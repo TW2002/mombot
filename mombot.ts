@@ -1,15 +1,17 @@
 systemscript
 reqRecording
 # TWX Script            : Mind Over Matter Bot
-# Authors           : Mind Dagger / The Bounty Hunter / Lonestar
+# Authors           : Mind Dagger / The Bounty Hunter / Lonestar / Hammer
 # Contributions/QA              : Misbehavin / DaCreeper / The Butcher
 # Description           : Allows Corpies to use you while AFK and a Self Helper
 # Credits           : Oz, Zentock, SupG, Dynarri, Cherokee, Alexio, Xide, Phx, Rincrast, Voltron, Traitor, Parrothead, PSI, Elder Prophet
 
 setVar $bot~major_version   "4"
-setVar $bot~minor_version   "00"
+setVar $bot~minor_version   "01p"
 savevar $bot~major_version
 savevar $bot~minor_version
+setvar $bot~default_bot_directory "mombot"&$bot~major_version&$bot~minor_version
+
 
 goto :BOT~load_bot
 :MAIN~module_vars
@@ -117,6 +119,7 @@ return
 return
 
 
+
 #INCLUDES:
 include "source\bot_includes\bot"
 include "source\bot_includes\bot\connectivity"
@@ -142,6 +145,3 @@ include "source\bot_includes\map\displayadjacentgridansi\map"
 include "source\bot_includes\map\commas\map"
 include "source\bot_includes\map\displaysector\map"
 include "source\bot_includes\game\gamestats\game"
-
-
-

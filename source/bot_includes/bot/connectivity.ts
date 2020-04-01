@@ -77,7 +77,7 @@
 			# formly "Copyright (C) EIS"
 			setTextTrigger loginsuccessful :continueRelog4v1 "Trade Wars 2002 Game Server v1"
 			setTextTrigger loginsuccessful2 :continueRelog4v2 "TWGS v2"
-			send $BOT~username & "*"
+			send $BOT~servername & "*"
 			pause
 		
 		:continueRelog4v1
@@ -284,8 +284,8 @@ return
 	:closed
 		killalltriggers
 		if (CONNECTED <> TRUE)
-			load "scripts\mombot\commands\general\relog.cts"
-			setEventTrigger		1		:relogended	"SCRIPT STOPPED" "scripts\mombot\commands\general\relog.cts"
+			load "scripts\"&$bot~mombot_directory&"\commands\general\relog.cts"
+			setEventTrigger		1		:relogended	"SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\general\relog.cts"
 			pause
 			:relogended
 			goto :try_again
@@ -302,9 +302,45 @@ return
 	:back_in_game
 	killalltriggers
 
+	# Testing this addition - Can we check briefly for our corp before mowing?
+	if (($BOT~isCEO = FALSE) AND ($BOT~corpName <> "") AND ($BOT~corpPassword <> ""))
+		setVar $skipJoin 0
+		setVar $attemps 0
+		gosub :BOT~killthetriggers
+		:checkForCorp2
+			add $attemps 1
+			if ($attemps >= 5)
+				gosub :BOT~killthetriggers
+				send "q"
+				goto :resumeStartAfterCorpJoin
+			end
+			send "*TD"
+			gosub :PLAYER~quikstats
+			setTextLineTrigger	1 :thereIsMyCorp2	"    "&$BOT~corpName
+			setTextTrigger 		2 :noCorpThatName2	"Corporate command ["
+			send "L"
+			pause
+		:noCorpThatName2
+			gosub :BOT~killthetriggers
+			echo "[[ Waiting 3 seconds to check for corp again, press [Spacebar] to cancel. ]]*"
+			setDelayTrigger		3 :checkForCorp2		200
+			setTextOutTrigger 	4 :alreadyCorped2 	#32
+			pause
+		:thereIsMyCorp2
+			gosub :BOT~killthetriggers
+			getWord CURRENTLINE $corpNumber 1
+		:continueCorpCreation2
+			gosub :BOT~killthetriggers
+			send "J"&$corpNumber&"*"&$BOT~corpPassword&"* * *CN24"&$BOT~subspace&"* Q Q Q ZN* ^Q c o* c q "
+			setVar $skipJoin 1
+	end
+	:resumeStartAfterCorpJoin
+
+	# End Testing 
 	if ($menus~mowDestination <> "")
 		gosub :moving
 	end
+
 	if ($newgame)
 		gosub :BOT~killthetriggers
 		if (($BOT~isCEO = TRUE) AND ($BOT~corpName <> "") AND ($BOT~corpPassword <> ""))
@@ -317,25 +353,29 @@ return
 				send $BOT~corpName&"*Y"&$BOT~corpPassword&"*Y*CN24"&$BOT~subspace&"* Q Q Q ZN* ^Q c o* c q "
 
 		elseif (($BOT~isCEO = FALSE) AND ($BOT~corpName <> "") AND ($BOT~corpPassword <> ""))
-			:checkForCorp
-				send "*TD"
-				gosub :PLAYER~quikstats
-				setTextLineTrigger	1 :thereIsMyCorp	"    "&$BOT~corpName
-				setTextTrigger 		2 :noCorpThatName	"Corporate command ["
-				send "L"
-				pause
-			:noCorpThatName
-				gosub :BOT~killthetriggers
-				echo "[[ Waiting 3 seconds to check for corp again, press [Spacebar] to cancel. ]]*"
-				setDelayTrigger		3 :checkForCorp		3000
-				setTextOutTrigger 	4 :alreadyCorped 	#32
-				pause
-			:thereIsMyCorp
-				gosub :BOT~killthetriggers
-				getWord CURRENTLINE $corpNumber 1
-			:continueCorpCreation
-				gosub :BOT~killthetriggers
-				send "J"&$corpNumber&"*"&$BOT~corpPassword&"* * *CN24"&$BOT~subspace&"* Q Q Q ZN* ^Q c o* c q "
+			if ($skipJoin = 0)
+				:checkForCorp
+					send "*TD"
+					gosub :PLAYER~quikstats
+					setTextLineTrigger	1 :thereIsMyCorp	"    "&$BOT~corpName
+					setTextTrigger 		2 :noCorpThatName	"Corporate command ["
+					send "L"
+					pause
+				:noCorpThatName
+					gosub :BOT~killthetriggers
+					echo "[[ Waiting 3 seconds to check for corp again, press [Spacebar] to cancel. ]]*"
+					setDelayTrigger		3 :checkForCorp		3000
+					setTextOutTrigger 	4 :alreadyCorped 	#32
+					pause
+				:thereIsMyCorp
+					gosub :BOT~killthetriggers
+					getWord CURRENTLINE $corpNumber 1
+				:continueCorpCreation
+					gosub :BOT~killthetriggers
+					send "J"&$corpNumber&"*"&$BOT~corpPassword&"* * *CN24"&$BOT~subspace&"* Q Q Q ZN* ^Q c o* c q "
+			else
+				goto :AllDone
+			end
 		else
 			:alreadyCorped
 				gosub :BOT~killthetriggers
@@ -351,6 +391,7 @@ return
 	# Don't think is needed now I've moved command_to_issue to below
 	if ($menus~mowDestination = "")
 		gosub :moving
+
 	end
 
 	if (($menus~command_to_issue <> "") and ($menus~command_to_issue <> "0"))
@@ -359,15 +400,14 @@ return
 		saveVar $menus~command_to_issue
 		goto :USER_INTERFACE~runUserCommandLine
 	end
-
 return
 
 :moving
 
 		echo #27 "[30D                        " #27 "[30D"
 		isNumber $isNumber $menus~mowDestination  
-		if ($isNumber and ((($BOT~mowToDock) OR ($menus~mowToRylos) OR ($menus~mowToAlpha) OR ($menus~mowToOther))))
-			if ($BOT~mowToDock)
+		if ($isNumber and ((($BOT~mowToDock) OR ($menus~mowToRylos) OR ($menus~mowToAlpha) OR ($menus~mowToOther) OR ($menus~fmowToDock))))
+			if ($BOT~mowToDock) or ($menus~fmowToDock)
 				if (((STARDOCK = "0") OR (STARDOCK = "")) and ($map~stardock = "0"))
 					send "v"
 					waitOn "-=-=-=-  Current "
@@ -382,23 +422,36 @@ return
 					setVar $menus~mowDestination $MAP~stardock
 				end
 			end
-			setvar $BOT~user_command_line "mow "&$menus~mowDestination&" "
+			if ($menus~fmowToDock = true)
+				setvar $BOT~user_command_line "fmow "&$menus~mowDestination&" 1 "
+			else
+				setvar $BOT~user_command_line "mow "&$menus~mowDestination&" 1 "
+			end
 			setVar $BOT~parm1 $menus~mowDestination
+			setVar $BOT~parm2 1
 			if ($menus~start_mow_option <> "")
 				setvar $BOT~user_command_line $BOT~user_command_line & $menus~start_mow_option & " "
-				setVar $BOT~parm2 $menus~start_mow_option
+				setVar $BOT~parm3 $menus~start_mow_option
 			end
 			savevar $bot~user_command_line
 			savevar $bot~parm1
+			savevar $bot~parm2
 			if ($menus~start_mow_option <> "")
-				savevar $bot~parm2
+				savevar $bot~parm3
 			end
 			setVar $menus~start_mow_option ""
 			saveVar $menus~start_mow_option
-			load "scripts\mombot\modes\grid\mow.cts"
-			setEventTrigger		1		:mowended	"SCRIPT STOPPED" "scripts\mombot\modes\grid\mow.cts"
-			pause
-			:mowended
+			if ($menus~fmowToDock = true)
+				load "scripts\"&$bot~mombot_directory&"\modes\grid\fmow.cts"
+				setEventTrigger		1		:fmowended	"SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\grid\fmow.cts"
+				pause
+				:fmowended
+			else
+				load "scripts\"&$bot~mombot_directory&"\modes\grid\mow.cts"
+				setEventTrigger		1		:mowended	"SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\grid\mow.cts"
+				pause
+				:mowended
+			end
 		else
 			if (($isNumber) and ($menus~xportToShip))
 				send "x    "&$menus~mowDestination&"  "

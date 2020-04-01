@@ -8,6 +8,7 @@
 		setVar $SHIP_MAX_ATTACK		0
 		setVar $SHIP_MINES_MAX		0
 		setVar $SHIP_SHIELD_MAX     0
+		setVar $SHIP_XPORT_RANGE    0
 	# ============================   END SHIP VARIABLES  ==========================
 
 :getShipStats
@@ -17,6 +18,7 @@
 	setTextLineTrigger getshipmines        :shipmaxmines       " Mine Max:  "
 	setTextLineTrigger  getshipgenesis        :shipmaxgenesis       " Genesis Max:  "
 	setTextLineTrigger  getshipshields      :shipmaxshields     "Maximum Shields:"
+	setTextLineTrigger  getshiprange      :shiptransportrange     "Transport Range:"
 	pause
 	
 	:shipmaxshields
@@ -54,4 +56,11 @@
 			striptext $SHIP_MAX_ATTACK " "
 		end
 		savevar $ship_max_attack
+		pause
+	:shiptransportrange
+		getText CURRENTLINE $SHIP_MAX_HOLDS "Maximum Holds:" "Transport Range:"
+		stripText $SHIP_MAX_HOLDS " "
+		getText CURRENTLINE $SHIP_XPORT_RANGE "Transport Range:" "Photon Missiles:"
+		stripText $SHIP_XPORT_RANGE " "
+
 return

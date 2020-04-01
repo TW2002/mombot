@@ -46,8 +46,7 @@
 		setVar $buydown_orgrounds 0
 		setVar $buydown_fuelrounds $buydownRoundsFromParam
 	else
-		setVar $SWITCHBOARD~message "Please use format buy [type] {speed} {#cycles} {override}*"
-		gosub :SWITCHBOARD~switchboard
+		setVar $exit_message "Please use format buy [type] {speed} {#cycles} {override}*"
 		return
 	end
 

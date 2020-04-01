@@ -606,21 +606,21 @@ return
 					setVar $BOT~custom_commands[$pos] $temp
 				end
 				setVar $i 1
-				delete "scripts/mombot/hotkeys.cfg"
-				delete "scripts/mombot/custom_keys.cfg"
-				delete "scripts/mombot/custom_commands.cfg"
+				delete "scripts/"&$bot~mombot_directory&"/hotkeys.cfg"
+				delete "scripts/"&$bot~mombot_directory&"/custom_keys.cfg"
+				delete "scripts/"&$bot~mombot_directory&"/custom_commands.cfg"
 				while ($i <= 255)
-					write "scripts/mombot/hotkeys.cfg" $BOT~hotkeys[$i]
+					write "scripts/"&$bot~mombot_directory&"/hotkeys.cfg" $BOT~hotkeys[$i]
 					add $i 1
 				end
 				setVar $i 1
 				while ($i <= 33)
-					write "scripts/mombot/custom_keys.cfg" $BOT~custom_keys[$i]
+					write "scripts/"&$bot~mombot_directory&"/custom_keys.cfg" $BOT~custom_keys[$i]
 					add $i 1
 				end
 				setVar $i 1
 				while ($i <= 33)
-					write "scripts/mombot/custom_commands.cfg" $BOT~custom_commands[$i]
+					write "scripts/"&$bot~mombot_directory&"/custom_commands.cfg" $BOT~custom_commands[$i]
 					add $i 1
 				end
 			else
@@ -1451,8 +1451,8 @@ return
 			killalltriggers
 			if ($BOT~newGameOlder = TRUE)
 				setvar $connectivity~newgame false
-				load "scripts\mombot\commands\general\relog.cts"
-				setEventTrigger		1		:relogended	"SCRIPT STOPPED" "scripts\mombot\commands\general\relog.cts"
+				load "scripts\"&$bot~mombot_directory&"\commands\general\relog.cts"
+				setEventTrigger		1		:relogended	"SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\general\relog.cts"
 				pause
 				:relogended
 				gosub :connectivity~moving

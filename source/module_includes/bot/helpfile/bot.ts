@@ -3,7 +3,7 @@ setvar $only_help false
 if (($parm1 = "help") or ($parm1 = "?"))
 	setvar $only_help true
 end
-	setVar $help_file "scripts\mombot\help\"&$command&".txt"
+	setVar $help_file "scripts\"&$mombot_directory&"\help\"&$command&".txt"
 	fileExists $doesHelpFileExist $help_file
 	if ($doesHelpFileExist)
 		setVar $i 1 
@@ -13,7 +13,7 @@ end
 			stripText $help[$i] #13
 			stripText $help[$i] "`"
 			stripText $help[$i] "'"
-			replaceText $help[$i] "=" "-"
+			#replaceText $help[$i] "=" "-"
 			if ($help[$i] <> $help_line)
 				goto :write_new_help_file
 			end
@@ -47,7 +47,7 @@ end
 			stripText $help[$i] #13
 			stripText $help[$i] "`"
 			stripText $help[$i] "'"
-			replaceText $help[$i] "=" "-"
+			#replaceText $help[$i] "=" "-"
 			if ($help[$i] = "0")
 				goto :done_help_file
 			end

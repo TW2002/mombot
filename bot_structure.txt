@@ -1,11 +1,11 @@
 twx\scripts
 	mombot - Main Bot file to start script
-twx\scripts\mombot\Commands\Cashing
+twx\scripts\"&$bot~mombot_directory&"\Commands\Cashing
 	mega - Completes a megarob on a port
 	rob - Completes a standard rob on a port
 	tricon - Plays TirCon game until win or run out of money
 
-twx\scripts\mombot\Commands\Data
+twx\scripts\"&$bot~mombot_directory&"\Commands\Data
 	alien411 - provides known locations of alien secotrs on ss
 	armids - runs a armid mine report
 	avoids - unknown
@@ -47,7 +47,7 @@ twx\scripts\mombot\Commands\Data
 	status
 	uf
 
-twx\scripts\mombot\Commands\Defense
+twx\scripts\"&$bot~mombot_directory&"\Commands\Defense
 	_dock_kit
 	_planet_kit
 	_terra_kit
@@ -55,7 +55,7 @@ twx\scripts\mombot\Commands\Defense
 	evac
 	hazkill
 
-twx\scripts\mombot\Commands\General
+twx\scripts\"&$bot~mombot_directory&"\Commands\General
 	bwarp
 	callout
 	corp
@@ -71,7 +71,7 @@ twx\scripts\mombot\Commands\General
 	with
 	xport
 
-twx\scripts\mombot\Commands\Grid
+twx\scripts\"&$bot~mombot_directory&"\Commands\Grid
 	clear
 	clearfig
 	climp
@@ -84,7 +84,7 @@ twx\scripts\mombot\Commands\Grid
 	pmine
 	smow
 
-twx\scripts\mombot\Commands\Offense
+twx\scripts\"&$bot~mombot_directory&"\Commands\Offense
 	_kazi
 	htorp
 	mex
@@ -100,7 +100,7 @@ twx\scripts\mombot\Commands\Offense
 	pxek
 	pxex
 
-twx\scripts\mombot\Commands\Resources
+twx\scripts\"&$bot~mombot_directory&"\Commands\Resources
 	_dock_shopper
 	buy
 	dump
@@ -108,7 +108,7 @@ twx\scripts\mombot\Commands\Resources
 	scruball
 	sellship
 
-twx\scripts\mombot\Modes\Cashing
+twx\scripts\"&$bot~mombot_directory&"\Modes\Cashing
 	furb
 	merch
 	psst
@@ -121,7 +121,7 @@ twx\scripts\mombot\Modes\Cashing
 	wrob
 	wsst
 
-twx\scripts\mombot\Modes\Data
+twx\scripts\"&$bot~mombot_directory&"\Modes\Data
 	_backdoor
 	_phx
 	_sptool
@@ -134,7 +134,7 @@ twx\scripts\mombot\Modes\Data
 	sentinel
 	ztm
 
-twx\scripts\mombot\Modes\Defense
+twx\scripts\"&$bot~mombot_directory&"\Modes\Defense
 	citfill
 	ig
 	qreset
@@ -143,10 +143,10 @@ twx\scripts\mombot\Modes\Defense
 	saveme
 	tsaveme
 
-twx\scripts\mombot\Modes\General
+twx\scripts\"&$bot~mombot_directory&"\Modes\General
 	xenter
 
-twx\scripts\mombot\Modes\Grid
+twx\scripts\"&$bot~mombot_directory&"\Modes\Grid
 	_probe
 	disr
 	emptythis
@@ -164,7 +164,7 @@ twx\scripts\mombot\Modes\Grid
 	surroundthis
 	ugrid
 
-twx\scripts\mombot\Modes\Offense
+twx\scripts\"&$bot~mombot_directory&"\Modes\Offense
 	_ldrop
 	_meatgrinder
 	boton
@@ -177,7 +177,7 @@ twx\scripts\mombot\Modes\Offense
 	slingshot
 	tripwire
 
-twx\scripts\mombot\Modes\Resources
+twx\scripts\"&$bot~mombot_directory&"\Modes\Resources
 	_solosg
 	_lsect
 	colo
@@ -194,7 +194,7 @@ twx\scripts\mombot\Modes\Resources
 	stripall
 	stripsips
 
-twx\scripts\mombot\Daemons
+twx\scripts\"&$bot~mombot_directory&"\Daemons
 	alienhunt
 	comms
 	farm
@@ -211,7 +211,7 @@ twx\scripts\mombot\Daemons
 	viewscreen
 	watcher
 
-twx\scripts\mombot\Startups
+twx\scripts\"&$bot~mombot_directory&"\Startups
 	mcic
 	online
 	stats

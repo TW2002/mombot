@@ -858,19 +858,7 @@ return
         end
         send $result
         gosub :quikstats
-        if (($CURRENT_PROMPT = "Command") AND ($mow_kill = TRUE))
-            setVar $startingLocation "Command"
-            goSub :SECTOR~getSectorData
-            goSub :fastAttack
-        elseif ($CURRENT_PROMPT = "Planet")
-            send "m * * * c "
-            if ($mow_kill = FALSE)
-                send "s* "
-            else
-                setVar $bot~startingLocation "Citadel"
-                gosub :scanit_cit_kill
-            end
-        elseif ($are_we_docking = FALSE)
+	if ($are_we_docking = FALSE)
             send "*"
         end
 return

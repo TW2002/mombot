@@ -1,4 +1,5 @@
 :pwarpto
+:pwarp
 	if ($scan)
 		send "q *c p" $PLAYER~warpto "*ys"
 	else
@@ -68,3 +69,6 @@ return
 	killtrigger No_pwarp
 	killtrigger wrong_number
 return
+
+include "source\module_includes\bot\removefigfromdata\bot"
+include "source\module_includes\bot\addfigtodata\bot"

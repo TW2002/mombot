@@ -67,7 +67,7 @@
 	:getShipType
 			getWordPos CURRENTLINE $shiptypeend "Ported="
 			subtract $shiptypeend 18
-			cutText CURRENTLINE $SHIP_TYPE 18 $shiptypeend
+			cutText CURRENTLINE $SHIP_TYPE_LONG 18 $shiptypeend
 			pause
 	:getTPW
 			getWord CURRENTLINE $TURNS_PER_WARP 5

@@ -66,8 +66,10 @@
 				getWord $stats $CREDITS         ($current_word + 1)
 			elseif ($wordy = "Figs")
 				getWord $stats $FIGHTERS        ($current_word + 1)
+				savevar $fighters
 			elseif ($wordy = "Shlds")
 				getWord $stats $SHIELDS         ($current_word + 1)
+				savevar $shields
 			elseif ($wordy = "Hlds")
 				getWord $stats $TOTAL_HOLDS         ($current_word + 1)
 			elseif ($wordy = "Ore")
@@ -116,6 +118,7 @@
 				savevar $corpnumber
 			elseif ($wordy = "Ship")
 				getWord $stats $SHIP_NUMBER         ($current_word + 1)
+				getWord $stats $SHIP_TYPE         ($current_word + 2)
 			end
 			add $current_word 1
 			getWord $stats $wordy $current_word

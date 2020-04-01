@@ -413,8 +413,8 @@
 			:GameClosedSettings
 				killalltriggers
 			    if (CONNECTED <> TRUE)
-			        load "scripts\mombot\commands\general\relog.cts"
-					setEventTrigger		relogended		:relogended "SCRIPT STOPPED" "scripts\mombot\commands\general\relog.cts"
+			        load "scripts\"&$bot~mombot_directory&"\commands\general\relog.cts"
+					setEventTrigger		relogended		:relogended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\general\relog.cts"
 					pause
 					:relogended
 					goto :tryAgainSettings

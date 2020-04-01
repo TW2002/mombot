@@ -271,9 +271,9 @@ return
 	setvar $do_not_resuscitate false
 	savevar $do_not_resuscitate
 
-	setvar $hotkeys_file         "scripts/mombot/hotkeys.cfg"
-	setvar $custom_keys_file     "scripts/mombot/custom_keys.cfg"
-	setvar $custom_commands_file "scripts/mombot/custom_commands.cfg"
+	setvar $hotkeys_file         "scripts/"&$mombot_directory&"/hotkeys.cfg"
+	setvar $custom_keys_file     "scripts/"&$mombot_directory&"/custom_keys.cfg"
+	setvar $custom_commands_file "scripts/"&$mombot_directory&"/custom_commands.cfg"
 
 	gosub :MENUS~doSplashScreen
 	fileExists $exists1 $hotkeys_file
@@ -419,7 +419,7 @@ return
 	setVar $END_FIG_HIT_OWNER "'s"
 # ================================END STANDARD GAME TEXT VARIABLES=================
 # ============================== START FILE VARIABLES ==============================
-	setvar $folder "scripts/mombot/games/"&GAMENAME
+	setvar $folder "scripts/"&$mombot_directory&"/games/"&GAMENAME
 	makedir $folder
 	setVar  $gconfig_file           $folder&"/bot.cfg"
 	setVar  $CK_FIG_FILE            $folder&"/_ck_" & GAMENAME & ".figs"
@@ -434,7 +434,7 @@ return
 	setVar  $BOT_USER_FILE          $folder&"/bot_users.lst"
 	setVar  $SHIP~cap_file          $folder&"/ships.cfg"
 	setVar  $PLANET~planet_file     $folder&"/planets.cfg"
-	setVar  $SCRIPT_FILE            "scripts/mombot/hotkey_scripts.cfg"
+	setVar  $SCRIPT_FILE            "scripts/"&$mombot_directory&"/hotkey_scripts.cfg"
 	setVar  $BUST_FILE              $folder&"/busts.cfg"
 	setVar  $MCIC_FILE              $folder&"/planet.nego"
 
@@ -662,17 +662,17 @@ return
 	end
 	gosub :save_the_variables
 
-	getFileList $startup_scripts "scripts\mombot\Startups\*.cts"
+	getFileList $startup_scripts "scripts\"&$mombot_directory&"\Startups\*.cts"
 	setVar $i 1 
 	while ($i <= $startup_scripts)
-		stop "scripts\mombot\startups\"&$startup_scripts[$i]
-		stop "scripts\mombot\startups\"&$startup_scripts[$i]
-		stop "scripts\mombot\startups\"&$startup_scripts[$i]
-		stop "scripts\mombot\startups\"&$startup_scripts[$i]
+		stop "scripts\"&$mombot_directory&"\startups\"&$startup_scripts[$i]
+		stop "scripts\"&$mombot_directory&"\startups\"&$startup_scripts[$i]
+		stop "scripts\"&$mombot_directory&"\startups\"&$startup_scripts[$i]
+		stop "scripts\"&$mombot_directory&"\startups\"&$startup_scripts[$i]
 		setVar $BOT~command $startup_scripts[$i]
 		replacetext $BOT~command ".cts" ""
 		saveVar $BOT~command
-		load "scripts\mombot\startups\"&$startup_scripts[$i]
+		load "scripts\"&$mombot_directory&"\startups\"&$startup_scripts[$i]
 		add $i 1
 	end
 
@@ -690,11 +690,11 @@ return
 
 		gosub :PLAYER~quikstats
 
-		stop "scripts\mombot\daemons\ephaggle.cts"
-		stop "scripts\mombot\daemons\ephaggle.cts"
-		stop "scripts\mombot\daemons\ephaggle.cts"
-		stop "scripts\mombot\daemons\ephaggle.cts"
-		load "scripts\mombot\daemons\ephaggle.cts"
+		stop "scripts\"&$mombot_directory&"\daemons\ephaggle.cts"
+		stop "scripts\"&$mombot_directory&"\daemons\ephaggle.cts"
+		stop "scripts\"&$mombot_directory&"\daemons\ephaggle.cts"
+		stop "scripts\"&$mombot_directory&"\daemons\ephaggle.cts"
+		load "scripts\"&$mombot_directory&"\daemons\ephaggle.cts"
 	else
 		echo "*{" $SWITCHBOARD~bot_name "} is ACTIVE: Version - "&$BOT~major_version&"."&$BOT~minor_version " - type " #34 $SWITCHBOARD~bot_name " help" #34 " for command list*"
 		if (($username = "") or ($letter = "") or ($doRelog = FALSE))

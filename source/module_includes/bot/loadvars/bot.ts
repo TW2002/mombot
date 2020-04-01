@@ -29,9 +29,8 @@
 	loadvar $letter
 	loadVar $game~port_max
 	loadVar $folder
+	loadVar $mombot_directory
 	loadVar $game~photon_duration
-
-
 
 
 	setArray $help 60
