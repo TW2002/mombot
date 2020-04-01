@@ -10,7 +10,7 @@ setVar $bot~major_version   "4"
 setVar $bot~minor_version   "01p"
 savevar $bot~major_version
 savevar $bot~minor_version
-setvar $bot~default_bot_directory "mombot"&$bot~major_version&$bot~minor_version
+setvar $bot~default_bot_directory "mombot4p"
 
 
 goto :BOT~load_bot
