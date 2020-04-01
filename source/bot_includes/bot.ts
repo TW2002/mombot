@@ -271,6 +271,25 @@ return
 	setvar $do_not_resuscitate false
 	savevar $do_not_resuscitate
 
+	loadvar $major_version
+	loadvar $minor_version
+
+	setVar  $mombot_folder_config "scripts/mombot"&$major_version&"_"&$minor_version&".cfg"
+	fileExists $folder_config_exists $mombot_folder_config
+	if ($folder_config_exists)
+		read $mombot_folder_config $mombot_directory 1
+	else
+		delete $mombot_folder_config
+		setvar $mombot_directory $bot~default_bot_directory
+		write $mombot_folder_config $mombot_directory
+	end
+
+	savevar $mombot_directory
+
+	setvar $folder "scripts/"&$mombot_directory&"/games/"&GAMENAME
+	makedir $folder
+
+
 	setvar $hotkeys_file         "scripts/"&$mombot_directory&"/hotkeys.cfg"
 	setvar $custom_keys_file     "scripts/"&$mombot_directory&"/custom_keys.cfg"
 	setvar $custom_commands_file "scripts/"&$mombot_directory&"/custom_commands.cfg"
@@ -419,8 +438,6 @@ return
 	setVar $END_FIG_HIT_OWNER "'s"
 # ================================END STANDARD GAME TEXT VARIABLES=================
 # ============================== START FILE VARIABLES ==============================
-	setvar $folder "scripts/"&$mombot_directory&"/games/"&GAMENAME
-	makedir $folder
 	setVar  $gconfig_file           $folder&"/bot.cfg"
 	setVar  $CK_FIG_FILE            $folder&"/_ck_" & GAMENAME & ".figs"
 	setVar  $FIG_FILE               $folder&"/fighters.cfg"
