@@ -45,8 +45,8 @@ if (($bot~parm1 = 0) OR ($bot~parm1 = 1) OR ($bot~parm1 = 2))
   setVar $Move~ScanHolo $bot~parm1
   setVar $PortCheck~ScanHolo $bot~parm1
 else
-  setVar $Move~ScanHolo 1
-  setVar $PortCheck~ScanHolo 1
+  setVar $Move~ScanHolo 2
+  setVar $PortCheck~ScanHolo 2
 end
 
 
