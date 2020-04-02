@@ -286,6 +286,7 @@ return
 
 	savevar $mombot_directory
 
+	makedir "scripts/"&$mombot_directory&"/games"
 	setvar $folder "scripts/"&$mombot_directory&"/games/"&GAMENAME
 	makedir $folder
 

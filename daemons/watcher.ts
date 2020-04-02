@@ -203,15 +203,11 @@ pause
 		isNumber $test $fig_hit 
 		if (($test = TRUE) AND ($fig_number <> "0"))
 			if (($fig_hit <= SECTORS) AND ($fig_hit > 0))
-				getText $ansi_line $alien_check ": " "'s"
-				getWordPos $alien_check $pos #27 & "[1;36m" & #27 & "["
 				setVar $target $fig_hit
-				if ($pos <= 0)
-					setvar $bot~last_fighter_hit $fig_hit
-					setvar $bot~last_hit $fig_hit
-					saveGlobal $bot~last_fighter_hit
-					saveGlobal $bot~last_hit
-				end
+				setvar $bot~last_fighter_hit $fig_hit
+				setvar $bot~last_hit $fig_hit
+				saveGlobal $bot~last_fighter_hit
+				saveGlobal $bot~last_hit
 				gosub :removefigfromdata
 			end
 		end
@@ -305,11 +301,6 @@ pause
 	cutText $line&"     " $spoof 1 2 
 	cutText $line&"     " $spoof2 1 1 
 	if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
-		goto :endfightersave
-	end
-	getText $ansi_line $alien_check ": " "'s"
-	getWordPos $alien_check $pos #27 & "[1;36m" & #27 & "["
-	if ($pos > 0)
 		goto :endfightersave
 	end
 	#Deployed Fighters Report Sector 8920: Mind's Imperial StarShip entered sector.
