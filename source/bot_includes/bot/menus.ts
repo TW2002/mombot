@@ -3,12 +3,14 @@
 	setDeafClients true
 	setVar $bot~botIsDeaf TRUE
 	saveVar $bot~botIsDeaf
-:refreshPreferencesMenu
 	gosub :BOT~killthetriggers
 	gosub :BOT~load_watcher_variables
 	gosub :bot~load_the_variables
 	setArray $h 31
 	setArray $qss 31
+	setArray $qss_var 100
+
+:refreshPreferencesMenu
 	setVar $h[2]  "                 "
 	setVar $h[3]  "Bot Name         "
 	setVar $h[4]  "Login Password   "
@@ -17,7 +19,7 @@
 	setVar $h[7]  "Limps to drop:        "
 	setVar $h[8]  "Armids to drop:       "
 	setVar $h[9]  "Avoid Planets?        "
-	setVar $h[10] "                      "
+	setVar $h[10] "       "
 	setVar $h[11] "Max Attack:      "
 	setVar $h[12] "Offensive Odds:  "
 	setVar $h[13] "Stardock         (S)  "
@@ -173,15 +175,17 @@
 	echo ANSI_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ANSI_15&"Trader List                    Game Stats"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ANSI_7&"**"
 	getConsoleInput $chosen_option SINGLEKEY
 	upperCase $chosen_option
-	gosub :BOT~killthetriggers
 	:process_command
 		if ($chosen_option = "?")
 			 goto :refreshPreferencesMenu
 		elseif ($chosen_option = "+")
 			 goto :chatMenu
 		elseif ($chosen_option = "N")
-				gosub :BOT~killthetriggers
-			getInput $new_bot_name ANSI_13&"What is the 'in game' name of the bot? (one word, no spaces)"&ANSI_7
+
+			setvar $question ANSI_13&"What is the 'in game' name of the bot? (one word, no spaces)"&ANSI_7
+			gosub :getinput 
+			setvar $new_bot_name $response
+
 			stripText $new_bot_name "^"
 			stripText $new_bot_name " "
 			lowerCase $new_bot_name
@@ -194,21 +198,26 @@
 			saveVar $SWITCHBOARD~bot_name
 
 		elseif ($chosen_option = "P")
-			gosub :BOT~killthetriggers
-			getInput $BOT~password "Please Enter your Game Password"
+			setvar $question "Please Enter your Game Password"
+			gosub :getinput 
+			setvar $bot~password $response
 		elseif ($chosen_option = "Z")
-			gosub :BOT~killthetriggers
-			getInput $BOT~bot_password "Please Enter your Bot Password"
+			setvar $question "Please Enter your Bot Password"
+			gosub :getinput 
+			setvar $bot~bot_password $response
 		elseif ($chosen_option = "G")
-			gosub :BOT~killthetriggers
-			getInput $BOT~letter "Please Enter your Game Letter"
+			setvar $question "Please Enter your Game Letter"
+			gosub :getinput 
+			setvar $bot~letter $response
 		elseif ($chosen_option = "C")
-			gosub :BOT~killthetriggers
-			getInput $BOT~username "Please Enter your Login Name"
+			setvar $question "Please Enter your Login Name"
+			gosub :getinput 
+			setvar $bot~username $response
 		elseif ($chosen_option = "1")
 			if ($PLAYER~unlimitedGame = FALSE)
-				gosub :BOT~killthetriggers
-				getInput $temp "What are the minimum turns you need to do bot commands?"
+				setvar $question "What are the minimum turns you need to do bot commands?"
+				gosub :getinput 
+				setvar $temp $response
 				isNumber $test $temp
 				if ($test)
 					if (($temp <= 65000) AND ($temp >= 0))
@@ -217,8 +226,9 @@
 				end
 			end
 		elseif ($chosen_option = "3")
-			gosub :BOT~killthetriggers
-			getInput $temp "How many fighters to drop on surround?"
+			setvar $question "How many fighters to drop on surround/gridding?"
+			gosub :getinput
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test)
 				if (($temp <= 50000) AND ($temp >= 0))
@@ -226,8 +236,9 @@
 				end
 			end
 		elseif ($chosen_option = "4")
-			gosub :BOT~killthetriggers
-			getInput $temp "How many limpets to drop on surround?"
+			setvar $question "How many limpets to drop on surround/gridding?"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test)
 				if (($temp <= 250) AND ($temp >= 0))
@@ -235,8 +246,9 @@
 				end
 			end
 		elseif ($chosen_option = "5")
-			gosub :BOT~killthetriggers
-			getInput $temp "How many armid mines to drop on surround?"
+			setvar $question "How many armid mines to drop on surround/gridding?"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test)
 				if (($temp <= 250) AND ($temp >= 0))
@@ -303,8 +315,9 @@
 				setVar $PLAYER~surround_before_hkill TRUE
 			end
 		elseif ($chosen_option = "S")
-			gosub :BOT~killthetriggers
-			getInput $temp "What sector is the Stardock? (0 to set to twx variable)"
+			setvar $question "What sector is the Stardock? (0 to set to twx variable)"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test)
 				if (($temp <= SECTORS) AND ($temp >= 1))
@@ -316,28 +329,32 @@
 				end
 			end
 		elseif ($chosen_option = "J")
-			gosub :BOT~killthetriggers
-			getInput $temp "Please enter name of traders, seperated by commas.  Can also use [2],[1] for Corporations."
+			setvar $question "Please enter name of traders, seperated by commas.  Can also use [2],[1] for Corporations."
+			gosub :getinput 
+			setvar $temp $response
 			setVar $BOT~alarm_list $temp
 			saveVar $BOT~alarm_list
 		elseif ($chosen_option = "X")
-			gosub :BOT~killthetriggers
-			getInput $temp "What ship number is your safe ship?"
+			setvar $question "What ship number is your safe ship?"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test)
 				setVar $BOT~safe_ship $temp
 			end
 		elseif ($chosen_option = "L")
-			gosub :BOT~killthetriggers
-			getInput $temp "What planet is your safe planet?"
+			setvar $question "What planet is your safe planet?"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test)
 				setVar $BOT~safe_planet $temp
 			end
 		elseif ($chosen_option = "E")
-			gosub :BOT~killthetriggers
 			setvar $temp 5760
-			getInput $temp "How many minutes afk do you want the echo banner to show each time?"
+			setvar $question "How many minutes afk do you want the echo banner to show each time?"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test)
 				if ($temp > 0)
@@ -347,8 +364,9 @@
 				end
 			end
 		elseif ($chosen_option = "R")
-			gosub :BOT~killthetriggers
-			getInput $temp "What sector is the Rylos port? (0 to set to twx variable)"
+			setvar $question "What sector is the Rylos port? (0 to set to twx variable)"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test)
 				if (($temp <= SECTORS) AND ($temp >= 1))
@@ -359,8 +377,9 @@
 				savevar $MAP~rylos
 			end
 		elseif ($chosen_option = "A")
-			gosub :BOT~killthetriggers
-			getInput $temp "What sector is the Alpha Centauri port? (0 to set to twx variable)"
+			setvar $question "What sector is the Alpha Centauri port? (0 to set to twx variable)"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test)
 				if (($temp <= SECTORS) AND ($temp >= 1))
@@ -371,8 +390,9 @@
 				savevar $MAP~alpha_centauri 
 			end
 		elseif ($chosen_option = "B")
-			gosub :BOT~killthetriggers
-			getInput $temp "What sector is the Backdoor to Stardock?"
+			setvar $question "What sector is the Backdoor to Stardock?"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test)
 				if (($temp <= SECTORS) AND ($temp >= 1))
@@ -381,8 +401,9 @@
 				savevar $MAP~backdoor 
 			end
 		elseif ($chosen_option = "H")
-			gosub :BOT~killthetriggers
-			getInput $temp "What sector is the Home Sector port?"
+			setvar $question "What sector is the Home Sector?"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test)
 				if (($temp <= SECTORS) AND ($temp >= 1))
@@ -403,7 +424,7 @@
 				setVar $PLAYER~surroundOverwrite TRUE
 				setVar $PLAYER~surroundPassive   FALSE
 				setVar $PLAYER~surroundNormal    FALSE
-						end
+			end
 		elseif ($chosen_option = ">")
 			goto :preferencesMenuPage2
 		elseif ($chosen_option = "<")
@@ -411,20 +432,19 @@
 		else
 			gosub :donePrefer
 		end
-		gosub :preferenceStats
 		goto :refreshPreferencesMenu
 :donePrefer
 	setDeafClients false
 	setVar $bot~botIsDeaf false
 	saveVar $bot~botIsDeaf
+	echo "*Saving preferences..*"
+	gosub :BOT~save_the_variables
+
 	echo #27 "[30D                        " #27 "[30D"
 	echo CURRENTANSILINE
 	setVar $BOT~botIsDeaf FALSE
 	saveVar $BOT~botIsDeaf
 	goto :BOT~wait_for_command
-return
-:preferenceStats
-	gosub :BOT~save_the_variables
 return
 
 :preferencesMenuPage2
@@ -583,9 +603,10 @@ return
 		elseif ($chosen_option = "<")
 			goto :preferencesMenuPage2
 		elseif ($pos > 0)
-			gosub :BOT~killthetriggers
+			setDeafClients false
 			echo "*What should this hotkey be set to?*"
 			getConsoleInput $temp SINGLEKEY
+			setDeafClients true
 			lowerCase $temp
 			getCharCode $temp $lower
 			upperCase $temp
@@ -602,7 +623,9 @@ return
 				setVar $BOT~hotkeys[$lower] $pos
 				setVar $BOT~custom_keys[$pos] $temp
 				if ($pos > 17)
-					getInput $temp "What is the bot command to connect to this hotkey?"
+					setvar $question "What is the bot command to connect to this hotkey?"
+					gosub :getinput 
+					setvar $temp $response
 					setVar $BOT~custom_commands[$pos] $temp
 				end
 				setVar $i 1
@@ -624,7 +647,9 @@ return
 					add $i 1
 				end
 			else
+				setDeafClients false
 				echo ANSI_4 "*Hot key already bound to another function.**" ANSI_7
+				setDeafClients true
 				setDelayTrigger warningdelay :preferencesMenuPage3 1000
 				pause
 			end
@@ -635,13 +660,13 @@ return
 :preferencesMenuPage4
 	gosub :BOT~killthetriggers
 	setVar $i 1
-	setVar $shipsChanged FALSE
 	if ($SHIP~shipcounter > 10)
 		setVar $pagesExist TRUE
 	else
 		setVar $pagesExist FALSE
 	end
 	:NextShipPage
+		setVar $shipsChanged FALSE
 		setVar $thisPage $i
 		setVar $menuCount 0
 		Echo #27 & "[2J"
@@ -703,6 +728,7 @@ return
 			end
 			setVar $i $thisPage
 			setVar $shipsChanged TRUE
+			gosub :rewrite_cap_file
 			goto :NextShipPage
 		else
 			gosub :rewrite_cap_file
@@ -797,50 +823,64 @@ return
 			end
 			goto :NextPlanetInfoPage
 		elseif ($pos > 0)
-			getInput $temp "What are the min fuel colos for "&$PLANET~planetList[($selection+$thisPage)]&"?"
+			setvar $question "What are the min fuel colos for "&$PLANET~planetList[($selection+$thisPage)]&"?"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test = FALSE)
 				goto :PreferencesMenuPagePlanet
 			end
 			setVar $PLANET~planetList[($selection+$thisPage)][1] $temp
 
-			getInput $temp "What are the max fuel colos for "&$PLANET~planetList[($selection+$thisPage)]&"?"
+			setvar $question "What are the max fuel colos for "&$PLANET~planetList[($selection+$thisPage)]&"?"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test = FALSE)
 				goto :PreferencesMenuPagePlanet
 			end
 			setVar $PLANET~planetList[($selection+$thisPage)][2] $temp
 
-			getInput $temp "What are the min organics colos for "&$PLANET~planetList[($selection+$thisPage)]&"?"
+			setvar $question "What are the min organics colos for "&$PLANET~planetList[($selection+$thisPage)]&"?"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test = FALSE)
 				goto :PreferencesMenuPagePlanet
 			end
 			setVar $PLANET~planetList[($selection+$thisPage)][3] $temp
 
-			getInput $temp "What are the max organics colos for "&$PLANET~planetList[($selection+$thisPage)]&"?"
+			setvar $question "What are the max organics colos for "&$PLANET~planetList[($selection+$thisPage)]&"?"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test = FALSE)
 				goto :PreferencesMenuPagePlanet
 			end
 			setVar $PLANET~planetList[($selection+$thisPage)][4] $temp
 
-			getInput $temp "What are the min equipment colos for "&$PLANET~planetList[($selection+$thisPage)]&"?"
+			setvar $question "What are the min equipment colos for "&$PLANET~planetList[($selection+$thisPage)]&"?"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test = FALSE)
 				goto :PreferencesMenuPagePlanet
 			end
 			setVar $PLANET~planetList[($selection+$thisPage)][5] $temp
 
-			getInput $temp "What are the max equipment colos for "&$PLANET~planetList[($selection+$thisPage)]&"?"
+			setvar $question "What are the max equipment colos for "&$PLANET~planetList[($selection+$thisPage)]&"?"
+			gosub :getinput 
+			setvar $temp $response
 			isNumber $test $temp
 			if ($test = FALSE)
 				goto :PreferencesMenuPagePlanet
 			end
 			setVar $PLANET~planetList[($selection+$thisPage)][6] $temp
 
+			setDeafClients false
 			echo "Is this planet a keeper? (y/n)*"
 			getConsoleInput $keeperselection SINGLEKEY
+			setDeafClients true
 			upperCase $keeperselection
 			if ($keeperselection = "Y")
 				setVar $PLANET~planetList[($selection+$thisPage)][7] TRUE
@@ -859,9 +899,15 @@ return
 
 :rewrite_cap_file
 	if ($shipsChanged)
+		setVar $gbonus_file $bot~folder&"/dbonus-ships.cfg"
+		delete $gbonus_file
+		delete $SHIP~cap_file
 		setVar $j 1
 		while ($j < $SHIP~shipcounter)
 			write $SHIP~cap_file $SHIP~shipList[$j][1] & " " & $SHIP~shipList[$j][2] & " " & $SHIP~shipList[$j][3] & " " & $SHIP~shipList[$j][9] & " " & $SHIP~shipList[$j][4] & " " & $SHIP~shipList[$j][5] & " " & $SHIP~shipList[$j][6] & " " & $SHIP~shipList[$j][7] & " " & $SHIP~shipList[$j][8] & " " & $SHIP~shipList[$j]
+			if ($SHIP~shipList[$j][8])
+				write $gbonus_file $SHIP~shipList[$j]
+			end
 			add $j 1
 		end
 	end
@@ -1141,9 +1187,15 @@ return
 	end
 	if ($BOT~username = 0)
 		setVar $BOT~username LOGINNAME
+		savevar $bot~username
+	end
+	if ($BOT~servername = 0)
+		setVar $BOT~servername LOGINNAME
+		savevar $bot~servername
 	end
 	if ($BOT~letter = 0)
 		setVar $BOT~letter GAME
+		savevar $bot~letter
 	end
 	if (($BOT~startShipName = 0) OR ($BOT~startShipName = ""))
 		setVar $BOT~startShipName "Mind ()ver Matter"
@@ -1163,20 +1215,20 @@ return
 	setArray $h 26
 	setArray $qss 26
 	setVar $h[1]  "Bot Name:        "
-	setVar $h[2]  "Login Name:      "
-	setVar $h[3]  "Password:        "
-	setVar $h[4]  "Game Letter:     "
-	setVar $h[5]  "Ship Name:       "
-	setVar $h[6]  "Type of login:   "
-	setVar $h[7]  "Are you CEO?     "
-	setVar $h[8]  "Corp Name:       "
-	setVar $h[9]  "Corp Password:   "
-	setVar $h[10] "Subspace Channel:"
-	setVar $h[11] "Delay (Minutes): "
-	setVar $h[12] "After login:     "
-	setVar $h[13] "Bot command to perform:"
-	setVar $h[14] "                 "
-	setVar $h[15] "                 "
+	setVar $h[2]  "Server Name:     "
+	setVar $h[3]  "Login Name:      "
+	setVar $h[4]  "Password:        "
+	setVar $h[5]  "Game Letter:     "
+	setVar $h[6]  "Ship Name:       "
+	setVar $h[7]  "Type of login:   "
+	setVar $h[8]  "Are you CEO?     "
+	setVar $h[9]  "Corp Name:       "
+	setVar $h[10] "Corp Password:   "
+	setVar $h[11] "Subspace Channel:"
+	setVar $h[12] "Delay (Minutes): "
+	setVar $h[13] "After login:     "
+	setVar $h[14] "Bot command to perform:"
+	setVar $h[15] "Mow Option       "
 	setVar $h[16] "                 "
 	setVar $h[17] "                 "
 	setVar $h[18] "                 "
@@ -1189,50 +1241,63 @@ return
 	setVar $h[25] "                 "
 	setVar $h[26] "                 "
 	setVar $qss[1] $SWITCHBOARD~bot_name
-	setVar $qss[2] $BOT~username
-	setVar $qss[3] $BOT~password
-	setVar $qss[4] $BOT~letter
-	setVar $qss[5] $BOT~startShipName
+	setVar $qss[2] $BOT~servername
+	setVar $qss[3] $BOT~username
+	setVar $qss[4] $BOT~password
+	setVar $qss[5] $BOT~letter
+	setVar $qss[6] $BOT~startShipName
 	if ($BOT~newGameDay1)
-		setVar $qss[6] "New Game Account Creation"
+		setVar $qss[7] "New Game Account Creation"
 	elseif ($BOT~newGameOlder)
-		setVar $qss[6] "Normal Relog"
+		setVar $qss[7] "Normal Relog"
 	else
-		setVar $qss[6] "Return after being destroyed."
+		setVar $qss[7] "Return after being destroyed."
 	end
 	if ($BOT~isCEO)
-		setVar $qss[7] "Yes"
+		setVar $qss[8] "Yes"
 	else
-		setVar $qss[7] "No"
+		setVar $qss[8] "No"
 	end
 	loadvar $bot~corpName
-	setVar $qss[8] $BOT~corpName
-	setVar $qss[9] $BOT~corpPassword
-	setVar $qss[10] $BOT~subspace
-	setVar $qss[11] $BOT~startGameDelay
+	setVar $qss[9] $BOT~corpName
+	setVar $qss[10] $BOT~corpPassword
+	setVar $qss[11] $BOT~subspace
+	setVar $qss[12] $BOT~startGameDelay
 	if ($BOT~mowToDock)
-		setVar $qss[12] "Mow To Stardock"
+		setVar $qss[13] "Mow To Stardock"
+	elseif ($fmowToDock)
+		setVar $qss[13] "Fuel Mow to Stardock"
 	elseif ($mowToAlpha)
-		setVar $qss[12] "Mow To Alpha"
+		setVar $qss[13] "Mow To Alpha"
 	elseif ($mowToRylos)
-		setVar $qss[12] "Mow To Rylos"
+		setVar $qss[13] "Mow To Rylos"
 	elseif ($mowToOther)
-		setVar $qss[12] "Mow To Custom TA"
+		setVar $qss[13] "Mow To Custom TA"
 	elseif ($xportToShip)
-		setVar $qss[12] "Xport to ship"
+		setVar $qss[13] "Xport to ship"
 	elseif ($landOnTerra)
-		setVar $qss[12] "Land on Terra"
+		setVar $qss[13] "Land on Terra"
 	else
-		setVar $qss[12] "Nothing"
+		setVar $qss[13] "Nothing"
 	end
 	loadvar $command_to_issue
 	if (($command_to_issue = "") or ($command_to_issue = "0"))
-		setVar $qss[13] "None"
+		setVar $qss[14] "None"
 	else
-		setVar $qss[13] $command_to_issue
+		setVar $qss[14] $command_to_issue
 	end
-	setVar $qss[14] ""
-	setVar $qss[15] ""
+	loadvar $start_mow_option
+	if (($start_mow_option = "") or ($start_mow_option = "0"))
+		setVar $qss[15] "Direct"
+	elseif ($start_mow_option = "backdoor")
+		setVar $qss[15] "Via Backdoor"
+	elseif ($start_mow_option = "i1")
+		setVar $qss[15] "Indirect Mow 1"
+	elseif ($start_mow_option = "i2")
+		setVar $qss[15] "Indirect Mow 2"
+	elseif ($start_mow_option = "i3")
+		setVar $qss[15] "Indirect Mow 3"
+	end
 	setVar $qss[16] ""
 	setVar $qss[17] ""
 	setVar $qss[18] ""
@@ -1248,24 +1313,28 @@ return
 	gosub :menuSpacing
 	echo "**"
 	echo ANSI_11&" Relog Menu   (Q to quit, Z to start logging in.)         *"
-	echo ANSI_10&#27&"[35m<"&#27&"[32m1"&#27&"[35m> "&ANSI_7&$qss_var[6] &"*"
+	echo ANSI_10&#27&"[35m<"&#27&"[32m1"&#27&"[35m> "&ANSI_7&$qss_var[7] &"*"
 	echo "*"
 	echo ANSI_10&#27&"[35m<"&#27&"[32mB"&#27&"[35m> "&ANSI_7&$qss_var[1] &"*"
-	echo ANSI_10&#27&"[35m<"&#27&"[32mL"&#27&"[35m> "&ANSI_7&$qss_var[2] &"*"
-	echo ANSI_10&#27&"[35m<"&#27&"[32mP"&#27&"[35m> "&ANSI_7&$qss_var[3] &"*"
-	echo ANSI_10&#27&"[35m<"&#27&"[32mG"&#27&"[35m> "&ANSI_7&$qss_var[4] &"*"
+	echo ANSI_10&#27&"[35m<"&#27&"[32mN"&#27&"[35m> "&ANSI_7&$qss_var[2] &"*"
+	echo ANSI_10&#27&"[35m<"&#27&"[32mL"&#27&"[35m> "&ANSI_7&$qss_var[3] &"*"
+	echo ANSI_10&#27&"[35m<"&#27&"[32mP"&#27&"[35m> "&ANSI_7&$qss_var[4] &"*"
+	echo ANSI_10&#27&"[35m<"&#27&"[32mG"&#27&"[35m> "&ANSI_7&$qss_var[5] &"*"
 	if ($BOT~newGameOlder = FALSE)
-		echo ANSI_10&#27&"[35m<"&#27&"[32mS"&#27&"[35m> "&ANSI_7&$qss_var[5] &"*"
+		echo ANSI_10&#27&"[35m<"&#27&"[32mS"&#27&"[35m> "&ANSI_7&$qss_var[6] &"*"
 	end
 	if ($BOT~newGameDay1 = TRUE)
-		echo ANSI_10&#27&"[35m<"&#27&"[32m2"&#27&"[35m> "&ANSI_7&$qss_var[7] &"*"
-		echo ANSI_10&#27&"[35m<"&#27&"[32m3"&#27&"[35m> "&ANSI_7&$qss_var[8] &"*"
-		echo ANSI_10&#27&"[35m<"&#27&"[32m4"&#27&"[35m> "&ANSI_7&$qss_var[9] &"*"
-		echo ANSI_10&#27&"[35m<"&#27&"[32m5"&#27&"[35m> "&ANSI_7&$qss_var[10]&"*"
+		echo ANSI_10&#27&"[35m<"&#27&"[32m2"&#27&"[35m> "&ANSI_7&$qss_var[8] &"*"
+		echo ANSI_10&#27&"[35m<"&#27&"[32m3"&#27&"[35m> "&ANSI_7&$qss_var[9] &"*"
+		echo ANSI_10&#27&"[35m<"&#27&"[32m4"&#27&"[35m> "&ANSI_7&$qss_var[10] &"*"
+		echo ANSI_10&#27&"[35m<"&#27&"[32m5"&#27&"[35m> "&ANSI_7&$qss_var[11]&"*"
 	end
-	echo ANSI_10&#27&"[35m<"&#27&"[32m6"&#27&"[35m> "&ANSI_7&$qss_var[11]&"*"
-	echo ANSI_10&#27&"[35m<"&#27&"[32m7"&#27&"[35m> "&ANSI_7&$qss_var[12]&"*"
-	echo ANSI_10&#27&"[35m<"&#27&"[32m8"&#27&"[35m> "&ANSI_7&$qss_var[13]&"*"
+	echo ANSI_10&#27&"[35m<"&#27&"[32m6"&#27&"[35m> "&ANSI_7&$qss_var[12]&"*"
+	echo ANSI_10&#27&"[35m<"&#27&"[32m7"&#27&"[35m> "&ANSI_7&$qss_var[13]&"*"
+	if (($BOT~mowToDock = true) or ($mowToAlpha = true) or ($mowToRylos = true) or ($mowToOther = true) or ($fmowToDock = true))
+		echo ANSI_10&#27&"[35m<"&#27&"[32mM"&#27&"[35m> "&ANSI_7&$qss_var[15]&"*"	
+	end
+	echo ANSI_10&#27&"[35m<"&#27&"[32m8"&#27&"[35m> "&ANSI_7&$qss_var[14]&"*"
 	echo "*"
 	:getStartGameInput
 		getConsoleInput $chosen_option SINGLEKEY
@@ -1289,15 +1358,23 @@ return
 		elseif ($chosen_option = "P")
 			killalltriggers
 			getInput $BOT~password "Please Enter your Game Password"
+			savevar $bot~password
 		elseif ($chosen_option = "G")
 			killalltriggers
 			getInput $BOT~letter "Please Enter your Game Letter"
+			savevar $bot~letter
+		elseif ($chosen_option = "N")
+			killalltriggers
+			getInput $BOT~servername "Please Enter your Server Name"
+			savevar $bot~servername
 		elseif ($chosen_option = "L")
 			killalltriggers
 			getInput $BOT~username "Please Enter your Login Name"
+			savevar $BOT~username
 		elseif ($chosen_option = "S")
 			killalltriggers
 			getInput $BOT~startShipName "What ship name would you like?"
+			savevar $BOT~startShipName
 		elseif ($chosen_option = "1")
 			if ($BOT~newGameDay1)
 				setvar $BOT~newGameDay1 FALSE
@@ -1353,7 +1430,8 @@ return
 				setVar $landOnTerra false
 				setVar $mowDestination ""
 				setvar $do_nothing false
-			elseif (($BOT~mowToDock = false) and ($mowToAlpha = false) and ($mowToRylos = false) and ($mowToOther = false) and ($xportToShip = false) and ($landOnTerra = false))
+				setVar $fmowToDock FALSE
+			elseif (($BOT~mowToDock = false) and ($mowToAlpha = false) and ($fmowToDock = false) and ($mowToRylos = false) and ($mowToOther = false) and ($xportToShip = false) and ($landOnTerra = false))
 				setVar $qss[12] "Land on Terra"
 				setvar $do_nothing true
 				setvar $BOT~mowToDock FALSE
@@ -1362,7 +1440,8 @@ return
 				setVar $mowToOther FALSE
 				setvar $xportToShip false
 				setVar $landOnTerra true
-				setVar $mowDestination ""		
+				setVar $mowDestination ""	
+				setVar $fmowToDock FALSE	
 			elseif ($landOnTerra)
 				setVar $qss[12] "Mow To Custom TA"
 				setvar $BOT~mowToDock FALSE
@@ -1373,6 +1452,7 @@ return
 				setVar $landOnTerra false
 				setVar $mowDestination ""
 				setvar $do_nothing false
+				setVar $fmowToDock FALSE
 			elseif ($mowToOther)
 				setVar $qss[12] "Mow to Stardock"
 				setvar $BOT~mowToDock TRUE
@@ -1382,8 +1462,20 @@ return
 				setVar $mowToOther FALSE
 				setVar $landOnTerra false
 				setvar $do_nothing false
+				setVar $fmowToDock FALSE
 				setVar $mowDestination $MAP~stardock
-			elseif ($bot~mowToDock)
+			elseif ($BOT~mowToDock)
+				setVar $qss[12] "Fuel Mow to Stardock"
+				setvar $BOT~mowToDock FALSE
+				setVar $mowToAlpha FALSE
+				setVar $mowToRylos FALSE
+				setvar $xportToShip false
+				setVar $mowToOther FALSE
+				setVar $landOnTerra false
+				setvar $do_nothing false
+				setVar $fmowToDock TRUE
+				setVar $mowDestination $MAP~stardock
+			elseif ($fmowToDock)
 				setVar $qss[12] "Xport to Ship"
 				setvar $xportToShip TRUE
 				setVar $mowToAlpha FALSE
@@ -1393,14 +1485,35 @@ return
 				setVar $bot~mowToDock  FALSE
 				setVar $mowDestination ""
 				setvar $do_nothing false
+				setVar $fmowToDock FALSE
 			end
 			savevar $xportToShip 
+			savevar $fmowToDock
 			savevar $mowToAlpha 
 			savevar $mowToRylos 
 			savevar $mowToOther 
 			savevar $bot~mowToDock  
 			savevar $landOnTerra
 			savevar $do_nothing
+		elseif ($chosen_option = "M")
+
+			if ($start_mow_option = "i3")
+				setVar $qss[14] "Direct"
+				setVar $start_mow_option ""
+			elseif (($start_mow_option = "") or ($start_mow_option = "0"))
+				setVar $qss[14] "Via Backdoor"
+				setVar $start_mow_option "backdoor"
+			elseif ($start_mow_option = "backdoor")
+				setVar $qss[14] "Indirect Mow 1"
+				setVar $start_mow_option "i1"
+			elseif ($start_mow_option = "i1")
+				setVar $qss[14] "Indirect Mow 2"
+				setVar $start_mow_option "i2"
+			elseif ($start_mow_option = "i2")
+				setVar $qss[14] "Indirect Mow 3"
+				setVar $start_mow_option "i3"
+			end 
+			savevar $start_mow_option 
 		elseif ($chosen_option = "8")
 			getInput $temp "Enter a command line for the bot to run after entering game (No bot name needed)"
 			setVar $command_to_issue $temp
@@ -1477,7 +1590,6 @@ return
 	gosub :BOT~save_the_variables
 return
 :menuSpacing
-	setArray $qss_var 100
 	setVar $qss_ss 0
 	setVar $qss_count 1
 	setVar $spc " "
@@ -1548,7 +1660,12 @@ return
 
 
 
-
+:getinput 
+	gosub :bot~killthetriggers
+	setDeafClients false
+	getInput $response $question
+	setDeafClients true
+return
 
 #####========================================== END BOT INTERNAL MENUS SECTION ========================================#####
 
