@@ -12,7 +12,7 @@
 	# ============================   END SHIP VARIABLES  ==========================
 
 :getShipStats
-	send "c;q"
+	send "c;"
 	setTextLineTrigger	getshipoffense		:shipoffenseodds	"Offensive Odds: "
 	setTextLineTrigger	getshipfighters 	:shipmaxfigsperattack	" TransWarp Drive:   "
 	setTextLineTrigger getshipmines        :shipmaxmines       " Mine Max:  "
@@ -62,5 +62,5 @@
 		stripText $SHIP_MAX_HOLDS " "
 		getText CURRENTLINE $SHIP_XPORT_RANGE "Transport Range:" "Photon Missiles:"
 		stripText $SHIP_XPORT_RANGE " "
-
+		send "q "
 return

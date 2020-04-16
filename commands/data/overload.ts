@@ -1,6 +1,6 @@
 	gosub :BOT~loadVars
 
-	setVar $BOT~help[1] $BOT~tab&"overload  {under}"
+	setVar $BOT~help[1] $BOT~tab&"overload  {under} {bubble}"
 	setVar $BOT~help[2] $BOT~tab&"        "
 	setVar $BOT~help[3] $BOT~tab&"  Tells you when you have sectors overloaded "
 	setVar $BOT~help[4] $BOT~tab&"  with planets        "
@@ -24,6 +24,12 @@
 		setVar $showUnderload TRUE
 	else
 		setVar $showUnderload FALSE
+	end
+
+	getwordpos " "&$bot~user_command_line&" " $pos " bubble "
+	setvar $bubble false
+	if ($pos > 0)
+		setvar $bubble true
 	end
 :start_overload
 	if ($game~MAX_PLANETS_PER_SECTOR <= 0)
@@ -111,9 +117,14 @@
 						goto :compareInnerLoop
 					else
 						if ($planet~planets_this_sector > $pps)
-							setvar $switchboard~message "OVERLOAD: " & $planet~planets_this_sector & " planets found in sector " & $currentDataSector & "*"
-							gosub :switchboard~switchboard
-							add $overloads 1
+							getsectorparameter $currentDataSector "BUBBLE" $isBubble
+							getsectorparameter $currentDataSector "FARM" $isFarm
+			
+							if (($bubble <> true) or (($bubble = true) and (($isBubble = true) or ($isFarm = true))))
+								setvar $switchboard~message "OVERLOAD: " & $planet~planets_this_sector & " planets found in sector " & $currentDataSector & "*"
+								gosub :switchboard~switchboard
+								add $overloads 1
+							end
 						elseif ((($planet~planets_this_sector > 1) OR ($pps <= 1)) AND ($planet~planets_this_sector < $pps) AND ($showUnderload = TRUE))
 							setvar $switchboard~message  ""&$planet~planets_this_sector & " planets found in sector " & $currentDataSector & ". Sector needs " &($pps-$planet~planets_this_sector)&" planets to be full.*"
 							gosub :switchboard~switchboard

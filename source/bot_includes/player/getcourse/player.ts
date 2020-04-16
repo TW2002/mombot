@@ -5,7 +5,7 @@
 			setVar $starting_point ""
 		end
 		setTextLineTrigger sectorlinetrig :sectorsline " > "
-		send "^f"&$starting_point&"*"&$destination&"**q"
+		send "^f"&$starting_point&"*"&$destination&"*"
 		pause
 	:sectorsline
 		killtrigger sectorlinetrig
@@ -34,6 +34,7 @@
 		getWordPos $line $pos2 "("&$destination&")"
 		getWordPos $line $pos3 "TO"
 		if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
+			send "* q "
 			goto :gotSectors
 		else
 			setTextLineTrigger sectorlinetrig :sectorsline " > "

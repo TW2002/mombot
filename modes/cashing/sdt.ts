@@ -15,16 +15,21 @@ reqRecording
 	loadVar $game~ptradesetting
 
 					      
-	setVar $BOT~help[1] $BOT~tab&" sdt {resetlra} [ship1] [ship2] [planet1] [planet2] {resetlra}*"
-	setVar $BOT~help[2] $BOT~tab&"  - Do NOT need to start in Ship 1 or Ship 2."
-	setVar $BOT~help[3] $BOT~tab&"  - First Steal will be from Ship 1."
-	setVar $BOT~help[4] $BOT~tab&"  - Checks last rob and busts from Sec Params"
-	setVar $BOT~help[5] $BOT~tab&"  - {resetlra} will reset last rob sector and exit"
-	setVar $BOT~help[6] $BOT~tab&"  - Will use EP Haggle if running in bot"
-	setVar $BOT~help[7] $BOT~tab&"  - Created by Cherokee"
+	setVar $BOT~help[1]  $BOT~tab&" sdt {resetlra} [ship1] [ship2] [planet1] [planet2]*"
+	setVar $BOT~help[2]  $BOT~tab&"     {swap}*"
+	setVar $BOT~help[3]  $BOT~tab&"    "
+	setVar $BOT~help[4]  $BOT~tab&"    Do NOT need to start in Ship 1 or Ship 2."
+	setVar $BOT~help[5]  $BOT~tab&"    First Steal will be from Ship 1."
+	setVar $BOT~help[6]  $BOT~tab&"    Checks last rob and busts from Sec Params"
+	setVar $BOT~help[7]  $BOT~tab&"     "
+	setVar $BOT~help[8]  $BOT~tab&"    Options: "
+	setVar $BOT~help[9]  $BOT~tab&"     {resetlra} will reset last rob sector and exit"
+	setVar $BOT~help[10] $BOT~tab&"     "
+	setVar $BOT~help[11] $BOT~tab&"    Will use EP Haggle if running in bot"
+	setVar $BOT~help[12] $BOT~tab&"    Created by Cherokee"
 	gosub :bot~helpfile
 
-	setVar $BOT~script_title "SDT - Steal Dump Transport"
+	setVar $BOT~script_title "SDT - Steal Dump Transport 2.1"
 	gosub :BOT~banner
 
 	
@@ -35,13 +40,18 @@ reqRecording
 		halt
 	end
 
-	getWordPos $bot~user_command_line $pos " resetlra"
+	getWordPos " "&$bot~user_command_line&" " $pos " resetlra"
 	if ($pos > 0)
 		setSectorParameter 1 "LRA" 1
 		setVar $SWITCHBOARD~message "Last rob sector reset.*"
 		gosub :switchboard~switchboard
 	end
 
+	getWordPos " "&$bot~user_command_line&" " $pos " swap "
+	setvar $swap false
+	if ($pos > 0)
+		setvar $swap true
+	end
 
     setVar $ckSDTquiet "OFF"
     setVar $beamFurbing "n"
@@ -75,6 +85,11 @@ reqRecording
        HALT
     END
 
+    getwordpos " "&$bot~user_command_line&" " $pos " noavoid "
+    setvar $noavoid false
+    if ($pos > 0)
+    	setvar $noavoid true
+    end
     if ($GAME~steal_factor = 0)
 	setVar $GAME~steal_factor 21
 	send "'{" $switchboard~bot_name "}No Steal factor!! assuming 21, you need to ensure bot has refreshed!*"
@@ -136,7 +151,7 @@ killalltriggers
 :verifyship   
     gosub :player~quikstats
     IF ($player~ship_number <> $ship_1)
-           send "x  " $ship_1 "*  q z *   "
+           send "x   " $ship_1 "*  q z *   "
     END
     gosub :player~quikstats
     IF ($player~ship_number <> $ship_1)
@@ -180,8 +195,12 @@ setVar $debugdelay 0
         send "'{" $switchboard~bot_name "} - Starting with Credits: " & $init_credits & " Exp: " & $init_exp & " Turns: " & $init_turns & ".*"
         send "*"
         waitFor "(?=Help)?"
-        gosub :voidAdjacent
-        setVar $ship[$current_ship].voids "set"
+        loadglobal $ship[$current_ship].voids
+        if ((($ship[$current_ship].voids <> "set") and ($noavoid = true)) or ($noavoid <> true))
+	        gosub :voidAdjacent
+	        setVar $ship[$current_ship].voids "set"
+	        saveglobal $ship[$current_ship].voids
+	    end
         gosub :checkPlanet
         gosub :checkPort
         gosub :checkUpgrade
@@ -203,8 +222,12 @@ setVar $debugdelay 0
         setVar $holds[$current_ship] $holds
         send "*"
         waitFor "(?=Help)?"
-        gosub :voidAdjacent
-        setVar $ship[$current_ship].voids "set"
+        loadglobal $ship[$current_ship].voids
+        if ($ship[$current_ship].voids <> "set")
+	        gosub :voidAdjacent
+	        setVar $ship[$current_ship].voids "set"
+	        saveglobal $ship[$current_ship].voids
+	    end
         gosub :checkPlanet
         gosub :checkPort
         gosub :checkUpgrade
@@ -229,15 +252,17 @@ setVar $debugdelay 0
 
 # ----- FINISH
 :finish
-        gosub :clearadjacent
+		if ($noavoid <> true)
+	        gosub :clearadjacent
+		end
         if ($current_ship = $ship_1)
                setVar $player~current_sector $sector[$ship_2]
         else
                setVar $player~current_sector $sector[$ship_1]
         end
-               if (($ship[$current_ship].voids = "set") and ($player~current_sector <> 0))
-                         gosub :clearadjacent
-               end
+		if (($ship[$current_ship].voids = "set") and ($player~current_sector <> 0) and ($noavoid <> true))
+			gosub :clearadjacent
+		end
         gosub :endCNsettings
         setVar $cash_made $player~credits
         subtract $cash_made $init_credits
@@ -507,17 +532,17 @@ setVar $debugdelay 0
             setTextTrigger sellfuel :sellfuel "How many units of Fuel Ore"
             setTextTrigger sellorg :sellorg "How many units of Organics"
             setTextTrigger sellequ :sellequ "How many units of Equipment"
+            settexttrigger noequ :noequ "Command ["
+
             pause
             pause
 
             :sellfuel
-                killalltriggers
                 send "0*"
-                goto :sellproduct
+                pause
             :sellorg
-                killalltriggers
                 send "0*"
-                goto :sellproduct
+                pause
             :sellequ
                 killalltriggers
                 send "*"
@@ -902,6 +927,8 @@ setVar $debugdelay 0
             send "'{" $switchboard~bot_name "} - Ship " & $current_ship & " - " & $portbuying & " EQU haggled for " & $counter & " credits (" & $perunit & " per unit).*"
         end
     else
+    	:noequ
+    	killalltriggers
         send "'{" $switchboard~bot_name "} - There is no equ to sell at this port*"
     end
     
@@ -947,6 +974,10 @@ setVar $debugdelay 0
                 #gosub :sell
                 gosub :getInfo
                 gosub :player~quikstats
+
+                setVar $sendString "L " & $planet~planet[$current_ship] & "*  TNL3*c t t"& ($player~credits-500000)&"*qqq * * "
+                send $sendString
+
                 goto :finish
             :fake
                 killAllTriggers
@@ -990,32 +1021,39 @@ setVar $debugdelay 0
         send $xportString
         return
     else
-        setVar $xportString "X  " & $current_ship & "*Q"
+        setVar $xportString "X  " & $current_ship & "*  Q"
         send $xportString
-        setTextLineTrigger noxportship :noxportship "That is not an available ship"
-        setTextLineTrigger noxportrange :noxportrange "only has a transport range"
-        setTextLineTrigger noxportpassword :noxportpassword "Enter the password for"
-        setTextLineTrigger xportsuccess :xportsuccess "Security code accepted"
-        pause
-        pause
-        :noxportship
-            killalltriggers
-            gosub :endCNsettings
-            setVar $exit_message "That is not an available ship, Script Halting."
-            goto :exit
-        :noxportrange
-            killalltriggers
-            gosub :endCNsettings
-            setVar $exit_message "Not enough transport range, Script Halting."
-            goto :exit
-        :noxportpassword
-            killalltriggers
-            gosub :endCNsettings
-            setVar $exit_message "Transport ship requires a password, Script Halting."
-            goto :exit
-        :xportsuccess
-            killalltriggers
-            return
+        gosub :player~quikstats
+
+		if ($player~ship_number <> $current_ship)
+			setVar $exit_message "Cannot Xport to Ship "&$current_ship&".  Check Xport Range.  Halting.*"
+			goto :exit
+		end
+		return
+#        setTextLineTrigger noxportship :noxportship "That is not an available ship"
+#        setTextLineTrigger noxportrange :noxportrange "only has a transport range"
+#        setTextLineTrigger noxportpassword :noxportpassword "Enter the password for"
+#        setTextLineTrigger xportsuccess :xportsuccess "Security code accepted"
+#        pause
+#        pause
+#        :noxportship
+#            killalltriggers
+#            gosub :endCNsettings
+#            setVar $exit_message "That is not an available ship, Script Halting."
+#            goto :exit
+#        :noxportrange
+#            killalltriggers
+#            gosub :endCNsettings
+#            setVar $exit_message "Not enough transport range, Script Halting."
+#            goto :exit
+#        :noxportpassword
+#            killalltriggers
+#            gosub :endCNsettings
+#            setVar $exit_message "Transport ship requires a password, Script Halting."
+#            goto :exit
+#        :xportsuccess
+#            killalltriggers
+#            return
     end
 
 :exit
@@ -1433,6 +1471,7 @@ setVar $debugdelay 0
         return
         
 :swathoff
+	loadglobal $swathoff
     if ($swathoff = 0)
         setTextTrigger swathison :swathison "Command [TL="
         setDelayTrigger swathisoff :swathisoff 2000
@@ -1442,11 +1481,13 @@ setVar $debugdelay 0
         killalltriggers
         setVar $message "Detected SWATH Autohaggle"
         setVar $swathoff 0
+        saveglobal $swathoff
         return
 
         :swathisoff
         killalltriggers
         setVar $swathoff 1
+        saveglobal $swathoff
     end
     return
     
@@ -1476,30 +1517,33 @@ setVar $debugdelay 0
 
 
 :clearadjacent
-    echo "*[["&$player~current_sector&"]]*"
-    if ($player~current_sector <= 0)
-       gosub :player~quikstats
-    end
-    if (SECTOR.WARPS[$player~current_sector][1] = 0)
-        send "'{" $switchboard~bot_name "} - This sector has no warps, maybe you need to scan it first*"
-        halt
-    else
-        setVar $voidsect 0
-        :clearvoids
-        add $voidsect 1
-        if ($voidsect < 7)
-            if (SECTOR.WARPS[$player~current_sector][$voidsect] <> 0)
-                send "CV0*YN" & SECTOR.WARPS[$player~current_sector][$voidsect] & "*Q"
-            end
-            goto :clearvoids
-        end
+    if ($noavoid <> true)
+		echo "*[["&$player~current_sector&"]]*"
+		if ($player~current_sector <= 0)
+		   gosub :player~quikstats
+		end
+		if (SECTOR.WARPS[$player~current_sector][1] = 0)
+		    send "'{" $switchboard~bot_name "} - This sector has no warps, maybe you need to scan it first*"
+		    halt
+		else
+		    setVar $voidsect 0
+		    :clearvoids
+		    add $voidsect 1
+		    if ($voidsect < 7)
+		        if (SECTOR.WARPS[$player~current_sector][$voidsect] <> 0)
+		            send "CV0*YN" & SECTOR.WARPS[$player~current_sector][$voidsect] & "*Q"
+		        end
+		        goto :clearvoids
+		    end
 
-        send "'{" $switchboard~bot_name "} - Avoids cleared on all adjacent sectors*"
-        send "/"
-        waitfor " Sect "
-        return
-    end
-
+		    send "'{" $switchboard~bot_name "} - Avoids cleared on all adjacent sectors*"
+		    send "/"
+		    waitfor " Sect "
+		    return
+		end
+		setvar $ship[$current_ship].voids ""
+		saveglobal $ship[$current_ship].voids 
+	end
 :player~quikstats
 
         # ============================ START QUIKSTAT VARIABLES ==========================
@@ -1676,12 +1720,11 @@ return
 
 
 :checkEPHaggle
-    if ($epHaggleFail = 1)
-	gosub :endCNsettings
-	gosub :clearadjacent
-	
-	halt
-    end
+	if ($epHaggleFail = 1)
+		gosub :endCNsettings
+		gosub :clearadjacent
+		halt
+	end
 return
 
 

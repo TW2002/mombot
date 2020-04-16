@@ -1,4 +1,5 @@
 # ===========================  START SWATH DISABLING SUBROUTINE  =================
+loadglobal $swathoff
 :swathoff
 	if ($swathoff = FALSE)
 		setTextTrigger swathison :swathison "Command [TL="
@@ -10,12 +11,14 @@
 		killtrigger swathison
 		setVar $swathOffMessage "Detected SWATH Autohaggle"
 		setVar $swathoff FALSE
+        saveglobal $swathoff
 		return
 
 		:swathisoff
 		killtrigger swathisoff
 		killtrigger swathison
 		setVar $swathoff TRUE
+        saveglobal $swathoff
 	end
 return
 # ==========================   END SWATH DISABLING SUBROUTINE  =================

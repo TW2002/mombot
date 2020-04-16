@@ -241,6 +241,7 @@ return
 	:try_again
 	gosub :do_relog
 	:GameClosed
+	killalltriggers
 	setTextLineTrigger  1 :closed 		"I'm sorry, but this is a closed game."
 	setTextLineTrigger  2 :closed 		"www.tradewars.com                                   Epic Interactive Strategy"
 	setTextLineTrigger  3 :closed		" day(s) to get back in."
@@ -256,7 +257,14 @@ return
 		setTextTrigger 9 :newname	"Use (N)ew Name or (B)BS Name"
 		setTextTrigger 10 :noalias	"Choose a name carefully as you will have it for a while!"
 	else
-		send $BOT~password&"***"&$BOT~startShipName&"*Y "
+		send $BOT~password&"* * ************"
+		waiton "What do you want to name your ship? (30 letters)"
+		if ($menus~landOnTerra = true)		
+			send $BOT~startShipName&"*Y l "
+			return
+		else
+			send $BOT~startShipName&"*Y "
+		end
 	end
 	pause
 	:whosplay
@@ -303,7 +311,7 @@ return
 	killalltriggers
 
 	# Testing this addition - Can we check briefly for our corp before mowing?
-	if (($BOT~isCEO = FALSE) AND ($BOT~corpName <> "") AND ($BOT~corpPassword <> ""))
+	if (($newgame) and ($BOT~isCEO = FALSE) AND ($BOT~corpName <> "") AND ($BOT~corpPassword <> ""))
 		setVar $skipJoin 0
 		setVar $attemps 0
 		gosub :BOT~killthetriggers

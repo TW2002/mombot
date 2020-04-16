@@ -580,6 +580,7 @@ return
 	if ($pos > 0)
 		setvar $bot~parms[8] $bot~command
 		setVar $BOT~command "update"
+		setvar $bot~user_command_line $bot~parms[1]&" "&$bot~parms[2]&" "&$bot~parms[3]&" "&$bot~parms[4]&" "&$bot~parms[5]&" "&$bot~parms[6]&" "&$bot~parms[7]&" "&$bot~parms[8]&" "
 	end
 	setvar $deploy_list " lay put place limp mine armid plimp mines climp cmine pmine topoff mines fig "
 	getwordpos $deploy_list $pos " "&$bot~command&" "
@@ -588,6 +589,10 @@ return
 			setvar $bot~parms[8] $bot~command
 		end
 		setVar $BOT~command "deploy"
+		setvar $bot~user_command_line $bot~parms[1]&" "&$bot~parms[2]&" "&$bot~parms[3]&" "&$bot~parms[4]&" "&$bot~parms[5]&" "&$bot~parms[6]&" "&$bot~parms[7]&" "&$bot~parms[8]&" "
+	end
+	if ($BOT~command = "figmove") or ($BOT~command = "movefigs")
+		setVar $BOT~command "movefig"	
 	end
 	if ($BOT~command = "build") or ($BOT~command = "create")
 		setVar $BOT~command $bot~parms[1]
@@ -605,6 +610,7 @@ return
 		setvar $bot~parms[3] $bot~parms[2]
 		setvar $bot~parms[2] $bot~parms[1]
 		setvar $bot~parms[1] "create"
+		setvar $bot~user_command_line $bot~parms[1]&" "&$bot~parms[2]&" "&$bot~parms[3]&" "&$bot~parms[4]&" "&$bot~parms[5]&" "&$bot~parms[6]&" "&$bot~parms[7]&" "&$bot~parms[8]&" "
 	end
 	if ($BOT~command = "kill") or ($BOT~command = "destroy") or ($BOT~command = "blow")
 		#setVar $BOT~command $bot~parms[1]
@@ -612,6 +618,7 @@ return
 		if ($bot~parms[1] = "port")
 			setVar $BOT~command $bot~parms[1]
 			setvar $bot~parms[1] "kill"
+			setvar $bot~user_command_line $bot~parms[1]&" "&$bot~parms[2]&" "&$bot~parms[3]&" "&$bot~parms[4]&" "&$bot~parms[5]&" "&$bot~parms[6]&" "&$bot~parms[7]&" "&$bot~parms[8]&" "
 		end
 	end
 	if ($BOT~command = "upgrade") or ($BOT~command = "max")
@@ -628,6 +635,7 @@ return
 		setvar $bot~parms[3] $bot~parms[2]
 		setvar $bot~parms[2] $bot~parms[1]
 		setvar $bot~parms[1] "upgrade"
+		setvar $bot~user_command_line $bot~parms[1]&" "&$bot~parms[2]&" "&$bot~parms[3]&" "&$bot~parms[4]&" "&$bot~parms[5]&" "&$bot~parms[6]&" "&$bot~parms[7]&" "&$bot~parms[8]&" "
 	end
 	if ($BOT~command = "f") or ($BOT~command = "fde") or ($BOT~command = "ufde") or ($BOT~command = "nf") or ($BOT~command = "uf") or ($BOT~command = "de") or ($BOT~command = "fp") or ($BOT~command = "fup") or ($BOT~command = "nfup")
 		setvar $bot~parms[8] $bot~parms[7]
@@ -639,8 +647,8 @@ return
 		setvar $bot~parms[2] $bot~parms[1]
 		setvar $bot~parms[1] $bot~command
 		setVar $BOT~command "find"
+		setvar $bot~user_command_line $bot~parms[1]&" "&$bot~parms[2]&" "&$bot~parms[3]&" "&$bot~parms[4]&" "&$bot~parms[5]&" "&$bot~parms[6]&" "&$bot~parms[7]&" "&$bot~parms[8]&" "
 	end
-	setvar $bot~user_command_line $bot~parms[1]&" "&$bot~parms[2]&" "&$bot~parms[3]&" "&$bot~parms[4]&" "&$bot~parms[5]&" "&$bot~parms[6]&" "&$bot~parms[7]&" "&$bot~parms[8]&" "
 	setVar $i 1
 	while ($i <= $BOT~parmS)
 		if ($BOT~parmS[$i] = "s")

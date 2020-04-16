@@ -671,6 +671,13 @@ while (($i <= SECTORS) and ($done <> true))
 	add $i 1
 end
 
+# if we hit the limit, unmark others
+if ($i < SECTORS)
+	while ($i <= SECTORS)
+		setSectorParameter $i $mark ""
+		add $i 1
+	end
+end
 
 setVar $sortedResults 0
 setVar $sortedResultsi 0

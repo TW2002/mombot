@@ -8,6 +8,7 @@ loadvar $bot~subspace
 loadvar $bot~bot_password
 loadvar $bot~bot_name
 loadGlobal $bot~last_fighter_attack
+loadvar $bot~mombot_directory
 if ($bot~last_fighter_attack = 0)
 	setvar $bot~last_fighter_attack ""
 	saveGlobal $bot~last_fighter_attack
