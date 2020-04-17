@@ -286,13 +286,15 @@ setVar $debugdelay 0
         else
                setVar $credsPerTurn 0
         end
-        if ($low_turns <> "YES")
-        end
-        send "'*{" $switchboard~bot_name "} - *"
-        send "   - Ship " & $ship_1 & " - " & $total_revenue[$ship_1] & " cr - " & $equ_sold[$ship_1] & " units (" & $credsPerUnit[$ship_1] & "/unit) - MCIC " & $MCIC[$ship_1] & "*"
-        send "   - Ship " & $ship_2 & " - " & $total_revenue[$ship_2] & " cr - " & $equ_sold[$ship_2] & " units (" & $credsPerUnit[$ship_2] & "/unit) - MCIC " & $MCIC[$ship_2] & "*"
-        send "   - Net " & $cash_made & " credits in " & $player~turns_used & " turns (" & $credsPerTurn & "/turn).*"
-        send " *"
+        format $total_revenue[$ship_1] $ship1money NUMBER
+        format $total_revenue[$ship_2] $ship2money NUMBER
+        format $equ_sold[$ship_1] $ship1equ NUMBER
+        format $equ_sold[$ship_2] $ship2equ NUMBER
+        format $cash_made $cashformat NUMBER
+        format $credsPerTurn $credsPerTurnformat NUMBER
+        setvar $switchboard~message "   - Ship " & $ship_1 & " - " & $ship1money & " cr - " & $ship1equ & " units (" & $credsPerUnit[$ship_1] & "/unit) - MCIC " & $MCIC[$ship_1] & "*   - Ship " & $ship_2 & " - " & $ship2money & " cr - " & $ship2equ & " units (" & $credsPerUnit[$ship_2] & "/unit) - MCIC " & $MCIC[$ship_2] & "*   - Net " & $cashformat & " credits in " & $player~turns_used & " turns (" & $credsPerTurnformat & "/turn).*  *"
+        gosub :switchboard~switchboard
+
     if ($low_turns <> "YES")
         if ($beamFurbing = "n")
             send "Busted in ship " & $current_ship & ", FURB please, I still have " & $player~turns & " turns to run.*"

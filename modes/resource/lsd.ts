@@ -327,17 +327,17 @@
     Gosub :LoadShipData
 
 	setVar $location $player~current_prompt
-	getWordPos CURRENTANSILINE $pos #27
+#	getWordPos CURRENTANSILINE $pos #27
 	if ($location = "Command")
-		if ($pos = 0)
-			send " c n 1 q q "
-			waitfor "Command [TL="
-		end
+#		if ($pos = 0)
+#			send " c n 1 q q "
+#			waitfor "Command [TL="
+#		end
 	elseif ($location = "Citadel")
-		if ($pos = 0)
-			send " c n 1 q q "
-			waitfor "Citadel command"
-		end
+#		if ($pos = 0)
+#			send " c n 1 q q "
+#			waitfor "Citadel command"
+#		end
 	elseif ($location = "Planet")
 		setVar $Theres_Citadel FALSE
 		setTextTrigger THERES_NO_CIT :THERES_NO_CIT "Planet command (?=help)"
@@ -354,15 +354,15 @@
 		else
 			send " Q "
 		end
-		getWordPos CURRENTANSILINE $pos #27
-		if ($pos = 0)
-			send " c n 1 q q "
-			if ($Theres_Citadel)
-				waitfor "Citadel command"
-			else
-				waitfor "Command "
-			end
-		end
+#		getWordPos CURRENTANSILINE $pos #27
+#		if ($pos = 0)
+#			send " c n 1 q q "
+#			if ($Theres_Citadel)
+#				waitfor "Citadel command"
+#			else
+#				waitfor "Command "
+#			end
+#		end
 	end
 
 	setVar $SpeacalMSG 			""

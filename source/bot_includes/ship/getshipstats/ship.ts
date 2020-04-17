@@ -26,6 +26,7 @@
 		replaceText $shield_line ":" "  "
 		replaceText $shield_line "," ""
 		getWord $shield_line $SHIP_SHIELD_MAX 10
+		savevar $ship_shield_max
 		pause
 	:shipoffenseodds
 		getWordPos CURRENTANSILINE $pos "[0;31m:[1;36m1"
@@ -36,17 +37,20 @@
 			gettext CURRENTANSILINE $SHIP_FIGHTERS_MAX "Max Fighters[1;33m:[36m" "[0;32m Offensive Odds"
 			stripText $SHIP_FIGHTERS_MAX ","
 			stripText $SHIP_FIGHTERS_MAX " "
-			savevar $SHIP~SHIP_OFFENSIVE_ODDS
+			savevar $ship_fighters_max
+			savevar $SHIP_OFFENSIVE_ODDS
 		end
 		pause
 	:shipmaxmines
 		getText CURRENTLINE $SHIP_MINES_MAX "Mine Max:" "Beacon Max:"
 		stripText $SHIP_MINES_MAX " "
+		savevar $ship_mines_max
 		pause
 
 	:shipmaxgenesis
 		getText CURRENTLINE $SHIP_GENESIS_MAX "Genesis Max:" "Long Range Scan:"
 		stripText $SHIP_GENESIS_MAX " "
+		savevar $ship_genesis_max
 		pause
 	
 	:shipmaxfigsperattack
@@ -62,5 +66,6 @@
 		stripText $SHIP_MAX_HOLDS " "
 		getText CURRENTLINE $SHIP_XPORT_RANGE "Transport Range:" "Photon Missiles:"
 		stripText $SHIP_XPORT_RANGE " "
+		savevar $ship_xport_range
 		send "q "
 return
