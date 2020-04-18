@@ -1,9 +1,9 @@
 # ----- SUB :getPortInfo -----
 :getPortInfo
 	if ($startingLocation = "Citadel")
-		send "S*CR*Q"
+		send "S*CR*"
 	else
-		send "*CR*Q"
+		send "*CR*"
 	end
 	setVar $validPortFound FALSE
 	setTextLineTrigger foundport :foundport2 "Items     Status  Trading % of max OnBoard"
@@ -15,10 +15,12 @@
 
 	:noport2
 		gosub :portkillingtriggers
+		send "q"
 		return
 
 	:foundport2
 		gosub :portkillingtriggers
+		send "q"
 		setVar $fuelselling 0
 		setVar $orgselling 0
 		setVar $equipselling 0

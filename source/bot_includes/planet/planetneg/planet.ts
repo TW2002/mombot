@@ -270,8 +270,15 @@ pause
 			setVar $attemptequ 1
 			setVar $attemptequconfirmed 0
 		end
-	
-		send "PN" & $planet & "*"
+		isNumber $number $planet
+		setVar $findPlanet 0
+		if ($number = 0)
+			send "PN"
+			setVar $findPlanet 1
+		else
+			send "PN" & $planet & "*"
+		end
+		
 		subtract $PLAYER~turns 1
 			:getpercts
 				setTextLineTrigger orepct :orepct "Fuel Ore   Buying"
@@ -324,7 +331,24 @@ pause
 					killtrigger orgpct
 					killtrigger equpct
 					killtrigger gotpercts
+					if ($findPlanet = 1)
+						setTextLineTrigger planetNum :planetNum "> "&$planet
+						setDelayTrigger noPlanetNum :noPlanetNum 3000
+						pause
+						:noPlanetNum
+							killalltriggers
+							setVar $exit_message "Could not determine port number!"
+							send "q*"
+							goto :exitneg
+						:planetNum
+							killtrigger planetNum
+							killtrigger noPlanetNum
+							getWord CURRENTLINE $planet 1
+							striptext $planet ">"
+							send $planet "*"
+					end
 
+			
 			:sellproduct
 				setTextTrigger sellfuel :sellfuel "How many units of Fuel Ore"
 				setTextTrigger sellorg :sellorg "How many units of Organics"
