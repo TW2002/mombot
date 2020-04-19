@@ -27,6 +27,7 @@ END
 replaceText $bot~parm1 "m" "000000"
 replaceText $bot~parm1 "M" "000000"
 replaceText $bot~parm1 "k" "000"
+replaceText $bot~parm1 "K" "000"
 
 IF ($bot~parm1 > 0)
      setVar $k $bot~parm1

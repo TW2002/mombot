@@ -10,6 +10,11 @@ setVar $planet~citadel_CASH_MAX    999999999999999
 # ============================== START DEPOSIT (DEP) ==============================
 :dep
 :d
+	replaceText $bot~parm1 "m" "000000"
+	replaceText $bot~parm1 "M" "000000"
+	replaceText $bot~parm1 "k" "000"
+	replaceText $bot~parm1 "K" "000"
+
 	gosub :bankProtections
 	if ($bot~parm1 = "")
 		setVar $cashToTransfer $PLAYER~CREDITS

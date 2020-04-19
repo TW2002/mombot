@@ -143,6 +143,27 @@
 		goto :command_processing
 #============================== END SELF CONTROL SUB ==============================
 :getParameters
+	setvar $test_value 0
+	setVar $i 1
+	while ($test_value <> "")
+		getWord (" " & $BOT~user_command_line & " ") $test_value $i ""
+		getWordPos " "&$test_value&" " $posMillions "m "
+		getWordPos " "&$test_value&" " $posThousands "k "
+		if (($posMillions > 0) or ($posThousands > 0))
+			replaceText $test_value "m" ""
+			replaceText $test_value "k" ""
+			trim $test_value
+			isNumber $is_a_number $test_value
+			if ($is_a_number = true)
+				if ($test_value <> 0)
+					replaceText $BOT~user_command_line $test_value&"m" $test_value&"000000"
+					replaceText $BOT~user_command_line $test_value&"k" $test_value&"000"
+				end
+			end
+		end
+		add $i 1
+	end
+
 	setVar $i 1
 	while ($i <= 8)
 		getWord (" " & $BOT~user_command_line & " ") $BOT~parms[$i] $i ""
@@ -694,6 +715,8 @@ return
 			end
 		end
 	end
+
+
 	setVar $BOT~parm1 $BOT~parmS[1]
 	setVar $BOT~parm2 $BOT~parmS[2]
 	setVar $BOT~parm3 $BOT~parmS[3]
