@@ -149,15 +149,18 @@
 		getWord (" " & $BOT~user_command_line & " ") $test_value $i ""
 		getWordPos " "&$test_value&" " $posMillions "m "
 		getWordPos " "&$test_value&" " $posThousands "k "
-		if (($posMillions > 0) or ($posThousands > 0))
+		getWordPos " "&$test_value&" " $posBillions "b "
+		if (($posMillions > 0) or ($posThousands > 0) or ($posBillions > 0))
 			replaceText $test_value "m" ""
 			replaceText $test_value "k" ""
+			replaceText $test_value "b" ""
 			trim $test_value
 			isNumber $is_a_number $test_value
 			if ($is_a_number = true)
 				if ($test_value <> 0)
 					replaceText $BOT~user_command_line $test_value&"m" $test_value&"000000"
 					replaceText $BOT~user_command_line $test_value&"k" $test_value&"000"
+					replaceText $BOT~user_command_line $test_value&"b" $test_value&"000000000"
 				end
 			end
 		end
