@@ -46,9 +46,22 @@
 			pause
 		:continuepassword
 			gosub :relog_freeze_trigger
-			send $BOT~password & "* **"
 			settextlinetrigger dead :dead "What do you want to name your ship? (30 letters)"
 			settexttrigger alive :alldone_relog "Command ["
+			settexttrigger avoids :continueavoids "Do you wish to clear some avoids? (Y/N) [N]"
+			settexttrigger messages :continuemessages "[Pause]"
+			settexttrigger delete :continuedelete "[Pause] - Delete messages? (Y/N)"
+			send $BOT~password & "*  *  *  *  "
+			pause
+		:continuedelete
+			send "*  * "
+			pause
+		:continuemessages
+			send "  "
+			settexttrigger messages :continuemessages "[Pause]"
+			pause
+		:continueavoids
+			send "* * "
 			pause
 		:dead
 			send "Mind ()ver Matter*y "
@@ -57,6 +70,9 @@
 			killtrigger clearvoids
 			killtrigger novoids
 			killtrigger morepauses
+			killtrigger avoids
+			killtrigger messages
+			killtrigger delete
 			gosub :relog_freeze_trigger
 			send "Z*  *  Z*  Z   A 9999*  Z*  /"
 			setvar $switchboard~message "Auto-relog activated*"
