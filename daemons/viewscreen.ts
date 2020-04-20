@@ -752,8 +752,9 @@ return
 	if ($BOT~botIsDeaf = TRUE)
 		gosub :MENUS~donePrefer
 	end
-setdelaytrigger    silentdelay :checksilent 900000
-pause
+	killtrigger silentdelay
+	setdelaytrigger    silentdelay :checksilent 900000
+	pause
 
 
 :killchattriggers
