@@ -29,12 +29,18 @@
 	pause
 
 	:planetinfo2
+		
 		setVar $CITADEL 0
 		setVar $SECTOR_CANNON 0
 		setVar $ATMOSPHERE_CANNON 0
 		setVar $CITADEL_CREDITS 0
 		getWord CURRENTLINE $PLANET 2
 		stripText $PLANET "#"
+		isNumber $tst $PLANET
+		if ($tst <> true)
+			setTextLineTrigger planetInfo2 :planetInfo2 "Planet #"
+			pause
+		end
 		getWord CURRENTLINE $PLAYER~CURRENT_SECTOR 5
 		stripText $PLAYER~CURRENT_SECTOR ":"
 		getWordPos CURRENTLINE $Pos ": "

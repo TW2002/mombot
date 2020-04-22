@@ -1,6 +1,3 @@
-systemscript
-
-
 	gosub :BOT~loadVars
 	setVar $BOT~help[1]  $BOT~tab&"Displays system's local time "
 	setVar $BOT~help[2]  $BOT~tab&"      "
