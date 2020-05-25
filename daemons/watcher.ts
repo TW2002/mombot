@@ -28,7 +28,6 @@ if ($MAP~stardock > 0)
 end
 
 
-
 setTextLineTrigger  federase        :fedEraseFig        "The Federation We destroyed your Corp's "
 setTextLineTrigger  fighterserase       :eraseFig       " of your fighters in sector "
 setTextLineTrigger  fightersave 	:fightersave "Deployed Fighters "
@@ -61,6 +60,8 @@ settextlinetrigger fakebusted :fakebusted "(You realize the guards saw you last 
 settextlinetrigger manualsubspace :manualsubspace "Ok, you will send and receive sub-space messages on channel "
 setTextLineTrigger foundbigbubble :foundbigbubble "[Found Big Bubble]"
 setTextLineTrigger foundbigtunnel :foundbigtunnel "[Found Big Tunnel]"
+setTextLineTrigger ferrengihitcorp :ferrengihitcorp "Your Corp's fighters in sector "
+setTextLineTrigger ferrengihitpers :ferrengihitpers "Your fighters in sector "
 pause
 
 :foundbigbubble
@@ -466,6 +467,50 @@ pause
 		end
 	end
 	setTextLineTrigger  pgridremove    :pgridremove   "Unsuccessful P-grid into sector "
+	pause
+
+:ferrengihitcorp
+	setvar $line CURRENTLINE
+	cutText $line&"     " $spoof 1 2 
+	cutText $line&"     " $spoof2 1 1 
+	if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
+		goto :endferrengihitcorp
+	end
+	#Your Corp's fighters in sector 14179 lost 1 fighting off Tejgek Ceuggeem.
+	getText $line&" [XX][XX][XX]" $temp "Your Corp's fighters in sector " " lost "
+	if ($temp <> "")
+		setvar $target $temp
+		isNumber $test $target 
+		if ($test = TRUE)
+			if (($target <= SECTORS) AND ($target > 0))
+				gosub :removefigfromdata
+			end
+		end
+	end
+:endferrengihitcorp
+	setTextLineTrigger ferrengihitcorp :ferrengihitcorp "Your Corp's fighters in sector "
+	pause
+
+:ferrengihitpers
+	setvar $line CURRENTLINE
+	cutText $line&"     " $spoof 1 2 
+	cutText $line&"     " $spoof2 1 1 
+	if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
+		goto :endferrengihitpers
+	end
+	#Your fighters in sector 4994 lost 1 fighting off Lufchar Ceacnaes
+	getText $line&" [XX][XX][XX]" $temp "Your fighters in sector " " lost "
+	if ($temp <> "")
+		setvar $target $temp
+		isNumber $test $target 
+		if ($test = TRUE)
+			if (($target <= SECTORS) AND ($target > 0))
+				gosub :removefigfromdata
+			end
+		end
+	end
+:endferrengihitpers
+	setTextLineTrigger ferrengihitpers :ferrengihitpers "Your fighters in sector "
 	pause
 
 :addFig

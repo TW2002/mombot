@@ -31,6 +31,8 @@
 	loadVar $folder
 	loadVar $mombot_directory
 	loadVar $game~photon_duration
+	loadvar $settings~override
+
 
 
 	setArray $help 60

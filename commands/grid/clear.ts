@@ -8,9 +8,14 @@
 	setVar $SWITCHBOARD~bot_name $bot~bot_name
 	setVar $SWITCHBOARD~self_command $self_command
 
-	goto :modules~clear
+	
+	setvar $switchboard~message "Clearing Current Sector*"
+	gosub :SWITCHBOARD~switchboard
+	gosub :modules~clear
+	gosub :switchboard~switchboard
 	halt
 	
+
 # includes:
 include "source\module_includes\bot\loadvars\bot"
 include "source\module_includes\bot\helpfile\bot"

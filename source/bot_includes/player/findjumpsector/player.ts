@@ -1,7 +1,7 @@
 :FindJumpSector
 	setVar $i 1
 	setVar $RED_adj 0
-	send "q t*t1* q*"
+	send "q q * "
 	while (SECTOR.WARPSIN[$target][$i] > 0)
 		setVar $RED_adj SECTOR.WARPSIN[$target][$i]
 		if ($RED_adj > 10)

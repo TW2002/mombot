@@ -60,7 +60,7 @@
 		return
 	end
 
-	send $start_mac "z n h 2 z " $amount "*  z" $mine " h 1 z " $amount "*  z " $mine $end_mac
+	send $start_mac "z n h 2 z " $amount "*  z" $mine "* h 1 z " $amount "*  z " $mine "* q q * " $end_mac
 	waiton "Warps to Sector(s) :"
 	gosub :PLAYER~quikstats
 	send "* "

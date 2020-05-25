@@ -600,6 +600,13 @@ return
 		setVar $BOT~command "help"
 	end
 	setvar $update_list " limps figs armids cim "
+	getwordpos " "&$bot~user_command_line&" " $pos " override "
+	getwordpos " "&$bot~user_command_line&" " $pos2 " overide "
+	setvar $settings~override false
+	if (($pos > 0) or ($pos2 > 0))
+		setvar $settings~override true
+	end
+	savevar $settings~override
 	getwordpos $update_list $pos " "&$bot~command&" "
 	if ($pos > 0)
 		setvar $bot~parms[8] $bot~command

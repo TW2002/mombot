@@ -326,6 +326,7 @@
 		gosub :MAP~displayAdjacentGridAnsi
 		return
 		:lifta
+		loadvar $ship~SHIP_MAX_ATTACK
 		send "q q z n a y y " $ship~SHIP_MAX_ATTACK "* * z n q z n  l " $planet~planet "*  m  *** c s* @"
 		waitOn "Average Interval Lag:"
 		goto :getPlanetMacroInput
