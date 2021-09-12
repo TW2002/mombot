@@ -241,7 +241,7 @@ setVar $debugdelay 0
         gosub :stealdump
         setVar $player~turns $init_turns
         subtract $player~turns $player~turns_used
-        if ($player~turns > 10)
+        if ($player~turns > $bot~bot_turn_limit)
                gosub :xport
                goto :sdtLoop
         else
@@ -293,21 +293,22 @@ setVar $debugdelay 0
         format $cash_made $cashformat NUMBER
         format $credsPerTurn $credsPerTurnformat NUMBER
         setvar $switchboard~message "   - Ship " & $ship_1 & " - " & $ship1money & " cr - " & $ship1equ & " units (" & $credsPerUnit[$ship_1] & "/unit) - MCIC " & $MCIC[$ship_1] & "*   - Ship " & $ship_2 & " - " & $ship2money & " cr - " & $ship2equ & " units (" & $credsPerUnit[$ship_2] & "/unit) - MCIC " & $MCIC[$ship_2] & "*   - Net " & $cashformat & " credits in " & $player~turns_used & " turns (" & $credsPerTurnformat & "/turn).*  *"
-        gosub :switchboard~switchboard
+        #gosub :switchboard~switchboard
 
     if ($low_turns <> "YES")
         if ($beamFurbing = "n")
-            send "Busted in ship " & $current_ship & ", FURB please, I still have " & $player~turns & " turns to run.*"
-            send "*"
+            setvar $switchboard~message  $switchboard~message & "Busted in ship " & $current_ship & ", FURB please, I still have " & $player~turns & " turns to run.*"
+            
         else
-            send "Furb Ship " & $current_ship & " I still have " & $player~turns & " turns to run.*"
-            send "*"
+            setvar $switchboard~message  $switchboard~message &  "Furb Ship " & $current_ship & " I still have " & $player~turns & " turns to run.*"
+         
             gosub :xport
         end
     else
-        send "NO Bust, stopping because I'm down to " & $player~turns & " turns.*"
-        send "*"
+        setvar $switchboard~message  $switchboard~message &  "NO Bust, stopping because I'm down to " & $player~turns & " turns.*"
+        
     end
+    gosub :switchboard~switchboard
     goto :exit
 
 # ----- BEGIN SUBROUTINES SECTION -----

@@ -112,7 +112,7 @@ pause
 	if ($_ck_pnego_fueltosell = "-1")
 		setVar $fueltosell 0
 	elseif ($_ck_pnego_fueltosell = "max")
-		setVar $fueltosell $planetorg
+		setVar $fueltosell $planetfuel
 	else
 		setvar $fueltosell $_ck_pnego_fueltosell
 	end
@@ -369,8 +369,14 @@ send "'DEBUG: NAN on equtrading:" & $test5 & " equpercent:" $test6 "*"
 				setTextTrigger sellorg :sellorg "How many units of Organics"
 				setTextTrigger sellequ :sellequ "How many units of Equipment"
 				setTextTrigger donewithport :donewithport "Command [TL="
+				killtrigger notours
+				settexttrigger notours :notours "You don't own that planet!  Were you expecting us to invade it?"
 				pause
 
+			:notours	
+				send "*"
+				setvar $exit_message "We don't own this planet!"
+				pause
 			:sellfuel
 				killtrigger sellfuel
 				killtrigger sellorg
@@ -449,6 +455,7 @@ send "'DEBUG: NAN on equtrading:" & $test5 & " equpercent:" $test6 "*"
 				goto :sellproduct
 
 			:sellequ
+
 				killtrigger sellfuel
 				killtrigger sellorg
 				killtrigger sellequ
@@ -620,6 +627,7 @@ send "'DEBUG: NAN on equtrading:" & $test5 & " equpercent:" $test6 "*"
 		# ----- LOOKUP the counteroffer percentage to use at this "quality" port -----
 
 		if ($prodtosell = "ore")
+
 			if ($portmaxinit >= 436)
 				setVar $MCIC "-90"
 				setVar $multiple "1494"
@@ -666,7 +674,7 @@ send "'DEBUG: NAN on equtrading:" & $test5 & " equpercent:" $test6 "*"
 
 			elseif ($portmaxinit >= 416)
 				setVar $MCIC "-79"
-				setVar $multiple "1429"
+				setVar $multiple "1428"
 
 			elseif ($portmaxinit >= 414)
 				setVar $MCIC "-78"
@@ -726,7 +734,7 @@ send "'DEBUG: NAN on equtrading:" & $test5 & " equpercent:" $test6 "*"
 
 			elseif ($portmaxinit >= 388)
 				setVar $MCIC "-64"
-				setVar $multiple "1342"
+				setVar $multiple "1341"
 
 			elseif ($portmaxinit >= 386)
 				setVar $MCIC "-63"

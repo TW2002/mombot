@@ -1,9 +1,21 @@
 	gosub :BOT~loadVars
 
-	if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
-		goto :wait_for_command
-	end
-
+	setVar $BOT~help[1]  $BOT~tab&"pwarp {sector:#} {"&#34&"trader_name"&#34&"} "
+	setVar $BOT~help[2]  $BOT~tab&"      "
+	setVar $BOT~help[3]  $BOT~tab&"        planet warps to sector "
+	setVar $BOT~help[4]  $BOT~tab&"      "
+	setVar $BOT~help[5]  $BOT~tab&"    Options: "
+	setVar $BOT~help[6]  $BOT~tab&"           {sector:#} - sector to pwarp to "
+	setVar $BOT~help[7]  $BOT~tab&"      {"&#34&"trader_name"&#34&"} - trader to pwarp to"
+	setVar $BOT~help[8]  $BOT~tab&"         "
+	setVar $BOT~help[9]  $BOT~tab&"    Examples:"
+	setVar $BOT~help[10] $BOT~tab&"               >p 233 - normal pwarp"
+	setVar $BOT~help[11] $BOT~tab&"         >p planet 12 - pwarp to last known "
+	setVar $BOT~help[12] $BOT~tab&"                        location of planet 12 "
+	setVar $BOT~help[13] $BOT~tab&"              >p mind - pwarp to a corp member with mind"
+	setVar $BOT~help[14] $BOT~tab&"                        in their name"
+	setVar $BOT~help[15] $BOT~tab&"     >p "&#34&"mind dagger"&#34&" - pwarp to corp member"
+	gosub :bot~helpfile
 
 # ======================     START PWARP SUBROUTINES     =================
 :pwarp
@@ -18,6 +30,9 @@
 	setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
 	setVar $bot~validPrompts "Citadel"
 	gosub :bot~checkstartingprompt
+
+	gosub :player~checkfortravelname
+
 	isNumber $test $bot~parm1
 	if (($test = FALSE) OR ($bot~parm1 = ""))
 		setVar $SWITCHBOARD~message "Sector must be entered as a number between 11-"&SECTORS&"*"
@@ -117,13 +132,6 @@ return
 # ======================     END PWARP SUBROUTINES     ==========================
 
 :wait_for_command
-	setVar $BOT~help[1]  $BOT~tab&"pwarp - planet warps to sector "
-	setVar $BOT~help[2]  $BOT~tab&"         "
-	setVar $BOT~help[3]  $BOT~tab&"Options: "
-	setVar $BOT~help[4]  $BOT~tab&"    p [sector] - normal planet warp"
-	setVar $BOT~help[5]  $BOT~tab&"    p planet {planet id} - planet warp to last known "
-	setVar $BOT~help[6]  $BOT~tab&"                           location of the planet id"
-	gosub :bot~helpfile
 halt
 
 
@@ -133,6 +141,8 @@ include "source\module_includes\bot\loadvars\bot"
 include "source\module_includes\bot\helpfile\bot"
 include "source\bot_includes\player\currentprompt\player"
 include "source\bot_includes\player\quikstats\player"
+include "source\bot_includes\player\checkcorp\player"
 include "source\module_includes\bot\checkstartingprompt\bot"
 include "source\module_includes\bot\removefigfromdata\bot"
 include "source\module_includes\bot\addfigtodata\bot"
+include "source\bot_includes\player\checkfortravelname\player"

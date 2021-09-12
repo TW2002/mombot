@@ -20,7 +20,7 @@ setVar $roll $player~CREDITS
 
 IF ($loc <> "Citadel")
      setvar $switchboard~message "Must be at the Citadel prompt (not " & $loc & ")*"
-     gosub :switchboard
+     gosub :switchboard~switchboard
      halt
 END
 
@@ -71,6 +71,7 @@ halt
 :checkBalance
 setVar $treasLine CURRENTLINE
 replaceText $treasLine "," ""
+replaceText $treasLine "." ""
 getWord $treasLine $roll 3
 getWord $treasLine $balance 9
 killTrigger treas

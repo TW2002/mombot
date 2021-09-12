@@ -201,6 +201,8 @@
 			write $BOT~gconfig_file $new_bot_name
 			setVar $SWITCHBOARD~bot_name $new_bot_name
 			saveVar $SWITCHBOARD~bot_name
+			setVar $bot~bot_name $new_bot_name
+			saveVar $bot~bot_name
 
 		elseif ($chosen_option = "P")
 			setvar $question "Please Enter your Game Password"
@@ -677,6 +679,7 @@ return
 		setVar $pagesExist FALSE
 	end
 	:NextShipPage
+		gosub :ship~loadShipInfo
 		setVar $shipsChanged FALSE
 		setVar $thisPage $i
 		setVar $menuCount 0
@@ -1142,7 +1145,7 @@ return
 	lowerCase $new_bot_name
 	if ($new_bot_name = "")
 		goto :add_game
-	end
+	end	
 	setVar $BOT~password PASSWORD
 	setVar $BOT~username LOGINNAME
 	setVar $BOT~letter GAME
@@ -1163,6 +1166,8 @@ return
 	write $BOT~gconfig_file $new_bot_name
 	setVar $SWITCHBOARD~bot_name $new_bot_name
 	saveVar $SWITCHBOARD~bot_name 
+	setVar $bot~bot_name $new_bot_name
+	saveVar $bot~bot_name 
 return
 # ============================== END STARTING IN A NEW GAME SUB ==============================
 
@@ -1222,6 +1227,7 @@ return
 		setVar $BOT~newGameDay1 FALSE
 		setVar $BOT~newGameOlder FALSE
 	end
+	setvar $bot~startMacro ""
 :preGameMenu
 	setArray $h 26
 	setArray $qss 26
@@ -1240,8 +1246,8 @@ return
 	setVar $h[13] "After login:     "
 	setVar $h[14] "Bot command to perform:"
 	setVar $h[15] "Mow Option       "
-	setVar $h[16] "                 "
-	setVar $h[17] "                 "
+	setVar $h[16] "Macro to fire after login:"
+	setVar $h[17] "Teammate names:  "
 	setVar $h[18] "                 "
 	setVar $h[19] "                 "
 	setVar $h[20] "                 "
@@ -1288,6 +1294,8 @@ return
 		setVar $qss[13] "Xport to ship"
 	elseif ($landOnTerra)
 		setVar $qss[13] "Land on Terra"
+	elseif ($landOnStardock)
+		setVar $qss[13] "Land on Stardock"
 	else
 		setVar $qss[13] "Nothing"
 	end
@@ -1309,8 +1317,17 @@ return
 	elseif ($start_mow_option = "i3")
 		setVar $qss[15] "Indirect Mow 3"
 	end
-	setVar $qss[16] ""
-	setVar $qss[17] ""
+	if (($bot~startMacro = "") or ($bot~startMacro = "0"))
+		setVar $qss[16] "None"
+	else
+		replacetext $bot~startMacro "*" #42
+		setVar $qss[16] $bot~startMacro
+	end
+	if (($bot~teammates = "") or ($bot~teammates = "0"))
+		setVar $qss[17] "None"
+	else
+		setVar $qss[17] $bot~startMacro
+	end
 	setVar $qss[18] ""
 	setVar $qss[19] ""
 	setVar $qss[20] ""
@@ -1346,6 +1363,10 @@ return
 		echo ANSI_10&#27&"[35m<"&#27&"[32mM"&#27&"[35m> "&ANSI_7&$qss_var[15]&"*"	
 	end
 	echo ANSI_10&#27&"[35m<"&#27&"[32m8"&#27&"[35m> "&ANSI_7&$qss_var[14]&"*"
+	echo ANSI_10&#27&"[35m<"&#27&"[32m9"&#27&"[35m> "&ANSI_7&$qss_var[16]&"*"
+	if ($BOT~newGameOlder <> TRUE)
+		echo ANSI_10&#27&"[35m<"&#27&"[32mT"&#27&"[35m> "&ANSI_7&$qss_var[17]&"*"
+	end
 	echo "*"
 	:getStartGameInput
 		getConsoleInput $chosen_option SINGLEKEY
@@ -1364,8 +1385,10 @@ return
 			end
 			delete $BOT~gconfig_file
 			write $BOT~gconfig_file $new_bot_name
+			setVar $bot~bot_name $new_bot_name
 			setVar $SWITCHBOARD~bot_name $new_bot_name
 			saveVar $SWITCHBOARD~bot_name
+			savevar $bot~bot_name
 		elseif ($chosen_option = "P")
 			killalltriggers
 			getInput $BOT~password "Please Enter your Game Password"
@@ -1439,21 +1462,35 @@ return
 				setvar $xportToShip false
 				setVar $mowToOther FALSE
 				setVar $landOnTerra false
+				setVar $landOnStardock false
 				setVar $mowDestination ""
-				setvar $do_nothing false
+				setvar $do_nothing TRUE
 				setVar $fmowToDock FALSE
-			elseif (($BOT~mowToDock = false) and ($mowToAlpha = false) and ($fmowToDock = false) and ($mowToRylos = false) and ($mowToOther = false) and ($xportToShip = false) and ($landOnTerra = false))
+			elseif (($BOT~mowToDock = false) and ($mowToAlpha = false) and ($fmowToDock = false) and ($mowToRylos = false) and ($mowToOther = false) and ($xportToShip = false) and ($landOnTerra = false) and ($landOnStardock = false))
 				setVar $qss[12] "Land on Terra"
-				setvar $do_nothing true
+				setvar $do_nothing FALSE
 				setvar $BOT~mowToDock FALSE
 				setVar $mowToAlpha false
 				setVar $mowToRylos FALSE
 				setVar $mowToOther FALSE
 				setvar $xportToShip false
 				setVar $landOnTerra true
+				setVar $landOnStardock false
 				setVar $mowDestination ""	
 				setVar $fmowToDock FALSE	
 			elseif ($landOnTerra)
+				setVar $qss[12] "Land on Stardock"
+				setvar $BOT~mowToDock FALSE
+				setVar $mowToAlpha FALSE
+				setVar $mowToRylos FALSE
+				setVar $mowToOther FALSE
+				setvar $xportToShip false
+				setVar $landOnTerra false
+				setVar $landOnStardock true
+				setVar $mowDestination ""
+				setvar $do_nothing false
+				setVar $fmowToDock FALSE
+			elseif ($landOnStardock)
 				setVar $qss[12] "Mow To Custom TA"
 				setvar $BOT~mowToDock FALSE
 				setVar $mowToAlpha FALSE
@@ -1461,6 +1498,7 @@ return
 				setVar $mowToOther TRUE
 				setvar $xportToShip false
 				setVar $landOnTerra false
+				setVar $landOnStardock false
 				setVar $mowDestination ""
 				setvar $do_nothing false
 				setVar $fmowToDock FALSE
@@ -1472,6 +1510,7 @@ return
 				setvar $xportToShip false
 				setVar $mowToOther FALSE
 				setVar $landOnTerra false
+				setVar $landOnStardock false
 				setvar $do_nothing false
 				setVar $fmowToDock FALSE
 				setVar $mowDestination $MAP~stardock
@@ -1483,6 +1522,7 @@ return
 				setvar $xportToShip false
 				setVar $mowToOther FALSE
 				setVar $landOnTerra false
+				setVar $landOnStardock false
 				setvar $do_nothing false
 				setVar $fmowToDock TRUE
 				setVar $mowDestination $MAP~stardock
@@ -1493,6 +1533,7 @@ return
 				setVar $mowToRylos FALSE
 				setVar $mowToOther FALSE
 				setVar $landOnTerra false
+				setVar $landOnStardock false
 				setVar $bot~mowToDock  FALSE
 				setVar $mowDestination ""
 				setvar $do_nothing false
@@ -1505,6 +1546,7 @@ return
 			savevar $mowToOther 
 			savevar $bot~mowToDock  
 			savevar $landOnTerra
+			savevar $landOnStardock
 			savevar $do_nothing
 		elseif ($chosen_option = "M")
 
@@ -1530,10 +1572,19 @@ return
 			setVar $command_to_issue $temp
 			savevar $command_to_issue
 
+		elseif ($chosen_option = "9")
+			getInput $BOT~startMacro "What macro should fire upon entry?"
+			replacetext $bot~startMacro "*" #42
+		elseif ($chosen_option = "T")
+			getInput $BOT~teammates "Enter teammate names (separated by commas)"
 		elseif ($chosen_option = "Q")
 			stop $BOT~LAST_LOADED_MODULE
+			savevar $bot~LAST_LOADED_MODULE
 			halt
 		elseif ($chosen_option = "Z")
+			replacetext $bot~startMacro "^m" #42
+			replacetext $bot~startMacro "^M" #42
+			savevar $bot~startMacro
 			:getMowSector
 			killalltriggers
 			if ($mowToOther)
@@ -1587,6 +1638,13 @@ return
 				setvar $connectivity~newgame false
 				gosub :connectivity~enter_new_game
 			end
+			loadvar $bot~startMacro
+			if ($bot~startMacro <> "")
+				replacetext $bot~startMacro #42 "*"
+				send $bot~startMacro
+				setvar $bot~startMacro ""
+				savevar $bot~startMacro
+			end
 			goto :donePreGame
 		else
 			goto :getStartGameInput
@@ -1594,6 +1652,31 @@ return
 		gosub :pregameStats
 		goto :pregameMenu
 :donePreGame
+	if (($bot~teammates <> "") and ($bot~teammates <> "0"))
+		splittext $bot~teammates $corp_list ","
+		setvar $i 1
+		while ($i <= $corp_list)
+			setvar $j 1
+			setvar $isFound false
+			trim $corp_list[$i]
+			while ($j <= $corpyCount)
+				trim $bot~corpy[$j]
+				setvar $corpy_lower $bot~corpy[$j]
+				setvar $corp_list_lower $corp_list[$i]
+				lowercase $corpy_lower
+				lowercase $corp_list_lower
+				if ($corp_list_lower = $corpy_lower)
+					setvar $isFound true
+				end
+				add $j 1
+			end
+			if ($isFound <> true)
+				add $corpyCount 1
+				setvar $bot~corpy[$corpyCount] $corp_list[$i]
+			end
+			add $i 1
+		end
+	end
 	goto :BOT~getInitial_Settings
 
 return

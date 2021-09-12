@@ -567,6 +567,7 @@ return
 		killAllTriggers
 		getWord CURRENTLINE $cCredits 3
 		stripText $cCredits ","
+		stripText $cCredits "."
 
 
 	killalltriggers
@@ -785,6 +786,7 @@ return
 				killAllTriggers
 				getWord CURRENTLINE $nCredits 3
 				stripText $nCredits ","
+				stripText $nCredits "."
 				
 				if ($nCredits = $cCredits)
 					setVar $report 1

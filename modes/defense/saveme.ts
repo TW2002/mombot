@@ -202,9 +202,9 @@ setVar $millevel 0
 	                setvar $switchboard~message "Save Aborted*"
 	                gosub :switchboard~switchboard
         	        if ($returnHome)
-						setDelayTrigger savemereturn :returnsaveme ($savemeDelay*1000)
+						setDelayTrigger savemereturn :returnsaveme1 ($savemeDelay*1000)
 						pause
-						:returnsaveme
+						:returnsaveme1
 							send "P" & $home_sector2 & "*Y"
 					end
 					goto :settriggers
@@ -212,9 +212,9 @@ setVar $millevel 0
 	        else
 			send "'Invalid save call (out of range)*"
 			if ($returnHome)
-				setDelayTrigger savemereturn :returnsaveme ($savemeDelay*1000)
+				setDelayTrigger savemereturn :returnsaveme2 ($savemeDelay*1000)
 				pause
-				:returnsaveme
+				:returnsaveme2
 					send "P" & $home_sector2 & "*Y"
                 	end
                        goto :settriggers
@@ -223,9 +223,9 @@ setVar $millevel 0
     	else
         	send "'Invalid save call (non-numeric)*"
 	        if ($returnHome)
-				setDelayTrigger savemereturn :returnsaveme ($savemeDelay*1000)
+				setDelayTrigger savemereturn :returnsaveme3 ($savemeDelay*1000)
 				pause
-				:returnsaveme
+				:returnsaveme3
 					send "P" & $home_sector2 & "*Y"
                  end
                  goto :settriggers
@@ -252,7 +252,6 @@ setVar $millevel 0
 		if ($spoof = "'")
 			setVar $auth_result "self"
 		elseif ($spoof = "R")
-			#send "'["&$subsender&"] = ["&$subtarget&"]*"
 			if ($subSender = $subTarget)
 				setVar $auth_result "true"
 			end
@@ -294,7 +293,6 @@ pause
 		setvar $switchboard~message "*Save Me - Running from planet " & $planet~planet & "*---Command List---*" & $bot~bot_name & " Deploy Mines*" & $bot~bot_name & " Personal Limp*----End of List---** "
 		gosub :switchboard~message
 	end
-	waitOn "----End of List---"
 	goto :Settriggers
 
 :authenticateannounce

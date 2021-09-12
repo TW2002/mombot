@@ -165,9 +165,11 @@
 		halt
 	:no_turns_available1
 		setvar $switchboard~message "No turns available.** "
+		gosub :switchboard~switchboard
 		halt
 		:no_scanner_available1
 		setvar $switchboard~message "No scanner available.** "
+		gosub :switchboard~switchboard
 		halt
 	:no_scanner_available2
 		setVar $current_line "-=-=-=-=-=-=-=-=-=-| Relative Density Scan |-=-=-=-=-=-=-=-=-=-"

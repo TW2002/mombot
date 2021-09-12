@@ -22,18 +22,22 @@
 
 gosub :BOT~loadVars
 
-setVar $BOT~help[1]   $BOT~tab&"- wppt {holoscan} {evade}" 
+setVar $BOT~help[1]   $BOT~tab&"- wppt {holoscan} {evade} {toll} {pay}" 
 setVar $BOT~help[2]   $BOT~tab&"  World PPT - Originally written by Xide                          " 
 setVar $BOT~help[3]   $BOT~tab&"                                                                  " 
-setVar $BOT~help[4]   $BOT~tab&"   - {holoscan}    = 0 - doesn't holoscan                         " 
+setVar $BOT~help[4]   $BOT~tab&"     {holoscan}      0 - doesn't holoscan                         " 
 setVar $BOT~help[5]   $BOT~tab&"                     1 - holoscans on odd densities               "
 setVar $BOT~help[6]   $BOT~tab&"                     2 - always holoscans (default)               " 
 setVar $BOT~help[7]   $BOT~tab&"                                                                  " 
-setVar $BOT~help[8]   $BOT~tab&"   - {evade}       = 0 - normal (default)                         " 
+setVar $BOT~help[8]   $BOT~tab&"     {evade}         0 - normal (default)                         " 
 setVar $BOT~help[9]   $BOT~tab&"                     1 - paranoid                                 " 
 setVar $BOT~help[10]  $BOT~tab&"                     2 - avoids nothing                           " 
 setVar $BOT~help[11]  $BOT~tab&"                                                                  " 
-setVar $BOT~help[12]  $BOT~tab&"   - {nohaggle}    = doesn't haggle                               " 
+setVar $BOT~help[12]  $BOT~tab&"     {toll}            - drops toll figs instead of defensive     " 
+setVar $BOT~help[13]  $BOT~tab&"                                                                  " 
+setVar $BOT~help[14]  $BOT~tab&"     {pay}             - pays tolls                               " 
+setVar $BOT~help[15]  $BOT~tab&"                                                                  " 
+setVar $BOT~help[16]  $BOT~tab&"     {nohaggle}        - doesn't haggle                           " 
 
 gosub :BOT~helpfile
 
@@ -90,10 +94,20 @@ else
 end
 
 
-  
-  setVar $Move~Attack 2
+
+  getWordPos " "&$bot~user_command_line&" " $pos " pay "
+  if ($pos > 0)
+    setVar $Move~Attack 3
+  else
+    setVar $Move~Attack 2
+  end
   setVar $Move~PortPriority 1
-  setVar $Move~ExtraSend "f 1 " & #42 & " c d "
+  getWordPos " "&$bot~user_command_line&" " $pos " toll "
+  if ($pos > 0)
+    setVar $Move~ExtraSend "f 1 " & #42 & " c t "  
+  else
+    setVar $Move~ExtraSend "f 1 " & #42 & " c d "  
+  end
   replaceText $Move~ExtraSend #42 "*"
     
   setVar $Move~Saved 1

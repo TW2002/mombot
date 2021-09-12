@@ -7,39 +7,41 @@
 	loadvar $bot~subspace
 	loadvar $switchboard~self_command
 
-	setVar $BOT~help[1]   $BOT~tab&"select {planets | traders | ships | anomalies}"
-	setVar $BOT~help[2]   $BOT~tab&"       {unexplored | sector | ports} "
-	setVar $BOT~help[3]   $BOT~tab&"       {BBB | XXB | SSX etc} {count:n} "
-	setVar $BOT~help[4]   $BOT~tab&"       {mark:PARAM} {dist | route} "
-	setVar $BOT~help[5]   $BOT~tab&"       {warps:n} {beam:botname} {limit:n}"
-	setVar $BOT~help[6]   $BOT~tab&"       "
-	setVar $BOT~help[7]   $BOT~tab&"     Searches TWX database for known info."
+	setVar $BOT~help[1]   $BOT~tab&"select {planet|trader|ship|anomoly|unexplored|sector|port}"
+	setVar $BOT~help[2]   $BOT~tab&"       {port:type} {count:#} {mark:PARAM} {none|dist|route}"
+	setVar $BOT~help[3]   $BOT~tab&"       {warps:#} {beam:botname} {limit:#} {from:#} {to:#}"
+	setVar $BOT~help[4]   $BOT~tab&"       {secure | paranoid}"
+	setVar $BOT~help[5]   $BOT~tab&"       "
+	setVar $BOT~help[6]   $BOT~tab&"     Searches TWX database for known info."
+	setVar $BOT~help[7]   $BOT~tab&"     You can use selectors = > < like !"
 	setVar $BOT~help[8]   $BOT~tab&"      "
-	setVar $BOT~help[9]   $BOT~tab&"     {mark:PARAM}  marks sectors PARAM=1 defult QUERY=1 "
-	setVar $BOT~help[10]  $BOT~tab&"                   selectors = > < like !"
-	setVar $BOT~help[11]  $BOT~tab&"     {BBB | SSX}   match PORTS query to this pattern"
-	setVar $BOT~help[12]  $BOT~tab&"                   X is wildcard."
-	setVar $BOT~help[13]  $BOT~tab&"     {secure | paranoid}  "
-	setVar $BOT~help[14]  $BOT~tab&"           "
-	setVar $BOT~help[15]  $BOT~tab&"    Examples:  "
-	setVar $BOT~help[16]  $BOT~tab&"              >select traders bubble=false equ-mcic<=60"
-	setVar $BOT~help[17]  $BOT~tab&"              >select planet like "&#34&"<<<< (a)"&#34
-	setVar $BOT~help[18]  $BOT~tab&"              >select port port.f>10000 figsec=true"
-	setVar $BOT~help[19]  $BOT~tab&"              >select port port.o>10000 figsec=false"
-	setVar $BOT~help[20]  $BOT~tab&"              >select port port.e>10000 warps:1"
-	setVar $BOT~help[21]  $BOT~tab&"              >select sector fig.owner=1 armid.owner=kane"
-	setVar $BOT~help[22]  $BOT~tab&"              >select sector limp.owner=3 limp.count>10"
-	setVar $BOT~help[23]  $BOT~tab&"              >select sector armid.count>100"
-	setVar $BOT~help[24]  $BOT~tab&"              >select sector limp.owner!3 "
-	setVar $BOT~help[25]  $BOT~tab&"         "
-	setVar $BOT~help[26]  $BOT~tab&"         {dist} - All results include distance from current. "
-	setVar $BOT~help[27]  $BOT~tab&"        {route} - Plots a basic shortest path (slow). "
-	setVar $BOT~help[28]  $BOT~tab&"          {ppt} - Finds port pair trading ports  "
-	setVar $BOT~help[29]  $BOT~tab&"      {warps:n} - Restrict matches to nwarps  "
-	setVar $BOT~help[30]  $BOT~tab&"      {count:n} - limit results to sectors with a  "
-	setVar $BOT~help[31]  $BOT~tab&"                  minimum count of planets/traders/ships"
-	setVar $BOT~help[32]  $BOT~tab&"      {limit:n} - limit query results to first n found "
-	setVar $BOT~help[33]  $BOT~tab&" {beam:botname} - Beam to bot name  "
+	setVar $BOT~help[9]   $BOT~tab&"     {mark:PARAM}  marks sectors PARAM=1 default QUERY=1 "
+	setVar $BOT~help[10]  $BOT~tab&"     {port:type}   match ports to pattern (xbx, sbb, xxx)"
+	setVar $BOT~help[11]  $BOT~tab&"                  "
+	setVar $BOT~help[12]  $BOT~tab&"    Examples:  "
+	setVar $BOT~help[13]  $BOT~tab&"              >select traders bubble=false equ-mcic<=60"
+	setVar $BOT~help[14]  $BOT~tab&"              >select planet like "&#34&"<<<< (a)"&#34
+	setVar $BOT~help[15]  $BOT~tab&"              >select port port.f>10000 figsec=true"
+	setVar $BOT~help[16]  $BOT~tab&"              >select port port.o>10000 figsec=false"
+	setVar $BOT~help[17]  $BOT~tab&"              >select port port.e>10000 warps:1"
+	setVar $BOT~help[18]  $BOT~tab&"              >select sector fig.owner=1 armid.owner=kane"
+	setVar $BOT~help[19]  $BOT~tab&"              >select sector limp.owner=3 limp.count>10"
+	setVar $BOT~help[20]  $BOT~tab&"              >select sector armid.count>100"
+	setVar $BOT~help[21]  $BOT~tab&"              >select sector limp.owner!3 "
+	setVar $BOT~help[22]  $BOT~tab&"         "
+	setVar $BOT~help[23]  $BOT~tab&"         {dist} - All results include distance from current. "
+	setVar $BOT~help[24]  $BOT~tab&"        {route} - Plots a basic shortest path (slow). "
+	setVar $BOT~help[25]  $BOT~tab&"          {ppt} - Finds port pair trading ports  "
+	setVar $BOT~help[26]  $BOT~tab&"      {warps:#} - Restrict matches to nwarps  "
+	setVar $BOT~help[27]  $BOT~tab&"      {count:#} - limit results to sectors with a  "
+	setVar $BOT~help[28]  $BOT~tab&"                  minimum count of planets/traders/ships"
+	setVar $BOT~help[29]  $BOT~tab&"      {limit:#} - limit query results to first n found "
+	setVar $BOT~help[30]  $BOT~tab&" {beam:botname} - Beam to bot name  "
+	setVar $BOT~help[31]  $BOT~tab&"   {origin:sec} - Specify which sector to use for DIST "
+	setVar $BOT~help[32]  $BOT~tab&"     {backdoor} - Result must include a backdoor "
+	setVar $BOT~help[33]  $BOT~tab&"       {from:#} - Lowest sector number to include "
+	setVar $BOT~help[34]  $BOT~tab&"         {to:#} - Highest sector number to include "
+
 	# ham select ports ore-mcic<-70
 	gosub :bot~helpfile
 
@@ -58,20 +60,84 @@ setVar $portClassWanted 0
 #final filter of search results 0 - none, 1 - secure (figs surrounded) 2- PAranoid (Figs + Limps)
 setVar $securityLevel 0
 setVar $warps 0
-setvar $limit sectors
+
 
 setvar $i 1
 
 setvar $original_query $bot~user_command_line
 
+setVar $searchFrom 1
+setVar $searchTo SECTORS
+
+
+
+getWordPos $bot~user_command_line $pos "from:"
+if ($pos > 0)
+	getText $bot~user_command_line $from "from:" " "
+	if ($from = "")
+		setVar $bot~user_command_line $bot~user_command_line & " "
+		getText $bot~user_command_line $from "from:" " "
+	end
+	isNumber $test $from
+	if ($test = FALSE)
+		
+		setVar $SWITCHBOARD~message "From Sector should be a number.*"
+		gosub :switchboard~switchboard
+		halt
+	else
+		setVar $searchFrom $from
+	end
+end
+
+
+
+getWordPos $bot~user_command_line $pos "to:"
+if ($pos > 0)
+	getText $bot~user_command_line $to "to:" " "
+	if ($to = "")
+		setVar $bot~user_command_line $bot~user_command_line & " "
+		getText $bot~user_command_line $to "to:" " "
+	end
+	isNumber $test $to
+	if ($test = FALSE)
+		
+		setVar $SWITCHBOARD~message "To Sector should be a number.*"
+		gosub :switchboard~switchboard
+		halt
+	else
+		setVar $searchTo $to
+	end
+end
+
+setvar $limit (($searchTo - $searchFrom) + 1)
 
 getWordPos $bot~user_command_line $pos "dist"
+setvar $origin CURRENTSECTOR
+
 if ($pos > 0)
 	setVar $dist 1
 	replaceText $bot~user_command_line " dist " " "
 	replaceText $bot~user_command_line " dist" " "
 
+	getWordPos $bot~user_command_line $pos "origin:"
+	if ($pos > 0)
+		getText $bot~user_command_line $origin "origin:" " "
+		if ($origin = "")
+			setVar $bot~user_command_line $bot~user_command_line & " "
+			getText $bot~user_command_line $origin "origin:" " "
+		end
+		isNumber $test $origin
+		
+	
+		if ($test = FALSE)
+			
+			setVar $SWITCHBOARD~message "Origin should be a number.*"
+			gosub :switchboard~switchboard
+			halt
+		end
+	end
 end
+
 
 getWordPos $bot~user_command_line $pos "warps:"
 if ($pos > 0)
@@ -102,6 +168,14 @@ if ($pos > 0)
 
 end
 
+
+setvar $backdoor false
+getWordPos " "&$bot~user_command_line&" " $pos " backdoor "
+if ($pos > 0)
+	setvar $backdoor true
+	replaceText $bot~user_command_line " backdoor " " "
+	replaceText $bot~user_command_line " backdoor" " "
+end
 
 getWordPos " "&$bot~user_command_line&" " $pos " ppt "
 if ($pos > 0)
@@ -179,7 +253,7 @@ while ($word <> "@@@###@@@")
 			setvar $mincount 1
 		end
 	end
-
+	
 	getWordPos $word $pos "beam:"
 	if ($pos > 0)
 		replaceText $word "beam:" ""
@@ -250,8 +324,8 @@ setVar $sectorResults 0
 setVar $sectorResultsi 0
 setvar $count 0
 setvar $done false
-setvar $i 1
-while (($i <= SECTORS) and ($done <> true))
+setvar $i $searchFrom
+while (($i <= $searchTo) and ($done <> true))
 	setvar $j 1
 	setvar $skip false
 	if ((($warps > 0) and (SECTOR.WARPCOUNT[$i] = $warps)) or ($warps = 0))
@@ -427,6 +501,11 @@ while (($i <= SECTORS) and ($done <> true))
 		end
 	else
 		setVar $skip true
+	end
+	if ($backdoor = true)
+		if (SECTOR.BACKDOORCOUNT[$i] = 0)
+			setVar $skip true
+		end
 	end
 	if ($skip <> true)
 		if (($bot~parm1 = "planet") or ($bot~parm1 = "planets"))
@@ -686,7 +765,7 @@ setVar $sortedDistance 0
 setVar $distances 0
 if ($dist = 1)
 	# Measures distance from this point of origin
-	getAllCourses $courses CURRENTSECTOR
+	getAllCourses $courses $origin
 	setVar $y 1
 	while ($y <= $sectorResultsi)
 		setVar $distances[$y] $courses[$sectorResults[$y]]
@@ -727,7 +806,7 @@ elseif ($doroute = 1)
 		add $y 1
 	end
 
-	setVar $routeCurrent CURRENTSECTOR
+	setVar $routeCurrent $origin
 	setVar $route 0
 	setVar $routei 0
 

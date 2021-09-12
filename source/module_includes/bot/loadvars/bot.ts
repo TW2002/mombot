@@ -24,6 +24,7 @@
 	loadVar $silent_running
 	loadVar $botIsDeaf
 	loadvar $switchboard~self_command
+	loadvar $command_caller
 	loadvar $planet~planet
 	loadVar $password
 	loadvar $letter
@@ -32,8 +33,18 @@
 	loadVar $mombot_directory
 	loadVar $game~photon_duration
 	loadvar $settings~override
-
-
+	loadvar $PLAYER~dropOffensive
+	loadvar $PLAYER~dropToll
+	if ($player~dropOffensive = true)
+		setvar $player~fighter_deploy_type "o"
+	else
+		if ($player~dropToll = true)
+			setvar $player~fighter_deploy_type "t"
+		else
+			setvar $player~fighter_deploy_type "d"
+		end
+	end
+	savevar $player~fighter_deploy_type
 
 	setArray $help 60
 	setVar $help 60

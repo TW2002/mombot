@@ -193,7 +193,7 @@
 		end
 		send "cf" $pgridSector "*" $xportShipSector "*q"
 		setTextLineTrigger shortestPath1 :shortestPath1 "The shortest path"
-		setTextLineTrigger noRouteToSec1 :noRouteToSec1 "No route within 50 warps fro"
+		setTextLineTrigger noRouteToSec1 :noRouteToSec1 "No route within "
 		settextLineTrigger whatsThePoint1 :whatsThePoint1 "So what's the point?"
 		pause
 		:noRouteToSec1
@@ -215,7 +215,7 @@
 
 		send "cf" $xportShipSector "*" $pgridSector "*q"
 		setTextLineTrigger shortestPath2 :shortestPath2 "The shortest path"
-		setTextLineTrigger noRouteToSec2 :noRouteToSec2 "No route within 50 warps fro"
+		setTextLineTrigger noRouteToSec2 :noRouteToSec2 "No route within "
 		settextLineTrigger whatsThePoint2 :whatsThePoint2 "So what's the point?"
 		pause
 		:noRouteToSec2
@@ -304,6 +304,7 @@
 			killtrigger denscheck2
 			getWord CURRENTLINE $pgridDensity 4
 			stripText $pgridDensity ","
+			stripText $pgridDensity "."
 			pause
 		:getDensityPgrid2
 			killtrigger denscheck
@@ -311,6 +312,7 @@
 			killtrigger denscheck2
 			getWord CURRENTLINE $pgridDensity 5
 			stripText $pgridDensity ","
+			stripText $pgridDensity "."
 			pause
 		:doneDensityCheck
 			killalltriggers
@@ -447,4 +449,6 @@ include "source\bot_includes\player\quikstats\player"
 include "source\module_includes\bot\checkstartingprompt\bot"
 include "source\bot_includes\planet\getplanetinfo\planet"
 include "source\bot_includes\ship\getshipstats\ship"
-include "source\bot_includes\player\currentprompt\player"
+
+# - Commented this out because it - checkstartingprompt already refers to this - we get duplicate label
+#include "source\bot_includes\player\currentprompt\player"

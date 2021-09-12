@@ -5,7 +5,8 @@
 	loadVar $bot~user_command_line
 	loadvar $PLAYER~unlimitedGame
 	loadvar $bot~subspace
-
+	loadvar $bot~bot_turn_limit
+	
 	gosub :BOT~loadVars
 	loadvar $bot~subspace
 			
@@ -212,7 +213,7 @@ setVar $skip_ships "YES"
 	gosub :sell
 	gosub :steal
 	gosub :xport
-	if ($player~turns > 29)
+	if ($player~turns > $bot~bot_turn_limit)
 		goto :sstLoop
 	else
 		send "'{" $switchboard~bot_name "} - Low Turns, Halting Script*"

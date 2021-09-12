@@ -25,6 +25,7 @@ setVar $planet~citadel_CASH_MAX    999999999999999
 	waitOn "Citadel treasury contains "
 	getWord CURRENTLINE $planet~citadelCash 4
 	stripText $planet~citadelCash ","
+	stripText $planet~citadelCash "."
 	if (($cashToTranfer+$planet~citadelCash) >= $planet~citadel_CASH_MAX)
 		setVar $SWITCHBOARD~message "Citadel has too much cash to do transfer (how sad for you)*"
 		gosub :SWITCHBOARD~switchboard

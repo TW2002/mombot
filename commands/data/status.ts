@@ -40,6 +40,96 @@
 		setVar $igstat "Busy"
 		setVar $timeLeft "Busy"        
 	end
+
+	if ($bot~parm1 <> "0")
+		# check for specific stat #
+		setvar $switchboard~message ""
+		getwordpos " "&$bot~user_command_line&" " $pos " phot"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Photons: "&$player~photons&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " tur"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Turns: "&$player~turns&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " sect"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Sector: "&$player~current_sector&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " ship"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Ship Number: "&$player~ship_number&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " exp"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Experience: "&$player~experience&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " ali"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Alignment: "&$player~alignment&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " fue"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Fuel Ore: "&$player~ore_holds&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " org"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Organics: "&$player~organic_holds&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " eq"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Equipment: "&$player~equipment_holds&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " at"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Atomics: "&$player~atomic&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " hol"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Holds: "&$player~total_holds&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " fig"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Fighters: "&$player~fighters&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " sh"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Shields: "&$player~shields&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " cre"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Credits: "&$player~credits&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos "prob"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"E-Probes: "&$player~eprobes&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " corb"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Corbomite: "&$player~corbo&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " lim"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Limpet Mines: "&$player~limpets&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " min"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Armid Mines: "&$player~armids&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos " col"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Colonists: "&$player~colonist_holds&"*"
+		end
+		getwordpos " "&$bot~user_command_line&" " $pos "torp"
+		if ($pos > 0)
+			setvar $switchboard~message $switchboard~message&"Genesis Torpedos: "&$player~genesis&"*"
+		end
+
+		if ($switchboard~message <> "")
+			gosub :switchboard~switchboard
+			halt
+		end
+	end
 	setArray $h 35
 	setArray $qss 35
 	setArray $qss_var 35

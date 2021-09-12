@@ -46,6 +46,7 @@
 			:pps
 				getWord CURRENTLINE $pps 8
 				stripText $pps ","
+				stripText $pps "."
 			:grabPlanets
 				setVar $sector_list " "
 				setVar $sector_list_length 0

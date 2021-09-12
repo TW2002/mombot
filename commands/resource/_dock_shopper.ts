@@ -596,9 +596,11 @@ return
         if ($LSD_NumberOfShip > 0)
             getText $LSD__Trickster $LSD_Cost "^^" "@@"
             stripText $LSD_Cost ","
+            stripText $LSD_Cost "."
             stripText $LSD_Cost " "
             getText $LSD__Trickster $LSD_temp "@@" "!!"
             stripText $LSD_ReRegisterCost ","
+            stripText $LSD_ReRegisterCost "."
             setVar $LSD_Cost ($LSD_Cost + $LSD_ReRegisterCost)
             setVar $LSD_MathOut ($LSD_NumberOfShip * $LSD_Cost)
             setVar $LSD__TOTAL ($LSD__TOTAL + $LSD_Mathout)
@@ -634,6 +636,7 @@ return
     if ($LSD__PScan = "Yes")
         setVar $LSD_Cost $GAME~LSD_PSCAN
         stripText $LSD_Cost ","
+        stripText $LSD_Cost "."
         setVar $LSD_MathOut $LSD_Cost
         isNumber $LSD_tst $LSD_NumberOfShip
         if ($LSD_tst <> 0)
@@ -664,6 +667,7 @@ return
     if ($LSD__LRScan = "Yes")
         setVar $LSD_Cost $GAME~LSD_HOLOCOST
         stripText $LSD_Cost ","
+        stripText $LSD_Cost "."
         setVar $LSD_MathOut $LSD_Cost
         isNumber $LSD_tst $LSD_NumberOfShip
         if ($LSD_tst <> 0)
@@ -690,6 +694,7 @@ return
     if ($LSD__T2Twarp = "Yes")
         setVar $LSD_Cost $GAME~LSD_TWARPIICOST
         stripText $LSD_Cost ","
+        stripText $LSD_Cost "."
         setVar $LSD_MathOut $LSD_Cost
         isNumber $LSD_tst $LSD_NumberOfShip
         if ($LSD_tst <> 0)
@@ -722,6 +727,7 @@ return
     isNumber $LSD_tst $item_number
     if ($LSD_tst <> 0)
         stripText $LSD_Cost ","
+        stripText $LSD_Cost "."
         setVar $LSD_MathOut ($item_number * $LSD_Cost)
         isNumber $LSD_tst $LSD_NumberOfShip
         if ($LSD_tst <> 0)
@@ -860,6 +866,7 @@ return
                 setVar $LSD_ANSI_Line "  " & ANSI_5 & "<" & ANSI_6 & $LSD_ShipList[$LSD_i] & ANSI_5 & "> "
                 setVar $LSD_temp $LSD_ShipList[$LSD_i][2]
                 stripText $LSD_temp ","
+                stripText $LSD_temp "."
                 stripText $LSD_temp " "
                 getLength $LSD_ShipList[$LSD_i][1] $LSD_len
                 if ($LSD_len > ($LSD_LineWidthMax - 10))

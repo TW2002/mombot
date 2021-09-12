@@ -16,6 +16,7 @@
 	setVar $i 11
 	while ($i <= SECTORS)   
 		setSectorParameter $i "BUSTED" ""
+		setSectorParameter $i "FAKEBUST" ""
 		add $i 1
 	end
 	setVar $SWITCHBOARD~message "Bust file for this bot has been cleared.*"

@@ -50,6 +50,7 @@
 	setVar $rob ($GAME~rob_factor*$PLAYER~EXPERIENCE)
 	getWord CURRENTLINE $port_cash 11
 	stripText $port_cash ","
+	stripText $port_cash "."
 	if ($port_cash < $mega_min)
 		if ($isMega)
 			setVar $port_cash (($port_cash*10)/9)

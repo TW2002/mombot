@@ -111,6 +111,7 @@ gosub :player~quikstats
 
 setvar $exp $player~experience
 setvar $sector player~current_sector
+gosub :checkforbluetrader
 
 if ($bot~bluehaggle)
 	setvar $tag "Blue Haggle"
@@ -164,15 +165,19 @@ getword CURRENTLINE $RANK 1
 if ($RANK = "Rank")
 	getword CURRENTLINE $player~experience 5
 	striptext $player~experience ","
+	striptext $player~experience "."
+	gosub :checkforbluetrader
 	goto :50
 end
 setvar $TEMP CURRENTLINE & #179
 gettext $TEMP $TEMP "Exp" #179
 striptext $TEMP ","
+striptext $TEMP "."
 striptext $TEMP " "
 isnumber $YN $TEMP
 if ($YN = 1)
 	setvar $player~experience $TEMP
+	gosub :checkforbluetrader
 end
 
 :50
@@ -205,6 +210,7 @@ end
 
 :56
 round $player~experience 0
+gosub :checkforbluetrader
 settextlinetrigger TRACKEXP :TRACKEXP "experience point(s)"
 pause
 
@@ -245,6 +251,7 @@ if ($verbose_debug_mode = TRUE)
 end
 add $player~experience $player~experience_increase
 round $player~experience 0
+gosub :checkforbluetrader
 pause
 
 :PRODUCTINFO
@@ -309,6 +316,7 @@ pause
 killalltriggers
 getword CURRENTLINE $holds_to_trade 2
 striptext $holds_to_trade ","
+striptext $holds_to_trade "."
 settextlinetrigger BUYOFFER :INITOFFER "We'll buy them for"
 settextlinetrigger SELLOFFER :INITOFFER "We'll sell them for"
 pause
@@ -341,6 +349,7 @@ pause
 
 :PARSEINITOFFER
 striptext $OFFER ","
+striptext $OFFER "."
 striptext $OFFER "["
 striptext $OFFER "]"
 striptext $OFFER "?"
@@ -608,6 +617,7 @@ killtrigger "GREATTRADE"
 getword CURRENTLINE $player~experience_increase 7
 add $player~experience $player~experience_increase
 round $player~experience 0
+gosub :checkforbluetrader
 pause
 
 :FINALOFFER
@@ -629,6 +639,7 @@ pause
 
 :PARSECOUNTEROFFER
 striptext $OFFER ","
+striptext $OFFER "."
 add $BID 1
 round $BID
 setvar $BID[$BID] $OFFER
@@ -821,41 +832,28 @@ if ($LTPEHL = 0)
 		divide $LTPEHL $planet~planettrade_ratio
 	end
 end
-setvar $TOECHO ""
-if ($FINALOFFER = 1) or ($planet~planetSHIP = "SHIP") and ($bot~worstprice = 1) and ($BUYSELL = "SELLING")
-	setvar $TOECHO ANSI_12 & "<<<  " & ANSI_11 & $PRODUCT & " MCIC = " & ANSI_14 & $MCIC
-	setvar $ANSILENGTH 28
-	if ($MCIC <> $UPPER_RANGE_MCIC)
-		setvar $TOECHO $TOECHO & ANSI_11 & " to " & ANSI_14 & $UPPER_RANGE_MCIC
-		setvar $ANSILENGTH 42
-	end
-	setvar $TOECHO $TOECHO & ANSI_12 & "  >>>"
-	replacetext $OUTTEXTSTRING "*" "[CR]"
-	if ($verbose_debug_mode = TRUE)
-		setvar $switchboard~message $toecho
-		gosub :bot~echo
-	end
-end
+#setvar $TOECHO ""
+#if ($FINALOFFER = 1) or ($planet~planetSHIP = "SHIP") and ($bot~worstprice = 1) and ($BUYSELL = "SELLING")#
+#	setvar $TOECHO ANSI_12 & "<<<  " & ANSI_11 & $PRODUCT & " MCIC = " & ANSI_14 & $MCIC
+#	setvar $ANSILENGTH 28
+#	if ($MCIC <> $UPPER_RANGE_MCIC)
+#		setvar $TOECHO $TOECHO & ANSI_11 & " to " & ANSI_14 & $UPPER_RANGE_MCIC
+#		setvar $ANSILENGTH 42
+#	end
+#	setvar $TOECHO $TOECHO & ANSI_12 & "  >>>"
+#	replacetext $OUTTEXTSTRING "*" "[CR]"
+#	if ($verbose_debug_mode = TRUE)
+#		setvar $switchboard~message $toecho
+#		gosub :bot~echo
+#	end
+#end
 if ($LHTEYH = 1) and ($LHTEYH[1][6] = 1)
 	if ($verbose_debug_mode = TRUE)
 		setvar $switchboard~message ANSI_12&"*   <<<  "&ANSI_14&"Exact .5 Anomaly Detected for this MCIC"&ANSI_12&"  >>>"
 		gosub :bot~echo
 	end
 end
-if ($FINALOFFER = 1)
-	getlength $TOECHO $ECHOLENGTH
-	subtract $ECHOLENGTH $ANSILENGTH
-	getlength CURRENTLINE $LINELENGTH
-	setvar $PADLENGTH ((80 -$LINELENGTH) -$ECHOLENGTH)
-	round $PADLENGTH 0
-	getDeafClients $botIsDeaf
-	if ($botIsDeaf)
-		setvar $switchboard~message "C"&#27&"[1A"&"  "&$toecho
-		gosub :bot~echo
-	else
-		echo #27&"[s"&#27&"["&$PADLENGTH&"C"&#27&"[1A"&$TOECHO&#27&"[u"&ANSI_5
-	end
-end
+
 if ($planet~planetSHIP = "PLANET") and ($planet~planettrade_ratio <> 1)
 	gosub :SUBPTRADENOT100
 	goto :223
@@ -1550,6 +1548,12 @@ setvar $switchboard~message ANSI_11&"COMPLETE**Data saved in the TWX Proxy folde
 gosub :bot~echo
 return
 
+:checkforbluetrader
+	if (($player~alignment >= 0) and ($player~experience > 800) and ($player~experience < 1000) and ($bot~worstprice <> true))
+		setvar $bot~bluehaggle true
+		savevar $bot~bluehaggle
+	end
+return
 
 include "source\module_includes\bot\loadvars\bot"
 include "source\module_includes\bot\helpfile\bot"

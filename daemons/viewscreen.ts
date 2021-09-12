@@ -113,7 +113,7 @@ settextlinetrigger figHit :figHitProcess "of your fighters in sector"
 settextlinetrigger offFigHit :figHitProcess "Your fighters in sector"
 #settextlinetrigger entered :figHitProcess "Deployed Fighters Report Sector"
 
-setdelaytrigger    silentdelay :checksilent 900000
+#setdelaytrigger    silentdelay :checksilent 900000
 #settextlinetrigger limpet :limpetProcess "Limpet mine in "
 
 getDeafClients $BOT~botIsDeaf
@@ -738,6 +738,7 @@ return
 	:msgs_on_again
 	killtrigger onMSGS_ON
 	killtrigger onMSGS_OFF
+	killtrigger silentdelay
 	setTextTrigger onMSGS_ON  :onMSGS_ON "Displaying all messages."
 	setTextTrigger onMSGS_OFF :onMSGS_OFF "Silencing all messages."
 	send "|"

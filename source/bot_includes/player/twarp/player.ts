@@ -55,18 +55,19 @@
 		end
 	end
 	if ($RED_adj <> 0)
-		goto :twarp_lock
-	end
-	if ($startingLocation = "Citadel")
-		send "q t*t1* q q * c u y q mz" $warpto "*"
-	elseif ($startingLocation = "Planet")
-		send "t*t1* q q * c u y q mz" $warpto "*"
+		send "* mz" $warpto "*"
 	else
-		if ($fasttwarp)
-			send "mz" $warpto "*"		
+		if ($startingLocation = "Citadel")
+			send "q t*t1* q q * c u y q mz" $warpto "*"
+		elseif ($startingLocation = "Planet")
+			send "t*t1* q q * c u y q mz" $warpto "*"
 		else
-			send "q q q n n 0 * c u y q mz" $warpto "*"
-		end
+			if ($fasttwarp)
+				send "mz" $warpto "*"		
+			else
+				send "q q q n n 0 * c u y q mz" $warpto "*"
+			end
+		end	
 	end
 	setTextTrigger      there      :adj_warp       "You are already in that sector!"
 	setTextLineTrigger  adj_warp   :adj_warp       "Sector  : "&$warpto&" "

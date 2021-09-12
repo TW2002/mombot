@@ -470,12 +470,22 @@ gosub :_START_
 		getText CurrentLine $DECASH " has " "."
 		stripText $DECASH ","
 		stripText $DECASH " "
-		if ($DECASH > 500000)
-			setVar $DECASH ($DECASH - 500000)
-			send $DECASH & "*"
+		if ($nodecash = true)
+			if ($player~credits < 500000)
+				setVar $DECASH (500000-$player~credits)
+				send $DECASH & "*"
+			else
+				setVar $DECASH 0
+				send "*"
+			end
 		else
-			setVar $DECASH 0
-			send "*"
+			if ($DECASH > 500000)
+				setVar $DECASH ($DECASH - 500000)
+				send $DECASH & "*"
+			else
+				setVar $DECASH 0
+				send "*"
+			end
 		end
 		setVar $FIGS 0
 		send "fyt"
@@ -720,6 +730,12 @@ gosub :_START_
 		end
 	end
 	
+	setvar $nodecash false
+	getWordPos $bot~user_command_line $pos "nodecash"
+	if ($pos > 0)
+		setvar $nodecash true
+	end
+
 	setVar $topplanet FALSE
 	getWordPos $bot~user_command_line $pos "topp"
 	if ($pos > 0)

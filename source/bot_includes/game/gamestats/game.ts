@@ -46,7 +46,77 @@
 		setTextLineTrigger settings38 :findMaxPlanets "Max Planet Sector="
 		setTextLineTrigger settings39 :findMaxGamePlanets ", sectors"
 		setTextLineTrigger settings40 :findFedSpacePhotons "FedSpace Photons="
+		setTextLineTrigger settings41 :findLatency "Latency="
+		setTextLineTrigger settings42 :findDelayShipMove "Ship Delay="
+		setTextLineTrigger settings43 :findDelayPlanetMove "Planet Delay="
+		setTextLineTrigger settings44 :findDelayOtherAttacks "Other Attacks Delay="
+		setTextLineTrigger settings45 :findDelayShipTransporter "Ship Transporter Delay="
+		setTextLineTrigger settings46 :findDelayPlanetTransporter "Planet Transporter Delay="
+		setTextLineTrigger settings47 :findDelayEProbe "EProbe Delay="
+		setTextLineTrigger settings48 :findDelayPhotonLaunch "Photon Launch Delay="
+		setTextLineTrigger settings49 :findDelayPhotonWave "Photon Wave Delay="
 		pause
+		:findLatency
+			getWord CURRENTLINE $latency 1
+			stripText $latency "Latency="
+			saveVar $latency
+			pause
+		:findDelayShipMove
+			setVar $delay 0
+			setVar $delayWord 2
+			goSub :convertDelay
+			setVar $delayShip $delay
+			saveVar $delayShip
+			pause
+		:findDelayPlanetMove
+			setVar $delay 0
+			setVar $delayWord 2
+			goSub :convertDelay
+			setVar $delayPlanet $delay
+			saveVar $delayPlanet
+			pause
+		:findDelayOtherAttacks
+			setVar $delay 0
+			setVar $delayWord 3
+			goSub :convertDelay
+			setVar $delayOtherAttack $delay
+			saveVar $delayOtherAttack
+			pause
+		:findDelayShipTransporter
+			setVar $delay 0
+			setVar $delayWord 3
+			goSub :convertDelay
+			setVar $delayShipTransporter $delay
+			saveVar $delayShipTransporter
+			pause
+		:findDelayPlanetTransporter
+			setVar $delay 0
+			setVar $delayWord 3
+			goSub :convertDelay
+			setVar $delayPlanetTransporter $delay
+			saveVar $delayPlanetTransporter
+			pause
+		:findDelayEProbe
+			setVar $delay 0
+			setVar $delayWord 2
+			goSub :convertDelay
+			setVar $delayEprobe $delay
+			saveVar $delayEprobe
+			pause
+		:findDelayPhotonLaunch
+			setVar $delay 0
+			setVar $delayWord 3
+			goSub :convertDelay
+			setVar $delayPhotonLaunch $delay
+			saveVar $delayPhotonLaunch
+			pause
+		:findDelayPhotonWave
+			setVar $delay 0
+			setVar $delayWord 3
+			goSub :convertDelay
+			setVar $delayPhotonDelay $delay
+			saveVar $delayPhotonDelay
+			pause
 		:findGold
 			getWord CURRENTLINE $check 2
 			stripText $check "Enabled="
@@ -58,8 +128,8 @@
 				saveVar $goldEnabled
 			end
 			pause
-	:findFedSpacePhotons
-		getWord CURRENTLINE $check 2
+		:findFedSpacePhotons
+			getWord CURRENTLINE $check 2
 			stripText $check "Photons="
 			if ($check = "True")
 				setVar $fedSpacePhotons TRUE
@@ -78,7 +148,7 @@
 			pause
 		:findMaxGamePlanets
 			getWord CURRENTLINE $check 9
-		stripText $check "."
+			stripText $check "."
 			setVar $MAX_PLANETS_IN_GAME $check
 			saveVar $MAX_PLANETS_IN_GAME
 			pause
@@ -175,6 +245,11 @@
 		:findMultiplePhotons
 			getWord CURRENTLINE $MULTIPLE_PHOTONS 2
 			stripText $MULTIPLE_PHOTONS "Photons="
+			if ($MULTIPLE_PHOTONS = "True")
+				setVar $MULTIPLE_PHOTONS TRUE
+			else
+				setVar $MULTIPLE_PHOTONS FALSE
+			end
 			saveVar $MULTIPLE_PHOTONS
 			pause
 		:findClearBusts
@@ -186,12 +261,16 @@
 			getWord CURRENTLINE $steal_factor 2
 			stripText $steal_factor "Factor="
 			stripText $steal_factor "%"
+			setvar $actual_steal_factor $steal_factor
+			savevar $actual_steal_factor
 			saveVar $STEAL_FACTOR
 			pause
 		:findRobFactor
 			getWord CURRENTLINE $rob_factor 2
 			stripText $rob_factor "Factor="
 			stripText $rob_factor "%"
+			setvar $actual_rob_factor $rob_factor
+			savevar $actual_rob_factor
 			saveVar $rob_factor
 			pause
 		:findPortMax
@@ -447,6 +526,28 @@
 	killtrigger settings5
 	setVar $gamestats TRUE
 	saveVar $gamestats
+return
+
+:convertDelay
+	getWord CURRENTLINE $check1 $delayWord
+	stripText $check1 "Delay="
+	if ($check1 = "Constant")
+		getWord CURRENTLINE $check2 ($delayWord + 1)
+		stripText $check2 "("
+		getWord CURRENTLINE $check3 ($delayWord + 2)
+		stripText $check3 ")"
+		if ($check3 = "s")
+			setVar $delay ($check2 * 1000)
+		else
+			setVar $delay $check2
+		end
+	elseif ($check1 = "None")
+		# Powerup Delay=None
+		setVar $delay 0
+	else
+		# Normal Quarter Third Half Double
+		setVar $delay $check1
+	end
 return
 # ============================== END GAME STATS SUB ==============================
 

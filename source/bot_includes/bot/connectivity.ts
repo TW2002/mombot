@@ -2,6 +2,7 @@
 :keepalive
 		send #27
 		setvar $relog_message ""
+		savevar $relog_message
 		add $alive_count 1
 	if ($alive_count >= ($BOT~echoInterval * 2))
 		setVar $alive_count 0
@@ -24,6 +25,7 @@
 		if ((CURRENTLINE = $game~game_menu_prompt) or (CURRENTLINE = "[Pause] - [Press Space or Enter to continue]") or (CURRENTLINE = "Enter your choice: ") or (CURRENTLINE = "Selection (? for menu): "))
 			if ($relogging <> true)
 				setvar $relog_message "Stuck on baffling prompt: ["&CURRENTLINE&"], so I relogged.*"
+				savevar $relog_message
 				DISCONNECT
 				setvar $relogging true
 				savevar $relogging
@@ -50,7 +52,10 @@
 			goto :internal_commands~relog_attempt
 		end
 	end
+	killtrigger keepalive
+	killtrigger online_watch
 	setTextTrigger      online_watch            :online_watch              "Your session will be terminated in "
+	setDelayTrigger     keepalive               :keepalive           20000
 	send #27
 	pause
 
@@ -107,7 +112,7 @@
 					setTextTrigger		enter		:done_do_relog	"Would you like to start a new character in this game?"
 					setTextTrigger		v1enter		:v1enter "Enter your choice"
 					setTextLineTrigger      notopen		:game_not_open	"but this is a closed game."
-					send $BOT~letter&" * "
+					send $BOT~letter&"                                           * "
 					pause
 				else
 					setTextTrigger firstpause :firstpause "[Pause]"
@@ -163,10 +168,10 @@
 		
 					setTextTrigger		v1Pause	:v1Pause "[Pause]"
 					setTextTrigger		v1Enter2 :v1Enter2 "Enter your choice"
-					setDelayTrigger		2	:new_game_delay2 2000
+					setDelayTrigger		2	:new_game_delay2 1000
 					setTextTrigger		3	:tryAgainNewGameDay1	"Would you like to start a new character in this game?"
 					setTextLineTrigger      4       :tryAgainEnterGame	"but this is a closed game."
-					send $BOT~letter&" * "
+					send $BOT~letter&"                                           * "
 					pause
 
 
@@ -311,6 +316,15 @@ return
 	killalltriggers
 
 	# Testing this addition - Can we check briefly for our corp before mowing?
+	if (($newGame = true) and ($BOT~isCEO = TRUE) AND ($BOT~corpName <> "") AND ($BOT~corpPassword <> ""))
+		gosub :BOT~killthetriggers
+		send "cn24"&$BOT~subspace&"* qqlt30*"
+		#Make Corp
+		send "tm" $BOT~corpName "*y" $BOT~corpPassword "*yq"
+		send "co*cq"
+		setvar $skipjoin true
+		goto :resumeStartAfterCorpJoin
+	end
 	if (($newgame) and ($BOT~isCEO = FALSE) AND ($BOT~corpName <> "") AND ($BOT~corpPassword <> ""))
 		setVar $skipJoin 0
 		setVar $attemps 0
@@ -352,16 +366,19 @@ return
 	if ($newgame)
 		gosub :BOT~killthetriggers
 		if (($BOT~isCEO = TRUE) AND ($BOT~corpName <> "") AND ($BOT~corpPassword <> ""))
-			setTextLineTrigger	1 :alreadyCorped		"You may only be on one Corp at a time."
-			setTextTrigger 		2 :continueCorpCreation	"<Create New Corporation>"
-			send "*TM"
-			pause
-			:continueCorpCreation
-				gosub :BOT~killthetriggers
-				send $BOT~corpName&"*Y"&$BOT~corpPassword&"*Y*CN24"&$BOT~subspace&"* Q Q Q ZN* ^Q c o* c q "
-
+			if ($skipJoin <> true)
+				setTextLineTrigger	1 :alreadyCorped		"You may only be on one Corp at a time."
+				setTextTrigger 		2 :continueCorpCreation	"<Create New Corporation>"
+				send "*TM"
+				pause
+				:continueCorpCreation
+					gosub :BOT~killthetriggers
+					send $BOT~corpName&"*Y"&$BOT~corpPassword&"*Y*CN24"&$BOT~subspace&"* Q Q Q ZN* ^Q c o* c q "
+			else
+				goto :AllDone
+			end
 		elseif (($BOT~isCEO = FALSE) AND ($BOT~corpName <> "") AND ($BOT~corpPassword <> ""))
-			if ($skipJoin = 0)
+			if ($skipJoin <> true)
 				:checkForCorp
 					send "*TD"
 					gosub :PLAYER~quikstats
@@ -402,12 +419,6 @@ return
 
 	end
 
-	if (($menus~command_to_issue <> "") and ($menus~command_to_issue <> "0"))
-		setVar $BOT~user_command_line $menus~command_to_issue
-		setVar $menus~command_to_issue ""
-		saveVar $menus~command_to_issue
-		goto :USER_INTERFACE~runUserCommandLine
-	end
 return
 
 :moving
@@ -459,6 +470,7 @@ return
 				setEventTrigger		1		:mowended	"SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\grid\mow.cts"
 				pause
 				:mowended
+				loadvar $map~backdoor
 			end
 		else
 			if (($isNumber) and ($menus~xportToShip))
@@ -477,9 +489,28 @@ return
 						killtrigger 1
 						send "'{" $SWITCHBOARD~bot_name "} - Safely on Terra.*"
 					:done_landing_terra
+				elseif ($menus~landOnStardock = true)
+					setTextTrigger 		1	:landed_on_stardock	"<Shipyards> Your option (?)"
+					setDelayTrigger     2	:landing_timeout	5000
+					send "pss "
+					pause
+					:landing_timeout
+						killtrigger 2
+						send "'{" $SWITCHBOARD~bot_name "} - Could not land on Stardock!  Probably not in sector.*"
+						goto :done_landing_stardock
+					:landed_on_stardock
+						killtrigger 1
+						send "'{" $SWITCHBOARD~bot_name "} - Safely on Stardock.*"
+					:done_landing_stardock
 				end
 			end
 		end
 
+	if (($menus~command_to_issue <> "") and ($menus~command_to_issue <> "0"))
+		setVar $BOT~user_command_line $menus~command_to_issue
+		setVar $menus~command_to_issue ""
+		saveVar $menus~command_to_issue
+		goto :USER_INTERFACE~runUserCommandLine
+	end
 return
 

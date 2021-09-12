@@ -97,6 +97,7 @@
 		killalltriggers
 		getWord CURRENTLINE $figsavailable 3
 		striptext $figsavailable ","
+		striptext $figsavailable "."
 		if ($figstodeploy = "ALL")
 			setVar $figstodeploy $figsavailable
 		end

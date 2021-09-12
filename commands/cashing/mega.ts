@@ -107,7 +107,7 @@
 		gosub :PLANET~landingSub
 	end
 	setSectorParameter $PLAYER~CURRENT_SECTOR "BUSTED" TRUE
-	send "'<" & $subspace & ">[Busted:" & $PLAYER~CURRENT_SECTOR & "]<" & $subspace & ">*"
+	send "'<" & $bot~subspace & ">[Busted:" & $PLAYER~CURRENT_SECTOR & "]<" & $bot~subspace & ">*"
 	goto :portrm_done
 :port_suc
 	killalltriggers

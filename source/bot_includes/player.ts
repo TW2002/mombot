@@ -825,12 +825,12 @@ return
                     setVar $result $result&"za  "&$mow_SHIP_MAX_ATTACK&"* *  "
                 end
                 if (($figsToDrop > 0) AND ($mowCourse[$j] > 10) AND ($mowCourse[$j] <> $MAP~stardock) AND ($j > 2))
-                    setVar $result $result&"f "&$figsToDrop&" * c d "
+                    setVar $result $result&"f "&$figsToDrop&" * c "&$player~fighter_deploy_type&" "
                     setVar $target $mowCourse[$j]
                     gosub :addfigtodata
                 end
                 if (($j >= $courseLength) AND ($mow_saveme = TRUE) AND ($figstoDrop = 0))
-                    setVar $result $result&"f 1 * c d "
+                    setVar $result $result&"f 1 * c "&$player~fighter_deploy_type&" "
                     setVar $target $mowCourse[$j]
                     gosub :addfigtodata
                 end

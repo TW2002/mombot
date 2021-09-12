@@ -13,16 +13,32 @@
 
 :_mine
 	gosub :mineProtections
-	if ($bot~parm1 > $PLAYER~ARMIDS)
+	if ($PLAYER~ARMIDS <= 0)
+		if ($PLAYER~startingLocation = "Citadel")
+			
+			send "s* "
+			waitfor "Warps to Sector(s) :"
+		elseif ($PLAYER~startingLocation = "Command")
+			send "d* "
+		end
+		if (SECTOR.MINES.OWNER[CURRENTSECTOR] = "belong to your Corp") or (SECTOR.MINES.OWNER[CURRENTSECTOR] = "yours")
+			# we will use what is available in sector
+			if ($bot~parm1 > SECTOR.MINES.QUANTITY[CURRENTSECTOR])
+				setVar $bot~parm1 SECTOR.MINES.QUANTITY[CURRENTSECTOR]
+			end
+			
+		else
+			setvar $switchboard~message "Out of Armid Mines!*"
+			gosub :SWITCHBOARD~switchboard
+			return
+		end
+	elseif ($bot~parm1 > $PLAYER~ARMIDS)
 		setVar $bot~parm1 $PLAYER~ARMIDS
 	end
 :_cmine
+	:retryArmid
 	killalltriggers
-	if ($PLAYER~ARMIDS <= 0)
-		setVar $SWITCHBOARD~message "Out of Armid Mines!*"
-		gosub :SWITCHBOARD~switchboard
-		return
-	end
+	
 	if ($PLAYER~startingLocation = "Citadel")
 		send "q q z n h1 z " $bot~parm1 "*  z" $armid " z n n  *l " $PLANET~PLANET "* c"
 	else
@@ -31,7 +47,7 @@
 	setTextLineTrigger toomanypl :toomany_mine "!  You are limited to "
 	setTextLineTrigger plclear :plclear_mine "Done. You have "
 	setTextLineTrigger enemypl :noperdown_mine "These mines are not under your control."
-	setTextLineTrigger notenough :toomany_mine "You don't have that many mines available."
+	setTextLineTrigger notenough :notenough_mine "You don't have that many mines available."
 	pause
 :plclear_mine
 	killalltriggers
@@ -48,20 +64,35 @@
 	setTextLineTrigger noperdown :noperdown_mine "Citadel treasury contains"
 	pause
 :cordown_mine
-		setVar $SWITCHBOARD~message $bot~parm1&" Corporate Mines Deployed!*"
-		gosub :SWITCHBOARD~switchboard
+	setVar $SWITCHBOARD~message $bot~parm1&" Corporate Mines Deployed!*"
+	gosub :SWITCHBOARD~switchboard
 	goto :done_armid
 :perdown_mine
-		setVar $SWITCHBOARD~message $bot~parm1&" Personal Mines Deployed!*"
-		gosub :SWITCHBOARD~switchboard
+	setVar $SWITCHBOARD~message $bot~parm1&" Personal Mines Deployed!*"
+	gosub :SWITCHBOARD~switchboard
 	goto :done_armid
 :noperdown_mine
-		setVar $SWITCHBOARD~message "Sector already has enemy Armid Mines present!*"
-		gosub :SWITCHBOARD~switchboard
+	setVar $SWITCHBOARD~message "Sector already has enemy Armid Mines present!*"
+	gosub :SWITCHBOARD~switchboard
 	setVar $isMined FALSE
 	goto :done_armid
 :toomany_mine
-	setVar $SWITCHBOARD~message "Too many mines in the sector!*"
+	
+	getWord CURRENTLINE $max_mines 11
+	
+	if (SECTOR.MINES.OWNER[CURRENTSECTOR] = "belong to your Corp") or (SECTOR.MINES.OWNER[CURRENTSECTOR] = "yours")
+		# should always be true.. but!
+		setVar $SWITCHBOARD~message "Your ship only holds "&$max_mines&", retrying!*"
+		gosub :SWITCHBOARD~switchboard
+		setVar $bot~parm1 ((SECTOR.MINES.QUANTITY[CURRENTSECTOR] + $PLAYER~ARMIDS) - $max_mines)
+		goto :retryArmid
+	else
+		setVar $SWITCHBOARD~message "Too many mines in the sector!*"
+		gosub :SWITCHBOARD~switchboard
+		goto :done_armid
+	end
+:notenough_mine
+	setVar $SWITCHBOARD~message "You don't have that many available!*"
 	gosub :SWITCHBOARD~switchboard
 :done_armid
 	if ($isMined)
@@ -69,6 +100,7 @@
 	else
 		setSectorParameter $PLAYER~CURRENT_SECTOR "MINESEC" FALSE
 	end
+	killalltriggers
 	return
 # ============================== END MINES SUB ==============================   
 

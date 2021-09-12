@@ -108,6 +108,9 @@
 				striptext $shipname ""
 				striptext $shipname "["
 
+				if ($ship~shipCounter <= 0)
+					gosub :ship~loadShipInfo
+				end
 				while (($isFound = FALSE) AND ($s < $ship~shipCounter))
 					striptext $ship~shipList[$s] "["
 					getwordpos $shipname $pos $ship~shipList[$s]
@@ -116,13 +119,15 @@
 						#echo "*["&$shipname&"*][*"&$ship~shipList[$s]&"]*"
 						setVar $isFound TRUE
 						setVar $isDefender $ship~shipList[$s][8]
+						setVar $target_defense_odds $ship~shipList[$s][2]
+						setVar $target_shields $ship~shipList[$s][1]
 					end
 					add $s 1
 				end
 				setVar $player~traders[($realTraderCount)][3] $shipname
 				if ($isDefender = TRUE)
 					setVar $player~traders[($realTraderCount)][1] 100000
-					#echo "*Adding defender ship:"&$shipname&"*"
+				#	echo "*Adding defender ship:"&$shipname&"*"
 					add $defenderShips 1
 				end
 				getwordpos $shipname $isTargetedShip $PLAYER~targetingShip
@@ -140,3 +145,4 @@
 		setVar $defenderShips 0
 	end
 return
+include "source\bot_includes\ship\loadshipinfo\ship"

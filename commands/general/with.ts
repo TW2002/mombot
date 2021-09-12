@@ -30,6 +30,7 @@ setVar $planet~citadel_CASH_MAX    999999999999999
 	waitOn "Citadel treasury contains "
 	getWord CURRENTLINE $planet~citadelCash 4
 	stripText $planet~citadelCash ","
+	stripText $planet~citadelCash "."
 	if (($PLAYER~CREDITS+$cashToTransfer) > $PLAYER_CASH_MAX)
 		setVar $cashToTransfer ($PLAYER_CASH_MAX-$PLAYER~CREDITS)
 	end

@@ -1,4 +1,4 @@
-for /r %%n in (*.ts) do call :checkit "%%n" 
+for /r %%n in (*relog.ts) do call :checkit "%%n" 
 goto end
 
 :checkit

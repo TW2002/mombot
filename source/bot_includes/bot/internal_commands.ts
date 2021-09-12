@@ -1,42 +1,33 @@
 # ============================== END MAIN BODY WAIT FOR COMMANDS SUB ==============================
 :loginmemo
-	getWordPos CURRENTANSILINE $pos (#27 & "[32mYou have a corporate memo from " & #27 & "[1;36m")
-	getwordpos currentansiline $pos2 ("[K[0;32mYou have a corporate memo from [1;36m")
-	if ($pos > 0)
-		getText CURRENTANSILINE $user_name (#27 & "[32mYou have a corporate memo from " & #27 & "[1;36m") (#27 & "[0;32m." & #13)
-		gosub :checklogin
-	elseif ($pos2 > 0)
-		getText CURRENTANSILINE $user_name ("[K[0;32mYou have a corporate memo from " & #27 & "[1;36m") (#27 & "[0;32m." & #13)
-		gosub :checklogin
-	end
-	:endloginmemo
+	getword currentline $word 1
+	if ($word <> "You")
 		killtrigger loginmemo
 		setTextLineTrigger	  loginmemo			   :loginmemo			"You have a corporate memo from "
 		pause
+	end
+	gettext currentline $user_name "You have a corporate memo from " "."
 
-
-		:checklogin
-			setVar $i 1
-			setVar $tempUsername $user_name
-			lowercase $tempUsername
-			lowerCase $user_name
-			while ($i <= $BOT~corpycount)
-			setVar $tempCorpy $BOT~corpy[$i]
-			lowerCase $tempCorpy
-			if ($tempCorpy = $tempUsername)
-				return
-			end
-			add $i 1
-			end
-			add $BOT~corpycount 1
-			setVar $BOT~corpy[$BOT~corpycount] $user_name
-			cutText $user_name $cut_user_name 1 6
-			stripText $cut_user_name " "
-			setVar $loggedin[$cut_user_name] 1
-			send "'["&$BOT~mode&"]{"&$SWITCHBOARD~bot_name&"} - User Verified - "&$user_name&"*"
-		return
+	setVar $i 1
+	setVar $tempUsername $user_name
+	lowercase $tempUsername
+	lowerCase $user_name
+	while ($i <= $BOT~corpycount)
+		setVar $tempCorpy $BOT~corpy[$i]
+		lowerCase $tempCorpy
+		if ($tempCorpy = $tempUsername)
+			goto :bot~wait_for_command
+		end
+		add $i 1
+	end
+	add $BOT~corpycount 1
+	setVar $BOT~corpy[$BOT~corpycount] $user_name
+	cutText $user_name $cut_user_name 1 6
+	stripText $cut_user_name " "
+	setVar $loggedin[$cut_user_name] 1
+	send "'["&$BOT~mode&"]{"&$SWITCHBOARD~bot_name&"} - User Verified - "&$user_name&"*"
+goto :bot~wait_for_command
 # ======================================= COMMAND ROUTING =========================================
-
 
 :stop
 	gosub :BOT~killthetriggers
@@ -119,20 +110,19 @@ goto :BOT~wait_for_command
 	setVar $BOT~mode "General"
 	savevar $bot~mode
 	setVar $BOT~LAST_LOADED_MODULE ""
+	savevar $bot~LAST_LOADED_MODULE
 	gosub :msgs_on
 	goto :BOT~wait_for_command
 # ================================= END GENERAL MODE RESET ==========================================
-:help
-	setVar $BOT~user_command_line "help "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
-	goto :USER_INTERFACE~runUserCommandLine
 
 :callin
 	setVar $new_bot_team_name $BOT~parm1
 	stripText $new_bot_team_name "^"
 	stripText $new_bot_team_name " "
 	lowerCase $new_bot_team_name
-	if ($new_bot_team_name = "")
-		setVar $SWITCHBOARD~message "Invalid team name entered, cannot join that one.*"
+	getLength $new_bot_team_name $targetLength 
+	if (($new_bot_team_name = "") or ($targetLength < 3))
+		setVar $SWITCHBOARD~message "Invalid team name entered, cannot join that one.  Must be more than 2 letters long.*"
 		gosub :SWITCHBOARD~switchboard
 		goto :BOT~wait_for_command		
 	else
@@ -154,7 +144,7 @@ goto :BOT~wait_for_command
 	getInput $BOT~parm1 "Twarp To:"
 	getWord $BOT~parm1 $BOT~parm1 1
 	stripText $BOT~parm1 " "
-	if ($BOT~parm1 = "")
+	if ($bot~parm1 = "")
 		goto :BOT~wait_for_command
 	end
 	setVar $BOT~user_command_line "twarp "&$BOT~parm1&" "
@@ -166,7 +156,7 @@ goto :BOT~wait_for_command
 	getInput $BOT~parm1 "Mow To:"
 	getWord $BOT~parm1 $BOT~parm1 1
 	stripText $BOT~parm1 " "
-	if ($BOT~parm1 = "")
+	if ($bot~parm1 = "")
 		goto :BOT~wait_for_command
 	end
 	setVar $BOT~user_command_line "mow "&$BOT~parm1&" 1"
@@ -184,43 +174,24 @@ goto :BOT~wait_for_command
 goto :BOT~wait_for_command
 #=========================== END PHOTON HOTKEY =======================================
 
-:clear
-   setVar $BOT~user_command_line "clear"
-	goto :USER_INTERFACE~runUserCommandLine
-
 :kit
-   setVar $BOT~user_command_line "macro_kit"
+	setVar $BOT~user_command_line "macro_kit"
 	goto :USER_INTERFACE~runUserCommandLine
 
 :dock_shopper
 	setVar $BOT~user_command_line "dock_shopper"
 	goto :USER_INTERFACE~runUserCommandLine
 
-
-:x
-:xport
-	setVar $BOT~user_command_line "xport "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
+:help
+	setVar $BOT~user_command_line "help "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
 	goto :USER_INTERFACE~runUserCommandLine
+
 	
-:mow
-:m
-	setVar $BOT~user_command_line "mow "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
-	goto :USER_INTERFACE~runUserCommandLine
-
-:land
-:l
-	setVar $BOT~user_command_line "land "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4
-	goto :USER_INTERFACE~runUserCommandLine
-
 :sector
 :secto
 :sect
 :sec
 	setVar $BOT~user_command_line "sector "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4
-	goto :USER_INTERFACE~runUserCommandLine
-:qss
-:status
-	setVar $BOT~user_command_line "status "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4
 	goto :USER_INTERFACE~runUserCommandLine
 
 :parm
@@ -229,36 +200,86 @@ goto :BOT~wait_for_command
 	setVar $BOT~user_command_line "param "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4
 	goto :USER_INTERFACE~runUserCommandLine
 
-:t
-:twarp
-	setVar $BOT~user_command_line "twarp "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8	
-	goto :USER_INTERFACE~runUserCommandLine
-
-:b
-:bwarp
-	setVar $BOT~user_command_line "bwarp "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8	
-	goto :USER_INTERFACE~runUserCommandLine
-
-:p
-:pwarp
-	setVar $BOT~user_command_line "pwarp "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
-	goto :USER_INTERFACE~runUserCommandLine
-
-:d
-:dep
-	setVar $BOT~user_command_line "dep "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4
-	goto :USER_INTERFACE~runUserCommandLine
-
-:w
-:with
-	setVar $BOT~user_command_line "with "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4
-	goto :USER_INTERFACE~runUserCommandLine
-
 :holotorp
 :htorp
 	setVar $BOT~user_command_line "htorp "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4
-	goto :USER_INTERFACE~runUserCommandLine
 
+	gosub :BOT~killthetriggers
+
+	gosub :PLAYER~quikstats
+	if ($PLAYER~SCAN_TYPE <> "Holo")
+		setvar $switchboard~message "You can not run htorp without a holographic scanner.*"
+		gosub :switchboard~switchboard
+		goto :BOT~wait_for_command
+	end
+	setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
+	if ($PLAYER~startingLocation = "Command")
+	
+	elseif ($PLAYER~startingLocation = "Citadel")
+		send "q "
+		gosub :PLANET~getPlanetInfo
+	else
+		echo "*Wrong prompt for htorp.*"
+		goto :BOT~wait_for_command
+	end
+	if ($PLAYER~startingLocation = "Citadel")
+		send "q szh* l " & $planet~planet & "* c "
+	else
+		send "szh* "
+	end
+	setTextLineTrigger checkForHolo :continueCheckHolo "Select (H)olo Scan or (D)ensity Scan or (Q)uit?"
+	setTextLineTrigger checkForDens :photonedhtorp "Relative Density Scan"  
+	pause
+	:continueCheckHolo
+		setTextTrigger htorpsector :continuehtorpsector "[" & $PLAYER~CURRENT_SECTOR & "]"
+		pause
+	:continuehtorpsector
+	if ($PLAYER~PHOTONS <= 0)
+		echo ANSI_14 & "*No Photons on hand.**" & ANSI_7
+		goto :BOT~wait_for_command
+	end
+	setVar $i 1
+	while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i] > 0)
+		setVar $adj_sec SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i]
+		if (SECTOR.TRADERCOUNT[$ADJ_SEC] > 0)
+			setVar $targetInSector FALSE
+			setVar $corpMemberInSector FALSE
+			setVar $j 1
+			while (SECTOR.TRADERS[$ADJ_SEC][$j] <> 0)
+				setVar $tempTarget SECTOR.TRADERS[$ADJ_SEC][$j]
+				getLength $tempTarget $targetLength
+				if ($targetLength >= 4)
+					cutText $tempTarget $targetCorp ($targetLength-4) 999
+					getText $targetCorp $targetCorp "[" "]"
+					if ($targetCorp <> $PLAYER~CORP)
+						setVar $targetInSector TRUE
+					end
+					if ($targetCorp = $PLAYER~CORP)
+						setVar $corpMemberInSector TRUE
+					end
+				end
+				add $j 1
+			end
+			if (($targetInSector = TRUE) AND ($corpMemberInSector = FALSE))
+				send "c p y " $ADJ_SEC "* *q"
+				setvar $switchboard~message "Photon fired into sector " & $ADJ_SEC & "!*"
+				gosub :switchboard~switchboard
+				goto :BOT~wait_for_command
+			end
+		end
+		add $i 1
+	end
+	if ($PLAYER~startingLocation = "Citadel")
+		setTextTrigger waitforcit :continuewaitforcit "Citadel command (?=help)"
+		pause
+		:continuewaitforcit
+	end
+	echo ANSI_14 & "*No valid targets**" & ANSI_7
+	goto :BOT~wait_for_command
+:photonedHtorp
+	setvar $switchboard~message "You have no holographic scanner, perhaps you were photoned?*"
+	gosub :switchboard~switchboard
+	goto :BOT~wait_for_command
 
 #==================================== LOG OFF SUB ===========================================
 :logoff
@@ -367,57 +388,14 @@ return
 #========================== END SURROUND SUB ==============================================
 
 
-:emx
-:reset
-	disconnect
-	goto :BOT~wait_for_command
-:emq
-	send " q q q * p d 0* 0* 0* * *** * c q q q q q z 2 2 c q * z * *** * * "
-	goto :BOT~wait_for_command
-:lift
-	send "0* 0* 0* q q q q q z a 999* * * * "
-	goto :BOT~wait_for_command
-# ============================== START LOGIN (login) Sub ==============================
-:login
-	gosub :BOT~killthetriggers
-	gosub  :player~currentPrompt
-	setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
-	setVar $BOT~validPrompts "Citadel Command"
-	gosub :BOT~checkStartingPrompt
-	if ($PLAYER~startingLocation = "Command")
-		send "t tLogin** q "
-	elseif ($PLAYER~startingLocation = "Citadel")
-		send "x tLogin** q "
-	end
-goto :BOT~wait_for_command
-# ============================== END LOGIN (login) Sub ==============================
 
-
-
-
-# ============================== START STORE SHIP ====================================
-:storeship
-:shipstore
-		gosub  :player~currentPrompt
-		setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
-		setVar $BOT~validPrompts "Command Citadel"
-		gosub :BOT~checkStartingPrompt
-		gosub :ship~savetheship
-		goto :BOT~wait_for_command
-# ================================== END STORE SHIP ==============================================
-
-
-
+:clear
+	setVar $BOT~user_command_line "clear "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
+	goto :USER_INTERFACE~runUserCommandLine
 
 :exit
 :xenter
 	setVar $BOT~user_command_line "xenter "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
-	goto :USER_INTERFACE~runUserCommandLine
-
-
-:pscan
-:pinfo
-	setVar $BOT~user_command_line "pscan "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
 	goto :USER_INTERFACE~runUserCommandLine
 
 #====================================SHUTDOWN MODULE SUB =====================================
@@ -428,22 +406,6 @@ goto :BOT~wait_for_command
 #===================================END SHUTDOWN MODULE SUB ==================================
 
 
-# ----- CN settings -----
-:cn
-:cn9
-	setVar $BOT~user_command_line "cn9 "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
-	goto :USER_INTERFACE~runUserCommandLine
-
-
-#============================== BOT PROMPT COMMUNICATION =================================
-:ss
-	cutText $BOT~user_command_line $BOT~user_command_line 2 9999
-	send "'"&$BOT~user_command_line&"*"
-	goto :BOT~wait_for_command
-:fed
-	cutText $BOT~user_command_line $BOT~user_command_line 2 9999
-	send "`"&$BOT~user_command_line&"*"
-	goto :BOT~wait_for_command
 #============================ END BOT PROMPT COMMUNICATION ================================
 :about
 	gosub :menus~doSplashScreen
@@ -467,24 +429,6 @@ goto :BOT~wait_for_command
 	end
 	gosub :SWITCHBOARD~switchboard
 goto :BOT~wait_for_command
-:relog
-	setVar $SWITCHBOARD~message ""
-	if ($BOT~parm1 = "on")
-		setVar $SWITCHBOARD~message "Relog Active*"
-		setVar $BOT~doRelog TRUE
-		savevar $bot~dorelog
-	end
-	if ($BOT~parm1 = "off")
-		setVar $SWITCHBOARD~message "Relog Deactivated*"
-		setVar $BOT~doRelog FALSE
-		savevar $bot~dorelog
-	end
-	if (($BOT~parm1 <> "off") AND ($BOT~parm1 <> "on"))
-		setVar $SWITCHBOARD~message "Please use relog [on/off] format.*"
-		goto :BOT~wait_for_command
-	end
-	gosub :SWITCHBOARD~switchboard
-goto :BOT~wait_for_command
 # ====================== END TURN BOT ON/OFF (BOT) SUBROUTINE ==========================
 #============================= REFRESH BOT SUB ===============================================
 :refresh
@@ -497,6 +441,7 @@ goto :BOT~wait_for_command
 		gosub :PLANET~getPlanetInfo
 		send "q"
 	end
+
 	gosub :PLAYER~getInfo
 	gosub :GAME~gamestats
 	
@@ -512,7 +457,8 @@ goto :BOT~wait_for_command
 	if ($PLAYER~CURRENT_PROMPT = "Citadel")
 		gosub :PLANET~landingSub
 	end
-	send "'{" & $SWITCHBOARD~bot_name & "} - Bot data refresh completed.*"
+	setvar $switchboard~message "Bot data refresh completed.*"
+	gosub :switchboard~switchboard
 goto :BOT~wait_for_command
 #========================== END REFRESH BOT SUB =================================================
 
@@ -520,35 +466,142 @@ goto :BOT~wait_for_command
 :holo_kill
 :hkill
 	setVar $BOT~user_command_line "hkill "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
-	goto :USER_INTERFACE~runUserCommandLine
+
+	gosub :BOT~killthetriggers
+
+	loadvar $player~surround_before_hkill
+	getWordPos $bot~user_command_line $pos "surround"
+	if ($pos > 0)
+		setVar $player~surround_before_hkill TRUE
+	else
+		if ($player~surround_before_hkill <> true)
+			setVar $player~surround_before_hkill FALSE
+		end
+	end
+
+	setVar $player~CIT FALSE
+	gosub :PLAYER~quikstats
+	setVar $startingLocation $PLAYER~current_prompt
+	setVar $BOT~validPrompts "Citadel Command"
+	gosub :BOT~checkStartingPrompt
+	gosub :combat~holokill
+	if ($SWITCHBOARD~message <> "")
+		gosub :SWITCHBOARD~switchboard
+	end
+	
+	goto :BOT~wait_for_command
 
 #####==========================================  BOT INTERNAL MENUS SECTION ===========================================#####
-
-# ========================================= SETVAR ======================================================
-:getvar
-	setVar $BOT~user_command_line "getvar "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
-	goto :USER_INTERFACE~runUserCommandLine
-
-:setvar
-	setVar $BOT~user_command_line "setvar "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
-	goto :USER_INTERFACE~runUserCommandLine
-
-# ======================================== END SETVAR ===================================================
 
 #=============================== AUTO KILL ==========================================
 :autoKill
 	setvar $bot~parm1 "furb"
 	setvar $bot~parm2 "silent"
 :kill
-	setVar $BOT~user_command_line "kill "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
-	goto :USER_INTERFACE~runUserCommandLine
+	gosub :BOT~killthetriggers
+	if ($bot~parm1 = "furb")
+		setvar $furb true
+	end
 
+	gosub  :player~currentPrompt
+	setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
+
+	if ($PLAYER~startingLocation <> "Command")
+		if ($PLAYER~startingLocation = "Citadel")
+			loadvar $bot~mode
+			if ($bot~mode <> "Citkill")
+				setVar $bot~user_command_line "citkill on override"
+				setvar $bot~autoattack false
+				savevar $bot~autoattack
+				goto :USER_INTERFACE~runUserCommandLine
+			else
+				setVar $bot~user_command_line "citkill off"
+				goto :USER_INTERFACE~runUserCommandLine
+			end
+		end
+		setVar $SWITCHBOARD~message "Wrong prompt for auto kill.*" 
+		gosub :SWITCHBOARD~switchboard
+		if ($bot~autoattack)
+			setvar $bot~autoattack false
+			savevar $bot~autoattack
+			setVar $SWITCHBOARD~message "Since in wrong prompt, shutting down autokill option in bot.  Restart in options.*" 
+			gosub :SWITCHBOARD~switchboard
+		end
+		goto :BOT~wait_for_command
+	end
+	loadVar $SHIP~SHIP_MAX_ATTACK
+	loadVar $SHIP~SHIP_FIGHTERS_MAX
+	loadVar $SHIP~SHIP_OFFENSIVE_ODDS
+	if ($SHIP~SHIP_MAX_ATTACK <= 0)
+		gosub :SHIP~getShipStats
+	end
+	setvar $player~isFound false
+	goSub :SECTOR~getSectorData
+	goSub :combat~fastAttack
+	if ((($player~current_sector = 1) or ($player~current_sector = $map~stardock)) and ($furb = true))
+		if ($player~isFound)
+			load "scripts\"&$bot~mombot_directory&"\commands\general\refurb.cts"
+			setEventTrigger		1		:refurbended	"SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\general\refurb.cts"
+			pause
+			:refurbended
+			goSub :SECTOR~getSectorData
+			goSub :combat~fastAttack
+		end
+	end
+	goto :BOT~wait_for_command
 #============================ END AUTO KILL ============================================
 :autoCapture
 :autoCap
 :cap
+
 	setVar $BOT~user_command_line "cap "&$BOT~parm1&" "&$BOT~parm2&" "&$BOT~parm3&" "&$BOT~parm4&" "&$BOT~parm5&" "&$BOT~parm6&" "&$BOT~parm7&" "&$BOT~parm8
-	goto :USER_INTERFACE~runUserCommandLine
+
+	gosub :BOT~killthetriggers
+	gosub :PLAYER~quikstats
+	setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
+	if ($PLAYER~startingLocation <> "Command")
+		if ($PLAYER~startingLocation = "Citadel")
+			loadvar $bot~mode
+			if ($bot~mode <> "Citcap")
+				setVar $BOT~command "citcap"
+				setVar $BOT~user_command_line " citcap on "
+				setVar $BOT~parm1 "on"			
+				goto :USER_INTERFACE~runUserCommandLine
+			else
+				setVar $BOT~command "citcap"
+				setVar $BOT~user_command_line " citcap off "
+				setVar $BOT~parm1 "off"			
+				goto :USER_INTERFACE~runUserCommandLine
+			end
+			goto :BOT~wait_for_command
+		end
+		setVar $SWITCHBOARD~message "Wrong prompt for auto capture.*"
+		gosub :SWITCHBOARD~switchboard
+		goto :BOT~wait_for_command
+	end
+	getWordPos $BOT~user_command_line $pos "alien"
+	if ($pos > 0)
+		setVar $PLAYER~onlyAliens TRUE
+	else
+		setVar $PLAYER~onlyAliens FALSE
+	end
+	fileExists $SHIP~cap_file_chk $SHIP~cap_file
+	if ($SHIP~cap_file_chk <> TRUE)
+		gosub :SHIP~getShipCapStats
+	end
+	loadVar $SHIP~SHIP_MAX_ATTACK
+	loadVar $SHIP~SHIP_FIGHTERS_MAX
+	loadVar $SHIP~SHIP_OFFENSIVE_ODDS
+	if ($SHIP~SHIP_OFFENSIVE_ODDS <= 0)
+		gosub :SHIP~getShipStats
+	end
+	setVar $lastTarget ""
+	setVar $thisTarget ""
+	goSub :SECTOR~getSectorData
+	goSub :combat~fastCapture
+	
+	goto :BOT~wait_for_command
+
 
 :do_relog
 	setvar $bot~parm1 "do_relog"
@@ -569,4 +622,3 @@ goto :BOT~wait_for_command
 :switchbot
 	SwitchBot $bot~parm1
 	halt
-

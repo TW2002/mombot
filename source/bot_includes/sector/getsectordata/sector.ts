@@ -21,7 +21,6 @@
 			end
 		end
 	end
-	:startover
 	setVar $sectorData ""
 	:sectorsline_cit_kill
 		setVar $line CURRENTANSILINE
@@ -33,13 +32,15 @@
 			setvar $player~current_sector $tempSector
 		end
 		getWordPos $line $pos "Warps to Sector(s) "
-		if ($pos > 0)
+		getword currentline $check 1			
+		if (($pos > 0) and ($check = "Warps"))
 			goto :gotSectorData
 		else
 			setTextLineTrigger getLine :sectorsline_cit_kill
 		end
 		pause
 	:gotSectorData
+		killtrigger getline
 		settexttrigger nomines :nomines "Citadel command (?=help)" 
 		settexttrigger nomines2 :nomines "Command ["
 		settexttrigger mines :mines "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
@@ -63,7 +64,6 @@
 		goSub :getEmptyShips
 		goSub :getFakeTraders
 return
-
 
 include "source\bot_includes\sector\getemptyships\sector"
 include "source\bot_includes\sector\getfaketraders\sector"

@@ -27,7 +27,7 @@
     halt
 :unlock_menu
     killalltriggers
-    send $letter & "*"
+    send $bot~letter & "*"
     waitOn "module now loading."
     send "**"
     waitOn "Enter your choice:"

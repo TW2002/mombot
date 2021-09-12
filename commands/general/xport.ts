@@ -1,10 +1,13 @@
 	gosub :BOT~loadVars
 	loadVar $bot~safe_ship
 
-	if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
-		goto :wait_for_command
-	end
+if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
+	goto :wait_for_command
+end
 
+if ($bot~parm1 = "list")
+	goto :xlist
+end
    #============================== XPORT (XPORT) ==============================
 :x
 :xport
@@ -102,10 +105,107 @@
 #============================== END XPORT (XPORT) SUB ==============================
 
 :wait_for_command
-	setVar $BOT~help[1] $BOT~tab&"xport [ship number] [password] "
-	setVar $BOT~help[2] $BOT~tab&"  - Attempts to xport into another ship"
+	setVar $BOT~help[1]  $BOT~tab&"xport [ship number | list] [password]"
+	setVar $BOT~help[2]  $BOT~tab&"      "
+	setVar $BOT~help[3]  $BOT~tab&"  xports into ship or display xport list "
+	setVar $BOT~help[4]  $BOT~tab&"      "
+	setVar $BOT~help[5]  $BOT~tab&"    {ship number}  ship number to tow"
+	setVar $BOT~help[6]  $BOT~tab&"           {list}  list all xport ships in range"
+	setVar $BOT~help[7]  $BOT~tab&"       {password}  if ship has password"
 	gosub :bot~helpfile
 halt
+
+
+:xlist
+	setVar $scan_macro "x** * "
+	gosub :PLAYER~quikstats
+	setArray $scan_array 1000
+	setVar $player~startingLocation $PLAYER~CURRENT_PROMPT
+	setVar $bot~validPrompts "Citadel Command"
+	gosub :bot~checkStartingPrompt
+	if ($PLAYER~startingLocation = "Citadel")
+		send " q "
+		gosub :PLANET~getPlanetInfo
+		send " q "
+	end
+	setVar $idx 0
+	send $scan_macro
+	setTextLineTrigger no_range  :no_range " can only beam intrasector."
+	setTextLineTrigger range :range " has a transport range of "
+	pause
+
+	:no_range
+		killtrigger range
+		setvar $ship_range 0
+		goto :done_range
+		
+	:range
+		killtrigger no_range
+		gettext currentline $ship_range " has a transport range of " "hops."
+
+	:done_range
+		add $idx 1
+		setVar $scan_array[$idx] currentline
+
+	waitOn "Ship  Sect Name                  Fighters Shields Hops Type"
+	waitOn "--------------------------------------------------------------------------"
+
+	setTextTrigger end_of_line4 :end_of_lines "<I> Ship details"
+	add $idx 1
+	setVar $scan_array[$idx] "                 --<  Available Ship Scan  >--"
+	add $idx 1
+	setVar $scan_array[$idx] "Ship  Sect Name                  Fighters Shields Hops Type"
+	add $idx 1
+	setVar $scan_array[$idx] "-----------------------------------------------------------------"
+
+	setTextLineTrigger line_trig :parse_scan_line
+	pause
+	:parse_scan_line
+		setVar $current_line CURRENTLINE
+		if ($idx >= 1000)
+				goto :end_of_lines
+		end
+		getWordPos $current_line $em_end "(?=Help)? :"
+		if ($em_end > 0)
+				goto :end_of_lines
+		end
+		getWordPos $current_line $em_end "<I> Ship details"
+		if ($em_end > 0)
+			goto :end_of_lines
+		end
+		getLength $current_line $length
+		if ($length > 70)
+			cutText $current_line $current_line 1 70
+		end
+		if ($current_line <> "")
+			cutText $current_line $range 52 3
+			trim $range
+			if ($range <= $ship_range)
+				add $idx 1
+				setVar $scan_array[$idx] $current_line
+			end
+		end
+		setTextLineTrigger line_trig :parse_scan_line
+		pause
+	:end_of_lines
+		killalltriggers
+		if ($PLAYER~startingLocation = "Citadel")
+			send " l " & $planet~planet & "* c s* "
+		end
+		gosub :spitItOut
+		halt
+:SpitItOut
+	setvar $switchboard~message ""
+	setvar $i 1
+	while ($i <= $idx)
+		if ($scan_array[$i] <> "0")
+			setvar $switchboard~message $switchboard~message & $scan_array[$i] & "*"
+		end
+		add $i 1
+	end
+	gosub :switchboard~switchboard
+	:continuecommpscan2
+return
 
 # includes:
 include "source\module_includes\bot\loadvars\bot"
