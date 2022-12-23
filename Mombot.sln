@@ -3,9 +3,43 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{9724F60C-5C92-4584-9937-18F07B559F4C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MakeMSI", "source\MakeMSI\MakeMSI.csproj", "{8CFF61BC-BD62-409A-B32C-BC0FB7D71F41}"
+EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Installer", "source\Installer\Installer.wixproj", "{1CE35394-0421-448C-BF9C-12F60C832CD2}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8CFF61BC-BD62-409A-B32C-BC0FB7D71F41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CFF61BC-BD62-409A-B32C-BC0FB7D71F41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CFF61BC-BD62-409A-B32C-BC0FB7D71F41}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8CFF61BC-BD62-409A-B32C-BC0FB7D71F41}.Debug|x86.Build.0 = Debug|Any CPU
+		{8CFF61BC-BD62-409A-B32C-BC0FB7D71F41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CFF61BC-BD62-409A-B32C-BC0FB7D71F41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CFF61BC-BD62-409A-B32C-BC0FB7D71F41}.Release|x86.ActiveCfg = Release|Any CPU
+		{8CFF61BC-BD62-409A-B32C-BC0FB7D71F41}.Release|x86.Build.0 = Release|Any CPU
+		{1CE35394-0421-448C-BF9C-12F60C832CD2}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{1CE35394-0421-448C-BF9C-12F60C832CD2}.Debug|Any CPU.Build.0 = Debug|x86
+		{1CE35394-0421-448C-BF9C-12F60C832CD2}.Debug|x86.ActiveCfg = Debug|x86
+		{1CE35394-0421-448C-BF9C-12F60C832CD2}.Debug|x86.Build.0 = Debug|x86
+		{1CE35394-0421-448C-BF9C-12F60C832CD2}.Release|Any CPU.ActiveCfg = Release|x86
+		{1CE35394-0421-448C-BF9C-12F60C832CD2}.Release|Any CPU.Build.0 = Release|x86
+		{1CE35394-0421-448C-BF9C-12F60C832CD2}.Release|x86.ActiveCfg = Release|x86
+		{1CE35394-0421-448C-BF9C-12F60C832CD2}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8CFF61BC-BD62-409A-B32C-BC0FB7D71F41} = {9724F60C-5C92-4584-9937-18F07B559F4C}
+		{1CE35394-0421-448C-BF9C-12F60C832CD2} = {9724F60C-5C92-4584-9937-18F07B559F4C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3DEAB7A6-616C-4DE1-9327-F26F56AC1A97}
