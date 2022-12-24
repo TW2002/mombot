@@ -18,7 +18,7 @@ class Test
             sw.WriteLine("""
                 <?xml version="1.0" encoding="UTF-8"?>
                 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-                	<Product Id="*" Name="TWX Proxy" Language="1033" Version="2.6.5.2" Manufacturer="eXide" UpgradeCode="9be0828c-24de-43b2-a233-5c0a82c07f35">
+                	<Product Id="*" Name="Mombot 5.0" Language="1033" Version="2.6.5.2" Manufacturer="eXide" UpgradeCode="9be0828c-24de-43b2-a233-5c0a82c07f35">
                 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
     
                         <MajorUpgrade AllowSameVersionUpgrades="yes"
@@ -26,9 +26,9 @@ class Test
 
                         <MediaTemplate EmbedCab="yes" />
 
-                       <!-- <Feature Id="ProductFeature" Title="TWX Proxy" Level="1" Absent="disallow" ConfigurableDirectory="MOMBOT" Description="Installs the main TWX Proxy program, including Pack 1 / 2">
+                        <Feature Id="ProductFeature" Title="TWX Proxy" Level="1" Absent="disallow" ConfigurableDirectory="MOMBOT" Description="Installs the main TWX Proxy program, including Pack 1 / 2">
                             <ComponentGroupRef Id="ProductComponents" />
-                        </Feature>-->
+                        </Feature>
 
                 		<Property Id="MOMBOT" Secure="yes">
                 			<RegistrySearch Id="ApplicationFolderSearch" Type="raw" Root="HKCU" Key="Software\Xide\TWXP" Name="MOMBOT"/>
@@ -53,15 +53,31 @@ class Test
                                     <Directory Id="TWXPROXY" Name="TWXProxy" >
                                         <Directory Id="SCRIPTS" Name="Scripts" >
                                             <Directory Id="MOMBOT" Name="Mombot">
-                        <Component Id="ProductComponent">
+
+                                <Directory Id="Source" Name="Source" >
+
+                                </Directory>
+               
+
+                  <!--      <Component Id="ProductComponent">
                             <RegistryValue Id="InstallPath" Root="HKCU" Key="Software\Xide\TWXP"  Name="Mombot" Type="string" Value="[Mombot]" />
-                        </Component>
+                        </Component>-->
                                             </Directory>
                                         </Directory>
                                     </Directory>
                                 </Directory>
                             </Directory>
                         </Directory>	   
+
+
+                        <ComponentGroup Id="ProductComponents">
+                            <Component Id="ProductComponent" Directory="Source" Guid="72a94083-4c7e-4365-aa2e-10d1aa6721c2"  >
+                               <RegistryValue Id="InstallPath" Root="HKCU" Key="Software\Xide\TWXP"  Name="Mombot" Type="string" Value="[Mombot]" />
+                               <File Source="..\mombot.ts"/>
+                            </Component>
+                        </ComponentGroup>
+                                
+
                     </Fragment>
                 </Wix>                
                 """);
