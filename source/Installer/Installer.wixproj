@@ -6,11 +6,11 @@
     <ProductVersion>3.10</ProductVersion>
     <ProjectGuid>1ce35394-0421-448c-bf9c-12f60c832cd2</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>Mombot5</OutputName>
+    <OutputName>Mombot5.0-Pre1</OutputName>
     <OutputType>Package</OutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <OutputPath>..\</OutputPath>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <DefineConstants>Debug</DefineConstants>
   </PropertyGroup>

@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MakeMSI", "source\MakeMSI\M
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Installer", "source\Installer\Installer.wixproj", "{1CE35394-0421-448C-BF9C-12F60C832CD2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeBot", "source\MakeBot\MakeBot.csproj", "{65DA25E0-A461-4F3F-A3FD-8DF7F216ED43}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,14 @@ Global
 		{1CE35394-0421-448C-BF9C-12F60C832CD2}.Release|Any CPU.Build.0 = Release|x86
 		{1CE35394-0421-448C-BF9C-12F60C832CD2}.Release|x86.ActiveCfg = Release|x86
 		{1CE35394-0421-448C-BF9C-12F60C832CD2}.Release|x86.Build.0 = Release|x86
+		{65DA25E0-A461-4F3F-A3FD-8DF7F216ED43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65DA25E0-A461-4F3F-A3FD-8DF7F216ED43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65DA25E0-A461-4F3F-A3FD-8DF7F216ED43}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{65DA25E0-A461-4F3F-A3FD-8DF7F216ED43}.Debug|x86.Build.0 = Debug|Any CPU
+		{65DA25E0-A461-4F3F-A3FD-8DF7F216ED43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65DA25E0-A461-4F3F-A3FD-8DF7F216ED43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65DA25E0-A461-4F3F-A3FD-8DF7F216ED43}.Release|x86.ActiveCfg = Release|Any CPU
+		{65DA25E0-A461-4F3F-A3FD-8DF7F216ED43}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -40,6 +50,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{8CFF61BC-BD62-409A-B32C-BC0FB7D71F41} = {9724F60C-5C92-4584-9937-18F07B559F4C}
 		{1CE35394-0421-448C-BF9C-12F60C832CD2} = {9724F60C-5C92-4584-9937-18F07B559F4C}
+		{65DA25E0-A461-4F3F-A3FD-8DF7F216ED43} = {9724F60C-5C92-4584-9937-18F07B559F4C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3DEAB7A6-616C-4DE1-9327-F26F56AC1A97}

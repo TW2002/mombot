@@ -17,8 +17,27 @@
 		</Property>
 		<Property Id="WIXUI_INSTALLDIR" Value="MOMBOT" />
 		<UIRef Id="WixUI_InstallDir" />
-   </Product>
-   
+  
+<UI>
+    
+    <Publish Dialog="ExitDialog" 
+        Control="Finish" 
+        Event="DoAction" 
+        Value="LaunchApplication">NOT Installed</Publish>
+</UI>
+<!--
+<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Compile Mind ()ver Matter bot now." />
+  -->
+<!-- Step 3: Include the custom action -->
+<Property Id="WixShellExecTarget" Value="[#MakeBot.exe]" />
+<CustomAction Id="LaunchApplication" 
+    BinaryKey="WixCA" 
+    DllEntry="WixShellExec"
+    Impersonate="yes" />                        
+</Product>
+ 
+
+
    <Fragment>
         <WixVariable Id="WixUISupportPerUser" Value="0" />
         <Property Id="ApplicationFolderName" Value="TWXProxy\Scripts\Mombot" />
@@ -35,15 +54,239 @@
                     <Directory Id="TWXPROXY" Name="TWXProxy" >
                         <Directory Id="SCRIPTS" Name="Scripts" >
                             <Directory Id="MOMBOT" Name="Mombot">
+                                <Directory Id="Source" Name="Source" >
+<Directory Id="D0000" Name="bot_includes">
+<Directory Id="D0001" Name="bot">
+</Directory>
+<Directory Id="D0002" Name="combat">
+<Directory Id="D0003" Name="fastattack">
+</Directory>
+<Directory Id="D0004" Name="fastcapture">
+</Directory>
+<Directory Id="D0005" Name="fastcitadelattack">
+</Directory>
+<Directory Id="D0006" Name="holokill">
+</Directory>
+<Directory Id="D0007" Name="holoscan">
+</Directory>
+<Directory Id="D0008" Name="init">
+</Directory>
+<Directory Id="D0009" Name="passiveholokill">
+</Directory>
+</Directory>
+<Directory Id="D0010" Name="external">
+</Directory>
+<Directory Id="D0011" Name="game">
+<Directory Id="D0012" Name="gamestats">
+</Directory>
+<Directory Id="D0013" Name="getcost">
+</Directory>
+</Directory>
+<Directory Id="D0014" Name="grid">
+<Directory Id="D0015" Name="surround">
+</Directory>
+</Directory>
+<Directory Id="D0016" Name="map">
+<Directory Id="D0017" Name="addfigtodata">
+</Directory>
+<Directory Id="D0018" Name="commas">
+</Directory>
+<Directory Id="D0019" Name="displayadjacentgridansi">
+</Directory>
+<Directory Id="D0020" Name="displaynavigation">
+</Directory>
+<Directory Id="D0021" Name="displaysector">
+</Directory>
+<Directory Id="D0022" Name="formatsectorowner">
+</Directory>
+<Directory Id="D0023" Name="removefigfromdata">
+</Directory>
+</Directory>
+<Directory Id="D0024" Name="planet">
+<Directory Id="D0025" Name="countplanets">
+</Directory>
+<Directory Id="D0026" Name="getplanetinfo">
+</Directory>
+<Directory Id="D0027" Name="getplanetnumber">
+</Directory>
+<Directory Id="D0028" Name="getplanetstats">
+</Directory>
+<Directory Id="D0029" Name="landingsub">
+</Directory>
+<Directory Id="D0030" Name="landonplanetentercitadel">
+</Directory>
+<Directory Id="D0031" Name="loadplanetinfo">
+</Directory>
+<Directory Id="D0032" Name="makeplanetarray">
+</Directory>
+<Directory Id="D0033" Name="planetneg">
+</Directory>
+</Directory>
+<Directory Id="D0034" Name="player">
+<Directory Id="D0035" Name="addfigtodata">
+</Directory>
+<Directory Id="D0036" Name="buy">
+</Directory>
+<Directory Id="D0037" Name="bwarp">
+</Directory>
+<Directory Id="D0038" Name="checkcorp">
+</Directory>
+<Directory Id="D0039" Name="checkfortravelname">
+</Directory>
+<Directory Id="D0040" Name="clearadjacent">
+</Directory>
+<Directory Id="D0041" Name="commasize">
+</Directory>
+<Directory Id="D0042" Name="currentprompt">
+</Directory>
+<Directory Id="D0043" Name="findjumpsector">
+</Directory>
+<Directory Id="D0044" Name="formatnumberforspaces">
+</Directory>
+<Directory Id="D0045" Name="formatpercentagesforspaces">
+</Directory>
+<Directory Id="D0046" Name="getcourse">
+</Directory>
+<Directory Id="D0047" Name="getinfo">
+</Directory>
+<Directory Id="D0048" Name="getportinfo">
+</Directory>
+<Directory Id="D0049" Name="isephaggle">
+</Directory>
+<Directory Id="D0050" Name="moveintosector">
+</Directory>
+<Directory Id="D0051" Name="pwarp">
+</Directory>
+<Directory Id="D0052" Name="quikstats">
+</Directory>
+<Directory Id="D0053" Name="removefigfromdata">
+</Directory>
+<Directory Id="D0054" Name="setconnectiontriggers">
+</Directory>
+<Directory Id="D0055" Name="startcnsettings">
+</Directory>
+<Directory Id="D0056" Name="starthaggle">
+</Directory>
+<Directory Id="D0057" Name="swathoff">
+</Directory>
+<Directory Id="D0058" Name="topoff">
+</Directory>
+<Directory Id="D0059" Name="turnoffansi">
+</Directory>
+<Directory Id="D0060" Name="turnonansi">
+</Directory>
+<Directory Id="D0061" Name="twarp">
+</Directory>
+<Directory Id="D0062" Name="voidadjacent">
+</Directory>
+</Directory>
+<Directory Id="D0063" Name="sector">
+<Directory Id="D0064" Name="getautosectordata">
+</Directory>
+<Directory Id="D0065" Name="getemptyships">
+</Directory>
+<Directory Id="D0066" Name="getfaketraders">
+</Directory>
+<Directory Id="D0067" Name="getsectordata">
+</Directory>
+<Directory Id="D0068" Name="gettraders">
+</Directory>
+</Directory>
+<Directory Id="D0069" Name="ship">
+<Directory Id="D0070" Name="getshipcapstats">
+</Directory>
+<Directory Id="D0071" Name="getshipstats">
+</Directory>
+<Directory Id="D0072" Name="loadshipinfo">
+</Directory>
+<Directory Id="D0073" Name="savetheship">
+</Directory>
+</Directory>
+<Directory Id="D0074" Name="targeting">
+<Directory Id="D0075" Name="fastcitadelattack">
+</Directory>
+<Directory Id="D0076" Name="getemptyships">
+</Directory>
+<Directory Id="D0077" Name="getfaketraders">
+</Directory>
+<Directory Id="D0078" Name="getsectordata">
+</Directory>
+<Directory Id="D0079" Name="gettraders">
+</Directory>
+<Directory Id="D0080" Name="initializetargeting">
+</Directory>
+<Directory Id="D0081" Name="scanitcitkill">
+</Directory>
+</Directory>
+</Directory>
+<Directory Id="D0082" Name="module_includes">
+<Directory Id="D0083" Name="bot">
+<Directory Id="D0084" Name="addfigtodata">
+</Directory>
+<Directory Id="D0085" Name="banner">
+</Directory>
+<Directory Id="D0086" Name="checkstartingprompt">
+</Directory>
+<Directory Id="D0087" Name="commas">
+</Directory>
+<Directory Id="D0088" Name="disconnecttriggers">
+</Directory>
+<Directory Id="D0089" Name="displayhelp">
+</Directory>
+<Directory Id="D0090" Name="echo">
+</Directory>
+<Directory Id="D0091" Name="formathelpline">
+</Directory>
+<Directory Id="D0092" Name="helpfile">
+</Directory>
+<Directory Id="D0093" Name="loadvars">
+</Directory>
+<Directory Id="D0094" Name="menu">
+</Directory>
+<Directory Id="D0095" Name="removefigfromdata">
+</Directory>
+<Directory Id="D0096" Name="wait_for_command">
+</Directory>
+</Directory>
+<Directory Id="D0097" Name="deploy">
+</Directory>
+<Directory Id="D0098" Name="game">
+<Directory Id="D0099" Name="addfigtodata">
+</Directory>
+<Directory Id="D0100" Name="banner">
+</Directory>
+<Directory Id="D0101" Name="checkstartingprompt">
+</Directory>
+<Directory Id="D0102" Name="commas">
+</Directory>
+<Directory Id="D0103" Name="disconnecttriggers">
+</Directory>
+<Directory Id="D0104" Name="displayhelp">
+</Directory>
+<Directory Id="D0105" Name="formathelpline">
+</Directory>
+<Directory Id="D0106" Name="helpfile">
+</Directory>
+<Directory Id="D0107" Name="loadvars">
+</Directory>
+<Directory Id="D0108" Name="menu">
+</Directory>
+<Directory Id="D0109" Name="removefigfromdata">
+</Directory>
+<Directory Id="D0110" Name="wait_for_command">
+</Directory>
+</Directory>
+<Directory Id="D0111" Name="modules">
+<Directory Id="D0112" Name="clear">
+</Directory>
+<Directory Id="D0113" Name="xenter">
+</Directory>
+</Directory>
+<Directory Id="D0114" Name="update">
+</Directory>
+</Directory>
 
-                <Directory Id="Source" Name="Source" >
-
-                </Directory>
-
-
-  <!--      <Component Id="ProductComponent">
-            <RegistryValue Id="InstallPath" Root="HKCU" Key="Software\Xide\TWXP"  Name="Mombot" Type="string" Value="[Mombot]" />
-        </Component>-->
+                                </Directory>
                             </Directory>
                         </Directory>
                     </Directory>
@@ -51,14 +294,366 @@
             </Directory>
         </Directory>	   
 
-
         <ComponentGroup Id="ProductComponents">
             <Component Id="ProductComponent" Directory="Source" Guid="72a94083-4c7e-4365-aa2e-10d1aa6721c2"  >
                <RegistryValue Id="InstallPath" Root="HKCU" Key="Software\Xide\TWXP"  Name="Mombot" Type="string" Value="[Mombot]" />
                <File Source="..\mombot.ts"/>
+               <File Source="..\Directory Structure.txt"/>
+               <File Source="..\page.wav"/>
+               <File Source="..\StripExample.ts"/>
+               <File Source="..\MakeBot\bin\Debug\MakeBot.exe"/>                               
+               <File Source="..\twxc.exe"/>                                          
             </Component>
-        </ComponentGroup>
-                
+<Component Id="C0000" Directory="D0000" Guid="ab7362a2-7408-4e96-96e4-775d5ffaf055">
+    <File Id="F0000" Source="..\bot_includes\ai.ts"/>
+    <File Id="F0001" Source="..\bot_includes\bot.ts"/>
+    <File Id="F0002" Source="..\bot_includes\game.ts"/>
+    <File Id="F0003" Source="..\bot_includes\map.ts"/>
+    <File Id="F0004" Source="..\bot_includes\planet.ts"/>
+    <File Id="F0005" Source="..\bot_includes\player.ts"/>
+    <File Id="F0006" Source="..\bot_includes\ship.ts"/>
+    <File Id="F0007" Source="..\bot_includes\switchboard.ts"/>
+    <File Id="F0008" Source="..\bot_includes\validation.ts"/>
+</Component>
+<Component Id="C0001" Directory="D0001" Guid="834ea846-f9fb-4c05-a822-a3a5e74ca004">
+    <File Id="F0009" Source="..\bot_includes\bot\connectivity.ts"/>
+    <File Id="F0010" Source="..\bot_includes\bot\internal_commands.ts"/>
+    <File Id="F0011" Source="..\bot_includes\bot\listener.ts"/>
+    <File Id="F0012" Source="..\bot_includes\bot\menus.ts"/>
+    <File Id="F0013" Source="..\bot_includes\bot\user_interface.ts"/>
+</Component>
+<Component Id="C0003" Directory="D0003" Guid="9ac3ba68-6f81-4b69-80f4-aadce619f2e2">
+    <File Id="F0014" Source="..\bot_includes\combat\fastattack\combat.ts"/>
+</Component>
+<Component Id="C0004" Directory="D0004" Guid="4127d5fb-65a0-4dfd-966a-85c2a4e6a01f">
+    <File Id="F0015" Source="..\bot_includes\combat\fastcapture\combat.ts"/>
+</Component>
+<Component Id="C0005" Directory="D0005" Guid="32571d2d-2599-40ba-bc04-30e8fd6f6a62">
+    <File Id="F0016" Source="..\bot_includes\combat\fastcitadelattack\combat.ts"/>
+</Component>
+<Component Id="C0006" Directory="D0006" Guid="57fb812e-25da-4cf6-9b42-7d80c5c90908">
+    <File Id="F0017" Source="..\bot_includes\combat\holokill\combat.ts"/>
+</Component>
+<Component Id="C0007" Directory="D0007" Guid="f1f57d54-33f2-45a0-b399-b4c820e4631d">
+    <File Id="F0018" Source="..\bot_includes\combat\holoscan\combat.ts"/>
+</Component>
+<Component Id="C0008" Directory="D0008" Guid="8b6d6011-19ff-4a18-816c-463c193c1317">
+    <File Id="F0019" Source="..\bot_includes\combat\init\combat.ts"/>
+</Component>
+<Component Id="C0009" Directory="D0009" Guid="a425bb6a-1971-43e7-aca0-f90f72870a27">
+    <File Id="F0020" Source="..\bot_includes\combat\passiveholokill\combat.ts"/>
+</Component>
+<Component Id="C0010" Directory="D0010" Guid="d42e5f5b-12c4-4e05-b7bd-029776865859">
+    <File Id="F0021" Source="..\bot_includes\external\buy.ts"/>
+    <File Id="F0022" Source="..\bot_includes\external\buyfig.ts"/>
+    <File Id="F0023" Source="..\bot_includes\external\buyfuel.ts"/>
+    <File Id="F0024" Source="..\bot_includes\external\buyshield.ts"/>
+    <File Id="F0025" Source="..\bot_includes\external\call.ts"/>
+    <File Id="F0026" Source="..\bot_includes\external\dep.ts"/>
+    <File Id="F0027" Source="..\bot_includes\external\dscan.ts"/>
+    <File Id="F0028" Source="..\bot_includes\external\holo.ts"/>
+    <File Id="F0029" Source="..\bot_includes\external\htorp.ts"/>
+    <File Id="F0030" Source="..\bot_includes\external\max.ts"/>
+    <File Id="F0031" Source="..\bot_includes\external\movefig.ts"/>
+    <File Id="F0032" Source="..\bot_includes\external\moveship.ts"/>
+    <File Id="F0033" Source="..\bot_includes\external\mow.ts"/>
+    <File Id="F0034" Source="..\bot_includes\external\patp.ts"/>
+    <File Id="F0035" Source="..\bot_includes\external\pe.ts"/>
+    <File Id="F0036" Source="..\bot_includes\external\pel.ts"/>
+    <File Id="F0037" Source="..\bot_includes\external\pgrid.ts"/>
+    <File Id="F0038" Source="..\bot_includes\external\photon.ts"/>
+    <File Id="F0039" Source="..\bot_includes\external\pwarp.ts"/>
+    <File Id="F0040" Source="..\bot_includes\external\scrub.ts"/>
+    <File Id="F0041" Source="..\bot_includes\external\with.ts"/>
+    <File Id="F0042" Source="..\bot_includes\external\xenter.ts"/>
+</Component>
+<Component Id="C0012" Directory="D0012" Guid="84aeaca0-1b81-4968-b6cc-36cdd3f399c3">
+    <File Id="F0043" Source="..\bot_includes\game\gamestats\game.ts"/>
+</Component>
+<Component Id="C0013" Directory="D0013" Guid="044f4ae6-520b-479b-9d3c-40d962bade22">
+    <File Id="F0044" Source="..\bot_includes\game\getcost\game.ts"/>
+</Component>
+<Component Id="C0015" Directory="D0015" Guid="d0e16351-e768-4434-8c7b-cf8b33424dd2">
+    <File Id="F0045" Source="..\bot_includes\grid\surround\grid.ts"/>
+</Component>
+<Component Id="C0017" Directory="D0017" Guid="ea2bbf99-c772-4e36-a0ae-31936b2e9293">
+    <File Id="F0046" Source="..\bot_includes\map\addfigtodata\map.ts"/>
+</Component>
+<Component Id="C0018" Directory="D0018" Guid="a5982758-56e5-40b4-a364-7f4cfbf22933">
+    <File Id="F0047" Source="..\bot_includes\map\commas\map.ts"/>
+</Component>
+<Component Id="C0019" Directory="D0019" Guid="d5139a55-edbf-471f-8b55-84282b40ef74">
+    <File Id="F0048" Source="..\bot_includes\map\displayadjacentgridansi\map.ts"/>
+</Component>
+<Component Id="C0020" Directory="D0020" Guid="3418ffb4-4f92-47be-9c1e-a30188148a1c">
+    <File Id="F0049" Source="..\bot_includes\map\displaynavigation\map.ts"/>
+</Component>
+<Component Id="C0021" Directory="D0021" Guid="74ae43cd-21a2-4b03-b693-503c64a769ed">
+    <File Id="F0050" Source="..\bot_includes\map\displaysector\map.ts"/>
+</Component>
+<Component Id="C0022" Directory="D0022" Guid="843b5450-c84c-4701-8ea0-d20ce44d436c">
+    <File Id="F0051" Source="..\bot_includes\map\formatsectorowner\map.ts"/>
+</Component>
+<Component Id="C0023" Directory="D0023" Guid="feba5ed6-1ea6-4a95-8f0c-718265a315c5">
+    <File Id="F0052" Source="..\bot_includes\map\removefigfromdata\map.ts"/>
+</Component>
+<Component Id="C0025" Directory="D0025" Guid="6077f0c0-6625-45dc-9b50-e95247546319">
+    <File Id="F0053" Source="..\bot_includes\planet\countplanets\planet.ts"/>
+</Component>
+<Component Id="C0026" Directory="D0026" Guid="09af6711-7b51-4ff3-8688-e2a108315e24">
+    <File Id="F0054" Source="..\bot_includes\planet\getplanetinfo\planet.ts"/>
+</Component>
+<Component Id="C0027" Directory="D0027" Guid="1c634511-8bfe-4a5a-8680-012cc82e0e09">
+    <File Id="F0055" Source="..\bot_includes\planet\getplanetnumber\planet.ts"/>
+</Component>
+<Component Id="C0028" Directory="D0028" Guid="16beab5e-7fda-400c-8e85-700c360646a3">
+    <File Id="F0056" Source="..\bot_includes\planet\getplanetstats\planet.ts"/>
+</Component>
+<Component Id="C0029" Directory="D0029" Guid="066e6acf-37de-4d7e-b3da-8733fa612f91">
+    <File Id="F0057" Source="..\bot_includes\planet\landingsub\planet.ts"/>
+</Component>
+<Component Id="C0030" Directory="D0030" Guid="ea340284-c5ca-42e2-a47e-cba264032bf3">
+    <File Id="F0058" Source="..\bot_includes\planet\landonplanetentercitadel\planet.ts"/>
+</Component>
+<Component Id="C0031" Directory="D0031" Guid="1bf6a7a6-c5ba-4e51-bfdc-850352b61d7f">
+    <File Id="F0059" Source="..\bot_includes\planet\loadplanetinfo\planet.ts"/>
+</Component>
+<Component Id="C0032" Directory="D0032" Guid="19dccbc7-fc07-4961-bb3e-aa2a2ecfac91">
+    <File Id="F0060" Source="..\bot_includes\planet\makeplanetarray\planet.ts"/>
+</Component>
+<Component Id="C0033" Directory="D0033" Guid="36658180-3516-4baa-83c2-dd1cabe41b07">
+    <File Id="F0061" Source="..\bot_includes\planet\planetneg\planet.ts"/>
+</Component>
+<Component Id="C0035" Directory="D0035" Guid="6ec07067-7697-40ab-a2f3-6f4fe899d32b">
+    <File Id="F0062" Source="..\bot_includes\player\addfigtodata\player.ts"/>
+</Component>
+<Component Id="C0036" Directory="D0036" Guid="39e6428a-1da2-4e0d-9ff4-5263f8df7eb3">
+    <File Id="F0063" Source="..\bot_includes\player\buy\player.ts"/>
+</Component>
+<Component Id="C0037" Directory="D0037" Guid="4e8d2234-84c2-44b8-85cf-24bb3253ec1e">
+    <File Id="F0064" Source="..\bot_includes\player\bwarp\player.ts"/>
+</Component>
+<Component Id="C0038" Directory="D0038" Guid="8fc4012f-a9ef-4151-8133-c11a83a8e89b">
+    <File Id="F0065" Source="..\bot_includes\player\checkcorp\player.ts"/>
+</Component>
+<Component Id="C0039" Directory="D0039" Guid="ff1de2f8-4065-4f73-90bb-c41e87ed03f6">
+    <File Id="F0066" Source="..\bot_includes\player\checkfortravelname\player.ts"/>
+</Component>
+<Component Id="C0040" Directory="D0040" Guid="bade0335-5173-452d-9378-a2167558c9b6">
+    <File Id="F0067" Source="..\bot_includes\player\clearadjacent\player.ts"/>
+</Component>
+<Component Id="C0041" Directory="D0041" Guid="b0bbf185-ba14-4f43-b3f5-e8e4a86646dd">
+    <File Id="F0068" Source="..\bot_includes\player\commasize\player.ts"/>
+</Component>
+<Component Id="C0042" Directory="D0042" Guid="cb9fd390-bf6a-49ff-aa57-64a6cfe2d55d">
+    <File Id="F0069" Source="..\bot_includes\player\currentprompt\player.ts"/>
+</Component>
+<Component Id="C0043" Directory="D0043" Guid="e9666039-aa72-4e9f-a1b7-9562001d2549">
+    <File Id="F0070" Source="..\bot_includes\player\findjumpsector\player.ts"/>
+</Component>
+<Component Id="C0044" Directory="D0044" Guid="0adf4d7e-f8c8-421d-8bc1-bf8588d3829a">
+    <File Id="F0071" Source="..\bot_includes\player\formatnumberforspaces\player.ts"/>
+</Component>
+<Component Id="C0045" Directory="D0045" Guid="9d9ea8a6-dc01-46f6-a268-3671b9829fdd">
+    <File Id="F0072" Source="..\bot_includes\player\formatpercentagesforspaces\player.ts"/>
+</Component>
+<Component Id="C0046" Directory="D0046" Guid="8fa24885-6e55-46c6-a40e-d6118692ccb6">
+    <File Id="F0073" Source="..\bot_includes\player\getcourse\player.ts"/>
+</Component>
+<Component Id="C0047" Directory="D0047" Guid="7fdf7c2b-51bc-4956-99d2-bb40d723c77e">
+    <File Id="F0074" Source="..\bot_includes\player\getinfo\player.ts"/>
+</Component>
+<Component Id="C0048" Directory="D0048" Guid="1196a8d6-7ffc-43cc-9f4c-627f45c057ba">
+    <File Id="F0075" Source="..\bot_includes\player\getportinfo\player.ts"/>
+</Component>
+<Component Id="C0049" Directory="D0049" Guid="5185ea8c-f714-4416-b5ad-f1614cdaff3b">
+    <File Id="F0076" Source="..\bot_includes\player\isephaggle\player.ts"/>
+</Component>
+<Component Id="C0050" Directory="D0050" Guid="dc814224-fc58-489b-a567-9279f47037df">
+    <File Id="F0077" Source="..\bot_includes\player\moveintosector\player.ts"/>
+</Component>
+<Component Id="C0051" Directory="D0051" Guid="955fb043-87a7-492c-a33d-0f187987c18b">
+    <File Id="F0078" Source="..\bot_includes\player\pwarp\player.ts"/>
+</Component>
+<Component Id="C0052" Directory="D0052" Guid="edc0a2e2-99f9-4096-8824-488d8470d941">
+    <File Id="F0079" Source="..\bot_includes\player\quikstats\player.ts"/>
+</Component>
+<Component Id="C0053" Directory="D0053" Guid="cc5c13a8-6045-42ab-a31d-d4bb2abcf372">
+    <File Id="F0080" Source="..\bot_includes\player\removefigfromdata\player.ts"/>
+</Component>
+<Component Id="C0054" Directory="D0054" Guid="6aa5ab4b-5427-4b17-9ecf-085b6b9c5d78">
+    <File Id="F0081" Source="..\bot_includes\player\setconnectiontriggers\player.ts"/>
+</Component>
+<Component Id="C0055" Directory="D0055" Guid="3e977431-367b-4455-aea8-89cce0eb9a9e">
+    <File Id="F0082" Source="..\bot_includes\player\startcnsettings\player.ts"/>
+</Component>
+<Component Id="C0056" Directory="D0056" Guid="10439ccd-5688-4ade-a0a6-7ea9100825c1">
+    <File Id="F0083" Source="..\bot_includes\player\starthaggle\player.ts"/>
+</Component>
+<Component Id="C0057" Directory="D0057" Guid="c28fe5f7-f19f-4262-9d0b-66d38c1b4c55">
+    <File Id="F0084" Source="..\bot_includes\player\swathoff\player.ts"/>
+</Component>
+<Component Id="C0058" Directory="D0058" Guid="642f3afc-7772-4ab7-b694-24e954c61471">
+    <File Id="F0085" Source="..\bot_includes\player\topoff\player.ts"/>
+</Component>
+<Component Id="C0059" Directory="D0059" Guid="86473f98-51d4-403d-9c4c-d1820d15006a">
+    <File Id="F0086" Source="..\bot_includes\player\turnoffansi\player.ts"/>
+</Component>
+<Component Id="C0060" Directory="D0060" Guid="b8bde474-37cb-4fa3-a47b-58ff26041cf6">
+    <File Id="F0087" Source="..\bot_includes\player\turnonansi\player.ts"/>
+</Component>
+<Component Id="C0061" Directory="D0061" Guid="990a584f-f9c6-4294-83fc-5180da474a85">
+    <File Id="F0088" Source="..\bot_includes\player\twarp\player.ts"/>
+</Component>
+<Component Id="C0062" Directory="D0062" Guid="4276850a-9832-495e-973b-e9fe90ee1ac0">
+    <File Id="F0089" Source="..\bot_includes\player\voidadjacent\player.ts"/>
+</Component>
+<Component Id="C0064" Directory="D0064" Guid="2d8ef8a1-613c-409c-aa7f-e7e16b502462">
+    <File Id="F0090" Source="..\bot_includes\sector\getautosectordata\sector.ts"/>
+</Component>
+<Component Id="C0065" Directory="D0065" Guid="8b910da6-f84a-426a-afdc-2b59b9790df3">
+    <File Id="F0091" Source="..\bot_includes\sector\getemptyships\sector.ts"/>
+</Component>
+<Component Id="C0066" Directory="D0066" Guid="8225b8ac-d2c5-4228-9295-3605e6158746">
+    <File Id="F0092" Source="..\bot_includes\sector\getfaketraders\sector.ts"/>
+</Component>
+<Component Id="C0067" Directory="D0067" Guid="d10545ed-6980-4658-957b-cac06cc4c523">
+    <File Id="F0093" Source="..\bot_includes\sector\getsectordata\sector.ts"/>
+</Component>
+<Component Id="C0068" Directory="D0068" Guid="6b865860-bb58-44e7-8d85-d33ba0f79455">
+    <File Id="F0094" Source="..\bot_includes\sector\gettraders\sector.ts"/>
+</Component>
+<Component Id="C0070" Directory="D0070" Guid="1fe3f44b-f265-4a77-94d2-119bc1dd1bfe">
+    <File Id="F0095" Source="..\bot_includes\ship\getshipcapstats\ship.ts"/>
+</Component>
+<Component Id="C0071" Directory="D0071" Guid="28e24d98-b0e1-40d6-9485-89c5435609f6">
+    <File Id="F0096" Source="..\bot_includes\ship\getshipstats\ship.ts"/>
+</Component>
+<Component Id="C0072" Directory="D0072" Guid="07b1529e-e51f-4868-8435-99f6a096ee3e">
+    <File Id="F0097" Source="..\bot_includes\ship\loadshipinfo\ship.ts"/>
+</Component>
+<Component Id="C0073" Directory="D0073" Guid="4d0522a7-1584-4cf5-b7f4-baf948ed44fb">
+    <File Id="F0098" Source="..\bot_includes\ship\savetheship\ship.ts"/>
+</Component>
+<Component Id="C0075" Directory="D0075" Guid="075dd1bc-92f1-4d50-a422-c36f41e22659">
+    <File Id="F0099" Source="..\bot_includes\targeting\fastcitadelattack\targeting.ts"/>
+</Component>
+<Component Id="C0076" Directory="D0076" Guid="59eaf633-5fb2-4654-bd15-856e407de25e">
+    <File Id="F0100" Source="..\bot_includes\targeting\getemptyships\sector.ts"/>
+</Component>
+<Component Id="C0077" Directory="D0077" Guid="46d6e071-701f-458a-8f88-ba99adb55bed">
+    <File Id="F0101" Source="..\bot_includes\targeting\getfaketraders\sector.ts"/>
+</Component>
+<Component Id="C0078" Directory="D0078" Guid="2ed9a281-90ea-46ff-be30-3553746b2870">
+    <File Id="F0102" Source="..\bot_includes\targeting\getsectordata\sector.ts"/>
+</Component>
+<Component Id="C0079" Directory="D0079" Guid="069609fc-32b5-467b-90a2-5d39a1b96d57">
+    <File Id="F0103" Source="..\bot_includes\targeting\gettraders\sector.ts"/>
+</Component>
+<Component Id="C0080" Directory="D0080" Guid="a1d64605-3e2c-419d-9a7a-99407700ce66">
+    <File Id="F0104" Source="..\bot_includes\targeting\initializetargeting\targeting.ts"/>
+</Component>
+<Component Id="C0081" Directory="D0081" Guid="2c3a1aca-213d-470e-99cc-79c73458d1f6">
+    <File Id="F0105" Source="..\bot_includes\targeting\scanitcitkill\targeting.ts"/>
+</Component>
+<Component Id="C0082" Directory="D0082" Guid="4c9ecfcb-f601-40bf-832b-e046e56ea0fc">
+    <File Id="F0106" Source="..\module_includes\bot.ts"/>
+</Component>
+<Component Id="C0084" Directory="D0084" Guid="a7c2aca8-1875-4c28-98c0-3f8df1b5df28">
+    <File Id="F0107" Source="..\module_includes\bot\addfigtodata\bot.ts"/>
+</Component>
+<Component Id="C0085" Directory="D0085" Guid="9d74f19b-6ab4-4a5c-934d-6068129ef776">
+    <File Id="F0108" Source="..\module_includes\bot\banner\bot.ts"/>
+</Component>
+<Component Id="C0086" Directory="D0086" Guid="b655163c-ad5e-4d46-8a3f-062b17403dc3">
+    <File Id="F0109" Source="..\module_includes\bot\checkstartingprompt\bot.ts"/>
+</Component>
+<Component Id="C0087" Directory="D0087" Guid="03ff9807-689d-4e24-be60-b3298d55ceb0">
+    <File Id="F0110" Source="..\module_includes\bot\commas\bot.ts"/>
+</Component>
+<Component Id="C0088" Directory="D0088" Guid="e1eb1c60-5c04-4cc1-9fda-d34d68b692f6">
+    <File Id="F0111" Source="..\module_includes\bot\disconnecttriggers\bot.ts"/>
+</Component>
+<Component Id="C0089" Directory="D0089" Guid="54ec393d-de38-4492-b270-9600bcd56859">
+    <File Id="F0112" Source="..\module_includes\bot\displayhelp\bot.ts"/>
+</Component>
+<Component Id="C0090" Directory="D0090" Guid="5d31c94d-6c04-4704-a2c9-4d5492c707b6">
+    <File Id="F0113" Source="..\module_includes\bot\echo\bot.ts"/>
+</Component>
+<Component Id="C0091" Directory="D0091" Guid="5a18d673-99bb-4605-bab0-8566dae44f04">
+    <File Id="F0114" Source="..\module_includes\bot\formathelpline\bot.ts"/>
+</Component>
+<Component Id="C0092" Directory="D0092" Guid="8988a812-6ee3-4ead-af22-fad323e9be73">
+    <File Id="F0115" Source="..\module_includes\bot\helpfile\bot.ts"/>
+</Component>
+<Component Id="C0093" Directory="D0093" Guid="c99b5278-130f-4d57-a793-ddee62fe8bcb">
+    <File Id="F0116" Source="..\module_includes\bot\loadvars\bot.ts"/>
+</Component>
+<Component Id="C0094" Directory="D0094" Guid="b4fe45e1-8ac0-4c70-8352-079599e65238">
+    <File Id="F0117" Source="..\module_includes\bot\menu\bot.ts"/>
+</Component>
+<Component Id="C0095" Directory="D0095" Guid="fbe8d4c1-b291-49ef-b8ba-1e10d42dd230">
+    <File Id="F0118" Source="..\module_includes\bot\removefigfromdata\bot.ts"/>
+</Component>
+<Component Id="C0096" Directory="D0096" Guid="cdda7874-7bec-427d-a4a8-7e7b6bfc400c">
+    <File Id="F0119" Source="..\module_includes\bot\wait_for_command\bot.ts"/>
+</Component>
+<Component Id="C0097" Directory="D0097" Guid="7def06d2-3bf7-4652-9fed-0f165e7dacc6">
+    <File Id="F0120" Source="..\module_includes\deploy\armid.ts"/>
+    <File Id="F0121" Source="..\module_includes\deploy\fighter.ts"/>
+    <File Id="F0122" Source="..\module_includes\deploy\limp.ts"/>
+    <File Id="F0123" Source="..\module_includes\deploy\mines.ts"/>
+    <File Id="F0124" Source="..\module_includes\deploy\topoff.ts"/>
+</Component>
+<Component Id="C0099" Directory="D0099" Guid="aad6cd97-8d6e-427f-a978-0a5e9ce129d8">
+    <File Id="F0125" Source="..\module_includes\game\addfigtodata\bot.ts"/>
+</Component>
+<Component Id="C0100" Directory="D0100" Guid="a8675b5d-7d73-47ac-9405-34a9bca28287">
+    <File Id="F0126" Source="..\module_includes\game\banner\bot.ts"/>
+</Component>
+<Component Id="C0101" Directory="D0101" Guid="e69feee5-afc4-4190-af34-5796625d87c4">
+    <File Id="F0127" Source="..\module_includes\game\checkstartingprompt\bot.ts"/>
+</Component>
+<Component Id="C0102" Directory="D0102" Guid="b813c6bf-46b5-431f-9aaf-9d00e1f06b04">
+    <File Id="F0128" Source="..\module_includes\game\commas\bot.ts"/>
+</Component>
+<Component Id="C0103" Directory="D0103" Guid="d574801b-3007-4b6a-abf1-6787bcd9dc12">
+    <File Id="F0129" Source="..\module_includes\game\disconnecttriggers\bot.ts"/>
+</Component>
+<Component Id="C0104" Directory="D0104" Guid="f615978a-47fc-4ee5-9a75-105db3a1c34e">
+    <File Id="F0130" Source="..\module_includes\game\displayhelp\bot.ts"/>
+</Component>
+<Component Id="C0105" Directory="D0105" Guid="3c3646f2-8d2f-4bd9-ab4c-468cb352012d">
+    <File Id="F0131" Source="..\module_includes\game\formathelpline\bot.ts"/>
+</Component>
+<Component Id="C0106" Directory="D0106" Guid="6bbb9b96-d370-42d1-addb-952605e2f8b0">
+    <File Id="F0132" Source="..\module_includes\game\helpfile\bot.ts"/>
+</Component>
+<Component Id="C0107" Directory="D0107" Guid="55108d84-d666-41ea-9a59-4e45fbaa7547">
+    <File Id="F0133" Source="..\module_includes\game\loadvars\bot.ts"/>
+</Component>
+<Component Id="C0108" Directory="D0108" Guid="a35a38ae-fdd4-466f-9fd9-7d8100565bfa">
+    <File Id="F0134" Source="..\module_includes\game\menu\bot.ts"/>
+</Component>
+<Component Id="C0109" Directory="D0109" Guid="7c9b55dd-8489-4e03-804d-79c1ea0d93f4">
+    <File Id="F0135" Source="..\module_includes\game\removefigfromdata\bot.ts"/>
+</Component>
+<Component Id="C0110" Directory="D0110" Guid="19fe23ab-6295-4906-bcc9-e45a558c2fba">
+    <File Id="F0136" Source="..\module_includes\game\wait_for_command\bot.ts"/>
+</Component>
+<Component Id="C0112" Directory="D0112" Guid="2241b842-6e84-42a9-b85b-3d9a40705ea6">
+    <File Id="F0137" Source="..\module_includes\modules\clear\modules.ts"/>
+</Component>
+<Component Id="C0113" Directory="D0113" Guid="cb8cc66b-b857-45f3-bb9d-00b4ad16852b">
+    <File Id="F0138" Source="..\module_includes\modules\xenter\modules.ts"/>
+</Component>
+<Component Id="C0114" Directory="D0114" Guid="767262eb-d306-4292-b29c-84be735b7510">
+    <File Id="F0139" Source="..\module_includes\update\armids.ts"/>
+    <File Id="F0140" Source="..\module_includes\update\cim.ts"/>
+    <File Id="F0141" Source="..\module_includes\update\fighters.ts"/>
+    <File Id="F0142" Source="..\module_includes\update\limpets.ts"/>
+</Component>
 
+        </ComponentGroup>
     </Fragment>
 </Wix>                
