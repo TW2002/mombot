@@ -32,8 +32,9 @@
 
             <Label Margin="0,0,12,12" Foreground="DarkCyan">Mombot 5 - Compiling Mind ()ver Matter bot.</Label>
             <Label Margin="30,40,12,12" Foreground="DarkCyan">Preparing Mombot 5 for use.</Label>
-            <Label Name="ProgressLabel" Margin="60,105,12,12" Foreground="DarkCyan">Scanning Files.</Label>
+            <Label Name="ProgressLabel" Margin="60,105,12,12" Foreground="LimeGreen">Scanning Files.</Label>
             <Label Name="ErrorLabel" Margin="60,120,12,12" Foreground="Red" FontWeight="Bold" Visibility="Hidden">Please see error.log for details.</Label>
+            <Label Name="FinishedLabel" Margin="60,120,12,12" Foreground="Blue" FontWeight="Bold" Visibility="Hidden"/>
             <ProgressBar Name="ProgressBar" Foreground="Green" Margin="15,2,12,12" Height="25" Width="250"/>
    
             <TextBlock Name="ErrorLog" Foreground="#60FFFFFF" HorizontalAlignment="Left" Margin="50,49,0,0" Width="300" Height="151" VerticalAlignment="Top" Visibility="Hidden" />
