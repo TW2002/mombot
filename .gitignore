@@ -11,9 +11,9 @@
 /[Hh]elp/
 [Mm]ombot.cts
 [Ss]trip[Ee]xample.cts
-MakeMsi.exe.config
+MakeMSI.exe.config
 MakeBot.exe.config
-*..wixpdb
+*.wixpdb
 
 
 # MAC files

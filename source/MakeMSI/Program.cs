@@ -13,8 +13,8 @@ class Test
     public static void Main()
     {
         string path = Environment.CurrentDirectory;
-        path = path.Replace(@"\bin\Debug\net7.0", "");
-        path = path.Replace(@"\bin\Release\net7.0", "");
+        path = path.Replace(@"\Debug\net7.0", "");
+        path = path.Replace(@"\Release\net7.0", "");
         path = path.Replace(@"\MakeMSI", "");
         string file = @$"{path}\Installer\Product.wxs";
 
@@ -100,7 +100,7 @@ class Test
                                <File Source="..\Directory Structure.txt"/>
                                <File Source="..\page.wav"/>
                                <File Source="..\StripExample.ts"/>
-                               <File Source="..\MakeBot\bin\Debug\MakeBot.exe"/>                               
+                               <File Source="..\MakeBot.exe"/>                               
                                <File Source="..\twxc.exe"/>                                          
                             </Component>
                 """);
