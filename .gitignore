@@ -5,10 +5,13 @@
 
 # Compiles Mombot Files
 /[Cc]ommands/
+/[Dd]aemons/
 /[Mm]odes/
 /[Mm]odules/
 /[Ss]tartups/
 /[Hh]elp/
+[Mm]ombot.cts
+[Ss]trip[Ee]xample.cts
 
 # MAC files
 .DS_Store
