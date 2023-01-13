@@ -13,5 +13,11 @@ namespace MakeBot
     /// </summary>
     public partial class App : Application
     {
+
+        private void AppStartup(object sender, StartupEventArgs e)
+        {
+            Main wnd = new Main(e.Args);
+            wnd.Show();
+        }
     }
 }

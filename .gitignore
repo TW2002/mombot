@@ -3,6 +3,16 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Compiles Mombot Files
+/[Cc]ommands/
+/[Mm]odes/
+/[Mm]odules/
+/[Ss]tartups/
+/[Hh]elp/
+
+# MAC files
+.DS_Store
+
 # User-specific files
 *.rsuser
 *.suo

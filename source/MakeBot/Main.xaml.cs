@@ -32,7 +32,7 @@ namespace MakeBot
         private StreamWriter clog, elog, wlog;
         private int ccount, ecount, wcount;
 
-        public Main()
+        public Main(string[] args)
         {
             InitializeComponent();
 
@@ -44,7 +44,7 @@ namespace MakeBot
             Path = Path.Replace(@"\MakeBot", "");
             //string file = $"{path}\\Installer\\Product.wxs";
 
-            Scripts = new FileList(Path);
+            Scripts = new FileList(Path, args.ToList());
             ProgressBar.Maximum = Scripts.Files.Count();
 
             if (File.Exists("Compile.log")) File.Delete("Compile.log");
