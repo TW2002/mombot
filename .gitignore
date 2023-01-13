@@ -11,6 +11,10 @@
 /[Hh]elp/
 [Mm]ombot.cts
 [Ss]trip[Ee]xample.cts
+MakeMsi.exe.config
+MakeBot.exe.config
+*..wixpdb
+
 
 # MAC files
 .DS_Store
