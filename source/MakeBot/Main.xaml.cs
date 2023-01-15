@@ -36,13 +36,15 @@ namespace MakeBot
         {
             InitializeComponent();
 
-            //List<Task> tasks = new List<Task>();
+
 
             Path = Environment.CurrentDirectory;
-            Path = Path.Replace(@"\bin\Debug", "");
-            Path = Path.Replace(@"\bin\Release", "");
-            Path = Path.Replace(@"\MakeBot", "");
-            //string file = $"{path}\\Installer\\Product.wxs";
+            //Path = Path.Replace(@"\bin\Debug", "");
+            //Path = Path.Replace(@"\bin\Release", "");
+            //Path = Path.Replace(@"\MakeBot", "");
+            ////string file = $"{path}\\Installer\\Product.wxs";
+           
+            
 
             Scripts = new FileList(Path, args.ToList());
             ProgressBar.Maximum = Scripts.Files.Count();
@@ -50,6 +52,10 @@ namespace MakeBot
             if (File.Exists("Compile.log")) File.Delete("Compile.log");
             if (File.Exists("Error.log")) File.Delete("Error.log");
             if (File.Exists("Warning.log")) File.Delete("Warning.log");
+
+            //script = File.CreateText("MakeHelp.ts");
+            //script.WriteLine("saveVar $user_command_line \"?\"");
+            //script.WriteLine("saveVar $parm1 \"?\"");
 
             clog = File.CreateText("Compile.log");
             elog = File.CreateText("Error.log");
@@ -98,12 +104,20 @@ namespace MakeBot
                 Cancel.Visibility = Visibility.Hidden;
                 Finish.Visibility = Visibility.Visible;
 
+
                 clog.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")} Finished Compiling.");
                 clog.Close();
                 elog.Close();
                 wlog.Close();
+
+                //script.Close();
+
                 if (ecount == 0) File.Delete("Error.log");
                 if (wcount == 0) File.Delete("Warning.log");
+
+                //if (File.Exists(@"..\..\..\twxp.exe"))
+                //    Process.Start(@"..\..\..\twxp.exe", @"Scripts\MomBot\Source\MakeHelp.ts");
+
             }));
 
 
@@ -117,6 +131,7 @@ namespace MakeBot
             var f = new FileInfo(file);
             var cts = new FileInfo(file.Replace(".ts", ".cts"));
             var dst = new FileInfo("..\\" + file.Replace(".ts", ".cts"));
+            var txt = new FileInfo("..\\Help\\" + cts.Name.Replace(".cts", ".txt"));
 
             if (f.Extension == ".ts")
             {
@@ -167,6 +182,9 @@ namespace MakeBot
                     if (dst.Exists) dst.Delete();
                     cts.MoveTo(dst.FullName);
 
+                    //if (txt.Name != "mombot.txt" && !txt.Exists)
+                    //    script.WriteLine($"Load \"Scripts\\Mombot\\{file.Replace(".ts", ".cts")}\"");
+
                 }
                 else
                 {
@@ -201,6 +219,7 @@ namespace MakeBot
 
         private void onCancelClick(object sender, RoutedEventArgs e)
         {
+            // TODO: Cancel all threads.
 
             Close();
         }

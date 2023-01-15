@@ -76,17 +76,17 @@ namespace MakeBot
                     var dir = new DirectoryInfo($"{Root}\\{path}");
 
                     // Avoid folders containing include files.
-                    if (!((dir.Name == "Source") || (dir.Name == "MakeMSI") || (dir.Name == "MakeBot") || (dir.Name == "Installer") || (dir.Name == "bot_includes") || (dir.Name == "module_includes")))
+                    if (!(((dir.Name == "MakeMSI") || (dir.Name == "MakeBot") || (dir.Name == "Installer") || (dir.Name == "bot_includes") || (dir.Name == "module_includes"))))
                     {
                     // Loop through each file.
-                    //foreach (var f in Directory.GetFiles($"{Root}\\{path}\\{dir.Name}", search))
                     foreach (var f in Directory.GetFiles($"{Root}\\{path}", search))
                     {
                             var file = new FileInfo(f);
 
-                            // Check to see if file is a script (.ts) or compiled script (.cts) without a source file.
-                            if ((file.Extension == ".ts") || (file.Extension == ".cts") && 
-                                !System.IO.File.Exists(file.FullName.Replace(".cts", ".ts")))
+                        // Check to see if file is a script (.ts) or compiled script (.cts) without a source file.
+                        if (((file.Extension == ".ts") || (file.Extension == ".cts" &&
+                            !System.IO.File.Exists(file.FullName.Replace(".cts", ".ts")))) &&
+                            file.Name != "StripExample.ts")
                             {
                                 Files.Add($"{(path==""?"":path + "\\")}{file.Name}");
                             }

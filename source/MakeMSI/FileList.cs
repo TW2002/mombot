@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace MakeMSI
         public int DirIndex { get; private set; }
         public int FileIndex { get; private set; }
         public string Dirs { get; private set; }
-        public string Files  { get; private set; }
+        public string Files { get; private set; }
         public string Root { get; private set; }
 
         private StringBuilder db;
@@ -28,8 +29,9 @@ namespace MakeMSI
 
             db = new();
             fb = new();
-        
+
             Enumerate();
+            EnumerateHelp();
 
             Dirs = db.ToString();
             Files = fb.ToString();
@@ -45,7 +47,8 @@ namespace MakeMSI
                     var dir = new DirectoryInfo(d);
 
 
-                    if (!((dir.Name == "MakeMSI") || (dir.Name == "MakeBot") || (dir.Name == "Installer")))
+                    //if (!(((dir.Name == "Help") || (dir.Name == "MakeMSI") || (dir.Name == "MakeBot") || (dir.Name == "Installer"))))
+                    if (!(((dir.Name == "MakeMSI") || (dir.Name == "MakeBot") || (dir.Name == "Installer") || (dir.Name == "help") || (dir.Name == "Debug"))))
                     {
                         DirIndex++;
                         Console.WriteLine(@$"D{DirIndex:D4}:{path}\{dir.Name}");
@@ -64,7 +67,8 @@ namespace MakeMSI
                             }
                         }
 
-                        if (fileCount > 0) {
+                        if (fileCount > 0)
+                        {
                             fb.AppendLine($"<Component Id=\"C{DirIndex:D4}\" Directory=\"D{DirIndex:D4}\" Guid=\"{Guid.NewGuid()}\">");
                             foreach (var f in Directory.GetFiles(@$"{Root}\{path}\{dir.Name}"))
                             {
@@ -91,6 +95,38 @@ namespace MakeMSI
                 }
 
 
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (PathTooLongException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void EnumerateHelp()
+        {
+            try
+            {
+                var dir = new DirectoryInfo(@$"{Root}\Help");
+
+                Console.WriteLine(@$"\nEnumerating Help Files.\n");
+
+                fb.AppendLine($"<Component Id=\"HelpComp\" Directory=\"Help\" Guid=\"{Guid.NewGuid()}\">");
+
+                foreach (var f in Directory.GetFiles(@$"{Root}\Help"))
+                {
+
+                    var file = new FileInfo(f);
+                    if (file.Extension == ".txt")
+                    {
+                        fb.AppendLine($"    <File Id=\"F{FileIndex:D4}\" Source=\"..\\Help\\{file.Name}\"/>");
+                        FileIndex++;
+                    }
+                }
+                fb.AppendLine($"</Component>");
             }
             catch (UnauthorizedAccessException ex)
             {
