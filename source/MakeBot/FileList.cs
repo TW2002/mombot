@@ -16,8 +16,6 @@ namespace MakeBot
         public List<string> Files  { get; private set; }
         public string Root { get; private set; }
 
-        //private StringBuilder fb;
-
         /// <summary>
         /// Constructor for FileList file Enumerator
         /// </summary>
@@ -76,7 +74,7 @@ namespace MakeBot
                     var dir = new DirectoryInfo($"{Root}\\{path}");
 
                     // Avoid folders containing include files.
-                    if (!(((dir.Name == "MakeMSI") || (dir.Name == "MakeBot") || (dir.Name == "Installer") || (dir.Name == "bot_includes") || (dir.Name == "module_includes"))))
+                    if (!(((dir.Name == "startups") || (dir.Name == "MakeMSI") || (dir.Name == "MakeBot") || (dir.Name == "Installer") || (dir.Name == "bot_includes") || (dir.Name == "module_includes"))))
                     {
                     // Loop through each file.
                     foreach (var f in Directory.GetFiles($"{Root}\\{path}", search))

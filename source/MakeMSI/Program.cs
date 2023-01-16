@@ -1,22 +1,13 @@
 ﻿using MakeMSI;
-using System;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Reflection.Metadata;
-using System.Runtime.InteropServices;
-using static System.Net.Mime.MediaTypeNames;
-
-//candle and light command lines:
-//    -ext WixUIExtension - ext WixUtilExtension
 
 class Test
 {
     public static void Main()
     {
         string path = Environment.CurrentDirectory;
-        path = path.Replace(@"\Debug\net7.0", "");
-        path = path.Replace(@"\Release\net7.0", "");
+        path = path.Replace(@"\bin\Debug\net7.0", "");
+        path = path.Replace(@"\bin\Release\net7.0", "");
         path = path.Replace(@"\MakeMSI", "");
         string file = @$"{path}\Installer\Product.wxs";
 
@@ -127,63 +118,52 @@ class Test
 
         if (!File.Exists($"{wixPath}\\candle.exe"))
         {
-            Console.WriteLine("Pleade install Wix Toolkit v3.x from:");
-            //Console.WriteLine("https://github.com/wixtoolset/wix3/releases/tag/wix3112rtm");
+            Console.WriteLine("\n\rWix Toolkit v3.x is free amd open source:");
+            Console.WriteLine("https://github.com/wixtoolset/wix3/releases/tag/wix3112rtm");
+
+            Console.WriteLine("\n\rPleade install Wix Toolkit v3.x from:");
             Console.WriteLine("https://wixtoolset.org/docs/wix3/");
         }
         else
         {
-            //string options = "-dOutDir=..\\..\\msi -dPlatform=x86 ";
-            //options += "-dTargetFileName=\"Mombot5.0 - Pre1.msi\" ";
-            //options += "-ext \"C:\\Program Files (x86)\\WiX Toolset v3.11\\bin\\WixUtilExtension.dll\" ";
-            //options += "-ext \"C:\\Program Files (x86)\\WiX Toolset v3.11\\bin\\WixUIExtension.dll\" ";
-            //options += $"-dProjectDir=\"{path}\\Installer\"";
+            string options = @"-dDebug -d""DevEnvDir=C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\\"" -dSolutionDir=C:\Projects\TW2002\mombot\ -dSolutionExt=.sln -dSolutionFileName=Mombot.sln -dSolutionName=Mombot -dSolutionPath=C:\Projects\TW2002\mombot\Mombot.sln -dConfiguration=Debug -dOutDir=..\..\Msi\ -dPlatform=x86 -dProjectDir=C:\Projects\TW2002\mombot\source\Installer\ -dProjectExt=.wixproj -dProjectFileName=Installer.wixproj -dProjectName=Installer -dProjectPath=C:\Projects\TW2002\mombot\source\Installer\Installer.wixproj -dTargetDir=C:\Projects\TW2002\mombot\Msi\ -dTargetExt=.msi -dTargetFileName=Mombot5.0-Pre1.msi -dTargetName=Mombot5.0-Pre1 -dTargetPath=C:\Projects\TW2002\mombot\Msi\Mombot5.0-Pre1.msi -out obj\Debug\ -arch x86 -ext ""C:\Program Files (x86)\WiX Toolset v3.11\bin\\WixUtilExtension.dll"" -ext ""C:\Program Files (x86)\WiX Toolset v3.11\bin\\WixUIExtension.dll""";
+            Console.WriteLine($"\n\r Candle {options}");
+            var proc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = $"{wixPath}\\Candle.exe",
+                    WorkingDirectory = @$"{path}\Installer",
+                    Arguments = options,
+                    CreateNoWindow = true
+                }
+            };
+            proc.Start();
+            proc.WaitForExit();
 
+            options = @"-out C:\Projects\TW2002\mombot\msi\Mombot5.0-Pre1.msi -pdbout C:\Projects\TW2002\mombot\Msi\Mombot5.0-Pre1.wixpdb -cultures:null -ext ""C:\Program Files (x86)\WiX Toolset v3.11\bin\\WixUtilExtension.dll"" -ext ""C:\Program Files (x86)\WiX Toolset v3.11\bin\\WixUIExtension.dll"" -contentsfile obj\Debug\Installer.wixproj.BindContentsFileListnull.txt -outputsfile obj\Debug\Installer.wixproj.BindOutputsFileListnull.txt -builtoutputsfile obj\Debug\Installer.wixproj.BindBuiltOutputsFileListnull.txt -wixprojectfile C:\Projects\TW2002\mombot\source\Installer\Installer.wixproj obj\Debug\Product.wixobj";
 
-            string options = " -dDebug ";
-                //"-dDevEnvDir =\"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\\"";
-            options += @"/-dSolutionDir=C:\Projects\TW2002\mombot -dSolutionExt=.sln -dSolutionFileName=Mombot.sln";
-            options += @"-dSolutionName=Mombot -dSolutionPath=C:\Projects\TW2002\mombot\Mombot.sln -dConfiguration=Debug";
-            options += @"-dOutDir=..\..\msi\ -dPlatform=x86 -dProjectDir=C:\Projects\TW2002\mombot\source\Installer";
-            options += @"-dProjectExt=.wixproj -dProjectFileName=Installer.wixproj -dProjectName=Installer";
-            options += @"-dProjectPath=C:\Projects\TW2002\mombot\source\Installer\Installer.wixproj";
-            options += @"-dTargetDir=C:\Projects\TW2002\mombot\msi\ -dTargetExt=.msi";
-            options += @"-dTargetFileName=Mombot5.0-Pre1.msi -dTargetName=Mombot5.0-Pre1";
-            options += @"-dTargetPath=C:\Projects\TW2002\mombot\msi\Mombot5.0-Pre1.msi";
-            options += "-out=C:\\Projects\\TW2002\\mombot\\source\\obj\\Debug ";
-            //options += "-ext=\"C:\\Program Files (x86)\\WiX Toolset v3.11\\bin\\WixUtilExtension.dll\"";
-            //options += "-ext=\"C:\\Program Files (x86)\\WiX Toolset v3.11\\bin\\WixUIExtension.dll\"";
+            Console.WriteLine($"\n\r Light {options}");
+            var proc2 = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = $"{wixPath}\\Light.exe",
+                    WorkingDirectory = @$"{path}\Installer",
+                    Arguments = options,
+                    CreateNoWindow = true
+                }
+            };
 
-            //options = @"-dPlatform=x86 -dProjectDir=C:\Projects\TW2002\mombot\source\Installer\";
+            Console.WriteLine("\n\rBuilding MSI...\n\r");
 
-            //Console.WriteLine($"Candle {options}");
-            //Process.Start($"{wixPath}\\candle.exe", $"Installer\\Product.wxs {options}").WaitForExit();
-            //Process.Start($"{wixPath}\\candle.exe", $"{options} {file}").WaitForExit();
-            //candle Product.wxs
-            //light Product.wixobj
+            proc2.Start();
+            proc2.WaitForExit();
 
-            //options = "-out C:\\Projects\\TW2002\\mombot\\msi\\Mombot5.0-Pre1.msi";
-            //options += "-ext \"C:\\Program Files (x86)\\WiX Toolset v3.11\\bin\\WixUtilExtension.dll\" ";
-            //options += "-ext \"C:\\Program Files (x86)\\WiX Toolset v3.11\\bin\\WixUIExtension.dll\" ";
-
-            //Console.WriteLine($"Light {options}");
-            //Process.Start($"{wixPath}\\Light.exe", $"{path}\\obj\\Debug\\Product.wixobj {options}");
-
-            //Console.WriteLine("Done...");
+            Console.WriteLine("Done. Press <Enter> to exit...\n\r");
         }
-      
-        //Light.exe -out C:\Projects\TW2002\mombot\Msi\Mombot5.0 - Pre1.msi
-    //- pdbout C:\Projects\TW2002\mombot\Msi\Mombot5.0 - Pre1.wixpdb
-    //- cultures:null - ext "C:\Program Files (x86)\WiX Toolset v3.11\bin\\WixUtilExtension.dll"
-    //- ext "C:\Program Files (x86)\WiX Toolset v3.11\bin\\WixUIExtension.dll"
-    //- contentsfile obj\Debug\Installer.wixproj.BindContentsFileListnull.txt
-    //- outputsfile obj\Debug\Installer.wixproj.BindOutputsFileListnull.txt
-    //- builtoutputsfile obj\Debug\Installer.wixproj.BindBuiltOutputsFileListnull.txt
-    //- wixprojectfile C:\Projects\TW2002\mombot\source\Installer\Installer.wixproj
-    //obj\Debug\Product.wixobj
 
-
-       // Console.ReadLine();
+         Console.ReadLine();
     }
 
 

@@ -48,7 +48,7 @@ namespace MakeMSI
 
 
                     //if (!(((dir.Name == "Help") || (dir.Name == "MakeMSI") || (dir.Name == "MakeBot") || (dir.Name == "Installer"))))
-                    if (!(((dir.Name == "MakeMSI") || (dir.Name == "MakeBot") || (dir.Name == "Installer") || (dir.Name == "help") || (dir.Name == "Debug"))))
+                    if (!(((dir.Name == "Startups") || (dir.Name == "MakeMSI") || (dir.Name == "MakeBot") || (dir.Name == "Installer") || (dir.Name == "help") || (dir.Name == "Debug"))))
                     {
                         DirIndex++;
                         Console.WriteLine(@$"D{DirIndex:D4}:{path}\{dir.Name}");
@@ -112,7 +112,7 @@ namespace MakeMSI
             {
                 var dir = new DirectoryInfo(@$"{Root}\Help");
 
-                Console.WriteLine(@$"\nEnumerating Help Files.\n");
+                Console.WriteLine(@$"\n\nEnumerating Help Files.\n\r");
 
                 fb.AppendLine($"<Component Id=\"HelpComp\" Directory=\"Help\" Guid=\"{Guid.NewGuid()}\">");
 
