@@ -1,0 +1,159 @@
+# Include Collapse Log
+
+Aggregates generated:
+- `bot_includes/player.ts` from 29 source file(s), 62 label block(s), 0 alias(es), 0 unresolved conflict(s).
+- `bot_includes/ship.ts` from 5 source file(s), 6 label block(s), 0 alias(es), 1 unresolved conflict(s).
+- `bot_includes/planet.ts` from 10 source file(s), 30 label block(s), 0 alias(es), 0 unresolved conflict(s).
+- `bot_includes/game.ts` from 3 source file(s), 3 label block(s), 0 alias(es), 0 unresolved conflict(s).
+- `bot_includes/map.ts` from 8 source file(s), 8 label block(s), 0 alias(es), 0 unresolved conflict(s).
+- `bot_includes/sector.ts` from 5 source file(s), 6 label block(s), 0 alias(es), 0 unresolved conflict(s).
+- `bot_includes/combat.ts` from 7 source file(s), 17 label block(s), 0 alias(es), 0 unresolved conflict(s).
+- `bot_includes/targeting.ts` from 3 source file(s), 4 label block(s), 0 alias(es), 0 unresolved conflict(s).
+- `bot_includes/grid.ts` from 1 source file(s), 1 label block(s), 0 alias(es), 0 unresolved conflict(s).
+- `module_includes/bot.ts` from 14 source file(s), 142 label block(s), 0 alias(es), 0 unresolved conflict(s).
+- `module_includes/modules.ts` from 2 source file(s), 4 label block(s), 0 alias(es), 0 unresolved conflict(s).
+
+Manual exceptions:
+- Left the alternate sector namespace under bot_includes/targeting/*/sector.ts split out. Those files define a different sector parser path than bot_includes/sector/*/sector.ts and were not safely merged into bot_includes/sector.ts.
+- Left module_includes/game/*/bot.ts split out. It overlaps the bot namespace with module_includes/bot/*/bot.ts but is not referenced by current source include lines.
+- Fragment implementations were treated as authoritative wherever they disagreed with older top-level aggregate files, because the live source tree was already including the fragments directly.
+- Aggregate files have fragment include lines stripped out so they are self-contained namespace bundles.
+
+## bot_includes/ship.ts
+Conflicts left unresolved inside this namespace:
+- Label `:process_ship_line` differed between `bot_includes/ship/loadshipinfo/ship.ts` and `bot_includes/ship/savetheship/ship.ts`. The fragment-side definition was kept.
+
+Rewritten source files to use aggregate includes:
+- `commands/cashing/mega.ts`
+- `commands/cashing/neg.ts`
+- `commands/cashing/ppt.ts`
+- `commands/cashing/rob.ts`
+- `commands/cashing/trade.ts`
+- `commands/cashing/tricon.ts`
+- `commands/data/avoids.ts`
+- `commands/data/busts.ts`
+- `commands/data/clearbusts.ts`
+- `commands/data/corp_info.ts`
+- `commands/data/course.ts`
+- `commands/data/disp.ts`
+- `commands/data/dscan.ts`
+- `commands/data/find.ts`
+- `commands/data/getvar.ts`
+- `commands/data/history.ts`
+- `commands/data/holo.ts`
+- `commands/data/overload.ts`
+- `commands/data/param.ts`
+- `commands/data/plist.ts`
+- `commands/data/pscan.ts`
+- `commands/data/sector.ts`
+- `commands/data/select.ts`
+- `commands/data/setparam.ts`
+- `commands/data/setparms.ts`
+- `commands/data/setvar.ts`
+- `commands/data/slist.ts`
+- `commands/data/status.ts`
+- `commands/data/storeship.ts`
+- `commands/data/time.ts`
+- `commands/data/update.ts`
+- `commands/defense/_macro_kit.ts`
+- `commands/defense/call.ts`
+- `commands/defense/evac.ts`
+- `commands/defense/hazkill.ts`
+- `commands/general/bwarp.ts`
+- `commands/general/callout.ts`
+- `commands/general/corp.ts`
+- `commands/general/dep.ts`
+- `commands/general/fed.ts`
+- `commands/general/help.ts`
+- `commands/general/keep.ts`
+- `commands/general/land.ts`
+- `commands/general/login.ts`
+- `commands/general/logoff.ts`
+- `commands/general/mac.ts`
+- `commands/general/nmac.ts`
+- `commands/general/photon.ts`
+- `commands/general/pwarp.ts`
+- `commands/general/reboot.ts`
+- `commands/general/relog.ts`
+- `commands/general/run.ts`
+- `commands/general/ss.ts`
+- `commands/general/subspace.ts`
+- `commands/general/switch.ts`
+- `commands/general/tow.ts`
+- `commands/general/twarp.ts`
+- `commands/general/unlock.ts`
+- `commands/general/wait.ts`
+- `commands/general/with.ts`
+- `commands/general/xport.ts`
+- `commands/grid/clear.ts`
+- `commands/grid/deploy.ts`
+- `commands/grid/exit.ts`
+- `commands/grid/pgrid.ts`
+- `commands/grid/plimp.ts`
+- `commands/grid/port.ts`
+- `commands/grid/xenter.ts`
+- `commands/offense/_kazi.ts`
+- `commands/offense/htorp.ts`
+- `commands/offense/pe.ts`
+- `commands/offense/ped.ts`
+- `commands/offense/pel.ts`
+- `commands/offense/pelk.ts`
+- `commands/offense/pex.ts`
+- `commands/offense/pxe.ts`
+- `commands/offense/pxed.ts`
+- `commands/offense/pxedx.ts`
+- `commands/offense/pxel.ts`
+- `commands/offense/pxelk.ts`
+- `commands/offense/pxex.ts`
+- `commands/resource/_dock_shopper.ts`
+- `daemons/chat.ts`
+- `daemons/ephaggle.ts`
+- `daemons/online.ts`
+- `daemons/stats.ts`
+- `daemons/viewscreen.ts`
+- `modes/cashing/bbb.ts`
+- `modes/cashing/furb.ts`
+- `modes/cashing/merch.ts`
+- `modes/cashing/salesman.ts`
+- `modes/cashing/sdt.ts`
+- `modes/cashing/sst.ts`
+- `modes/cashing/wppt.ts`
+- `modes/cashing/wsst.ts`
+- `modes/data/beam.ts`
+- `modes/data/list.ts`
+- `modes/data/sentinel.ts`
+- `modes/data/ztm.ts`
+- `modes/defense/citfill.ts`
+- `modes/defense/ig.ts`
+- `modes/defense/reloader.ts`
+- `modes/defense/runaway.ts`
+- `modes/defense/saveme.ts`
+- `modes/defense/unstack.ts`
+- `modes/grid/dora.ts`
+- `modes/grid/lspassgrid.ts`
+- `modes/grid/mow.ts`
+- `modes/grid/pgridder.ts`
+- `modes/grid/plimper.ts`
+- `modes/grid/ramgrid.ts`
+- `modes/grid/wall.ts`
+- `modes/grid/wander.ts`
+- `modes/offense/citcap.ts`
+- `modes/offense/citkill.ts`
+- `modes/offense/density.ts`
+- `modes/offense/dockkill.ts`
+- `modes/offense/drop.ts`
+- `modes/offense/foton.ts`
+- `modes/offense/pdrop.ts`
+- `modes/offense/plock.ts`
+- `modes/resource/colo.ts`
+- `modes/resource/dump.ts`
+- `modes/resource/ecolo.ts`
+- `modes/resource/fillships.ts`
+- `modes/resource/lsd.ts`
+- `modes/resource/makeplanet.ts`
+- `modes/resource/moveship.ts`
+- `modes/resource/patp.ts`
+- `modes/resource/pimp.ts`
+- `modes/resource/strip.ts`
+- `mombot.ts`
+

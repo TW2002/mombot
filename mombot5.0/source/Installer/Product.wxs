@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+	<Product Id="*" Name="Mombot 5.0" Language="1033" Version="2.6.5.2" Manufacturer="eXide" UpgradeCode="9be0828c-24de-43b2-a233-5c0a82c07f35">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+        <MajorUpgrade AllowSameVersionUpgrades="yes"
+            DowngradeErrorMessage="A newer version of [ProductName] is already installed. If you are sure you want to downgrade, remove the existing installation via Programs and Features." />
+
+        <MediaTemplate EmbedCab="yes" />
+
+        <Feature Id="ProductFeature" Title="TWX Proxy" Level="1" Absent="disallow" ConfigurableDirectory="MOMBOT" Description="Installs the main TWX Proxy program, including Pack 1 / 2">
+            <ComponentGroupRef Id="ProductComponents" />
+        </Feature>
+
+		<Property Id="MOMBOT" Secure="yes">
+			<RegistrySearch Id="ApplicationFolderSearch" Type="raw" Root="HKCU" Key="Software\Xide\TWXP" Name="MOMBOT"/>
+		</Property>
+		<Property Id="COMPILE" Secure="yes">
+			<RegistrySearch Id="CompileMombot" Type="raw" Root="HKCU" Key="Software\Xide\TWXP" Name="COMPILE"/>
+		</Property>
+        <Property Id="WIXUI_INSTALLDIR" Value="MOMBOT" />
+		<UIRef Id="WixUI_InstallDir" />
+  
+<UI>
+    
+    <Publish Dialog="ExitDialog" 
+        Control="Finish" 
+        Event="DoAction" 
+        Value="LaunchApplication">NOT Installed</Publish>
+</UI>
+<!--
+<Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Compile Mind ()ver Matter bot now." />
+  -->
+
+<Property Id="WixShellExecTarget" Value="[#MakeBot.exe]" />
+<CustomAction Id="LaunchApplication" 
+    BinaryKey="WixCA" 
+    DllEntry="WixShellExec"
+    Impersonate="yes" />                        
+</Product>
+ 
+
+
+   <Fragment>
+        <WixVariable Id="WixUISupportPerUser" Value="0" />
+        <Property Id="ApplicationFolderName" Value="TWXProxy\Scripts\Mombot" />
+        <Property Id="WixAppFolder" Value="WixPerUserFolder" />
+
+        <WixVariable Id="WixUILicenseRtf" Value="$(var.ProjectDir)\license.rtf" />
+        <WixVariable Id="WixUIBannerBmp" Value="$(var.ProjectDir)\banner.jpg" />
+        <WixVariable Id="WixUIDialogBmp" Value="$(var.ProjectDir)\sidelogo.jpg" />
+        <SetDirectory Id="APPLICATIONFOLDER" Value="[WindowsVolume]" />
+        
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder">
+                <Directory Id="APPLICATIONFOLDER" Name="AppFolder">
+                    <Directory Id="TWXPROXY" Name="TWXProxy" >
+                        <Directory Id="SCRIPTS" Name="Scripts" >
+                            <Directory Id="MOMBOT" Name="Mombot">
+                                <Directory Id="Help" Name="Help" />
+                                <Directory Id="Source" Name="Source" >
+<Directory Id="D0082" Name="commands">
+<Directory Id="D0083" Name="cashing">
+</Directory>
+<Directory Id="D0084" Name="data">
+</Directory>
+<Directory Id="D0085" Name="defense">
+</Directory>
+<Directory Id="D0086" Name="general">
+</Directory>
+<Directory Id="D0087" Name="grid">
+</Directory>
+<Directory Id="D0088" Name="offense">
+</Directory>
+<Directory Id="D0089" Name="resource">
+</Directory>
+</Directory>
+<Directory Id="D0090" Name="daemons">
+</Directory>
+<Directory Id="D0091" Name="modes">
+<Directory Id="D0092" Name="cashing">
+</Directory>
+<Directory Id="D0093" Name="data">
+</Directory>
+<Directory Id="D0094" Name="defense">
+</Directory>
+<Directory Id="D0095" Name="general">
+</Directory>
+<Directory Id="D0096" Name="grid">
+</Directory>
+<Directory Id="D0097" Name="offense">
+</Directory>
+<Directory Id="D0098" Name="resource">
+</Directory>
+</Directory>
+<Directory Id="D0099" Name="include">
+</Directory>
+<Directory Id="D0133" Name="preload">
+</Directory>
+</Directory>
+<Directory Id="D0132" Name="startups">
+</Directory>
+
+                                </Directory>
+                            </Directory>
+                        </Directory>
+                    </Directory>
+                </Directory>
+            </Directory>
+        </Directory>	   
+
+        <ComponentGroup Id="ProductComponents">
+            <Component Id="ProductComponent" Directory="Source" Guid="72a94083-4c7e-4365-aa2e-10d1aa6721c2"  >
+               <!--<RegistryValue Id="InstallPath" Root="HKCU" Key="Software\Xide\TWXP"  Name="Mombot" Type="string" Value="[Mombot]" />
+               <RegistryValue Id="Compile" Root="HKCU" Key="Software\Xide\TWXP"  Name="Compile" Type="integer" Value="[Compile]" />-->
+                               
+               <File Source="..\mombot.ts"/>
+               <File Source="..\Directory Structure.txt"/>
+               <File Source="..\page.wav"/>
+               <File Source="..\StripExample.ts"/>
+               <File Source="..\MakeBot.exe"/>                               
+               <File Source="..\twxc.exe"/>                                          
+            </Component>
+<Component Id="C0083" Directory="D0083" Guid="f3f3a1f5-b40a-4bac-95f4-106fb6023d48">
+    <File Id="F0106" Source="..\commands\cashing\mega.ts"/>
+    <File Id="F0107" Source="..\commands\cashing\neg.ts"/>
+    <File Id="F0108" Source="..\commands\cashing\ppt.ts"/>
+    <File Id="F0109" Source="..\commands\cashing\rob.ts"/>
+    <File Id="F0110" Source="..\commands\cashing\trade.ts"/>
+    <File Id="F0111" Source="..\commands\cashing\tricon.ts"/>
+</Component>
+<Component Id="C0084" Directory="D0084" Guid="05f81ee0-b7d2-4d41-8343-5a1df2e6ea34">
+    <File Id="F0112" Source="..\commands\data\armids.cts"/>
+    <File Id="F0113" Source="..\commands\data\avoids.ts"/>
+    <File Id="F0114" Source="..\commands\data\busts.ts"/>
+    <File Id="F0115" Source="..\commands\data\cim.cts"/>
+    <File Id="F0116" Source="..\commands\data\clearbusts.ts"/>
+    <File Id="F0117" Source="..\commands\data\corpinfo.ts"/>
+    <File Id="F0118" Source="..\commands\data\course.ts"/>
+    <File Id="F0119" Source="..\commands\data\disp.ts"/>
+    <File Id="F0120" Source="..\commands\data\dscan.ts"/>
+    <File Id="F0121" Source="..\commands\data\figs.cts"/>
+    <File Id="F0122" Source="..\commands\data\find.ts"/>
+    <File Id="F0123" Source="..\commands\data\getvar.ts"/>
+    <File Id="F0124" Source="..\commands\data\history.ts"/>
+    <File Id="F0125" Source="..\commands\data\holo.ts"/>
+    <File Id="F0126" Source="..\commands\data\limps.cts"/>
+    <File Id="F0127" Source="..\commands\data\overload.ts"/>
+    <File Id="F0128" Source="..\commands\data\param.ts"/>
+    <File Id="F0129" Source="..\commands\data\ping.cts"/>
+    <File Id="F0130" Source="..\commands\data\plist.ts"/>
+    <File Id="F0131" Source="..\commands\data\pscan.ts"/>
+    <File Id="F0132" Source="..\commands\data\sector.ts"/>
+    <File Id="F0133" Source="..\commands\data\select.ts"/>
+    <File Id="F0134" Source="..\commands\data\setparam.ts"/>
+    <File Id="F0136" Source="..\commands\data\setvar.ts"/>
+    <File Id="F0137" Source="..\commands\data\slist.ts"/>
+    <File Id="F0138" Source="..\commands\data\status.ts"/>
+    <File Id="F0139" Source="..\commands\data\storeship.ts"/>
+    <File Id="F0140" Source="..\commands\data\time.ts"/>
+    <File Id="F0141" Source="..\commands\data\update.ts"/>
+</Component>
+<Component Id="C0085" Directory="D0085" Guid="64407904-53c8-45d9-859e-778bb86716c4">
+    <File Id="F0142" Source="..\commands\defense\call.ts"/>
+    <File Id="F0143" Source="..\commands\defense\evac.ts"/>
+    <File Id="F0144" Source="..\commands\defense\hazkill.ts"/>
+</Component>
+<Component Id="C0086" Directory="D0086" Guid="fbc6ad3e-b9d4-4d9c-b574-090778738f5c">
+    <File Id="F0146" Source="..\commands\general\bg2019.cts"/>
+    <File Id="F0147" Source="..\commands\general\bwarp.ts"/>
+    <File Id="F0148" Source="..\commands\general\callout.ts"/>
+    <File Id="F0149" Source="..\commands\general\cn9.cts"/>
+    <File Id="F0150" Source="..\commands\general\corp.ts"/>
+    <File Id="F0151" Source="..\commands\general\dep.ts"/>
+    <File Id="F0152" Source="..\commands\general\emq.ts"/>
+    <File Id="F0153" Source="..\commands\general\fed.ts"/>
+    <File Id="F0154" Source="..\commands\general\help.ts"/>
+    <File Id="F0155" Source="..\commands\general\hht2020.cts"/>
+    <File Id="F0156" Source="..\commands\general\keep.ts"/>
+    <File Id="F0157" Source="..\commands\general\land.ts"/>
+    <File Id="F0158" Source="..\commands\general\lift.ts"/>
+    <File Id="F0159" Source="..\commands\general\login.ts"/>
+    <File Id="F0160" Source="..\commands\general\mac.ts"/>
+    <File Id="F0161" Source="..\commands\general\nmac.ts"/>
+    <File Id="F0162" Source="..\commands\general\photon.ts"/>
+    <File Id="F0163" Source="..\commands\general\port.cts"/>
+    <File Id="F0164" Source="..\commands\general\pwarp.ts"/>
+    <File Id="F0165" Source="..\commands\general\qset.cts"/>
+    <File Id="F0166" Source="..\commands\general\reboot.ts"/>
+    <File Id="F0167" Source="..\commands\general\relog.ts"/>
+    <File Id="F0168" Source="..\commands\general\reset.ts"/>
+    <File Id="F0169" Source="..\commands\general\run.ts"/>
+    <File Id="F0170" Source="..\commands\general\ss.ts"/>
+    <File Id="F0171" Source="..\commands\general\subspace.ts"/>
+    <File Id="F0172" Source="..\commands\general\switch.ts"/>
+    <File Id="F0173" Source="..\commands\general\topoff.cts"/>
+    <File Id="F0174" Source="..\commands\general\tow.ts"/>
+    <File Id="F0175" Source="..\commands\general\twarp.ts"/>
+    <File Id="F0176" Source="..\commands\general\unlock.ts"/>
+    <File Id="F0177" Source="..\commands\general\wait.ts"/>
+    <File Id="F0178" Source="..\commands\general\with.ts"/>
+    <File Id="F0179" Source="..\commands\general\xport.ts"/>
+</Component>
+<Component Id="C0087" Directory="D0087" Guid="bf106bec-3c09-4f9d-84a2-a5b82389d29d">
+    <File Id="F0180" Source="..\commands\grid\clear.ts"/>
+    <File Id="F0181" Source="..\commands\grid\climp.cts"/>
+    <File Id="F0182" Source="..\commands\grid\cmine.cts"/>
+    <File Id="F0183" Source="..\commands\grid\deploy.ts"/>
+    <File Id="F0184" Source="..\commands\grid\exit.ts"/>
+    <File Id="F0185" Source="..\commands\grid\mines.cts"/>
+    <File Id="F0186" Source="..\commands\grid\pgrid.ts"/>
+    <File Id="F0187" Source="..\commands\grid\plimp.ts"/>
+    <File Id="F0188" Source="..\commands\grid\pmine.cts"/>
+    <File Id="F0189" Source="..\commands\grid\port.ts"/>
+    <File Id="F0190" Source="..\commands\grid\surround.cts"/>
+</Component>
+<Component Id="C0088" Directory="D0088" Guid="442b5f19-15b6-465f-a30d-c51c8be55f3d">
+    <File Id="F0192" Source="..\commands\offense\cap.cts"/>
+    <File Id="F0193" Source="..\commands\offense\hkill.ts"/>
+    <File Id="F0194" Source="..\commands\offense\htorp.ts"/>
+    <File Id="F0195" Source="..\commands\offense\kill.cts"/>
+    <File Id="F0196" Source="..\commands\offense\pe.ts"/>
+    <File Id="F0197" Source="..\commands\offense\ped.ts"/>
+    <File Id="F0198" Source="..\commands\offense\pel.ts"/>
+    <File Id="F0199" Source="..\commands\offense\pelk.ts"/>
+    <File Id="F0200" Source="..\commands\offense\pex.ts"/>
+    <File Id="F0201" Source="..\commands\offense\pxe.ts"/>
+    <File Id="F0202" Source="..\commands\offense\pxed.ts"/>
+    <File Id="F0203" Source="..\commands\offense\pxedx.ts"/>
+    <File Id="F0204" Source="..\commands\offense\pxel.ts"/>
+    <File Id="F0205" Source="..\commands\offense\pxelk.ts"/>
+    <File Id="F0206" Source="..\commands\offense\pxex.ts"/>
+</Component>
+<Component Id="C0089" Directory="D0089" Guid="0240dfcd-012c-4efd-8691-1185c5627fad">
+    <File Id="F0208" Source="..\commands\resource\buy.cts"/>
+    <File Id="F0209" Source="..\commands\resource\dump.cts"/>
+    <File Id="F0210" Source="..\commands\resource\max.cts"/>
+    <File Id="F0211" Source="..\commands\resource\sellship.cts"/>
+</Component>
+<Component Id="C0133" Directory="D0133" Guid="53ef8958-c044-44f4-a0c5-7e108ce73c2a">
+    <File Id="FPreloadMacroKit" Source="..\preload\_macro_kit.ts"/>
+    <File Id="FPreloadDockShopper" Source="..\preload\_dock_shopper.ts"/>
+    <File Id="FPreloadKazi" Source="..\preload\_kazi.ts"/>
+    <File Id="FPreloadLdrop" Source="..\preload\_ldrop.ts"/>
+</Component>
+<Component Id="C0090" Directory="D0090" Guid="5d077e4e-f9c4-4302-99ea-c609f8998f11">
+    <File Id="F0213" Source="..\daemons\alienhunt.cts"/>
+    <File Id="F0214" Source="..\daemons\at.cts"/>
+    <File Id="F0215" Source="..\daemons\chat.ts"/>
+    <File Id="F0216" Source="..\daemons\comms.ts"/>
+    <File Id="F0217" Source="..\daemons\ephaggle.ts"/>
+    <File Id="F0218" Source="..\daemons\ignore.ts"/>
+    <File Id="F0219" Source="..\daemons\online.ts"/>
+    <File Id="F0220" Source="..\daemons\repeat.cts"/>
+    <File Id="F0221" Source="..\daemons\stats.ts"/>
+    <File Id="F0222" Source="..\daemons\teammega.cts"/>
+    <File Id="F0223" Source="..\daemons\viewscreen.ts"/>
+    <File Id="F0224" Source="..\daemons\watcher.ts"/>
+</Component>
+<Component Id="C0092" Directory="D0092" Guid="cbc13b49-6859-480c-9913-fee7784b362c">
+    <File Id="F0225" Source="..\modes\cashing\bbb.ts"/>
+    <File Id="F0226" Source="..\modes\cashing\furb.ts"/>
+    <File Id="F0227" Source="..\modes\cashing\marco.cts"/>
+    <File Id="F0228" Source="..\modes\cashing\merch.ts"/>
+    <File Id="F0229" Source="..\modes\cashing\mooexp_p.cts"/>
+    <File Id="F0230" Source="..\modes\cashing\moo_p.cts"/>
+    <File Id="F0231" Source="..\modes\cashing\salesman.ts"/>
+    <File Id="F0232" Source="..\modes\cashing\sdt.ts"/>
+    <File Id="F0233" Source="..\modes\cashing\sst.ts"/>
+    <File Id="F0234" Source="..\modes\cashing\Tbust.cts"/>
+    <File Id="F0235" Source="..\modes\cashing\wppt.ts"/>
+    <File Id="F0236" Source="..\modes\cashing\wsst.ts"/>
+</Component>
+<Component Id="C0093" Directory="D0093" Guid="00f1a282-6909-4a71-8126-441d5959a90e">
+    <File Id="F0237" Source="..\modes\data\beam.ts"/>
+    <File Id="F0238" Source="..\modes\data\list.ts"/>
+    <File Id="F0239" Source="..\modes\data\sentinel.ts"/>
+    <File Id="F0240" Source="..\modes\data\ztm.ts"/>
+</Component>
+<Component Id="C0094" Directory="D0094" Guid="be852ddb-8a40-41dd-b05d-d949f813b92b">
+    <File Id="F0241" Source="..\modes\defense\citfill.ts"/>
+    <File Id="F0242" Source="..\modes\defense\ig.ts"/>
+    <File Id="F0243" Source="..\modes\defense\reloader.ts"/>
+    <File Id="F0244" Source="..\modes\defense\runaway.ts"/>
+    <File Id="F0245" Source="..\modes\defense\saveme.ts"/>
+    <File Id="F0246" Source="..\modes\defense\savevar.ts"/>
+    <File Id="F0247" Source="..\modes\defense\unstack.ts"/>
+</Component>
+<Component Id="C0096" Directory="D0096" Guid="a631d9c8-8bb7-44b0-b026-895cf2eb586f">
+    <File Id="F0249" Source="..\modes\grid\dora.ts"/>
+    <File Id="F0250" Source="..\modes\grid\lspassgrid.ts"/>
+    <File Id="F0251" Source="..\modes\grid\mow.ts"/>
+    <File Id="F0252" Source="..\modes\grid\pgridder.ts"/>
+    <File Id="F0253" Source="..\modes\grid\plimper.ts"/>
+    <File Id="F0254" Source="..\modes\grid\ramgrid.ts"/>
+    <File Id="F0255" Source="..\modes\grid\wall.ts"/>
+    <File Id="F0256" Source="..\modes\grid\wander.ts"/>
+</Component>
+<Component Id="C0097" Directory="D0097" Guid="a22ef82e-7f39-4c0c-84a3-b2f3d219f1cb">
+    <File Id="F0257" Source="..\modes\offense\Boton.cts"/>
+    <File Id="F0258" Source="..\modes\offense\citcap.ts"/>
+    <File Id="F0259" Source="..\modes\offense\citkill.ts"/>
+    <File Id="F0260" Source="..\modes\offense\density.ts"/>
+    <File Id="F0261" Source="..\modes\offense\dockkill.ts"/>
+    <File Id="F0262" Source="..\modes\offense\drop.ts"/>
+    <File Id="F0263" Source="..\modes\offense\foton.ts"/>
+    <File Id="F0264" Source="..\modes\offense\pdrop.ts"/>
+    <File Id="F0265" Source="..\modes\offense\plock.ts"/>
+</Component>
+<Component Id="C0098" Directory="D0098" Guid="d7b49b2b-5cf1-4fed-8926-84d49843f03f">
+    <File Id="F0266" Source="..\modes\resource\colo.ts"/>
+    <File Id="F0267" Source="..\modes\resource\dump.ts"/>
+    <File Id="F0268" Source="..\modes\resource\ecolo.ts"/>
+    <File Id="F0269" Source="..\modes\resource\fillships.ts"/>
+    <File Id="F0270" Source="..\modes\resource\lsd.ts"/>
+    <File Id="F0271" Source="..\modes\resource\makeplanet.ts"/>
+    <File Id="F0272" Source="..\modes\resource\Move.cts"/>
+    <File Id="F0273" Source="..\modes\resource\movefig.cts"/>
+    <File Id="F0274" Source="..\modes\resource\moveship.ts"/>
+    <File Id="F0275" Source="..\modes\resource\patp.ts"/>
+    <File Id="F0276" Source="..\modes\resource\pimp.ts"/>
+    <File Id="F0277" Source="..\modes\resource\strip.ts"/>
+</Component>
+<Component Id="C0099" Directory="D0099" Guid="eaf5f23c-b590-4c69-ac47-d62de38a080b">
+    <File Id="FIncludeCall" Source="..\include\call.ts"/>
+    <File Id="FIncludeHolo" Source="..\include\holo.ts"/>
+    <File Id="FIncludePel" Source="..\include\pel.ts"/>
+    <File Id="FIncludePgrid" Source="..\include\pgrid.ts"/>
+    <File Id="FIncludeArmid" Source="..\include\armid.ts"/>
+    <File Id="FIncludeArmids" Source="..\include\armids.ts"/>
+    <File Id="FIncludeBot" Source="..\include\bot.ts"/>
+    <File Id="FIncludeBuyfig" Source="..\include\buyfig.ts"/>
+    <File Id="FIncludeBuyfuel" Source="..\include\buyfuel.ts"/>
+    <File Id="FIncludeBuyshield" Source="..\include\buyshield.ts"/>
+    <File Id="FIncludeCim" Source="..\include\cim.ts"/>
+    <File Id="FIncludeCombat" Source="..\include\combat.ts"/>
+    <File Id="FIncludeConnectivity" Source="..\include\connectivity.ts"/>
+    <File Id="FIncludeDep" Source="..\include\dep.ts"/>
+    <File Id="FIncludeDscan" Source="..\include\dscan.ts"/>
+    <File Id="FIncludeFighter" Source="..\include\fighter.ts"/>
+    <File Id="FIncludeFighters" Source="..\include\fighters.ts"/>
+    <File Id="FIncludeGame" Source="..\include\game.ts"/>
+    <File Id="FIncludeGrid" Source="..\include\grid.ts"/>
+    <File Id="FIncludeInternalCommands" Source="..\include\internal_commands.ts"/>
+    <File Id="FIncludeInvader" Source="..\include\invader.ts"/>
+    <File Id="FIncludeLimp" Source="..\include\limp.ts"/>
+    <File Id="FIncludeLimpets" Source="..\include\limpets.ts"/>
+    <File Id="FIncludeMap" Source="..\include\map.ts"/>
+    <File Id="FIncludeMax" Source="..\include\max.ts"/>
+    <File Id="FIncludeMenus" Source="..\include\menus.ts"/>
+    <File Id="FIncludeMines" Source="..\include\mines.ts"/>
+    <File Id="FIncludeModules" Source="..\include\modules.ts"/>
+    <File Id="FIncludeMoveship" Source="..\include\moveship.ts"/>
+    <File Id="FIncludeMow" Source="..\include\mow.ts"/>
+    <File Id="FIncludePatp" Source="..\include\patp.ts"/>
+    <File Id="FIncludePlanet" Source="..\include\planet.ts"/>
+    <File Id="FIncludePlanetinfo" Source="..\include\planetinfo.ts"/>
+    <File Id="FIncludePlayer" Source="..\include\player.ts"/>
+    <File Id="FIncludePort" Source="..\include\port.ts"/>
+    <File Id="FIncludePrompt" Source="..\include\prompt.ts"/>
+    <File Id="FIncludePwarp" Source="..\include\pwarp.ts"/>
+    <File Id="FIncludeQuikstats" Source="..\include\quikstats.ts"/>
+    <File Id="FIncludeScrub" Source="..\include\scrub.ts"/>
+    <File Id="FIncludeSearch" Source="..\include\search.ts"/>
+    <File Id="FIncludeSector" Source="..\include\sector.ts"/>
+    <File Id="FIncludeShip" Source="..\include\ship.ts"/>
+    <File Id="FIncludeShipstats" Source="..\include\shipstats.ts"/>
+    <File Id="FIncludeSwitchboard" Source="..\include\switchboard.ts"/>
+    <File Id="FIncludeTargeting" Source="..\include\targeting.ts"/>
+    <File Id="FIncludeTopoff" Source="..\include\topoff.ts"/>
+    <File Id="FIncludeUserInterface" Source="..\include\user_interface.ts"/>
+    <File Id="FIncludeValidation" Source="..\include\validation.ts"/>
+    <File Id="FIncludeWith" Source="..\include\with.ts"/>
+    <File Id="FIncludeWorldtrade" Source="..\include\worldtrade.ts"/>
+    <File Id="FIncludeXenter" Source="..\include\xenter.ts"/>
+</Component>
+<Component Id="C0132" Directory="D0132" Guid="43cac386-94f8-46d5-9f9f-943f00925110">
+    <File Id="F0315" Source="..\startups\chat.cts"/>
+    <File Id="F0316" Source="..\startups\viewscreen.cts"/>
+    <File Id="F0317" Source="..\startups\watcher.cts"/>
+</Component>
+<Component Id="HelpComp" Directory="Help" Guid="b64b40cf-aa6a-4e93-9ece-ae158b059df7">
+    <File Id="F0318" Source="..\Help\About.txt"/>
+    <File Id="F0319" Source="..\Help\armids.txt"/>
+    <File Id="F0320" Source="..\Help\avoids.txt"/>
+    <File Id="F0321" Source="..\Help\Bot.txt"/>
+    <File Id="F0322" Source="..\Help\boton.txt"/>
+    <File Id="F0323" Source="..\Help\Bust.txt"/>
+    <File Id="F0324" Source="..\Help\bustcount.txt"/>
+    <File Id="F0325" Source="..\Help\Buy.txt"/>
+    <File Id="F0326" Source="..\Help\BWarp.txt"/>
+    <File Id="F0327" Source="..\Help\Call.txt"/>
+    <File Id="F0328" Source="..\Help\callout.txt"/>
+    <File Id="F0329" Source="..\Help\CIM.txt"/>
+    <File Id="F0330" Source="..\Help\citkill.txt"/>
+    <File Id="F0331" Source="..\Help\class0.txt"/>
+    <File Id="F0332" Source="..\Help\Clear.txt"/>
+    <File Id="F0333" Source="..\Help\CLimp.txt"/>
+    <File Id="F0334" Source="..\Help\CMine.txt"/>
+    <File Id="F0335" Source="..\Help\cn.txt"/>
+    <File Id="F0336" Source="..\Help\cn9.txt"/>
+    <File Id="F0337" Source="..\Help\Colo.txt"/>
+    <File Id="F0338" Source="..\Help\corp.txt"/>
+    <File Id="F0339" Source="..\Help\course.txt"/>
+    <File Id="F0340" Source="..\Help\Dep.txt"/>
+    <File Id="F0341" Source="..\Help\DISP.txt"/>
+    <File Id="F0342" Source="..\Help\DisR.txt"/>
+    <File Id="F0343" Source="..\Help\DScan.txt"/>
+    <File Id="F0344" Source="..\Help\Dump.txt"/>
+    <File Id="F0345" Source="..\Help\EMQ.txt"/>
+    <File Id="F0346" Source="..\Help\EMX.txt"/>
+    <File Id="F0347" Source="..\Help\Exit.txt"/>
+    <File Id="F0348" Source="..\Help\FigMove.txt"/>
+    <File Id="F0349" Source="..\Help\Figs.txt"/>
+    <File Id="F0350" Source="..\Help\Find.txt"/>
+    <File Id="F0351" Source="..\Help\Finder.txt"/>
+    <File Id="F0352" Source="..\Help\Furb.txt"/>
+    <File Id="F0353" Source="..\Help\GetVar.txt"/>
+    <File Id="F0354" Source="..\Help\GridCheck.txt"/>
+    <File Id="F0355" Source="..\Help\HKILL.txt"/>
+    <File Id="F0356" Source="..\Help\Holo.txt"/>
+    <File Id="F0357" Source="..\Help\HTorp.txt"/>
+    <File Id="F0358" Source="..\Help\IG.txt"/>
+    <File Id="F0359" Source="..\Help\KILL.txt"/>
+    <File Id="F0360" Source="..\Help\Land.txt"/>
+    <File Id="F0361" Source="..\Help\Lift.txt"/>
+    <File Id="F0362" Source="..\Help\Limp.txt"/>
+    <File Id="F0363" Source="..\Help\Limps.txt"/>
+    <File Id="F0364" Source="..\Help\ListAll.txt"/>
+    <File Id="F0365" Source="..\Help\Login.txt"/>
+    <File Id="F0366" Source="..\Help\Logoff.txt"/>
+    <File Id="F0367" Source="..\Help\LSD.txt"/>
+    <File Id="F0368" Source="..\Help\Mac.txt"/>
+    <File Id="F0369" Source="..\Help\Max.txt"/>
+    <File Id="F0370" Source="..\Help\MaxPort.txt"/>
+    <File Id="F0371" Source="..\Help\Mega.txt"/>
+    <File Id="F0372" Source="..\Help\Merch.txt"/>
+    <File Id="F0373" Source="..\Help\Mine.txt"/>
+    <File Id="F0374" Source="..\Help\Mines.txt"/>
+    <File Id="F0375" Source="..\Help\MOVE.txt"/>
+    <File Id="F0376" Source="..\Help\MoveFig.txt"/>
+    <File Id="F0377" Source="..\Help\moveship.txt"/>
+    <File Id="F0378" Source="..\Help\Mow.txt"/>
+    <File Id="F0379" Source="..\Help\msgs.txt"/>
+    <File Id="F0380" Source="..\Help\Neg.txt"/>
+    <File Id="F0381" Source="..\Help\News.txt"/>
+    <File Id="F0382" Source="..\Help\NMac.txt"/>
+    <File Id="F0383" Source="..\Help\Overload.txt"/>
+    <File Id="F0384" Source="..\Help\Page.txt"/>
+    <File Id="F0385" Source="..\Help\param.txt"/>
+    <File Id="F0386" Source="..\Help\patp.txt"/>
+    <File Id="F0387" Source="..\Help\pdrop.txt"/>
+    <File Id="F0388" Source="..\Help\PE.txt"/>
+    <File Id="F0389" Source="..\Help\PED.txt"/>
+    <File Id="F0390" Source="..\Help\PEL.txt"/>
+    <File Id="F0391" Source="..\Help\PELK.txt"/>
+    <File Id="F0392" Source="..\Help\PEX.txt"/>
+    <File Id="F0393" Source="..\Help\PGrid.txt"/>
+    <File Id="F0394" Source="..\Help\Pimp.txt"/>
+    <File Id="F0395" Source="..\Help\Ping.txt"/>
+    <File Id="F0396" Source="..\Help\Plimp.txt"/>
+    <File Id="F0397" Source="..\Help\PList.txt"/>
+    <File Id="F0398" Source="..\Help\Plock.txt"/>
+    <File Id="F0399" Source="..\Help\PMine.txt"/>
+    <File Id="F0400" Source="..\Help\PScan.txt"/>
+    <File Id="F0401" Source="..\Help\PSST.txt"/>
+    <File Id="F0402" Source="..\Help\PWarp.txt"/>
+    <File Id="F0403" Source="..\Help\PXE.txt"/>
+    <File Id="F0404" Source="..\Help\PXED.txt"/>
+    <File Id="F0405" Source="..\Help\PXEL.txt"/>
+    <File Id="F0406" Source="..\Help\PXELK.txt"/>
+    <File Id="F0407" Source="..\Help\PXEX.txt"/>
+    <File Id="F0408" Source="..\Help\QSS.txt"/>
+    <File Id="F0409" Source="..\Help\Refresh.txt"/>
+    <File Id="F0410" Source="..\Help\Relog.txt"/>
+    <File Id="F0411" Source="..\Help\Reset.txt"/>
+    <File Id="F0412" Source="..\Help\Rob.txt"/>
+    <File Id="F0413" Source="..\Help\SafeMow.txt"/>
+    <File Id="F0414" Source="..\Help\Saveme.txt"/>
+    <File Id="F0415" Source="..\Help\SDT.txt"/>
+    <File Id="F0416" Source="..\Help\Sector.txt"/>
+    <File Id="F0417" Source="..\Help\SetVar.txt"/>
+    <File Id="F0418" Source="..\Help\ShipMove.txt"/>
+    <File Id="F0419" Source="..\Help\SList.txt"/>
+    <File Id="F0420" Source="..\Help\SST.txt"/>
+    <File Id="F0421" Source="..\Help\Stats.txt"/>
+    <File Id="F0422" Source="..\Help\status.txt"/>
+    <File Id="F0423" Source="..\Help\Stopall.txt"/>
+    <File Id="F0424" Source="..\Help\StoreShip.txt"/>
+    <File Id="F0425" Source="..\Help\strip.txt"/>
+    <File Id="F0426" Source="..\Help\Surround.txt"/>
+    <File Id="F0427" Source="..\Help\tbust.txt"/>
+    <File Id="F0428" Source="..\Help\TopOff.txt"/>
+    <File Id="F0429" Source="..\Help\Tow.txt"/>
+    <File Id="F0430" Source="..\Help\TRICON.txt"/>
+    <File Id="F0431" Source="..\Help\TWarp.txt"/>
+    <File Id="F0432" Source="..\Help\Unlock.txt"/>
+    <File Id="F0433" Source="..\Help\With.txt"/>
+    <File Id="F0434" Source="..\Help\wppt.txt"/>
+    <File Id="F0435" Source="..\Help\xenter.txt"/>
+    <File Id="F0436" Source="..\Help\Xport.txt"/>
+    <File Id="F0437" Source="..\Help\ZTM.txt"/>
+</Component>
+
+        </ComponentGroup>
+    </Fragment>
+</Wix>                

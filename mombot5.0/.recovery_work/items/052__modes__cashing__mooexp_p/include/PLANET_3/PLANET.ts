@@ -1,0 +1,1544 @@
+:PLANET~PLANETNEG
+
+
+
+
+
+
+
+
+setvar $PLANET~OUTPUT_FILE $BOT~MCIC_FILE
+setvar $PLANET~SELLDELAY 0
+setvar $PLANET~OREMCIC "-90"
+setvar $PLANET~ORGMCIC "-75"
+setvar $PLANET~EQUMCIC "-65"
+setvar $PLANET~VERSION "3.0.0"
+
+setvar $PLANET~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+:PLANET~VERIFYPROMPT
+if (($PLANET~STARTINGLOCATION <> "Citadel") and ($PLANET~STARTINGLOCATION <> "Planet"))
+  setvar $PLANET~EXIT_MESSAGE "Must start at Citadel or Planet Prompt for Planet Nego"
+  goto :EXITNEG
+end
+
+
+
+setvar $PLANET~_CK_PTRADESETTING $GAME~PTRADESETTING
+setvar $PLANET~QUANTITYUNKNOWN 0
+
+if ($PLANET~STARTINGLOCATION = "Citadel")
+  send "Q"
+elseif ($PLANET~STARTINGLOCATION = "Planet ")
+  setvar $PLANET~STARTINGLOCATION "Planet"
+end
+gosub :GETPLANETINFO
+send "Q"
+gosub :PLAYER~GETINFO
+send "*"
+
+
+send "|CR"&$PLAYER~CURRENT_SECTOR&"*"
+
+settextlinetrigger FOUNDPORT :FOUNDPORT "Items     Status  Trading % of max OnBoard"
+settextlinetrigger NOPORT :NOPORT "I have no information about a port in that sector."
+settextlinetrigger NOPORT2 :NOPORT "You have never visted sector"
+settextlinetrigger NOPORT3 :NOPORT "credits / next hold"
+pause
+:PLANET~NOPORT
+
+send "Q|"
+killtrigger FOUNDPORT
+killtrigger NOPORT
+killtrigger NOPORT2
+killtrigger NOPORT3
+gosub :NEGOTIATELAND
+setvar $PLANET~EXIT_MESSAGE "No port to sell to"
+goto :EXITNEG
+:PLANET~FOUNDPORT
+
+killtrigger FOUNDPORT
+killtrigger NOPORT
+killtrigger NOPORT2
+killtrigger NOPORT3
+settextlinetrigger PORTINFO1 :PORTINFO1 "Fuel Ore "
+settextlinetrigger PORTINFO2 :PORTINFO2 "Organics"
+settextlinetrigger PORTINFO3 :PORTINFO3 "Equipment"
+settextlinetrigger GOTCR :GOTCR "Computer command [TL="
+pause
+:PLANET~PORTINFO1
+
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.OREBUYING 3
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORETRADING 4
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.OREPERCENT 5
+striptext $PLAYER~CURRENT_SECTOR.OREPERCENT "%"
+pause
+:PLANET~PORTINFO2
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGBUYING 2
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGTRADING 3
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGPERCENT 4
+striptext $PLAYER~CURRENT_SECTOR.ORGPERCENT "%"
+pause
+:PLANET~PORTINFO3
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUBUYING 2
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUTRADING 3
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUPERCENT 4
+striptext $PLAYER~CURRENT_SECTOR.EQUPERCENT "%"
+send "Q|"
+pause
+:PLANET~GOTCR
+killtrigger PORTINFO1
+killtrigger PORTINFO2
+killtrigger PORTINFO3
+killtrigger GOTCR
+
+
+setdelaytrigger JUSTASEC :JUSTASEC 200
+pause
+:PLANET~JUSTASEC
+:PLANET~INITINFO
+
+
+if ($PLAYER~TURNS <= 0)
+  gosub :NEGOTIATELAND
+  setvar $PLANET~EXIT_MESSAGE "I have no turns to negotiate this planet"
+  goto :EXITNEG
+end
+if ($PLAYER~CREDITS > 900000000)
+  gosub :NEGOTIATELAND
+  setvar $PLANET~EXIT_MESSAGE "I have too much cash on hand"
+  goto :EXITNEG
+end
+
+if ($PLANET~_CK_PNEGO_FUELTOSELL = "-1")
+  setvar $PLANET~FUELTOSELL 0
+elseif ($PLANET~_CK_PNEGO_FUELTOSELL = "max")
+  setvar $PLANET~FUELTOSELL $PLANET~PLANETORG
+else
+  setvar $PLANET~FUELTOSELL $PLANET~_CK_PNEGO_FUELTOSELL
+
+end
+if ($PLANET~FUELTOSELL > $PLANET~PLANETFUEL)
+  setvar $PLANET~FUELTOSELL $PLANET~PLANETFUEL
+end
+
+if ($PLANET~_CK_PNEGO_ORGTOSELL = "-1")
+  setvar $PLANET~ORGTOSELL 0
+elseif ($PLANET~_CK_PNEGO_ORGTOSELL = "max")
+  setvar $PLANET~ORGTOSELL $PLANET~PLANETORG
+else
+  setvar $PLANET~ORGTOSELL $PLANET~_CK_PNEGO_ORGTOSELL
+
+end
+if ($PLANET~ORGTOSELL > $PLANET~PLANETORG)
+  setvar $PLANET~ORGTOSELL $PLANET~PLANETORG
+end
+
+if ($PLANET~_CK_PNEGO_EQUIPTOSELL = "-1")
+  setvar $PLANET~EQUIPTOSELL 0
+elseif ($PLANET~_CK_PNEGO_EQUIPTOSELL = "max")
+  setvar $PLANET~EQUIPTOSELL $PLANET~PLANETEQUIP
+else
+  setvar $PLANET~EQUIPTOSELL $PLANET~_CK_PNEGO_EQUIPTOSELL
+
+end
+if ($PLANET~EQUIPTOSELL > $PLANET~PLANETEQUIP)
+  setvar $PLANET~EQUIPTOSELL $PLANET~PLANETEQUIP
+end
+
+
+
+if (($PLAYER~CURRENT_SECTOR.OREBUYING <> "Buying") or ($PLAYER~CURRENT_SECTOR.OREPERCENT < 15))
+  setvar $PLANET~FUELTOSELL 0
+end
+if (($PLAYER~CURRENT_SECTOR.ORGBUYING <> "Buying") or ($PLAYER~CURRENT_SECTOR.ORGPERCENT < 15))
+  setvar $PLANET~ORGTOSELL 0
+end
+if (($PLAYER~CURRENT_SECTOR.EQUBUYING <> "Buying") or ($PLAYER~CURRENT_SECTOR.EQUPERCENT < 15))
+  setvar $PLANET~EQUIPTOSELL 0
+end
+:PLANET~SELLOFF
+
+
+if (($PLANET~FUELTOSELL <> 0) or ($PLANET~ORGTOSELL <> 0) or ($PLANET~EQUIPTOSELL <> 0))
+  setvar $PLANET~ORE_SELL_FAILURES 0
+  setvar $PLANET~ORG_SELL_FAILURES 0
+  setvar $PLANET~EQU_SELL_FAILURES 0
+  setvar $PLANET~ORESELLOUTPUT ""
+  setvar $PLANET~ORGSELLOUTPUT ""
+  setvar $PLANET~EQUSELLOUTPUT ""
+  setvar $PLANET~OREPROFIT 0
+  setvar $PLANET~ORGPROFIT 0
+  setvar $PLANET~EQUPROFIT 0
+
+  send "|"
+  gosub :SELL
+  gosub :NEGOTIATELAND
+  if ($PLANET~STARTINGLOCATION = "Citadel")
+
+    if ($PLANET~OREPROFIT <> 0)
+      send "TT"&$PLANET~OREPROFIT&"*"
+      subtract $PLAYER~CREDITS $PLANET~OREPROFIT
+    end
+    if ($PLANET~ORGPROFIT <> 0)
+      send "TT"&$PLANET~ORGPROFIT&"*"
+      subtract $PLAYER~CREDITS $PLANET~ORGPROFIT
+    end
+    if ($PLANET~EQUPROFIT <> 0)
+      send "TT"&$PLANET~EQUPROFIT&"*"
+      subtract $PLAYER~CREDITS $PLANET~EQUPROFIT
+    end
+  end
+
+
+  send "|"
+
+
+
+
+  setvar $PLANET~GENERALOUTPUT "*Sector "&$PLAYER~CURRENT_SECTOR&"*"
+  write $PLANET~OUTPUT_FILE $PLANET~GENERALOUTPUT
+
+  if ($PLANET~ORESELLOUTPUT <> "")
+
+    setvar $SWITCHBOARD~MESSAGE "  *"&$PLANET~ORESELLOUTPUT
+    if ($SWITCHBOARD~SELF_COMMAND <> TRUE)
+      setvar $SWITCHBOARD~SELF_COMMAND 2
+    end
+
+
+    write $PLANET~OUTPUT_FILE $PLANET~ORESELLOUTPUT
+  end
+  if ($PLANET~ORGSELLOUTPUT <> "")
+
+    setvar $SWITCHBOARD~MESSAGE "  *"&$PLANET~ORGSELLOUTPUT
+    if ($SWITCHBOARD~SELF_COMMAND <> TRUE)
+      setvar $SWITCHBOARD~SELF_COMMAND 2
+    end
+
+    write $PLANET~OUTPUT_FILE $PLANET~ORGSELLOUTPUT
+  end
+  if ($PLANET~EQUSELLOUTPUT <> "")
+
+    setvar $SWITCHBOARD~MESSAGE "  *"&$PLANET~EQUSELLOUTPUT
+    if ($SWITCHBOARD~SELF_COMMAND <> TRUE)
+      setvar $SWITCHBOARD~SELF_COMMAND 2
+    end
+
+    write $PLANET~OUTPUT_FILE $PLANET~EQUSELLOUTPUT
+  end
+  setvar $PLANET~EXIT_MESSAGE "Done with port"
+  goto :EXITNEG
+else
+  gosub :NEGOTIATELAND
+  setvar $PLANET~EXIT_MESSAGE "Nothing to sell"
+  goto :EXITNEG
+end
+:PLANET~SELL
+:PLANET~RESELL
+
+
+
+
+
+
+if ($PLAYER~TURNS <= 0)
+  send "'I'm out of turns*"
+  return
+end
+setvar $PLANET~THISOREFAILED 0
+setvar $PLANET~THISORGFAILED 0
+setvar $PLANET~THISEQUFAILED 0
+if ($PLANET~FUELTOSELL > 0)
+  setvar $PLANET~ATTEMPTORE 1
+  setvar $PLANET~ATTEMPTORECONFIRMED 0
+end
+if ($PLANET~ORGTOSELL > 0)
+  setvar $PLANET~ATTEMPTORG 1
+  setvar $PLANET~ATTEMPTORGCONFIRMED 0
+end
+if ($PLANET~EQUIPTOSELL > 0)
+  setvar $PLANET~ATTEMPTEQU 1
+  setvar $PLANET~ATTEMPTEQUCONFIRMED 0
+end
+isnumber $PLANET~NUMBER $PLANET~PLANET
+setvar $PLANET~FINDPLANET 0
+if ($PLANET~NUMBER = 0)
+  send "PN"
+  setvar $PLANET~FINDPLANET 1
+else
+  send "PN"
+end
+
+subtract $PLAYER~TURNS 1
+:PLANET~GETPERCTS
+settextlinetrigger OREPCT :OREPCT "Fuel Ore   Buying"
+settextlinetrigger ORGPCT :ORGPCT "Organics   Buying"
+settextlinetrigger EQUPCT :EQUPCT "Equipment  Buying"
+settextlinetrigger GOTPERCTS :GOTPERCTS "Registry# and Planet Name"
+pause
+:PLANET~OREPCT
+
+killtrigger OREPCT
+killtrigger ORGPCT
+killtrigger EQUPCT
+killtrigger GOTPERCTS
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORETRADING 4
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.OREPERCENT 5
+striptext $PLAYER~CURRENT_SECTOR.OREPERCENT "%"
+if ($PLAYER~CURRENT_SECTOR.OREPERCENT < 100)
+  add $PLAYER~CURRENT_SECTOR.OREPERCENT 1
+end
+goto :GETPERCTS
+:PLANET~ORGPCT
+
+killtrigger OREPCT
+killtrigger ORGPCT
+killtrigger EQUPCT
+killtrigger GOTPERCTS
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGTRADING 3
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGPERCENT 4
+striptext $PLAYER~CURRENT_SECTOR.ORGPERCENT "%"
+if ($PLAYER~CURRENT_SECTOR.ORGPERCENT < 100)
+  add $PLAYER~CURRENT_SECTOR.ORGPERCENT 1
+end
+goto :GETPERCTS
+:PLANET~EQUPCT
+
+killtrigger OREPCT
+killtrigger ORGPCT
+killtrigger EQUPCT
+killtrigger GOTPERCTS
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUTRADING 3
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUPERCENT 4
+striptext $PLAYER~CURRENT_SECTOR.EQUPERCENT "%"
+if ($PLAYER~CURRENT_SECTOR.EQUPERCENT < 100)
+  add $PLAYER~CURRENT_SECTOR.EQUPERCENT 1
+end
+goto :GETPERCTS
+:PLANET~GOTPERCTS
+
+
+isnumber $PLANET~TEST1 $PLAYER~CURRENT_SECTOR.ORETRADING
+isnumber $PLANET~TEST2 $PLAYER~CURRENT_SECTOR.OREPERCENT
+if (($PLANET~TEST1 = 0) or ($PLANET~TEST2 = 0))
+  send "'DEBUG: NAN on oretrading:"&$PLANET~TEST1&" orepercent:" $PLANET~TEST2 "*"
+  setvar $PLAYER~CURRENT_SECTOR.OREPERCENT 1
+  setvar $PLAYER~CURRENT_SECTOR.ORETRADING 1
+end
+isnumber $PLANET~TEST3 $PLAYER~CURRENT_SECTOR.ORGTRADING
+isnumber $PLANET~TEST4 $PLAYER~CURRENT_SECTOR.ORGPERCENT
+if (($PLANET~TEST3 = 0) or ($PLANET~TEST2 = 0))
+  send "'DEBUG: NAN on orgtrading:"&$PLANET~TEST3&" orgpercent:" $PLANET~TEST4 "*"
+  setvar $PLAYER~CURRENT_SECTOR.ORGPERCENT 1
+  setvar $PLAYER~CURRENT_SECTOR.ORGTRADING 1
+end
+
+isnumber $PLANET~TEST5 $PLAYER~CURRENT_SECTOR.EQUTRADING
+isnumber $PLANET~TEST6 $PLAYER~CURRENT_SECTOR.EQUPERCENT
+if (($PLANET~TEST5 = 0) or ($PLANET~TEST6 = 0))
+  send "'DEBUG: NAN on equtrading:"&$PLANET~TEST5&" equpercent:" $PLANET~TEST6 "*"
+  setvar $PLAYER~CURRENT_SECTOR.EQUPERCENT 1
+  setvar $PLAYER~CURRENT_SECTOR.EQUTRADING 1
+end
+killtrigger OREPCT
+killtrigger ORGPCT
+killtrigger EQUPCT
+killtrigger GOTPERCTS
+if ($PLANET~FINDPLANET = 1)
+  settextlinetrigger PLANETNUM :PLANETNUM "> "&$PLANET~PLANET
+  setdelaytrigger NOPLANETNUM :NOPLANETNUM 3000
+  pause
+  :PLANET~NOPLANETNUM
+  killalltriggers
+  setvar $PLANET~EXIT_MESSAGE "Could not determine port number!"
+  send "q*"
+  goto :EXITNEG
+  :PLANET~PLANETNUM
+  killtrigger PLANETNUM
+  killtrigger NOPLANETNUM
+  getword CURRENTLINE $PLANET~PLANET 1
+  striptext $PLANET~PLANET ">"
+  send $PLANET~PLANET "*"
+else
+  send $PLANET~PLANET "*"
+end
+:PLANET~SELLPRODUCT
+
+
+settexttrigger SELLFUEL :SELLFUEL "How many units of Fuel Ore"
+settexttrigger SELLORG :SELLORG "How many units of Organics"
+settexttrigger SELLEQU :SELLEQU "How many units of Equipment"
+settexttrigger DONEWITHPORT :DONEWITHPORT "Command [TL="
+pause
+:PLANET~SELLFUEL
+
+killtrigger SELLFUEL
+killtrigger SELLORG
+killtrigger SELLEQU
+killtrigger DONEWITHPORT
+if ($PLANET~QUANTITYUNKNOWN = 1)
+  getword CURRENTLINE $PLANET~FUELTOSELL 12
+  striptext $PLANET~FUELTOSELL "["
+  striptext $PLANET~FUELTOSELL "]"
+  striptext $PLANET~FUELTOSELL "?"
+end
+
+
+isnumber $PLANET~TEST $PLANET~FUELTOSELL
+if ($PLANET~TEST = 0)
+  send "'DEBUG: NAN on fueltosell:"&$PLANET~FUELTOSELL "*"
+  setvar $PLANET~FUELTOSELL 0
+end
+if (($PLAYER~CURRENT_SECTOR.OREPERCENT >= 15) and ($PLANET~FUELTOSELL > 0))
+  if ($PLANET~FUELTOSELL > $PLAYER~CURRENT_SECTOR.ORETRADING)
+    setvar $PLANET~FUELTOSELL $PLAYER~CURRENT_SECTOR.ORETRADING
+  end
+  setvar $PLANET~ATTEMPTORECONFIRMED 1
+  setvar $PLANET~PRODTOSELL "ore"
+  setvar $PLANET~PORTBUYING $PLANET~FUELTOSELL
+  gosub :SELLHAGGLE
+  if ($PLANET~CURRENTHAGGLE = "succeeded")
+    setvar $PLANET~OREHAGGLE "succeeded"
+    setvar $PLANET~FUELTOSELL 0
+    subtract $PLANET~OREMCIC 1
+  else
+    setvar $PLANET~OREHAGGLE "failed"
+  end
+else
+  send "az0*"
+  setvar $PLANET~FUELTOSELL 0
+end
+goto :SELLPRODUCT
+:PLANET~SELLORG
+
+killtrigger SELLFUEL
+killtrigger SELLORG
+killtrigger SELLEQU
+killtrigger DONEWITHPORT
+if ($PLANET~QUANTITYUNKNOWN = 1)
+  getword CURRENTLINE $PLANET~ORGTOSELL 11
+  striptext $PLANET~ORGTOSELL "["
+  striptext $PLANET~ORGTOSELL "]"
+  striptext $PLANET~ORGTOSELL "?"
+end
+
+isnumber $PLANET~TEST $PLANET~ORGTOSELL
+if ($PLANET~TEST = 0)
+  send "'DEBUG: NAN on orgtosell:"&$PLANET~ORGTOSELL "*"
+  setvar $PLANET~ORGTOSELL 0
+end
+if (($PLAYER~CURRENT_SECTOR.ORGPERCENT >= 15) and ($PLANET~ORGTOSELL > 0))
+  if ($PLANET~ORGTOSELL > $PLAYER~CURRENT_SECTOR.ORGTRADING)
+    setvar $PLANET~ORGTOSELL $PLAYER~CURRENT_SECTOR.ORGTRADING
+  end
+  setvar $PLANET~ATTEMPTORGCONFIRMED 1
+  setvar $PLANET~PRODTOSELL "org"
+  setvar $PLANET~PORTBUYING $PLANET~ORGTOSELL
+  gosub :SELLHAGGLE
+  if ($PLANET~CURRENTHAGGLE = "succeeded")
+    setvar $PLANET~ORGHAGGLE "succeeded"
+    setvar $PLANET~ORGTOSELL 0
+    subtract $PLANET~ORGMCIC 1
+  else
+    setvar $PLANET~ORGHAGGLE "failed"
+  end
+else
+  send "az0*"
+  setvar $PLANET~ORGTOSELL 0
+end
+goto :SELLPRODUCT
+:PLANET~SELLEQU
+
+killtrigger SELLFUEL
+killtrigger SELLORG
+killtrigger SELLEQU
+killtrigger DONEWITHPORT
+if ($PLANET~QUANTITYUNKNOWN = 1)
+  getword CURRENTLINE $PLANET~EQUIPTOSELL 11
+  striptext $PLANET~EQUIPTOSELL "["
+  striptext $PLANET~EQUIPTOSELL "]"
+  striptext $PLANET~EQUIPTOSELL "?"
+end
+
+isnumber $PLANET~TEST $PLANET~EQUIPTOSELL
+if ($PLANET~TEST = 0)
+  send "'DEBUG: NAN on equiptosell:"&$PLANET~EQUIPTOSELL "*"
+  setvar $PLANET~EQUIPTOSELL 0
+end
+if (($PLAYER~CURRENT_SECTOR.EQUPERCENT >= 15) and ($PLANET~EQUIPTOSELL > 0))
+  if ($PLANET~EQUIPTOSELL > $PLAYER~CURRENT_SECTOR.EQUTRADING)
+    setvar $PLANET~EQUIPTOSELL $PLAYER~CURRENT_SECTOR.EQUTRADING
+  end
+  setvar $PLANET~ATTEMPTEQUCONFIRMED 1
+  setvar $PLANET~PRODTOSELL "equ"
+  setvar $PLANET~PORTBUYING $PLANET~EQUIPTOSELL
+  gosub :SELLHAGGLE
+  if ($PLANET~CURRENTHAGGLE = "succeeded")
+    setvar $PLANET~EQUHAGGLE "succeeded"
+    setvar $PLANET~EQUIPTOSELL 0
+    subtract $PLANET~EQUMCIC 1
+  else
+    setvar $PLANET~EQUHAGGLE "failed"
+  end
+else
+  send "az0*"
+  setvar $PLANET~EQUIPTOSELL 0
+end
+goto :SELLPRODUCT
+:PLANET~DONEWITHPORT
+
+killtrigger SELLFUEL
+killtrigger SELLORG
+killtrigger SELLEQU
+killtrigger DONEWITHPORT
+
+if (($PLANET~ATTEMPTORE = 1) and ($PLANET~ATTEMPTORECONFIRMED = 0))
+
+  setvar $PLANET~FUELTOSELL 0
+end
+if (($PLANET~ATTEMPTORG = 1) and ($PLANET~ATTEMPTORGCONFIRMED = 0))
+  setvar $PLANET~ORGTOSELL 0
+end
+if (($PLANET~ATTEMPTEQU = 1) and ($PLANET~ATTEMPTEQUCONFIRMED = 0))
+  setvar $PLANET~EQUIPTOSELL 0
+end
+
+if (($PLANET~ORE_SELL_FAILURES > 1) or ($PLANET~ORG_SELL_FAILURES > 4) or ($PLANET~EQU_SELL_FAILURES > 4))
+  setvar $PLANET~SELLOUTPUT $PLANET~SELLOUTPUT&"Multiple Haggle Failures - Please cut and paste this haggling session and email to Cherokee*"
+  return
+elseif (($PLANET~FUELTOSELL = 0) and (($PLANET~ORGTOSELL = 0) and ($PLANET~EQUIPTOSELL = 0)))
+  if (($PLANET~ATTEMPTORECONFIRMED = 0) and (($PLANET~ATTEMPTORGCONFIRMED = 0) and ($PLANET~ATTEMPTEQUCONFIRMED = 0)))
+    setvar $PLANET~EXIT_MESSAGE "Nothing to sell here!"
+  end
+  return
+else
+  goto :RESELL
+end
+:PLANET~SELLHAGGLE
+
+
+
+
+settextlinetrigger SELLFIRSTOFFER :SELLFIRSTOFFER "We'll buy them for"
+send "az"&$PLANET~PORTBUYING&"*"
+pause
+:PLANET~SELLFIRSTOFFER
+
+killtrigger SELLFIRSTOFFER
+getword CURRENTLINE $PLANET~OFFER 5
+striptext $PLANET~OFFER ","
+
+gosub :PLAYER~SWATHOFF
+if ($PLAYER~SWATHOFF = FALSE)
+  gosub :NEGOTIATELAND
+  setvar $PLANET~EXIT_MESSAGE $PLANET~SWATHOFFMESSAGE
+  goto :EXITNEG
+end
+
+
+
+setvar $PLANET~PERUNITINITOFFER $PLANET~OFFER
+
+
+multiply $PLANET~PERUNITINITOFFER 100
+divide $PLANET~PERUNITINITOFFER $PLANET~_CK_PTRADESETTING
+
+
+multiply $PLANET~PERUNITINITOFFER 100
+
+
+divide $PLANET~PERUNITINITOFFER $PLANET~PORTBUYING
+
+
+setvar $PLANET~PORTMAXINIT $PLANET~PERUNITINITOFFER
+
+
+divide $PLANET~PERUNITINITOFFER 10
+
+if ($PLANET~PRODTOSELL = "ore")
+
+  setvar $PLANET~BASEVALUE 256055800
+  setvar $PLANET~BASEPERCENT 11725
+  setvar $PLANET~BASEPERCENTINVERSE 88275
+  setvar $PLANET~PERCENTFROMBASE $PLAYER~CURRENT_SECTOR.OREPERCENT
+elseif ($PLANET~PRODTOSELL = "org")
+
+  setvar $PLANET~BASEVALUE 506276400
+  setvar $PLANET~BASEPERCENT 11287
+  setvar $PLANET~BASEPERCENTINVERSE 88713
+  setvar $PLANET~PERCENTFROMBASE $PLAYER~CURRENT_SECTOR.ORGPERCENT
+elseif ($PLANET~PRODTOSELL = "equ")
+
+  setvar $PLANET~BASEVALUE 906281000
+  setvar $PLANET~BASEPERCENT 10989
+  setvar $PLANET~BASEPERCENTINVERSE 89010
+  setvar $PLANET~PERCENTFROMBASE $PLAYER~CURRENT_SECTOR.EQUPERCENT
+
+end
+if ($PLANET~PERCENTFROMBASE = 100)
+
+
+  divide $PLANET~PORTMAXINIT 10
+
+elseif ($PLANET~PERCENTFROMBASE >= 15)
+
+  multiply $PLANET~PORTMAXINIT 100000
+
+
+  subtract $PLANET~PORTMAXINIT $PLANET~BASEVALUE
+
+
+  multiply $PLANET~PERCENTFROMBASE 1000
+
+
+  subtract $PLANET~PERCENTFROMBASE $PLANET~BASEPERCENT
+
+
+  divide $PLANET~PORTMAXINIT $PLANET~PERCENTFROMBASE
+
+
+  multiply $PLANET~PORTMAXINIT $PLANET~BASEPERCENTINVERSE
+
+
+  add $PLANET~PORTMAXINIT $PLANET~BASEVALUE
+
+
+  divide $PLANET~PORTMAXINIT 1000000
+
+elseif ($PLANET~PRODTOSELL = "ore")
+  setvar $PLANET~PORTMAXINIT 340
+
+elseif ($PLANET~PRODTOSELL = "org")
+  setvar $PLANET~PORTMAXINIT 635
+
+elseif ($PLANET~PRODTOSELL = "equ")
+  setvar $PLANET~PORTMAXINIT 1063
+
+
+
+
+
+end
+if ($PLANET~PRODTOSELL = "ore")
+  if ($PLANET~PORTMAXINIT >= 436)
+    setvar $PLANET~MCIC "-90"
+    setvar $PLANET~MULTIPLE 1494
+
+  elseif ($PLANET~PORTMAXINIT >= 434)
+    setvar $PLANET~MCIC "-89"
+    setvar $PLANET~MULTIPLE 1488
+
+  elseif ($PLANET~PORTMAXINIT >= 433)
+    setvar $PLANET~MCIC "-88"
+    setvar $PLANET~MULTIPLE 1482
+
+  elseif ($PLANET~PORTMAXINIT >= 431)
+    setvar $PLANET~MCIC "-87"
+    setvar $PLANET~MULTIPLE 1476
+
+  elseif ($PLANET~PORTMAXINIT >= 429)
+    setvar $PLANET~MCIC "-86"
+    setvar $PLANET~MULTIPLE 1470
+
+  elseif ($PLANET~PORTMAXINIT >= 427)
+    setvar $PLANET~MCIC "-85"
+    setvar $PLANET~MULTIPLE 1464
+
+  elseif ($PLANET~PORTMAXINIT >= 425)
+    setvar $PLANET~MCIC "-84"
+    setvar $PLANET~MULTIPLE 1458
+
+  elseif ($PLANET~PORTMAXINIT >= 424)
+    setvar $PLANET~MCIC "-83"
+    setvar $PLANET~MULTIPLE 1452
+
+  elseif ($PLANET~PORTMAXINIT >= 422)
+    setvar $PLANET~MCIC "-82"
+    setvar $PLANET~MULTIPLE 1446
+
+  elseif ($PLANET~PORTMAXINIT >= 420)
+    setvar $PLANET~MCIC "-81"
+    setvar $PLANET~MULTIPLE 1440
+
+  elseif ($PLANET~PORTMAXINIT >= 418)
+    setvar $PLANET~MCIC "-80"
+    setvar $PLANET~MULTIPLE 1434
+
+  elseif ($PLANET~PORTMAXINIT >= 416)
+    setvar $PLANET~MCIC "-79"
+    setvar $PLANET~MULTIPLE 1429
+
+  elseif ($PLANET~PORTMAXINIT >= 414)
+    setvar $PLANET~MCIC "-78"
+    setvar $PLANET~MULTIPLE 1423
+
+  elseif ($PLANET~PORTMAXINIT >= 412)
+    setvar $PLANET~MCIC "-77"
+    setvar $PLANET~MULTIPLE 1417
+
+  elseif ($PLANET~PORTMAXINIT >= 411)
+    setvar $PLANET~MCIC "-76"
+    setvar $PLANET~MULTIPLE 1411
+
+  elseif ($PLANET~PORTMAXINIT >= 409)
+    setvar $PLANET~MCIC "-75"
+    setvar $PLANET~MULTIPLE 1405
+
+  elseif ($PLANET~PORTMAXINIT >= 407)
+    setvar $PLANET~MCIC "-74"
+    setvar $PLANET~MULTIPLE 1399
+
+  elseif ($PLANET~PORTMAXINIT >= 405)
+    setvar $PLANET~MCIC "-73"
+    setvar $PLANET~MULTIPLE 1393
+
+  elseif ($PLANET~PORTMAXINIT >= 403)
+    setvar $PLANET~MCIC "-72"
+    setvar $PLANET~MULTIPLE 1387
+
+  elseif ($PLANET~PORTMAXINIT >= 401)
+    setvar $PLANET~MCIC "-71"
+    setvar $PLANET~MULTIPLE 1381
+
+  elseif ($PLANET~PORTMAXINIT >= 399)
+    setvar $PLANET~MCIC "-70"
+    setvar $PLANET~MULTIPLE 1375
+
+  elseif ($PLANET~PORTMAXINIT >= 397)
+    setvar $PLANET~MCIC "-69"
+    setvar $PLANET~MULTIPLE 1369
+
+  elseif ($PLANET~PORTMAXINIT >= 396)
+    setvar $PLANET~MCIC "-68"
+    setvar $PLANET~MULTIPLE 1363
+
+  elseif ($PLANET~PORTMAXINIT >= 394)
+    setvar $PLANET~MCIC "-67"
+    setvar $PLANET~MULTIPLE 1357
+
+  elseif ($PLANET~PORTMAXINIT >= 392)
+    setvar $PLANET~MCIC "-66"
+    setvar $PLANET~MULTIPLE 1351
+
+  elseif ($PLANET~PORTMAXINIT >= 390)
+    setvar $PLANET~MCIC "-65"
+    setvar $PLANET~MULTIPLE 1345
+
+  elseif ($PLANET~PORTMAXINIT >= 388)
+    setvar $PLANET~MCIC "-64"
+    setvar $PLANET~MULTIPLE 1342
+
+  elseif ($PLANET~PORTMAXINIT >= 386)
+    setvar $PLANET~MCIC "-63"
+    setvar $PLANET~MULTIPLE 1336
+
+  elseif ($PLANET~PORTMAXINIT >= 384)
+    setvar $PLANET~MCIC "-62"
+    setvar $PLANET~MULTIPLE 1330
+
+  elseif ($PLANET~PORTMAXINIT >= 382)
+    setvar $PLANET~MCIC "-61"
+    setvar $PLANET~MULTIPLE 1324
+
+  elseif ($PLANET~PORTMAXINIT >= 380)
+    setvar $PLANET~MCIC "-60"
+    setvar $PLANET~MULTIPLE 1318
+
+  elseif ($PLANET~PORTMAXINIT >= 378)
+    setvar $PLANET~MCIC "-59"
+    setvar $PLANET~MULTIPLE 1312
+
+  elseif ($PLANET~PORTMAXINIT >= 376)
+    setvar $PLANET~MCIC "-58"
+    setvar $PLANET~MULTIPLE 1306
+
+  elseif ($PLANET~PORTMAXINIT >= 374)
+    setvar $PLANET~MCIC "-57"
+    setvar $PLANET~MULTIPLE 1300
+
+  elseif ($PLANET~PORTMAXINIT >= 372)
+    setvar $PLANET~MCIC "-56"
+    setvar $PLANET~MULTIPLE 1294
+
+  elseif ($PLANET~PORTMAXINIT >= 370)
+    setvar $PLANET~MCIC "-55"
+    setvar $PLANET~MULTIPLE 1291
+
+  elseif ($PLANET~PORTMAXINIT >= 368)
+    setvar $PLANET~MCIC "-54"
+    setvar $PLANET~MULTIPLE 1285
+
+  elseif ($PLANET~PORTMAXINIT >= 366)
+    setvar $PLANET~MCIC "-53"
+    setvar $PLANET~MULTIPLE 1279
+
+  elseif ($PLANET~PORTMAXINIT >= 364)
+    setvar $PLANET~MCIC "-52"
+    setvar $PLANET~MULTIPLE 1273
+
+  elseif ($PLANET~PORTMAXINIT >= 362)
+    setvar $PLANET~MCIC "-51"
+    setvar $PLANET~MULTIPLE 1267
+
+  elseif ($PLANET~PORTMAXINIT >= 360)
+    setvar $PLANET~MCIC "-50"
+    setvar $PLANET~MULTIPLE 1261
+
+  elseif ($PLANET~PORTMAXINIT >= 358)
+    setvar $PLANET~MCIC "-49"
+    setvar $PLANET~MULTIPLE 1255
+
+  elseif ($PLANET~PORTMAXINIT >= 356)
+    setvar $PLANET~MCIC "-48"
+    setvar $PLANET~MULTIPLE 1249
+
+  elseif ($PLANET~PORTMAXINIT >= 354)
+    setvar $PLANET~MCIC "-46"
+    setvar $PLANET~MULTIPLE 1246
+
+  elseif ($PLANET~PORTMAXINIT >= 352)
+    setvar $PLANET~MCIC "-46"
+    setvar $PLANET~MULTIPLE 1240
+
+  elseif ($PLANET~PORTMAXINIT >= 350)
+    setvar $PLANET~MCIC "-45"
+    setvar $PLANET~MULTIPLE 1234
+
+  elseif ($PLANET~PORTMAXINIT >= 348)
+    setvar $PLANET~MCIC "-44"
+    setvar $PLANET~MULTIPLE 1228
+
+  elseif ($PLANET~PORTMAXINIT >= 346)
+    setvar $PLANET~MCIC "-43"
+    setvar $PLANET~MULTIPLE 1222
+
+  elseif ($PLANET~PORTMAXINIT >= 344)
+    setvar $PLANET~MCIC "-42"
+    setvar $PLANET~MULTIPLE 1219
+
+  elseif ($PLANET~PORTMAXINIT >= 342)
+    setvar $PLANET~MCIC "-41"
+    setvar $PLANET~MULTIPLE 1209
+
+  elseif ($PLANET~PORTMAXINIT >= 340)
+    setvar $PLANET~MCIC "-40"
+    setvar $PLANET~MULTIPLE 1208
+
+  else
+    setvar $PLANET~MCIC 0
+    setvar $PLANET~MULTIPLE 1208
+
+
+  end
+elseif ($PLANET~PRODTOSELL = "org")
+  if ($PLANET~PORTMAXINIT >= 813)
+    setvar $PLANET~MCIC "-75"
+    setvar $PLANET~MULTIPLE 1405
+
+  elseif ($PLANET~PORTMAXINIT >= 810)
+    setvar $PLANET~MCIC "-74"
+    setvar $PLANET~MULTIPLE 1399
+
+  elseif ($PLANET~PORTMAXINIT >= 806)
+    setvar $PLANET~MCIC "-73"
+    setvar $PLANET~MULTIPLE 1393
+
+  elseif ($PLANET~PORTMAXINIT >= 802)
+    setvar $PLANET~MCIC "-72"
+    setvar $PLANET~MULTIPLE 1387
+
+  elseif ($PLANET~PORTMAXINIT >= 798)
+    setvar $PLANET~MCIC "-71"
+    setvar $PLANET~MULTIPLE 1381
+
+  elseif ($PLANET~PORTMAXINIT >= 795)
+    setvar $PLANET~MCIC "-70"
+    setvar $PLANET~MULTIPLE 1375
+
+  elseif ($PLANET~PORTMAXINIT >= 791)
+    setvar $PLANET~MCIC "-69"
+    setvar $PLANET~MULTIPLE 1369
+
+  elseif ($PLANET~PORTMAXINIT >= 787)
+    setvar $PLANET~MCIC "-68"
+    setvar $PLANET~MULTIPLE 1363
+
+  elseif ($PLANET~PORTMAXINIT >= 783)
+    setvar $PLANET~MCIC "-67"
+    setvar $PLANET~MULTIPLE 1357
+
+  elseif ($PLANET~PORTMAXINIT >= 779)
+    setvar $PLANET~MCIC "-66"
+    setvar $PLANET~MULTIPLE 1351
+
+  elseif ($PLANET~PORTMAXINIT >= 775)
+    setvar $PLANET~MCIC "-65"
+    setvar $PLANET~MULTIPLE 1345
+
+  elseif ($PLANET~PORTMAXINIT >= 772)
+    setvar $PLANET~MCIC "-64"
+    setvar $PLANET~MULTIPLE 1339
+
+  elseif ($PLANET~PORTMAXINIT >= 768)
+    setvar $PLANET~MCIC "-63"
+    setvar $PLANET~MULTIPLE 1336
+
+  elseif ($PLANET~PORTMAXINIT >= 764)
+    setvar $PLANET~MCIC "-62"
+    setvar $PLANET~MULTIPLE 1330
+
+  elseif ($PLANET~PORTMAXINIT >= 760)
+    setvar $PLANET~MCIC "-61"
+    setvar $PLANET~MULTIPLE 1324
+
+  elseif ($PLANET~PORTMAXINIT >= 756)
+    setvar $PLANET~MCIC "-60"
+    setvar $PLANET~MULTIPLE 1318
+
+  elseif ($PLANET~PORTMAXINIT >= 752)
+    setvar $PLANET~MCIC "-59"
+    setvar $PLANET~MULTIPLE 1312
+
+  elseif ($PLANET~PORTMAXINIT >= 748)
+    setvar $PLANET~MCIC "-58"
+    setvar $PLANET~MULTIPLE 1306
+
+  elseif ($PLANET~PORTMAXINIT >= 744)
+    setvar $PLANET~MCIC "-57"
+    setvar $PLANET~MULTIPLE 1300
+
+  elseif ($PLANET~PORTMAXINIT >= 740)
+    setvar $PLANET~MCIC "-56"
+    setvar $PLANET~MULTIPLE 1294
+
+  elseif ($PLANET~PORTMAXINIT >= 737)
+    setvar $PLANET~MCIC "-55"
+    setvar $PLANET~MULTIPLE 1291
+
+  elseif ($PLANET~PORTMAXINIT >= 733)
+    setvar $PLANET~MCIC "-54"
+    setvar $PLANET~MULTIPLE 1285
+
+  elseif ($PLANET~PORTMAXINIT >= 729)
+    setvar $PLANET~MCIC "-53"
+    setvar $PLANET~MULTIPLE 1279
+
+  elseif ($PLANET~PORTMAXINIT >= 725)
+    setvar $PLANET~MCIC "-52"
+    setvar $PLANET~MULTIPLE 1273
+
+  elseif ($PLANET~PORTMAXINIT >= 721)
+    setvar $PLANET~MCIC "-51"
+    setvar $PLANET~MULTIPLE 1267
+
+  elseif ($PLANET~PORTMAXINIT >= 717)
+    setvar $PLANET~MCIC "-50"
+    setvar $PLANET~MULTIPLE 1261
+
+  elseif ($PLANET~PORTMAXINIT >= 713)
+    setvar $PLANET~MCIC "-49"
+    setvar $PLANET~MULTIPLE 1255
+
+  elseif ($PLANET~PORTMAXINIT >= 709)
+    setvar $PLANET~MCIC "-48"
+    setvar $PLANET~MULTIPLE 1252
+
+  elseif ($PLANET~PORTMAXINIT >= 705)
+    setvar $PLANET~MCIC "-47"
+    setvar $PLANET~MULTIPLE 1246
+
+  elseif ($PLANET~PORTMAXINIT >= 701)
+    setvar $PLANET~MCIC "-46"
+    setvar $PLANET~MULTIPLE 1236
+
+  elseif ($PLANET~PORTMAXINIT >= 697)
+    setvar $PLANET~MCIC "-45"
+    setvar $PLANET~MULTIPLE 1233
+
+  elseif ($PLANET~PORTMAXINIT >= 693)
+    setvar $PLANET~MCIC "-44"
+    setvar $PLANET~MULTIPLE 1227
+
+  elseif ($PLANET~PORTMAXINIT >= 688)
+    setvar $PLANET~MCIC "-43"
+    setvar $PLANET~MULTIPLE 1224
+
+  elseif ($PLANET~PORTMAXINIT >= 684)
+    setvar $PLANET~MCIC "-42"
+    setvar $PLANET~MULTIPLE 1214
+
+  elseif ($PLANET~PORTMAXINIT >= 680)
+    setvar $PLANET~MCIC "-41"
+    setvar $PLANET~MULTIPLE 1213
+
+  elseif ($PLANET~PORTMAXINIT >= 676)
+    setvar $PLANET~MCIC "-40"
+    setvar $PLANET~MULTIPLE 1203
+
+  elseif ($PLANET~PORTMAXINIT >= 672)
+    setvar $PLANET~MCIC "-39"
+    setvar $PLANET~MULTIPLE 1200
+
+  elseif ($PLANET~PORTMAXINIT >= 668)
+    setvar $PLANET~MCIC "-38"
+    setvar $PLANET~MULTIPLE 1194
+
+  elseif ($PLANET~PORTMAXINIT >= 664)
+    setvar $PLANET~MCIC "-37"
+    setvar $PLANET~MULTIPLE 1191
+
+  elseif ($PLANET~PORTMAXINIT >= 660)
+    setvar $PLANET~MCIC "-36"
+    setvar $PLANET~MULTIPLE 1181
+
+  elseif ($PLANET~PORTMAXINIT >= 656)
+    setvar $PLANET~MCIC "-35"
+    setvar $PLANET~MULTIPLE 1178
+
+  elseif ($PLANET~PORTMAXINIT >= 651)
+    setvar $PLANET~MCIC "-34"
+    setvar $PLANET~MULTIPLE 1172
+
+  elseif ($PLANET~PORTMAXINIT >= 647)
+    setvar $PLANET~MCIC "-33"
+    setvar $PLANET~MULTIPLE 1166
+
+  elseif ($PLANET~PORTMAXINIT >= 643)
+    setvar $PLANET~MCIC "-32"
+    setvar $PLANET~MULTIPLE 1160
+
+  elseif ($PLANET~PORTMAXINIT >= 639)
+    setvar $PLANET~MCIC "-31"
+    setvar $PLANET~MULTIPLE 1157
+
+  elseif ($PLANET~PORTMAXINIT >= 635)
+    setvar $PLANET~MCIC "-30"
+    setvar $PLANET~MULTIPLE 1154
+
+  else
+    setvar $PLANET~MCIC 0
+    setvar $PLANET~MULTIPLE 1154
+
+  end
+elseif ($PLANET~PRODTOSELL = "equ")
+  if ($PLANET~PORTMAXINIT >= 1393)
+    setvar $PLANET~MCIC "-65"
+    setvar $PLANET~MULTIPLE 1347
+
+  elseif ($PLANET~PORTMAXINIT >= 1386)
+    setvar $PLANET~MCIC "-64"
+    setvar $PLANET~MULTIPLE 1341
+
+  elseif ($PLANET~PORTMAXINIT >= 1379)
+    setvar $PLANET~MCIC "-63"
+    setvar $PLANET~MULTIPLE 1336
+
+  elseif ($PLANET~PORTMAXINIT >= 1372)
+    setvar $PLANET~MCIC "-62"
+    setvar $PLANET~MULTIPLE 1330
+
+  elseif ($PLANET~PORTMAXINIT >= 1365)
+    setvar $PLANET~MCIC "-61"
+    setvar $PLANET~MULTIPLE 1324
+
+  elseif ($PLANET~PORTMAXINIT >= 1358)
+    setvar $PLANET~MCIC "-60"
+    setvar $PLANET~MULTIPLE 1319
+
+  elseif ($PLANET~PORTMAXINIT >= 1351)
+    setvar $PLANET~MCIC "-59"
+    setvar $PLANET~MULTIPLE 1313
+
+  elseif ($PLANET~PORTMAXINIT >= 1344)
+    setvar $PLANET~MCIC "-58"
+    setvar $PLANET~MULTIPLE 1307
+
+  elseif ($PLANET~PORTMAXINIT >= 1337)
+    setvar $PLANET~MCIC "-57"
+    setvar $PLANET~MULTIPLE 1302
+
+  elseif ($PLANET~PORTMAXINIT >= 1329)
+    setvar $PLANET~MCIC "-56"
+    setvar $PLANET~MULTIPLE 1296
+
+  elseif ($PLANET~PORTMAXINIT >= 1323)
+    setvar $PLANET~MCIC "-55"
+    setvar $PLANET~MULTIPLE 1291
+
+  elseif ($PLANET~PORTMAXINIT >= 1315)
+    setvar $PLANET~MCIC "-54"
+    setvar $PLANET~MULTIPLE 1285
+
+  elseif ($PLANET~PORTMAXINIT >= 1308)
+    setvar $PLANET~MCIC "-53"
+    setvar $PLANET~MULTIPLE 1279
+
+  elseif ($PLANET~PORTMAXINIT >= 1301)
+    setvar $PLANET~MCIC "-52"
+    setvar $PLANET~MULTIPLE 1274
+
+  elseif ($PLANET~PORTMAXINIT >= 1294)
+    setvar $PLANET~MCIC "-51"
+    setvar $PLANET~MULTIPLE 1268
+
+  elseif ($PLANET~PORTMAXINIT >= 1287)
+    setvar $PLANET~MCIC "-50"
+    setvar $PLANET~MULTIPLE 1262
+
+  elseif ($PLANET~PORTMAXINIT >= 1279)
+    setvar $PLANET~MCIC "-49"
+    setvar $PLANET~MULTIPLE 1254
+
+  elseif ($PLANET~PORTMAXINIT >= 1272)
+    setvar $PLANET~MCIC "-48"
+    setvar $PLANET~MULTIPLE 1247
+
+  elseif ($PLANET~PORTMAXINIT >= 1265)
+    setvar $PLANET~MCIC "-47"
+    setvar $PLANET~MULTIPLE 1246
+
+  elseif ($PLANET~PORTMAXINIT >= 1258)
+    setvar $PLANET~MCIC "-46"
+    setvar $PLANET~MULTIPLE 1241
+
+  elseif ($PLANET~PORTMAXINIT >= 1251)
+    setvar $PLANET~MCIC "-45"
+    setvar $PLANET~MULTIPLE 1235
+
+  elseif ($PLANET~PORTMAXINIT >= 1243)
+    setvar $PLANET~MCIC "-44"
+    setvar $PLANET~MULTIPLE 1229
+
+  elseif ($PLANET~PORTMAXINIT >= 1236)
+    setvar $PLANET~MCIC "-43"
+    setvar $PLANET~MULTIPLE 1224
+
+  elseif ($PLANET~PORTMAXINIT >= 1229)
+    setvar $PLANET~MCIC "-42"
+    setvar $PLANET~MULTIPLE 1218
+
+  elseif ($PLANET~PORTMAXINIT >= 1221)
+    setvar $PLANET~MCIC "-41"
+    setvar $PLANET~MULTIPLE 1213
+
+  elseif ($PLANET~PORTMAXINIT >= 1214)
+    setvar $PLANET~MCIC "-40"
+    setvar $PLANET~MULTIPLE 1208
+
+  elseif ($PLANET~PORTMAXINIT >= 1206)
+    setvar $PLANET~MCIC "-39"
+    setvar $PLANET~MULTIPLE 1201
+
+  elseif ($PLANET~PORTMAXINIT >= 1199)
+    setvar $PLANET~MCIC "-38"
+    setvar $PLANET~MULTIPLE 1196
+
+  elseif ($PLANET~PORTMAXINIT >= 1192)
+    setvar $PLANET~MCIC "-37"
+    setvar $PLANET~MULTIPLE 1190
+
+  elseif ($PLANET~PORTMAXINIT >= 1184)
+    setvar $PLANET~MCIC "-36"
+    setvar $PLANET~MULTIPLE 1185
+
+  elseif ($PLANET~PORTMAXINIT >= 1177)
+    setvar $PLANET~MCIC "-35"
+    setvar $PLANET~MULTIPLE 1180
+
+  elseif ($PLANET~PORTMAXINIT >= 1169)
+    setvar $PLANET~MCIC "-34"
+    setvar $PLANET~MULTIPLE 1174
+
+  elseif ($PLANET~PORTMAXINIT >= 1162)
+    setvar $PLANET~MCIC "-33"
+    setvar $PLANET~MULTIPLE 1169
+
+  elseif ($PLANET~PORTMAXINIT >= 1154)
+    setvar $PLANET~MCIC "-32"
+    setvar $PLANET~MULTIPLE 1164
+
+  elseif ($PLANET~PORTMAXINIT >= 1147)
+    setvar $PLANET~MCIC "-31"
+    setvar $PLANET~MULTIPLE 1158
+
+  elseif ($PLANET~PORTMAXINIT >= 1139)
+    setvar $PLANET~MCIC "-30"
+    setvar $PLANET~MULTIPLE 1152
+
+  elseif ($PLANET~PORTMAXINIT >= 1132)
+    setvar $PLANET~MCIC "-29"
+    setvar $PLANET~MULTIPLE 1149
+
+  elseif ($PLANET~PORTMAXINIT >= 1124)
+    setvar $PLANET~MCIC "-28"
+    setvar $PLANET~MULTIPLE 1144
+
+  elseif ($PLANET~PORTMAXINIT >= 1116)
+    setvar $PLANET~MCIC "-27"
+    setvar $PLANET~MULTIPLE 1136
+
+  elseif ($PLANET~PORTMAXINIT >= 1109)
+    setvar $PLANET~MCIC "-26"
+    setvar $PLANET~MULTIPLE 1132
+
+  elseif ($PLANET~PORTMAXINIT >= 1101)
+    setvar $PLANET~MCIC "-25"
+    setvar $PLANET~MULTIPLE 1126
+
+  elseif ($PLANET~PORTMAXINIT >= 1093)
+    setvar $PLANET~MCIC "-24"
+    setvar $PLANET~MULTIPLE 1122
+
+  elseif ($PLANET~PORTMAXINIT >= 1086)
+    setvar $PLANET~MCIC "-23"
+    setvar $PLANET~MULTIPLE 1117
+
+  elseif ($PLANET~PORTMAXINIT >= 1078)
+    setvar $PLANET~MCIC "-22"
+    setvar $PLANET~MULTIPLE 1110
+
+  elseif ($PLANET~PORTMAXINIT >= 1071)
+    setvar $PLANET~MCIC "-21"
+    setvar $PLANET~MULTIPLE 1105
+
+  elseif ($PLANET~PORTMAXINIT >= 1063)
+    setvar $PLANET~MCIC "-20"
+    setvar $PLANET~MULTIPLE 1102
+
+  else
+    setvar $PLANET~MCIC 0
+    setvar $PLANET~MULTIPLE 1102
+
+
+
+  end
+end
+setvar $PLANET~COUNTER $PLANET~OFFER
+divide $PLANET~COUNTER 10
+multiply $PLANET~COUNTER $PLANET~MULTIPLE
+divide $PLANET~COUNTER 100
+send "az"&$PLANET~COUNTER&"*"
+setvar $PLANET~MIDHAGGLES 0
+:PLANET~SELLOFFERLOOP
+settextlinetrigger SELLPRICE :SELLPRICE "We'll buy them for"
+settextlinetrigger SELLFINALOFFER :SELLFINALOFFER "Our final offer"
+
+settextlinetrigger SELLEXPERIENCE :SELLEXPERIENCE "experience point(s)"
+settextlinetrigger SELLYOUHAVE :SELLYOUHAVE "You have"
+
+settextlinetrigger SELLSCREWUP1 :SELLSCREWUP "Get real ion-brain, make me a real offer."
+settextlinetrigger SELLSCREWUP2 :SELLSCREWUP "This is the big leagues Jr.  Make a real offer."
+settextlinetrigger SELLSCREWUP3 :SELLSCREWUP "My patience grows short with you."
+settextlinetrigger SELLSCREWUP4 :SELLSCREWUP "I have much better things to do than waste my time.  Try again."
+settextlinetrigger SELLSCREWUP5 :SELLSCREWUP "HA! HA, ha hahahhah hehehe hhhohhohohohh!  You choke me up!"
+settextlinetrigger SELLSCREWUP6 :SELLSCREWUP "Quit playing around, you're wasting my time!"
+settextlinetrigger SELLSCREWUP7 :SELLSCREWUP "Make a real offer or get the h"
+settextlinetrigger SELLSCREWUP8 :SELLSCREWUP "WHAT?!@!? you must be crazy!"
+settextlinetrigger SELLSCREWUP9 :SELLSCREWUP "So, you think I'm as stupid as you look? Make a real offer."
+settextlinetrigger SELLSCREWUP10 :SELLSCREWUP "What do you take me for, a fool?  Make a real offer!"
+settextlinetrigger SELLSCREWUP11 :SELLSCREWUP "Swine, go peddle your wares somewhere else, you make me sick."
+settextlinetrigger SELLSCREWUP12 :SELLSCREWUP "I see you are as stupid as you look, get lost..."
+settextlinetrigger SELLSCREWUP13 :SELLSCREWUP "HA!  You think me a fool?  Thats insane!  Get out of here!"
+settextlinetrigger SELLSCREWUP14 :SELLSCREWUP "Get lost creep, that junk isn't worth half that much!"
+settextlinetrigger SELLSCREWUP15 :SELLSCREWUP "I think you'd better leave if you value your life!"
+pause
+pause
+:PLANET~SELLSCREWUP
+killtrigger SELLPRICE
+killtrigger SELLFINALOFFER
+killtrigger SELLEXPERIENCE
+killtrigger SELLYOUHAVE
+killtrigger SELLSCREWUP1
+killtrigger SELLSCREWUP2
+killtrigger SELLSCREWUP3
+killtrigger SELLSCREWUP4
+killtrigger SELLSCREWUP5
+killtrigger SELLSCREWUP6
+killtrigger SELLSCREWUP7
+killtrigger SELLSCREWUP8
+killtrigger SELLSCREWUP9
+killtrigger SELLSCREWUP10
+killtrigger SELLSCREWUP11
+killtrigger SELLSCREWUP12
+killtrigger SELLSCREWUP13
+killtrigger SELLSCREWUP14
+killtrigger SELLSCREWUP15
+echo "*## PICKUP up sell fail"
+goto :SELLHAGGLEFAILED
+echo "*### HSOULD NOT GET HERE NOW"
+
+
+multiply $PLANET~COUNTER 98
+divide $PLANET~COUNTER 100
+send "az"&$PLANET~COUNTER&"*"
+goto :SELLOFFERLOOP
+:PLANET~SELLPRICE
+killtrigger SELLPRICE
+killtrigger SELLFINALOFFER
+killtrigger SELLEXPERIENCE
+killtrigger SELLYOUHAVE
+killtrigger SELLSCREWUP1
+killtrigger SELLSCREWUP2
+killtrigger SELLSCREWUP3
+killtrigger SELLSCREWUP4
+killtrigger SELLSCREWUP5
+killtrigger SELLSCREWUP6
+killtrigger SELLSCREWUP7
+killtrigger SELLSCREWUP8
+killtrigger SELLSCREWUP9
+killtrigger SELLSCREWUP10
+killtrigger SELLSCREWUP11
+killtrigger SELLSCREWUP12
+killtrigger SELLSCREWUP13
+killtrigger SELLSCREWUP14
+killtrigger SELLSCREWUP15
+add $PLANET~MIDHAGGLES 1
+setvar $PLANET~OLD_OFFER $PLANET~OFFER
+setvar $PLANET~OLD_COUNTER $PLANET~COUNTER
+getword CURRENTLINE $PLANET~OFFER 5
+striptext $PLANET~OFFER ","
+
+
+setvar $PLANET~OFFER_CHANGE $PLANET~OFFER
+subtract $PLANET~OFFER_CHANGE $PLANET~OLD_OFFER
+if ($PLANET~MCIC > "-35")
+  multiply $PLANET~OFFER_CHANGE 75
+  divide $PLANET~OFFER_CHANGE 100
+  subtract $PLANET~COUNTER $PLANET~OFFER_CHANGE
+  subtract $PLANET~COUNTER 25
+elseif ($PLANET~MCIC > "-55")
+  multiply $PLANET~OFFER_CHANGE 65
+  divide $PLANET~OFFER_CHANGE 100
+  subtract $PLANET~COUNTER $PLANET~OFFER_CHANGE
+  subtract $PLANET~COUNTER 25
+else
+  multiply $PLANET~OFFER_CHANGE 60
+  divide $PLANET~OFFER_CHANGE 100
+  subtract $PLANET~COUNTER $PLANET~OFFER_CHANGE
+  subtract $PLANET~COUNTER 10
+end
+send "az"&$PLANET~COUNTER&"*"
+goto :SELLOFFERLOOP
+:PLANET~SELLFINALOFFER
+killtrigger SELLPRICE
+killtrigger SELLFINALOFFER
+killtrigger SELLEXPERIENCE
+killtrigger SELLYOUHAVE
+killtrigger SELLSCREWUP1
+killtrigger SELLSCREWUP2
+killtrigger SELLSCREWUP3
+killtrigger SELLSCREWUP4
+killtrigger SELLSCREWUP5
+killtrigger SELLSCREWUP6
+killtrigger SELLSCREWUP7
+killtrigger SELLSCREWUP8
+killtrigger SELLSCREWUP9
+killtrigger SELLSCREWUP10
+killtrigger SELLSCREWUP11
+killtrigger SELLSCREWUP12
+killtrigger SELLSCREWUP13
+killtrigger SELLSCREWUP14
+killtrigger SELLSCREWUP15
+
+
+
+
+if (($PLANET~PRODTOSELL = "ore") and (($PLANET~MCIC <= "-75") and (($PLANET~PORTBUYING >= 25000) and (($PLANET~MIDHAGGLES < 1) and ($PLANET~ORE_SELL_FAILURES < 2)))))
+  setvar $PLANET~FORCEFAIL 1
+  setvar $PLANET~THISOREFAILED 1
+elseif (($PLANET~PRODTOSELL = "org") and ((($PLANET~MCIC <= "-60") and ((($PLANET~PORTBUYING >= 25000) and ((($PLANET~MIDHAGGLES < 2) and (($PLANET~THISOREFAILED = 1) or ($PLANET~ORG_SELL_FAILURES < 4)))))))))
+  setvar $PLANET~FORCEFAIL 1
+  setvar $PLANET~THISORGFAILED 1
+elseif (($PLANET~PRODTOSELL = "org") and ((($PLANET~MCIC <= "-60") and ((($PLANET~PORTBUYING >= 15000) and ((($PLANET~MIDHAGGLES < 1) and (($PLANET~THISOREFAILED = 1) or ($PLANET~ORG_SELL_FAILURES < 2)))))))))
+  setvar $PLANET~FORCEFAIL 1
+  setvar $PLANET~THISORGFAILED 1
+elseif (($PLANET~PRODTOSELL = "equ") and ((($PLANET~MCIC <= "-55") and ((($PLANET~PORTBUYING >= 20000) and ((($PLANET~MIDHAGGLES < 2) and (($PLANET~THISOREFAILED = 1) or ($PLANET~THISORGFAILED = 1) or ($PLANET~EQU_SELL_FAILURES < 4)))))))))
+  setvar $PLANET~FORCEFAIL 1
+  setvar $PLANET~THISEQUFAILED 1
+elseif (($PLANET~PRODTOSELL = "equ") and ((($PLANET~MCIC <= "-55") and ((($PLANET~PORTBUYING >= 12000) and ((($PLANET~MIDHAGGLES < 1) and (($PLANET~THISOREFAILED = 1) or ($PLANET~THISORGFAILED = 1) or ($PLANET~EQU_SELL_FAILURES < 2)))))))))
+  setvar $PLANET~FORCEFAIL 1
+  setvar $PLANET~THISEQUFAILED 1
+else
+  setvar $PLANET~FORCEFAIL 0
+end
+setsectorparameter $PLAYER~CURRENT_SECTOR "MCIC" $PLANET~MCIC
+if ($PLANET~PRODTOSELL = "ore")
+  setsectorparameter $PLAYER~CURRENT_SECTOR "ORE-MCIC" $PLANET~MCIC
+elseif ($PLANET~PRODTOSELL = "org")
+  setsectorparameter $PLAYER~CURRENT_SECTOR "ORG-MCIC" $PLANET~MCIC
+elseif ($PLANET~PRODTOSELL = "equ")
+  setsectorparameter $PLAYER~CURRENT_SECTOR "EQU-MCIC" $PLANET~MCIC
+
+end
+if ($PLANET~FORCEFAIL = 0)
+  setvar $PLANET~OLD_OFFER $PLANET~OFFER
+  setvar $PLANET~OLD_COUNTER $PLANET~COUNTER
+  getword CURRENTLINE $PLANET~OFFER 5
+  striptext $PLANET~OFFER ","
+  setvar $PLANET~OFFER_CHANGE $PLANET~OFFER
+  subtract $PLANET~OFFER_CHANGE $PLANET~OLD_OFFER
+  if ($PLANET~PRODTOSELL = "ore")
+    multiply $PLANET~OFFER_CHANGE 30
+  elseif ($PLANET~PRODTOSELL = "org")
+    multiply $PLANET~OFFER_CHANGE 27
+  elseif ($PLANET~PRODTOSELL = "equ")
+    multiply $PLANET~OFFER_CHANGE 25
+  end
+  divide $PLANET~OFFER_CHANGE 10
+  subtract $PLANET~COUNTER $PLANET~OFFER_CHANGE
+  subtract $PLANET~COUNTER 10
+  send "az"&$PLANET~COUNTER&"*"
+else
+
+  send "az"&$PLANET~COUNTER&"*"
+end
+goto :SELLOFFERLOOP
+:PLANET~SELLNOTINTERESTED
+killtrigger SELLPRICE
+killtrigger SELLFINALOFFER
+killtrigger SELLEXPERIENCE
+killtrigger SELLYOUHAVE
+killtrigger SELLSCREWUP1
+killtrigger SELLSCREWUP2
+killtrigger SELLSCREWUP3
+killtrigger SELLSCREWUP4
+killtrigger SELLSCREWUP5
+killtrigger SELLSCREWUP6
+killtrigger SELLSCREWUP7
+killtrigger SELLSCREWUP8
+killtrigger SELLSCREWUP9
+killtrigger SELLSCREWUP10
+killtrigger SELLSCREWUP11
+killtrigger SELLSCREWUP12
+killtrigger SELLSCREWUP13
+killtrigger SELLSCREWUP14
+killtrigger SELLSCREWUP15
+
+goto :SELLHAGGLEFAILED
+:PLANET~SELLEXPERIENCE
+killtrigger SELLPRICE
+killtrigger SELLFINALOFFER
+killtrigger SELLEXPERIENCE
+killtrigger SELLYOUHAVE
+killtrigger SELLSCREWUP1
+killtrigger SELLSCREWUP2
+killtrigger SELLSCREWUP3
+killtrigger SELLSCREWUP4
+killtrigger SELLSCREWUP5
+killtrigger SELLSCREWUP6
+killtrigger SELLSCREWUP7
+killtrigger SELLSCREWUP8
+killtrigger SELLSCREWUP9
+killtrigger SELLSCREWUP10
+killtrigger SELLSCREWUP11
+killtrigger SELLSCREWUP12
+killtrigger SELLSCREWUP13
+killtrigger SELLSCREWUP14
+
+getword CURRENTLINE $PLANET~EXP_BONUS 7
+add $PLANET~EXPERIENCE $PLANET~EXP_BONUS
+goto :SELLOFFERLOOP
+:PLANET~SELLYOUHAVE
+killtrigger SELLPRICE
+killtrigger SELLFINALOFFER
+killtrigger SELLEXPERIENCE
+killtrigger SELLYOUHAVE
+killtrigger SELLSCREWUP1
+killtrigger SELLSCREWUP2
+killtrigger SELLSCREWUP3
+killtrigger SELLSCREWUP4
+killtrigger SELLSCREWUP5
+killtrigger SELLSCREWUP6
+killtrigger SELLSCREWUP7
+killtrigger SELLSCREWUP8
+killtrigger SELLSCREWUP9
+killtrigger SELLSCREWUP10
+killtrigger SELLSCREWUP11
+killtrigger SELLSCREWUP12
+killtrigger SELLSCREWUP13
+killtrigger SELLSCREWUP14
+killtrigger SELLSCREWUP15
+setvar $PLANET~OLDCREDITS $PLAYER~CREDITS
+getword CURRENTLINE $PLANET~CREDITS 3
+striptext $PLANET~CREDITS ","
+
+if ($PLANET~OLDCREDITS = $PLANET~CREDITS)
+  setvar $PLANET~CURRENTHAGGLE "failed"
+  goto :SELLHAGGLEFAILED
+else
+  setvar $PLANET~CURRENTHAGGLE "succeeded"
+  goto :SELLHAGGLESUCCEEDED
+end
+:PLANET~SELLHAGGLEFAILED
+if ($PLANET~PRODTOSELL = "ore")
+  add $PLANET~ORE_SELL_FAILURES 1
+elseif ($PLANET~PRODTOSELL = "org")
+  add $PLANET~ORG_SELL_FAILURES 1
+elseif ($PLANET~PRODTOSELL = "equ")
+  add $PLANET~EQU_SELL_FAILURES 1
+end
+if ($PLANET~SELLDELAY > 99)
+  setdelaytrigger SELLDELAY :SELLDELAY $PLANET~SELLDELAY
+  pause
+  :PLANET~SELLDELAY
+end
+return
+:PLANET~SELLHAGGLESUCCEEDED
+
+setvar $PLANET~PERUNIT $PLANET~COUNTER
+divide $PLANET~PERUNIT $PLANET~PORTBUYING
+
+
+setvar $PLANET~SELLOUTPUT ""
+setvar $PLANET~SELLOUTPUT $PLANET~SELLOUTPUT&$PLANET~PORTBUYING&" "&$PLANET~PRODTOSELL&" for "&$PLANET~COUNTER&" cr"
+setvar $PLANET~SELLOUTPUT $PLANET~SELLOUTPUT&" - "
+if ($PLANET~PRODTOSELL = "ore")
+  setvar $PLANET~SELLOUTPUT $PLANET~SELLOUTPUT&$PLANET~ORE_SELL_FAILURES
+elseif ($PLANET~PRODTOSELL = "org")
+  setvar $PLANET~SELLOUTPUT $PLANET~SELLOUTPUT&$PLANET~ORG_SELL_FAILURES
+elseif ($PLANET~PRODTOSELL = "equ")
+  setvar $PLANET~SELLOUTPUT $PLANET~SELLOUTPUT&$PLANET~EQU_SELL_FAILURES
+end
+setvar $PLANET~SELLOUTPUT $PLANET~SELLOUTPUT&" fails"
+setvar $PLANET~SELLOUTPUT $PLANET~SELLOUTPUT&" - "&$PLANET~PERUNIT&"/unit"
+
+
+setvar $PLANET~SELLOUTPUT $PLANET~SELLOUTPUT&" - MCIC "&$PLANET~MCIC
+if ($PLANET~PRODTOSELL = "ore")
+  setvar $PLANET~SELLOUTPUT $PLANET~SELLOUTPUT&"/-90*"
+  setvar $PLANET~ORESELLOUTPUT $PLANET~SELLOUTPUT
+  setvar $PLANET~OREPROFIT $PLANET~COUNTER
+elseif ($PLANET~PRODTOSELL = "org")
+  setvar $PLANET~SELLOUTPUT $PLANET~SELLOUTPUT&"/-75*"
+  setvar $PLANET~ORGSELLOUTPUT $PLANET~SELLOUTPUT
+  setvar $PLANET~ORGPROFIT $PLANET~COUNTER
+elseif ($PLANET~PRODTOSELL = "equ")
+  setvar $PLANET~SELLOUTPUT $PLANET~SELLOUTPUT&"/-65*"
+  setvar $PLANET~EQUSELLOUTPUT $PLANET~SELLOUTPUT
+  setvar $PLANET~EQUPROFIT $PLANET~COUNTER
+
+end
+if ($PLANET~SELLDELAY > 99)
+  setdelaytrigger SELLDELAY :SELLDELAY2 $PLANET~SELLDELAY
+  pause
+  pause
+  :PLANET~SELLDELAY2
+end
+return
+:PLANET~NEGOTIATELAND
+
+
+
+if ($PLANET~STARTINGLOCATION = "Citadel")
+  send "L "&$PLANET~PLANET&"* "
+  gosub :GETPLANETINFO
+  send "c "
+elseif ($PLANET~STARTINGLOCATION = "Planet")
+  send "L "&$PLANET~PLANET&"* "
+  gosub :GETPLANETINFO
+end
+return
+:PLANET~EXITNEG
+
+
+return

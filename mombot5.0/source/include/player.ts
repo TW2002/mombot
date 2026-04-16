@@ -1,0 +1,2534 @@
+:PLAYER~ADDFIGTODATA
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if (($PLAYER~TARGET > 0) and ($PLAYER~TARGET <= SECTORS))
+  setsectorparameter $PLAYER~TARGET "FIGSEC" TRUE
+end
+return
+:PLAYER~BUY
+
+
+
+
+
+
+
+
+
+setvar $PLAYER~OVERHAGGLEMULTIPLE 147
+setvar $PLAYER~CYCLEBUFFER 1
+setvar $PLAYER~CYCLEBUFFERLIMIT 20
+
+
+send "@"
+waiton "Average Interval Lag:"
+gosub :QUIKSTATS
+setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+
+setvar $PLAYER~OUTPUT ""
+setvar $PLAYER~EQUIPROUNDS 0
+setvar $PLAYER~ORGROUNDS 0
+setvar $PLAYER~FUELROUNDS 0
+if ($PLAYER~BUYDOWNROUNDSFROMPARAM <= 0)
+  setvar $PLAYER~BUYDOWNROUNDSFROMPARAM 999999
+end
+if ($PLAYER~BUYTYPE = "w")
+  setvar $PLAYER~BUYDOWN_MODE 3
+elseif ($PLAYER~BUYTYPE = "b")
+  setvar $PLAYER~BUYDOWN_MODE 2
+else
+  setvar $PLAYER~BUYDOWN_MODE 1
+end
+if ($PLAYER~BUYOBJECT = "e")
+  setvar $PLAYER~BUYDOWN_EQUIPROUNDS $PLAYER~BUYDOWNROUNDSFROMPARAM
+  setvar $PLAYER~BUYDOWN_ORGROUNDS 0
+  setvar $PLAYER~BUYDOWN_FUELROUNDS 0
+elseif ($PLAYER~BUYOBJECT = "o")
+  setvar $PLAYER~BUYDOWN_EQUIPROUNDS 0
+  setvar $PLAYER~BUYDOWN_ORGROUNDS $PLAYER~BUYDOWNROUNDSFROMPARAM
+  setvar $PLAYER~BUYDOWN_FUELROUNDS 0
+elseif ($PLAYER~BUYOBJECT = "f")
+  setvar $PLAYER~BUYDOWN_EQUIPROUNDS 0
+  setvar $PLAYER~BUYDOWN_ORGROUNDS 0
+  setvar $PLAYER~BUYDOWN_FUELROUNDS $PLAYER~BUYDOWNROUNDSFROMPARAM
+else
+  setvar $PLAYER~EXIT_MESSAGE "Please use format buy [type] {speed} {#cycles} {override}*"
+  return
+
+end
+if ($PLAYER~STARTINGLOCATION = "Citadel")
+  send "Q"
+end
+send "t n l 1* t n l 2* t n l 3* s n l1*"
+waiton "How many groups of Colonists do you want to leave"
+gosub :PLANET~GETPLANETINFO
+if ($PLAYER~STARTINGLOCATION = "Citadel")
+  send "C s* "
+else
+  send "Q D"
+end
+gosub :GETINFO
+if ($PLAYER~TOTAL_HOLDS <> $PLAYER~EMPTY_HOLDS)
+  if ($PLAYER~STARTINGLOCATION <> "Citadel")
+    gosub :PLANET~LANDINGSUB
+  end
+  setvar $SWITCHBOARD~MESSAGE "Planet full, cannot empty ship holds*"
+  gosub :SWITCHBOARD~SWITCHBOARD
+  goto :BUYDOWNEXIT
+end
+gosub :VOIDADJACENT
+gosub :GETPORTINFO
+if ($PLAYER~VALIDPORTFOUND <> TRUE)
+  echo "*No valid port found*"
+  if ($PLAYER~STARTINGLOCATION <> "Citadel")
+    gosub :PLANET~LANDINGSUB
+  end
+  gosub :CLEARADJACENT
+  goto :BUYDOWNEXIT
+end
+if ($PLAYER~STARTINGLOCATION = "Citadel")
+  send "Q"
+else
+  send "L "&$PLANET~PLANET&"* "
+end
+setdelaytrigger INITPAUSE :INITPAUSE 500
+pause
+:PLAYER~INITPAUSE
+:PLAYER~GETINPUTS
+
+
+setvar $PLAYER~TURNS_NEEDED 0
+setvar $PLAYER~TURNS_ALLOWED $PLAYER~TURNS
+subtract $PLAYER~TURNS_ALLOWED 1
+
+
+if ($PLAYER~BUYDOWN_FUELROUNDS > 0)
+  setvar $PLAYER~FUELROUNDS 0
+  setvar $PLAYER~PLANETFUELROOM $PLANET~PLANET_FUEL_MAX
+  subtract $PLAYER~PLANETFUELROOM $PLANET~PLANET_FUEL
+  setvar $PLAYER~MAXFUELTOBUY $PLAYER~FUELSELLING
+  if ($PLAYER~FUELSELLING > $PLAYER~PLANETFUELROOM)
+    setvar $PLAYER~MAXFUELTOBUY $PLAYER~PLANETFUELROOM
+  end
+  setvar $PLAYER~MAXFUELROUNDS $PLAYER~MAXFUELTOBUY
+  divide $PLAYER~MAXFUELROUNDS $PLAYER~TOTAL_HOLDS
+  if ($PLAYER~MAXFUELROUNDS > $PLAYER~TURNS_ALLOWED)
+    setvar $PLAYER~MAXFUELROUNDS $PLAYER~TURNS_ALLOWED
+  end
+  if ($PLAYER~MAXFUELROUNDS > $PLAYER~BUYDOWN_FUELROUNDS)
+    setvar $PLAYER~MAXFUELROUNDS $PLAYER~BUYDOWN_FUELROUNDS
+  end
+  if ($PLAYER~MAXFUELROUNDS > 0)
+    setvar $PLAYER~FUELROUNDS $PLAYER~MAXFUELROUNDS
+  end
+  add $PLAYER~TURNS_NEEDED $PLAYER~FUELROUNDS
+  subtract $PLAYER~TURNS_ALLOWED $PLAYER~FUELROUNDS
+end
+
+if ($PLAYER~BUYDOWN_ORGROUNDS > 0)
+  setvar $PLAYER~ORGROUNDS 0
+  setvar $PLAYER~PLANETORGROOM $PLANET~PLANET_ORGANICS_MAX
+  subtract $PLAYER~PLANETORGROOM $PLANET~PLANET_ORGANICS
+  setvar $PLAYER~MAXORGTOBUY $PLAYER~ORGSELLING
+  if ($PLAYER~ORGSELLING > $PLAYER~PLANETORGROOM)
+    setvar $PLAYER~MAXORGTOBUY $PLAYER~PLANETORGROOM
+  end
+  setvar $PLAYER~MAXORGROUNDS $PLAYER~MAXORGTOBUY
+  divide $PLAYER~MAXORGROUNDS $PLAYER~TOTAL_HOLDS
+  if ($PLAYER~MAXORGROUNDS > $PLAYER~TURNS_ALLOWED)
+    setvar $PLAYER~MAXORGROUNDS $PLAYER~TURNS_ALLOWED
+  end
+  if ($PLAYER~MAXORGROUNDS > $PLAYER~BUYDOWN_ORGROUNDS)
+    setvar $PLAYER~MAXORGROUNDS $PLAYER~BUYDOWN_ORGROUNDS
+  end
+  if ($PLAYER~MAXORGROUNDS > 0)
+    setvar $PLAYER~ORGROUNDS $PLAYER~MAXORGROUNDS
+  end
+  add $PLAYER~TURNS_NEEDED $PLAYER~ORGROUNDS
+  subtract $PLAYER~TURNS_ALLOWED $PLAYER~ORGROUNDS
+end
+
+if ($PLAYER~BUYDOWN_EQUIPROUNDS > 0)
+  setvar $PLAYER~EQUIPROUNDS 0
+  setvar $PLAYER~PLANETEQUIPROOM $PLANET~PLANET_EQUIPMENT_MAX
+  subtract $PLAYER~PLANETEQUIPROOM $PLANET~PLANET_EQUIPMENT
+  setvar $PLAYER~MAXEQUIPTOBUY $PLAYER~EQUIPSELLING
+  if ($PLAYER~EQUIPSELLING > $PLAYER~PLANETEQUIPROOM)
+    setvar $PLAYER~MAXEQUIPTOBUY $PLAYER~PLANETEQUIPROOM
+  end
+  setvar $PLAYER~MAXEQUIPROUNDS $PLAYER~MAXEQUIPTOBUY
+  divide $PLAYER~MAXEQUIPROUNDS $PLAYER~TOTAL_HOLDS
+  if ($PLAYER~MAXEQUIPROUNDS > $PLAYER~TURNS_ALLOWED)
+    setvar $PLAYER~MAXEQUIPROUNDS $PLAYER~TURNS_ALLOWED
+  end
+  if ($PLAYER~MAXEQUIPROUNDS > $PLAYER~BUYDOWN_EQUIPROUNDS)
+    setvar $PLAYER~MAXEQUIPROUNDS $PLAYER~BUYDOWN_EQUIPROUNDS
+  end
+  if ($PLAYER~MAXEQUIPROUNDS > 0)
+    setvar $PLAYER~EQUIPROUNDS $PLAYER~MAXEQUIPROUNDS
+  end
+  add $PLAYER~TURNS_NEEDED $PLAYER~EQUIPROUNDS
+  subtract $PLAYER~TURNS_ALLOWED $PLAYER~EQUIPROUNDS
+end
+if (($PLAYER~FUELROUNDS = 0) and (($PLAYER~ORGROUNDS = 0) and ($PLAYER~EQUIPROUNDS = 0)))
+  if ($PLAYER~STARTINGLOCATION = "Citadel")
+    send "C "
+  else
+    send "q "
+  end
+  echo "*Nothing to buy*"
+  gosub :CLEARADJACENT
+  goto :BUYDOWNEXIT
+end
+:PLAYER~GETMODE
+
+if ($PLAYER~BUYDOWN_MODE = 1)
+  setvar $PLAYER~BUYDOWN_MODE "Speedbuy"
+elseif ($PLAYER~BUYDOWN_MODE = 2)
+  setvar $PLAYER~BUYDOWN_MODE "Best Price"
+elseif ($PLAYER~BUYDOWN_MODE = 3)
+  setvar $PLAYER~BUYDOWN_MODE "Worst Price"
+end
+setvar $PLAYER~FUELROUNDSLEFT $PLAYER~FUELROUNDS
+setvar $PLAYER~ORGROUNDSLEFT $PLAYER~ORGROUNDS
+setvar $PLAYER~EQUIPROUNDSLEFT $PLAYER~EQUIPROUNDS
+setvar $PLAYER~FUEL_CREDS_NEEDED 0
+setvar $PLAYER~ORG_CREDS_NEEDED 0
+setvar $PLAYER~EQUIP_CREDS_NEEDED 0
+
+
+if ($PLAYER~FUELROUNDS > 0)
+  setvar $PLAYER~FUEL_CREDS_NEEDED $PLAYER~FUELROUNDS
+  multiply $PLAYER~FUEL_CREDS_NEEDED $PLAYER~TOTAL_HOLDS
+  multiply $PLAYER~FUEL_CREDS_NEEDED 30
+  if ($PLAYER~BUYDOWN_MODE = "Worst Price")
+    multiply $PLAYER~FUEL_CREDS_NEEDED 3
+    divide $PLAYER~FUEL_CREDS_NEEDED 2
+  end
+end
+if ($PLAYER~ORGROUNDS > 0)
+  setvar $PLAYER~ORG_CREDS_NEEDED $PLAYER~ORGROUNDS
+  multiply $PLAYER~ORG_CREDS_NEEDED $PLAYER~TOTAL_HOLDS
+  multiply $PLAYER~ORG_CREDS_NEEDED 60
+  if ($PLAYER~BUYDOWN_MODE = "Worst Price")
+    multiply $PLAYER~ORG_CREDS_NEEDED 3
+    divide $PLAYER~ORG_CREDS_NEEDED 2
+  end
+end
+if ($PLAYER~EQUIPROUNDS > 0)
+  setvar $PLAYER~EQUIP_CREDS_NEEDED $PLAYER~EQUIPROUNDS
+  multiply $PLAYER~EQUIP_CREDS_NEEDED $PLAYER~TOTAL_HOLDS
+  multiply $PLAYER~EQUIP_CREDS_NEEDED 100
+  if ($PLAYER~BUYDOWN_MODE = "Worst Price")
+    multiply $PLAYER~EQUIP_CREDS_NEEDED 3
+    divide $PLAYER~EQUIP_CREDS_NEEDED 2
+  end
+end
+setvar $PLAYER~TOTAL_CREDS_NEEDED 0
+add $PLAYER~TOTAL_CREDS_NEEDED $PLAYER~FUEL_CREDS_NEEDED
+add $PLAYER~TOTAL_CREDS_NEEDED $PLAYER~ORG_CREDS_NEEDED
+add $PLAYER~TOTAL_CREDS_NEEDED $PLAYER~EQUIP_CREDS_NEEDED
+setvar $PLAYER~STARTINGCREDITS $PLAYER~CREDITS
+if ($PLAYER~TOTAL_CREDS_NEEDED > $PLAYER~CREDITS)
+  setvar $PLAYER~CASHONHAND $PLANET~CITADEL_CREDITS
+  add $PLAYER~CASHONHAND $PLAYER~CREDITS
+  if ($PLAYER~CASHONHAND > $PLAYER~TOTAL_CREDS_NEEDED)
+    send "C"
+    send "T T "&$PLAYER~CREDITS&"* "
+    send "T F "&$PLAYER~TOTAL_CREDS_NEEDED&"* "
+    setvar $PLAYER~CREDITS $PLAYER~TOTAL_CREDS_NEEDED
+    send "Q"
+  else
+    if ($PLAYER~STARTINGLOCATION = "Citadel")
+      send "C "
+    else
+      send "q "
+    end
+    setvar $PLAYER~EXIT_MESSAGE "Not enough cash onhand"
+    gosub :CLEARADJACENT
+    goto :BUYDOWNEXIT
+  end
+end
+setvar $PLAYER~INIT_CREDITS $PLAYER~CREDITS
+:PLAYER~BUYDOWNEQUIP
+
+if ($PLAYER~EQUIPROUNDSLEFT > 0)
+  send "Q P T  "
+  if ($PLAYER~FUELSELLING > 0)
+    send "0* "
+  end
+  if ($PLAYER~ORGSELLING > 0)
+    send "0*"
+  end
+  gosub :CHOOSEHAGGLE
+  send "L "&$PLANET~PLANET&"* t n l 3* "
+  subtract $PLAYER~EQUIPROUNDSLEFT 1
+  goto :BUYDOWNEQUIP
+end
+if ($PLAYER~EQUIPROUNDS > 0)
+  if ($PLAYER~BUYDOWN_MODE = "Worst Price")
+    setvar $PLAYER~OUTPUT $PLAYER~OUTPUT&" - Equipment overhaggled at "&$PLAYER~OVERHAGGLEMULTIPLE&"*"
+  end
+end
+:PLAYER~BUYDOWNORG
+
+if ($PLAYER~ORGROUNDSLEFT > 0)
+  send "Q P T  "
+  if ($PLAYER~FUELSELLING > 0)
+    send "0*"
+  end
+  gosub :CHOOSEHAGGLE
+  send "0* L "&$PLANET~PLANET&"* t n l 2* "
+  subtract $PLAYER~ORGROUNDSLEFT 1
+  goto :BUYDOWNORG
+end
+if ($PLAYER~ORGROUNDS > 0)
+  if ($PLAYER~BUYDOWN_MODE = "Worst Price")
+    setvar $PLAYER~OUTPUT $PLAYER~OUTPUT&" - Organics overhaggled at "&$PLAYER~OVERHAGGLEMULTIPLE&"*"
+  end
+end
+:PLAYER~BUYDOWNFUEL
+
+if ($PLAYER~FUELROUNDSLEFT > 0)
+  send "Q P T "
+  gosub :CHOOSEHAGGLE
+  send "0* 0* L "&$PLANET~PLANET&"* t n l 1* "
+  subtract $PLAYER~FUELROUNDSLEFT 1
+  goto :BUYDOWNFUEL
+end
+if ($PLAYER~FUELROUNDS > 0)
+  if ($PLAYER~BUYDOWN_MODE = "Worst Price")
+    setvar $PLAYER~OUTPUT $PLAYER~OUTPUT&" - Fuel Ore overhaggled at "&$PLAYER~OVERHAGGLEMULTIPLE&"*"
+  end
+end
+:PLAYER~BUYDOWNFINISH
+
+if ($PLAYER~STARTINGLOCATION = "Citadel")
+  send "C "
+end
+gosub :GETINFO
+setvar $PLAYER~CREDITS_SPENT $PLAYER~INIT_CREDITS
+subtract $PLAYER~CREDITS_SPENT $PLAYER~CREDITS
+gosub :CLEARADJACENT
+if ($PLAYER~STARTINGLOCATION = "Planet")
+  send "L "&$PLANET~PLANET&"* "
+end
+if ($PLAYER~CREDITS > $PLAYER~STARTINGCREDITS)
+  if ($PLAYER~STARTINGLOCATION = "Citadel")
+    send "T T "&($PLAYER~CREDITS - $PLAYER~STARTINGCREDITS)&"* "
+  end
+end
+setvar $PLAYER~EXIT_MESSAGE "Normal Exit"
+:PLAYER~BUYDOWNEXIT
+
+return
+:PLAYER~CHOOSEHAGGLE
+
+
+
+
+
+
+if ($PLAYER~BUYDOWN_MODE = "Speedbuy")
+  gosub :BUYNOHAGGLE
+else
+  gosub :BUYHAGGLE
+end
+return
+:PLAYER~BUYHAGGLE
+
+
+
+killtrigger BUYFIRSTOFFER
+
+setvar $PLAYER~EMPTY $PLAYER~TOTAL_HOLDS
+send "*"
+settextlinetrigger BUYFIRSTOFFER :BUYFIRSTOFFER "We'll sell them for"
+pause
+:PLAYER~BUYFIRSTOFFER
+
+gosub :KILLBUYTRIGGERS
+getword CURRENTLINE $PLAYER~OFFER 5
+striptext $PLAYER~OFFER ","
+
+gosub :SWATHOFF
+if ($PLAYER~SWATHOFF = 0)
+  send "L "&$PLANET~PLANET&"* "
+  if ($PLAYER~STARTINGLOCATION = "Citadel")
+    send "C "
+  end
+  setvar $PLAYER~EXIT_MESSAGE $PLAYER~SWATHOFFMESSAGE
+  goto :BUYDOWNEXIT
+end
+
+setvar $PLAYER~COUNTER $PLAYER~OFFER
+if ($PLAYER~BUYDOWN_MODE = "Best Price")
+  multiply $PLAYER~COUNTER 92
+  divide $PLAYER~COUNTER 100
+elseif ($PLAYER~BUYDOWN_MODE = "Worst Price")
+  multiply $PLAYER~COUNTER $PLAYER~OVERHAGGLEMULTIPLE
+  divide $PLAYER~COUNTER 100
+end
+send $PLAYER~COUNTER&"*"
+:PLAYER~BUYOFFERLOOP
+settextlinetrigger BUYPRICE :BUYPRICE "We'll sell them for"
+settextlinetrigger BUYFINALOFFER :BUYFINALOFFER "Our final offer"
+settextlinetrigger BUYNOTINTERESTED :BUYNOTINTERESTED "We're not interested."
+settextlinetrigger BUYEXPERIENCE :BUYEXPERIENCE "experience point(s)"
+settextlinetrigger BUYEMPTY :BUYEMPTY "empty cargo holds"
+settextlinetrigger BUYSCREWUP1 :BUYSCREWUP "Get real ion-brain, make me a real offer."
+settextlinetrigger BUYSCREWUP2 :BUYSCREWUP "This is the big leagues Jr.  Make a real offer."
+settextlinetrigger BUYSCREWUP3 :BUYSCREWUP "My patience grows short with you."
+settextlinetrigger BUYSCREWUP4 :BUYSCREWUP "I have much better things to do than waste my time.  Try again."
+settextlinetrigger BUYSCREWUP5 :BUYSCREWUP "HA! HA, ha hahahhah hehehe hhhohhohohohh!  You choke me up!"
+settextlinetrigger BUYSCREWUP6 :BUYSCREWUP "Quit playing around, you're wasting my time!"
+settextlinetrigger BUYSCREWUP7 :BUYSCREWUP "Make a real offer or get the "
+settextlinetrigger BUYSCREWUP8 :BUYSCREWUP "WHAT?!@!? you must be crazy!"
+settextlinetrigger BUYSCREWUP9 :BUYSCREWUP "So, you think I'm as stupid as you look? Make a real offer."
+settextlinetrigger BUYSCREWUP10 :BUYSCREWUP "What do you take me for, a fool?  Make a real offer!"
+pause
+pause
+:PLAYER~BUYSCREWUP
+gosub :KILLBUYTRIGGERS
+if ($PLAYER~BUYDOWN_MODE = "Best Price")
+  multiply $PLAYER~COUNTER 102
+  divide $PLAYER~COUNTER 100
+elseif ($PLAYER~BUYDOWN_MODE = "Worst Price")
+  subtract $PLAYER~OVERHAGGLEMULTIPLE 1
+  setvar $PLAYER~COUNTER $PLAYER~OFFER
+  multiply $PLAYER~COUNTER $PLAYER~OVERHAGGLEMULTIPLE
+  divide $PLAYER~COUNTER 100
+end
+send $PLAYER~COUNTER&"*"
+goto :BUYOFFERLOOP
+:PLAYER~BUYPRICE
+gosub :KILLBUYTRIGGERS
+setvar $PLAYER~OLD_OFFER $PLAYER~OFFER
+setvar $PLAYER~OLD_COUNTER $PLAYER~COUNTER
+getword CURRENTLINE $PLAYER~OFFER 5
+striptext $PLAYER~OFFER ","
+setvar $PLAYER~OFFER_PCT $PLAYER~OFFER
+multiply $PLAYER~OFFER_PCT 1000
+divide $PLAYER~OFFER_PCT $PLAYER~OLD_OFFER
+if ($PLAYER~OFFER_PCT > 990)
+  setvar $PLAYER~OFFER_PCT 990
+end
+multiply $PLAYER~COUNTER 1000
+divide $PLAYER~COUNTER $PLAYER~OFFER_PCT
+if ($PLAYER~COUNTER <= $PLAYER~OLD_COUNTER)
+  add $PLAYER~COUNTER 1
+end
+send $PLAYER~COUNTER&"*"
+goto :BUYOFFERLOOP
+:PLAYER~BUYFINALOFFER
+gosub :KILLBUYTRIGGERS
+setvar $PLAYER~OLD_OFFER $PLAYER~OFFER
+setvar $PLAYER~OLD_COUNTER $PLAYER~COUNTER
+getword CURRENTLINE $PLAYER~OFFER 5
+striptext $PLAYER~OFFER ","
+setvar $PLAYER~OFFER_CHANGE $PLAYER~OFFER
+subtract $PLAYER~OFFER_CHANGE $PLAYER~OLD_OFFER
+subtract $PLAYER~OFFER_CHANGE 1
+multiply $PLAYER~OFFER_CHANGE 25
+divide $PLAYER~OFFER_CHANGE 10
+subtract $PLAYER~COUNTER $PLAYER~OFFER_CHANGE
+if ($PLAYER~COUNTER = $PLAYER~OLD_COUNTER)
+  add $PLAYER~COUNTER 1
+end
+add $PLAYER~COUNTER 1
+send $PLAYER~COUNTER&"*"
+goto :BUYOFFERLOOP
+:PLAYER~BUYNOTINTERESTED
+gosub :KILLBUYTRIGGERS
+send "0* "
+send "0* "
+goto :BUYHAGGLEFAILED
+:PLAYER~BUYEXPERIENCE
+gosub :KILLBUYTRIGGERS
+getword CURRENTLINE $PLAYER~EXP_BONUS 7
+add $PLAYER~EXP $PLAYER~EXP_BONUS
+add $PLAYER~JETBONUS $PLAYER~EXP_BONUS
+goto :BUYOFFERLOOP
+:PLAYER~BUYEMPTY
+gosub :KILLBUYTRIGGERS
+getword CURRENTLINE $PLAYER~CREDITS 3
+striptext $PLAYER~CREDITS ","
+setvar $PLAYER~OLDEMPTY $PLAYER~EMPTY
+getword CURRENTLINE $PLAYER~EMPTY 6
+if ($PLAYER~OLDEMPTY = $PLAYER~EMPTY)
+  goto :BUYHAGGLEFAILED
+else
+  goto :BUYHAGGLESUCCEEDED
+end
+:PLAYER~BUYHAGGLEFAILED
+setvar $PLAYER~BUYHAGGLE 0
+return
+:PLAYER~BUYHAGGLESUCCEEDED
+setvar $PLAYER~BUYHAGGLE 1
+return
+:PLAYER~BUYNOHAGGLE
+
+
+
+if ($PLAYER~SWATHOFF = 0)
+
+  waiton "How many holds of"
+  send "*"
+  gosub :SWATHOFF
+  send "*"
+else
+  send "**"
+end
+setvar $PLAYER~CYCLEBUFFERLIMIT 20
+add $PLAYER~CYCLEBUFFER 1
+if ($PLAYER~CYCLEBUFFER = $PLAYER~CYCLEBUFFERLIMIT)
+  setvar $PLAYER~CYCLEBUFFER 1
+  send "/"
+  waiton " Sect "
+end
+return
+:PLAYER~KILLBUYTRIGGERS
+
+killtrigger BUYPRICE
+killtrigger BUYFINALOFFER
+killtrigger BUYNOTINTERESTED
+killtrigger BUYEXPERIENCE
+killtrigger BUYEMPTY
+killtrigger BUYSCREWUP1
+killtrigger BUYSCREWUP2
+killtrigger BUYSCREWUP3
+killtrigger BUYSCREWUP4
+killtrigger BUYSCREWUP5
+killtrigger BUYSCREWUP6
+killtrigger BUYSCREWUP7
+killtrigger BUYSCREWUP8
+killtrigger BUYSCREWUP9
+killtrigger BUYSCREWUP10
+return
+:PLAYER~BWARP
+
+
+send "b"
+settexttrigger NOBWARP :NOBWARP "Would you like to place a subspace order for one? "
+settexttrigger YESBWARP :YESBWARP "Beam to what sector? (U="
+settexttrigger IGBWARP :BWARPPHOTONED "Your ship was hit by a Photon and has been disabled"
+pause
+:PLAYER~NOBWARP
+gosub :KILLBWARPTRIGGERS
+send "*"
+setvar $SWITCHBOARD~MESSAGE "No Bwarp installed on this planet*"
+gosub :SWITCHBOARD~SWITCHBOARD
+return
+:PLAYER~YESBWARP
+gosub :KILLBWARPTRIGGERS
+send $PLAYER~WARPTO&"*"
+settexttrigger BWARP_LOCK :BWARP_NO_RANGE "This planetary transporter does not have the range."
+settexttrigger NO_BWRP_LOCK :NO_BWARP_LOCK "Do you want to make this transport blind?"
+settexttrigger BWARP_READY :BWARP_LOCK "All Systems Ready, shall we engage?"
+settextlinetrigger NO_BWARPFUEL :BWARPNOFUEL "This planet does not have enough Fuel Ore to transport you."
+pause
+:PLAYER~BWARP_NO_RANGE
+gosub :KILLBWARPTRIGGERS
+setvar $SWITCHBOARD~MESSAGE "Not enough range on this planet's transporter.*"
+gosub :SWITCHBOARD~SWITCHBOARD
+return
+:PLAYER~NO_BWARP_LOCK
+gosub :KILLBWARPTRIGGERS
+send "* "
+setvar $PLAYER~TARGET $PLAYER~WARPTO
+setsectorparameter $PLAYER~TARGET "FIGSEC" FALSE
+setvar $SWITCHBOARD~MESSAGE "No fighter down at that destination, aborting*"
+gosub :SWITCHBOARD~SWITCHBOARD
+return
+:PLAYER~BWARP_LOCK
+gosub :KILLBWARPTRIGGERS
+send "y     * "
+setvar $PLAYER~TARGET $PLAYER~WARPTO
+setsectorparameter $PLAYER~TARGET "FIGSEC" TRUE
+setvar $SWITCHBOARD~MESSAGE "B-warp completed.*"
+gosub :SWITCHBOARD~SWITCHBOARD
+return
+:PLAYER~BWARPNOFUEL
+gosub :KILLBWARPTRIGGERS
+setvar $SWITCHBOARD~MESSAGE "Not enough fuel on the planet to make the transport!*"
+gosub :SWITCHBOARD~SWITCHBOARD
+return
+:PLAYER~BWARPPHOTONED
+gosub :KILLBWARPTRIGGERS
+setvar $SWITCHBOARD~MESSAGE "I have been photoned and can not B-warp!*"
+gosub :SWITCHBOARD~SWITCHBOARD
+return
+:PLAYER~KILLBWARPTRIGGERS
+
+killtrigger YESBWARP
+killtrigger IGBWARP
+killtrigger NOBWARP
+killtrigger BWARP_LOCK
+killtrigger NO_BWRP_LOCK
+killtrigger BWARP_READY
+killtrigger NO_BWARPFUEL
+return
+:PLAYER~CHECKCORP
+
+
+setarray $PLAYER~CORP_MEMBERS 10 1
+setvar $PLAYER~CORP_COUNT 0
+gosub :QUIKSTATS
+if ($PLAYER~CURRENT_PROMPT = "Citadel")
+  send "xa"
+else
+  send "ta"
+end
+waiton "    Corp Member Name                   Sector  Fighters Shields Mines  Credits"
+waiton "------------------------------------------------------------------------------"
+:PLAYER~TA_AGAIN
+
+settextlinetrigger TALINE :TA_CHECK
+pause
+:PLAYER~TA_CHECK
+
+getwordpos CURRENTLINE $PLAYER~POS "P indicates Trader is on a planet in that sector"
+getwordpos CURRENTLINE $PLAYER~POS2 "Corporate command ["
+if (($PLAYER~POS > 0) or ($PLAYER~POS2 > 0))
+  goto :DONE_TA
+end
+setvar $PLAYER~LINE CURRENTLINE
+trim $PLAYER~LINE
+if ($PLAYER~LINE <> "")
+  cuttext $PLAYER~LINE $PLAYER~NAME 1 30
+  replacetext $PLAYER~LINE $PLAYER~NAME ""
+  trim $PLAYER~NAME
+  add $PLAYER~CORP_COUNT 1
+  setvar $PLAYER~CORP_MEMBERS[$PLAYER~CORP_COUNT] $PLAYER~NAME
+  getword $PLAYER~LINE $PLAYER~CORP_MEMBERS[$PLAYER~CORP_COUNT][1] 1
+  replacetext $PLAYER~CORP_MEMBERS[$PLAYER~CORP_COUNT][1] "P" ""
+end
+goto :TA_AGAIN
+:PLAYER~DONE_TA
+
+send "q"
+return
+:PLAYER~CHECKFORTRAVELNAME
+
+
+if ($BOT~PARM1 = "me")
+  if ($BOT~COMMAND_CALLER = "self")
+    setvar $SWITCHBOARD~MESSAGE "I don't think you need to travel to yourself.*"
+    gosub :SWITCHBOARD~SWITCHBOARD
+    halt
+  end
+  setvar $PLAYER~WHO_CALLED_ME $BOT~COMMAND_CALLER
+  gosub :CHECKCORP
+  setvar $PLAYER~I 1
+  while ($PLAYER~I <= $PLAYER~CORP_COUNT)
+    lowercase $PLAYER~CORP_MEMBERS[$PLAYER~I]
+    lowercase $PLAYER~WHO_CALLED_ME
+    getwordpos $PLAYER~CORP_MEMBERS[$PLAYER~I] $PLAYER~POS $PLAYER~WHO_CALLED_ME
+    if ($PLAYER~POS > 0)
+      setvar $BOT~PARM1 $PLAYER~CORP_MEMBERS[$PLAYER~I][1]
+      goto :GO_AFTER_ME
+    end
+    add $PLAYER~I 1
+  end
+end
+isnumber $PLAYER~TEST $BOT~PARM1
+if ($PLAYER~TEST <> TRUE)
+  getwordpos $BOT~USER_COMMAND_LINE $PLAYER~POS "sector:"
+  if ($PLAYER~POS > 0)
+    setvar $PLAYER~CLINE $BOT~USER_COMMAND_LINE&" "
+    gettext $PLAYER~CLINE $BOT~PARM1 "sector:" " "
+    goto :GO_AFTER_ME
+  end
+  getwordpos $BOT~USER_COMMAND_LINE $PLAYER~POS #34
+  if ($PLAYER~POS > 0)
+    gettext $BOT~USER_COMMAND_LINE $PLAYER~TRADER #34 #34
+    if ($PLAYER~TRADER = FALSE)
+      setvar $PLAYER~TRADER $BOT~PARM1
+    end
+  else
+    setvar $PLAYER~TRADER $BOT~PARM1
+  end
+
+
+  gosub :CHECKCORP
+  setvar $PLAYER~I 1
+  while ($PLAYER~I <= $PLAYER~CORP_COUNT)
+    lowercase $PLAYER~CORP_MEMBERS[$PLAYER~I]
+    lowercase $PLAYER~TRADER
+    getwordpos $PLAYER~CORP_MEMBERS[$PLAYER~I] $PLAYER~POS $PLAYER~TRADER
+    if ($PLAYER~POS > 0)
+      setvar $BOT~PARM1 $PLAYER~CORP_MEMBERS[$PLAYER~I][1]
+      goto :GO_AFTER_ME
+    end
+    add $PLAYER~I 1
+  end
+end
+:PLAYER~GO_AFTER_ME
+return
+:PLAYER~CLEARADJACENT
+
+
+getsector $PLAYER~CURRENT_SECTOR $PLAYER~SECTORINFO
+if ($PLAYER~SECTORINFO.WARP[1] = 0)
+  setvar $SWITCHBOARD~MESSAGE "This sector has no warps, try to scan it first!*"
+  gosub :SWITCHBOARD~SWITCHBOARD
+  return
+else
+  setvar $PLAYER~VOIDSECT 0
+  :PLAYER~CLEARVOIDS
+  add $PLAYER~VOIDSECT 1
+  if ($PLAYER~VOIDSECT < 7)
+    if ($PLAYER~SECTORINFO.WARP[$PLAYER~VOIDSECT] <> 0)
+      send "CV0*YN"&$PLAYER~SECTORINFO.WARP[$PLAYER~VOIDSECT]&"*Q"
+    end
+    goto :CLEARVOIDS
+  end
+
+  send "/"
+  waiton " Sect "
+end
+return
+:PLAYER~COMMASIZE
+
+
+format $PLAYER~VALUE $PLAYER~VALUE "NUMBER"
+return
+:PLAYER~CURRENTPROMPT
+
+
+settexttrigger PROMPT :ALLPROMPTSCATCH #145&#8
+setdelaytrigger PROMPT_DELAY :CURRENT_PROMPT_DELAY 5000
+send #145
+pause
+:PLAYER~CURRENT_PROMPT_DELAY
+settextouttrigger ATKEYS :CURRENT_PROMPT_AT_KEYS
+setdelaytrigger PROMPT_DELAY :VERIFYDELAY 30000
+pause
+:PLAYER~CURRENT_PROMPT_AT_KEYS
+getouttext $PLAYER~OUT
+send $PLAYER~OUT
+killtrigger PROMPT_DELAY
+return
+:PLAYER~ALLPROMPTSCATCH
+setvar $PLAYER~ANSILINE CURRENTANSILINE
+setvar $PLAYER~SELF_DESTRUCT_PROMPT FALSE
+getwordpos $PLAYER~ANSILINE $PLAYER~POS "ARE YOU SURE CAPTAIN? (Y/N) [N]"
+if ($PLAYER~POS > 0)
+  setvar $PLAYER~SELF_DESTRUCT_PROMPT TRUE
+end
+killtrigger PROMPT_DELAY
+getword CURRENTLINE $PLAYER~CURRENT_PROMPT 1
+if ($PLAYER~CURRENT_PROMPT = 0)
+  getword CURRENTANSILINE $PLAYER~CURRENT_PROMPT 1
+end
+striptext $PLAYER~CURRENT_PROMPT #145
+striptext $PLAYER~CURRENT_PROMPT #8
+setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+return
+:PLAYER~VERIFYDELAY
+
+killalltriggers
+disconnect
+:PLAYER~FINDJUMPSECTOR
+
+
+setvar $PLAYER~RED_ADJ 0
+if ($PLAYER~STARTINGLOCATION = "Citadel")
+  send "qt*t1*q* "
+else
+  send "qq* "
+end
+
+setvar $PLAYER~K 1
+while (SECTOR.BACKDOORS[$PLAYER~TARGET][$PLAYER~K] > 0)
+  setvar $PLAYER~RED_ADJ SECTOR.BACKDOORS[$PLAYER~TARGET][$PLAYER~K]
+  gosub :TEST_RED_SECTOR
+  if ($PLAYER~FOUNDSECTOR = TRUE)
+    goto :SECTORLOCKED
+  end
+  add $PLAYER~K 1
+end
+
+setvar $PLAYER~I 1
+while (SECTOR.WARPSIN[$PLAYER~TARGET][$PLAYER~I] > 0)
+  setvar $PLAYER~RED_ADJ SECTOR.WARPSIN[$PLAYER~TARGET][$PLAYER~I]
+  gosub :TEST_RED_SECTOR
+  if ($PLAYER~FOUNDSECTOR = TRUE)
+    goto :SECTORLOCKED
+  end
+  add $PLAYER~I 1
+end
+:PLAYER~NOADJSFOUND
+
+setvar $PLAYER~RED_ADJ 0
+return
+:PLAYER~SECTORLOCKED
+
+if ($PLAYER~TARGET = $MAP~STARDOCK)
+  setvar $MAP~BACKDOOR $PLAYER~RED_ADJ
+  savevar $MAP~BACKDOOR
+end
+return
+:PLAYER~TEST_RED_SECTOR
+
+setvar $PLAYER~FOUNDSECTOR FALSE
+send "m "&$PLAYER~RED_ADJ&"* y"
+settexttrigger TWARPBLIND :TWARPBLIND "Do you want to make this jump blind? "
+settexttrigger TWARPLOCKED :TWARPLOCKED "All Systems Ready, shall we engage? "
+settextlinetrigger TWARPVOIDED :TWARPVOIDED "Danger Warning Overridden"
+settextlinetrigger TWARPADJ :TWARPADJ "<Set NavPoint>"
+pause
+:PLAYER~TWARPADJ
+gosub :KILLFINDJUMPSECTORS
+send " * "
+return
+:PLAYER~TWARPVOIDED
+
+gosub :KILLFINDJUMPSECTORS
+send " N N "
+return
+:PLAYER~TWARPLOCKED
+
+gosub :KILLFINDJUMPSECTORS
+send " * "
+setvar $PLAYER~FOUNDSECTOR TRUE
+return
+:PLAYER~TWARPBLIND
+
+gosub :KILLFINDJUMPSECTORS
+send " N "
+return
+:PLAYER~KILLFINDJUMPSECTORS
+
+killtrigger TWARPBLIND
+killtrigger TWARPLOCKED
+killtrigger TWARPVOIDED
+killtrigger TWARPADJ
+return
+:PLAYER~FORMATNUMBERFORSPACES
+
+
+if ($PLAYER~INPUTVARIABLE < 10)
+  setvar $PLAYER~OUTPUTVARIABLE "    "&$PLAYER~INPUTVARIABLE
+elseif ($PLAYER~INPUTVARIABLE < 100)
+  setvar $PLAYER~OUTPUTVARIABLE "   "&$PLAYER~INPUTVARIABLE
+elseif ($PLAYER~INPUTVARIABLE < 1000)
+  setvar $PLAYER~OUTPUTVARIABLE "  "&$PLAYER~INPUTVARIABLE
+elseif ($PLAYER~INPUTVARIABLE < 10000)
+  setvar $PLAYER~OUTPUTVARIABLE " "&$PLAYER~INPUTVARIABLE
+else
+  setvar $PLAYER~OUTPUTVARIABLE $PLAYER~INPUTVARIABLE
+end
+return
+:PLAYER~FORMATPERCENTAGESFORSPACES
+
+
+if ($PLAYER~INPUTVARIABLE < 10)
+  setvar $PLAYER~OUTPUTVARIABLE "  ("&$PLAYER~INPUTVARIABLE&"%)"
+elseif ($PLAYER~INPUTVARIABLE < 100)
+  setvar $PLAYER~OUTPUTVARIABLE " ("&$PLAYER~INPUTVARIABLE&"%)"
+elseif ($PLAYER~INPUTVARIABLE < 1000)
+  setvar $PLAYER~OUTPUTVARIABLE "("&$PLAYER~INPUTVARIABLE&"%)"
+else
+  setvar $PLAYER~OUTPUTVARIABLE $PLAYER~INPUTVARIABLE
+end
+return
+:PLAYER~GETINFO
+
+
+setvar $PLAYER~NOFLIP TRUE
+setvar $PLAYER~PHOTONS 0
+setvar $PLAYER~TOWED ""
+setvar $PLAYER~SCAN_TYPE "None"
+setvar $PLAYER~TWARP_TYPE 0
+setvar $PLAYER~CORPSTRING "[0]"
+setvar $PLAYER~IGSTAT 0
+:PLAYER~WAITONINFO
+send "?"
+waiton "<!>"
+settextlinetrigger GETINFO_CN9_CHECK_1 :GETINFO_CN9_CHECK "<N> Interdictor Control"
+settextlinetrigger GETINFO_CN9_CHECK_2 :GETINFO_CN9_CHECK "<N> Move to NavPoint"
+settextlinetrigger GETTRADERNAME :GETTRADERNAME "Trader Name    :"
+settextlinetrigger GETEXPANDALIGN :GETEXPANDALIGN "Rank and Exp"
+settextlinetrigger GETCORP :GETCORP "Corp           #"
+settextlinetrigger GETSHIPTYPE :GETSHIPTYPE "Ship Info      :"
+settextlinetrigger GETTPW :GETTPW "Turns to Warp  :"
+settextlinetrigger GETSECT :GETSECT "Current Sector :"
+settextlinetrigger GETTURNS :GETTURNS "Turns left"
+settextlinetrigger GETTOW :GETTOW "Tractor Beam   : ON, towing "
+settextlinetrigger GETHOLDS :GETHOLDS "Total Holds"
+settextlinetrigger GETFIGHTERS :GETFIGHTERS "Fighters       :"
+settextlinetrigger GETSHIELDS :GETSHIELDS "Shield points  :"
+settextlinetrigger GETPHOTONS :GETPHOTONS "Photon Missiles:"
+settextlinetrigger GETSCANTYPE :GETSCANTYPE "LongRange Scan :"
+settextlinetrigger GETTWARPTYPE1 :GETTWARPTYPE1 "  (Type 1 Jump):"
+settextlinetrigger GETTWARPTYPE2 :GETTWARPTYPE2 "  (Type 2 Jump):"
+settextlinetrigger GETCREDITS :GETCREDITS "Credits"
+settextlinetrigger CHECKIG :CHECKIG "Interdictor ON :"
+send "i"
+pause
+:PLAYER~GETINFO_CN9_CHECK
+setvar $PLAYER~NOFLIP TRUE
+pause
+:PLAYER~GETTRADERNAME
+killtrigger GETINFO_CN9_CHECK_1
+killtrigger GETINFO_CN9_CHECK_2
+setvar $PLAYER~TRADER_NAME CURRENTLINE
+striptext $PLAYER~TRADER_NAME "Trader Name    : "
+setvar $PLAYER~I 1
+while ($PLAYER~I <= $PLAYER~RANKSLENGTH)
+  setvar $PLAYER~TEMP $PLAYER~RANKS[$PLAYER~I]
+  striptext $PLAYER~TEMP "31m"
+  striptext $PLAYER~TEMP "36m"
+  striptext $PLAYER~TRADER_NAME $PLAYER~TEMP&" "
+  add $PLAYER~I 1
+end
+pause
+:PLAYER~GETTOW
+setvar $PLAYER~LINE CURRENTLINE&"<<|END|>>"
+gettext $PLAYER~LINE $PLAYER~TOWED "Tractor Beam   : ON, towing " "<<|END|>>"
+pause
+:PLAYER~GETEXPANDALIGN
+getword CURRENTLINE $PLAYER~EXPERIENCE 5
+getword CURRENTLINE $PLAYER~ALIGNMENT 7
+striptext $PLAYER~EXPERIENCE ","
+striptext $PLAYER~ALIGNMENT ","
+striptext $PLAYER~ALIGNMENT "Alignment="
+pause
+:PLAYER~GETCORP
+getword CURRENTLINE $PLAYER~CORP 3
+striptext $PLAYER~CORP ","
+setvar $PLAYER~CORPSTRING "["&$PLAYER~CORP&"]"
+pause
+:PLAYER~GETSHIPTYPE
+getwordpos CURRENTLINE $PLAYER~SHIPTYPEEND "Ported="
+subtract $PLAYER~SHIPTYPEEND 18
+cuttext CURRENTLINE $PLAYER~SHIP_TYPE_LONG 18 $PLAYER~SHIPTYPEEND
+pause
+:PLAYER~GETTPW
+getword CURRENTLINE $PLAYER~TURNS_PER_WARP 5
+pause
+:PLAYER~GETSECT
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR 4
+pause
+:PLAYER~GETTURNS
+getword CURRENTLINE $PLAYER~TURNS 4
+if ($PLAYER~TURNS = "Unlimited")
+  setvar $PLAYER~TURNS 65000
+  setvar $PLAYER~UNLIMITEDGAME TRUE
+end
+savevar $PLAYER~UNLIMITEDGAME
+pause
+:PLAYER~GETHOLDS
+setvar $PLAYER~TEMP CURRENTLINE&" "
+gettext $PLAYER~TEMP $PLAYER~ORE_HOLDS "Ore=" " "
+if ($PLAYER~ORE_HOLDS = "")
+  setvar $PLAYER~ORE_HOLDS 0
+end
+gettext $PLAYER~TEMP $PLAYER~ORGANIC_HOLDS "Organics=" " "
+if ($PLAYER~ORGANIC_HOLDS = "")
+  setvar $PLAYER~ORGANIC_HOLDS 0
+end
+gettext $PLAYER~TEMP $PLAYER~EQUIPMENT_HOLDS "Equipment=" " "
+if ($PLAYER~EQUIPMENT_HOLDS = "")
+  setvar $PLAYER~EQUIPMENT_HOLDS 0
+end
+gettext $PLAYER~TEMP $PLAYER~COLONIST_HOLDS "Colonists=" " "
+if ($PLAYER~COLONIST_HOLDS = "")
+  setvar $PLAYER~COLONIST_HOLDS 0
+end
+gettext $PLAYER~TEMP $PLAYER~EMPTY_HOLDS "Empty=" " "
+if ($PLAYER~EMPTY_HOLDS = "")
+  setvar $PLAYER~EMPTY_HOLDS 0
+end
+pause
+:PLAYER~GETFIGHTERS
+getword CURRENTLINE $PLAYER~FIGHTERS 3
+striptext $PLAYER~FIGHTERS ","
+pause
+:PLAYER~GETSHIELDS
+getword CURRENTLINE $PLAYER~SHIELDS 4
+striptext $PLAYER~SHIELDS ","
+pause
+:PLAYER~GETPHOTONS
+getword CURRENTLINE $PLAYER~PHOTONS 3
+pause
+:PLAYER~GETSCANTYPE
+getword CURRENTLINE $PLAYER~SCAN_TYPE 4
+pause
+:PLAYER~GETTWARPTYPE1
+getword CURRENTLINE $PLAYER~TWARP_1_RANGE 4
+setvar $PLAYER~TWARP_TYPE 1
+pause
+:PLAYER~GETTWARPTYPE2
+getword CURRENTLINE $PLAYER~TWARP_2_RANGE 4
+setvar $PLAYER~TWARP_TYPE 2
+pause
+:PLAYER~CHECKIG
+getword CURRENTLINE $PLAYER~IGSTAT 4
+pause
+:PLAYER~GETCREDITS
+getword CURRENTLINE $PLAYER~CREDITS 3
+striptext $PLAYER~CREDITS ","
+if ($PLAYER~IGSTAT = 0)
+  setvar $PLAYER~IGSTAT "NO IG"
+end
+:PLAYER~GETINFODONE
+killtrigger GETEXPANDALIGN
+killtrigger GETCORP
+killtrigger GETSHIPTYPE
+killtrigger GETTPW
+killtrigger GETTOW
+killtrigger GETSECT
+killtrigger GETTURNS
+killtrigger GETHOLDS
+killtrigger GETFIGHTERS
+killtrigger GETSHIELDS
+killtrigger GETPHOTONS
+killtrigger GETSCANTYPE
+killtrigger GETTWARPTYPE1
+killtrigger GETTWARPTYPE2
+killtrigger GETCREDITS
+killtrigger CHECKIG
+killtrigger GETINFODONE
+killtrigger GETINFODONE2
+killtrigger GETINFO_CN9_CHECK_1
+killtrigger GETINFO_CN9_CHECK_2
+
+savevar $PLAYER~UNLIMITEDGAME
+
+if ($PLAYER~SAVE)
+
+  savevar $PLAYER~CREDITS
+  savevar $PLAYER~FIGHTERS
+  savevar $PLAYER~SHIELDS
+  savevar $PLAYER~TOTAL_HOLDS
+  savevar $PLAYER~ORE_HOLDS
+  savevar $PLAYER~ORGANIC_HOLDS
+  savevar $PLAYER~EQUIPMENT_HOLDS
+  savevar $PLAYER~COLONIST_HOLDS
+  savevar $PLAYER~PHOTONS
+  savevar $PLAYER~ARMIDS
+  savevar $PLAYER~LIMPETS
+  savevar $PLAYER~GENESIS
+  savevar $PLAYER~TWARP_TYPE
+  savevar $PLAYER~CLOAKS
+  savevar $PLAYER~BEACONS
+  savevar $PLAYER~ATOMIC
+  savevar $PLAYER~CORBO
+  savevar $PLAYER~EPROBES
+  savevar $PLAYER~MINE_DISRUPTORS
+  savevar $PLAYER~PSYCHIC_PROBE
+  savevar $PLAYER~PLANET_SCANNER
+  savevar $PLAYER~SCAN_TYPE
+  savevar $PLAYER~ALIGNMENT
+  savevar $PLAYER~EXPERIENCE
+  savevar $PLAYER~SHIP_NUMBER
+  savevar $PLAYER~TRADER_NAME
+end
+return
+:PLAYER~GETPORTINFO
+
+
+
+if ($PLAYER~STARTINGLOCATION = "Citadel")
+  send "S*CR*"
+else
+  send "*CR*"
+end
+setvar $PLAYER~VALIDPORTFOUND FALSE
+settextlinetrigger FOUNDPORT :FOUNDPORT2 "Items     Status  Trading % of max OnBoard"
+settextlinetrigger NOPORT :NOPORT2 "I have no information about a port in that sector."
+settextlinetrigger NOPORT2 :NOPORT2 "You have never visted sector"
+settextlinetrigger NOPORT3 :NOPORT2 "credits / next hold"
+settextlinetrigger NOPORT4 :NOPORT2 "A  Cargo holds     :"
+pause
+:PLAYER~NOPORT2
+
+gosub :PORTKILLINGTRIGGERS
+send "q"
+return
+:PLAYER~FOUNDPORT2
+
+gosub :PORTKILLINGTRIGGERS
+send "q"
+setvar $PLAYER~FUELSELLING 0
+setvar $PLAYER~ORGSELLING 0
+setvar $PLAYER~EQUIPSELLING 0
+setvar $PLAYER~VALIDPORTFOUND TRUE
+:PLAYER~GETSELLING
+settextlinetrigger PORTFUELINFO :PORTFUELINFO2 "Fuel Ore   Selling"
+settextlinetrigger PORTORGINFO :PORTORGINFO2 "Organics   Selling"
+settextlinetrigger PORTEQUIPINFO :PORTEQUIPINFO2 "Equipment  Selling"
+settextlinetrigger GOTALLPORTINFO :GOTALLPORTINFO2 "<Computer deactivated>"
+pause
+:PLAYER~PORTFUELINFO2
+
+getword CURRENTLINE $PLAYER~FUELSELLING 4
+settextlinetrigger PORTFUELINFO :PORTFUELINFO2 "Fuel Ore   Selling"
+pause
+:PLAYER~PORTORGINFO2
+
+getword CURRENTLINE $PLAYER~ORGSELLING 3
+settextlinetrigger PORTORGINFO :PORTORGINFO2 "Organics   Selling"
+pause
+:PLAYER~PORTEQUIPINFO2
+
+getword CURRENTLINE $PLAYER~EQUIPSELLING 3
+settextlinetrigger PORTEQUIPINFO :PORTEQUIPINFO2 "Equipment  Selling"
+pause
+:PLAYER~GOTALLPORTINFO2
+
+killtrigger PORTFUELINFO
+killtrigger PORTORGINFO
+killtrigger PORTEQUIPINFO
+killtrigger GOTALLPORTINFO
+return
+:PLAYER~PORTKILLINGTRIGGERS
+
+killtrigger FOUNDPORT
+killtrigger NOPORT
+killtrigger NOPORT2
+killtrigger NOPORT3
+killtrigger NOPORT4
+return
+:PLAYER~ISEPHAGGLE
+
+
+setvar $PLAYER~ISEPHAGGLE FALSE
+listactivescripts $PLAYER~SCRIPTS
+setvar $PLAYER~I 1
+while ($PLAYER~I <= $PLAYER~SCRIPTS)
+  getwordpos "<><><>"&$PLAYER~SCRIPTS[$PLAYER~I] $PLAYER~POS "<><><>ephaggle"
+  if ($PLAYER~POS > 0)
+    setvar $PLAYER~ISEPHAGGLE TRUE
+  end
+  add $PLAYER~I 1
+end
+return
+:PLAYER~MOVEINTOSECTOR
+
+
+setvar $PLAYER~RESULT ""
+setvar $PLAYER~DROPFIGS TRUE
+setvar $PLAYER~RESULT $PLAYER~RESULT&"m "&$PLAYER~MOVEINTOSECTOR&"*"
+if (($PLAYER~MOVEINTOSECTOR > 10) and ($PLAYER~MOVEINTOSECTOR <> $MAP~STARDOCK))
+  if ($PLAYER~FIGHTERS > $SHIP~SHIP_MAX_ATTACK)
+    setvar $PLAYER~RESULT $PLAYER~RESULT&"za"&$SHIP~SHIP_MAX_ATTACK&"* * "
+  else
+    setvar $PLAYER~RESULT $PLAYER~RESULT&"za"&$PLAYER~FIGHTERS&"* * "
+  end
+end
+if ($PLAYER~SURROUNDFIGS <= 0)
+  setvar $PLAYER~SURROUNDFIGS 1
+end
+if (($PLAYER~MOVEINTOSECTOR > 10) and ($PLAYER~MOVEINTOSECTOR <> $MAP~STARDOCK))
+  if ($PLAYER~SURROUNDFIGS > 0)
+    setvar $PLAYER~RESULT $PLAYER~RESULT&"f  z  "&$PLAYER~SURROUNDFIGS&"* z  c  d  *  "
+  end
+  if ($PLAYER~SURROUNDLIMP > 0)
+    setvar $PLAYER~RESULT $PLAYER~RESULT&"  H  2  Z  "&$PLAYER~SURROUNDLIMP&"*  Z C  *  "
+  end
+  if ($PLAYER~SURROUNDMINE > 0)
+    setvar $PLAYER~RESULT $PLAYER~RESULT&"  H  1  Z  "&$PLAYER~SURROUNDMINE&"*  Z C  *  "
+  end
+end
+send $PLAYER~RESULT
+setvar $PLAYER~CURRENT_SECTOR $PLAYER~MOVEINTOSECTOR
+return
+:PLAYER~PWARPTO
+:PLAYER~PWARP
+
+
+
+setvar $PLAYER~PWARPSUCCESS FALSE
+if ($PLAYER~SCAN)
+  send "q *c p" $PLAYER~WARPTO "*ys"
+else
+  send "q *c p" $PLAYER~WARPTO "*y"
+end
+waiton "Planet #"
+getword CURRENTLINE $PLANET~PLANET 2
+striptext $PLANET~PLANET "#"
+savevar $PLANET~PLANET
+
+settextlinetrigger PWARP_LOCK :PWARP_LOCK "Locating beam pinpointed"
+settextlinetrigger NO_PWARP_LOCK :NO_PWARP_LOCK "Your own fighters must be"
+settextlinetrigger ALREADY :ALREADY "You are already in that sector!"
+settextlinetrigger NO_ORE :NO_ORE "You do not have enough Fuel Ore"
+settextlinetrigger NO_PWARP :NOPWARP "This Citadel does not have a Planetary TransWarp"
+settextlinetrigger WRONG_NUMBER :WRONG_NUMBER "Invalid Sector number,"
+pause
+:PLAYER~WRONG_NUMBER
+setvar $PLAYER~PWARPSUCCESS FALSE
+gosub :KILLPWARPTRIGGERS
+setvar $PLAYER~MSG "Not a valid sector to pwarp to!*"
+return
+:PLAYER~NOPWARP
+
+setvar $PLAYER~PWARPSUCCESS FALSE
+gosub :KILLPWARPTRIGGERS
+setvar $PLAYER~MSG "Planet Does Not Have A Planetary TransWarp Drive!*"
+return
+:PLAYER~NO_PWARP_LOCK
+setvar $PLAYER~PWARPSUCCESS FALSE
+gosub :KILLPWARPTRIGGERS
+setvar $BOT~TARGET $PLAYER~WARPTO
+gosub :BOT~REMOVEFIGFROMDATA
+setvar $PLAYER~MSG "No fighter down at that location!*"
+return
+:PLAYER~NO_ORE
+setvar $PLAYER~PWARPSUCCESS FALSE
+gosub :KILLPWARPTRIGGERS
+setvar $PLAYER~MSG "Not enough fuel for that pwarp.*"
+return
+:PLAYER~PWARP_LOCK
+setvar $PLAYER~PWARPSUCCESS TRUE
+gosub :KILLPWARPTRIGGERS
+waiton "Planet is now in sector"
+setvar $PLAYER~MSG "Planet #"&$PLANET~PLANET&" moved to sector "&$PLAYER~WARPTO&".*"
+gosub :SWITCHBOARD~SWITCHBOARD
+setvar $BOT~TARGET $PLAYER~WARPTO
+loadvar $PLANET~PLANET
+isnumber $PLAYER~TEST $PLANET~PLANET
+if ($PLAYER~TEST)
+  if (($PLANET~PLANET <> ".") and ($PLANET~PLANET > 0))
+    setsectorparameter $PLANET~PLANET "PSECTOR" $BOT~TARGET
+  end
+end
+gosub :BOT~ADDFIGTODATA
+return
+:PLAYER~ALREADY
+setvar $PLAYER~PWARPSUCCESS TRUE
+gosub :KILLPWARPTRIGGERS
+setvar $PLAYER~MSG "Planet already in that sector!.*"
+return
+:PLAYER~KILLPWARPTRIGGERS
+
+killtrigger PWARP_LOCK
+killtrigger NO_PWARP_LOCK
+killtrigger ALREADY
+killtrigger NO_ORE
+killtrigger NO_PWARP
+killtrigger WRONG_NUMBER
+return
+:PLAYER~QUIKSTATS
+
+
+setvar $PLAYER~CURRENT_PROMPT "Undefined"
+setvar $PLAYER~FEDSPACE FALSE
+if ($PLAYER~TOWED = 0)
+  setvar $PLAYER~TOWED ""
+end
+loadvar $PLAYER~UNLIMITEDGAME
+:PLAYER~TRYPROMPTAGAIN
+killtrigger TOOLONGPROMPT
+killtrigger NOPROMPT
+killtrigger PROMPT
+killtrigger STATLINETRIG
+killtrigger GETLINE2
+settextlinetrigger PROMPT :ALLPROMPTS #145&#8
+settextlinetrigger STATLINETRIG :STATSTART #179
+setdelaytrigger TOOLONGPROMPT :TRYPROMPTAGAIN 10000
+send #145&"/"
+pause
+:PLAYER~ALLPROMPTS
+setvar $PLAYER~ANSILINE CURRENTANSILINE
+setvar $PLAYER~SELF_DESTRUCT_PROMPT FALSE
+getwordpos $PLAYER~ANSILINE $PLAYER~POS "ARE YOU SURE CAPTAIN? (Y/N) [N]"
+if ($PLAYER~POS > 0)
+  setvar $PLAYER~SELF_DESTRUCT_PROMPT TRUE
+end
+
+getword CURRENTLINE $PLAYER~CURRENT_PROMPT 1
+setvar $PLAYER~FULL_CURRENT_PROMPT CURRENTLINE
+striptext $PLAYER~FULL_CURRENT_PROMPT #145
+striptext $PLAYER~FULL_CURRENT_PROMPT #8
+striptext $PLAYER~CURRENT_PROMPT #145
+striptext $PLAYER~CURRENT_PROMPT #8
+settextlinetrigger PROMPT :ALLPROMPTS #145&#8
+pause
+:PLAYER~STATSTART
+killtrigger PROMPT
+setvar $PLAYER~STATS ""
+setvar $PLAYER~WORDY ""
+:PLAYER~STATSLINE
+killtrigger STATLINETRIG
+killtrigger GETLINE2
+setvar $PLAYER~LINE2 CURRENTLINE
+replacetext $PLAYER~LINE2 #179 " "
+striptext $PLAYER~LINE2 ","
+setvar $PLAYER~STATS $PLAYER~STATS&$PLAYER~LINE2
+getwordpos $PLAYER~LINE2 $PLAYER~POS "Ship"
+if ($PLAYER~POS > 0)
+  goto :GOTSTATS
+else
+  settextlinetrigger GETLINE2 :STATSLINE
+  pause
+end
+:PLAYER~GOTSTATS
+killtrigger TOOLONGPROMPT
+killtrigger GETLINE2
+setvar $PLAYER~STATS $PLAYER~STATS&" @@@"
+setvar $PLAYER~CURRENT_WORD 1
+getword $PLAYER~STATS $PLAYER~WORDY $PLAYER~CURRENT_WORD
+:PLAYER~PARSESTATS
+if ($PLAYER~WORDY <> "@@@")
+  if ($PLAYER~WORDY = "Sect")
+    getword $PLAYER~STATS $PLAYER~CURRENT_SECTOR ($PLAYER~CURRENT_WORD + 1)
+    if (($PLAYER~CURRENT_SECTOR <= 10) or ($PLAYER~CURRENT_SECTOR = STARDOCK) or ($PLAYER~CURRENT_SECTOR = $MAP~STARDOCK))
+      setvar $PLAYER~FEDSPACE TRUE
+    end
+  elseif ($PLAYER~WORDY = "Turns")
+    getword $PLAYER~STATS $PLAYER~TURNS ($PLAYER~CURRENT_WORD + 1)
+    if ($PLAYER~UNLIMITEDGAME = TRUE)
+      setvar $PLAYER~TURNS 65000
+    end
+  elseif ($PLAYER~WORDY = "Creds")
+    getword $PLAYER~STATS $PLAYER~CREDITS ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Figs")
+    getword $PLAYER~STATS $PLAYER~FIGHTERS ($PLAYER~CURRENT_WORD + 1)
+    savevar $PLAYER~FIGHTERS
+  elseif ($PLAYER~WORDY = "Shlds")
+    getword $PLAYER~STATS $PLAYER~SHIELDS ($PLAYER~CURRENT_WORD + 1)
+    savevar $PLAYER~SHIELDS
+  elseif ($PLAYER~WORDY = "Hlds")
+    getword $PLAYER~STATS $PLAYER~TOTAL_HOLDS ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Ore")
+    getword $PLAYER~STATS $PLAYER~ORE_HOLDS ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Org")
+    getword $PLAYER~STATS $PLAYER~ORGANIC_HOLDS ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Equ")
+    getword $PLAYER~STATS $PLAYER~EQUIPMENT_HOLDS ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Col")
+    getword $PLAYER~STATS $PLAYER~COLONIST_HOLDS ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Phot")
+    getword $PLAYER~STATS $PLAYER~PHOTONS ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Armd")
+    getword $PLAYER~STATS $PLAYER~ARMIDS ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Lmpt")
+    getword $PLAYER~STATS $PLAYER~LIMPETS ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "GTorp")
+    getword $PLAYER~STATS $PLAYER~GENESIS ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "TWarp")
+    getword $PLAYER~STATS $PLAYER~TWARP_TYPE ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Clks")
+    getword $PLAYER~STATS $PLAYER~CLOAKS ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Beacns")
+    getword $PLAYER~STATS $PLAYER~BEACONS ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "AtmDt")
+    getword $PLAYER~STATS $PLAYER~ATOMIC ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Corbo")
+    getword $PLAYER~STATS $PLAYER~CORBO ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "EPrb")
+    getword $PLAYER~STATS $PLAYER~EPROBES ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "MDis")
+    getword $PLAYER~STATS $PLAYER~MINE_DISRUPTORS ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "PsPrb")
+    getword $PLAYER~STATS $PLAYER~PSYCHIC_PROBE ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "PlScn")
+    getword $PLAYER~STATS $PLAYER~PLANET_SCANNER ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "LRS")
+    getword $PLAYER~STATS $PLAYER~SCAN_TYPE ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Aln")
+    getword $PLAYER~STATS $PLAYER~ALIGNMENT ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Exp")
+    getword $PLAYER~STATS $PLAYER~EXPERIENCE ($PLAYER~CURRENT_WORD + 1)
+  elseif ($PLAYER~WORDY = "Corp")
+    getword $PLAYER~STATS $PLAYER~CORP ($PLAYER~CURRENT_WORD + 1)
+    setvar $PLAYER~CORPNUMBER $PLAYER~CORP
+    savevar $PLAYER~CORPNUMBER
+  elseif ($PLAYER~WORDY = "Ship")
+    getword $PLAYER~STATS $PLAYER~SHIP_NUMBER ($PLAYER~CURRENT_WORD + 1)
+    getword $PLAYER~STATS $PLAYER~SHIP_TYPE ($PLAYER~CURRENT_WORD + 2)
+  end
+  add $PLAYER~CURRENT_WORD 1
+  getword $PLAYER~STATS $PLAYER~WORDY $PLAYER~CURRENT_WORD
+  goto :PLAYER~PARSESTATS
+end
+if ($PLAYER~CURRENT_PROMPT = "Undefined")
+  settextlinetrigger PROMPTAFTERSTATS :PLAYER~PROMPTAFTERSTATS #145&#8
+  setdelaytrigger NOPROMPT :PLAYER~NOPROMPT 1000
+  pause
+end
+goto :PLAYER~DONEQUIKSTATS
+:PLAYER~PROMPTAFTERSTATS
+killtrigger NOPROMPT
+setvar $PLAYER~ANSILINE CURRENTANSILINE
+setvar $PLAYER~SELF_DESTRUCT_PROMPT FALSE
+getwordpos $PLAYER~ANSILINE $PLAYER~POS "ARE YOU SURE CAPTAIN? (Y/N) [N]"
+if ($PLAYER~POS > 0)
+  setvar $PLAYER~SELF_DESTRUCT_PROMPT TRUE
+end
+getword CURRENTLINE $PLAYER~CURRENT_PROMPT 1
+setvar $PLAYER~FULL_CURRENT_PROMPT CURRENTLINE
+striptext $PLAYER~FULL_CURRENT_PROMPT #145
+striptext $PLAYER~FULL_CURRENT_PROMPT #8
+striptext $PLAYER~CURRENT_PROMPT #145
+striptext $PLAYER~CURRENT_PROMPT #8
+goto :PLAYER~DONEQUIKSTATS
+:PLAYER~NOPROMPT
+killtrigger PROMPTAFTERSTATS
+goto :PLAYER~DONEQUIKSTATS
+:PLAYER~DONEQUIKSTATS
+killtrigger STATLINETRIG
+killtrigger GETLINE2
+killtrigger PROMPT
+savevar $PLAYER~UNLIMITEDGAME
+if ($PLAYER~SAVE)
+  savevar $PLAYER~CORP
+  savevar $PLAYER~CREDITS
+  savevar $PLAYER~CURRENT_SECTOR
+  savevar $PLAYER~TURNS
+  savevar $PLAYER~FIGHTERS
+  savevar $PLAYER~SHIELDS
+  savevar $PLAYER~TOTAL_HOLDS
+  savevar $PLAYER~ORE_HOLDS
+  savevar $PLAYER~ORGANIC_HOLDS
+  savevar $PLAYER~EQUIPMENT_HOLDS
+  savevar $PLAYER~COLONIST_HOLDS
+  savevar $PLAYER~PHOTONS
+  savevar $PLAYER~ARMIDS
+  savevar $PLAYER~LIMPETS
+  savevar $PLAYER~GENESIS
+  savevar $PLAYER~TWARP_TYPE
+  savevar $PLAYER~CLOAKS
+  savevar $PLAYER~BEACONS
+  savevar $PLAYER~ATOMIC
+  savevar $PLAYER~CORBO
+  savevar $PLAYER~EPROBES
+  savevar $PLAYER~MINE_DISRUPTORS
+  savevar $PLAYER~PSYCHIC_PROBE
+  savevar $PLAYER~PLANET_SCANNER
+  savevar $PLAYER~SCAN_TYPE
+  savevar $PLAYER~ALIGNMENT
+  savevar $PLAYER~EXPERIENCE
+  savevar $PLAYER~SHIP_NUMBER
+  savevar $PLAYER~TRADER_NAME
+end
+return
+:PLAYER~REMOVEFIGFROMDATA
+
+
+
+getsectorparameter $PLAYER~TARGET "FIGSEC" $PLAYER~CHECK
+if ($PLAYER~CHECK = TRUE)
+  getsectorparameter 2 "FIG_COUNT" $PLAYER~FIGCOUNT
+  setsectorparameter 2 "FIG_COUNT" ($PLAYER~FIGCOUNT - 1)
+end
+setsectorparameter $PLAYER~TARGET "FIGSEC" FALSE
+return
+:PLAYER~DISCOD
+
+
+setvar $PLAYER~TAGLINE "["&$BOT~COMMAND&"]"
+setvar $PLAYER~TAGLINEB "["&$BOT~COMMAND&"]"
+killalltriggers
+echo "**"&ANSI_14&$PLAYER~TAGLINEB&ANSI_15&" Disconnected **"
+:PLAYER~DISCO_TEST
+if (CONNECTED <> TRUE)
+  setdelaytrigger EMANCIPATE_CPU :EMANCIPATE_CPU 3000
+  echo "**"&ANSI_14&$PLAYER~TAGLINEB&ANSI_15&" Auto Resume Initiated - Awaiting Connection!**"
+  pause
+  :PLAYER~EMANCIPATE_CPU
+  goto :DISCO_TEST
+end
+waitfor "(?="
+setdelaytrigger WAITINGABIT :WAITINGABIT 3000
+echo "**"&ANSI_14&$PLAYER~TAGLINEB&ANSI_15&" Connected - Waiting For Command Prompt!**"
+pause
+:PLAYER~WAITINGABIT
+killalltriggers
+gosub :QUIKSTATS
+if ($PLAYER~CURRENT_PROMPT = "Command")
+  send "'{"&$SWITCHBOARD~BOT_NAME&"} "&$PLAYER~TAGLINEB&" - Restarting!**"
+  waitfor "Message sent on sub-space channel"
+  goto :INAC
+elseif ($PLAYER~CURRENT_PROMPT = "Citadel")
+  send "'{"&$SWITCHBOARD~BOT_NAME&"} "&$PLAYER~TAGLINEB&" - Restarting!**"
+  waitfor "Message sent on sub-space channel"
+  send "qqqq**"
+  goto :INAC
+else
+  send " p d 0* 0* 0* * *** * c q q q q q z 2 2 c q * z * *** * * '"&$PLAYER~TAGLINEB&"Attempting to Reach Correct Prompt...*"
+  settextlinetrigger EMQ_COMPLETE :EMQ_DELAY "Attempting to Reach Correct Prompt..."
+  setdelaytrigger EMQ_DELAY :EMQ_DELAY 3000
+  pause
+  :PLAYER~EMQ_DELAY
+  killalltriggers
+  goto :DISCO_TEST
+end
+:PLAYER~SETCONNECTIONTRIGGERS
+
+killtrigger DISCOD1
+killtrigger DISCOD2
+seteventtrigger DISCOD1 :DISCOD "CONNECTION LOST"
+seteventtrigger DISCOD2 :DISCOD "Connections have been temporarily disabled."
+return
+:PLAYER~STARTCNSETTINGS
+
+
+send "CN"
+settextlinetrigger ANSI1 :CNCHECK "(1) ANSI graphics            - Off"
+settextlinetrigger ANIM1 :CNCHECK "(2) Animation display        - On"
+settextlinetrigger PAGE1 :CNCHECK "(3) Page on messages         - On"
+settextlinetrigger SETSSCHN :SETSSCHN "(4) Sub-space radio channel"
+settextlinetrigger SILENCE1 :CNCHECK "(7) Silence ALL messages     - Yes"
+settextlinetrigger ABORTDISPLAY1 :CNCHECK "(9) Abort display on keys    - ALL KEYS"
+settextlinetrigger MESSAGEDISPLAY1 :CNCHECK "(A) Message Display Mode     - Long"
+settextlinetrigger SCREENPAUSES1 :CNCHECK "(B) Screen Pauses            - Yes"
+settextlinetrigger ONLINEAUTOFLEE0 :CNCDONE "(C) Online Auto Flee         - Off"
+settextlinetrigger ONLINEAUTOFLEE1 :CNCALMOSTDONE "(C) Online Auto Flee         - On"
+pause
+:PLAYER~CNCHECK
+gosub :GETCNC
+pause
+:PLAYER~SETSSCHN
+getword CURRENTLINE $BOT~SUBSPACE 6
+if ($BOT~SUBSPACE = 0)
+  getrnd $BOT~SUBSPACE 101 60000
+  send 4&$BOT~SUBSPACE&"*"
+end
+savevar $BOT~SUBSPACE
+pause
+:PLAYER~CNCALMOSTDONE
+gosub :GETCNC
+:PLAYER~CNCDONE
+send "QQ"
+killtrigger 1
+killtrigger 2
+settexttrigger 1 :SUBSTARTCNCONTINUE "Command [TL="
+settexttrigger 2 :SUBSTARTCNCONTINUE "Citadel command (?=help)"
+pause
+:PLAYER~SUBSTARTCNCONTINUE
+killtrigger 1
+killtrigger 2
+return
+:PLAYER~GETCNC
+
+getword CURRENTLINE $PLAYER~CNC 1
+striptext $PLAYER~CNC "("
+striptext $PLAYER~CNC ")"
+send $PLAYER~CNC&"  "
+return
+:PLAYER~STARTHAGGLE
+
+
+
+gosub :ISEPHAGGLE
+if ($PLAYER~ISEPHAGGLE)
+  waitfor "Agreed,"
+  settextlinetrigger TRADEFIN :TRADEFIN "empty cargo holds"
+  pause
+  :PLAYER~TRADEFIN
+  killtrigger TRADEFIN
+  getword CURRENTLINE $PLAYER~NCREDITS 3
+  striptext $PLAYER~NCREDITS ","
+
+  if ($PLAYER~NCREDITS = $PLAYER~CCREDITS)
+    setvar $PLAYER~REPORT 1
+  else
+    setvar $PLAYER~CCREDITS $PLAYER~NCREDITS
+  end
+else
+  setvar $PLAYER~HFACTOR 5
+  :PLAYER~UNITS
+  killtrigger PTRADE
+  killtrigger STRADE
+  killtrigger GO
+  killtrigger DONE
+  gosub :SETCONNECTIONTRIGGERS
+  settexttrigger PTRADE :BUNITS "do you want to buy ["
+  settexttrigger STRADE :SUNITS "do you want to sell ["
+  settextlinetrigger GO :FINISHHAGGLE "Agreed, "
+  settextlinetrigger DONE :DONEHAGGLE "empty cargo holds."
+  pause
+  :PLAYER~FINISHHAGGLE
+
+  killtrigger DONE
+  gosub :HAGGLE
+  :PLAYER~DONEHAGGLE
+end
+
+
+
+return
+:PLAYER~BUNITS
+
+setvar $PLAYER~MULTIPLIER (100 - $PLAYER~HFACTOR)
+goto :UNITS
+:PLAYER~SUNITS
+
+setvar $PLAYER~MULTIPLIER (100 + $PLAYER~HFACTOR)
+goto :UNITS
+:PLAYER~HAGGLE
+
+setvar $PLAYER~NI 0
+setvar $PLAYER~MIDHAG "-1"
+setvar $PLAYER~NOCRED 0
+killtrigger 1
+killtrigger 0
+killtrigger DONEHAGGLING
+killtrigger DONHAG
+killtrigger OFFERME
+gosub :SETCONNECTIONTRIGGERS
+settexttrigger DONEHAG :DONE_HAGGLE "Command [TL="
+settexttrigger DONEHAGGLING :DONE_HAGGLE "empty cargo holds."
+settexttrigger OFFERME :OFFERME "] ?"
+pause
+:PLAYER~OFFERME
+
+getword CURRENTLINE $PLAYER~OFFER 3
+striptext $PLAYER~OFFER "["
+striptext $PLAYER~OFFER "]"
+striptext $PLAYER~OFFER ","
+striptext $PLAYER~OFFER "?"
+setvar $PLAYER~ORIG_OFFER $PLAYER~OFFER
+:PLAYER~REHAGGLE
+
+killtrigger 1
+killtrigger 0
+killtrigger 2
+killtrigger 3
+setvar $PLAYER~OFFER (($PLAYER~ORIG_OFFER * $PLAYER~MULTIPLIER) / 100)
+send $PLAYER~OFFER "*"
+add $PLAYER~MIDHAG 1
+waitfor $PLAYER~OFFER
+if ($PLAYER~MULTIPLIER > 100)
+  subtract $PLAYER~MULTIPLIER 1
+else
+  add $PLAYER~MULTIPLIER 1
+end
+gosub :SETCONNECTIONTRIGGERS
+send "@"
+waiton "Average Interval Lag:"
+settexttrigger 0 :DONE_HAGGLE "How many holds of"
+settexttrigger 1 :REHAGGLE "Your offer"
+settexttrigger 2 :DONEHAG "We're not interested."
+settexttrigger 3 :NOCREDS "You only have"
+pause
+:PLAYER~NOCREDS
+
+setvar $PLAYER~NOCRED 1
+send "0*0*"
+goto :DONE_HAGGLE
+:PLAYER~DONEHAG
+
+setvar $PLAYER~NI 1
+:PLAYER~DONE_HAGGLE
+
+killtrigger DONEHAG
+killtrigger 0
+killtrigger 1
+killtrigger 2
+killtrigger 3
+killtrigger REHAGGLE
+killtrigger DONEHAGGLING
+killtrigger OFFERME
+killalltriggers
+return
+:PLAYER~SWATHOFF
+
+
+if ($PLAYER~SWATHOFF = FALSE)
+  settexttrigger SWATHISON :SWATHISON "Command [TL="
+  setdelaytrigger SWATHISOFF :SWATHISOFF 2000
+  pause
+  :PLAYER~SWATHISON
+
+  killtrigger SWATHISOFF
+  killtrigger SWATHISON
+  setvar $PLAYER~SWATHOFFMESSAGE "Detected SWATH Autohaggle"
+  setvar $PLAYER~SWATHOFF FALSE
+  saveglobal $PLAYER~SWATHOFF
+  return
+  :PLAYER~SWATHISOFF
+
+  killtrigger SWATHISOFF
+  killtrigger SWATHISON
+  setvar $PLAYER~SWATHOFF TRUE
+  saveglobal $PLAYER~SWATHOFF
+end
+return
+:PLAYER~TOPOFF
+:PLAYER~DO_TOPOFF_AGAIN
+
+
+
+killtrigger TOPOFF_SUCCESS
+killtrigger TOPOFF_FAILURE1
+killtrigger TOPOFF_FAILURE2
+send " F"
+waiton "Your ship can support up to"
+getword CURRENTLINE $PLAYER~FTRS_TO_LEAVE 10
+striptext $PLAYER~FTRS_TO_LEAVE ","
+striptext $PLAYER~FTRS_TO_LEAVE " "
+if ($PLAYER~FTRS_TO_LEAVE < 1)
+  setvar $PLAYER~FTRS_TO_LEAVE 1
+end
+send " "&$PLAYER~FTRS_TO_LEAVE&" * c d"
+settextlinetrigger TOPOFF_SUCCESS :TOPOFF_SUCCESS "Done. You have "
+settextlinetrigger TOPOFF_FAILURE1 :DO_TOPOFF_AGAIN "You don't have that many fighters available."
+settextlinetrigger TOPOFF_FAILURE2 :DO_TOPOFF_AGAIN "Too many fighters in your fleet!  You are limited to"
+pause
+:PLAYER~TOPOFF_SUCCESS
+killtrigger TOPOFF_FAILURE1
+killtrigger TOPOFF_FAILURE2
+return
+:PLAYER~TURNOFFANSI
+
+
+send "c n"
+killalltriggers
+waiton "(1) ANSI graphics"
+getword CURRENTLINE $PLAYER~ANSISTATUS 5
+waiton "(2) Animation display"
+getword CURRENTLINE $PLAYER~ANIMATIONSTATUS 5
+if ($PLAYER~ANIMATIONSTATUS = "On")
+  send 2
+end
+if ($PLAYER~ANSISTATUS = "On")
+  send "1 q q"
+else
+  send "q q"
+end
+waiton "<Computer deactivated>"
+return
+:PLAYER~TURNONANSI
+
+
+send "c n"
+killalltriggers
+waiton "(1) ANSI graphics"
+getword CURRENTLINE $PLAYER~ANSISTATUS 5
+if ($PLAYER~ANSISTATUS = "Off")
+  send "1 q q"
+else
+  send "q q"
+end
+waiton "<Computer deactivated>"
+return
+:PLAYER~TWARP
+
+
+setvar $PLAYER~TWARPSUCCESS FALSE
+setvar $PLAYER~ORIGINAL 9999999
+setvar $PLAYER~TARGET 0
+if ($PLAYER~CURRENT_SECTOR = $PLAYER~WARPTO)
+  setvar $PLAYER~MSG "Already in that sector!"
+  goto :TWARPDONE
+elseif (($PLAYER~WARPTO <= 0) or ($PLAYER~WARPTO > SECTORS))
+  setvar $PLAYER~MSG "Destination sector is out of range!"
+  goto :TWARPDONE
+end
+if ($PLAYER~TWARP_TYPE = "No")
+  setvar $PLAYER~MSG "No T-warp drive on this ship!"
+  goto :TWARPDONE
+end
+if (($PLAYER~PHOTONS > 0) and ($SETTINGS~OVERRIDE <> TRUE))
+  setvar $SWITCHBOARD~MESSAGE "You can't twarp with photons without override!*"
+  gosub :SWITCHBOARD~SWITCHBOARD
+  setvar $PLAYER~MSG "You can't twarp with photons without override!"
+  goto :TWARPDONE
+end
+loadvar $SHIP~SHIP_MAX_ATTACK
+if ($SHIP~SHIP_MAX_ATTACK = 0)
+  setvar $SHIP~SHIP_MAX_ATTACK 9999
+end
+if (($PLAYER~FIGHTERS > 0) and ($PLAYER~FIGHTERS < $SHIP~SHIP_MAX_ATTACK))
+  setvar $SHIP~SHIP_MAX_ATTACK $PLAYER~FIGHTERS
+end
+
+setvar $PLAYER~WEAREADJDOCK FALSE
+if (($PLAYER~WARPTO = $MAP~STARDOCK) or ($PLAYER~WARPTO <= 10))
+  setvar $PLAYER~TARGET $PLAYER~WARPTO
+  setvar $PLAYER~A 1
+  setvar $PLAYER~START_SECTOR $PLAYER~CURRENT_SECTOR
+  while ($PLAYER~A <= SECTOR.WARPCOUNT[$PLAYER~START_SECTOR])
+    setvar $PLAYER~ADJ_START SECTOR.WARPS[$PLAYER~START_SECTOR][$PLAYER~A]
+    if ($PLAYER~ADJ_START = $PLAYER~TARGET)
+      setvar $PLAYER~WEAREADJDOCK TRUE
+    end
+    add $PLAYER~A 1
+  end
+end
+setvar $PLAYER~RED_ADJ 0
+if (($PLAYER~ALIGNMENT < 1000) and ((($PLAYER~WEAREADJDOCK = FALSE) and (($PLAYER~WARPTO = $MAP~STARDOCK) or ($PLAYER~WARPTO <= 10)))))
+  setvar $PLAYER~TARGET $PLAYER~WARPTO
+  gosub :FINDJUMPSECTOR
+  if ($PLAYER~RED_ADJ <> 0)
+    setvar $PLAYER~ORIGINAL $PLAYER~WARPTO
+    setvar $PLAYER~WARPTO $PLAYER~RED_ADJ
+  else
+    waitfor "Command [TL="
+    setvar $PLAYER~MSG "Cannot Find Jump Sector Adjacent Sector "&$PLAYER~TARGET&"."
+    goto :TWARPDONE
+  end
+end
+if ($PLAYER~RED_ADJ <> 0)
+  send "* mz" $PLAYER~WARPTO "*"
+else
+  if ($PLAYER~STARTINGLOCATION = "Citadel")
+    send "q t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
+  elseif ($PLAYER~STARTINGLOCATION = "Planet")
+    send "t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
+  else
+    if ($PLAYER~FASTTWARP)
+      send "mz" $PLAYER~WARPTO "*"
+    else
+      send "q q q n n 0 * c u y q mz" $PLAYER~WARPTO "*"
+    end
+  end
+end
+settexttrigger THERE :ADJ_WARP "You are already in that sector!"
+settextlinetrigger ADJ_WARP :ADJ_WARP "Sector  : "&$PLAYER~WARPTO&" "
+settexttrigger LOCKING :LOCKING "Do you want to engage the TransWarp drive?"
+settexttrigger IGD :TWARPIGD "An Interdictor Generator in this sector holds you fast!"
+settexttrigger NOTURNS :TWARPPHOTONED "Your ship was hit by a Photon and has been disabled"
+settexttrigger NOROUTE :TWARPNOROUTE "Do you really want to warp there? (Y/N)"
+settextlinetrigger NO_FUEL :TWARPNOFUEL "You do not have enough Fuel Ore"
+pause
+:PLAYER~ADJ_WARP
+gosub :KILLTWARPTRIGGERS
+send "z*"
+goto :TWARP_ADJ
+:PLAYER~LOCKING
+gosub :KILLTWARPTRIGGERS
+send "y"
+settextlinetrigger TWARP_LOCK :TWARP_LOCK "TransWarp Locked"
+settextlinetrigger NO_TWRP_LOCK :NO_TWARP_LOCK "No locating beam found"
+settextlinetrigger TWARP_ADJ :TWARP_ADJ "<Set NavPoint>"
+settextlinetrigger NO_FUEL :TWARPNOFUEL "You do not have enough Fuel Ore"
+pause
+:PLAYER~TWARPNOFUEL
+gosub :KILLTWARPTRIGGERS
+setvar $PLAYER~MSG "Not enough fuel for T-warp."
+goto :TWARPDONE
+:PLAYER~TWARP_ADJ
+gosub :KILLTWARPTRIGGERS
+send "za  "&$SHIP~SHIP_MAX_ATTACK&"* * r * "
+setvar $PLAYER~MSG "That sector is next door, just plain warping."
+setvar $PLAYER~TWARPSUCCESS TRUE
+goto :TWARPDONE
+:PLAYER~TWARPNOROUTE
+gosub :KILLTWARPTRIGGERS
+send "n* z* "
+setvar $PLAYER~MSG "No route available to that sector!"
+goto :TWARPDONE
+:PLAYER~NO_TWARP_LOCK
+gosub :KILLTWARPTRIGGERS
+send "n* z* "
+setvar $PLAYER~TARGET $PLAYER~WARPTO
+setsectorparameter $PLAYER~TARGET "FIGSEC" FALSE
+setvar $PLAYER~MSG "No fighters at T-warp point!"
+goto :TWARPDONE
+:PLAYER~TWARPIGD
+gosub :KILLTWARPTRIGGERS
+setvar $PLAYER~MSG "My ship is being held by Interdictor!"
+goto :TWARPDONE
+:PLAYER~TWARPPHOTONED
+gosub :KILLTWARPTRIGGERS
+setvar $PLAYER~MSG "I have been photoned and can not T-warp!"
+goto :TWARPDONE
+:PLAYER~TWARP_LOCK
+gosub :KILLTWARPTRIGGERS
+setvar $PLAYER~TARGET $PLAYER~WARPTO
+setsectorparameter $PLAYER~TARGET "FIGSEC" TRUE
+send "y   *     "
+setvar $PLAYER~MSG "T-warp completed."
+setvar $PLAYER~TWARPSUCCESS TRUE
+:PLAYER~TWARPDONE
+if (($PLAYER~TWARPSUCCESS = TRUE) and (($PLAYER~ORIGINAL = $MAP~STARDOCK) or ($PLAYER~ORIGINAL <= 10)))
+  send "* m "&$PLAYER~ORIGINAL&"*  za"&$SHIP~SHIP_MAX_ATTACK&"* * "
+end
+if ($PLAYER~TWARPSUCCESS = TRUE)
+  setvar $PLAYER~CURRENT_SECTOR $PLAYER~WARPTO
+end
+return
+:PLAYER~KILLTWARPTRIGGERS
+
+killtrigger THERE
+killtrigger ADJ_WARP
+killtrigger LOCKING
+killtrigger IGD
+killtrigger NOTURNS
+killtrigger NOROUTE
+killtrigger TWARP_LOCK
+killtrigger NO_TWRP_LOCK
+killtrigger TWARP_ADJ
+killtrigger NO_FUEL
+return
+:PLAYER~VOIDADJACENT
+
+
+
+getsector $PLAYER~CURRENT_SECTOR $PLAYER~SECTORINFO
+if ($PLAYER~SECTORINFO.WARP[1] = 0)
+  send "'This sector has no warps, maybe you need to scan it first*"
+  halt
+else
+  setvar $PLAYER~VOIDSECT 0
+  :PLAYER~VOIDS
+  add $PLAYER~VOIDSECT 1
+  if ($PLAYER~VOIDSECT < 7)
+    if ($PLAYER~SECTORINFO.WARP[$PLAYER~VOIDSECT] <> 0)
+      send "CV"&$PLAYER~SECTORINFO.WARP[$PLAYER~VOIDSECT]&"*Q"
+    end
+    goto :VOIDS
+  end
+
+  send "/"
+  waiton " Sect "
+end
+return
+:PLAYER~INIT
+
+
+
+setarray $PLAYER~TRADERS 50
+setarray $PLAYER~FAKETRADERS 50
+setarray $PLAYER~EMPTYSHIPS 100
+setvar $PLAYER~RANKSLENGTH 46
+setarray $PLAYER~RANKS $PLAYER~RANKSLENGTH
+setvar $PLAYER~RANKS[1] "36mCivilian"
+setvar $PLAYER~RANKS[2] "36mPrivate 1st Class"
+setvar $PLAYER~RANKS[3] "36mPrivate"
+setvar $PLAYER~RANKS[4] "36mLance Corporal"
+setvar $PLAYER~RANKS[5] "36mCorporal"
+setvar $PLAYER~RANKS[6] "36mStaff Sergeant"
+setvar $PLAYER~RANKS[7] "36mGunnery Sergeant"
+setvar $PLAYER~RANKS[8] "36m1st Sergeant"
+setvar $PLAYER~RANKS[9] "36mSergeant Major"
+setvar $PLAYER~RANKS[10] "36mSergeant"
+setvar $PLAYER~RANKS[11] "31mAnnoyance"
+setvar $PLAYER~RANKS[12] "31mNuisance 3rd Class"
+setvar $PLAYER~RANKS[13] "31mNuisance 2nd Class"
+setvar $PLAYER~RANKS[14] "31mNuisance 1st Class"
+setvar $PLAYER~RANKS[15] "31mMenace 3rd Class"
+setvar $PLAYER~RANKS[16] "31mMenace 2nd Class"
+setvar $PLAYER~RANKS[17] "31mMenace 1st Class"
+setvar $PLAYER~RANKS[18] "31mSmuggler 3rd Class"
+setvar $PLAYER~RANKS[19] "31mSmuggler 2nd Class"
+setvar $PLAYER~RANKS[20] "31mSmuggler 1st Class"
+setvar $PLAYER~RANKS[21] "31mSmuggler Savant"
+setvar $PLAYER~RANKS[22] "31mRobber"
+setvar $PLAYER~RANKS[23] "31mTerrorist"
+setvar $PLAYER~RANKS[24] "31mInfamous Pirate"
+setvar $PLAYER~RANKS[25] "31mNotorious Pirate"
+setvar $PLAYER~RANKS[26] "31mDread Pirate"
+setvar $PLAYER~RANKS[27] "31mPirate"
+setvar $PLAYER~RANKS[28] "31mGalactic Scourge"
+setvar $PLAYER~RANKS[29] "31mEnemy of the State"
+setvar $PLAYER~RANKS[30] "31mEnemy of the People"
+setvar $PLAYER~RANKS[31] "31mEnemy of Humankind"
+setvar $PLAYER~RANKS[32] "31mHeinous Overlord"
+setvar $PLAYER~RANKS[33] "31mPrime Evil"
+setvar $PLAYER~RANKS[34] "36mChief Warrant Officer"
+setvar $PLAYER~RANKS[35] "36mWarrant Officer"
+setvar $PLAYER~RANKS[36] "36mEnsign"
+setvar $PLAYER~RANKS[37] "36mLieutenant J.G."
+setvar $PLAYER~RANKS[38] "36mLieutenant Commander"
+setvar $PLAYER~RANKS[39] "36mLieutenant"
+setvar $PLAYER~RANKS[40] "36mCommander"
+setvar $PLAYER~RANKS[41] "36mCaptain"
+setvar $PLAYER~RANKS[42] "36mCommodore"
+setvar $PLAYER~RANKS[43] "36mRear Admiral"
+setvar $PLAYER~RANKS[44] "36mVice Admiral"
+setvar $PLAYER~RANKS[45] "36mFleet Admiral"
+setvar $PLAYER~RANKS[46] "36mAdmiral"
+setvar $PLAYER~LASTTARGET ""
+
+
+return
+:PLAYER~CURRENT_PROMPT
+
+
+
+settexttrigger PROMPT :ALLPROMPTSCATCH #145&#8
+setdelaytrigger PROMPT_DELAY :CURRENT_PROMPT_DELAY 5000
+send #145
+pause
+:PLAYER~CURRENT_PROMPT_DELAY
+settextouttrigger ATKEYS :CURRENT_PROMPT_AT_KEYS
+setdelaytrigger PROMPT_DELAY :VERIFYDELAY 30000
+pause
+:PLAYER~CURRENT_PROMPT_AT_KEYS
+getouttext $PLAYER~OUT
+send $PLAYER~OUT
+killtrigger PROMPT_DELAY
+return
+:PLAYER~ALLPROMPTSCATCH
+killtrigger PROMPT_DELAY
+getword CURRENTLINE $PLAYER~CURRENT_PROMPT 1
+if ($PLAYER~CURRENT_PROMPT = 0)
+  getword CURRENTANSILINE $PLAYER~CURRENT_PROMPT 1
+end
+striptext $PLAYER~CURRENT_PROMPT #145
+striptext $PLAYER~CURRENT_PROMPT #8
+setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+return
+:PLAYER~VERIFYDELAY
+
+killalltriggers
+disconnect
+:PLAYER~MOW
+
+
+if ($BOT~STARTINGLOCATION = "Citadel")
+  send "q"
+  gosub :PLANET~GETPLANETINFO
+  send "c "
+end
+if ($BOT~STARTINGLOCATION = "Command")
+  gosub :SHIP~GETSHIPSTATS
+  setvar $PLAYER~MOW_SHIP_MAX_ATTACK $SHIP~SHIP_MAX_ATTACK
+elseif ($SHIP~SHIP_MAX_ATTACK <= 0)
+  setvar $PLAYER~MOW_SHIP_MAX_ATTACK 99991111
+else
+  setvar $PLAYER~MOW_SHIP_MAX_ATTACK $SHIP~SHIP_MAX_ATTACK
+end
+setvar $PLAYER~DESTINATION $BOT~PARM1
+isnumber $PLAYER~NUMBER $PLAYER~DESTINATION
+if ($PLAYER~NUMBER <> 1)
+  send "'{" $SWITCHBOARD~BOT_NAME "} - Sector entered is not a number, cannot mow!*"
+  return
+elseif (($PLAYER~DESTINATION <= 0) or ($PLAYER~DESTINATION > SECTORS))
+  send "'{" $SWITCHBOARD~BOT_NAME "} - Sector entered is not valid, cannot mow!*"
+  return
+end
+setvar $PLAYER~DESTINATION ($BOT~PARM1 + 0)
+getwordpos " "&$BOT~USER_COMMAND_LINE&" " $PLAYER~POS "kill"
+if ($PLAYER~POS > 0)
+  setvar $PLAYER~MOW_KILL TRUE
+else
+  setvar $PLAYER~MOW_KILL FALSE
+end
+getwordpos " "&$BOT~USER_COMMAND_LINE&" " $PLAYER~POS "saveme"
+if ($PLAYER~POS > 0)
+  setvar $PLAYER~MOW_SAVEME TRUE
+else
+  setvar $PLAYER~MOW_SAVEME FALSE
+end
+getwordpos " "&$BOT~USER_COMMAND_LINE&" " $PLAYER~POS " p "
+if ($PLAYER~POS > 0)
+  setvar $PLAYER~ARE_WE_DOCKING TRUE
+else
+  setvar $PLAYER~ARE_WE_DOCKING FALSE
+end
+setvar $PLAYER~FIGSTODROP $BOT~PARM2
+isnumber $PLAYER~NUMBER $PLAYER~FIGSTODROP
+if ($PLAYER~NUMBER <> TRUE)
+  setvar $PLAYER~FIGSTODROP 0
+else
+  if ($PLAYER~FIGSTODROP > 50000)
+    send "'{" $SWITCHBOARD~BOT_NAME "} - Cannot drop more than 50,000 fighters per sector!*"
+    return
+  elseif ($PLAYER~FIGSTODROP > $PLAYER~FIGHTERS)
+    send "'{" $SWITCHBOARD~BOT_NAME "} - Fighters to drop cannot exceed total ship fighters.*"
+    return
+  end
+end
+if ($PLAYER~MOW_SHIP_MAX_ATTACK > $PLAYER~FIGHTERS)
+  setvar $PLAYER~MOW_SHIP_MAX_ATTACK 9999
+end
+if ($PLAYER~CURRENT_SECTOR <> CURRENTSECTOR)
+  setvar $PLAYER~CURRENT_SECTOR 0
+end
+gosub :GETCOURSE
+setvar $PLAYER~J 2
+setvar $PLAYER~RESULT "q q q * "
+while ($PLAYER~J <= $PLAYER~COURSELENGTH)
+  if ($PLAYER~MOWCOURSE[$PLAYER~J] <> $PLAYER~CURRENT_SECTOR)
+    setvar $PLAYER~RESULT $PLAYER~RESULT&"m  "&$PLAYER~MOWCOURSE[$PLAYER~J]&"*   "
+    if (($PLAYER~MOWCOURSE[$PLAYER~J] > 10) and ($PLAYER~MOWCOURSE[$PLAYER~J] <> $MAP~STARDOCK))
+      setvar $PLAYER~RESULT $PLAYER~RESULT&"za  "&$PLAYER~MOW_SHIP_MAX_ATTACK&"* *  "
+    end
+    if (($PLAYER~FIGSTODROP > 0) and (($PLAYER~MOWCOURSE[$PLAYER~J] > 10) and (($PLAYER~MOWCOURSE[$PLAYER~J] <> $MAP~STARDOCK) and ($PLAYER~J > 2))))
+      setvar $PLAYER~RESULT $PLAYER~RESULT&"f "&$PLAYER~FIGSTODROP&" * c "&$PLAYER~FIGHTER_DEPLOY_TYPE&" "
+      setvar $PLAYER~TARGET $PLAYER~MOWCOURSE[$PLAYER~J]
+      gosub :ADDFIGTODATA
+    end
+    if (($PLAYER~J >= $PLAYER~COURSELENGTH) and (($PLAYER~MOW_SAVEME = TRUE) and ($PLAYER~FIGSTODROP = 0)))
+      setvar $PLAYER~RESULT $PLAYER~RESULT&"f 1 * c "&$PLAYER~FIGHTER_DEPLOY_TYPE&" "
+      setvar $PLAYER~TARGET $PLAYER~MOWCOURSE[$PLAYER~J]
+      gosub :ADDFIGTODATA
+    end
+    if (($PLAYER~CALLED = FALSE) and (($PLAYER~MOW_SAVEME = TRUE) and ($PLAYER~J >= ($PLAYER~COURSELENGTH - 2))))
+      setvar $PLAYER~RESULT $PLAYER~RESULT&"'"&$PLAYER~DESTINATION&"=saveme*  "
+      setvar $PLAYER~CALLED TRUE
+    end
+  end
+  add $PLAYER~J 1
+end
+setvar $PLAYER~DOCKING_INSTRUCTIONS ""
+if ($PLAYER~ARE_WE_DOCKING)
+  setvar $PLAYER~DOCKING_INSTRUCTIONS " p z t *"
+  if ($PLAYER~DESTINATION = $MAP~STARDOCK)
+    setvar $PLAYER~DOCKING_INSTRUCTIONS " p z s g y g q h *"
+  end
+  setvar $PLAYER~RESULT $PLAYER~RESULT&$PLAYER~DOCKING_INSTRUCTIONS
+elseif (($PLAYER~MOW_SAVEME = TRUE) and ($PLAYER~STARTINGLOCATION = "Citadel"))
+  setvar $PLAYER~I 0
+  while ($PLAYER~I < 8)
+    add $PLAYER~I 1
+
+    setvar $PLAYER~RESULT $PLAYER~RESULT&"l j"&#8&$PLANET~PLANET&"*  *  j  c  *  *  "
+  end
+end
+send $PLAYER~RESULT
+gosub :QUIKSTATS
+if ($PLAYER~ARE_WE_DOCKING = FALSE)
+  send "*"
+end
+return
+:PLAYER~UNITS
+
+
+killtrigger PTRADE
+killtrigger STRADE
+killtrigger GO
+killtrigger DONE
+gosub :SETCONNECTIONTRIGGERS
+settexttrigger PTRADE :BUNITS "do you want to buy ["
+settexttrigger STRADE :SUNITS "do you want to sell ["
+settextlinetrigger GO :FINISHHAGGLE "Agreed, "
+settextlinetrigger DONE :DONEHAGGLE "empty cargo holds."
+pause
+:PLAYER~FINISHHAGGLE
+
+killtrigger DONE
+gosub :HAGGLE
+:PLAYER~DONEHAGGLE
+
+
+return
+:PLAYER~FORMATPERCENTAGEFORSPACES
+
+if ($PLAYER~INPUTVARIABLE < 10)
+  setvar $PLAYER~OUTPUTVARIABLE "  ("&$PLAYER~INPUTVARIABLE&"%)"
+elseif ($PLAYER~INPUTVARIABLE < 100)
+  setvar $PLAYER~OUTPUTVARIABLE " ("&$PLAYER~INPUTVARIABLE&"%)"
+elseif ($PLAYER~INPUTVARIABLE < 1000)
+  setvar $PLAYER~OUTPUTVARIABLE "("&$PLAYER~INPUTVARIABLE&"%)"
+else
+  setvar $PLAYER~OUTPUTVARIABLE $PLAYER~INPUTVARIABLE
+end
+return
+
+:PLAYER~CAPSTOPPINGPOINT
+return
+
+
+:PLAYER~CHECKINGFIGS
+if ($PLAYER~FIGHTERS <= 0)
+  gosub :QUIKSTATS
+  if ($PLAYER~FIGHTERS <= 0)
+    echo ANSI_12 "*You have no fighters.*" ANSI_7
+    goto :STOPPINGPOINT
+  end
+end
+if ((($PLAYER~CURRENT_SECTOR > 10) and ($PLAYER~CURRENT_SECTOR <> $MAP~STARDOCK)) and ($PLAYER~BEACONPOS > 0))
+  setvar $PLAYER~TARGETSTRING $PLAYER~TARGETSTRING&"*"
+end
+if (($SECTOR~EMPTYSHIPCOUNT + ($SECTOR~FAKETRADERCOUNT + $SECTOR~REALTRADERCOUNT)) > 0)
+  setvar $PLAYER~I 0
+  while ($PLAYER~I < ($SECTOR~EMPTYSHIPCOUNT + $SECTOR~FAKETRADERCOUNT))
+    setvar $PLAYER~TARGETSTRING $PLAYER~TARGETSTRING&"* "
+    add $PLAYER~I 1
+  end
+  setvar $PLAYER~C 1
+  while (($PLAYER~C <= $SECTOR~REALTRADERCOUNT) and ($PLAYER~ISFOUND = FALSE))
+
+    if ($PLAYER~TRADERS[$PLAYER~C][1] = $PLAYER~CORP)
+      setvar $PLAYER~TARGETSTRING $PLAYER~TARGETSTRING&"* "
+    elseif ((($PLAYER~CURRENT_SECTOR <= 10) or ($PLAYER~CURRENT_SECTOR = $MAP~STARDOCK)) and ($PLAYER~TRADERS[$PLAYER~C][2] = TRUE))
+      setvar $PLAYER~TARGETSTRING $PLAYER~TARGETSTRING&"* "
+    else
+      setvar $PLAYER~ISFOUND TRUE
+      setvar $PLAYER~TARGETSTRING $PLAYER~TARGETSTRING&"zy z"
+    end
+    add $PLAYER~C 1
+  end
+else
+  setvar $SWITCHBOARD~MESSAGE "You have no targets.*"
+  gosub :SWITCHBOARD~SWITCHBOARD
+  goto :STOPPINGPOINT
+end
+if ($PLAYER~ISFOUND = TRUE)
+  setvar $PLAYER~ATTACKSTRING ""
+  while ($PLAYER~FIGHTERS > 0)
+    if ($PLAYER~FIGHTERS < $SHIP~SHIP_MAX_ATTACK)
+      setvar $PLAYER~ATTACKSTRING $PLAYER~ATTACKSTRING&$PLAYER~TARGETSTRING&$PLAYER~FIGHTERS&"* * "
+      setvar $PLAYER~FIGHTERS 0
+    else
+      setvar $PLAYER~ATTACKSTRING $PLAYER~ATTACKSTRING&$PLAYER~TARGETSTRING&$SHIP~SHIP_MAX_ATTACK&"* * "
+      setvar $PLAYER~FIGHTERS ($PLAYER~FIGHTERS - $SHIP~SHIP_MAX_ATTACK)
+    end
+  end
+else
+  setvar $SWITCHBOARD~MESSAGE "You have no valid targets.*"
+  gosub :SWITCHBOARD~SWITCHBOARD
+  goto :STOPPINGPOINT
+end
+send $PLAYER~ATTACKSTRING&"* "
+gosub :QUIKSTATS
+
+
+:PLAYER~CONTINUESURROUNDSECTOR
+if ($PLAYER~ALREADY_CHECKED_SHIP <> TRUE)
+  gosub :SHIP~GETSHIPSTATS
+end
+if ($SHIP~SHIP_MAX_ATTACK > $PLAYER~FIGHTERS)
+  setvar $SHIP~SHIP_MAX_ATTACK ($PLAYER~FIGHTERS / 2)
+end
+
+setvar $PLAYER~I 1
+setvar $PLAYER~SURROUNDSTRING "c v 0* y* "&$PLAYER~CURRENT_SECTOR&"* q "
+setvar $PLAYER~SURROUNDOUTPUT ""
+setvar $PLAYER~YOUROWNCOUNT 0
+while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$PLAYER~I] > 0)
+  setvar $PLAYER~ADJ_SEC SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$PLAYER~I]
+  getdistance $PLAYER~DISTANCE $PLAYER~ADJ_SEC $PLAYER~CURRENT_SECTOR
+  if ($PLAYER~DISTANCE <= 0)
+    send "^f"&$PLAYER~ADJ_SEC&"*"&$PLAYER~CURRENT_SECTOR&"*q"
+    waiton "ENDINTERROG"
+    getdistance $PLAYER~DISTANCE $PLAYER~ADJ_SEC $PLAYER~CURRENT_SECTOR
+  end
+  setvar $PLAYER~CONTAINSSHIELDEDPLANET FALSE
+  setvar $PLAYER~P 1
+  while ($PLAYER~P <= SECTOR.PLANETCOUNT[$PLAYER~ADJ_SEC])
+    getword SECTOR.PLANETS[$PLAYER~ADJ_SEC][$PLAYER~P] $PLAYER~TEST 1
+    if ($PLAYER~TEST = "<<<<")
+      setvar $PLAYER~CONTAINSSHIELDEDPLANET TRUE
+    end
+    add $PLAYER~P 1
+  end
+  setvar $PLAYER~TEMPOFFODD $SHIP~SHIP_OFFENSIVE_ODDS
+  multiply $PLAYER~TEMPOFFODD $SHIP~SHIP_MAX_ATTACK
+  divide $PLAYER~TEMPOFFODD 12
+  setvar $PLAYER~FIGOWNER SECTOR.FIGS.OWNER[$PLAYER~ADJ_SEC]
+  setvar $PLAYER~MINEOWNER SECTOR.MINES.OWNER[$PLAYER~ADJ_SEC]
+  setvar $PLAYER~LIMPOWNER SECTOR.LIMPETS.OWNER[$PLAYER~ADJ_SEC]
+  if (($PLAYER~SURROUNDOVERWRITE = FALSE) and (($PLAYER~FIGOWNER = "belong to your Corp") or ($PLAYER~FIGOWNER = "yours")))
+    add $PLAYER~YOUROWNCOUNT 1
+    if ($PLAYER~YOUROWNCOUNT = $PLAYER~TOTALWARPS)
+      setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) All sectors around are friendly fighters.*"
+    end
+  elseif (SECTOR.FIGS.QUANTITY[$PLAYER~ADJ_SEC] >= $PLAYER~TEMPOFFODD)
+    setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) Too many fighters in sector "&$PLAYER~ADJ_SEC&".*"
+  elseif (($PLAYER~ADJ_SEC <= 10) or ($PLAYER~ADJ_SEC = $MAP~STARDOCK))
+    setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) Avoided Fed Space, sector "&$PLAYER~ADJ_SEC&".*"
+  elseif ((SECTOR.PLANETCOUNT[$PLAYER~ADJ_SEC] > 0) and $PLAYER~SURROUNDAVOIDALLPLANETS)
+    setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) Avoided planet in sector "&$PLAYER~ADJ_SEC&".*"
+  elseif (($PLAYER~CONTAINSSHIELDEDPLANET = TRUE) and ($PLAYER~SURROUNDAVOIDSHIELDEDONLY = TRUE))
+    setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) Avoided shielded planet in sector "&$PLAYER~ADJ_SEC&".*"
+  elseif ($PLAYER~DISTANCE > 1)
+    setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) Avoided one way in sector "&$PLAYER~ADJ_SEC&".*"
+  elseif (($PLAYER~SURROUNDPASSIVE = TRUE) and (((SECTOR.ANOMOLY[$PLAYER~ADJ_SEC] = TRUE) and (($PLAYER~LIMPOWNER <> "belong to your Corp") and ($PLAYER~LIMPOWNER <> "yours"))) or (SECTOR.FIGS.QUANTITY[$PLAYER~ADJ_SEC] > 0) or ((SECTOR.MINES.QUANTITY[$PLAYER~ADJ_SEC] > 0) and (($PLAYER~MINEOWNER <> "belong to your Corp") and ($PLAYER~MINEOWNER <> "yours")))))
+    setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) Avoided non-passive situation in sector "&$PLAYER~ADJ_SEC&".*"
+  else
+    if ($PLAYER~DROPOFFENSIVE = TRUE)
+      setvar $PLAYER~DEPLOYFIG "o"
+    elseif ($PLAYER~DROPTOLL = TRUE)
+      setvar $PLAYER~DEPLOYFIG "t"
+    else
+      setvar $PLAYER~DEPLOYFIG "d"
+    end
+    setvar $PLAYER~SURROUNDSTRING $PLAYER~SURROUNDSTRING&" m z "&$PLAYER~ADJ_SEC&"* z a "&$SHIP~SHIP_MAX_ATTACK&"* * "
+    if (($PLAYER~SURROUNDFIGS > 0) and ($PLAYER~FIGHTERS > $PLAYER~SURROUNDFIGS))
+      setvar $PLAYER~SURROUNDSTRING $PLAYER~SURROUNDSTRING&"f z"&$PLAYER~SURROUNDFIGS&"*zc"&$PLAYER~DEPLOYFIG&"*  "
+      subtract $PLAYER~FIGHTERS $PLAYER~SURROUNDFIGS
+      setvar $PLAYER~TARGET $PLAYER~ADJ_SEC
+      setsectorparameter $PLAYER~TARGET "FIGSEC" TRUE
+    end
+    if (($PLAYER~SURROUNDLIMP > 0) and (($PLAYER~LIMPETS > $PLAYER~SURROUNDLIMP) and ($PLAYER~LIMPETS > 0)))
+      setvar $PLAYER~SURROUNDSTRING $PLAYER~SURROUNDSTRING&"h2 z"&$PLAYER~SURROUNDLIMP&"*zc* "
+      subtract $PLAYER~LIMPETS $PLAYER~SURROUNDLIMP
+    end
+
+    if (($PLAYER~SURROUNDMINE > 0) and (($PLAYER~ARMIDS > $PLAYER~SURROUNDMINE) and ($PLAYER~ARMIDS > 0)))
+      setvar $PLAYER~SURROUNDSTRING $PLAYER~SURROUNDSTRING&"h1 z"&$PLAYER~SURROUNDMINE&"*zc* "
+      subtract $PLAYER~ARMIDS $PLAYER~SURROUNDMINE
+    end
+
+    setvar $PLAYER~SURROUNDSTRING $PLAYER~SURROUNDSTRING&"m z"&$PLAYER~CURRENT_SECTOR&"* "
+    setvar $PLAYER~SURROUNDSTRING $PLAYER~SURROUNDSTRING&"za "&$SHIP~SHIP_MAX_ATTACK&"* * "
+  end
+  add $PLAYER~I 1
+end
+send $PLAYER~SURROUNDSTRING
+return
+
+
+:PLAYER~FASTATTACK
+
+setvar $PLAYER~TARGETSTRING "a"
+setvar $PLAYER~ISFOUND FALSE
+getwordpos $SECTOR~SECTORDATA $PLAYER~BEACONPOS "[0m[35mBeacon  [1;33m:"
+
+
+:PLAYER~FASTCAPTURE
+
+setvar $PLAYER~ISFOUND FALSE
+setvar $PLAYER~TARGETISALIEN FALSE
+setvar $PLAYER~STILLSHIELDS FALSE
+getwordpos $SECTOR~SECTORDATA $PLAYER~BEACONPOS "[0m[35mBeacon  [1;33m:"
+
+
+:PLAYER~GETCOURSE
+
+
+
+
+setarray $PLAYER~MOWCOURSE 80
+setvar $PLAYER~SECTORS ""
+if (($PLAYER~STARTING_POINT <= 0) and ($PLAYER~STARTING_POINT <> ""))
+  setvar $PLAYER~STARTING_POINT ""
+end
+settextlinetrigger SECTORLINETRIG :SECTORSLINE " > "
+send "^f"&$PLAYER~STARTING_POINT&"*"&$PLAYER~DESTINATION&"*"
+pause
+
+
+:PLAYER~GOTSECTORS
+setvar $PLAYER~SECTORS $PLAYER~SECTORS&" :::"
+setvar $PLAYER~COURSELENGTH 0
+setvar $PLAYER~INDEX 1
+goto :PLAYER~KEEPGOING
+
+
+:PLAYER~HOLO_KILL
+
+
+:PLAYER~HOLO_KILL_GET_CURRENT_SECTOR
+
+setvar $PLAYER~HKILL_START_SECTOR $PLAYER~CURRENT_SECTOR
+setvar $PLAYER~KILLSECTOR 0
+setvar $PLAYER~IDX 1
+while ($PLAYER~IDX <= SECTOR.WARPCOUNT[$PLAYER~CURRENT_SECTOR])
+  setvar $PLAYER~TEST_SECTOR SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$PLAYER~IDX]
+  setvar $PLAYER~SAFEPLANETS TRUE
+  setvar $PLAYER~CONTAINSSHIELDEDPLANET FALSE
+  if (SECTOR.PLANETCOUNT[$PLAYER~TEST_SECTOR] > 0)
+    setvar $PLAYER~P 1
+    while ($PLAYER~P <= SECTOR.PLANETCOUNT[$PLAYER~TEST_SECTOR])
+      getword SECTOR.PLANETS[$PLAYER~TEST_SECTOR][$PLAYER~P] $PLAYER~TEST 1
+      if ($PLAYER~TEST = "<<<<")
+        setvar $PLAYER~CONTAINSSHIELDEDPLANET TRUE
+      end
+      add $PLAYER~P 1
+    end
+    if ($PLAYER~SURROUNDAVOIDALLPLANETS)
+      setvar $PLAYER~SAFEPLANETS FALSE
+    elseif ($PLAYER~CONTAINSSHIELDEDPLANET and $PLAYER~SURROUNDAVOIDSHIELDEDONLY)
+      setvar $PLAYER~SAFEPLANETS FALSE
+    end
+  end
+  if (($PLAYER~TEST_SECTOR <> $MAP~STARDOCK) and (($PLAYER~TEST_SECTOR > 10) and ((SECTOR.TRADERCOUNT[$PLAYER~TEST_SECTOR] > 0) and ($PLAYER~SAFEPLANETS = TRUE))))
+    setvar $PLAYER~KILLSECTOR $PLAYER~TEST_SECTOR
+    goto :HOLO_KILL_KILLEM
+  end
+  add $PLAYER~IDX 1
+end
+goto :HOLO_KILL_NO_TARGETS
+
+
+:PLAYER~HOLO_KILL_GET_PROMPT
+
+
+:PLAYER~HOLO_KILL_KILLEM
+
+send "'{" $SWITCHBOARD~BOT_NAME "} - HoloKill - Attacking sector "&$PLAYER~TEST_SECTOR&".*"
+setvar $PLAYER~NO_STR ""
+setvar $PLAYER~NO_CNT SECTOR.SHIPCOUNT[$PLAYER~KILLSECTOR]
+setvar $PLAYER~NO_IDX 1
+while ($PLAYER~NO_IDX <= $PLAYER~NO_CNT)
+  setvar $PLAYER~NO_STR $PLAYER~NO_STR&"n"
+  add $PLAYER~NO_IDX 1
+end
+send " c v 0 * y n "&$PLAYER~TEST_SECTOR&" * q "
+if ($PLAYER~STARTINGLOCATION = "Citadel")
+  send " qmnt*qqz* "
+end
+send " m z "&$PLAYER~TEST_SECTOR&" *  *  z  a  99999  *  z  a  99999  *  R  *  f  z  1  *  z  c  d  *   "
+setvar $PLAYER~KILL_IDX 1
+if ($PLAYER~SURROUND_BEFORE_HKILL = TRUE)
+  gosub :QUIKSTATS
+  gosub :SURROUND
+  setvar $PLAYER~INSURROUND_BEFORE_HKILL FALSE
+  gosub :QUIKSTATS
+end
+
+gosub :CURRENT_PROMPT
+if ($PLAYER~CURRENT_PROMPT <> "Command")
+  setvar $SWITCHBOARD~MESSAGE "Wrong prompt for holokill kill.*"
+  return
+end
+gosub :SECTOR~GETSECTORDATA
+gosub :FASTATTACK
+
+send "m "&$PLAYER~HKILL_START_SECTOR&" *  *  z  a  99999  *  z  a  99999  *  R  *  f  z  1  *  z  c  d  *   "
+if ($PLAYER~CIT = TRUE)
+  send " l "&$PLANET~PLANET&" * n n * j m * * * j c  *  "
+end
+gosub :QUIKSTATS
+if ($PLAYER~CURRENT_SECTOR <> $PLAYER~HKILL_START_SECTOR)
+  send "'"&$SWITCHBOARD~BOT_NAME " call*"
+else
+  setvar $SWITCHBOARD~MESSAGE "Attack made and back in original sector!*"
+end
+return
+
+
+:PLAYER~HOLO_KILL_KILL_CHECK
+
+
+settextlinetrigger NOSCAN1 :HOLO_KILL_NOSCANNER "Handle which mine type, 1 Armid or 2 Limpet"
+settextlinetrigger NOSCAN2 :HOLO_KILL_NOSCANNER "You don't have a long range scanner."
+settextlinetrigger SCANNED :HOLO_KILL_SCANDONE "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
+if ($PLAYER~CURRENT_PROMPT = "Citadel")
+  send " qqqz* sh*  l "&$PLANET~PLANET&" * j c * "
+  setvar $PLAYER~CIT TRUE
+else
+  send " sh*"
+end
+pause
+
+
+:PLAYER~HOLO_KILL_NOSCANNER
+killalltriggers
+setvar $SWITCHBOARD~MESSAGE "You don't have a HoloScanner!*"
+send " *  "
+return
+
+
+:PLAYER~HOLO_KILL_NO_TARGETS
+setvar $SWITCHBOARD~SELF_COMMAND TRUE
+setvar $SWITCHBOARD~MESSAGE "No Enemies found adjacent!*"
+return
+
+
+:PLAYER~HOLO_KILL_SCANDONE
+killalltriggers
+gosub :SHIP~GETSHIPSTATS
+
+
+:PLAYER~KEEPGOING
+getword $PLAYER~SECTORS $PLAYER~MOWCOURSE[$PLAYER~INDEX] $PLAYER~INDEX
+while ($PLAYER~MOWCOURSE[$PLAYER~INDEX] <> ":::")
+  add $PLAYER~COURSELENGTH 1
+  add $PLAYER~INDEX 1
+  getword $PLAYER~SECTORS $PLAYER~MOWCOURSE[$PLAYER~INDEX] $PLAYER~INDEX
+end
+return
+
+
+:PLAYER~MOVEIN_NOPE
+killtrigger MOVEIN_THERE
+send "R"
+
+
+:PLAYER~MOVEIN_THERE
+killtrigger MOVEIN_NOPE
+return
+
+
+:PLAYER~NOCAPPINGTARGETS
+killtrigger NOCTARGET
+killtrigger FOUNDCAPTARGET
+send "* "
+
+
+:PLAYER~NOPATH
+
+send "q '{" $SWITCHBOARD~BOT_NAME "} - No path to that sector, cannot mow!*"
+setvar $PLAYER~MOWCOURSE 0
+setvar $PLAYER~COURSELENGTH 0
+return
+
+
+:PLAYER~SECTORSLINE
+killtrigger SECTORLINETRIG
+killtrigger SECTORLINETRIG2
+killtrigger SECTORLINETRIG3
+killtrigger SECTORLINETRIG4
+killtrigger DONEPATH
+killtrigger DONEPATH2
+setvar $PLAYER~LINE CURRENTLINE
+replacetext $PLAYER~LINE ">" " "
+striptext $PLAYER~LINE "("
+striptext $PLAYER~LINE ")"
+setvar $PLAYER~LINE $PLAYER~LINE&" "
+getwordpos $PLAYER~LINE $PLAYER~POS "So what's the point?"
+getwordpos $PLAYER~LINE $PLAYER~POS2 ": ENDINTERROG"
+getwordpos $PLAYER~LINE $PLAYER~POS3 " No route within "
+if (($PLAYER~POS > 0) or ($PLAYER~POS2 > 0) or ($PLAYER~POS3 > 0))
+  goto :NOPATH
+end
+getwordpos $PLAYER~LINE $PLAYER~POS " sector "
+getwordpos $PLAYER~LINE $PLAYER~POS2 "TO"
+if (($PLAYER~POS <= 0) and ($PLAYER~POS2 <= 0))
+  setvar $PLAYER~SECTORS $PLAYER~SECTORS&" "&$PLAYER~LINE
+end
+getwordpos $PLAYER~LINE $PLAYER~POS " "&$PLAYER~DESTINATION&" "
+getwordpos $PLAYER~LINE $PLAYER~POS2 "("&$PLAYER~DESTINATION&")"
+getwordpos $PLAYER~LINE $PLAYER~POS3 "TO"
+if ((($PLAYER~POS > 0) or ($PLAYER~POS2 > 0)) and ($PLAYER~POS3 <= 0))
+  send "* q "
+  goto :GOTSECTORS
+else
+  settextlinetrigger SECTORLINETRIG :SECTORSLINE " > "
+  settextlinetrigger SECTORLINETRIG2 :SECTORSLINE " "&$PLAYER~DESTINATION&" "
+  settextlinetrigger SECTORLINETRIG3 :SECTORSLINE " "&$PLAYER~DESTINATION
+  settextlinetrigger SECTORLINETRIG4 :SECTORSLINE "("&$PLAYER~DESTINATION&")"
+  settextlinetrigger DONEPATH :SECTORSLINE "So what's the point?"
+  settextlinetrigger DONEPATH2 :SECTORSLINE ": ENDINTERROG"
+end
+pause
+
+
+:PLAYER~STARTSURROUND
+
+
+send "szh* "
+killtrigger SURROUNDSECTOR
+settexttrigger SURROUNDSECTOR :CONTINUESURROUNDSECTOR "["&$PLAYER~CURRENT_SECTOR&"]"
+pause
+
+
+:PLAYER~STOPPINGPOINT
+return
+
+
+:PLAYER~SURROUND

@@ -1,0 +1,4551 @@
+[
+  {
+    "target": "BOT",
+    "label": "BOT~BANNER",
+    "variant_count": 3,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/BOT.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/BOT.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/BOT.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/BOT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/BOT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/BOT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/BOT.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/BOT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/BOT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 11,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/BOT_6/BOT.ts",
+          ".recovery_work/items/003__commands__data__cim/include/BOT_6/BOT.ts",
+          ".recovery_work/items/006__commands__data__figs/include/BOT_6/BOT.ts",
+          ".recovery_work/items/008__commands__data__limps/include/BOT_6/BOT.ts",
+          ".recovery_work/items/016__commands__general__bg2019/include/BOT_5/BOT.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/BOT_6/BOT.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/BOT_6/BOT.ts",
+          ".recovery_work/items/046__daemons__repeat/include/BOT_6/BOT.ts",
+          ".recovery_work/items/047__daemons__teammega/include/BOT_5/BOT.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/BOT_6/BOT.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/BOT.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/BOT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "BOT",
+    "label": "BOT~CHECKSTARTINGPROMPT",
+    "variant_count": 3,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/BOT.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/BOT.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/BOT.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/BOT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/BOT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/BOT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/BOT.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/BOT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/BOT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 9,
+        "files": [
+          ".recovery_work/items/005__commands__data__corpinfo/include/BOT_3/BOT.ts",
+          ".recovery_work/items/017__commands__general__cn9/include/BOT_5/BOT.ts",
+          ".recovery_work/items/020__commands__general__port/include/BOT_5/BOT.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/BOT_6/BOT.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/BOT_6/BOT.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/BOT_6/BOT.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/BOT_6/BOT.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/BOT_6/BOT.ts",
+          ".recovery_work/items/037__commands__resource__max/include/BOT_5/BOT.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/BOT.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/BOT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "BOT",
+    "label": "BOT~DISCONNECTTRIGGERS",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/BOT.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/BOT.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/BOT.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/BOT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/BOT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/BOT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/BOT.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/BOT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/BOT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/BOT_7/BOT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "BOT",
+    "label": "BOT~DISPLAYHELP",
+    "variant_count": 3,
+    "chosen_count": 19,
+    "variants": [
+      {
+        "count": 19,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/BOT_3/BOT.ts",
+          ".recovery_work/items/003__commands__data__cim/include/BOT_3/BOT.ts",
+          ".recovery_work/items/006__commands__data__figs/include/BOT_3/BOT.ts",
+          ".recovery_work/items/008__commands__data__limps/include/BOT_3/BOT.ts",
+          ".recovery_work/items/016__commands__general__bg2019/include/BOT_3/BOT.ts",
+          ".recovery_work/items/017__commands__general__cn9/include/BOT_3/BOT.ts",
+          ".recovery_work/items/020__commands__general__port/include/BOT_3/BOT.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/BOT_3/BOT.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/BOT_3/BOT.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/BOT_3/BOT.ts"
+        ]
+      },
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/BOT.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/BOT.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/BOT.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/BOT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/BOT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/BOT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/BOT.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/BOT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/BOT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 9,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/BOT_3/BOT.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/BOT_3/BOT.ts",
+          ".recovery_work/items/041__daemons__at/include/BOT_3/BOT.ts",
+          ".recovery_work/items/046__daemons__repeat/include/BOT_3/BOT.ts",
+          ".recovery_work/items/047__daemons__teammega/include/BOT_3/BOT.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/BOT_4/BOT.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/BOT_4/BOT.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/BOT_3/BOT.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/BOT_3/BOT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "BOT",
+    "label": "BOT~DONE_HELP_FILE",
+    "variant_count": 3,
+    "chosen_count": 32,
+    "variants": [
+      {
+        "count": 32,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/BOT_2/BOT.ts",
+          ".recovery_work/items/003__commands__data__cim/include/BOT_2/BOT.ts",
+          ".recovery_work/items/006__commands__data__figs/include/BOT_2/BOT.ts",
+          ".recovery_work/items/008__commands__data__limps/include/BOT_2/BOT.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/BOT.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/BOT_2/BOT.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/BOT_2/BOT.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/BOT_2/BOT.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/BOT_2/BOT.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/BOT_2/BOT.ts"
+        ]
+      },
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/BOT.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/BOT.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/BOT.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/BOT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/BOT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/BOT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/BOT.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/BOT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/BOT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/BOT.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/BOT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "BOT",
+    "label": "BOT~ECHO",
+    "variant_count": 2,
+    "chosen_count": 18,
+    "variants": [
+      {
+        "count": 18,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/BOT_5/BOT.ts",
+          ".recovery_work/items/003__commands__data__cim/include/BOT_5/BOT.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/BOT_2/BOT.ts",
+          ".recovery_work/items/006__commands__data__figs/include/BOT_5/BOT.ts",
+          ".recovery_work/items/008__commands__data__limps/include/BOT_5/BOT.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/BOT_5/BOT.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/BOT_5/BOT.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/BOT_5/BOT.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/BOT_5/BOT.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/BOT_5/BOT.ts"
+        ]
+      },
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/BOT.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/BOT.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/BOT.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/BOT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/BOT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/BOT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/BOT.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/BOT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/BOT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/BOT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "BOT",
+    "label": "BOT~FORMATHELPLINE",
+    "variant_count": 3,
+    "chosen_count": 19,
+    "variants": [
+      {
+        "count": 19,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/BOT_4/BOT.ts",
+          ".recovery_work/items/003__commands__data__cim/include/BOT_4/BOT.ts",
+          ".recovery_work/items/006__commands__data__figs/include/BOT_4/BOT.ts",
+          ".recovery_work/items/008__commands__data__limps/include/BOT_4/BOT.ts",
+          ".recovery_work/items/016__commands__general__bg2019/include/BOT_4/BOT.ts",
+          ".recovery_work/items/017__commands__general__cn9/include/BOT_4/BOT.ts",
+          ".recovery_work/items/020__commands__general__port/include/BOT_4/BOT.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/BOT_4/BOT.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/BOT_4/BOT.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/BOT_4/BOT.ts"
+        ]
+      },
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/BOT.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/BOT.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/BOT.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/BOT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/BOT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/BOT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/BOT.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/BOT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/BOT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 9,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/BOT_4/BOT.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/BOT_4/BOT.ts",
+          ".recovery_work/items/041__daemons__at/include/BOT_4/BOT.ts",
+          ".recovery_work/items/046__daemons__repeat/include/BOT_4/BOT.ts",
+          ".recovery_work/items/047__daemons__teammega/include/BOT_4/BOT.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/BOT_5/BOT.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/BOT_5/BOT.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/BOT_4/BOT.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/BOT_4/BOT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "BOT",
+    "label": "BOT~HELPFILE",
+    "variant_count": 5,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/BOT.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/BOT.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/BOT.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/BOT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/BOT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/BOT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/BOT.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/BOT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/BOT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/BOT_2/BOT.ts",
+          ".recovery_work/items/003__commands__data__cim/include/BOT_2/BOT.ts",
+          ".recovery_work/items/006__commands__data__figs/include/BOT_2/BOT.ts",
+          ".recovery_work/items/008__commands__data__limps/include/BOT_2/BOT.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/BOT_2/BOT.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/BOT_2/BOT.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/BOT_2/BOT.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/BOT_2/BOT.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/BOT_2/BOT.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/BOT_2/BOT.ts"
+        ]
+      },
+      {
+        "count": 9,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/BOT_2/BOT.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/BOT_2/BOT.ts",
+          ".recovery_work/items/041__daemons__at/include/BOT_2/BOT.ts",
+          ".recovery_work/items/046__daemons__repeat/include/BOT_2/BOT.ts",
+          ".recovery_work/items/047__daemons__teammega/include/BOT_2/BOT.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/BOT_3/BOT.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/BOT_3/BOT.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/BOT_2/BOT.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/BOT_2/BOT.ts"
+        ]
+      },
+      {
+        "count": 8,
+        "files": [
+          ".recovery_work/items/016__commands__general__bg2019/include/BOT_2/BOT.ts",
+          ".recovery_work/items/017__commands__general__cn9/include/BOT_2/BOT.ts",
+          ".recovery_work/items/020__commands__general__port/include/BOT_2/BOT.ts",
+          ".recovery_work/items/030__commands__grid__surround/include/BOT_2/BOT.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/BOT_2/BOT.ts",
+          ".recovery_work/items/036__commands__resource__dump/include/BOT_2/BOT.ts",
+          ".recovery_work/items/037__commands__resource__max/include/BOT_2/BOT.ts",
+          ".recovery_work/items/039__commands__resource__sellship/include/BOT_2/BOT.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/031__commands__offense__cap/include/BOT_2/BOT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "BOT",
+    "label": "BOT~HELP_FILE",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/BOT.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/BOT.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/BOT.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/BOT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/BOT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/BOT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/BOT.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/BOT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/BOT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/BOT.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/BOT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "BOT",
+    "label": "BOT~LOADVARS",
+    "variant_count": 7,
+    "chosen_count": 19,
+    "variants": [
+      {
+        "count": 19,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/BOT.ts",
+          ".recovery_work/items/003__commands__data__cim/include/BOT.ts",
+          ".recovery_work/items/006__commands__data__figs/include/BOT.ts",
+          ".recovery_work/items/008__commands__data__limps/include/BOT.ts",
+          ".recovery_work/items/016__commands__general__bg2019/include/BOT.ts",
+          ".recovery_work/items/017__commands__general__cn9/include/BOT.ts",
+          ".recovery_work/items/020__commands__general__port/include/BOT.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/BOT.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/BOT.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/BOT.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/BOT.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/BOT.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/BOT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/BOT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/BOT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/BOT.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/BOT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/BOT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 7,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/BOT.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/BOT.ts",
+          ".recovery_work/items/041__daemons__at/include/BOT.ts",
+          ".recovery_work/items/046__daemons__repeat/include/BOT.ts",
+          ".recovery_work/items/047__daemons__teammega/include/BOT.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/BOT.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/048__modes__cashing__Marco/include/BOT.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/068__modes__offense__Boton/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/BOT.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/005__commands__data__corpinfo/include/BOT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "BOT",
+    "label": "BOT~WRITE_NEW_HELP_FILE",
+    "variant_count": 3,
+    "chosen_count": 23,
+    "variants": [
+      {
+        "count": 23,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/BOT_2/BOT.ts",
+          ".recovery_work/items/003__commands__data__cim/include/BOT_2/BOT.ts",
+          ".recovery_work/items/006__commands__data__figs/include/BOT_2/BOT.ts",
+          ".recovery_work/items/008__commands__data__limps/include/BOT_2/BOT.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/BOT.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/BOT_2/BOT.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/BOT_2/BOT.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/BOT_2/BOT.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/BOT_2/BOT.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/BOT_2/BOT.ts"
+        ]
+      },
+      {
+        "count": 21,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/BOT.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/BOT_2/BOT.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/BOT_2/BOT.ts",
+          ".recovery_work/items/041__daemons__at/include/BOT_2/BOT.ts",
+          ".recovery_work/items/046__daemons__repeat/include/BOT_2/BOT.ts",
+          ".recovery_work/items/047__daemons__teammega/include/BOT_2/BOT.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/BOT_3/BOT.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/BOT_3/BOT.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/BOT.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/BOT_2/BOT.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/BOT.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/BOT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "COMBAT",
+    "label": "COMBAT~CHECKINGFIGS",
+    "variant_count": 4,
+    "chosen_count": 6,
+    "variants": [
+      {
+        "count": 6,
+        "files": [
+          ".recovery_work/items/069__modes__offense__CitCap/include/COMBAT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/COMBAT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/COMBAT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/COMBAT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/COMBAT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/COMBAT.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/032__commands__offense__kill/include/COMBAT_2/COMBAT.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/031__commands__offense__cap/include/COMBAT_2/COMBAT.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/COMBAT_3/COMBAT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "COMBAT",
+    "label": "COMBAT~FASTATTACK",
+    "variant_count": 2,
+    "chosen_count": 6,
+    "variants": [
+      {
+        "count": 6,
+        "files": [
+          ".recovery_work/items/069__modes__offense__CitCap/include/COMBAT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/COMBAT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/COMBAT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/COMBAT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/COMBAT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/COMBAT.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/032__commands__offense__kill/include/COMBAT_2/COMBAT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "COMBAT",
+    "label": "COMBAT~FASTCAPTURE",
+    "variant_count": 3,
+    "chosen_count": 6,
+    "variants": [
+      {
+        "count": 6,
+        "files": [
+          ".recovery_work/items/069__modes__offense__CitCap/include/COMBAT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/COMBAT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/COMBAT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/COMBAT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/COMBAT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/COMBAT.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/031__commands__offense__cap/include/COMBAT_2/COMBAT.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/COMBAT_3/COMBAT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "COMBAT",
+    "label": "COMBAT~FASTCITADELATTACK",
+    "variant_count": 2,
+    "chosen_count": 6,
+    "variants": [
+      {
+        "count": 6,
+        "files": [
+          ".recovery_work/items/069__modes__offense__CitCap/include/COMBAT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/COMBAT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/COMBAT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/COMBAT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/COMBAT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/COMBAT.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/COMBAT_2/COMBAT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "COMBAT",
+    "label": "COMBAT~INIT",
+    "variant_count": 2,
+    "chosen_count": 7,
+    "variants": [
+      {
+        "count": 7,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/COMBAT.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/COMBAT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/COMBAT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/COMBAT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/COMBAT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/COMBAT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/COMBAT.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/031__commands__offense__cap/include/COMBAT.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/COMBAT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "COMBAT",
+    "label": "COMBAT~NOCAPPINGTARGETS",
+    "variant_count": 2,
+    "chosen_count": 7,
+    "variants": [
+      {
+        "count": 7,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/COMBAT_3/COMBAT.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/COMBAT.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/COMBAT.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/COMBAT.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/COMBAT.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/COMBAT.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/COMBAT.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/031__commands__offense__cap/include/COMBAT_2/COMBAT.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "GRID",
+    "label": "GRID~CONTINUESURROUNDSECTOR",
+    "variant_count": 2,
+    "chosen_count": 2,
+    "variants": [
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/GRID.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/GRID.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/030__commands__grid__surround/include/GRID.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "GRID",
+    "label": "GRID~STARTSURROUND",
+    "variant_count": 2,
+    "chosen_count": 2,
+    "variants": [
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/GRID.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/GRID.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/030__commands__grid__surround/include/GRID.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~BUILD_CIT",
+    "variant_count": 3,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 8,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLANET_2/PLANET.ts"
+        ]
+      },
+      {
+        "count": 5,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts",
+          ".recovery_work/items/030__commands__grid__surround/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~CANNONSTART",
+    "variant_count": 2,
+    "chosen_count": 24,
+    "variants": [
+      {
+        "count": 24,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLANET.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLANET.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLANET.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 6,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts",
+          ".recovery_work/items/030__commands__grid__surround/include/PLANET.ts",
+          ".recovery_work/items/036__commands__resource__dump/include/PLANET.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLANET.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~COUNT_THE_PLANETS",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~DISPLAYPLANET",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLANET.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLANET_2/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~EQUIPSTART",
+    "variant_count": 3,
+    "chosen_count": 27,
+    "variants": [
+      {
+        "count": 27,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLANET.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLANET.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLANET.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~EXITNEG",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_3/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~FUELSTART",
+    "variant_count": 3,
+    "chosen_count": 27,
+    "variants": [
+      {
+        "count": 27,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLANET.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLANET.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLANET.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~GETCLASS",
+    "variant_count": 3,
+    "chosen_count": 24,
+    "variants": [
+      {
+        "count": 24,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLANET.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLANET.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLANET.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/030__commands__grid__surround/include/PLANET.ts",
+          ".recovery_work/items/036__commands__resource__dump/include/PLANET.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~GETPLANETINFO",
+    "variant_count": 5,
+    "chosen_count": 13,
+    "variants": [
+      {
+        "count": 13,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLANET.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLANET.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLANET.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLANET.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 4,
+        "files": [
+          ".recovery_work/items/030__commands__grid__surround/include/PLANET.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLANET.ts",
+          ".recovery_work/items/036__commands__resource__dump/include/PLANET.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~GETPLANETSTATS",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~GETPLANETSTUFF",
+    "variant_count": 3,
+    "chosen_count": 27,
+    "variants": [
+      {
+        "count": 27,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLANET.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLANET.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLANET.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~GOTCR",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_3/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~INITINFO",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_3/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~IN_CIT",
+    "variant_count": 3,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 8,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLANET_2/PLANET.ts"
+        ]
+      },
+      {
+        "count": 5,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts",
+          ".recovery_work/items/030__commands__grid__surround/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~KILLLANDINGTRIGGERS",
+    "variant_count": 3,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 5,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLANET_2/PLANET.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLANET.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLANET_2/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~KILLPLANETTRIGGERS",
+    "variant_count": 2,
+    "chosen_count": 14,
+    "variants": [
+      {
+        "count": 14,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLANET.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLANET.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLANET.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLANET.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~LANDINGSUB",
+    "variant_count": 5,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 5,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLANET_2/PLANET.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLANET.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLANET_2/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/030__commands__grid__surround/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLANET_2/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~LANDONPLANETENTERCITADEL",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~LOADPLANETINFO",
+    "variant_count": 3,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~NEGOTIATELAND",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_3/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~NOPLANET",
+    "variant_count": 3,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 8,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLANET_2/PLANET.ts"
+        ]
+      },
+      {
+        "count": 5,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts",
+          ".recovery_work/items/030__commands__grid__surround/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~NO_LAND",
+    "variant_count": 3,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 8,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLANET_2/PLANET.ts"
+        ]
+      },
+      {
+        "count": 5,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts",
+          ".recovery_work/items/030__commands__grid__surround/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~ORGSTART",
+    "variant_count": 3,
+    "chosen_count": 27,
+    "variants": [
+      {
+        "count": 27,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLANET.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLANET.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLANET.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~PLANET",
+    "variant_count": 3,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 8,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLANET_2/PLANET.ts"
+        ]
+      },
+      {
+        "count": 5,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts",
+          ".recovery_work/items/030__commands__grid__surround/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~PLANETINFO2",
+    "variant_count": 4,
+    "chosen_count": 15,
+    "variants": [
+      {
+        "count": 15,
+        "files": [
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLANET.ts",
+          ".recovery_work/items/047__daemons__teammega/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLANET.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLANET.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLANET.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLANET.ts",
+          ".recovery_work/items/030__commands__grid__surround/include/PLANET.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~PLANETINFODONE",
+    "variant_count": 6,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 8,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLANET.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLANET.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLANET.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 5,
+        "files": [
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLANET.ts",
+          ".recovery_work/items/047__daemons__teammega/include/PLANET.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_2/PLANET.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/030__commands__grid__surround/include/PLANET.ts",
+          ".recovery_work/items/036__commands__resource__dump/include/PLANET.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/035__commands__resource__buy/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~PLANETNEG",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_3/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~PLANETTPORT",
+    "variant_count": 2,
+    "chosen_count": 27,
+    "variants": [
+      {
+        "count": 27,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLANET.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLANET.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLANET.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~PLANET_PROMPT",
+    "variant_count": 4,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/030__commands__grid__surround/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLANET_2/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~PROCESS_PLANET_LINE",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~RESELL",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_3/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~SELLEQU",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_3/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~SELLFIRSTOFFER",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_3/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~SELLFUEL",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_3/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~SELLHAGGLE",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_3/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~SELLOFF",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_3/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~SELLPRODUCT",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_3/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~SHP_LOOP",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~SHP_PLANETSTATS",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLANET.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~VERIFYPROMPT",
+    "variant_count": 2,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLANET_3/PLANET.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLANET_3/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLANET",
+    "label": "PLANET~WRONG_NUM",
+    "variant_count": 2,
+    "chosen_count": 13,
+    "variants": [
+      {
+        "count": 13,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLANET.ts",
+          ".recovery_work/items/021__commands__general__qset/include/PLANET.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/030__commands__grid__surround/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLANET_2/PLANET.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLANET_2/PLANET.ts"
+        ]
+      },
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLANET.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLANET.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLANET.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLANET.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLANET.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLANET.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLANET.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLANET.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/PLANET.ts",
+          ".recovery_work/items/080__modes__resource__Pimp/include/PLANET.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~ALLPROMPTS",
+    "variant_count": 2,
+    "chosen_count": 26,
+    "variants": [
+      {
+        "count": 26,
+        "files": [
+          ".recovery_work/items/003__commands__data__cim/include/PLAYER.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLAYER.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLAYER.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLAYER.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLAYER.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLAYER.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 11,
+        "files": [
+          ".recovery_work/items/016__commands__general__bg2019/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/020__commands__general__port/include/PLAYER.ts",
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/030__commands__grid__surround/include/PLAYER.ts",
+          ".recovery_work/items/031__commands__offense__cap/include/PLAYER.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/036__commands__resource__dump/include/PLAYER.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLAYER.ts",
+          ".recovery_work/items/039__commands__resource__sellship/include/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~ALLPROMPTSCATCH",
+    "variant_count": 2,
+    "chosen_count": 22,
+    "variants": [
+      {
+        "count": 22,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLAYER.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLAYER.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLAYER.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLAYER.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLAYER_2/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 17,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/017__commands__general__cn9/include/PLAYER.ts",
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~BUY",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_4/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~BUYFIRSTOFFER",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_4/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~BWARPNOFUEL",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~BWARPPHOTONED",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~BWARP_LOCK",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~BWARP_NO_RANGE",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~CHECKINGFIGS",
+    "variant_count": 3,
+    "chosen_count": 3,
+    "variants": [
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~CHOOSEHAGGLE",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_4/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~CLEARADJACENT",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_6/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~CURRENTPROMPT",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLAYER.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLAYER.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLAYER.ts",
+          ".recovery_work/items/017__commands__general__cn9/include/PLAYER.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLAYER.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLAYER_2/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~DONEQUIKSTATS",
+    "variant_count": 2,
+    "chosen_count": 34,
+    "variants": [
+      {
+        "count": 34,
+        "files": [
+          ".recovery_work/items/003__commands__data__cim/include/PLAYER.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLAYER.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/016__commands__general__bg2019/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/020__commands__general__port/include/PLAYER.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLAYER.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLAYER.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLAYER.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~DO_TOPOFF_AGAIN",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~FINDJUMPSECTOR",
+    "variant_count": 4,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/PLAYER_4/PLAYER.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/PLAYER_4/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/016__commands__general__bg2019/include/PLAYER_2/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~FORMATNUMBERFORSPACES",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/006__commands__data__figs/include/PLAYER_4/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~FORMATPERCENTAGESFORSPACES",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/006__commands__data__figs/include/PLAYER_5/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~GETCNC",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/017__commands__general__cn9/include/PLAYER_2/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~GETCREDITS",
+    "variant_count": 2,
+    "chosen_count": 16,
+    "variants": [
+      {
+        "count": 16,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER_4/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~GETINFO",
+    "variant_count": 3,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 4,
+        "files": [
+          ".recovery_work/items/035__commands__resource__buy/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER_4/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~GETINFODONE",
+    "variant_count": 2,
+    "chosen_count": 16,
+    "variants": [
+      {
+        "count": 16,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER_4/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~GETINPUTS",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_4/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~GETPORTINFO",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_8/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~GETSHIPTYPE",
+    "variant_count": 2,
+    "chosen_count": 15,
+    "variants": [
+      {
+        "count": 15,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER_4/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 4,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~GOTSTATS",
+    "variant_count": 4,
+    "chosen_count": 18,
+    "variants": [
+      {
+        "count": 18,
+        "files": [
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLAYER.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER.ts",
+          ".recovery_work/items/047__daemons__teammega/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 14,
+        "files": [
+          ".recovery_work/items/003__commands__data__cim/include/PLAYER.ts",
+          ".recovery_work/items/016__commands__general__bg2019/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/020__commands__general__port/include/PLAYER.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLAYER.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLAYER.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLAYER.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLAYER.ts",
+          ".recovery_work/items/030__commands__grid__surround/include/PLAYER.ts",
+          ".recovery_work/items/031__commands__offense__cap/include/PLAYER.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/PLAYER_2/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/048__modes__cashing__Marco/include/PLAYER.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~INIT",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~ISEPHAGGLE",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/035__commands__resource__buy/include/PLAYER.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/PLAYER_5/PLAYER.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/PLAYER_5/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~KILLBUYTRIGGERS",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_4/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~KILLTWARPTRIGGERS",
+    "variant_count": 2,
+    "chosen_count": 18,
+    "variants": [
+      {
+        "count": 18,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/016__commands__general__bg2019/include/PLAYER.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLAYER.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~MOVEINTOSECTOR",
+    "variant_count": 3,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 4,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/PLAYER_4/PLAYER.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER_3/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~MOW",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~NOBWARP",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~NO_BWARP_LOCK",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~PORTKILLINGTRIGGERS",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_8/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~QUIKSTATS",
+    "variant_count": 5,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 11,
+        "files": [
+          ".recovery_work/items/003__commands__data__cim/include/PLAYER.ts",
+          ".recovery_work/items/016__commands__general__bg2019/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/020__commands__general__port/include/PLAYER.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLAYER.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLAYER.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLAYER.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLAYER.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/036__commands__resource__dump/include/PLAYER.ts",
+          ".recovery_work/items/037__commands__resource__max/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 8,
+        "files": [
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLAYER.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER.ts",
+          ".recovery_work/items/047__daemons__teammega/include/PLAYER.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/PLAYER.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/PLAYER.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/030__commands__grid__surround/include/PLAYER.ts",
+          ".recovery_work/items/031__commands__offense__cap/include/PLAYER.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/PLAYER_2/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~STARTCNSETTINGS",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/017__commands__general__cn9/include/PLAYER_2/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~SWATHOFF",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_5/PLAYER.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLAYER_4/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER_5/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~TOPOFF_SUCCESS",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~TURNOFFANSI",
+    "variant_count": 2,
+    "chosen_count": 13,
+    "variants": [
+      {
+        "count": 13,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLAYER_2/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~TURNONANSI",
+    "variant_count": 3,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLAYER_3/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~TWARP",
+    "variant_count": 4,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 5,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/PLAYER.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER_2/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/016__commands__general__bg2019/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~TWARPDONE",
+    "variant_count": 3,
+    "chosen_count": 17,
+    "variants": [
+      {
+        "count": 17,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLAYER.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/016__commands__general__bg2019/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~TWARP_ADJ",
+    "variant_count": 2,
+    "chosen_count": 18,
+    "variants": [
+      {
+        "count": 18,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/016__commands__general__bg2019/include/PLAYER.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLAYER.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~TWARP_LOCK",
+    "variant_count": 2,
+    "chosen_count": 18,
+    "variants": [
+      {
+        "count": 18,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/016__commands__general__bg2019/include/PLAYER.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/PLAYER.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~VERIFYDELAY",
+    "variant_count": 2,
+    "chosen_count": 27,
+    "variants": [
+      {
+        "count": 27,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/PLAYER.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/006__commands__data__figs/include/PLAYER.ts",
+          ".recovery_work/items/008__commands__data__limps/include/PLAYER.ts",
+          ".recovery_work/items/017__commands__general__cn9/include/PLAYER.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/PLAYER.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/PLAYER_2/PLAYER.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/PLAYER_2/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~VOIDADJACENT",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_7/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~WAITONINFO",
+    "variant_count": 2,
+    "chosen_count": 16,
+    "variants": [
+      {
+        "count": 16,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/PLAYER_3/PLAYER.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/PLAYER_4/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/PLAYER.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PLAYER",
+    "label": "PLAYER~YESBWARP",
+    "variant_count": 2,
+    "chosen_count": 12,
+    "variants": [
+      {
+        "count": 12,
+        "files": [
+          ".recovery_work/items/015__commands__defense__HazKill/include/PLAYER.ts",
+          ".recovery_work/items/050__modes__cashing__Merch/include/PLAYER.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/PLAYER.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/PLAYER.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/PLAYER.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/PLAYER.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/PLAYER.ts",
+          ".recovery_work/items/073__modes__offense__Foton/include/PLAYER.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/PLAYER.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/PLAYER.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/060__modes__general__xenter/include/PLAYER.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/PLAYER.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "PWARP",
+    "label": "PWARP~PWARP",
+    "variant_count": 2,
+    "chosen_count": 2,
+    "variants": [
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/023__commands__grid__clearfig/include/PWARP.ts",
+          ".recovery_work/items/042__daemons__FillSector/include/PWARP.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/PWARP.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "QUIKSTATS",
+    "label": "QUIKSTATS~QUIKSTATS",
+    "variant_count": 2,
+    "chosen_count": 3,
+    "variants": [
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/023__commands__grid__clearfig/include/QUIKSTATS.ts",
+          ".recovery_work/items/042__daemons__FillSector/include/QUIKSTATS.ts",
+          ".recovery_work/items/067__modes__offense___ldrop/include/QUIKSTATS.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/013__commands__data__QReport/include/QUIKSTATS.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SECTOR",
+    "label": "SECTOR~GETEMPTYSHIPS",
+    "variant_count": 2,
+    "chosen_count": 6,
+    "variants": [
+      {
+        "count": 6,
+        "files": [
+          ".recovery_work/items/069__modes__offense__CitCap/include/SECTOR.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SECTOR.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SECTOR.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SECTOR.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SECTOR.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SECTOR.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/031__commands__offense__cap/include/SECTOR_2/SECTOR.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SECTOR_2/SECTOR.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/SECTOR_2/SECTOR.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SECTOR",
+    "label": "SECTOR~GETFAKETRADERS",
+    "variant_count": 2,
+    "chosen_count": 6,
+    "variants": [
+      {
+        "count": 6,
+        "files": [
+          ".recovery_work/items/069__modes__offense__CitCap/include/SECTOR.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SECTOR.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SECTOR.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SECTOR.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SECTOR.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SECTOR.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/031__commands__offense__cap/include/SECTOR_3/SECTOR.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SECTOR_3/SECTOR.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/SECTOR_3/SECTOR.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SECTOR",
+    "label": "SECTOR~GETSECTORDATA",
+    "variant_count": 3,
+    "chosen_count": 6,
+    "variants": [
+      {
+        "count": 6,
+        "files": [
+          ".recovery_work/items/069__modes__offense__CitCap/include/SECTOR.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SECTOR.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SECTOR.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SECTOR.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SECTOR.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SECTOR.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/031__commands__offense__cap/include/SECTOR.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SECTOR.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/SECTOR.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SECTOR",
+    "label": "SECTOR~GETTRADERS",
+    "variant_count": 3,
+    "chosen_count": 6,
+    "variants": [
+      {
+        "count": 6,
+        "files": [
+          ".recovery_work/items/069__modes__offense__CitCap/include/SECTOR.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SECTOR.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SECTOR.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SECTOR.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SECTOR.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SECTOR.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/031__commands__offense__cap/include/SECTOR_4/SECTOR.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SECTOR_4/SECTOR.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/SECTOR_4/SECTOR.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SECTOR",
+    "label": "SECTOR~GOTSECTORDATA",
+    "variant_count": 2,
+    "chosen_count": 7,
+    "variants": [
+      {
+        "count": 7,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/SECTOR.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/SECTOR.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SECTOR.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SECTOR.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SECTOR.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SECTOR.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SECTOR.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/031__commands__offense__cap/include/SECTOR.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SECTOR.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SECTOR",
+    "label": "SECTOR~GRABFAKEDATA",
+    "variant_count": 3,
+    "chosen_count": 6,
+    "variants": [
+      {
+        "count": 6,
+        "files": [
+          ".recovery_work/items/069__modes__offense__CitCap/include/SECTOR.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SECTOR.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SECTOR.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SECTOR.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SECTOR.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SECTOR.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/031__commands__offense__cap/include/SECTOR_3/SECTOR.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SECTOR_3/SECTOR.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/SECTOR_3/SECTOR.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SECTOR",
+    "label": "SECTOR~SECTORSLINE_CIT_KILL",
+    "variant_count": 2,
+    "chosen_count": 7,
+    "variants": [
+      {
+        "count": 7,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/SECTOR.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/SECTOR.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SECTOR.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SECTOR.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SECTOR.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SECTOR.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SECTOR.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/031__commands__offense__cap/include/SECTOR.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SECTOR.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SECTOR",
+    "label": "SECTOR~STARTOVER",
+    "variant_count": 2,
+    "chosen_count": 6,
+    "variants": [
+      {
+        "count": 6,
+        "files": [
+          ".recovery_work/items/069__modes__offense__CitCap/include/SECTOR.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SECTOR.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SECTOR.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SECTOR.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SECTOR.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SECTOR.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/040__daemons__alienhunt/include/SECTOR.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SHIP",
+    "label": "SHIP~GETSHIPCAPSTATS",
+    "variant_count": 2,
+    "chosen_count": 8,
+    "variants": [
+      {
+        "count": 8,
+        "files": [
+          ".recovery_work/items/056__modes__cashing__WSST/include/SHIP.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/SHIP.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SHIP.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SHIP.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SHIP.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SHIP.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SHIP.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/SHIP.ts"
+        ]
+      },
+      {
+        "count": 2,
+        "files": [
+          ".recovery_work/items/031__commands__offense__cap/include/SHIP_2/SHIP.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/SHIP.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SHIP",
+    "label": "SHIP~GETSHIPSTATS",
+    "variant_count": 2,
+    "chosen_count": 11,
+    "variants": [
+      {
+        "count": 11,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/SHIP.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/SHIP_2/SHIP.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/SHIP.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/SHIP.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/SHIP.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SHIP.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SHIP.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SHIP.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SHIP.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SHIP.ts"
+        ]
+      },
+      {
+        "count": 4,
+        "files": [
+          ".recovery_work/items/030__commands__grid__surround/include/SHIP.ts",
+          ".recovery_work/items/031__commands__offense__cap/include/SHIP_3/SHIP.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SHIP.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/SHIP.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SHIP",
+    "label": "SHIP~SHIPMAXFIGSPERATTACK",
+    "variant_count": 3,
+    "chosen_count": 11,
+    "variants": [
+      {
+        "count": 11,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/SHIP.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/SHIP_2/SHIP.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/SHIP.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/SHIP.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/SHIP.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SHIP.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SHIP.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SHIP.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SHIP.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SHIP.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/030__commands__grid__surround/include/SHIP.ts",
+          ".recovery_work/items/031__commands__offense__cap/include/SHIP_3/SHIP.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SHIP.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/035__commands__resource__buy/include/SHIP.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SHIP",
+    "label": "SHIP~SHIPMAXGENESIS",
+    "variant_count": 2,
+    "chosen_count": 11,
+    "variants": [
+      {
+        "count": 11,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/SHIP.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/SHIP_2/SHIP.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/SHIP.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/SHIP.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/SHIP.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SHIP.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SHIP.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SHIP.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SHIP.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SHIP.ts"
+        ]
+      },
+      {
+        "count": 4,
+        "files": [
+          ".recovery_work/items/030__commands__grid__surround/include/SHIP.ts",
+          ".recovery_work/items/031__commands__offense__cap/include/SHIP_3/SHIP.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SHIP.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/SHIP.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SHIP",
+    "label": "SHIP~SHIPMAXMINES",
+    "variant_count": 2,
+    "chosen_count": 11,
+    "variants": [
+      {
+        "count": 11,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/SHIP.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/SHIP_2/SHIP.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/SHIP.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/SHIP.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/SHIP.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SHIP.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SHIP.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SHIP.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SHIP.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SHIP.ts"
+        ]
+      },
+      {
+        "count": 4,
+        "files": [
+          ".recovery_work/items/030__commands__grid__surround/include/SHIP.ts",
+          ".recovery_work/items/031__commands__offense__cap/include/SHIP_3/SHIP.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SHIP.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/SHIP.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SHIP",
+    "label": "SHIP~SHIPMAXSHIELDS",
+    "variant_count": 2,
+    "chosen_count": 11,
+    "variants": [
+      {
+        "count": 11,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/SHIP.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/SHIP_2/SHIP.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/SHIP.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/SHIP.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/SHIP.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SHIP.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SHIP.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SHIP.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SHIP.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SHIP.ts"
+        ]
+      },
+      {
+        "count": 4,
+        "files": [
+          ".recovery_work/items/030__commands__grid__surround/include/SHIP.ts",
+          ".recovery_work/items/031__commands__offense__cap/include/SHIP_3/SHIP.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SHIP.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/SHIP.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SHIP",
+    "label": "SHIP~SHIPOFFENSEODDS",
+    "variant_count": 3,
+    "chosen_count": 11,
+    "variants": [
+      {
+        "count": 11,
+        "files": [
+          ".recovery_work/items/018__commands__general__hht2020/include/SHIP.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/SHIP_2/SHIP.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/SHIP.ts",
+          ".recovery_work/items/056__modes__cashing__WSST/include/SHIP.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/SHIP.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SHIP.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SHIP.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SHIP.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SHIP.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SHIP.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/030__commands__grid__surround/include/SHIP.ts",
+          ".recovery_work/items/031__commands__offense__cap/include/SHIP_3/SHIP.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SHIP.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/035__commands__resource__buy/include/SHIP.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SHIP",
+    "label": "SHIP~_CHECKSHIPNAME",
+    "variant_count": 2,
+    "chosen_count": 8,
+    "variants": [
+      {
+        "count": 8,
+        "files": [
+          ".recovery_work/items/056__modes__cashing__WSST/include/SHIP.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/SHIP.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SHIP.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SHIP.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SHIP.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SHIP.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SHIP.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/SHIP.ts"
+        ]
+      },
+      {
+        "count": 8,
+        "files": [
+          ".recovery_work/items/056__modes__cashing__WSST/include/SHIP.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/SHIP.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SHIP.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SHIP.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SHIP.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SHIP.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SHIP.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/SHIP.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SHIP",
+    "label": "SHIP~_MH",
+    "variant_count": 2,
+    "chosen_count": 8,
+    "variants": [
+      {
+        "count": 8,
+        "files": [
+          ".recovery_work/items/056__modes__cashing__WSST/include/SHIP.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/SHIP.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SHIP.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SHIP.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SHIP.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SHIP.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SHIP.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/SHIP.ts"
+        ]
+      },
+      {
+        "count": 8,
+        "files": [
+          ".recovery_work/items/056__modes__cashing__WSST/include/SHIP.ts",
+          ".recovery_work/items/069__modes__offense__CitCap/include/SHIP.ts",
+          ".recovery_work/items/070__modes__offense__Citkill/include/SHIP.ts",
+          ".recovery_work/items/071__modes__offense__DockKill/include/SHIP.ts",
+          ".recovery_work/items/072__modes__offense__Drop/include/SHIP.ts",
+          ".recovery_work/items/074__modes__offense__PDrop/include/SHIP.ts",
+          ".recovery_work/items/075__modes__offense__Plock/include/SHIP.ts",
+          ".recovery_work/items/079__modes__resource__PATP/include/SHIP.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SWITCHBOARD",
+    "label": "SWITCHBOARD~FORMAT_RAW_MESSAGE",
+    "variant_count": 2,
+    "chosen_count": 28,
+    "variants": [
+      {
+        "count": 28,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/SWITCHBOARD.ts",
+          ".recovery_work/items/003__commands__data__cim/include/SWITCHBOARD.ts",
+          ".recovery_work/items/005__commands__data__corpinfo/include/SWITCHBOARD.ts",
+          ".recovery_work/items/006__commands__data__figs/include/SWITCHBOARD.ts",
+          ".recovery_work/items/008__commands__data__limps/include/SWITCHBOARD.ts",
+          ".recovery_work/items/016__commands__general__bg2019/include/SWITCHBOARD.ts",
+          ".recovery_work/items/017__commands__general__cn9/include/SWITCHBOARD.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/SWITCHBOARD.ts",
+          ".recovery_work/items/020__commands__general__port/include/SWITCHBOARD.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/SWITCHBOARD.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/047__daemons__teammega/include/SWITCHBOARD.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "SWITCHBOARD",
+    "label": "SWITCHBOARD~SWITCHBOARD",
+    "variant_count": 5,
+    "chosen_count": 10,
+    "variants": [
+      {
+        "count": 10,
+        "files": [
+          ".recovery_work/items/002__commands__data__armids/include/SWITCHBOARD.ts",
+          ".recovery_work/items/003__commands__data__cim/include/SWITCHBOARD.ts",
+          ".recovery_work/items/006__commands__data__figs/include/SWITCHBOARD.ts",
+          ".recovery_work/items/008__commands__data__limps/include/SWITCHBOARD.ts",
+          ".recovery_work/items/022__commands__general__topoff/include/SWITCHBOARD.ts",
+          ".recovery_work/items/024__commands__grid__climp/include/SWITCHBOARD.ts",
+          ".recovery_work/items/025__commands__grid__cmine/include/SWITCHBOARD.ts",
+          ".recovery_work/items/027__commands__grid__mines/include/SWITCHBOARD.ts",
+          ".recovery_work/items/029__commands__grid__pmine/include/SWITCHBOARD.ts",
+          ".recovery_work/items/035__commands__resource__buy/include/SWITCHBOARD.ts"
+        ]
+      },
+      {
+        "count": 9,
+        "files": [
+          ".recovery_work/items/005__commands__data__corpinfo/include/SWITCHBOARD.ts",
+          ".recovery_work/items/018__commands__general__hht2020/include/SWITCHBOARD.ts",
+          ".recovery_work/items/040__daemons__alienhunt/include/SWITCHBOARD.ts",
+          ".recovery_work/items/041__daemons__at/include/SWITCHBOARD.ts",
+          ".recovery_work/items/046__daemons__repeat/include/SWITCHBOARD.ts",
+          ".recovery_work/items/048__modes__cashing__Marco/include/SWITCHBOARD.ts",
+          ".recovery_work/items/049__modes__cashing__marco/include/SWITCHBOARD.ts",
+          ".recovery_work/items/051__modes__cashing__moo_p/include/SWITCHBOARD.ts",
+          ".recovery_work/items/052__modes__cashing__mooexp_p/include/SWITCHBOARD.ts"
+        ]
+      },
+      {
+        "count": 9,
+        "files": [
+          ".recovery_work/items/016__commands__general__bg2019/include/SWITCHBOARD.ts",
+          ".recovery_work/items/017__commands__general__cn9/include/SWITCHBOARD.ts",
+          ".recovery_work/items/020__commands__general__port/include/SWITCHBOARD.ts",
+          ".recovery_work/items/030__commands__grid__surround/include/SWITCHBOARD.ts",
+          ".recovery_work/items/031__commands__offense__cap/include/SWITCHBOARD.ts",
+          ".recovery_work/items/032__commands__offense__kill/include/SWITCHBOARD.ts",
+          ".recovery_work/items/036__commands__resource__dump/include/SWITCHBOARD.ts",
+          ".recovery_work/items/037__commands__resource__max/include/SWITCHBOARD.ts",
+          ".recovery_work/items/039__commands__resource__sellship/include/SWITCHBOARD.ts"
+        ]
+      },
+      {
+        "count": 3,
+        "files": [
+          ".recovery_work/items/021__commands__general__qset/include/SWITCHBOARD.ts",
+          ".recovery_work/items/060__modes__general__xenter/include/SWITCHBOARD.ts",
+          ".recovery_work/items/068__modes__offense__Boton/include/SWITCHBOARD.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/047__daemons__teammega/include/SWITCHBOARD.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "TARGETING",
+    "label": "TARGETING~CHECKFORVICTIMSFROMCITADEL",
+    "variant_count": 2,
+    "chosen_count": 1,
+    "variants": [
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/075__modes__offense__Plock/include/TARGETING.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/067__modes__offense___ldrop/include/TARGETING.ts"
+        ]
+      }
+    ]
+  },
+  {
+    "target": "TARGETING",
+    "label": "TARGETING~FASTCITADELATTACK",
+    "variant_count": 2,
+    "chosen_count": 1,
+    "variants": [
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/075__modes__offense__Plock/include/TARGETING.ts"
+        ]
+      },
+      {
+        "count": 1,
+        "files": [
+          ".recovery_work/items/067__modes__offense___ldrop/include/TARGETING.ts"
+        ]
+      }
+    ]
+  }
+]

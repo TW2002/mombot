@@ -1,0 +1,22 @@
+{
+  "rewritten_script_count": 68,
+  "shared_include_count": 29,
+  "appended_label_count": 179,
+  "conflict_count": 131,
+  "skipped_existing_source_count": 12,
+  "skipped_existing_source": [
+    "commands/defense/HazKill.cts",
+    "modes/cashing/Merch.cts",
+    "modes/cashing/WSST.cts",
+    "modes/offense/CitCap.cts",
+    "modes/offense/Citkill.cts",
+    "modes/offense/DockKill.cts",
+    "modes/offense/Drop.cts",
+    "modes/offense/Foton.cts",
+    "modes/offense/PDrop.cts",
+    "modes/offense/Plock.cts",
+    "modes/resource/PATP.cts",
+    "modes/resource/Pimp.cts"
+  ],
+  "compile_failures": []
+}

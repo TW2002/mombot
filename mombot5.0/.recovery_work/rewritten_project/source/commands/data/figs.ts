@@ -1,0 +1,311 @@
+logging "OFF"
+gosub :BOT~LOADVARS
+
+setvar $BOT~HELP[1] $BOT~TAB&"Refreshes Deployed Fighter List"
+setvar $BOT~HELP[2] $BOT~TAB&"  - Will show difference since last command was run."
+gosub :BOT~HELPFILE
+
+setvar $BOT~SCRIPT_TITLE "Fighter Report"
+gosub :BOT~BANNER
+:FIGS
+
+
+gosub :PLAYER~CURRENTPROMPT
+setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+if ($STARTINGLOCATION = "Command")
+  goto :START_FIGS
+elseif ($STARTINGLOCATION = "Citadel")
+  send "q"
+  gosub :PLANET~GETPLANETINFO
+  send "q"
+elseif ($STARTINGLOCATION = "Planet")
+  send "d"
+  gosub :PLANET~GETPLANETINFO
+  send "q"
+else
+  setvar $SWITCHBOARD~MESSAGE "Unknown Prompt*"
+  halt
+end
+:START_FIGS
+
+
+gosub :PLAYER~TURNOFFANSI
+setvar $SWITCHBOARD~MESSAGE "Loading current fighter locations. . .*"
+gosub :SWITCHBOARD~SWITCHBOARD
+getsectorparameter 2 "FIG_COUNTR" $PREVIOUSCOUNT
+getsectorparameter 2 "FUEL_COUNT" $PREVIOUSFUELCOUNT
+getsectorparameter 2 "ORG_COUNT" $PREVIOUSORGCOUNT
+getsectorparameter 2 "EQU_COUNT" $PREVIOUSEQUIPCOUNT
+getsectorparameter 2 "EQS_COUNT" $PREVIOUSEQUIPSELLCOUNT
+getsectorparameter 2 "FB_COUNT" $PREVIOUSFUELBUYCOUNT
+
+if ($PREVIOUSCOUNT = "")
+  setvar $PREVIOUSCOUNT 0
+end
+if ($PREVIOUSFUELCOUNT = "")
+  setvar $PREVIOUSFUELCOUNT 0
+end
+if ($PREVIOUSORGCOUNT = "")
+  setvar $PREVIOUSORGCOUNT 0
+end
+if ($PREVIOUSEQUIPCOUNT = "")
+  setvar $PREVIOUSEQUIPCOUNT 0
+end
+if ($PREVIOUSEQUIPSELLCOUNT = "")
+  setvar $PREVIOUSEQUIPSELLCOUNT 0
+end
+if ($PREVIOUSFUELBUYCOUNT = "")
+  setvar $PREVIOUSFUELBUYCOUNT 0
+end
+gosub :REFRESHFIGHTERS
+gosub :PLAYER~TURNONANSI
+if ($COUNT <> 0)
+  setvar $PERCENT (($COUNT * 100) / SECTORS)
+  setvar $1PERCENT (($1SCOUNT * 100) / $COUNT)
+  setvar $2PERCENT (($2SCOUNT * 100) / $COUNT)
+  setvar $3PERCENT (($3SCOUNT * 100) / $COUNT)
+  setvar $4PERCENT (($4SCOUNT * 100) / $COUNT)
+  setvar $5PERCENT (($5SCOUNT * 100) / $COUNT)
+  setvar $6PERCENT (($6SCOUNT * 100) / $COUNT)
+  setvar $?PERCENT (($?SCOUNT * 100) / $COUNT)
+end
+setvar $GRIDCHANGE ($COUNT - $PREVIOUSCOUNT)
+if ($GRIDCHANGE > 0)
+  setvar $GRIDCHANGE "+"&$GRIDCHANGE
+end
+setvar $GRIDFUELCHANGE ($UPGRADEDFUELCOUNT - $PREVIOUSFUELCOUNT)
+if ($GRIDFUELCHANGE > 0)
+  setvar $GRIDFUELCHANGE "+"&$GRIDFUELCHANGE
+end
+setvar $GRIDORGCHANGE ($UPGRADEDORGCOUNT - $PREVIOUSORGCOUNT)
+if ($GRIDORGCHANGE > 0)
+  setvar $GRIDORGCHANGE "+"&$GRIDORGCHANGE
+end
+setvar $GRIDEQUIPCHANGE ($UPGRADEDEQUIPCOUNT - $PREVIOUSEQUIPCOUNT)
+if ($GRIDEQUIPCHANGE > 0)
+  setvar $GRIDEQUIPCHANGE "+"&$GRIDEQUIPCHANGE
+end
+setvar $GRIDEQUIPSELLCHANGE ($UPGRADEDEQUIPSELLCOUNT - $PREVIOUSEQUIPSELLCOUNT)
+if ($GRIDEQUIPSELLCHANGE > 0)
+  setvar $GRIDEQUIPSELLCHANGE "+"&$GRIDEQUIPSELLCHANGE
+end
+setvar $GRIDFUELBUYCHANGE ($UPGRADEDFUELBUYCOUNT - $PREVIOUSFUELBUYCOUNT)
+if ($GRIDFUELBUYCHANGE > 0)
+  setvar $GRIDFUELBUYCHANGE "+"&$GRIDFUELBUYCHANGE
+end
+
+setvar $INPUTVARIABLE $1SCOUNT
+gosub :PLAYER~FORMATNUMBERFORSPACES
+setvar $1SCOUNTFORMATTED $OUTPUTVARIABLE
+setvar $INPUTVARIABLE $2SCOUNT
+gosub :PLAYER~FORMATNUMBERFORSPACES
+setvar $2SCOUNTFORMATTED $OUTPUTVARIABLE
+setvar $INPUTVARIABLE $3SCOUNT
+gosub :PLAYER~FORMATNUMBERFORSPACES
+setvar $3SCOUNTFORMATTED $OUTPUTVARIABLE
+setvar $INPUTVARIABLE $4SCOUNT
+gosub :PLAYER~FORMATNUMBERFORSPACES
+setvar $4SCOUNTFORMATTED $OUTPUTVARIABLE
+setvar $INPUTVARIABLE $5SCOUNT
+gosub :PLAYER~FORMATNUMBERFORSPACES
+setvar $5SCOUNTFORMATTED $OUTPUTVARIABLE
+setvar $INPUTVARIABLE $6SCOUNT
+gosub :PLAYER~FORMATNUMBERFORSPACES
+setvar $6SCOUNTFORMATTED $OUTPUTVARIABLE
+
+setvar $INPUTVARIABLE $1PERCENT
+gosub :PLAYER~FORMATPERCENTAGESFORSPACES
+setvar $1PERCENTFORMATTED $OUTPUTVARIABLE
+setvar $INPUTVARIABLE $2PERCENT
+gosub :PLAYER~FORMATPERCENTAGESFORSPACES
+setvar $2PERCENTFORMATTED $OUTPUTVARIABLE
+setvar $INPUTVARIABLE $3PERCENT
+gosub :PLAYER~FORMATPERCENTAGESFORSPACES
+setvar $3PERCENTFORMATTED $OUTPUTVARIABLE
+setvar $INPUTVARIABLE $4PERCENT
+gosub :PLAYER~FORMATPERCENTAGESFORSPACES
+setvar $4PERCENTFORMATTED $OUTPUTVARIABLE
+setvar $INPUTVARIABLE $5PERCENT
+gosub :PLAYER~FORMATPERCENTAGESFORSPACES
+setvar $5PERCENTFORMATTED $OUTPUTVARIABLE
+setvar $INPUTVARIABLE $6PERCENT
+gosub :PLAYER~FORMATPERCENTAGESFORSPACES
+setvar $6PERCENTFORMATTED $OUTPUTVARIABLE
+
+setvar $FIGSGRIDDED TRUE
+if (($STARTINGLOCATION = "Citadel") or ($STARTINGLOCATION = "Planet"))
+  gosub :PLANET~LANDINGSUB
+end
+
+send "'*{"&$SWITCHBOARD~BOT_NAME&"}*          - Fighter Grid Report -*          - "&$COUNT&" sectors, "&$PERSONALCOUNT&" personal. ("&$PERCENT&"%) ("&$GRIDCHANGE&" Change)*          - T: "&$TOLLCOUNT&"  O: "&$OFFCOUNT&"  D:"&$DEFCOUNT&"*          - DE: "&$1SCOUNTFORMATTED&""&$1PERCENTFORMATTED&" 2S: "&$2SCOUNTFORMATTED&""&$2PERCENTFORMATTED&" 3S: "&$3SCOUNTFORMATTED&""&$3PERCENTFORMATTED&"*          - 4S: "&$4SCOUNTFORMATTED&""&$4PERCENTFORMATTED&" 5S: "&$5SCOUNTFORMATTED&""&$5PERCENTFORMATTED&" 6S: "&$6SCOUNTFORMATTED&""&$6PERCENTFORMATTED&"*          - Upgraded Sxx: "&$UPGRADEDFUELCOUNT&" ("&$GRIDFUELCHANGE&" Change)*          - Upgraded xBx: "&$UPGRADEDORGCOUNT&" ("&$GRIDORGCHANGE&" Change)*          - Upgraded xxB: "&$UPGRADEDEQUIPCOUNT&" ("&$GRIDEQUIPCHANGE&" Change)*          - Upgraded xxS: "&$UPGRADEDEQUIPSELLCOUNT&" ("&$GRIDEQUIPSELLCHANGE&" Change)*          - Upgraded Bxx: "&$UPGRADEDFUELBUYCOUNT&" ("&$GRIDFUELBUYCHANGE&" Change)**"
+halt
+:REFRESHFIGHTERS
+:READFIGHTERLIST
+
+
+
+
+
+setvar $COUNT 0
+setvar $PERSONALCOUNT 0
+setvar $1SCOUNT 0
+setvar $2SCOUNT 0
+setvar $3SCOUNT 0
+setvar $4SCOUNT 0
+setvar $5SCOUNT 0
+setvar $6SCOUNT 0
+setvar $?SCOUNT 0
+setvar $TOLLCOUNT 0
+setvar $OFFCOUNT 0
+setvar $DEFCOUNT 0
+setvar $FUELCOUNT 0
+setvar $ORGCOUNT 0
+setvar $EQUIPCOUNT 0
+setvar $EQUIPSELLCOUNT 0
+setvar $UPGRADEDEQUIPCOUNT 0
+setvar $UPGRADEDEQUIPSELLCOUNT 0
+setvar $UPGRADEDFUELBUYCOUNT 0
+setvar $UPGRADEDORGCOUNT 0
+setvar $UPGRADEDFUELCOUNT 0
+
+send "g"
+setvar $I 1
+setvar $PERSONALOUTPUT " "
+setvar $OUTPUT " "
+setvar $CKOUTPUT " "
+:KEEPCOUNTING
+settextlinetrigger CORPORATE :CORPCOUNT " Corp"
+settextlinetrigger PERSONAL :PERSONALCOUNT "Personal "
+settextlinetrigger DONECOUNTINGFIGS :DONECOUNTING "Total"
+settextlinetrigger DONENOFIGS :DONECOUNTING "No fighters deployed"
+pause
+:PERSONALCOUNT
+add $COUNT 1
+add $PERSONALCOUNT 1
+getword CURRENTLINE $SECTOR 1
+getword CURRENTLINE $TYPE 4
+setvar $PERSONALOUTPUT $PERSONALOUTPUT&" "&$SECTOR&"  "
+settextlinetrigger PERSONAL :PERSONALCOUNT "Personal "
+pause
+:CORPCOUNT
+
+add $COUNT 1
+add $PLAYER~CORPCOUNT 1
+getword CURRENTLINE $SECTOR 1
+getword CURRENTLINE $TYPE 4
+if ($TYPE = "Toll")
+  add $TOLLCOUNT 1
+elseif ($TYPE = "Offensive")
+  add $OFFCOUNT 1
+elseif ($TYPE = "Defensive")
+  add $DEFCOUNT 1
+end
+if ($I <= $SECTOR)
+  getwordpos $PERSONALOUTPUT $POS " "&$I&" "
+  if (($SECTOR = $I) or ($POS > 0))
+    setvar $OUTPUT $OUTPUT&$I&"*"
+    setvar $CKOUTPUT $CKOUTPUT&$I&"  "
+    setsectorparameter $I "FIGSEC" TRUE
+    if (PORT.EXISTS[$I] = TRUE)
+      setvar $CURRENTEQUIP (PORT.EQUIP[$I] * 100)
+      if (PORT.PERCENTEQUIP[$I] <> 0)
+        divide $CURRENTEQUIP PORT.PERCENTEQUIP[$I]
+      end
+      if (PORT.BUYEQUIP[$I] = FALSE)
+        if ($CURRENTEQUIP > 10000)
+          add $UPGRADEDEQUIPSELLCOUNT 1
+        end
+      else
+        if ($CURRENTEQUIP > 10000)
+          add $UPGRADEDEQUIPCOUNT 1
+        end
+      end
+      if (PORT.BUYORG[$I] = TRUE)
+        setvar $CURRENTORG (PORT.ORG[$I] * 100)
+        if (PORT.PERCENTORG[$I] <> 0)
+          divide $CURRENTORG PORT.PERCENTORG[$I]
+        end
+        if ($CURRENTORG > 10000)
+          add $UPGRADEDORGCOUNT 1
+        end
+      end
+      if (PORT.BUYFUEL[$I] = FALSE)
+        setvar $CURRENTFUEL (PORT.FUEL[$I] * 100)
+        if (PORT.PERCENTFUEL[$I] <> 0)
+          divide $CURRENTFUEL PORT.PERCENTFUEL[$I]
+        end
+        if ($CURRENTFUEL > 10000)
+          add $UPGRADEDFUELCOUNT 1
+        end
+      else
+        setvar $CURRENTFUEL (PORT.FUEL[$I] * 100)
+        if (PORT.PERCENTFUEL[$I] <> 0)
+          divide $CURRENTFUEL PORT.PERCENTFUEL[$I]
+        end
+        if ($CURRENTFUEL > 10000)
+          add $UPGRADEDFUELBUYCOUNT 1
+        end
+      end
+    end
+
+    setvar $TEMPWARPCOUNT SECTOR.WARPINCOUNT[$I]
+    setvar $TEMPWARPCOUNTOUT SECTOR.WARPCOUNT[$I]
+    if (($TEMPWARPCOUNT > 0) and ($TEMPWARPCOUNTOUT > 0))
+      if ($TEMPWARPCOUNT = 1)
+        add $1SCOUNT 1
+      elseif ($TEMPWARPCOUNT = 2)
+        add $2SCOUNT 1
+      elseif ($TEMPWARPCOUNT = 3)
+        add $3SCOUNT 1
+      elseif ($TEMPWARPCOUNT = 4)
+        add $4SCOUNT 1
+      elseif ($TEMPWARPCOUNT = 5)
+        add $5SCOUNT 1
+      elseif ($TEMPWARPCOUNT = 6)
+        add $6SCOUNT 1
+      end
+    else
+      add $?SCOUNT 1
+
+    end
+  else
+    setvar $OUTPUT $OUTPUT&"0*"
+    setvar $CKOUTPUT $CKOUTPUT&"0  "
+    setsectorparameter $I "FIGSEC" FALSE
+  end
+  add $I 1
+end
+settextlinetrigger CORPORATE :CORPCOUNT " Corp"
+pause
+:DONECOUNTING
+
+killalltriggers
+while ($I <= SECTORS)
+  getwordpos $PERSONALOUTPUT $POS " "&$I&" "
+  if ($POS > 0)
+    setvar $CKOUTPUT $CKOUTPUT&$I&"  "
+    setvar $OUTPUT $OUTPUT&$I&"*"
+    setsectorparameter $I "FIGSEC" TRUE
+  else
+    setvar $CKOUTPUT $CKOUTPUT&"0  "
+    setvar $OUTPUT $OUTPUT&"0*"
+    setsectorparameter $I "FIGSEC" FALSE
+  end
+  add $I 1
+end
+
+setsectorparameter 2 "FIG_COUNT" $COUNT
+setsectorparameter 2 "FIG_COUNTR" $COUNT
+setsectorparameter 2 "FUEL_COUNT" $UPGRADEDFUELCOUNT
+setsectorparameter 2 "ORG_COUNT" $UPGRADEDORGCOUNT
+setsectorparameter 2 "EQU_COUNT" $UPGRADEDEQUIPCOUNT
+setsectorparameter 2 "EQS_COUNT" $UPGRADEDEQUIPSELLCOUNT
+setsectorparameter 2 "FB_COUNT" $UPGRADEDFUELBUYCOUNT
+
+return
+
+# includes:
+include "source\include\BOT"
+include "source\include\SWITCHBOARD"
+include "source\include\PLAYER"
+include "source\include\PLANET"

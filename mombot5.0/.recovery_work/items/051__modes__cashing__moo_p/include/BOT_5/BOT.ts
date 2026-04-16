@@ -1,0 +1,10 @@
+:BOT~ECHO
+
+getdeafclients $BOT~BOTISDEAF
+if ($BOT~BOTISDEAF)
+  setvar $BOT~SILENT_RUNNING TRUE
+  gosub :SWITCHBOARD~SWITCHBOARD
+else
+  echo $SWITCHBOARD~MESSAGE
+end
+return

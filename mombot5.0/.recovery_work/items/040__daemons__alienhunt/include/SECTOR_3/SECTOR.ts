@@ -1,0 +1,63 @@
+:SECTOR~GETFAKETRADERS
+setvar $SECTOR~FEDERALSINSECTOR FALSE
+setvar $SECTOR~FEDERALCOUNT 0
+getwordpos $SECTOR~SECTORDATA $SECTOR~POSSHIPS "[0m[33mShips   [1m:"
+getwordpos $SECTOR~SECTORDATA $SECTOR~POSTRADERS "[0m[33mTraders [1m:"
+getwordpos $SECTOR~SECTORDATA $SECTOR~POSFEDERALS "[0m[33mFederals[1m:"
+if ($SECTOR~POSFEDERALS > 0)
+  setvar $SECTOR~FEDERALSINSECTOR TRUE
+end
+if ($SECTOR~POSTRADERS > 0)
+  gettext $SECTOR~SECTORDATA $SECTOR~FAKEDATA "[1;32mSector  [33m:" "[0m[33mTraders [1m:"
+  gosub :GRABFAKEDATA
+elseif ($SECTOR~POSSHIPS > 0)
+  gettext $SECTOR~SECTORDATA $SECTOR~FAKEDATA "[1;32mSector  [33m:" "[0m[33mShips   [1m:"
+  gosub :GRABFAKEDATA
+else
+  gettext $SECTOR~SECTORDATA $SECTOR~FAKEDATA "[1;32mSector  [33m:" "[0m[1;32mWarps to Sector(s) [33m:"
+  gosub :GRABFAKEDATA
+end
+return
+:SECTOR~GRABFAKEDATA
+setvar $SECTOR~FAKEDATA $SECTOR~STARTLINE&$SECTOR~FAKEDATA
+gettext $SECTOR~FAKEDATA $SECTOR~TEMP $SECTOR~STARTLINE $SECTOR~ENDLINE
+setvar $SECTOR~FAKETRADERCOUNT 0
+while ($SECTOR~TEMP <> "")
+  getlength $SECTOR~STARTLINE&$SECTOR~TEMP&$SECTOR~ENDLINE $SECTOR~LENGTH
+  cuttext $SECTOR~FAKEDATA $SECTOR~FAKEDATA ($SECTOR~LENGTH + 1) 9999
+  striptext $SECTOR~TEMP $SECTOR~STARTLINE
+  striptext $SECTOR~TEMP "  "
+  striptext $SECTOR~TEMP $SECTOR~ENDLINE
+  getwordpos $SECTOR~TEMP $SECTOR~POS "33m,[0;32m w/ "
+  if ($SECTOR~POS <= 0)
+    getwordpos $SECTOR~TEMP $SECTOR~POS "[0;32mw/ "
+  end
+  getwordpos $SECTOR~TEMP $SECTOR~POS2 "[33m, [0;32mwith"
+  getwordpos $SECTOR~TEMP $SECTOR~POS3 "[0;35m[[31mOwned by[35m]"
+  getwordpos $SECTOR~TEMP $SECTOR~POS4 "[0;32mw/ "&#27&"[1;33m"
+  getwordpos $SECTOR~TEMP $SECTOR~POS5 "in[36m "
+  if ((($SECTOR~POS4 > 0) or ($SECTOR~POS > 0) or ($SECTOR~POS2 > 0)) and ($SECTOR~POS3 <= 0))
+    setvar $PLAYER~FAKETRADERS[($SECTOR~FAKETRADERCOUNT + 1)] $SECTOR~TEMP
+    getwordpos $SECTOR~TEMP $SECTOR~POSA "Zyrain"
+    getwordpos $SECTOR~TEMP $SECTOR~POSB "Clausewitz"
+    getwordpos $SECTOR~TEMP $SECTOR~POSC "Nelson"
+    getwordpos $SECTOR~TEMP $SECTOR~POSD "Wilson"
+    if (($SECTOR~POSA > 0) or ($SECTOR~POSB > 0) or ($SECTOR~POSC > 0) or ($SECTOR~POSD > 0))
+      add $SECTOR~FEDERALCOUNT 1
+    end
+    add $SECTOR~FAKETRADERCOUNT 1
+  end
+
+  if ($SECTOR~POS5 > 0)
+    gettext $SECTOR~TEMP $SECTOR~SHIPNAME "[1;31m" ")"
+
+    if ($SECTOR~SHIPNAME = "")
+      gettext $SECTOR~TEMP $SECTOR~SHIPNAME "(" ")"&#13
+      gettext $SECTOR~SHIPNAME&"ENDOFSHIP" $SECTOR~SHIPNAME "m"&#27&"[" "ENDOFSHIP"
+    end
+    gettext $SECTOR~SHIPNAME&"ENDOFSHIP" $SECTOR~SHIPNAME "m" "ENDOFSHIP"
+  end
+
+  gettext $SECTOR~FAKEDATA $SECTOR~TEMP $SECTOR~STARTLINE $SECTOR~ENDLINE
+end
+return

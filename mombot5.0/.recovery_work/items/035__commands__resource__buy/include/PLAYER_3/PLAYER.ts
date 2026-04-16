@@ -1,0 +1,193 @@
+:PLAYER~GETINFO
+
+setvar $PLAYER~NOFLIP TRUE
+setvar $PLAYER~PHOTONS 0
+setvar $PLAYER~TOWED ""
+setvar $PLAYER~SCAN_TYPE "None"
+setvar $PLAYER~TWARP_TYPE 0
+setvar $PLAYER~CORPSTRING "[0]"
+setvar $PLAYER~IGSTAT 0
+:PLAYER~WAITONINFO
+send "?"
+waiton "<!>"
+settextlinetrigger GETINFO_CN9_CHECK_1 :GETINFO_CN9_CHECK "<N> Interdictor Control"
+settextlinetrigger GETINFO_CN9_CHECK_2 :GETINFO_CN9_CHECK "<N> Move to NavPoint"
+settextlinetrigger GETTRADERNAME :GETTRADERNAME "Trader Name    :"
+settextlinetrigger GETEXPANDALIGN :GETEXPANDALIGN "Rank and Exp"
+settextlinetrigger GETCORP :GETCORP "Corp           #"
+settextlinetrigger GETSHIPTYPE :GETSHIPTYPE "Ship Info      :"
+settextlinetrigger GETTPW :GETTPW "Turns to Warp  :"
+settextlinetrigger GETSECT :GETSECT "Current Sector :"
+settextlinetrigger GETTURNS :GETTURNS "Turns left"
+settextlinetrigger GETTOW :GETTOW "Tractor Beam   : ON, towing "
+settextlinetrigger GETHOLDS :GETHOLDS "Total Holds"
+settextlinetrigger GETFIGHTERS :GETFIGHTERS "Fighters       :"
+settextlinetrigger GETSHIELDS :GETSHIELDS "Shield points  :"
+settextlinetrigger GETPHOTONS :GETPHOTONS "Photon Missiles:"
+settextlinetrigger GETSCANTYPE :GETSCANTYPE "LongRange Scan :"
+settextlinetrigger GETTWARPTYPE1 :GETTWARPTYPE1 "  (Type 1 Jump):"
+settextlinetrigger GETTWARPTYPE2 :GETTWARPTYPE2 "  (Type 2 Jump):"
+settextlinetrigger GETCREDITS :GETCREDITS "Credits"
+settextlinetrigger CHECKIG :CHECKIG "Interdictor ON :"
+send "i"
+pause
+:PLAYER~GETINFO_CN9_CHECK
+setvar $PLAYER~NOFLIP TRUE
+pause
+:PLAYER~GETTRADERNAME
+killtrigger GETINFO_CN9_CHECK_1
+killtrigger GETINFO_CN9_CHECK_2
+setvar $PLAYER~TRADER_NAME CURRENTLINE
+striptext $PLAYER~TRADER_NAME "Trader Name    : "
+setvar $PLAYER~I 1
+while ($PLAYER~I <= $PLAYER~RANKSLENGTH)
+  setvar $PLAYER~TEMP $PLAYER~RANKS[$PLAYER~I]
+  striptext $PLAYER~TEMP "31m"
+  striptext $PLAYER~TEMP "36m"
+  striptext $PLAYER~TRADER_NAME $PLAYER~TEMP&" "
+  add $PLAYER~I 1
+end
+pause
+:PLAYER~GETTOW
+setvar $PLAYER~LINE CURRENTLINE&"<<|END|>>"
+gettext $PLAYER~LINE $PLAYER~TOWED "Tractor Beam   : ON, towing " "<<|END|>>"
+pause
+:PLAYER~GETEXPANDALIGN
+getword CURRENTLINE $PLAYER~EXPERIENCE 5
+getword CURRENTLINE $PLAYER~ALIGNMENT 7
+striptext $PLAYER~EXPERIENCE ","
+striptext $PLAYER~ALIGNMENT ","
+striptext $PLAYER~ALIGNMENT "Alignment="
+pause
+:PLAYER~GETCORP
+getword CURRENTLINE $PLAYER~CORP 3
+striptext $PLAYER~CORP ","
+setvar $PLAYER~CORPSTRING "["&$PLAYER~CORP&"]"
+pause
+:PLAYER~GETSHIPTYPE
+getwordpos CURRENTLINE $PLAYER~SHIPTYPEEND "Ported="
+subtract $PLAYER~SHIPTYPEEND 18
+cuttext CURRENTLINE $PLAYER~SHIP_TYPE 18 $PLAYER~SHIPTYPEEND
+pause
+:PLAYER~GETTPW
+getword CURRENTLINE $PLAYER~TURNS_PER_WARP 5
+pause
+:PLAYER~GETSECT
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR 4
+pause
+:PLAYER~GETTURNS
+getword CURRENTLINE $PLAYER~TURNS 4
+if ($PLAYER~TURNS = "Unlimited")
+  setvar $PLAYER~TURNS 65000
+  setvar $PLAYER~UNLIMITEDGAME TRUE
+end
+savevar $PLAYER~UNLIMITEDGAME
+pause
+:PLAYER~GETHOLDS
+setvar $PLAYER~TEMP CURRENTLINE&" "
+gettext $PLAYER~TEMP $PLAYER~ORE_HOLDS "Ore=" " "
+if ($PLAYER~ORE_HOLDS = "")
+  setvar $PLAYER~ORE_HOLDS 0
+end
+gettext $PLAYER~TEMP $PLAYER~ORGANIC_HOLDS "Organics=" " "
+if ($PLAYER~ORGANIC_HOLDS = "")
+  setvar $PLAYER~ORGANIC_HOLDS 0
+end
+gettext $PLAYER~TEMP $PLAYER~EQUIPMENT_HOLDS "Equipment=" " "
+if ($PLAYER~EQUIPMENT_HOLDS = "")
+  setvar $PLAYER~EQUIPMENT_HOLDS 0
+end
+gettext $PLAYER~TEMP $PLAYER~COLONIST_HOLDS "Colonists=" " "
+if ($PLAYER~COLONIST_HOLDS = "")
+  setvar $PLAYER~COLONIST_HOLDS 0
+end
+gettext $PLAYER~TEMP $PLAYER~EMPTY_HOLDS "Empty=" " "
+if ($PLAYER~EMPTY_HOLDS = "")
+  setvar $PLAYER~EMPTY_HOLDS 0
+end
+pause
+:PLAYER~GETFIGHTERS
+getword CURRENTLINE $PLAYER~FIGHTERS 3
+striptext $PLAYER~FIGHTERS ","
+pause
+:PLAYER~GETSHIELDS
+getword CURRENTLINE $PLAYER~SHIELDS 4
+striptext $PLAYER~SHIELDS ","
+pause
+:PLAYER~GETPHOTONS
+getword CURRENTLINE $PLAYER~PHOTONS 3
+pause
+:PLAYER~GETSCANTYPE
+getword CURRENTLINE $PLAYER~SCAN_TYPE 4
+pause
+:PLAYER~GETTWARPTYPE1
+getword CURRENTLINE $PLAYER~TWARP_1_RANGE 4
+setvar $PLAYER~TWARP_TYPE 1
+pause
+:PLAYER~GETTWARPTYPE2
+getword CURRENTLINE $PLAYER~TWARP_2_RANGE 4
+setvar $PLAYER~TWARP_TYPE 2
+pause
+:PLAYER~CHECKIG
+getword CURRENTLINE $PLAYER~IGSTAT 4
+pause
+:PLAYER~GETCREDITS
+getword CURRENTLINE $PLAYER~CREDITS 3
+striptext $PLAYER~CREDITS ","
+if ($PLAYER~IGSTAT = 0)
+  setvar $PLAYER~IGSTAT "NO IG"
+end
+:PLAYER~GETINFODONE
+killtrigger GETEXPANDALIGN
+killtrigger GETCORP
+killtrigger GETSHIPTYPE
+killtrigger GETTPW
+killtrigger GETTOW
+killtrigger GETSECT
+killtrigger GETTURNS
+killtrigger GETHOLDS
+killtrigger GETFIGHTERS
+killtrigger GETSHIELDS
+killtrigger GETPHOTONS
+killtrigger GETSCANTYPE
+killtrigger GETTWARPTYPE1
+killtrigger GETTWARPTYPE2
+killtrigger GETCREDITS
+killtrigger CHECKIG
+killtrigger GETINFODONE
+killtrigger GETINFODONE2
+killtrigger GETINFO_CN9_CHECK_1
+killtrigger GETINFO_CN9_CHECK_2
+
+savevar $PLAYER~UNLIMITEDGAME
+
+if ($PLAYER~SAVE)
+
+  savevar $PLAYER~CREDITS
+  savevar $PLAYER~FIGHTERS
+  savevar $PLAYER~SHIELDS
+  savevar $PLAYER~TOTAL_HOLDS
+  savevar $PLAYER~ORE_HOLDS
+  savevar $PLAYER~ORGANIC_HOLDS
+  savevar $PLAYER~EQUIPMENT_HOLDS
+  savevar $PLAYER~COLONIST_HOLDS
+  savevar $PLAYER~PHOTONS
+  savevar $PLAYER~ARMIDS
+  savevar $PLAYER~LIMPETS
+  savevar $PLAYER~GENESIS
+  savevar $PLAYER~TWARP_TYPE
+  savevar $PLAYER~CLOAKS
+  savevar $PLAYER~BEACONS
+  savevar $PLAYER~ATOMIC
+  savevar $PLAYER~CORBO
+  savevar $PLAYER~EPROBES
+  savevar $PLAYER~MINE_DISRUPTORS
+  savevar $PLAYER~PSYCHIC_PROBE
+  savevar $PLAYER~PLANET_SCANNER
+  savevar $PLAYER~SCAN_TYPE
+  savevar $PLAYER~ALIGNMENT
+  savevar $PLAYER~EXPERIENCE
+  savevar $PLAYER~SHIP_NUMBER
+  savevar $PLAYER~TRADER_NAME
+end
+return
