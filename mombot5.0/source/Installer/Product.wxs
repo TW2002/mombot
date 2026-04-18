@@ -248,7 +248,6 @@
     <File Id="F0214" Source="..\daemons\at.cts"/>
     <File Id="F0215" Source="..\daemons\chat.ts"/>
     <File Id="F0216" Source="..\daemons\comms.ts"/>
-    <File Id="F0217" Source="..\daemons\ephaggle.ts"/>
     <File Id="F0218" Source="..\daemons\ignore.ts"/>
     <File Id="F0219" Source="..\daemons\online.ts"/>
     <File Id="F0220" Source="..\daemons\repeat.cts"/>

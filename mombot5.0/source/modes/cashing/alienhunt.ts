@@ -574,15 +574,31 @@ return
 
 		if ($targetsFound = TRUE)
 
-			send "s*  "
-			waiton "Warps to Sector(s) : "
-			setVar $figowner SECTOR.FIGS.OWNER[currentsector]
-			setVar $figCount SECTOR.FIGS.QUANTITY[currentsector]
-
-			if (($figcount <= 0) or (($figOwner <> "belong to your Corp") AND ($figOwner <> "yours")))
-				gosub :xenter~run
-			end		
-			setVar $emptyShips SECTOR.SHIPCOUNT[currentsector]
+				send "s*  "
+				waiton "Warps to Sector(s) : "
+				setVar $figowner SECTOR.FIGS.OWNER[currentsector]
+				setVar $figCount SECTOR.FIGS.QUANTITY[currentsector]
+	
+				if ($figcount <= 0)
+					if ((CURRENTSECTOR > 10) and (CURRENTSECTOR <> STARDOCK))
+						setvar $bot~startingLocation $PLAYER~CURRENT_PROMPT
+						setvar $fighter~offensive false
+						setvar $fighter~defensive true
+						setvar $fighter~toll false
+						setvar $fighter~corporate true
+						setvar $fighter~personal false
+						setvar $fighter~amount 1
+						gosub :fighter~deploy
+						gosub :PLAYER~quikstats
+						if ($PLAYER~CURRENT_PROMPT = "Planet")
+							send "c "
+							gosub :PLAYER~quikstats
+						end
+					end
+				elseif (($figOwner <> "belong to your Corp") AND ($figOwner <> "yours"))
+					gosub :xenter~run
+				end		
+				setVar $emptyShips SECTOR.SHIPCOUNT[currentsector]
 			if ($emptyShips > 0)
 				loadVar $MAP~stardock
 				if ($filterships <> "")
@@ -635,7 +651,17 @@ return
 				gosub :max~run
 				gosub :setwindow
 			else
-				send "c r*q "
+				gosub :PLAYER~quikstats
+				if ($PLAYER~CURRENT_PROMPT = "Planet")
+					send "c "
+					waiton "Citadel command (?=help)"
+					gosub :PLAYER~quikstats
+				end
+				if ($PLAYER~CURRENT_PROMPT = "Citadel")
+					send "c r*q "
+					waiton "Citadel command (?=help)"
+					gosub :PLAYER~quikstats
+				end
 			end
 			setvar $fuel PORT.FUEL[currentsector]
 			if ((($upgrade = true) and ($fuel > 10000)) or (($upgrade <> true) and ($fuel > 1000)))
@@ -707,11 +733,21 @@ return
 return
 
 :gohome
-	setvar $pwarp~destination $homesector
-	gosub :ensureCitadelForPwarp
-	gosub :pwarp~run
-	setvar $scrub~seek true
-	gosub :scrub~run
+	gosub :PLAYER~quikstats
+	if (CURRENTSECTOR <> $homesector)
+		setvar $pwarp~destination $homesector
+		gosub :ensureCitadelForPwarp
+		gosub :pwarp~run
+	end
+	gosub :PLAYER~quikstats
+	if ($PLAYER~CURRENT_PROMPT = "Command")
+		gosub :PLANET~landingSub
+		gosub :PLAYER~quikstats
+	end
+	if ($PLAYER~CURRENT_PROMPT = "Planet")
+		send "c "
+		gosub :PLAYER~quikstats
+	end
 	if ($cannon = true)
 		send " *ls"&$percentToSet&"* la"&$starting_atmos_cannon&"*"  
 	end
@@ -735,6 +771,7 @@ include "source\include\buyshield"
 include "source\include\dep"
 include "source\include\with"
 include "source\include\dscan"
+include "source\include\fighter"
 include "source\include\moveship"
 include "source\include\xenter"
 include "source\include\mow"

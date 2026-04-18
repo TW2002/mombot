@@ -24,11 +24,12 @@
 	setVar $BOT~help[8]  $BOT~tab&"   {neg/hold}    Determines planet negotiate or hold selling"
 	setVar $BOT~help[9]  $BOT~tab&"   {docim}       Does cim before starting route"
 	setVar $BOT~help[10] $BOT~tab&"   {upgradefuel} Upgrades fuel ports selling fuel"
-	setVar $BOT~help[11] $BOT~tab&"   {nohaggle}    Doesn't haggle when buying product"
-	setVar $BOT~help[12] $BOT~tab&"   {sellfuel}    Sells fuel during travels"
-	setVar $BOT~help[13] $BOT~tab&"       {grid}    Surround grid as you go"
-	setVar $BOT~help[14] $BOT~tab&"        {rob}    Rob ports after buying down"
-	setVar $BOT~help[15] $BOT~tab&"    {upgrade}    Slowly upgrade each port as it goes"
+	setVar $BOT~help[11] $BOT~tab&"     {haggle}    Uses native haggle for trading"
+	setVar $BOT~help[12] $BOT~tab&"   {nohaggle}    Doesn't haggle when buying product"
+	setVar $BOT~help[13] $BOT~tab&"   {sellfuel}    Sells fuel during travels"
+	setVar $BOT~help[14] $BOT~tab&"       {grid}    Surround grid as you go"
+	setVar $BOT~help[15] $BOT~tab&"        {rob}    Rob ports after buying down"
+	setVar $BOT~help[16] $BOT~tab&"    {upgrade}    Slowly upgrade each port as it goes"
 	gosub :bot~helpfile
 
 	setVar $BOT~script_title "Traveling Salesman"
@@ -67,6 +68,12 @@
 		setVar $nohaggle TRUE
 	else
 		setVar $nohaggle FALSE
+	end
+	getWordPos " "&$bot~user_command_line&" " $pos " haggle "
+	if ($pos > 0)
+		setVar $nativeHaggleMode TRUE
+	else
+		setVar $nativeHaggleMode FALSE
 	end
 	getWordPos " "&$bot~user_command_line&" " $pos " upgrade "
 	if ($pos > 0)
@@ -165,6 +172,7 @@
 		gosub :SWITCHBOARD~switchboard
 	end
 	gosub :player~quikstats
+	gosub :configureNativeHaggle
 	if (($player~limpets <= 3) and ($mines))
 		gosub :attempt_refurb
 	end
@@ -334,14 +342,33 @@
 						send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
 							
 						while ($player~turnsSellingProduct > 0)
-							send "l " $planet~planet "*  t  *  * 2*  q P**"
-							gosub :PLAYER~startHaggle
-							send "0 * 0 *  /"
-							if ($PLAYER~ni <> TRUE)
+							if ($nativeHaggleMode)
+								setVar $salesmanTradeSellFuel 1
+								setVar $salesmanTradeSellOrg 0
+								setVar $salesmanTradeSellEqu 0
+								setVar $salesmanTradeBuyFuel 0
+								setVar $salesmanTradeBuyOrg 0
+								setVar $salesmanTradeBuyEqu 0
+								send "l " $planet~planet "*  t  *  * 2*  q "
+								gosub :nativePortTrade
+								gosub :PLAYER~quikstats
+								if ($PLAYER~ore_holds > 0)
+									setVar $SWITCHBOARD~message "Unable to finish selling Fuel Ore before continuing.*"
+									gosub :SWITCHBOARD~switchboard
+									goto :haltSalesman
+								end
 								subtract $player~turnsSellingProduct 1
 								add $totalFuelHolds $player~total_holds
+							else
+								send "l " $planet~planet "*  t  *  * 2*  q P**"
+								gosub :PLAYER~startHaggle
+								send "0 * 0 *  /"
+								if ($PLAYER~ni <> TRUE)
+									subtract $player~turnsSellingProduct 1
+									add $totalFuelHolds $player~total_holds
+								end
+								waitOn "Turns"
 							end
-							waitOn "Turns"
 						end
 					end
 					if ((PORT.BUYORG[$NearFig] = TRUE) AND ($sellingOrg))
@@ -359,14 +386,33 @@
 						send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
 							
 						while ($player~turnsSellingProduct > 0)
-							send "l " $planet~planet "*  t  *  * 2*  q P**"
-							gosub :PLAYER~startHaggle
-							send "0 * 0 *  /"
-							if ($PLAYER~ni <> TRUE)
+							if ($nativeHaggleMode)
+								setVar $salesmanTradeSellFuel 0
+								setVar $salesmanTradeSellOrg 1
+								setVar $salesmanTradeSellEqu 0
+								setVar $salesmanTradeBuyFuel 0
+								setVar $salesmanTradeBuyOrg 0
+								setVar $salesmanTradeBuyEqu 0
+								send "l " $planet~planet "*  t  *  * 2*  q "
+								gosub :nativePortTrade
+								gosub :PLAYER~quikstats
+								if ($PLAYER~organic_holds > 0)
+									setVar $SWITCHBOARD~message "Unable to finish selling Organics before continuing.*"
+									gosub :SWITCHBOARD~switchboard
+									goto :haltSalesman
+								end
 								subtract $player~turnsSellingProduct 1
 								add $totalOrganicHolds $player~total_holds
+							else
+								send "l " $planet~planet "*  t  *  * 2*  q P**"
+								gosub :PLAYER~startHaggle
+								send "0 * 0 *  /"
+								if ($PLAYER~ni <> TRUE)
+									subtract $player~turnsSellingProduct 1
+									add $totalOrganicHolds $player~total_holds
+								end
+								waitOn "Turns"
 							end
-							waitOn "Turns"
 						end
 					end
 					if ((PORT.BUYEQUIP[$NearFig] = TRUE) AND ($sellingEquip))
@@ -377,8 +423,24 @@
 						end
 						send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
 						while ($player~turnsSellingProduct > 0)
-							
-							while ($player~turnsSellingProduct > 0)
+							if ($nativeHaggleMode)
+								setVar $salesmanTradeSellFuel 0
+								setVar $salesmanTradeSellOrg 0
+								setVar $salesmanTradeSellEqu 1
+								setVar $salesmanTradeBuyFuel 0
+								setVar $salesmanTradeBuyOrg 0
+								setVar $salesmanTradeBuyEqu 0
+								send "l " $planet~planet "*  t  *  * 3*  q "
+								gosub :nativePortTrade
+								gosub :PLAYER~quikstats
+								if ($PLAYER~equipment_holds > 0)
+									setVar $SWITCHBOARD~message "Unable to finish selling Equipment before continuing.*"
+									gosub :SWITCHBOARD~switchboard
+									goto :haltSalesman
+								end
+								subtract $player~turnsSellingProduct 1
+								add $totalEquipmentHolds $player~total_holds
+							else
 								send "l " $planet~planet "*  t  *  * 3*  q P**"
 								gosub :PLAYER~startHaggle
 								send "0 * 0 *  /"
@@ -396,6 +458,10 @@
 					gosub :PLAYER~quikstats
 				end
 					if (PORT.BUYEQUIP[$NearFig] = FALSE)
+						if ($nativeHaggleMode)
+							setVar $salesmanBuyProduct "e"
+							gosub :nativeBuyProduct
+						else
 						setVar $PLAYER~buyobject "e"
 						if ($nohaggle)
 							setVar $PLAYER~buytype "s"
@@ -404,8 +470,13 @@
 						end
 						gosub :player~buy
 						gosub :PLAYER~quikstats
+						end
 					end
 					if (PORT.BUYORG[$NearFig] = FALSE)
+						if ($nativeHaggleMode)
+							setVar $salesmanBuyProduct "o"
+							gosub :nativeBuyProduct
+						else
 						setVar $PLAYER~buyobject "o"
 						if ($nohaggle)
 							setVar $PLAYER~buytype "s"
@@ -414,12 +485,18 @@
 						end
 						gosub :player~buy
 						gosub :PLAYER~quikstats
+						end
 					end
 					if (PORT.BUYFUEL[$NearFig] = FALSE)
+						if ($nativeHaggleMode)
+							setVar $salesmanBuyProduct "f"
+							gosub :nativeBuyProduct
+						else
 						setVar $PLAYER~buyobject "f"
 						setVar $PLAYER~buytype "s"
 						gosub :player~buy
 						gosub :PLAYER~quikstats
+						end
 					end
 										
 				send "#"
@@ -454,7 +531,12 @@
 			send "p"&$startingSector&"*y"
 			setVar $SWITCHBOARD~message "Travelling Salesman completed.*"
 			gosub :SWITCHBOARD~switchboard
+			gosub :restoreAutoHaggle
 			halt
+
+:haltSalesman
+	gosub :restoreAutoHaggle
+	halt
 
 
 
@@ -628,7 +710,7 @@ return
 		stripText $planet~CITADELCash ","
 		if ($planet~CITADELCash < $cashNeeded)
 			send "'{" & $bot~bot_name & "} - Not enough cash for mine refurbs in treasury or on hand.*"	
-			halt
+			goto :haltSalesman
 		end
 		send "t f "&($cashNeeded-$player~credits)&"* "
 	end
@@ -651,7 +733,7 @@ return
 		if ($player~RED_adj = 0)
 			waitfor "Command [TL="
 			send "'{" & $bot~bot_name & "} - Cannot Find Jump Sector Adjacent Dock**"
-			halt
+			goto :haltSalesman
 		end
 	end
 
@@ -675,7 +757,7 @@ return
 	:noJoy
 		killAllTriggers
 		send "'{" $bot~bot_name "} - Cannot Find Path to StarDock!**"
-		halt
+		goto :haltSalesman
 	:cont
 		killAllTriggers
 		setDelayTrigger Latency_Delay		:Latency_Delay 500
@@ -692,37 +774,37 @@ return
 
 		if ($dist1 <= 0)
 			send "'{" $bot~bot_name "} " & $TagLineB & " - Insufficient Warp Data Plotting Course to Dock**"
-			halt
+			goto :haltSalesman
 		end
 
 		getdistance $dist2 $map~stardock $START_SECTOR
 		if ($dist2 <= 0)
 			send "'{" $bot~bot_name "} " & $TagLineB & " - Insufficient Warp Data Plotting Return Course From Dock**"
-			halt
+			goto :haltSalesman
 		end
 
 		setVar $ore_req (($dist1 + $dist2) * 3)
 
 		if ($player~ore_holds < $ore_req)
 			send "'{" $bot~bot_name "} - Not Enough ORE In Holds To Make Round Trip**"
-			halt
+			goto :haltSalesman
 		end
 
 		if ($player~twarp_type = "No")
 			send "'{" $bot~bot_name "} - Must Have Twarp 1 or 2**"
-			halt
+			goto :haltSalesman
 		end
 
 		if ($player~unlimitedGame = 0)
 			gosub :TurnsRequired
 			if ($player~turnsRequired > $player~turns)
 				send "'{" $bot~bot_name "} - Not Enough Turns. " & ANSI_12 & $player~turnsRequired & ANSI_15 & ", Required**"
-				halt
+				goto :haltSalesman
 			elseif ($player~turnsRequired <= $player~turns)
 				setVar $tmp ($player~turns - $player~turnsRequired)
 				if ($tmp <= $bot~bot_turn_limit)
 					send "'{" $bot~bot_name "} - Proceeding Will Leave Fewer Than " & $bot~bot_turn_limit & " Turns!**"
-					halt
+					goto :haltSalesman
 				end
 			end
 		end
@@ -734,7 +816,7 @@ return
 	:nosoupforme
 		killAllTriggers
 		send "'{" $bot~bot_name "} " & $TagLineB & " - StarDock appears to have been Blown Up!**"
-		halt
+		goto :haltSalesman
 	:itsalive
 		killAllTriggers
 		waitfor "(?="
@@ -752,7 +834,7 @@ return
 			waitfor "You leave the Galactic Bank."
 		else
 			send "'{" $bot~bot_name "} - Unknown Problem Detected. Check TA!**"
-			halt
+			goto :haltSalesman
 		end
 		gosub :player~quikstats
 
@@ -763,7 +845,7 @@ return
 		gosub :player~quikstats
 		if ($player~current_sector = $map~stardock)
 			send "'{" $bot~bot_name "} - Twarp Error, Should be Hiding on Dock!**"
-			halt
+			goto :haltSalesman
 		end
 		send "q tnt1* c "
 	
@@ -920,7 +1002,196 @@ return
 
 :callSaveMe
 	send "q q q q * '"&$SWITCHBOARD~bot_name&" call*"
-	halt
+	goto :haltSalesman
+
+:configureNativeHaggle
+	setVar $restoreAutoHaggleState 0
+	if ($nativeHaggleMode)
+		if (HAGGLE = FALSE)
+			autohaggle on
+			setVar $restoreAutoHaggleState 2
+		end
+	else
+		if (HAGGLE)
+			autohaggle off
+			setVar $restoreAutoHaggleState 1
+		end
+	end
+	return
+
+:restoreAutoHaggle
+	if ($restoreAutoHaggleState = 1)
+		autohaggle on
+	else
+		if ($restoreAutoHaggleState = 2)
+			autohaggle off
+		end
+	end
+	setVar $restoreAutoHaggleState 0
+	return
+
+:nativePortTrade
+	setVar $salesmanTradeActive 0
+	send "PT"
+:nativePortTradeWait
+	setTextLineTrigger SALESMANTRADESTART1 :nativePortTradeProgress "<Port>"
+	setTextLineTrigger SALESMANTRADESTART2 :nativePortTradeProgress "Docking..."
+	setTextTrigger SALESMANTRADESTART3 :nativePortTradeProgress "Your offer ["
+	setTextTrigger SALESMANTRADESTART4 :nativePortTradeProgress "Our final offer"
+	setTextTrigger SALESMANTRADESTART5 :nativePortTradeProgress "Agreed,"
+	setTextTrigger SALESMANTRADEQTY :nativePortTradeQty "How many holds of "
+	if ($salesmanTradeActive = 1)
+		setTextTrigger SALESMANTRADEDONE :nativePortTradeDone "Command [TL="
+	end
+	pause
+
+:nativePortTradeProgress
+	killalltriggers
+	setVar $salesmanTradeActive 1
+	goto :nativePortTradeWait
+
+:nativePortTradeQty
+	killalltriggers
+	setVar $salesmanTradeActive 1
+	setVar $salesmanTradeLine CURRENTLINE
+	gosub :handleNativePortQty
+	goto :nativePortTradeWait
+
+:nativePortTradeDone
+	killalltriggers
+	return
+
+:handleNativePortQty
+	setVar $salesmanTradeProduct "None"
+	setVar $salesmanTradeIsBuy 0
+
+	getWordPos $salesmanTradeLine $salesmanTradePos " do you want to buy "
+	if ($salesmanTradePos > 0)
+		setVar $salesmanTradeIsBuy 1
+	end
+
+	getWordPos $salesmanTradeLine $salesmanTradePos "Fuel"
+	if ($salesmanTradePos > 0)
+		setVar $salesmanTradeProduct "Fuel"
+	else
+		getWordPos $salesmanTradeLine $salesmanTradePos "Organics"
+		if ($salesmanTradePos > 0)
+			setVar $salesmanTradeProduct "Organics"
+		else
+			getWordPos $salesmanTradeLine $salesmanTradePos "Equipment"
+			if ($salesmanTradePos > 0)
+				setVar $salesmanTradeProduct "Equipment"
+			end
+		end
+	end
+
+	if ($salesmanTradeIsBuy = 1)
+		if (($salesmanTradeProduct = "Fuel") and ($salesmanTradeBuyFuel > 0))
+			send $salesmanTradeBuyFuel & "*"
+			setVar $salesmanTradeBuyFuel 0
+		elseif (($salesmanTradeProduct = "Organics") and ($salesmanTradeBuyOrg > 0))
+			send $salesmanTradeBuyOrg & "*"
+			setVar $salesmanTradeBuyOrg 0
+		elseif (($salesmanTradeProduct = "Equipment") and ($salesmanTradeBuyEqu > 0))
+			send $salesmanTradeBuyEqu & "*"
+			setVar $salesmanTradeBuyEqu 0
+		else
+			send "0*"
+		end
+		return
+	end
+
+	if (($salesmanTradeProduct = "Fuel") and ($salesmanTradeSellFuel > 0))
+		send "*"
+		setVar $salesmanTradeSellFuel 0
+	elseif (($salesmanTradeProduct = "Organics") and ($salesmanTradeSellOrg > 0))
+		send "*"
+		setVar $salesmanTradeSellOrg 0
+	elseif (($salesmanTradeProduct = "Equipment") and ($salesmanTradeSellEqu > 0))
+		send "*"
+		setVar $salesmanTradeSellEqu 0
+	else
+		send "0*"
+	end
+	return
+
+:nativeBuyProduct
+	gosub :PLAYER~quikstats
+	send "q"
+	waitOn "Planet command (?"
+	gosub :PLANET~getPlanetInfo
+	send "c"
+
+	if ($salesmanBuyProduct = "e")
+		setVar $salesmanBuyAvailable PORT.EQUIP[$NearFig]
+		setVar $salesmanBuyPlanetRoom $planet~planetequipmax
+		subtract $salesmanBuyPlanetRoom $planet~planetequip
+		setVar $salesmanBuyTransferCmd "3"
+	elseif ($salesmanBuyProduct = "o")
+		setVar $salesmanBuyAvailable PORT.ORG[$NearFig]
+		setVar $salesmanBuyPlanetRoom $planet~planetorgmax
+		subtract $salesmanBuyPlanetRoom $planet~planetorg
+		setVar $salesmanBuyTransferCmd "2"
+	else
+		setVar $salesmanBuyAvailable PORT.FUEL[$NearFig]
+		setVar $salesmanBuyPlanetRoom $planet~planetfuelmax
+		subtract $salesmanBuyPlanetRoom $planet~planetfuel
+		setVar $salesmanBuyTransferCmd "1"
+	end
+
+	while (($salesmanBuyAvailable > 0) and ($salesmanBuyPlanetRoom > 0))
+		if (($PLAYER~unlimitedGame = FALSE) AND ($PLAYER~TURNS <= $BOT~bot_turn_limit))
+			setVar $SWITCHBOARD~message "Turns too low to continue.*"
+			gosub :SWITCHBOARD~switchboard
+			goto :doneMerchant
+		end
+
+		setVar $salesmanBuyCount $PLAYER~total_holds
+		if ($salesmanBuyCount > $salesmanBuyAvailable)
+			setVar $salesmanBuyCount $salesmanBuyAvailable
+		end
+		if ($salesmanBuyCount > $salesmanBuyPlanetRoom)
+			setVar $salesmanBuyCount $salesmanBuyPlanetRoom
+		end
+		if ($salesmanBuyCount <= 0)
+			goto :nativeBuyProductDone
+		end
+
+		setVar $salesmanTradeSellFuel 0
+		setVar $salesmanTradeSellOrg 0
+		setVar $salesmanTradeSellEqu 0
+		setVar $salesmanTradeBuyFuel 0
+		setVar $salesmanTradeBuyOrg 0
+		setVar $salesmanTradeBuyEqu 0
+		if ($salesmanBuyProduct = "e")
+			setVar $salesmanTradeBuyEqu $salesmanBuyCount
+		elseif ($salesmanBuyProduct = "o")
+			setVar $salesmanTradeBuyOrg $salesmanBuyCount
+		else
+			setVar $salesmanTradeBuyFuel $salesmanBuyCount
+		end
+
+		send "q "
+		gosub :nativePortTrade
+		gosub :PLAYER~quikstats
+		if (($salesmanBuyProduct = "e") and ($PLAYER~equipment_holds <= 0))
+			goto :nativeBuyProductDone
+		elseif (($salesmanBuyProduct = "o") and ($PLAYER~organic_holds <= 0))
+			goto :nativeBuyProductDone
+		elseif (($salesmanBuyProduct = "f") and ($PLAYER~ore_holds <= 0))
+			goto :nativeBuyProductDone
+		end
+
+		send "l " & $planet~planet & "* t n l " & $salesmanBuyTransferCmd & "* "
+		gosub :PLAYER~quikstats
+		subtract $salesmanBuyAvailable $salesmanBuyCount
+		subtract $salesmanBuyPlanetRoom $salesmanBuyCount
+	end
+
+:nativeBuyProductDone
+	gosub :PLANET~landOnPlanetEnterCitadel
+	gosub :PLAYER~quikstats
+	return
 
 :DoPurchases
 	send "h "

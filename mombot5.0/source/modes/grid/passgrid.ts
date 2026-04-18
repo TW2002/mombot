@@ -131,6 +131,7 @@
 	setvar $player~save true
 
 	gosub :player~quikstats
+	setvar $UNLIM $PLAYER~UNLIMITEDGAME
 	if ($player~total_holds <= $EQU_MIN)
 		
 	end
@@ -153,7 +154,7 @@
 		gosub :SWITCHBOARD~switchboard
 		halt
 	end
-	if (CURRENTCREDITS < 10000)
+	if ($PLAYER~CREDITS < 10000)
 		
 		setVar $SWITCHBOARD~message "Must At Least Have 10,000 creds.*"
 		gosub :SWITCHBOARD~switchboard
@@ -169,7 +170,7 @@
 	setVar $Turn_Limit $bot~parm1
 	isNumber $number $Turn_Limit
 
-	if (($number <> 1) or ($Turn_Limit = 0))
+	if (($UNLIM = FALSE) and (($number <> 1) or ($Turn_Limit = 0)))
 		setvar $switchboard~message "Please select what turns to halt at.*"
 		gosub :switchboard~switchboard
 		halt
@@ -459,9 +460,14 @@
 		setVar $maxFigAttack 9999
 	end
 
-	while (CURRENTTURNS > $Turn_Limit)
+	:PASSGRID_MAIN_LOOP
+	gosub :player~quikstats
+	if ($UNLIM = FALSE)
+		if ($PLAYER~TURNS <= $Turn_Limit)
+			goto :PASSGRID_MAIN_DONE
+		end
+	end
 		:To_The_Top
-		gosub :player~quikstats
 		setVar $anon_ptr 1
 		setTextLineTrigger	TurnsGone	:TurnsGone	"Do you want instructions (Y/N) [N]?"
 
@@ -496,7 +502,7 @@
 				end
 			end
 			if ($restock = 1)
-				if (CURRENTCREDITS < 100000)
+				if ($PLAYER~CREDITS < 100000)
 					send ("'["&$TagLineB&"] Restocking halted as credits low*")
 					setVar $restock 0
 				end
@@ -1089,7 +1095,7 @@
 
 									gosub :player~quikstats
 									if ($player~total_holds <> $player~ore_holds) AND ($TRACKER = 0)
-										if (CURRENTCREDITS < 10000)
+										if ($PLAYER~CREDITS < 10000)
 											Echo "**" & $TAGLINEc & " " & " Appear To Be Out of Funds for ORE purchase.**"
 										elseif (($UNLIM = FALSE) AND (CURRENTTURNS < 1))
 											Echo "**" & $TAGLINEc & " " & " Appear To Be Out Turns. Photon'd Maybe??**"
@@ -1098,7 +1104,7 @@
 										end
 										halt
 									elseif ($TRACKER) AND ($player~ore_holds < ($player~total_holds - $EQU_MIN))
-										if (CURRENTCREDITS < 10000)
+										if ($PLAYER~CREDITS < 10000)
 											Echo "**" & $TAGLINEc & " " & " Appear To Be Out of Funds for ORE purchase.**"
 										elseif (($UNLIM = FALSE) AND (CURRENTTURNS < 1))
 											Echo "**" & $TAGLINEc & " " & " Appear To Be Out Turns. Photon'd Maybe??**"
@@ -1106,7 +1112,7 @@
 											Echo "**" & $TAGLINEc & " " & " Not Enough ORE to continue.**"
 										end
 										halt
-									elseif (CURRENTCREDITS < 10000)
+									elseif ($PLAYER~CREDITS < 10000)
 										Echo "**" & $TAGLINEc & " " & " Too Few Credits to continue.**"
 										halt
 									end
@@ -1278,7 +1284,8 @@
 			Echo "**" & $TAGLINEc & " " & "Fighter Level is Critically Low (Less Than 10)**"
 			Halt
 		end
-	end
+		goto :PASSGRID_MAIN_LOOP
+	:PASSGRID_MAIN_DONE
 
 	if ($UNLIM = 0)
 		if (CURRENTTURNS <= $Turn_Limit)
@@ -1400,7 +1407,7 @@
 		setVar $Window_TXT ($Window_TXT & " (Turn Limit " & $CashAmount & ")*")
 	end
 
-	setVar $CashAmount CURRENTCREDITS
+	setVar $CashAmount $PLAYER~CREDITS
 	gosub :CommaSize
 	setVar $Window_TXT ($Window_TXT & " Credits   : $" & $CashAmount & "*")
 
@@ -1550,12 +1557,19 @@
 		end
 	# End addition
 
+		setVar $restoreHaggle 0
+		if (HAGGLE)
+			setVar $restoreHaggle 1
+			autohaggle off
+		end
+
 		setVar $EQU_NEED2BUY ($EQU_MIN - $player~equipment_holds)
 		setVar $ORE_NEED2BUY (($player~total_holds - $EQU_MIN) - $player~ore_holds)
-		if (PORT.CLASS[$player~CURRENT_SECTOR] = 1) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 5) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 6) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 7) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 3) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 4) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 2)
+	if (PORT.CLASS[$player~CURRENT_SECTOR] = 1) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 5) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 6) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 7) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 3) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 4) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 2)
 			#send "CR*Q"
 			#waiton "<Computer deactivated>"
 			#if (PORT.EQUIP[$player~CURRENT_SECTOR] >= $EQU_NEED2BUY) AND ($EQU_NEED2BUY <> 0)
+			setVar $tradeStarted 0
 			setTextTrigger noPort :noPort "Corp Menu"
 			send "pt"
 			Waiton "<Port>"
@@ -1566,16 +1580,25 @@
 			setTextTrigger	nosell		:nosell		"You don't have anything they want"
 			setTextTrigger	fuelsell 	:fuelsell	"How many holds of Fuel Ore do you want to sell"
 			setTextTrigger	orgSell 	:orgSell	"How many holds of Organics do you want to sell"
+			setTextTrigger	offer		:offer		"Your offer ["
+			setTextTrigger	finaloffer	:offer		"Our final offer"
 			setTextTrigger	done		:done		"Command [TL"
 			pause
 			:noPort
 				killAllTriggers
+				gosub :RestoreHaggle
 				Echo "***Hmmm.. where'd the port go?!?**"
 				halt
 			:done
+				if ($tradeStarted = 0)
+					setTextTrigger	done		:done		"Command [TL"
+					pause
+				end
 				killAllTriggers
+				gosub :RestoreHaggle
 				return
 			:noFuel
+			setVar $tradeStarted 1
         		if ($ORE_NEED2BUY >= 1)
         			#send $ORE_NEED2BUY & "**"
         			send $ORE_NEED2BUY & "*"
@@ -1584,9 +1607,11 @@
         		end
         		pause
 			:noOrg
+			setVar $tradeStarted 1
 			send "0*"
 			pause
 			:equp
+			setVar $tradeStarted 1
 			if ($MCIC[$player~CURRENT_SECTOR] = 0)
 				setVar $MCIC[$player~CURRENT_SECTOR] TRUE
 				if ($player~equipment_holds > $EQU_MIN)
@@ -1602,17 +1627,25 @@
 			end
 			pause
 			:buyequp
+			setVar $tradeStarted 1
 			if ($EQU_NEED2BUY >= 1)
 				#send $EQU_NEED2BUY & "**"
 				send $EQU_NEED2BUY & "*"
 			else
 				send "0*"
-			end
-			pause
+        		end
+        		pause
 			:nosell
+			setVar $tradeStarted 1
 			killAllTriggers
+			gosub :RestoreHaggle
 			return
+			:offer
+			setVar $tradeStarted 1
+			send "*"
+			pause
 			:fuelsell
+			setVar $tradeStarted 1
 			if ($player~ore_holds > ($player~total_holds - $EQU_MIN))
 				#send $player~ore_holds - ($player~total_holds - $EQU_MIN)& "**"
 				send $player~ore_holds - ($player~total_holds - $EQU_MIN)& "*"
@@ -1621,9 +1654,17 @@
 			end
 			pause
 			:orgsell
+			setVar $tradeStarted 1
 			#send "**"
 			send "*"
 			pause
+	end
+	gosub :RestoreHaggle
+	return
+:RestoreHaggle
+	if ($restoreHaggle = 1)
+		autohaggle on
+		setVar $restoreHaggle 0
 	end
 	return
 :Do_Holo

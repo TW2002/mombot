@@ -83,12 +83,12 @@ if ($POS > 0)
 end
 setvar $I 1
 setarray $PLANETS 3000
-gosub :QUIKSTATS
-if ($PLANET_SCANNER = "No")
+quikstats
+if (CURRENTPLANETSCANNER = "No")
   send "'{" $BOT_NAME "} - Planet Farmer must be run with a planet scanner.*"
   halt
 end
-if ($CURRENT_PROMPT <> "Citadel")
+if (CURRENTPROMPT <> "Citadel")
   send "'{" $BOT_NAME "} - Planet Farmer must be run from the Citadel Prompt.*"
   halt
 end
@@ -104,8 +104,8 @@ else
 end
 
 send "'{" $BOT_NAME "} - Planet List Loaded, starting the farming!*"
-gosub :QUIKSTATS
-setvar $HOME $CURRENT_SECTOR
+quikstats
+setvar $HOME CURRENTSECTOR
 gosub :PLANET_INFO
 :START
 
@@ -135,46 +135,6 @@ setvar $SECTOR $SECTORCOUNT
 gosub :SETCONNECTIONTRIGGERS
 waiton "Average Interval Lag:"
 
-return
-goto :QUIKSTATS_PLAYER_INCLUDE
-include "source\include\player"
-:QUIKSTATS_PLAYER_INCLUDE
-:QUIKSTATS
-gosub :PLAYER~QUIKSTATS
-setvar $CURRENT_PROMPT $PLAYER~CURRENT_PROMPT
-setvar $CURRENT_SECTOR $PLAYER~CURRENT_SECTOR
-setvar $TURNS $PLAYER~TURNS
-setvar $CREDITS $PLAYER~CREDITS
-setvar $FIGHTERS $PLAYER~FIGHTERS
-setvar $SHIELDS $PLAYER~SHIELDS
-setvar $TOTAL_HOLDS $PLAYER~TOTAL_HOLDS
-setvar $ORE_HOLDS $PLAYER~ORE_HOLDS
-setvar $ORGANIC_HOLDS $PLAYER~ORGANIC_HOLDS
-setvar $EQUIPMENT_HOLDS $PLAYER~EQUIPMENT_HOLDS
-setvar $COLONIST_HOLDS $PLAYER~COLONIST_HOLDS
-setvar $PHOTONS $PLAYER~PHOTONS
-setvar $ARMIDS $PLAYER~ARMIDS
-setvar $LIMPETS $PLAYER~LIMPETS
-setvar $GENESIS $PLAYER~GENESIS
-setvar $TWARP_TYPE $PLAYER~TWARP_TYPE
-setvar $CLOAKS $PLAYER~CLOAKS
-setvar $BEACONS $PLAYER~BEACONS
-setvar $ATOMIC $PLAYER~ATOMIC
-setvar $CORBO $PLAYER~CORBO
-setvar $EPROBES $PLAYER~EPROBES
-setvar $MINE_DISRUPTORS $PLAYER~MINE_DISRUPTORS
-setvar $PSYCHIC_PROBE $PLAYER~PSYCHIC_PROBE
-setvar $PLANET_SCANNER $PLAYER~PLANET_SCANNER
-setvar $SCAN_TYPE $PLAYER~SCAN_TYPE
-setvar $ALIGNMENT $PLAYER~ALIGNMENT
-setvar $EXPERIENCE $PLAYER~EXPERIENCE
-setvar $CORP $PLAYER~CORP
-setvar $CORPNUMBER $PLAYER~CORPNUMBER
-setvar $SHIP_NUMBER $PLAYER~SHIP_NUMBER
-setvar $SHIP_TYPE $PLAYER~SHIP_TYPE
-setvar $FULL_CURRENT_PROMPT $PLAYER~FULL_CURRENT_PROMPT
-setvar $FEDSPACE $PLAYER~FEDSPACE
-setvar $SELF_DESTRUCT_PROMPT $PLAYER~SELF_DESTRUCT_PROMPT
 return
 :PLANET_INFO
 
@@ -227,7 +187,6 @@ while ($I <= $SECTOR)
 end
 goto :END
 :COUNT_PLANETS
-gosub :QUIKSTATS
 send "q  q  q  z  n  *|l"
 gosub :SETCONNECTIONTRIGGERS
 waiton "Registry# and Planet Name"
@@ -392,8 +351,8 @@ if ($PLANETISFULL)
 else
   send "'{" $BOT_NAME "} - Farming run is complete.*"
 end
-gosub :QUIKSTATS
-if ($CURRENT_SECTOR <> $HOME)
+quikstats
+if (CURRENTSECTOR <> $HOME)
   send "'{" $BOT_NAME "} - Could not make it back to starting sector!*"
 end
 halt
@@ -1150,8 +1109,8 @@ echo "**"&ANSI_14&$TAGLINEB&ANSI_15&" Connected - Waiting For Command Prompt!**"
 pause
 :WAITINGABIT
 killalltriggers
-gosub :QUIKSTATS
-if ($CURRENT_PROMPT = "Command")
+quikstats
+if (CURRENTPROMPT = "Command")
   send " L Z"&#8&$PLANETTOFILL&"*  *  J  C  *  "
   settextlinetrigger NOTLANDED :NOTLANDED "Are you sure you want to jettison all cargo?"
   settextlinetrigger LANDED :LANDED "<Enter Citadel>"
@@ -1175,7 +1134,7 @@ if ($CURRENT_PROMPT = "Command")
   send "'{"&$BOT_NAME&"} "&$TAGLINEB&" - Restarting!**"
   waitfor "Message sent on sub-space channel"
   goto :INAC
-elseif ($CURRENT_PROMPT = "Citadel")
+elseif (CURRENTPROMPT = "Citadel")
   send "'{"&$BOT_NAME&"} "&$TAGLINEB&" - Restarting!**"
   waitfor "Message sent on sub-space channel"
   goto :INAC

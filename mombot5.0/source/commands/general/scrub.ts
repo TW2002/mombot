@@ -61,7 +61,7 @@ else
       end
     end
   else
-    setVar $SWITCHBOARD~MESSAGE "No known class 0 or 9 port here to scrub at. Try the seek option.*"
+    setVar $SWITCHBOARD~MESSAGE "Not currently at a class 0 or 9 port. Use the seek option to twarp to a known class 0 or 9 port and back.*"
     gosub :SWITCHBOARD~SWITCHBOARD
     goto :WAIT_FOR_COMMAND
   end

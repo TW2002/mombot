@@ -66,6 +66,10 @@ gosub :BOT~banner
 gosub :player~quikstats
 setvar $startcredits $player~credits
 setvar $startturns $player~turns
+setVar $unlimitedGame FALSE
+if (($PLAYER~UNLIMITEDGAME = TRUE) or (UNLIMITEDGAME = TRUE))
+	setVar $unlimitedGame TRUE
+end
 
 
 setVar $startingLocation $PLAYER~CURRENT_PROMPT
@@ -106,22 +110,28 @@ setVar $callInFigs 0
 setVar $cashPause 0
 
 setVar $halt_turns $bot~parm1
-isNumber $number $halt_turns
-
-if ($number <> 1)
-	setvar $switchboard~message "Please select what turns to halt at.*"
+if ($unlimitedGame = TRUE)
+	setVar $halt_turns 0
+	setvar $switchboard~message "Unlimited game detected - skipping turn limit checks.*"
 	gosub :switchboard~switchboard
-	halt
-
-end
-
-if ($halt_turns <= 0)
-	setvar $switchboard~message "Halt turns must be greater than 0.*"
-	gosub :switchboard~switchboard
-	halt
 else
-	setvar $switchboard~message "We will stop when we reach " & $halt_turns & " turns.*"
-	gosub :switchboard~switchboard
+	isNumber $number $halt_turns
+
+	if ($number <> 1)
+		setvar $switchboard~message "Please select what turns to halt at.*"
+		gosub :switchboard~switchboard
+		halt
+
+	end
+
+	if ($halt_turns <= 0)
+		setvar $switchboard~message "Halt turns must be greater than 0.*"
+		gosub :switchboard~switchboard
+		halt
+	else
+		setvar $switchboard~message "We will stop when we reach " & $halt_turns & " turns.*"
+		gosub :switchboard~switchboard
+	end
 end
 
 
@@ -351,21 +361,8 @@ while ($i <= SECTORS)
 	add $i 1
 end
 
-listActiveScripts $scripts
-setVar $foundep 0
-setVar $a 1
-while ($a <= $scripts)
-	if ($scripts[$a] = "ephaggle.cts")
-		setVar $foundep 1
-	end
-	add $a 1
-end
-
 setvar $switchboard~message "Pause for effect....*"
 gosub :switchboard~switchboard
-if ($foundep = 0)
-	send "'" $BOT~BOT_NAME " ephaggle*"
-end
 
 setDelayTrigger delay :startPause 3000
 pause
@@ -407,7 +404,7 @@ while ($iSaySo)
 			end
 		end
 	end
-	if ($turnsNow < $halt_turns)
+	if (($unlimitedGame <> TRUE) and ($turnsNow < $halt_turns))
 		setvar $switchboard~message "Turn Limit Reached*"
 		gosub :switchboard~switchboard
 		clearAllAvoids
@@ -1107,20 +1104,21 @@ return
 return
 
 :checkPassingTrading
-	# for sectors we've explored/tested MCIC - do we want to trade
-	if ($singleTrades = 1)
-		setVar $doQuickTrade 0
+		# for sectors we've explored/tested MCIC - do we want to trade
+		if ($singleTrades = 1)
+			gosub :ensureCurrentPortReport
+			setVar $doQuickTrade 0
 
-		if (($player~ORE_HOLDS > 40) and (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 1))
-			setVar $doQuickTrade 1
-		elseif (($player~ORGANIC_HOLDS > 40) and (PORT.BUYORG[$PLAYER~CURRENT_SECTOR] = 1))
-			setVar $doQuickTrade 1
-		elseif (($player~EQUIPMENT_HOLDS > 40) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 1))
-			setVar $doQuickTrade 1
-		end
-		if ($doQuickTrade = 1)
-			goSub :doSingleTrade
-		end
+			if (($player~ORE_HOLDS > 40) and (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTFUEL[$PLAYER~CURRENT_SECTOR] >= 20))
+				setVar $doQuickTrade 1
+			elseif (($player~ORGANIC_HOLDS > 40) and (PORT.BUYORG[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTORG[$PLAYER~CURRENT_SECTOR] >= 20))
+				setVar $doQuickTrade 1
+			elseif (($player~EQUIPMENT_HOLDS > 40) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTEQUIP[$PLAYER~CURRENT_SECTOR] >= 20))
+				setVar $doQuickTrade 1
+			end
+			if ($doQuickTrade = 1)
+				goSub :doSingleTrade
+			end
 	end
 	
 return
@@ -1130,16 +1128,19 @@ return
 	setVar $empty_holds ($PLAYER~TOTAL_HOLDS - ($player~ORE_HOLDS + $player~ORGANIC_HOLDS + $player~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
 
 	if ($singleTrades = 1)
+		gosub :ensureCurrentPortReport
 		setVar $doQuickTrade 0
 
-		if (($player~ORE_HOLDS > 40) and (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 1))
+		if (($player~ORE_HOLDS > 40) and (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTFUEL[$PLAYER~CURRENT_SECTOR] >= 20))
 			setVar $doQuickTrade 1
-		elseif (($player~ORGANIC_HOLDS > 40) and (PORT.BUYORG[$PLAYER~CURRENT_SECTOR] = 1))
+		elseif (($player~ORGANIC_HOLDS > 40) and (PORT.BUYORG[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTORG[$PLAYER~CURRENT_SECTOR] >= 20))
 			setVar $doQuickTrade 1
-		elseif (($player~EQUIPMENT_HOLDS > 40) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 1))
+		elseif (($player~EQUIPMENT_HOLDS > 40) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTEQUIP[$PLAYER~CURRENT_SECTOR] >= 20))
 			setVar $doQuickTrade 1
-		elseif (((PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 0) or (PORT.BUYORG[$PLAYER~CURRENT_SECTOR] = 0) or (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 0)) and ($empty_holds > 10))
-			setVar $doQuickTrade 1
+		elseif (((PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 0) and (PORT.PERCENTFUEL[$PLAYER~CURRENT_SECTOR] >= 20)) or ((PORT.BUYORG[$PLAYER~CURRENT_SECTOR] = 0) and (PORT.PERCENTORG[$PLAYER~CURRENT_SECTOR] >= 20)) or ((PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 0) and (PORT.PERCENTEQUIP[$PLAYER~CURRENT_SECTOR] >= 20)))
+			if ($empty_holds > 10)
+				setVar $doQuickTrade 1
+			end
 		end
 		
 	end
@@ -1170,6 +1171,15 @@ return
 	
 	if ($doQuickTrade = 1)
 		goSub :doSingleTrade
+	end
+
+return
+
+:ensureCurrentPortReport
+	if ((PORT.EXISTS[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.UPDATED[$PLAYER~CURRENT_SECTOR] = ""))
+		send "cr*q"
+		waiton "Commerce report for "
+		waiton "Command [TL="
 	end
 
 return
@@ -1346,12 +1356,14 @@ return
 	# we don't really want to sit outside of SD.
 
 	setVar $explored[$stardock] 1
-	setVar $a 1
-	while ($a <= SECTOR.WARPCOUNT[$stardock])
-		# Avoids warps out of StarDock
-		setVar $explored[SECTOR.WARPS[$stardock][$a]] 1
-		setAvoid SECTOR.WARPS[$stardock][$a]
-		add $a 1
+	if ($PLAYER~CURRENT_SECTOR <> $stardock)
+		setVar $a 1
+		while ($a <= SECTOR.WARPCOUNT[$stardock])
+			# Avoids warps out of StarDock unless we're launching from Dock.
+			setVar $explored[SECTOR.WARPS[$stardock][$a]] 1
+			setAvoid SECTOR.WARPS[$stardock][$a]
+			add $a 1
+		end
 	end
 
 	setVar $doMini 0
@@ -1555,12 +1567,9 @@ return
 			goSub :pushPath
 			
 		else
-			# We just went through a one way - reset path back
-			setArray $pathBack $maxPathBack
-			setVar $pathBacki 0
-			setArray $pathBackHasOptions $maxPathBack
-echo "WENT THROUGH A ONE WAY -PATH BACK EMPTED*"
-echo "Have had issues, leaving to highlight for debugging*"
+			# We may have moved through a one way or hit stale adjacency data.
+			# Do not nuke the whole backtrack stack here; keep older retreat points.
+			# We simply avoid pushing this immediate origin as a reversible step.
 		end
 		add $stat_figsdown 1
 		add $stat_moves 1
@@ -1580,7 +1589,7 @@ return
 		
 		setVar $stackSector $pathBack[$movei]
 		goSub :popPath 
-		if ($pathBack[$movei] = $toStackSector)
+		if ($stackSector = $toStackSector)
 			setVar $movei 30001
 			return
 		end

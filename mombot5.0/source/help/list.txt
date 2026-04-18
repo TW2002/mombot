@@ -1,0 +1,14 @@
+LIST - List sectors that match port and topology filters
+
+  - list [port type] {pair} {mcic {value}} {figged} {shape}
+  - [port type] = bbb, bsb, sbb, sss, xxx, or partial masks
+                  such as bxx, bbx, xbb, xxb, sxx, xss, or sxb
+  - {pair}      = only show ports with a valid adjacent port pair
+  - {mcic}      = require stored MCIC data
+  - {value}     = MCIC cutoff from -70 to 70, example: 20 or -20
+  - {figged}    = only show figged sectors
+                  default is unfigged sectors
+  - {shape}     = deadend, 2way, 3way, 4way, 5way, 6way, or 7way
+
+  - Displays sector, distance from current sector, figged status,
+    port mix, MCIC, and optional adjacent port pair.

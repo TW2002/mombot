@@ -49,10 +49,22 @@ return
 setvar $PLAYER~OVERHAGGLEMULTIPLE 147
 setvar $PLAYER~CYCLEBUFFER 1
 setvar $PLAYER~CYCLEBUFFERLIMIT 20
+setvar $PLAYER~BUYDOWN_RESTORE_HAGGLE 0
+setvar $PLAYER~BUYDOWN_USENATIVEHAGGLE 0
 
+if (HAGGLE)
+  if ($PLAYER~BUYTYPE = "s")
+    setvar $PLAYER~BUYDOWN_RESTORE_HAGGLE 1
+    autohaggle off
+  else
+    setvar $PLAYER~BUYDOWN_USENATIVEHAGGLE 1
+  end
+end
 
-send "@"
-waiton "Average Interval Lag:"
+if ($PLAYER~BUYDOWN_USENATIVEHAGGLE = 0)
+  send "@"
+  waiton "Average Interval Lag:"
+end
 gosub :QUIKSTATS
 setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 
@@ -352,6 +364,10 @@ end
 setvar $PLAYER~EXIT_MESSAGE "Normal Exit"
 :PLAYER~BUYDOWNEXIT
 
+if ($PLAYER~BUYDOWN_RESTORE_HAGGLE = 1)
+  autohaggle on
+  setvar $PLAYER~BUYDOWN_RESTORE_HAGGLE 0
+end
 return
 :PLAYER~CHOOSEHAGGLE
 
@@ -360,12 +376,22 @@ return
 
 
 
-if ($PLAYER~BUYDOWN_MODE = "Speedbuy")
+if ($PLAYER~BUYDOWN_USENATIVEHAGGLE = 1)
+  gosub :BUYNATIVEHAGGLE
+elseif ($PLAYER~BUYDOWN_MODE = "Speedbuy")
   gosub :BUYNOHAGGLE
 else
   gosub :BUYHAGGLE
 end
 return
+:PLAYER~BUYNATIVEHAGGLE
+
+setvar $PLAYER~EMPTY $PLAYER~TOTAL_HOLDS
+send "*"
+settextlinetrigger BUYEMPTY :BUYEMPTY "empty cargo holds"
+settextlinetrigger BUYNOTINTERESTED :BUYNOTINTERESTED "We're not interested."
+settexttrigger BUYNATIVEDONE :BUYHAGGLESUCCEEDED "Command [TL="
+pause
 :PLAYER~BUYHAGGLE
 
 
@@ -525,6 +551,7 @@ killtrigger BUYFINALOFFER
 killtrigger BUYNOTINTERESTED
 killtrigger BUYEXPERIENCE
 killtrigger BUYEMPTY
+killtrigger BUYNATIVEDONE
 killtrigger BUYSCREWUP1
 killtrigger BUYSCREWUP2
 killtrigger BUYSCREWUP3
@@ -1123,20 +1150,6 @@ killtrigger NOPORT2
 killtrigger NOPORT3
 killtrigger NOPORT4
 return
-:PLAYER~ISEPHAGGLE
-
-
-setvar $PLAYER~ISEPHAGGLE FALSE
-listactivescripts $PLAYER~SCRIPTS
-setvar $PLAYER~I 1
-while ($PLAYER~I <= $PLAYER~SCRIPTS)
-  getwordpos "<><><>"&$PLAYER~SCRIPTS[$PLAYER~I] $PLAYER~POS "<><><>ephaggle"
-  if ($PLAYER~POS > 0)
-    setvar $PLAYER~ISEPHAGGLE TRUE
-  end
-  add $PLAYER~I 1
-end
-return
 :PLAYER~MOVEINTOSECTOR
 
 
@@ -1247,7 +1260,7 @@ return
 
 
 setvar $PLAYER~CURRENT_PROMPT "Undefined"
-setvar $PLAYER~FEDSPACE FALSE
+setvar $PLAYER~QUIKSTATS_RETRY 0
 if ($PLAYER~TOWED = 0)
   setvar $PLAYER~TOWED ""
 end
@@ -1301,15 +1314,26 @@ end
 killtrigger TOOLONGPROMPT
 killtrigger GETLINE2
 setvar $PLAYER~STATS $PLAYER~STATS&" @@@"
+getwordpos $PLAYER~STATS $PLAYER~POS "Sect "
+if ($PLAYER~POS = 0)
+  add $PLAYER~QUIKSTATS_RETRY 1
+  if ($PLAYER~QUIKSTATS_RETRY <= 3)
+    goto :PLAYER~TRYPROMPTAGAIN
+  end
+end
+getwordpos $PLAYER~STATS $PLAYER~POS "Figs "
+if ($PLAYER~POS = 0)
+  add $PLAYER~QUIKSTATS_RETRY 1
+  if ($PLAYER~QUIKSTATS_RETRY <= 3)
+    goto :PLAYER~TRYPROMPTAGAIN
+  end
+end
 setvar $PLAYER~CURRENT_WORD 1
 getword $PLAYER~STATS $PLAYER~WORDY $PLAYER~CURRENT_WORD
 :PLAYER~PARSESTATS
 if ($PLAYER~WORDY <> "@@@")
   if ($PLAYER~WORDY = "Sect")
     getword $PLAYER~STATS $PLAYER~CURRENT_SECTOR ($PLAYER~CURRENT_WORD + 1)
-    if (($PLAYER~CURRENT_SECTOR <= 10) or ($PLAYER~CURRENT_SECTOR = STARDOCK) or ($PLAYER~CURRENT_SECTOR = $MAP~STARDOCK))
-      setvar $PLAYER~FEDSPACE TRUE
-    end
   elseif ($PLAYER~WORDY = "Turns")
     getword $PLAYER~STATS $PLAYER~TURNS ($PLAYER~CURRENT_WORD + 1)
     if ($PLAYER~UNLIMITEDGAME = TRUE)
@@ -1546,40 +1570,23 @@ return
 
 
 
-gosub :ISEPHAGGLE
-if ($PLAYER~ISEPHAGGLE)
-  waitfor "Agreed,"
-  settextlinetrigger TRADEFIN :TRADEFIN "empty cargo holds"
-  pause
-  :PLAYER~TRADEFIN
-  killtrigger TRADEFIN
-  getword CURRENTLINE $PLAYER~NCREDITS 3
-  striptext $PLAYER~NCREDITS ","
+setvar $PLAYER~HFACTOR 5
+:PLAYER~UNITS
+killtrigger PTRADE
+killtrigger STRADE
+killtrigger GO
+killtrigger DONE
+gosub :SETCONNECTIONTRIGGERS
+settexttrigger PTRADE :BUNITS "do you want to buy ["
+settexttrigger STRADE :SUNITS "do you want to sell ["
+settextlinetrigger GO :FINISHHAGGLE "Agreed, "
+settextlinetrigger DONE :DONEHAGGLE "empty cargo holds."
+pause
+:PLAYER~FINISHHAGGLE
 
-  if ($PLAYER~NCREDITS = $PLAYER~CCREDITS)
-    setvar $PLAYER~REPORT 1
-  else
-    setvar $PLAYER~CCREDITS $PLAYER~NCREDITS
-  end
-else
-  setvar $PLAYER~HFACTOR 5
-  :PLAYER~UNITS
-  killtrigger PTRADE
-  killtrigger STRADE
-  killtrigger GO
-  killtrigger DONE
-  gosub :SETCONNECTIONTRIGGERS
-  settexttrigger PTRADE :BUNITS "do you want to buy ["
-  settexttrigger STRADE :SUNITS "do you want to sell ["
-  settextlinetrigger GO :FINISHHAGGLE "Agreed, "
-  settextlinetrigger DONE :DONEHAGGLE "empty cargo holds."
-  pause
-  :PLAYER~FINISHHAGGLE
-
-  killtrigger DONE
-  gosub :HAGGLE
-  :PLAYER~DONEHAGGLE
-end
+killtrigger DONE
+gosub :HAGGLE
+:PLAYER~DONEHAGGLE
 
 
 

@@ -474,10 +474,22 @@
 		setVar $send ""
 			if ($inShip1)
 				if ($ship1Equipment > 0)
-					# sell off existing equipment
-					setVar $send $send & "p t * * 0* 0* "
-					setVar $ship1Equipment 0
-					add $equipAtPort[$ship1Sector] $ship1Equipment
+					if (HAGGLE)
+						setVar $wsstSellProduct "Equipment"
+						gosub :sellCurrentCargo
+						gosub :player~quikstats
+						if ($player~equipment_holds > 0)
+							setVar $SWITCHBOARD~message "Unable to finish selling Equipment before next steal.*"
+							gosub :SWITCHBOARD~switchboard
+							halt
+						end
+						setVar $ship1Equipment 0
+					else
+						# sell off existing equipment
+						setVar $send $send & "p t * * 0* 0* "
+						setVar $ship1Equipment 0
+						add $equipAtPort[$ship1Sector] $ship1Equipment
+					end
 				end
 				# steal as much as we are able to on this ship
 				if ($ship1TotalHolds < $maxSteal)
@@ -493,14 +505,26 @@
 					setVar $send $send & "o 3" & $upgrade & "* * "
 					add $equipAtPort[$ship1Sector] ($upgrade * 10)
 				end
- 				setVar $send $send & "p r * s z 3 " & $steal & "* x    "
+ 			setVar $send $send & "p r * s z 3 " & $steal & "* x    "
 				setVar $ship1Equipment $steal
 			else
 				if ($ship2Equipment > 0)
-					# sell off existing equipment
-					setVar $send $send & "p t * * 0* 0* "
-      					setVar $ship2Equipment 0
-					add $equipAtPort[$ship2Sector] $ship2Equipment
+					if (HAGGLE)
+						setVar $wsstSellProduct "Equipment"
+						gosub :sellCurrentCargo
+						gosub :player~quikstats
+						if ($player~equipment_holds > 0)
+							setVar $SWITCHBOARD~message "Unable to finish selling Equipment before next steal.*"
+							gosub :SWITCHBOARD~switchboard
+							halt
+						end
+      						setVar $ship2Equipment 0
+					else
+						# sell off existing equipment
+						setVar $send $send & "p t * * 0* 0* "
+      						setVar $ship2Equipment 0
+						add $equipAtPort[$ship2Sector] $ship2Equipment
+					end
 				end
 				# steal as much as we are able to on this ship
 				if ($ship2TotalHolds < $maxSteal)
@@ -597,6 +621,84 @@
 				killtrigger 2
 				killtrigger 3
 				killtrigger 4			
+return
+
+:sellCurrentCargo
+	setVar $wsstPortActive 0
+	setVar $wsstSoldCargo FALSE
+	send "pt"
+	:wsstSellWait
+		setTextLineTrigger WSSTSELLSTART1 :wsstSellProgress "<Port>"
+		setTextLineTrigger WSSTSELLSTART2 :wsstSellProgress "Docking..."
+		setTextTrigger WSSTSELLSTART3 :wsstSellProgress "Your offer ["
+		setTextTrigger WSSTSELLSTART4 :wsstSellProgress "Our final offer"
+		setTextTrigger WSSTSELLSTART5 :wsstSellProgress "Agreed,"
+		setTextTrigger WSSTSELLQTY :wsstSellQty "How many holds of "
+		if ($wsstPortActive = 1)
+			setTextTrigger WSSTSELLDONE1 :wsstSellDone "Command [TL="
+			setTextTrigger WSSTSELLDONE2 :wsstSellDone "Citadel command"
+		end
+		pause
+
+:wsstSellProgress
+	killalltriggers
+	setVar $wsstPortActive 1
+	goto :wsstSellWait
+
+:wsstSellQty
+	killalltriggers
+	setVar $wsstPortActive 1
+	setVar $wsstLine CURRENTLINE
+	gosub :handleSellCargoQty
+	goto :wsstSellWait
+
+:wsstSellDone
+	killalltriggers
+return
+
+:handleSellCargoQty
+	setVar $wsstTradeProduct "None"
+	setVar $wsstIsBuy 0
+	setVar $wsstIsSell 0
+
+	getWordPos $wsstLine $wsstX " do you want to buy "
+	if ($wsstX > 0)
+		setVar $wsstIsBuy 1
+	else
+		setVar $wsstIsSell 1
+	end
+
+	getWordPos $wsstLine $wsstX "Fuel"
+	if ($wsstX > 0)
+		setVar $wsstTradeProduct "Fuel"
+	else
+		getWordPos $wsstLine $wsstX "Organics"
+		if ($wsstX > 0)
+			setVar $wsstTradeProduct "Organics"
+		else
+			getWordPos $wsstLine $wsstX "Equipment"
+			if ($wsstX > 0)
+				setVar $wsstTradeProduct "Equipment"
+			end
+		end
+	end
+
+	if ($wsstIsSell = 1)
+		if (($wsstTradeProduct = "None") and ($wsstSellProduct <> "None"))
+			setVar $wsstTradeProduct $wsstSellProduct
+		end
+
+		if ($wsstTradeProduct = $wsstSellProduct)
+			send "*"
+			setVar $wsstSoldCargo TRUE
+			setVar $wsstSellProduct "None"
+		else
+			send "0*"
+		end
+		return
+	end
+
+	send "0*"
 return
 
 :getSSTPortInfo

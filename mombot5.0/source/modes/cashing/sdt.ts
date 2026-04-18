@@ -95,17 +95,6 @@ reqRecording
 	send "'{" $switchboard~bot_name "}No Steal factor!! assuming 21, you need to ensure bot has refreshed!*"
     end
 
-	gosub :player~isEpHaggle
-	if ($player~isEphaggle)
-		setVar $ephaggle "y"
-		setVar $SWITCHBOARD~message "Using EP HAGGLE!*"
-		gosub :switchboard~switchboard
-	else
-		setVar $epHaggleFail 0
-		setVar $ephaggle "n"
-	END
-
-
 # ----- make sure we are at a good prompt -----
 :verifyprompt
         gosub :player~quikstats
@@ -464,62 +453,6 @@ setVar $debugdelay 0
 
         add $player~turns_used 1
         send "PN" & $planet~planet[$current_ship] & "*"
-	if ($ephaggle = "y")
-
-		waitfor "Registry# and Planet Name"
-		setTextTrigger youHave2 :youHave2 "You have "
-		:sellproduct2
-		setTextTrigger sellfuel2 :sellfuel2 "How many units of Fuel Ore"
-		setTextTrigger sellorg2 :sellorg2 "How many units of Organics"
-		setTextTrigger sellequ2 :sellequ2 "How many units of Equipment"
-		pause
-		pause
-		:youHave2
-			killalltriggers
-			getWord CURRENTLINE $preCredits 3
-			striptext $preCredits ","
-			goto :sellproduct2
-		:sellfuel2
-			killalltriggers
-			send "0*"
-			goto :sellproduct2
-		:sellorg2
-			killalltriggers
-			send "0*"
-			goto :sellproduct2
-		:sellequ2
-			killalltriggers
-			send "*"
-			setTextLineTrigger equamount2 :equamount2 "Agreed,"
-			pause
-			pause
-
-			:equamount2
-				getWord CURRENTLINE $portbuying 2
-				striptext $portbuying ","
-
-				setTextLineTrigger sellempty2 :sellempty2 "You have "
-				setDelayTrigger epsellwait2 :epsellwait2 7000
-				pause
-				:epsellwait2
-					killalltriggers
-					send "'{" $switchboard~bot_name "} - Waiting for trade has timed out.*"
-					send "'{" $switchboard~bot_name "} - Ep Haggle Disabled and bot will exit at end of cycle.*"
-					setvar $ephaggle "n"
-					setVar $epHaggleFail 1
-					send "*"
-					halt
-				:sellempty2
-					getWord CURRENTLINE $postCredits 3
-					striptext $postCredits ","
-					setVar $diff ($postCredits - $preCredits)
-					setVar $perunit ($diff/$portbuying)
-					send "'{" $switchboard~bot_name "} - Ship " & $current_ship & " - " & $portbuying & " EQU haggled for " & $diff & " credits (" & $perunit & " per unit).*"
-
-				killalltriggers
-		gosub :checkEPHaggle
-		return
-	end
 
 
         :getpercts
@@ -549,6 +482,37 @@ setVar $debugdelay 0
             :sellequ
                 killalltriggers
                 send "*"
+                if (HAGGLE)
+                    setVar $nativePlanetTradeActive 0
+                    setVar $nativeSellAmount 0
+                    setVar $nativeTradeCreditsBefore $player~credits
+                    gosub :nativePlanetTradeWait
+                    gosub :getInfo
+                    if ($nativeSellAmount <= 0)
+                        goto :sellhagglefailed
+                    end
+                    setVar $nativeRevenueMade $player~credits
+                    subtract $nativeRevenueMade $nativeTradeCreditsBefore
+                    if ($nativeRevenueMade < 0)
+                        setVar $nativeRevenueMade 0
+                    end
+                    subtract $planet~planet[$current_ship].equ $nativeSellAmount
+                    if ($planet~planet[$current_ship].equ < 0)
+                        setVar $planet~planet[$current_ship].equ 0
+                    end
+                    add $port[$current_ship].equ_on_port $nativeSellAmount
+                    add $equ_sold[$current_ship] $nativeSellAmount
+                    add $total_revenue[$current_ship] $nativeRevenueMade
+                    setVar $perunit 0
+                    if ($nativeSellAmount > 0)
+                        setVar $perunit $nativeRevenueMade
+                        divide $perunit $nativeSellAmount
+                    end
+                    if ($ckSDTquiet = "OFF")
+                        send "'{" $switchboard~bot_name "} - Ship " & $current_ship & " - " & $nativeSellAmount & " EQU haggled for " & $nativeRevenueMade & " credits (" & $perunit & " per unit).*"
+                    end
+                    return
+                end
                 setTextLineTrigger equamount :equamount "Agreed,"
                 pause
                 pause
@@ -936,6 +900,68 @@ setVar $debugdelay 0
     end
     
     
+    return
+
+:nativePlanetTradeWait
+    setTextLineTrigger NATIVEPLANETSTART1 :nativePlanetTradeProgress "<Port>"
+    setTextLineTrigger NATIVEPLANETSTART2 :nativePlanetTradeProgress "Docking..."
+    setTextTrigger NATIVEPLANETSTART3 :nativePlanetTradeProgress "Your offer ["
+    setTextTrigger NATIVEPLANETSTART4 :nativePlanetTradeProgress "Our final offer"
+    setTextLineTrigger NATIVEPLANETSTART5 :nativePlanetTradeAgreed "Agreed,"
+    setTextTrigger NATIVEPLANETQTY :nativePlanetTradeQty "How many units of "
+    if ($nativePlanetTradeActive = 1)
+        setTextTrigger NATIVEPLANETDONE1 :nativePlanetTradeDone "Planet command"
+        setTextTrigger NATIVEPLANETDONE2 :nativePlanetTradeDone "Command [TL="
+        setTextTrigger NATIVEPLANETDONE3 :nativePlanetTradeDone "Citadel command"
+        setTextTrigger NATIVEPLANETDONE4 :nativePlanetTradeDone "Corporate command [TL="
+    end
+    pause
+
+:nativePlanetTradeProgress
+    killalltriggers
+    setVar $nativePlanetTradeActive 1
+    goto :nativePlanetTradeWait
+
+:nativePlanetTradeAgreed
+    killalltriggers
+    setVar $nativePlanetTradeActive 1
+    getWord CURRENTLINE $nativeSellAmount 2
+    striptext $nativeSellAmount ","
+    goto :nativePlanetTradeWait
+
+:nativePlanetTradeQty
+    killalltriggers
+    setVar $nativePlanetTradeActive 1
+    setVar $nativeLine CURRENTLINE
+    gosub :handleNativePlanetQty
+    goto :nativePlanetTradeWait
+
+:nativePlanetTradeDone
+    killalltriggers
+    return
+
+:handleNativePlanetQty
+    setVar $nativeTradeProduct "None"
+    getWordPos $nativeLine $nativeX "Fuel"
+    if ($nativeX > 0)
+        setVar $nativeTradeProduct "Fuel"
+    else
+        getWordPos $nativeLine $nativeX "Organics"
+        if ($nativeX > 0)
+            setVar $nativeTradeProduct "Organics"
+        else
+            getWordPos $nativeLine $nativeX "Equipment"
+            if ($nativeX > 0)
+                setVar $nativeTradeProduct "Equipment"
+            end
+        end
+    end
+
+    if ($nativeTradeProduct = "Equipment")
+        send "*"
+    else
+        send "0*"
+    end
     return
 
 
@@ -1720,15 +1746,6 @@ setVar $debugdelay 0
 
 return
 # ============================== END QUICKSTATS SUB==============================
-
-
-:checkEPHaggle
-	if ($epHaggleFail = 1)
-		gosub :endCNsettings
-		gosub :clearadjacent
-		halt
-	end
-return
 
 
 #INCLUDES:

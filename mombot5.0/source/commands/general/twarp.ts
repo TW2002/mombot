@@ -53,8 +53,10 @@ gosub :BOT~loadVars
 			send "p z s h *"
 			goto :wait_for_command
 		end
-		setVar $SWITCHBOARD~message $PLAYER~msg&"*"
-		gosub :SWITCHBOARD~switchboard
+		if ($PLAYER~msg <> "You can't twarp with photons without override!")
+			setVar $SWITCHBOARD~message $PLAYER~msg&"*"
+			gosub :SWITCHBOARD~switchboard
+		end
 	else
 		if ($bot~parm2 = "p")
 			send $player~warpto_p

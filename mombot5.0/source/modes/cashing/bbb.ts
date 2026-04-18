@@ -12,7 +12,7 @@ gosub :BOT~loadVars
 	setVar $BOT~help[8]  $BOT~tab&"	   {upport}      When port empties upgrades the minimum "
 	setVar $BOT~help[9]  $BOT~tab&"                  to continue  "
 	setVar $BOT~help[9]  $BOT~tab&"     "
-	setVar $BOT~help[9]  $BOT~tab&"    Script uses internal Haggle which should be EPs. "
+	setVar $BOT~help[9]  $BOT~tab&"    Script uses internal Haggle. "
 	setVar $BOT~help[10] $BOT~tab&"    Start from planet to dump to planet. Start in sector"
 	setVar $BOT~help[10] $BOT~tab&"    and it will jettison."
 	gosub :bot~helpfile
@@ -78,19 +78,6 @@ gosub :BOT~loadVars
 	else
 		send "J    y    *"
 	end
-	setvar $switchboard~message "Checking EPHaggle...*"
-		gosub :switchboard~switchboard
-	
-	stop "scripts\"&$bot~mombot_directory&"\daemons\ephaggle.cts"
-	setDelayTrigger del1 :del1 500
-	pause
-	:del1
-		killtrigger del1
-	load "scripts\"&$bot~mombot_directory&"\daemons\ephaggle.cts"
-	setDelayTrigger del2 :del2 2000
-	pause
-	:del2
-		killtrigger del2
 
 if ($useplanet = TRUE)
 	send "d"
@@ -151,17 +138,59 @@ while ($y < $trips)
 	gosub :weareselling
 	
 	send $oreholds "*"
-	gosub :PLAYER~startHaggle
-	
-	setVar $cred2 $PLAYER~nCredits
+
+	if (HAGGLE = FALSE)
+		gosub :PLAYER~startHaggle
+		setVar $cred2 $PLAYER~nCredits
+	else
+		killalltriggers
+		settextlinetrigger oredone :oredone "credits and"
+		pause
+		:oredone
+		getword CURRENTLINE $cred2 3
+		stripText $cred2 ","
+		isNumber $isnum $cred2
+		if ($isnum <> 1)
+			setVar $cred2 $cred1
+		end
+	end
+
 	send $org_holds "*"
-	gosub :PLAYER~startHaggle
 
-	setVar $cred3 $PLAYER~nCredits
+	if (HAGGLE = FALSE)
+		gosub :PLAYER~startHaggle
+		setVar $cred3 $PLAYER~nCredits
+	else
+		killalltriggers
+		settextlinetrigger orgdone :orgdone "credits and"
+		pause
+		:orgdone
+		getword CURRENTLINE $cred3 3
+		stripText $cred3 ","
+		isNumber $isnum $cred3
+		if ($isnum <> 1)
+			setVar $cred3 $cred2
+		end
+	end
+
 	send $equip_holds "*"
-	gosub :PLAYER~startHaggle
 
-	setVar $cred4 $PLAYER~nCredits
+	if (HAGGLE = FALSE)
+		gosub :PLAYER~startHaggle
+		setVar $cred4 $PLAYER~nCredits
+	else
+		killalltriggers
+		settextlinetrigger equdone :equdone "credits and"
+		pause
+		:equdone
+		getword CURRENTLINE $cred4 3
+		stripText $cred4 ","
+		isNumber $isnum $cred4
+		if ($isnum <> 1)
+			setVar $cred4 $cred3
+		end
+	end
+
 	goSub :checkSizing
 	gosub :player~quikstats
 	
@@ -370,6 +399,10 @@ return
 	
 	setVar $expdiff ($player~experience - $startexp)
 	setVar $turndiff ($startturns - $player~turns)
+	if ($turndiff <= 0)
+		send "'Experience gained: " $expdiff "; exp @ " $player~experience "*"
+		return
+	end
 	setPrecision 2
 	setVar $expperturn ($expdiff/$turndiff)
 	setPrecision 0

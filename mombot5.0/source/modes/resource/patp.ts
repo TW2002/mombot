@@ -4,17 +4,19 @@
 
 
 	setVar $BOT~help[1]  $BOT~tab&"              PATP - Pay At The Pump               "
-	setVar $BOT~help[2]  $BOT~tab&"  patp [min port fuel] {upgrade} {buyhalf} {docim} {destroyports}"
-	setVar $BOT~help[3]  $BOT~tab&"       "
-	setVar $BOT~help[4]  $BOT~tab&"        "
-	setVar $BOT~help[5]  $BOT~tab&"Options:"
-	setVar $BOT~help[6]  $BOT~tab&"    [min port fuel]  minimum fuel a port must have to visit it"
-	setVar $BOT~help[7]  $BOT~tab&"    [upgrade]        upgrades fuel in each port"
-	setVar $BOT~help[8]  $BOT~tab&"    [buyhalf]        empties ports halfway"
-	setVar $BOT~help[9]  $BOT~tab&"    [docim]          does cim check before patp"
-	setVar $BOT~help[10] $BOT~tab&"    [destroyports]   destroys every port it drains if you "
-	setVar $BOT~help[11] $BOT~tab&"    [bubble]         only visits bubble sectors  "
-	setVar $BOT~help[12] $BOT~tab&"                     have enough fighters"
+	setVar $BOT~help[2]  $BOT~tab&"  patp [min port fuel] {turbo} {upgrade} {buyhalf}"
+	setVar $BOT~help[3]  $BOT~tab&"       {docim} {destroyports}"
+	setVar $BOT~help[4]  $BOT~tab&"       "
+	setVar $BOT~help[5]  $BOT~tab&"        "
+	setVar $BOT~help[6]  $BOT~tab&"Options:"
+	setVar $BOT~help[7]  $BOT~tab&"    [min port fuel]  minimum fuel a port must have to visit it"
+	setVar $BOT~help[8]  $BOT~tab&"    [turbo]          puts all buydowns in a burst"
+	setVar $BOT~help[9]  $BOT~tab&"    [upgrade]        upgrades fuel in each port"
+	setVar $BOT~help[10] $BOT~tab&"    [buyhalf]        empties ports halfway"
+	setVar $BOT~help[11] $BOT~tab&"    [docim]          does cim check before patp"
+	setVar $BOT~help[12] $BOT~tab&"    [destroyports]   destroys every port it drains if you "
+	setVar $BOT~help[13] $BOT~tab&"    [bubble]         only visits bubble sectors  "
+	setVar $BOT~help[14] $BOT~tab&"                     have enough fighters"
 	gosub :bot~helpfile
 
 	setVar $BOT~script_title "Pay At The Pump"
@@ -72,6 +74,12 @@
 	else
 		setVar $upgrade FALSE
 	end
+	getWordPos $bot~user_command_line $pos "turbo"
+	if ($pos > 0)
+		setVar $turbo TRUE
+	else
+		setVar $turbo FALSE
+	end
 	getWordPos $bot~user_command_line $pos "half"
 	if ($pos > 0)
 		setVar $buyHalf TRUE
@@ -105,6 +113,11 @@
 	setArray $checkedPorts SECTORS
 	setArray $que SECTORS
 	setArray $checked SECTORS
+	setVar $restoreAutoHaggleState 0
+	if (($turbo = TRUE) AND (HAGGLE))
+		autohaggle off
+		setVar $restoreAutoHaggleState 1
+	end
 
 	if ($docim = TRUE)
 		setVar $SWITCHBOARD~message "PATP Downloading Current Port CIM Data - Comms Off*"
@@ -238,7 +251,11 @@
 					add $totalHolds $totalPortFuel
 				end
 				setVar $PLAYER~buyobject "f"
-				setVar $PLAYER~buytype "s"
+				if ($turbo = TRUE)
+					setVar $PLAYER~buytype "s"
+				else
+					setVar $PLAYER~buytype "b"
+				end
 				setVar $PLAYER~buydownRoundsFromParam $player~turnsToEmpty
 				gosub :player~buy
 				gosub :PLAYER~quikstats
@@ -312,6 +329,10 @@
 			end
 	end
 	:donePATP
+	if ($restoreAutoHaggleState = 1)
+		autohaggle on
+		setVar $restoreAutoHaggleState 0
+	end
 	send "p"&$startingSector&"*y"
 	setVar $formattedSpentCredits ""
 	getLength $spentCredits $length

@@ -320,11 +320,6 @@
 		halt
 	end
 
-	if (SECTOR.EXPLORED[$map~stardock] <> "YES")
-		send "'{" $BOT~bot_name "} " & $TagLineB & " - Have Not Visited StarDock!**"
-		halt
-	end
-
     Gosub :LoadShipData
 
 	setVar $location $player~current_prompt

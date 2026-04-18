@@ -780,17 +780,6 @@ if ((($PLAYER~STARTINGLOCATION = "Citadel") or ($PLAYER~STARTINGLOCATION = "Comm
     end
     gosub :SWITCHBOARD~SWITCHBOARD
   end
-  setvar $BOT~EPHAGGLE "scripts\"&$BOT~MOMBOT_DIRECTORY&"\daemons\ephaggle.cts"
-  fileexists $BOT~EPHAGGLEEXISTS $BOT~EPHAGGLE
-  if ($BOT~EPHAGGLEEXISTS)
-    stop $BOT~EPHAGGLE
-    stop $BOT~EPHAGGLE
-    stop $BOT~EPHAGGLE
-    stop $BOT~EPHAGGLE
-    load $BOT~EPHAGGLE
-  else
-    echo "{"&$BOT~BOT_NAME&"} - No EP Haggle is running ep haggle does not exist at [" $BOT~EPHAGGLE "].*"
-  end
 else
   fileexists $BOT~TEAM_FILE_CHECK $BOT~BOT_USER_FILE
   if ($BOT~TEAM_FILE_CHECK)

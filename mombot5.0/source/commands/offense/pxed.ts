@@ -18,4 +18,8 @@ halt
 
 # includes:
 include "source\include\bot"
+include "source\include\player"
+include "source\include\ship"
+include "source\include\planet"
+include "source\include\switchboard"
 include "source\include\invader"

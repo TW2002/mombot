@@ -368,7 +368,7 @@ else
   setvar $ppt~issell 1
 end
 
-getwordpos $ppt~line $ppt~x "Fuel Ore"
+getwordpos $ppt~line $ppt~x "Fuel"
 if ($ppt~x > 0)
   setvar $ppt~tradeproduct "Fuel"
 else
@@ -384,6 +384,12 @@ else
 end
 
 if ($ppt~issell = 1)
+  if (($ppt~tradeproduct = "None") and ($ppt~onhand <> "None"))
+    # Native prompts can occasionally omit or mangle the commodity text;
+    # in a sell prompt, the product we are carrying is the only valid choice.
+    setvar $ppt~tradeproduct $ppt~onhand
+  end
+
   if (($ppt~onhand <> "None") and ($ppt~tradeproduct = $ppt~onhand))
     send "*"
     setvar $ppt~onhand "None"

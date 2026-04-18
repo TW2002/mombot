@@ -1,7 +1,9 @@
+systemscript
+
 gosub :targeting~initializetargeting 
  
 window COMS 250 400 "Who's Playing?" ONTOP
-setwindowcontents COMS "Starting up..*"
+setwindowcontents COMS "Waiting for Who's Playing..*"
 
 setVar $i 1
 while ($i < $targeting~ranksLength)

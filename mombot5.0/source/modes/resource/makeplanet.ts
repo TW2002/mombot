@@ -170,6 +170,8 @@ halt
 	gosub :SWITCHBOARD~switchboard
 	halt
   end
+
+  setVar $makeplanet~announce_message ""
   
   :bust
 
@@ -225,8 +227,7 @@ else
   setVar $i 1
   while ($i <= $WantedPlanets)
     if ($WantedPlanets[$i] = $Type)
-		setVar $SWITCHBOARD~message "Made "&$WantedPlanets[$i]&" planet!.*"
-		gosub :SWITCHBOARD~switchboard
+		setVar $makeplanet~announce_message "Made "&$WantedPlanets[$i]&" planet!.*"
 		goto :Bust_Wanted
     else
 		#setVar $SWITCHBOARD~message "Looking for "&$WantedPlanets[$i]&", but found "&$Type&" instead.*"
@@ -294,6 +295,11 @@ end
   getWord $line $PlanetID 1
   send "q*"
   killTrigger 1
+  if ($makeplanet~announce_message <> "")
+    setVar $SWITCHBOARD~message $makeplanet~announce_message
+    gosub :SWITCHBOARD~switchboard
+    setVar $makeplanet~announce_message ""
+  end
   return
 
   :Bust_Landed2
@@ -304,6 +310,11 @@ end
   stripText $PlanetID "#"
   killTrigger 2
   send "q"  
+  if ($makeplanet~announce_message <> "")
+    setVar $SWITCHBOARD~message $makeplanet~announce_message
+    gosub :SWITCHBOARD~switchboard
+    setVar $makeplanet~announce_message ""
+  end
   return
 
 
@@ -403,7 +414,10 @@ include "source\pack2_includes\playerInfo"
 include "source\pack2_includes\warp"
 include "source\pack2_includes\seekProduct"
 include "source\include\bot"
+include "source\include\move"
+include "source\include\findproduct"
+include "source\include\planetcheck"
+include "source\include\haggle"
 include "source\include\player"
+include "source\include\planetinfo"
 include "source\include\planet"
-
-

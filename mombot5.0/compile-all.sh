@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 SOURCE="$ROOT/source"
+SYNC_SCRIPT="$ROOT/sync-live.sh"
 
 if [[ -n "${TWXC_PATH:-}" ]]; then
   COMPILER="$TWXC_PATH"
@@ -13,6 +14,11 @@ fi
 if [[ ! -x "$COMPILER" ]]; then
   echo "Compiler not found or not executable: $COMPILER" >&2
   exit 1
+fi
+
+TWXC_FLAGS_ARRAY=()
+if [[ -n "${TWXC_FLAGS:-}" ]]; then
+  read -r -a TWXC_FLAGS_ARRAY <<< "$TWXC_FLAGS"
 fi
 
 targets=("$SOURCE/mombot.ts")
@@ -33,7 +39,7 @@ fail=0
 for target in "${targets[@]}"; do
   rel="${target#$ROOT/}"
   echo "Compiling $rel ..."
-  output="$("$COMPILER" "$rel" 2>&1 || true)"
+  output="$("$COMPILER" ${TWXC_FLAGS_ARRAY[@]+"${TWXC_FLAGS_ARRAY[@]}"} "$rel" 2>&1 || true)"
   echo "$output"
   if grep -q "Compilation successful." <<<"$output"; then
     success=$((success + 1))
@@ -56,5 +62,12 @@ fi
 
 echo "Summary: success=$success fail=$fail"
 if [[ $fail -gt 0 ]]; then
+  exit 1
+fi
+
+if [[ -x "$SYNC_SCRIPT" ]]; then
+  "$SYNC_SCRIPT"
+else
+  echo "Sync script not found or not executable: $SYNC_SCRIPT" >&2
   exit 1
 fi

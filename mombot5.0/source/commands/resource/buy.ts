@@ -26,33 +26,7 @@ return
 if ($BUYDOWN_MODE = "Speedbuy")
   gosub :BUYNOHAGGLE
 else
-  gosub :PLAYER~ISEPHAGGLE
-  if ($PLAYER~ISEPHAGGLE)
-    killalltriggers
-    if ($BUYDOWN_MODE = "Worst Price")
-
-      loadvar $BOT~WORSTPRICE
-      setvar $ORIGINAL_WORSTPRICE_VALUE $BOT~WORSTPRICE
-      setvar $BOT~WORSTPRICE TRUE
-      savevar $BOT~WORSTPRICE
-    end
-    send "*"
-    waitfor "Agreed,"
-    settextlinetrigger TRADEFIN :TRADEFIN "empty cargo holds"
-    pause
-    :TRADEFIN
-    killalltriggers
-    getword CURRENTLINE $NCREDITS 3
-    striptext $NCREDITS ","
-
-    if ($NCREDITS = $CCREDITS)
-      setvar $REPORT 1
-    else
-      setvar $CCREDITS $NCREDITS
-    end
-  else
-    gosub :BUYHAGGLE
-  end
+  gosub :BUYHAGGLE
 end
 
 

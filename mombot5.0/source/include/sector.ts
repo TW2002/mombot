@@ -247,11 +247,7 @@ else
   if ($PLAYER~STARTINGLOCATION = "Citadel")
     send "s"
   else
-    if ($PLAYER~FEDSPACE = TRUE)
-      send "*"
-    else
-      send "*"
-    end
+    send "*"
   end
 end
 setvar $SECTOR~SECTORDATA ""

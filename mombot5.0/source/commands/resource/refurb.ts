@@ -96,7 +96,7 @@ gosub :BOT~loadVars
 				end
 			end
 		else
-			setVar $SWITCHBOARD~message "No known class 0 or 9 port here to refurb at. Try the seek option.*" 
+			setVar $SWITCHBOARD~message "Not currently at a class 0 or 9 port. Use the seek option to twarp to a known class 0 or 9 port and back.*" 
 			gosub :SWITCHBOARD~switchboard
 			goto :wait_for_command
 		end

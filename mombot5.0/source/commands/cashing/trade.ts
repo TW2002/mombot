@@ -310,7 +310,23 @@ return
 return
 
 :doTrade
-	
+	setVar $promptMax ""
+	getText CURRENTLINE $promptMax "[" "]"
+	stripText $promptMax ","
+	stripText $promptMax "."
+	isNumber $promptMaxIsNum $promptMax
+	if ($promptMaxIsNum = TRUE)
+		if ($promptMax < $tradeQuant)
+			setVar $tradeQuant $promptMax
+		end
+	end
+
+	if ($tradeQuant <= 0)
+		send "0*"
+		waitfor "empty cargo holds."
+		return
+	end
+
 	send $tradeQuant "*"
 	
 		

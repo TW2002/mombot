@@ -28,6 +28,32 @@
 				end
 				add $i 1
 			end
+			setVar $resolvedHelpCommand $BOT~parm1
+			fileExists $aliasesExist "scripts\"&$bot~mombot_directory&"\aliases.cfg"
+			if ($aliasesExist)
+				readToArray "scripts\"&$bot~mombot_directory&"\aliases.cfg" $aliasLines
+				setVar $aliasIndex 1
+				while ($aliasIndex <= $aliasLines)
+					setVar $aliasLine $aliasLines[$aliasIndex]
+					cutText $aliasLine&" " $aliasFirstChar 1 1
+					if ($aliasFirstChar <> "#")
+						getWordPos $aliasLine $aliasEqPos "="
+						if ($aliasEqPos > 1)
+							cutText $aliasLine $aliasName 1 ($aliasEqPos - 1)
+							cutText $aliasLine $aliasTarget ($aliasEqPos + 1) 9999
+							lowerCase $aliasName
+							lowerCase $aliasTarget
+							if ($resolvedHelpCommand = $aliasName)
+								setVar $resolvedHelpCommand $aliasTarget
+								goto :help_alias_resolved
+							end
+						end
+					end
+					add $aliasIndex 1
+				end
+			end
+			:help_alias_resolved
+			setVar $BOT~parm1 $resolvedHelpCommand
 			fileExists $doesExist "scripts\"&$bot~mombot_directory&"\help\"&$BOT~parm1&".txt"
 			if ($doesExist)
 				readToArray "scripts\"&$bot~mombot_directory&"\help\"&$BOT~parm1&".txt" $bot~help

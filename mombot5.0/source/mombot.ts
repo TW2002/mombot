@@ -199,6 +199,46 @@ return
 return
 
 
+:NATIVE~ENTER_NEW_GAME
+	gosub :BOT~LOAD_THE_VARIABLES
+
+	loadvar $BOT~USERNAME
+	loadvar $BOT~SERVERNAME
+	loadvar $BOT~PASSWORD
+	loadvar $BOT~LETTER
+	loadvar $BOT~STARTSHIPNAME
+	loadvar $BOT~ISCEO
+	loadvar $BOT~CORPNAME
+	loadvar $BOT~CORPPASSWORD
+
+	if ($BOT~USERNAME = 0)
+		setvar $BOT~USERNAME LOGINNAME
+	end
+	if ($BOT~SERVERNAME = 0)
+		setvar $BOT~SERVERNAME LOGINNAME
+	end
+	if ($BOT~PASSWORD = 0)
+		setvar $BOT~PASSWORD PASSWORD
+	end
+	if ($BOT~LETTER = 0)
+		setvar $BOT~LETTER GAME
+	end
+	if (($BOT~STARTSHIPNAME = 0) or ($BOT~STARTSHIPNAME = ""))
+		setvar $BOT~STARTSHIPNAME "Mind ()ver Matter"
+	end
+	if ($BOT~CORPNAME = 0)
+		setvar $BOT~CORPNAME ""
+	end
+	if ($BOT~CORPPASSWORD = 0)
+		setvar $BOT~CORPPASSWORD ""
+	end
+	if ($BOT~ISCEO = 0)
+		setvar $BOT~ISCEO FALSE
+	end
+
+	goto :CONNECTIVITY~ENTER_NEW_GAME
+
+
 #INCLUDES:
 include "source\include\bot"
 include "source\include\connectivity"
@@ -208,10 +248,9 @@ include "source\include\user_interface"
 include "source\include\modules"
 include "source\include\player"
 include "source\include\ship"
+include "source\include\gameprefs"
 include "source\include\combat"
 include "source\include\planet"
 include "source\include\sector"
 include "source\include\map"
 include "source\include\game"
-
-

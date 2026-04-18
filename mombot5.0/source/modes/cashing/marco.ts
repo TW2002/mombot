@@ -82,10 +82,6 @@ setvar $PORTS[6] "BSS"
 setvar $PORTS[7] "SSS"
 setvar $PORTS[8] "BBB"
 
-
-gosub :PLAYER~ISEPHAGGLE
-
-
 if (($BOT~PARM1 <> "trade") and ($BOT~PARM1 <> "report"))
   setvar $SWITCHBOARD~MESSAGE "First parameter should be trade or report.*"
   gosub :SWITCHBOARD~SWITCHBOARD
@@ -166,21 +162,6 @@ if ($BOT~PARM1 = "trade")
 
 
   end
-  listactivescripts $SCRIPTS
-  setvar $FOUNDEP 0
-  setvar $A 1
-  while ($A <= $SCRIPTS)
-    if ($SCRIPTS[$A] = "ephaggle.cts")
-      setvar $FOUNDEP 1
-    end
-    add $A 1
-  end
-
-
-  if ($FOUNDEP = 0)
-    send "'" $BOT~BOT_NAME " ephaggle*"
-  end
-
   setdelaytrigger DELAY :STARTPAUSE 1000
   pause
   :STARTPAUSE
