@@ -8,11 +8,13 @@ loadvar $PARM4
 loadvar $PARM5
 goto :MOVER
 include "source\include\planetinfo"
+include "source\include\planet"
 :MOVER
 
 killalltriggers
 setvar $STUFFMOVED ""
 setvar $ROUNDS 0
+setvar $moveextra 0
 gosub :QUIKSTATS
 echo "total_holds: " $TOTAL_HOLDS "*"
 setvar $STARTLOCATION $CURRENT_PROMPT
@@ -33,7 +35,7 @@ elseif ($PARM1 = "oc")
 elseif ($PARM1 = "ec")
   setvar $STUFFMOVED "Equipment Colonists"
 else
-  send "'{" $BOT_NAME "} - Please use move [f/o/e/fc/oc/ec/] [planet] [rounds]|[amount] format*"
+  send "'{" $BOT_NAME "} - Please use move [f/o/e/fc/oc/ec/] [planet] {[rounds]|[amount]} format*"
   halt
 end
 isnumber $TEST $PARM2
@@ -41,10 +43,16 @@ if ($TEST = FALSE)
   send "'{" $BOT_NAME "} - Mover Planet Parameter in-valid*"
   halt
 end
+setvar $moveall FALSE
 isnumber $TEST $PARM3
 if ($TEST = FALSE)
-  send "'{" $BOT_NAME "} - Mover Rounds Parameter in-valid*"
-  halt
+  if ($PARM3 = "")
+    setvar $moveall TRUE
+    goto :STARTMOVER
+  else
+    send "'{" $BOT_NAME "} - Mover Rounds Parameter in-valid*"
+    halt
+  end
 elseif ($PARM3 <= 0)
   send "'{" $BOT_NAME "} - Must choose more than 0 rounds to move*"
   halt
@@ -55,24 +63,61 @@ elseif ($PARM3 > 1000)
     halt
   end
   setvar $MOVEHOLDS ($PARM3 / $TOTAL_HOLDS)
-  send "'{" $BOT_NAME "} - Moving " & $MOVEHOLDS & " holds (" & $PARM3 & " total).*"
+  setvar $moveextra ($PARM3 - ($TOTAL_HOLDS * $MOVEHOLDS))
+  setvar $movetrips $MOVEHOLDS
+  if ($moveextra > 0)
+    add $movetrips 1
+  end
+  send "'{" $BOT_NAME "} - Moving " & $movetrips & " holds (" & $PARM3 & " total).*"
 else
    setvar $MOVEHOLDS $PARM3
+   setvar $moveextra 0
 end
 if ($STARTLOCATION = "Citadel")
   send "q"
 end
-gosub :GETPLANETINFO
+
 :STARTMOVER
 
+gosub :GETPLANETINFO
+if (($moveall = TRUE) and (($STUFFMOVED = "Fuel Colonists") or ($STUFFMOVED = "Organic Colonists") or ($STUFFMOVED = "Equipment Colonists")))
+  gosub :GETPLANETCOLONISTINFO
+end
 if ($STUFFMOVED = "Fighters")
   goto :MOVEFIGHTERS
 elseif (($STUFFMOVED = "Fuel") or ($STUFFMOVED = "Fuel Colonists"))
   setvar $STUFF 1
+  if ($moveall = TRUE)
+    if ($STUFFMOVED = "Fuel Colonists")
+      setvar $MOVEHOLDS ($PLANET_FUEL_COLONISTS / $TOTAL_HOLDS)
+      setvar $moveextra $PLANET_FUEL_COLONISTS - ($MOVEHOLDS * $TOTAL_HOLDS)
+    else
+      setvar $MOVEHOLDS ($PLANET_FUEL / $TOTAL_HOLDS)
+      setvar $moveextra $PLANET_FUEL - ($MOVEHOLDS * $TOTAL_HOLDS)
+    end
+  end
 elseif (($STUFFMOVED = "Organics") or ($STUFFMOVED = "Organic Colonists"))
   setvar $STUFF 2
+  if ($moveall = TRUE)
+    if ($STUFFMOVED = "Organic Colonists")
+      setvar $MOVEHOLDS ($PLANET_ORGANICS_COLONISTS / $TOTAL_HOLDS)
+      setvar $moveextra $PLANET_ORGANICS_COLONISTS - ($MOVEHOLDS * $TOTAL_HOLDS)
+    else
+      setvar $MOVEHOLDS ($PLANET_ORGANICS / $TOTAL_HOLDS)
+      setvar $moveextra $PLANET_ORGANICS - ($MOVEHOLDS * $TOTAL_HOLDS)
+    end
+  end
 elseif (($STUFFMOVED = "Equipment") or ($STUFFMOVED = "Equipment Colonists"))
   setvar $STUFF 3
+  if ($moveall = TRUE)
+    if ($STUFFMOVED = "Equipment Colonists")
+      setvar $MOVEHOLDS ($PLANET_EQUIPMENT_COLONISTS / $TOTAL_HOLDS)
+      setvar $moveextra $PLANET_EQUIPMENT_COLONISTS - ($MOVEHOLDS * $TOTAL_HOLDS)
+    else
+      setvar $MOVEHOLDS ($PLANET_EQUIPMENT / $TOTAL_HOLDS)
+      setvar $moveextra $PLANET_EQUIPMENT - ($MOVEHOLDS * $TOTAL_HOLDS)
+    end
+  end
 end
 getwordpos $USER_COMMAND_LINE $POS "c"
 if ($POS > 0)
@@ -84,24 +129,35 @@ else
 end
 
 :MOVEPRODUCT
-echo "moveholds " $MOVEHOLDS " rounds " $ROUNDS "*"
-if ($ROUNDS <= $MOVEHOLDS)
-  send "t  n  t  "&$STUFF&"*  q  l "&$PARM2&"*  t  n  l "&$STUFF&"*  q  l "&$PLANET&"*  "
-  add $ROUNDS 1
-  goto :MOVEPRODUCT
-elseif ($ROUNDS < 1)
+#echo "moveholds " $MOVEHOLDS " rounds " $ROUNDS "*"
+if ($ROUNDS >= $MOVEHOLDS)
+  goto :MOVEPRODUCTEXTRA
+end
+send "t  n  t  "&$STUFF&"*  q  l "&$PARM2&"*  t  n  l "&$STUFF&"*  q  l "&$PLANET&"*  "
+add $ROUNDS 1
+goto :MOVEPRODUCT
+
+:MOVEPRODUCTEXTRA
+if ($moveextra <= 0)
   goto :MOVEDONE
 end
+send "t  n  t  "&$STUFF&" "&$moveextra&"*  q  l "&$PARM2&"*  t  n  l "&$STUFF&"*  q  l "&$PLANET&"*  "
 goto :MOVEDONE
 
 :MOVECOLONISTS
-if ($ROUNDS <= $MOVEHOLDS)
-  send "s  n  t  "&$STUFF&"*  q  l "&$PARM2&"*  s  n  l "&$STUFF&"*  q  l "&$PLANET&"*  "
-  add $ROUNDS 1
-  goto :MOVECOLONISTS
-elseif ($ROUNDS < 1)
+if ($ROUNDS >= $MOVEHOLDS)
+  goto :MOVECOLONISTSEXTRA
+end
+send "s  n  t  "&$STUFF&"*  q  l "&$PARM2&"*  s  n  l "&$STUFF&"*  q  l "&$PLANET&"*  "
+add $ROUNDS 1
+goto :MOVECOLONISTS
+
+:MOVECOLONISTSEXTRA
+if ($moveextra <= 0)
   goto :MOVEDONE
 end
+send "s  n  t  "&$STUFF&" "&$moveextra&"*  q  l "&$PARM2&"*  s  n  l "&$STUFF&"*  q  l "&$PLANET&"*  "
+goto :MOVEDONE
 
 :MOVEFIGHTERS
 if ($ROUNDS <= $PARM3)
@@ -116,7 +172,13 @@ end
 if ($STARTLOCATION = "Citadel")
   send "c"
 end
-send "'{" $BOT_NAME "} - Moved "&$PARM3&" loads of "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
+if ($moveall = TRUE)
+  send "'{" $BOT_NAME "} - Moved all "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
+elseif ($PARM3 > 1000)
+  send "'{" $BOT_NAME "} - Moved "&$PARM3&" total "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
+else
+  send "'{" $BOT_NAME "} - Moved "&$PARM3&" loads of "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
+end
 halt
 goto :QUIKSTATS_PLAYER_INCLUDE
 include "source\include\player"
@@ -383,6 +445,12 @@ setvar $CITADEL $PLANETINFO~CITADEL
 setvar $CITADEL_CREDITS $PLANETINFO~CITADEL_CREDITS
 setvar $ATMOSPHERE_CANNON $PLANETINFO~ATMOSPHERE_CANNON
 setvar $SECTOR_CANNON $PLANETINFO~SECTOR_CANNON
+return
+:GETPLANETCOLONISTINFO
+gosub :PLANET~GETPLANETINFO
+setvar $PLANET_FUEL_COLONISTS $PLANET~PLANET_FUEL_COLONISTS
+setvar $PLANET_ORGANICS_COLONISTS $PLANET~PLANET_ORGANICS_COLONISTS
+setvar $PLANET_EQUIPMENT_COLONISTS $PLANET~PLANET_EQUIPMENT_COLONISTS
 return
 killtrigger CITADELSTART
 killtrigger CANNON

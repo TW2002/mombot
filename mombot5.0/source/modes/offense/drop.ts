@@ -409,37 +409,37 @@ reqRecording
 				goto :startTargeting
 			end
 			
-		:getDropSector
-			if ($dropDescription = "Direct")
-				if ($isPlanetDrop)
-					setvar $send "p "&$dropSector&"* y "
-					if ($fastkill = true)
-						setvar $send $send&"q q a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** c  "
+			:getDropSector
+				if ($dropDescription = "Direct")
+					if ($isPlanetDrop)
+						setvar $send "p "&$dropSector&"* y "
+						if ($fastkill = true)
+							setvar $send $send&"q q a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** c  "
+						end
+						send $send
+					else
+						killalltriggers
+						setVar $PLAYER~WARPTO $dropSector
+						gosub :PLAYER~twarp
+						if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
+							setvar $switchboard~message "Could not make it to attack sector - ["&$player~msg&"]*"
+							gosub :switchboard~switchboard
+							goto :starttargeting
+						end
+						if ($fastkill = true)
+							send "a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n * * "
+						end
 					end
-					send $send
-				else
-					killalltriggers
-					setVar $PLAYER~WARPTO $dropSector
-					gosub :PLAYER~twarp
-					if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
-						setvar $switchboard~message "Could not make it to attack sector - ["&$player~msg&"]*"
-						gosub :switchboard~switchboard
-						goto :starttargeting
+					gosub :player~quikstats
+					if ($player~current_sector = $dropSector)
+						if ($attackOnSight)
+							goSub :checkForVictims
+						end	
+					else
+						if ($isPlanetDrop)
+							setSectorParameter $dropSector "FIGSEC" FALSE
+						end
 					end
-					if ($fastkill = true)
-						send "a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n * * "
-					end
-				end
-				gosub :player~quikstats
-				if ($player~current_sector = $dropSector)
-					if ($attackOnSight)
-						goSub :checkForVictims
-					end	
-				else
-					if ($planetDrop)
-						setSectorParameter $dropSector "FIGSEC" FALSE
-					end
-				end
 			elseif ($dropDescription = "Adjacent")			
 				gosub :findAdjacent
 				goSub :attemptDrop
@@ -447,45 +447,45 @@ reqRecording
 					goSub :checkForVictims
 				end
 				gosub :player~quikstats
-			elseif ($dropDescription = "Adjacent, then Direct")			
-				gosub :findAdjacent
-				goSub :attemptDrop
-				if ($planetDrop)
-					send "p " $dropSector "* y "
-				else
-					setVar $PLAYER~WARPTO $dropSector
-					gosub :PLAYER~twarp
-					if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
-						goto :pwarpNo				
+				elseif ($dropDescription = "Adjacent, then Direct")			
+					gosub :findAdjacent
+					goSub :attemptDrop
+				if ($isPlanetDrop)
+						send "p " $dropSector "* y "
 					else
-						if ($fastkill = true)
-							send "a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n * * "
+						setVar $PLAYER~WARPTO $dropSector
+						gosub :PLAYER~twarp
+						if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
+							goto :pwarpNo				
+						else
+							if ($fastkill = true)
+								send "a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n * * "
+							end
 						end
 					end
-				end
-				if ($attackOnSight)
-					goSub :checkForVictims
+					if ($attackOnSight)
+						goSub :checkForVictims
 				end
 				gosub :player~quikstats
-			elseif ($dropDescription = "Direct, then Adjacent")			
-				if ($planetDrop)
-					setvar $gotosector $dropsector
-					send "p " $dropSector "* y "
-				else
-					setvar $gotosector $dropsector
-					setVar $PLAYER~WARPTO $dropSector
-					gosub :PLAYER~twarp
-					if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
-						goto :pwarpNo				
+				elseif ($dropDescription = "Direct, then Adjacent")			
+				if ($isPlanetDrop)
+						setvar $gotosector $dropsector
+						send "p " $dropSector "* y "
 					else
-						if ($fastkill = true)
-							send "a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n * * "
+						setvar $gotosector $dropsector
+						setVar $PLAYER~WARPTO $dropSector
+						gosub :PLAYER~twarp
+						if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
+							goto :pwarpNo				
+						else
+							if ($fastkill = true)
+								send "a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n * * "
+							end
 						end
 					end
-				end
-				gosub :findAdjacent
-				goSub :attemptDrop
-				if ($attackOnSight)
+					gosub :findAdjacent
+					goSub :attemptDrop
+					if ($attackOnSight)
 					goSub :checkForVictims
 				end
 				gosub :player~quikstats
@@ -572,8 +572,8 @@ reqRecording
 	end		
 return
 
-:attemptDrop
-	if ($targetCount > 0)
+	:attemptDrop
+		if ($targetCount > 0)
 		getRnd $randomTarget 1 $targetCount
 		if ($dropDelay > 0)
 			killAllTriggers
@@ -585,7 +585,7 @@ return
 			gosub :dopwarp
 	end
 	
-return
+	return
 
 :dopwarp
 		killAllTriggers
@@ -959,8 +959,8 @@ return
 	setVar $isValid TRUE
 return
 
-:findAdjacent
-        getSectorParameter $dropSector "FIGSEC" $isFigged
+	:findAdjacent
+	        getSectorParameter $dropSector "FIGSEC" $isFigged
         if (($triggerDescription = "Unfigged Mines") AND ($isFigged = TRUE))
                 return
         else
@@ -968,14 +968,14 @@ return
                 setVar $checkSector SECTOR.WARPS[$dropSector][$i]
                 setArray $targetSectors 6
                 setVar $targetCount 0
-                while ($checkSector > 0)
-                        getSectorParameter $checkSector "FIGSEC" $isFigged
-                        if ($isFigged = TRUE)
+	                while ($checkSector > 0)
+	                        getSectorParameter $checkSector "FIGSEC" $isFigged
+	                        if ($isFigged = TRUE)
                                 add $targetCount 1
                                 setVar $targetSectors[$targetCount] $checkSector
                         end
-                        add $i 1
-                        setVar $checkSector SECTOR.WARPS[$dropSector][$i]
+	                        add $i 1
+	                        setVar $checkSector SECTOR.WARPS[$dropSector][$i]
                 end
                 if ($targetCount <= 0)
                         echo "No Targets..*"

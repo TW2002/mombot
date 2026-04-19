@@ -635,9 +635,16 @@ pause
 
 getWordPos CURRENTANSILINE $pos "[32mYou will have to start over"
 if ($pos > 0)
-	DISCONNECT
 	setVar $BOT~isShipDestroyed TRUE
 	saveVar $BOT~isShipDestroyed
+	if (ISNATIVEBOT = TRUE)
+		setVar $BOT~DO_NOT_RESUSCITATE TRUE
+		saveVar $BOT~DO_NOT_RESUSCITATE
+		echo "Mombot stopped: ship destroyed.**"
+		nativebot stop
+		halt
+	end
+	DISCONNECT
 	setVar $i 1
 	setVar $found FALSE
 	setVar $rebooted FALSE
@@ -713,6 +720,11 @@ pause
 	loadvar $bot~subspace
 	loadvar $bot~bot_password
 	loadvar $bot~bot_name
+
+	if (ISNATIVEBOT = TRUE)
+		setdelaytrigger		checkifbotalive       :checkifbotalive 60000
+		pause
+	end
 
 	if ($bot~do_not_resuscitate <> true)
 		setvar $found false
