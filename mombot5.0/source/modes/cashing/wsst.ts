@@ -227,18 +227,25 @@
 				echo "*Avoiding too many enemy fighters*"
 				goto :tryNewRouteShip1
 			end
-			gosub :moveIntoSector
-			getSectorParameter $moveIntoSector "BUSTED" $isBusted
-			if ((PORT.BUYEQUIP[$moveIntoSector] = TRUE) AND ($isBusted <> TRUE) AND ($moveIntoSector <> $ship2Sector))
-				gosub :player~quikstats
-				setVar $ship1NeedsPort FALSE
-				setVar $ship1Sector $COURSE[$j]
-				setVar $testSector $COURSE[$j]
-				gosub :getSSTPortInfo
-				setVar $ship1TotalHolds $player~total_holds
-				setVar $ship1Equipment $player~equipment_holds
-				gosub :displayCredits
-			else
+				gosub :moveIntoSector
+				getSectorParameter $moveIntoSector "BUSTED" $isBusted
+				setVar $testSector $moveIntoSector
+				gosub :isUsableSSTPortCandidate
+				if (($candidatePortValid = TRUE) AND ($isBusted <> TRUE) AND ($moveIntoSector <> $ship2Sector))
+					gosub :player~quikstats
+					setVar $ship1NeedsPort FALSE
+					setVar $ship1Sector $COURSE[$j]
+					setVar $testSector $COURSE[$j]
+					gosub :getSSTPortInfo
+					if ($portInfoValid)
+						setVar $ship1TotalHolds $player~total_holds
+						setVar $ship1Equipment $player~equipment_holds
+						gosub :displayCredits
+					else
+						setVar $ship1NeedsPort TRUE
+						goto :tryNewRouteShip1
+					end
+				else
 				setVar $k 1
 				setVar $isFound FALSE
 				while ((SECTOR.WARPS[$COURSE[$j]][$k] > 0) AND ($isFound = FALSE))
@@ -257,19 +264,26 @@
 					setVar $mineOwner SECTOR.MINES.OWNER[$checkingNeighbor]
 					setVar $limpOwner SECTOR.LIMPETS.OWNER[$checkingNeighbor]
 					setVar $figCount  SECTOR.FIGS.QUANTITY[$checkingNeighbor]
-					if ((PORT.BUYEQUIP[$checkingNeighbor] = TRUE) AND ($isBusted <> TRUE) AND ($checkingNeighbor <> $ship2Sector) AND ($containsShieldedPlanet = FALSE) AND (($figCount <= $safeFighterLevel) AND (($figOwner = "belong to your Corp") OR ($figOwner = "yours"))))
-						setVar $moveIntoSector $checkingNeighbor
-						gosub :moveIntoSector
-						setVar $ship1NeedsPort FALSE
-						setVar $ship1Sector $checkingNeighbor
-						gosub :player~quikstats
 						setVar $testSector $checkingNeighbor
-						gosub :getSSTPortInfo
-						setVar $ship1TotalHolds $player~total_holds
-						setVar $ship1Equipment $player~equipment_holds
-						gosub :displayCredits
-						setVar $isFound TRUE
-					end
+						gosub :isUsableSSTPortCandidate
+						if (($candidatePortValid = TRUE) AND ($isBusted <> TRUE) AND ($checkingNeighbor <> $ship2Sector) AND ($containsShieldedPlanet = FALSE) AND (($figCount <= $safeFighterLevel) AND (($figOwner = "belong to your Corp") OR ($figOwner = "yours"))))
+							setVar $moveIntoSector $checkingNeighbor
+							gosub :moveIntoSector
+							setVar $ship1NeedsPort FALSE
+							setVar $ship1Sector $checkingNeighbor
+							gosub :player~quikstats
+							setVar $testSector $checkingNeighbor
+							gosub :getSSTPortInfo
+							if ($portInfoValid)
+								setVar $ship1TotalHolds $player~total_holds
+								setVar $ship1Equipment $player~equipment_holds
+								gosub :displayCredits
+								setVar $isFound TRUE
+							else
+								setVar $ship1NeedsPort TRUE
+								goto :tryNewRouteShip1
+							end
+						end
 					add $k 1
 				end
 			end
@@ -311,18 +325,25 @@
 				echo "*Avoiding too many enemy fighters*"
 				goto :tryNewRouteShip2
 			end
-			gosub :moveIntoSector
-			getSectorParameter $COURSE[$j] "BUSTED" $isBusted
-			if ((PORT.BUYEQUIP[$COURSE[$j]] = TRUE) AND ($isBusted <> TRUE) AND ($COURSE[$j] <> $ship1Sector))
-				setVar $ship2NeedsPort FALSE
-				setVar $ship2Sector $COURSE[$j]
-				gosub :player~quikstats
+				gosub :moveIntoSector
+				getSectorParameter $COURSE[$j] "BUSTED" $isBusted
 				setVar $testSector $COURSE[$j]
-				gosub :getSSTPortInfo
-				setVar $ship2TotalHolds $player~total_holds
-				setVar $ship2Equipment $player~equipment_holds
-				gosub :displayCredits
-			else
+				gosub :isUsableSSTPortCandidate
+				if (($candidatePortValid = TRUE) AND ($isBusted <> TRUE) AND ($COURSE[$j] <> $ship1Sector))
+					setVar $ship2NeedsPort FALSE
+					setVar $ship2Sector $COURSE[$j]
+					gosub :player~quikstats
+					setVar $testSector $COURSE[$j]
+					gosub :getSSTPortInfo
+					if ($portInfoValid)
+						setVar $ship2TotalHolds $player~total_holds
+						setVar $ship2Equipment $player~equipment_holds
+						gosub :displayCredits
+					else
+						setVar $ship2NeedsPort TRUE
+						goto :tryNewRouteShip2
+					end
+				else
 				setVar $k 1
 				setVar $isFound FALSE
 				while ((SECTOR.WARPS[$COURSE[$j]][$k] > 0) AND ($isFound = FALSE))
@@ -341,19 +362,26 @@
 					setVar $limpOwner SECTOR.LIMPETS.OWNER[$checkingNeighbor]
 					setVar $figCount  SECTOR.FIGS.QUANTITY[$checkingNeighbor]
 					getSectorParameter $checkingNeighbor "BUSTED" $isBusted
-					if ((PORT.BUYEQUIP[$checkingNeighbor] = TRUE) AND ($isBusted <> TRUE) AND ($checkingNeighbor <> $ship1Sector) AND ($containsShieldedPlanet = FALSE) AND (($figCount <= $safeFighterLevel) AND (($figOwner = "belong to your Corp") OR ($figOwner = "yours"))))
-						setVar $moveIntoSector $checkingNeighbor
-						gosub :moveIntoSector
-						setVar $ship2NeedsPort FALSE
-						setVar $ship2Sector $checkingNeighbor
-						gosub :player~quikstats
 						setVar $testSector $checkingNeighbor
-						gosub :getSSTPortInfo
-						setVar $ship2TotalHolds $player~total_holds
-						setVar $ship2Equipment $player~equipment_holds
-						gosub :displayCredits
-						setVar $isFound TRUE
-					end
+						gosub :isUsableSSTPortCandidate
+						if (($candidatePortValid = TRUE) AND ($isBusted <> TRUE) AND ($checkingNeighbor <> $ship1Sector) AND ($containsShieldedPlanet = FALSE) AND (($figCount <= $safeFighterLevel) AND (($figOwner = "belong to your Corp") OR ($figOwner = "yours"))))
+							setVar $moveIntoSector $checkingNeighbor
+							gosub :moveIntoSector
+							setVar $ship2NeedsPort FALSE
+							setVar $ship2Sector $checkingNeighbor
+							gosub :player~quikstats
+							setVar $testSector $checkingNeighbor
+							gosub :getSSTPortInfo
+							if ($portInfoValid)
+								setVar $ship2TotalHolds $player~total_holds
+								setVar $ship2Equipment $player~equipment_holds
+								gosub :displayCredits
+								setVar $isFound TRUE
+							else
+								setVar $ship2NeedsPort TRUE
+								goto :tryNewRouteShip2
+							end
+						end
 					add $k 1
 				end
 			end
@@ -702,7 +730,7 @@ return
 return
 
 :getSSTPortInfo
-	
+	setVar $portInfoValid TRUE
 	send "* cr*q"
 	waitOn "What sector is the port in? ["
 	:portInfo
@@ -716,6 +744,7 @@ return
 			killalltriggers
 			setVar $equipBuy 0
 			setVar $equipPerc 0
+			setVar $portInfoValid FALSE
 			goto :gotAllPortInfo
 
 		:getPortEquip
@@ -724,7 +753,8 @@ return
 			getWord CURRENTLINE $equipPerc 4
 			stripText $equipPerc "%"
 			setVar $x 10000
-			if ($equipPerc = 0)
+			if (($equipPerc = 0) OR ($equipBuy <= 0))
+				setVar $portInfoValid FALSE
  				setVar $equipAtPort[$TestSector] ($player~total_holds + 50)
 			else
 				divide $x $equipPerc
@@ -736,18 +766,41 @@ return
 				if ($x < 0)
 					setVar $equipAtPort[$TestSector] 0
 				else
-       	 				setVar $equipAtPort[$TestSector] $x
+					setVar $equipAtPort[$TestSector] $x
 				end
+			end
+			setVar $portName PORT.NAME[$TestSector]
+			lowercase $portName
+			if (($portName = "build") OR (PORT.BUILDTIME[$TestSector] > 0) OR (PORT.CLASS[$TestSector] = 9))
+				setVar $portInfoValid FALSE
+				setVar $equipAtPort[$TestSector] ($player~total_holds + 50)
 			end
 		:gotallportinfo
 			killtrigger 1
 			killtrigger 2
 
   return
+
+:isUsableSSTPortCandidate
+	setVar $candidatePortValid TRUE
+	if (PORT.BUYEQUIP[$TestSector] <> TRUE)
+		setVar $candidatePortValid FALSE
+		return
+	end
+	setVar $portName PORT.NAME[$TestSector]
+	lowercase $portName
+	if (($portName = "build") OR (PORT.BUILDTIME[$TestSector] > 0) OR (PORT.CLASS[$TestSector] = 9))
+		setVar $candidatePortValid FALSE
+	end
+return
 :refurb
 
 	setvar $twarp_refurb_success false
 	setVar $refurbPort $FURBING
+	gosub :ChooseNearbyClass0Refurb
+	if ($nearClass0Port > 0)
+		setVar $refurbPort $nearClass0Port
+	end
 	if (($player~twarp_type <> "No") and ($refurbPort = $map~stardock))
 
 		gosub :twarprefurb
@@ -755,9 +808,8 @@ return
 
 	end
 	if ($twarp_refurb_success <> true)
-		if ($FURBING <> 0)
-			setVar $mowIntoSector $FURBING
-			setVar $refurbPort $FURBING
+		if ($refurbPort <> 0)
+			setVar $mowIntoSector $refurbPort
 		else
 			setVar $mowIntoSector $refurbPort
 		end
@@ -771,10 +823,10 @@ return
 			gosub :mowIntoSector
 		end
 		gosub :player~quikstats
-		if ($player~current_sector = $refurbPort)
-			if ($FURBING <> $map~stardock)
-				send "p ty"
-				waitOn "A  Cargo holds     :"
+			if ($player~current_sector = $refurbPort)
+				if ($refurbPort <> $map~stardock)
+					send "p ty"
+					waitOn "A  Cargo holds     :"
 				getWord CURRENTLINE $holdsprice 5
 				getWord CURRENTLINE $holdsToBuy 10
 				setVar $beforeFurbCredits $player~credits
@@ -812,13 +864,13 @@ return
 				end
 				send "a "&$holdsToBuy&"* y b "&$figsToBuy&"* c "&$player~shieldsToBuy&"* q q q z n * "
 				return
-			else
-				send "p s g y g q "
+				else
+					send "p s g y g q "
+				end
 			end
-		end
 	end
 
-	if ($player~current_sector = $refurbPort)
+		if ($player~current_sector = $refurbPort)
 		killAllTriggers
 		send " s p"
 		waitOn "A  Cargo holds     :"
@@ -974,10 +1026,10 @@ return
 			setVar $figsToBuy 0
 			setVar $player~shieldsToBuy 0
 		end
-		if ($FURBING <> $map~stardock)
-			send "a "&$holdsToBuy&"* y b "&$figsToBuy&"* c "&$player~shieldsToBuy&"* q q q z n * "
-		elseif (($FURBING = $map~stardock) AND (($DROPLIMPS) OR ($DROPARMIDS)) AND ($player~credits > ($CASH_TO_HOLD_ONTO + 2000000)))
-			send "a "&$holdsToBuy&"* y b "&$figsToBuy&"* c "&$player~shieldsToBuy&"* q q h "
+			if ($refurbPort <> $map~stardock)
+				send "a "&$holdsToBuy&"* y b "&$figsToBuy&"* c "&$player~shieldsToBuy&"* q q q z n * "
+			elseif (($refurbPort = $map~stardock) AND (($DROPLIMPS) OR ($DROPARMIDS)) AND ($player~credits > ($CASH_TO_HOLD_ONTO + 2000000)))
+				send "a "&$holdsToBuy&"* y b "&$figsToBuy&"* c "&$player~shieldsToBuy&"* q q h "
 			waitfor "<Hardware Emporium>"
 			if ($DROPLIMPS)
 				send "L"
@@ -1584,6 +1636,11 @@ goto :GoGo
 		setVar $RED_adj 0
 		gosub :FindJumpSector
 		if ($RED_adj = 0)
+			gosub :ChooseClass0FigFallback
+			if ($class0FallbackPort > 0)
+				setVar $refurbPort $class0FallbackPort
+				return
+			end
 			waitfor "Command [TL="
 #			setvar $switchboard~message "Cannot Find Jump Sector Adjacent Dock*"
 #			gosub :switchboard~switchboard
@@ -1606,7 +1663,7 @@ goto :GoGo
 		end
 	end
 	setTextLineTrigger noJoy :noJoy "*** Error - No route within"
-	setTextTrigger cont :cont "(?="
+	setTextLineTrigger cont :cont ": ENDINTERROG"
 	pause
 
 	:noJoy
@@ -1617,8 +1674,24 @@ goto :GoGo
 		halt
 	:cont
 		killAllTriggers
-		setDelayTrigger Latency_Delay		:Latency_Delay 500
+		setTextTrigger RouteNavPrompt       :RouteNavPrompt "Choose NavPoint (?=Help)"
+		setTextTrigger RouteCmdPrompt       :RouteCmdPrompt "Command [TL="
+		setDelayTrigger RoutePromptDelay    :RoutePromptDelay 1000
 		pause
+
+		:RouteNavPrompt
+			killAllTriggers
+			send "q"
+			waitfor "Command [TL="
+			goto :Latency_Delay
+
+		:RouteCmdPrompt
+			killAllTriggers
+			goto :Latency_Delay
+
+		:RoutePromptDelay
+			killAllTriggers
+			waitfor "Command [TL="
 
 		:Latency_Delay
 
@@ -1741,6 +1814,11 @@ return
 	send "qq*"
 	while (SECTOR.WARPSIN[$MAP~stardock][$i] > 0)
 		setVar $RED_adj SECTOR.WARPSIN[$MAP~stardock][$i]
+		setVar $checkSector $RED_adj
+		gosub :VerifySectorAdjDock
+		if ($sectorAdjDock = FALSE)
+			goto :TryingNextAdj
+		end
 		send "m " & $RED_adj & "* y"
 		setTextTrigger TwarpBlind 			:TwarpBlind "Do you want to make this jump blind? "
 		setTextTrigger TwarpLocked			:TwarpLocked "All Systems Ready, shall we engage? "
@@ -1775,12 +1853,85 @@ return
     	add $i 1
 	end
 
-	:NoAdjsFound
-		setVar $RED_adj 0
-		return
+		:NoAdjsFound
+			setVar $RED_adj 0
+			return
 
-	:SectorLocked
+		:SectorLocked
+			return
+
+:ChooseNearbyClass0Refurb
+	setVar $nearClass0Port 0
+	setVar $nearClass0Dist 100000
+	setVar $class0Candidate 0
+	setVar $class0Candidate $map~rylos
+	gosub :ConsiderNearbyClass0
+	setVar $class0Candidate $map~alpha_centauri
+	gosub :ConsiderNearbyClass0
+	setVar $class0Candidate 1
+	gosub :ConsiderNearbyClass0
+return
+
+:ConsiderNearbyClass0
+	if ($class0Candidate <= 0)
 		return
+	end
+	getdistance $class0Dist $player~current_sector $class0Candidate
+	if (($class0Dist > 0) AND ($class0Dist <= 3) AND ($class0Dist < $nearClass0Dist))
+		setVar $nearClass0Port $class0Candidate
+		setVar $nearClass0Dist $class0Dist
+	end
+return
+
+:ChooseClass0FigFallback
+	setVar $class0FallbackPort 0
+	setVar $class0FallbackDist 100000
+	setVar $class0Candidate 0
+	setVar $class0Candidate $map~rylos
+	gosub :ConsiderClass0FigFallback
+	setVar $class0Candidate $map~alpha_centauri
+	gosub :ConsiderClass0FigFallback
+	setVar $class0Candidate 1
+	gosub :ConsiderClass0FigFallback
+return
+
+:ConsiderClass0FigFallback
+	if ($class0Candidate <= 0)
+		return
+	end
+	setVar $class0HasFigAdj FALSE
+	setVar $class0AdjIdx 1
+	while (SECTOR.WARPSIN[$class0Candidate][$class0AdjIdx] > 0)
+		setVar $class0Adj SECTOR.WARPSIN[$class0Candidate][$class0AdjIdx]
+		getSectorParameter $class0Adj "FIGSEC" $class0IsFigged
+		if ($class0IsFigged)
+			setVar $class0HasFigAdj TRUE
+		end
+		add $class0AdjIdx 1
+	end
+	if ($class0HasFigAdj)
+		getdistance $class0Dist $player~current_sector $class0Candidate
+		if (($class0Dist > 0) AND ($class0Dist < $class0FallbackDist))
+			setVar $class0FallbackPort $class0Candidate
+			setVar $class0FallbackDist $class0Dist
+		end
+	end
+return
+
+
+:VerifySectorAdjDock
+	setVar $sectorAdjDock FALSE
+	if (($checkSector <= 0) OR ($MAP~stardock <= 0))
+		return
+	end
+	setVar $checkWarpIdx 1
+	while (SECTOR.WARPS[$checkSector][$checkWarpIdx] > 0)
+		if (SECTOR.WARPS[$checkSector][$checkWarpIdx] = $MAP~stardock)
+			setVar $sectorAdjDock TRUE
+		end
+		add $checkWarpIdx 1
+	end
+	return
 
 
 :TurnsRequired
