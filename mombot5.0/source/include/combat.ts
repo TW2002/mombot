@@ -1,16 +1,4 @@
 :COMBAT~FASTATTACK
-
-
-
-
-
-
-
-
-
-
-
-
 setvar $COMBAT~TARGETSTRING "a"
 setvar $PLAYER~ISFOUND FALSE
 setvar $COMBAT~TARGETSHOTGUN "a z z y z"&$SHIP~SHIP_MAX_ATTACK&"* * a z z * y z"&$SHIP~SHIP_MAX_ATTACK&"* * a z z * * y z"&$SHIP~SHIP_MAX_ATTACK&"* * "
@@ -452,9 +440,10 @@ else
 
 
 
-
+    setvar $COMBAT~STILLSHIELDS FALSE
     setvar $COMBAT~SHIP_SHIELD_PERCENT 0
     setvar $COMBAT~SHIELDPOINTS 0
+    setvar $COMBAT~SHIELDPERC 0
     settextlinetrigger COMBAT :COMBAT_SCAN "Combat scanners show enemy shields at"
     settexttrigger NOCOMBAT :CAP_IT "How many fighters do you wish to use"
     settextlinetrigger NOTARGET :NOCAPPINGTARGETS "Do you want instructions (Y/N) [N]?"
@@ -498,20 +487,20 @@ else
 
     if ((($PLAYER~DEFENDERCAPPING = TRUE) and ($COMBAT~UNMANNED <> TRUE)) and ($COMBAT~TARGETISALIEN = TRUE))
       if ($COMBAT~STILLSHIELDS = TRUE)
-        if ($COMBAT~SHIP_FIGHTERS > 750)
+        if ($COMBAT~SHIP_FIGHTERS > 3500)
           setvar $COMBAT~CAP_POINTS (($COMBAT~SHIELDPOINTS / $COMBAT~OWN_ODDS) + ($COMBAT~CAP_POINTS / 100))
         else
-          setvar $COMBAT~CAP_POINTS ($COMBAT~SHIELDPOINTS + 1)
+          setvar $COMBAT~CAP_POINTS (($combat~shieldPoints / $combat~own_odds) + 1)
         end
       else
-        if ($COMBAT~SHIP_FIGHTERS > 750)
-          setvar $COMBAT~CAP_POINTS (($COMBAT~CAP_POINTS / $COMBAT~OWN_ODDS) - ($COMBAT~CAP_POINTS / 70))
-        else
+      # Changes imported from TBH version
+        #if ($COMBAT~SHIP_FIGHTERS > 750)
+        #  setvar $COMBAT~CAP_POINTS (($COMBAT~CAP_POINTS / $COMBAT~OWN_ODDS) - ($COMBAT~CAP_POINTS / 70))
+        #else
           setvar $COMBAT~CAP_POINTS 1
-        end
+        #end
       end
     else
-
       setvar $COMBAT~CAP_POINTS ($COMBAT~CAP_POINTS / $COMBAT~OWN_ODDS)
     end
     if ($COMBAT~UNMANNED = TRUE)
@@ -523,15 +512,35 @@ else
     elseif ($COMBAT~CAP_POINTS > $COMBAT~MAX_FIGS)
       setvar $COMBAT~CAP_POINTS $COMBAT~MAX_FIGS
     end
+  echo ANSI_15&"sendattack: z"&$combat~cap_points&"*  "
+  echo "shieldperc:["&$combat~shieldperc&"]*"
+# added from TBH version
+    if ((($combat~last_shield_percentage = $combat~shieldperc) and ($combat~shieldperc > 0)))
+		  setvar $combat~cap_points $combat~cap_points+$combat~added_attack
+      setvar $combat~added_attack $combat~added_attack+2
+      setvar $combat~cummulative_added_attack $combat~cummulative_added_attack+$combat~cap_points
+    else
+      if (($combat~last_shield_percentage > 0) and ($combat~shieldperc > 0))
+        setvar $combat~shield_difference ($combat~last_shield_percentage - $combat~shieldperc)
+        if ($combat~shieldperc > 1)
+          setvar $combat~a_little_extra (($combat~cummulative_added_attack/$combat~shield_difference)/2)
+          setvar $combat~cap_points ((($combat~cummulative_added_attack/$combat~shield_difference) * $combat~shieldperc)-$combat~a_little_extra)
+          setvar $combat~cummulative_added_attack 0
+        end
+      else
+        setvar $combat~added_attack 2
+      end
+    end
+    setvar $combat~last_shield_percentage $combat~shieldperc
     setvar $COMBAT~SENDATTACK "z"&$COMBAT~CAP_POINTS&"*  "
     if ($PLAYER~STARTINGLOCATION = "Citadel")
       setvar $COMBAT~SENDATTACK $COMBAT~SENDATTACK&$COMBAT~REFURBSTRING
     elseif (($PLAYER~REFURBSTRING <> "") and ($PLAYER~REFURBSTRING <> 0))
       setvar $COMBAT~SENDATTACK $COMBAT~SENDATTACK&$PLAYER~REFURBSTRING
     end
+    #echo ANSI_15&"sendattack: "&$combat~sendAttack&"*"
     send $COMBAT~SENDATTACK
     if ($PLAYER~ONETAP = TRUE)
-
       setvar $SWITCHBOARD~MESSAGE "One tap complete.*"
       gosub :SWITCHBOARD~SWITCHBOARD
       halt
@@ -545,6 +554,8 @@ else
       killtrigger CITCAPBREAK
       return
     end
+    echo ANSI_15&"sendattack: z"&$combat~cap_points&"*  "
+    echo "shieldperc:["&$combat~shieldperc&"]*"
     if ($COMBAT~CAP_POINTS = 1)
       setvar $COMBAT~I 1
       setvar $COMBAT~BURST ""
@@ -553,6 +564,7 @@ else
         setvar $PLAYER~FIGHTERS ($PLAYER~FIGHTERS - $COMBAT~CAP_POINTS)
         add $COMBAT~I 1
       end
+      echo ANSI_15&"burst: " & $COMBAT_BURST
       send $COMBAT~BURST
       setdelaytrigger LITTLESLOWER :DONELITTLESLOWER 10
       pause
