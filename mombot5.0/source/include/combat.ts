@@ -512,8 +512,8 @@ else
     elseif ($COMBAT~CAP_POINTS > $COMBAT~MAX_FIGS)
       setvar $COMBAT~CAP_POINTS $COMBAT~MAX_FIGS
     end
-  echo ANSI_15&"sendattack: z"&$combat~cap_points&"*  "
-  echo "shieldperc:["&$combat~shieldperc&"]*"
+  #echo ANSI_15&"sendattack: z"&$combat~cap_points&"*  "
+  #echo "shieldperc:["&$combat~shieldperc&"]*"
 # added from TBH version
     if ((($combat~last_shield_percentage = $combat~shieldperc) and ($combat~shieldperc > 0)))
 		  setvar $combat~cap_points $combat~cap_points+$combat~added_attack
@@ -554,8 +554,8 @@ else
       killtrigger CITCAPBREAK
       return
     end
-    echo ANSI_15&"sendattack: z"&$combat~cap_points&"*  "
-    echo "shieldperc:["&$combat~shieldperc&"]*"
+    #echo ANSI_15&"sendattack: z"&$combat~cap_points&"*  "
+    #echo "shieldperc:["&$combat~shieldperc&"]*"
     if ($COMBAT~CAP_POINTS = 1)
       setvar $COMBAT~I 1
       setvar $COMBAT~BURST ""
@@ -564,7 +564,7 @@ else
         setvar $PLAYER~FIGHTERS ($PLAYER~FIGHTERS - $COMBAT~CAP_POINTS)
         add $COMBAT~I 1
       end
-      echo ANSI_15&"burst: " & $COMBAT_BURST
+      #echo ANSI_15&"burst: " & $COMBAT_BURST
       send $COMBAT~BURST
       setdelaytrigger LITTLESLOWER :DONELITTLESLOWER 10
       pause
