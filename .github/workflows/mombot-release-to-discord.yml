@@ -1,0 +1,113 @@
+name: Mombot Release Zip to Discord
+
+on:
+  push:
+    paths:
+      - "mombot5.0/Release/mombot.zip"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mombot-zip-to-discord:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Build Discord payload
+        env:
+          REPOSITORY: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          python <<'PY'
+          import json
+          import os
+
+          repo = os.environ["REPOSITORY"]
+          sha = os.environ["SHA"]
+          short_sha = sha[:7]
+          branch = os.environ["REF_NAME"]
+
+          with open(os.environ["GITHUB_EVENT_PATH"], "r", encoding="utf-8") as handle:
+              event = json.load(handle)
+
+          head_commit = event.get("head_commit") or {}
+          actor = (
+              event.get("pusher", {}).get("name")
+              or event.get("sender", {}).get("login")
+              or "unknown"
+          )
+          compare_url = event.get("compare") or f"https://github.com/{repo}/commit/{sha}"
+          commit_url = f"https://github.com/{repo}/commit/{sha}"
+          summary = (head_commit.get("message") or "mombot.zip updated").strip().splitlines()[0]
+          download_url = f"https://github.com/{repo}/raw/{sha}/mombot5.0/Release/mombot.zip"
+
+          payload = {
+              "username": "Github Update",
+              "avatar_url": "https://cdn.discordapp.com/avatars/487431320314576937/bd64361e4ba6313d561d54e78c9e7171.png",
+              "content": "||@everyone||",
+              "embeds": [
+                  {
+                      "title": "Mombot release zip updated",
+                      "description": (
+                          f"**Branch:** `{branch}`\n"
+                          f"**Commit:** [`{short_sha}`]({commit_url})\n"
+                          f"**Author:** `{actor}`\n"
+                          f"**Summary:** {summary}\n\n"
+                          f"**Download:** [mombot.zip]({download_url})\n\n"
+                          f"[View changes]({compare_url})"
+                      ),
+                      "color": 2105893,
+                      "footer": { "text": "Changelog" },
+                  }
+              ],
+          }
+
+          with open("discord-payload.json", "w", encoding="utf-8") as handle:
+              json.dump(payload, handle)
+          PY
+
+      - name: Send Discord notification
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL || secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          python <<'PY'
+          import os
+          import sys
+          import urllib.request
+          import urllib.error
+
+          webhook_url = (os.environ.get("WEBHOOK_URL") or "").strip().strip("\"'")
+          if not webhook_url:
+              print("Missing WEBHOOK_URL / DISCORD_WEBHOOK_URL secret.", file=sys.stderr)
+              sys.exit(1)
+
+          if webhook_url.endswith("/github"):
+              webhook_url = webhook_url[:-7]
+
+          with open("discord-payload.json", "rb") as handle:
+              payload = handle.read()
+
+          request = urllib.request.Request(
+              webhook_url,
+              data=payload,
+              headers={
+                  "Content-Type": "application/json",
+                  "Accept": "application/json",
+                  "User-Agent": "GitHub-Hookshot/1.0",
+              },
+              method="POST",
+          )
+
+          try:
+              with urllib.request.urlopen(request) as response:
+                  status = getattr(response, "status", response.getcode())
+                  if status >= 300:
+                      print(f"Discord webhook returned HTTP {status}", file=sys.stderr)
+                      sys.exit(1)
+          except urllib.error.HTTPError as exc:
+              body = exc.read().decode("utf-8", "replace")
+              print(f"Discord webhook returned HTTP {exc.code}: {body}", file=sys.stderr)
+              raise
+          PY

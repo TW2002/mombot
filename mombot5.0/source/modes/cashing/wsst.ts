@@ -429,7 +429,6 @@
 	send "^f*"&$destination&"**q"
 	pause
 
-# getcourse
 :getCourse
 #Does Specific Course Calculation
 	killalltriggers
