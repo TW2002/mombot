@@ -257,7 +257,7 @@
 					setVar $PLAYER~buytype "b"
 				end
 				setVar $PLAYER~buydownRoundsFromParam $player~turnsToEmpty
-				gosub :player~buy
+				gosub :planethaggle~buy
 				gosub :PLAYER~quikstats
 				send "q"
 				gosub :planet~getplanetinfo
@@ -420,5 +420,6 @@ return
 #INCLUDES:
 include "source\include\bot"
 include "source\include\player"
+include "source\include\planethaggle"
 include "source\include\planet"
 include "source\include\ship"

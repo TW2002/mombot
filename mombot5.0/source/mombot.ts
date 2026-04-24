@@ -18,6 +18,7 @@ goto :BOT~load_bot
 
 :MAIN~module_vars
 	saveVar $bot~command
+	saveVar $bot~command_typed
 	saveVar $bot~user_command_line
 	setVar $switchboard~bot_name $bot~bot_name
 	saveVar $switchboard~bot_name
@@ -46,6 +47,8 @@ return
 	saveVar $safe_planet
 	setVar $command $bot~command
 	saveVar $command
+	setVar $command_typed $bot~command_typed
+	saveVar $command_typed
 	setvar $user_command_line $bot~user_command_line
 	saveVar $user_command_line
 	setVar $bot_name $bot~bot_name
@@ -250,7 +253,6 @@ include "source\include\player"
 include "source\include\ship"
 include "source\include\gameprefs"
 include "source\include\combat"
-include "source\include\planet"
 include "source\include\sector"
 include "source\include\map"
 include "source\include\game"

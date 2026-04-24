@@ -43,7 +43,10 @@
 							cutText $aliasLine $aliasTarget ($aliasEqPos + 1) 9999
 							lowerCase $aliasName
 							lowerCase $aliasTarget
-							if ($resolvedHelpCommand = $aliasName)
+							setVar $aliasNames ","&$aliasName&","
+							stripText $aliasNames " "
+							getWordPos $aliasNames $aliasNamePos ","&$resolvedHelpCommand&","
+							if ($aliasNamePos > 0)
 								setVar $resolvedHelpCommand $aliasTarget
 								goto :help_alias_resolved
 							end

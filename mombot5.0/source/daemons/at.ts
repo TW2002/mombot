@@ -1,6 +1,4 @@
 systemscript
-
-
 	gosub :BOT~loadVars
 	setVar $BOT~help[1]  $BOT~tab&"Does bot command at certain time "
 	setVar $BOT~help[2]  $BOT~tab&"      "
@@ -15,7 +13,6 @@ systemscript
 	setVar $BOT~help[11] $BOT~tab&"     The time is on your machine, not the game server"
 	gosub :bot~helpfile
 
-
 	loadVar $bot~bot_name
 	loadVar $bot~parm1
 	loadVar $bot~user_command_line
@@ -28,17 +25,13 @@ systemscript
 		halt
 	end
 
-
-
-
-
 	getLength $bot~parm1 $length
 	getWordPos $bot~user_command_line $pos $bot~parm1
 	
-	
 	if (($bot~parm2 <> "pm") and ($bot~parm2 <> "am"))
 		send "'{"&$bot~bot_name&"} - Time must be entered in system format.*"
-		goto :just_loaded_timers
+		halt
+		#goto :just_loaded_timers
 	end
 
     fileExists $exists $bot~timer_file

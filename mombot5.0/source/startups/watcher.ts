@@ -51,6 +51,7 @@ setTextLineTrigger  emergency_reboot      :emergency_reboot "<EMERGENCY REBOOT>"
 setTextLineTrigger  shipdestroyed         :shipdestroyed "You will have to start over from scratch!"
 setTextLineTrigger  getPlanetNumberRaw    :setPlanetNumberRaw "Land on which planet <Q to abort> ? "
 setTextLineTrigger  getShipNumberRaw       :setShipNumberRaw "Choose which ship to beam to (Q=Quit) "
+killtrigger         checkifbotalive
 setdelaytrigger		checkifbotalive       :checkifbotalive 60000
 settextlinetrigger lracheck :lracheck "For stealing from this port, your alignment"
 settextlinetrigger lracheck2 :lracheck "For robbing this port, your alignment"
@@ -722,6 +723,7 @@ pause
 	loadvar $bot~bot_name
 
 	if (ISNATIVEBOT = TRUE)
+		killtrigger         checkifbotalive
 		setdelaytrigger		checkifbotalive       :checkifbotalive 60000
 		pause
 	end
@@ -743,6 +745,7 @@ pause
 			ECHO "**"&ansi_2&"["&ansi_4&"No mombot is running, automatically booting up mombot."&ansi_2&"]**"
 			load "scripts\"&$bot~mombot_directory&"\mombot.cts"
 		end
+		killtrigger         checkifbotalive
 		setdelaytrigger		checkifbotalive       :checkifbotalive 60000
 		pause
 	end

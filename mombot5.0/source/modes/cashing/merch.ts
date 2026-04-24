@@ -287,36 +287,36 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
     end
     if ($planet~planetnegotiate = TRUE)
       killalltriggers
-      setvar $planet~_ck_pnego_fueltosell "-1"
+      setvar $planethaggle~_ck_pnego_fueltosell "-1"
       if ($SELLINGORG)
         if ($SELLHALF)
           setvar $ORG_TO_SELL (PORT.ORG[$NEARFIG] - $HALF_PORT_MAX)
           if ($ORG_TO_SELL <= 0)
-            setvar $planet~_ck_pnego_orgtosell "-1"
+            setvar $planethaggle~_ck_pnego_orgtosell "-1"
           else
-            setvar $planet~_ck_pnego_orgtosell $ORG_TO_SELL
+            setvar $planethaggle~_ck_pnego_orgtosell $ORG_TO_SELL
           end
         else
-          setvar $planet~_ck_pnego_orgtosell "max"
+          setvar $planethaggle~_ck_pnego_orgtosell "max"
         end
       else
-        setvar $planet~_ck_pnego_orgtosell "-1"
+        setvar $planethaggle~_ck_pnego_orgtosell "-1"
       end
       if ($SELLINGEQUIP)
         if ($SELLHALF)
           setvar $EQUIP_TO_SELL (PORT.EQUIP[$NEARFIG] - $HALF_PORT_MAX)
           if ($EQUIP_TO_SELL <= 0)
-            setvar $planet~_ck_pnego_equiptosell "-1"
+            setvar $planethaggle~_ck_pnego_equiptosell "-1"
           else
-            setvar $planet~_ck_pnego_equiptosell $EQUIP_TO_SELL
+            setvar $planethaggle~_ck_pnego_equiptosell $EQUIP_TO_SELL
           end
         else
-          setvar $planet~_ck_pnego_equiptosell "max"
+          setvar $planethaggle~_ck_pnego_equiptosell "max"
         end
       else
-        setvar $planet~_ck_pnego_equiptosell "-1"
+        setvar $planethaggle~_ck_pnego_equiptosell "-1"
       end
-      gosub :planet~planetneg
+      gosub :planethaggle~planetneg
       send "cr*q"
       gosub :player~quikstats
       if ($SELLINGEQUIP and (PORT.EQUIP[$NEARFIG] > $MINIMUMFUEL))
@@ -329,7 +329,7 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
         setvar $player~buyobject "f"
         setvar $player~buytype "s"
         setvar $player~buydownroundsfromparam $player~turnstoempty
-        gosub :player~buy
+        gosub :planethaggle~buy
         gosub :player~quikstats
       end
     else
@@ -505,8 +505,9 @@ setsectorparameter $NEARFIG "FIGSEC" FALSE
 goto :TRYAGAIN2
 
 # includes:
-include "include/bot.ts"
-include "include/switchboard.ts"
-include "include/player.ts"
-include "include/planet.ts"
-include "include/port.ts"
+include "source\include\bot"
+include "source\include\switchboard"
+include "source\include\player"
+include "source\include\planethaggle"
+include "source\include\planet"
+include "source\include\port"

@@ -293,23 +293,23 @@
 
 				if ($planet~planetNegotiate = TRUE)
 					killAllTriggers
-					setVar $planet~_ck_pnego_fueltosell "-1"
+					setVar $planethaggle~_ck_pnego_fueltosell "-1"
 					if (($planet~planetfuel >= 100000) and ($sellfuel = true))
-						setVar $planet~_ck_pnego_fueltosell "max"
+						setVar $planethaggle~_ck_pnego_fueltosell "max"
 					else
-						setVar $planet~_ck_pnego_fueltosell "-1"
+						setVar $planethaggle~_ck_pnego_fueltosell "-1"
 					end
 					if ($planet~planetorg >= 500)
-						setVar $planet~_ck_pnego_orgtosell "max"
+						setVar $planethaggle~_ck_pnego_orgtosell "max"
 					else
-						setVar $planet~_ck_pnego_orgtosell "-1"
+						setVar $planethaggle~_ck_pnego_orgtosell "-1"
 					end
 					if ($planet~planetequip >= 500)
-						setVar  $planet~_ck_pnego_equiptosell "max"
+						setVar  $planethaggle~_ck_pnego_equiptosell "max"
 					else
-						setVar  $planet~_ck_pnego_equiptosell "-1"
+						setVar  $planethaggle~_ck_pnego_equiptosell "-1"
 					end
-					gosub :PLANET~planetNeg
+					gosub :PLANETHAGGLE~planetNeg
 				else	
 					killAllTriggers
 					gosub :PLAYER~quikstats
@@ -468,7 +468,7 @@
 						else
 							setVar $PLAYER~buytype "b"
 						end
-						gosub :player~buy
+						gosub :planethaggle~buy
 						gosub :PLAYER~quikstats
 						end
 					end
@@ -483,7 +483,7 @@
 						else
 							setVar $PLAYER~buytype "b"
 						end
-						gosub :player~buy
+						gosub :planethaggle~buy
 						gosub :PLAYER~quikstats
 						end
 					end
@@ -494,7 +494,7 @@
 						else
 						setVar $PLAYER~buyobject "f"
 						setVar $PLAYER~buytype "s"
-						gosub :player~buy
+						gosub :planethaggle~buy
 						gosub :PLAYER~quikstats
 						end
 					end
@@ -1227,6 +1227,7 @@ return
 #INCLUDES:
 include "source\include\bot"
 include "source\include\player"
+include "source\include\planethaggle"
 include "source\include\planet"
 include "source\include\ship"
 include "source\include\grid"

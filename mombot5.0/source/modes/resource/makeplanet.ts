@@ -138,7 +138,7 @@ if ($pos > 0)
 	end
 end
 
-gosub :planet~make_planet_array
+gosub :planetnames~make_planet_array
 
 gosub :makeplanet
 if (($startingLocation = "Citadel") OR ($startingLocation = "Planet"))
@@ -153,19 +153,19 @@ halt
 
 
   setVar $Failed 0
-  gosub :player~quikstats
+  gosub :PLAYER~QUIKSTATS
 
-  setvar $sector currentsector
-  setVar $Credits currentcredits
-  setVar $holds currentholds
-  setVar $torps currentgentorps
-  setVar $dets currentatomics
-  setVar $figs currentfighters
-  setVar $shield currentshields
+  setvar $sector $PLAYER~CURRENT_SECTOR
+  setVar $Credits $PLAYER~CREDITS
+  setVar $holds $PLAYER~TOTAL_HOLDS
+  setVar $torps $PLAYER~GENESIS
+  setVar $dets $PLAYER~ATOMIC
+  setVar $figs $PLAYER~FIGHTERS
+  setVar $shield $PLAYER~SHIELDS
   
 
   # see if we really can twarp
-  if ((SECTOR.FIGS.QUANTITY[$Sector] <= 0) or ((SECTOR.FIGS.OWNER[$Sector] <> "belong to your Corp") and (SECTOR.FIGS.OWNER[$Sector] = "yours")) or (currenttwarptype = 0) or (currentalignment < 1000)) and ($WarpType = "T")
+  if ((SECTOR.FIGS.QUANTITY[$Sector] <= 0) or ((SECTOR.FIGS.OWNER[$Sector] <> "belong to your Corp") and (SECTOR.FIGS.OWNER[$Sector] = "yours")) or (($PLAYER~TWARP_TYPE = 0) or ($PLAYER~TWARP_TYPE = "No")) or ($PLAYER~ALIGNMENT < 1000)) and ($WarpType = "T")
 	setVar $SWITCHBOARD~message "Cannot twarp safely, so halting.  Check alignment and make sure fighter is in sector.*"
 	gosub :SWITCHBOARD~switchboard
 	halt
@@ -325,18 +325,35 @@ end
     return
   end
   
-  gosub :PlayerInfo~InfoQuick
-  setVar $buyFigs ($figs - currentfighters)
-  setVar $buyShield ($shield - currentshields)
-  setVar $Credits currentcredits
+  gosub :PLAYER~QUIKSTATS
+  setVar $buyFigs ($figs - $PLAYER~FIGHTERS)
+  setVar $buyShield ($shield - $PLAYER~SHIELDS)
+  setVar $Credits $PLAYER~CREDITS
   
   loadvar $map~stardock
 	  
   if ($WarpType = "T")
     # TWarp to stardock
-    setVar $SeekProduct~Product 1
-    setVar $SeekProduct~Holds currenttotalholds
-    gosub :SeekProduct~SeekProduct
+    gosub :MAKEPLANET~CALCTWARPORE
+    if ($MAKEPLANET~ORE_SHORT > 0)
+      if ($MAKEPLANET~EMPTY_HOLDS <= 0)
+        setVar $SWITCHBOARD~message "Need more ore for the round trip to StarDock, but the ship has no empty holds.*"
+        gosub :SWITCHBOARD~switchboard
+        setVar $Failed 1
+        return
+      end
+
+      if ($MAKEPLANET~EMPTY_HOLDS < $MAKEPLANET~ORE_SHORT)
+        setVar $SWITCHBOARD~message "Need "&$MAKEPLANET~ORE_SHORT&" holds of ore for the round trip to StarDock, but only "&$MAKEPLANET~EMPTY_HOLDS&" holds are free.*"
+        gosub :SWITCHBOARD~switchboard
+        setVar $Failed 1
+        return
+      end
+
+      setVar $SeekProduct~Product 1
+      setVar $SeekProduct~Holds $MAKEPLANET~ORE_SHORT
+      gosub :MAKEPLANET~SEEKPRODUCT
+    end
     
     if ($map~stardock < 600) or (SECTORS > 5000)
       send $map~stardock "*yy"
@@ -346,7 +363,7 @@ end
   else
     setVar $Warp~Mode $WarpType
     setVar $Warp~Dest $map~stardock
-    gosub :Warp~Warp
+    gosub :MAKEPLANET~WARP
   end
 
   send "ps  g yg qh t"
@@ -383,7 +400,7 @@ end
     if ($buyFigs > 0)
       send "b" $buyFigs "*"
     end
-    if ($buyFigs > 0)
+    if ($buyShield > 0)
       send "c" $buyShield "*"
     end
     
@@ -401,23 +418,193 @@ end
   else
     setVar $Warp~Mode $WarpType
     setVar $Warp~Dest $Sector
-    gosub :Warp~Warp
+    gosub :MAKEPLANET~WARP
   end
   
   return
   
+:MAKEPLANET~SEEKPRODUCT
+if ($SEEKPRODUCT~HOLDS = 0)
+  gosub :PLAYER~QUIKSTATS
+  setvar $SEEKPRODUCT~HOLDS $PLAYER~TOTAL_HOLDS
+end
+
+:MAKEPLANET~SEEKPRODUCT_GOGATHER
+setvar $MOVE~CHECKSUB ":MAKEPLANET~SEEKPRODUCT_CHECKSECTOR"
+send "d"
+gosub :MOVE~MOVE
+
+if ($SEEKPRODUCT~FOUND = "P")
+:MAKEPLANET~SEEKPRODUCT_BUYPRODUCT
+  if ($SEEKPRODUCT~PRODUCT = 1)
+    setvar $HAGGLE~BUYPROD "Fuel"
+  elseif ($SEEKPRODUCT~PRODUCT = 2)
+    setvar $HAGGLE~BUYPROD "Organics"
+  else
+    setvar $HAGGLE~BUYPROD "Equipment"
+  end
+
+  setvar $HAGGLE~QUANTITY 0
+  setvar $HAGGLE~SECTOR $SEEKPRODUCT~SOURCESECTOR
+  send "pt"
+  gosub :HAGGLE~HAGGLE
+
+  if ($HAGGLE~ABORT)
+    goto :MAKEPLANET~SEEKPRODUCT_BUYPRODUCT
+  end
+else
+  send "tnt"&$SEEKPRODUCT~PRODUCT "*q"
+end
+return
+
+:MAKEPLANET~SEEKPRODUCT_CHECKSECTOR
+setvar $FINDPRODUCT~QUANTITY $SEEKPRODUCT~HOLDS
+setvar $FINDPRODUCT~PRODUCT $SEEKPRODUCT~PRODUCT
+setvar $FINDPRODUCT~IGNORELIST $SEEKPRODUCT~IGNORELIST
+setvar $FINDPRODUCT~STAYONPLANET 1
+setvar $FINDPRODUCT~SECTOR $MOVE~CURSECTOR
+
+gosub :FINDPRODUCT~FINDPRODUCT
+
+setvar $SEEKPRODUCT~IGNORELIST $FINDPRODUCT~IGNORELIST
+
+if ($FINDPRODUCT~LOCATION <> 0)
+  setvar $MOVE~FOUND 1
+  setvar $SEEKPRODUCT~SOURCESECTOR $MOVE~CURSECTOR
+  setvar $SEEKPRODUCT~FOUND $FINDPRODUCT~LOCATION
+end
+
+return
+
+:MAKEPLANET~CALCTWARPORE
+setvar $MAKEPLANET~ORE_REQUIRED 0
+setvar $MAKEPLANET~ORE_SHORT 0
+setvar $MAKEPLANET~EMPTY_HOLDS ($PLAYER~TOTAL_HOLDS - ($PLAYER~ORE_HOLDS + $PLAYER~ORGANIC_HOLDS + $PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
+
+getdistance $MAKEPLANET~DIST1 $PLAYER~CURRENT_SECTOR $MAP~STARDOCK
+getdistance $MAKEPLANET~DIST2 $MAP~STARDOCK $PLAYER~CURRENT_SECTOR
+
+if ($PLAYER~CURRENT_SECTOR <> $MAP~STARDOCK)
+  if ($MAKEPLANET~DIST1 <= 0)
+    setVar $SWITCHBOARD~message "Insufficient warp data plotting course to StarDock for makeplanet.*"
+    gosub :SWITCHBOARD~switchboard
+    setVar $Failed 1
+    return
+  end
+
+  if ($MAKEPLANET~DIST2 <= 0)
+    setVar $SWITCHBOARD~message "Insufficient warp data plotting return course from StarDock for makeplanet.*"
+    gosub :SWITCHBOARD~switchboard
+    setVar $Failed 1
+    return
+  end
+end
+
+setvar $MAKEPLANET~ORE_REQUIRED (($MAKEPLANET~DIST1 + $MAKEPLANET~DIST2) * 3)
+if ($PLAYER~ORE_HOLDS < $MAKEPLANET~ORE_REQUIRED)
+  setvar $MAKEPLANET~ORE_SHORT ($MAKEPLANET~ORE_REQUIRED - $PLAYER~ORE_HOLDS)
+end
+
+return
+
+:MAKEPLANET~WARP
+if (($SECTORS > 5000) or ($WARP~DEST < 600))
+  send $WARP~DEST "*"
+else
+  send $WARP~DEST
+end
+
+settextlinetrigger MAKEPLANET_WARP_ARRIVED :MAKEPLANET~WARP_ARRIVED "You are already in that sector!"
+settextlinetrigger MAKEPLANET_WARP_BEGIN :MAKEPLANET~WARP_BEGIN "<Move>"
+pause
+
+:MAKEPLANET~WARP_BEGIN
+killtrigger MAKEPLANET_WARP_ARRIVED
+settexttrigger MAKEPLANET_WARP_START :MAKEPLANET~WARP_START "Engage the Autopilot?"
+settexttrigger MAKEPLANET_WARP_TWARP :MAKEPLANET~WARP_TWARP "Do you want to engage"
+settextlinetrigger MAKEPLANET_WARP_SINGLE :MAKEPLANET~WARP_SINGLE "Sector  :"
+pause
+
+:MAKEPLANET~WARP_TWARP
+send "n"
+
+:MAKEPLANET~WARP_START
+send "e"
+
+:MAKEPLANET~WARP_SINGLE
+killtrigger MAKEPLANET_WARP_START
+killtrigger MAKEPLANET_WARP_TWARP
+killtrigger MAKEPLANET_WARP_SINGLE
+
+setvar $WARP~STOPPROMPT 1
+setvar $WARP~MINEPROMPT 1
+
+:MAKEPLANET~WARP_MID
+killtrigger MAKEPLANET_WARP_TOLLFIGS
+killtrigger MAKEPLANET_WARP_FIGS
+killtrigger MAKEPLANET_WARP_STOPPROMPT
+killtrigger MAKEPLANET_WARP_MINESPROMPT
+killtrigger MAKEPLANET_WARP_NEXTSECTOR
+killtrigger MAKEPLANET_WARP_ARRIVED
+settextlinetrigger MAKEPLANET_WARP_NEXTSECTOR :MAKEPLANET~WARP_NEXTSECTOR "Sector  :"
+settextlinetrigger MAKEPLANET_WARP_TOLLFIGS :MAKEPLANET~WARP_TOLLFIGS "You have to destroy the fighters or pay"
+settextlinetrigger MAKEPLANET_WARP_FIGS :MAKEPLANET~WARP_FIGS "You have to destroy the fighters to remain"
+settexttrigger MAKEPLANET_WARP_STOPPROMPT :MAKEPLANET~WARP_STOPPROMPT "Stop in this sector"
+settexttrigger MAKEPLANET_WARP_MINESPROMPT :MAKEPLANET~WARP_MINESPROMPT "Mined Sector:"
+settexttrigger MAKEPLANET_WARP_ARRIVED :MAKEPLANET~WARP_ARRIVED "Command [TL="
+pause
+
+:MAKEPLANET~WARP_NEXTSECTOR
+setvar $WARP~STOPPROMPT 1
+setvar $WARP~MINEPROMPT 1
+goto :MAKEPLANET~WARP_MID
+
+:MAKEPLANET~WARP_TOLLFIGS
+if ($MOVE~ATTACK = 3)
+  send "py"
+else
+  send "a9999*"
+end
+goto :MAKEPLANET~WARP_MID
+
+:MAKEPLANET~WARP_FIGS
+send "a9999*"
+goto :MAKEPLANET~WARP_MID
+
+:MAKEPLANET~WARP_STOPPROMPT
+if ($WARP~STOPPROMPT)
+  send "n"
+  setvar $WARP~STOPPROMPT 0
+end
+goto :MAKEPLANET~WARP_MID
+
+:MAKEPLANET~WARP_MINESPROMPT
+if ($WARP~MINEPROMPT)
+  send "n"
+  setvar $WARP~MINEPROMPT 0
+end
+goto :MAKEPLANET~WARP_MID
+
+:MAKEPLANET~WARP_ARRIVED
+killtrigger MAKEPLANET_WARP_BEGIN
+killtrigger MAKEPLANET_WARP_START
+killtrigger MAKEPLANET_WARP_TWARP
+killtrigger MAKEPLANET_WARP_SINGLE
+killtrigger MAKEPLANET_WARP_NEXTSECTOR
+killtrigger MAKEPLANET_WARP_TOLLFIGS
+killtrigger MAKEPLANET_WARP_FIGS
+killtrigger MAKEPLANET_WARP_STOPPROMPT
+killtrigger MAKEPLANET_WARP_MINESPROMPT
+killtrigger MAKEPLANET_WARP_ARRIVED
+return
   
 
 # includes:
 
-include "source\pack2_includes\playerInfo"
-include "source\pack2_includes\warp"
-include "source\pack2_includes\seekProduct"
 include "source\include\bot"
 include "source\include\move"
 include "source\include\findproduct"
-include "source\include\planetcheck"
 include "source\include\haggle"
 include "source\include\player"
-include "source\include\planetinfo"
 include "source\include\planet"
+include "source\include\planetnames"

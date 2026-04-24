@@ -51,4 +51,4 @@ Compared built 5.0 output under `source/` against runtime scripts under `~/twx/s
 - The recovery staging/conflict artifacts remain under `.recovery_work/` for auditability.
 - The include-collapse notes remain in `source/include_collapse_log.md`.
 - Active shared includes now live under `source/include/`; active source, the Windows file enumerator, and installer packaging were all repointed to that canonical include tree.
-- The legacy `source/bot_includes/` tree was retired after migrating active consumers to `source/include/` and preserving the old external wrapper helpers as `include/call.ts`, `include/holo.ts`, `include/pel.ts`, and `include/pgrid.ts`.
+- The legacy `source/bot_includes/` tree was retired after migrating active consumers to `source/include/` and preserving the remaining active wrapper helpers there.

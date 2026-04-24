@@ -17,8 +17,8 @@ if ($PARM1 = "help")
 end
 :CANNONCALCULATOR
 
-gosub :QUIKSTATS~QUIKSTATS
-setvar $STARTINGLOCATION $QUIKSTATS~CURRENT_PROMPT
+gosub :PLAYER~QUIKSTATS
+setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 if ($STARTINGLOCATION <> "Command")
   send "'{" $BOT_NAME "} - Cannon Calculator must be run from command prompt*"
   halt
@@ -56,10 +56,10 @@ while ($I <= $CANNONPLANETCOUNT)
     :GOODPLANET
     killtrigger WRONGPLANET
     killtrigger BADPLANET
-    gosub :PLANETINFO~GETPLANETINFO
+    gosub :PLANET~GETPLANETINFO
     send "q "
-    setvar $CANNONFUEL[$I] $PLANETINFO~PLANET_FUEL
-    setvar $CANNONPERCENT[$I] $PLANETINFO~SECTOR_CANNON
+    setvar $CANNONFUEL[$I] $PLANET~PLANET_FUEL
+    setvar $CANNONPERCENT[$I] $PLANET~SECTOR_CANNON
   end
 
 
@@ -115,6 +115,6 @@ send $QUASAROUTPUT
 halt
 
 # includes:
-include "source\include\quikstats"
+include "source\include\player"
 include "source\include\validation"
-include "source\include\planetinfo"
+include "source\include\planet"

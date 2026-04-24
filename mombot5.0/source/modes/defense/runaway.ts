@@ -310,7 +310,7 @@ return
 
 	:evac_move
 		send "l " $planet~planet[$planet~planetCount] "* "
-		gosub :planetinfo~getPlanetInfo
+		gosub :planet~getPlanetInfo
 		if ($planet~CITADEL < 4)
 			add $planet~planetSkip 1
 			goto :evac_twarp
@@ -382,4 +382,5 @@ return
 	setVar $isValid TRUE
 return
 
+include "source\include\planet"
 include "source\include\player"

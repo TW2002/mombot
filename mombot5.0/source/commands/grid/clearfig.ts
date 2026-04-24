@@ -30,8 +30,8 @@ end
 
 
 
-gosub :QUIKSTATS~QUIKSTATS
-setvar $STARTINGLOCATION $QUIKSTATS~CURRENT_PROMPT
+gosub :PLAYER~QUIKSTATS
+setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 if (($STARTINGLOCATION <> "Citadel") and ($STARTINGLOCATION <> "Command"))
   send "'{" $BOT_NAME "} - Must start at Citadel or Command Prompt.*"
   halt
@@ -56,11 +56,11 @@ elseif ($PGRIDSECTOR = $STARDOCK)
 end
 if ($STARTINGLOCATION = "Citadel")
   send "q"
-  gosub :PLANETINFO~GETPLANETINFO
+  gosub :PLANET~GETPLANETINFO
   send "m * * * c "
 end
-if ($SHIPSTATS~SHIP_MAX_ATTACK <= 0)
-  gosub :SHIPSTATS~GETSHIPSTATS
+if ($SHIP~SHIP_MAX_ATTACK <= 0)
+  gosub :SHIP~GETSHIPSTATS
 end
 
 getwordpos $USER_COMMAND_LINE $POS "def"
@@ -72,8 +72,8 @@ end
 
 setvar $I 1
 setvar $ISFOUND FALSE
-while (SECTOR.WARPS[$QUIKSTATS~CURRENT_SECTOR][$I] > 0)
-  if (SECTOR.WARPS[$QUIKSTATS~CURRENT_SECTOR][$I] = $PGRIDSECTOR)
+while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$I] > 0)
+  if (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$I] = $PGRIDSECTOR)
     setvar $ISFOUND TRUE
   end
   add $I 1
@@ -86,17 +86,18 @@ send "'{" $BOT_NAME "} - Fig Clearing sector "&$PGRIDSECTOR&"* c v* y* "&$PGRIDS
 setvar $MAC "     * "
 setvar $I 1
 if ($DEFEND = FALSE)
-  while ($QUIKSTATS~FIGHTERS >= $SHIPSTATS~SHIP_MAX_ATTACK)
-    setvar $MAC $MAC&"a z "&($SHIPSTATS~SHIP_MAX_ATTACK - 1)&"* * "
+  setvar $FIGHTERS_AVAILABLE $PLAYER~FIGHTERS
+  while ($FIGHTERS_AVAILABLE >= $SHIP~SHIP_MAX_ATTACK)
+    setvar $MAC $MAC&"a z "&($SHIP~SHIP_MAX_ATTACK - 1)&"* * "
     add $I 1
-    subtract $QUIKSTATS~FIGHTERS ($SHIPSTATS~SHIP_MAX_ATTACK - 1)
+    subtract $FIGHTERS_AVAILABLE ($SHIP~SHIP_MAX_ATTACK - 1)
   end
 end
 setvar $MAC $MAC&"j r * f  z  1  * z  c  d  * "
 :ATTACKADJSECTOR
 
-gosub :QUIKSTATS~QUIKSTATS
-if ($QUIKSTATS~FIGHTERS < $SHIPSTATS~SHIP_FIGHTERS_MAX)
+gosub :PLAYER~QUIKSTATS
+if ($PLAYER~FIGHTERS < $SHIP~SHIP_FIGHTERS_MAX)
   send "'{" $BOT_NAME "} - Unable to proceed, not enough fighters.*"
   halt
 end
@@ -104,21 +105,21 @@ if ($STARTINGLOCATION = "Citadel")
   send "Q Q * "
 end
 send "m " $PGRIDSECTOR&$MAC
-gosub :QUIKSTATS~QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 
-if ($QUIKSTATS~CURRENT_SECTOR = $PGRIDSECTOR)
+if ($PLAYER~CURRENT_SECTOR = $PGRIDSECTOR)
   send "'"&$PGRIDSECTOR&"=saveme*"
   if ($STARTINGLOCATION = "Citadel")
     setvar $I 0
     while ($I < 15)
       add $I 1
-      send "l j"&#8&$PLANETINFO~PLANET&"*  *  "
+      send "l j"&#8&$PLANET~PLANET&"*  *  "
     end
   end
   send "'{" $BOT_NAME "} - Successfully Fig Cleared sector "&$PGRIDSECTOR&"*"
 else
   if ($STARTINGLOCATION = "Citadel")
-    send "l j"&#8&$PLANETINFO~PLANET&"*  *  "
+    send "l j"&#8&$PLANET~PLANET&"*  *  "
     gosub :CURRENT_PROMPT
     if ($CURRENT_PROMPT = "Planet")
       send "m* * *"
@@ -157,8 +158,7 @@ striptext $CURRENT_PROMPT #8
 return
 
 # includes:
-include "source\include\quikstats"
+include "source\include\player"
 include "source\include\validation"
-include "source\include\planetinfo"
-include "source\include\pwarp"
-include "source\include\shipstats"
+include "source\include\planet"
+include "source\include\ship"

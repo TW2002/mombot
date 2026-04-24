@@ -266,7 +266,7 @@ return
 	killtrigger loginsuccessful2
 	killtrigger firstpause
 	killtrigger enter
-	setDelayTrigger thedelay2 :thedelay 5000
+	setDelayTrigger thedelay2 :relog_attempt 20000
 return
 
 :calcTime

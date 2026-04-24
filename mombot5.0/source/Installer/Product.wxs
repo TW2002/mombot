@@ -118,8 +118,6 @@
                <File Source="..\Directory Structure.txt"/>
                <File Source="..\page.wav"/>
                <File Source="..\StripExample.ts"/>
-               <File Source="..\MakeBot.exe"/>                               
-               <File Source="..\twxc.exe"/>                                          
             </Component>
 <Component Id="C0083" Directory="D0083" Guid="f3f3a1f5-b40a-4bac-95f4-106fb6023d48">
     <File Id="F0106" Source="..\commands\cashing\mega.ts"/>
@@ -166,7 +164,6 @@
     <File Id="F0144" Source="..\commands\defense\hazkill.ts"/>
 </Component>
 <Component Id="C0086" Directory="D0086" Guid="fbc6ad3e-b9d4-4d9c-b574-090778738f5c">
-    <File Id="F0146" Source="..\commands\general\bg2019.cts"/>
     <File Id="F0147" Source="..\commands\general\bwarp.ts"/>
     <File Id="F0148" Source="..\commands\general\callout.ts"/>
     <File Id="F0149" Source="..\commands\general\cn9.cts"/>
@@ -175,14 +172,12 @@
     <File Id="F0152" Source="..\commands\general\emq.ts"/>
     <File Id="F0153" Source="..\commands\general\fed.ts"/>
     <File Id="F0154" Source="..\commands\general\help.ts"/>
-    <File Id="F0155" Source="..\commands\general\hht2020.cts"/>
     <File Id="F0156" Source="..\commands\general\keep.ts"/>
     <File Id="F0157" Source="..\commands\general\land.ts"/>
     <File Id="F0158" Source="..\commands\general\lift.ts"/>
     <File Id="F0159" Source="..\commands\general\login.ts"/>
     <File Id="F0160" Source="..\commands\general\mac.ts"/>
     <File Id="F0161" Source="..\commands\general\nmac.ts"/>
-    <File Id="F0162" Source="..\commands\general\photon.ts"/>
     <File Id="F0163" Source="..\commands\general\port.cts"/>
     <File Id="F0164" Source="..\commands\general\pwarp.ts"/>
     <File Id="F0165" Source="..\commands\general\qset.cts"/>
@@ -203,14 +198,9 @@
 </Component>
 <Component Id="C0087" Directory="D0087" Guid="bf106bec-3c09-4f9d-84a2-a5b82389d29d">
     <File Id="F0180" Source="..\commands\grid\clear.ts"/>
-    <File Id="F0181" Source="..\commands\grid\climp.cts"/>
-    <File Id="F0182" Source="..\commands\grid\cmine.cts"/>
     <File Id="F0183" Source="..\commands\grid\deploy.ts"/>
     <File Id="F0184" Source="..\commands\grid\exit.ts"/>
-    <File Id="F0185" Source="..\commands\grid\mines.cts"/>
     <File Id="F0186" Source="..\commands\grid\pgrid.ts"/>
-    <File Id="F0187" Source="..\commands\grid\plimp.ts"/>
-    <File Id="F0188" Source="..\commands\grid\pmine.cts"/>
     <File Id="F0189" Source="..\commands\grid\port.ts"/>
     <File Id="F0190" Source="..\commands\grid\surround.cts"/>
 </Component>
@@ -218,18 +208,8 @@
     <File Id="F0192" Source="..\commands\offense\cap.cts"/>
     <File Id="F0193" Source="..\commands\offense\hkill.ts"/>
     <File Id="F0194" Source="..\commands\offense\htorp.ts"/>
+    <File Id="FOffenseInvader" Source="..\commands\offense\invader.ts"/>
     <File Id="F0195" Source="..\commands\offense\kill.cts"/>
-    <File Id="F0196" Source="..\commands\offense\pe.ts"/>
-    <File Id="F0197" Source="..\commands\offense\ped.ts"/>
-    <File Id="F0198" Source="..\commands\offense\pel.ts"/>
-    <File Id="F0199" Source="..\commands\offense\pelk.ts"/>
-    <File Id="F0200" Source="..\commands\offense\pex.ts"/>
-    <File Id="F0201" Source="..\commands\offense\pxe.ts"/>
-    <File Id="F0202" Source="..\commands\offense\pxed.ts"/>
-    <File Id="F0203" Source="..\commands\offense\pxedx.ts"/>
-    <File Id="F0204" Source="..\commands\offense\pxel.ts"/>
-    <File Id="F0205" Source="..\commands\offense\pxelk.ts"/>
-    <File Id="F0206" Source="..\commands\offense\pxex.ts"/>
 </Component>
 <Component Id="C0089" Directory="D0089" Guid="0240dfcd-012c-4efd-8691-1185c5627fad">
     <File Id="F0208" Source="..\commands\resource\buy.cts"/>
@@ -244,25 +224,16 @@
     <File Id="FPreloadLdrop" Source="..\preload\_ldrop.ts"/>
 </Component>
 <Component Id="C0090" Directory="D0090" Guid="5d077e4e-f9c4-4302-99ea-c609f8998f11">
-    <File Id="F0213" Source="..\daemons\alienhunt.cts"/>
     <File Id="F0214" Source="..\daemons\at.cts"/>
-    <File Id="F0215" Source="..\daemons\chat.ts"/>
-    <File Id="F0216" Source="..\daemons\comms.ts"/>
-    <File Id="F0218" Source="..\daemons\ignore.ts"/>
     <File Id="F0219" Source="..\daemons\online.ts"/>
     <File Id="F0220" Source="..\daemons\repeat.cts"/>
-    <File Id="F0221" Source="..\daemons\stats.ts"/>
     <File Id="F0222" Source="..\daemons\teammega.cts"/>
-    <File Id="F0223" Source="..\daemons\viewscreen.ts"/>
-    <File Id="F0224" Source="..\daemons\watcher.ts"/>
 </Component>
 <Component Id="C0092" Directory="D0092" Guid="cbc13b49-6859-480c-9913-fee7784b362c">
     <File Id="F0225" Source="..\modes\cashing\bbb.ts"/>
     <File Id="F0226" Source="..\modes\cashing\furb.ts"/>
     <File Id="F0227" Source="..\modes\cashing\marco.cts"/>
     <File Id="F0228" Source="..\modes\cashing\merch.ts"/>
-    <File Id="F0229" Source="..\modes\cashing\mooexp_p.cts"/>
-    <File Id="F0230" Source="..\modes\cashing\moo_p.cts"/>
     <File Id="F0231" Source="..\modes\cashing\salesman.ts"/>
     <File Id="F0232" Source="..\modes\cashing\sdt.ts"/>
     <File Id="F0233" Source="..\modes\cashing\sst.ts"/>
@@ -282,12 +253,10 @@
     <File Id="F0243" Source="..\modes\defense\reloader.ts"/>
     <File Id="F0244" Source="..\modes\defense\runaway.ts"/>
     <File Id="F0245" Source="..\modes\defense\saveme.ts"/>
-    <File Id="F0246" Source="..\modes\defense\savevar.ts"/>
     <File Id="F0247" Source="..\modes\defense\unstack.ts"/>
 </Component>
 <Component Id="C0096" Directory="D0096" Guid="a631d9c8-8bb7-44b0-b026-895cf2eb586f">
     <File Id="F0249" Source="..\modes\grid\dora.ts"/>
-    <File Id="F0250" Source="..\modes\grid\lspassgrid.ts"/>
     <File Id="F0251" Source="..\modes\grid\mow.ts"/>
     <File Id="F0252" Source="..\modes\grid\pgridder.ts"/>
     <File Id="F0253" Source="..\modes\grid\plimper.ts"/>
@@ -321,61 +290,32 @@
     <File Id="F0277" Source="..\modes\resource\strip.ts"/>
 </Component>
 <Component Id="C0099" Directory="D0099" Guid="eaf5f23c-b590-4c69-ac47-d62de38a080b">
-    <File Id="FIncludeCall" Source="..\include\call.ts"/>
-    <File Id="FIncludeHolo" Source="..\include\holo.ts"/>
-    <File Id="FIncludePel" Source="..\include\pel.ts"/>
-    <File Id="FIncludePgrid" Source="..\include\pgrid.ts"/>
-    <File Id="FIncludeArmid" Source="..\include\armid.ts"/>
-    <File Id="FIncludeArmids" Source="..\include\armids.ts"/>
     <File Id="FIncludeBot" Source="..\include\bot.ts"/>
-    <File Id="FIncludeBuyfig" Source="..\include\buyfig.ts"/>
-    <File Id="FIncludeBuyfuel" Source="..\include\buyfuel.ts"/>
-    <File Id="FIncludeBuyshield" Source="..\include\buyshield.ts"/>
-    <File Id="FIncludeCim" Source="..\include\cim.ts"/>
     <File Id="FIncludeCombat" Source="..\include\combat.ts"/>
     <File Id="FIncludeConnectivity" Source="..\include\connectivity.ts"/>
-    <File Id="FIncludeDep" Source="..\include\dep.ts"/>
-    <File Id="FIncludeDscan" Source="..\include\dscan.ts"/>
     <File Id="FIncludeFighter" Source="..\include\fighter.ts"/>
-    <File Id="FIncludeFighters" Source="..\include\fighters.ts"/>
     <File Id="FIncludeGame" Source="..\include\game.ts"/>
     <File Id="FIncludeGrid" Source="..\include\grid.ts"/>
     <File Id="FIncludeInternalCommands" Source="..\include\internal_commands.ts"/>
     <File Id="FIncludeInvader" Source="..\include\invader.ts"/>
-    <File Id="FIncludeLimp" Source="..\include\limp.ts"/>
-    <File Id="FIncludeLimpets" Source="..\include\limpets.ts"/>
     <File Id="FIncludeMap" Source="..\include\map.ts"/>
-    <File Id="FIncludeMax" Source="..\include\max.ts"/>
     <File Id="FIncludeMenus" Source="..\include\menus.ts"/>
     <File Id="FIncludeMines" Source="..\include\mines.ts"/>
     <File Id="FIncludeModules" Source="..\include\modules.ts"/>
-    <File Id="FIncludeMoveship" Source="..\include\moveship.ts"/>
-    <File Id="FIncludeMow" Source="..\include\mow.ts"/>
-    <File Id="FIncludePatp" Source="..\include\patp.ts"/>
     <File Id="FIncludePlanet" Source="..\include\planet.ts"/>
-    <File Id="FIncludePlanetinfo" Source="..\include\planetinfo.ts"/>
     <File Id="FIncludePlayer" Source="..\include\player.ts"/>
     <File Id="FIncludePort" Source="..\include\port.ts"/>
-    <File Id="FIncludePrompt" Source="..\include\prompt.ts"/>
-    <File Id="FIncludePwarp" Source="..\include\pwarp.ts"/>
-    <File Id="FIncludeQuikstats" Source="..\include\quikstats.ts"/>
-    <File Id="FIncludeScrub" Source="..\include\scrub.ts"/>
     <File Id="FIncludeSearch" Source="..\include\search.ts"/>
     <File Id="FIncludeSector" Source="..\include\sector.ts"/>
     <File Id="FIncludeShip" Source="..\include\ship.ts"/>
-    <File Id="FIncludeShipstats" Source="..\include\shipstats.ts"/>
     <File Id="FIncludeSwitchboard" Source="..\include\switchboard.ts"/>
     <File Id="FIncludeTargeting" Source="..\include\targeting.ts"/>
-    <File Id="FIncludeTopoff" Source="..\include\topoff.ts"/>
+    <File Id="FIncludeUpdate" Source="..\include\update.ts"/>
     <File Id="FIncludeUserInterface" Source="..\include\user_interface.ts"/>
     <File Id="FIncludeValidation" Source="..\include\validation.ts"/>
-    <File Id="FIncludeWith" Source="..\include\with.ts"/>
-    <File Id="FIncludeWorldtrade" Source="..\include\worldtrade.ts"/>
     <File Id="FIncludeXenter" Source="..\include\xenter.ts"/>
 </Component>
 <Component Id="C0132" Directory="D0132" Guid="43cac386-94f8-46d5-9f9f-943f00925110">
-    <File Id="F0315" Source="..\startups\chat.cts"/>
-    <File Id="F0316" Source="..\startups\viewscreen.cts"/>
     <File Id="F0317" Source="..\startups\watcher.cts"/>
 </Component>
 <Component Id="HelpComp" Directory="Help" Guid="b64b40cf-aa6a-4e93-9ece-ae158b059df7">

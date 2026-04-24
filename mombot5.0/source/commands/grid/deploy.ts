@@ -64,6 +64,25 @@
 		add $i 1
 	end
 
+	# Old mine commands can be routed into deploy; use the original command
+	# name to preserve their default mine/corp settings.
+	setvar $legacy_deploy_command $bot~command_typed
+	if ($legacy_deploy_command = "")
+		setvar $legacy_deploy_command $bot~command
+	end
+	lowercase $legacy_deploy_command
+	if ($legacy_deploy_command = "plimp")
+		setvar $bot~user_command_line $bot~user_command_line&" personal limp "
+	elseif ($legacy_deploy_command = "pmine")
+		setvar $bot~user_command_line $bot~user_command_line&" personal mine "
+	elseif ($legacy_deploy_command = "climp")
+		setvar $bot~user_command_line $bot~user_command_line&" corporate limp "
+	elseif ($legacy_deploy_command = "cmine")
+		setvar $bot~user_command_line $bot~user_command_line&" corporate mine "
+	elseif ($legacy_deploy_command = "mines")
+		setvar $bot~user_command_line $bot~user_command_line&" mines "
+	end
+
 	isNumber $isnumber $bot~parm1
 	setvar $default false
 	if ($isnumber = true)
@@ -180,7 +199,7 @@
 
 	if ($fighter)
 		if ($topoff)
-			gosub :topoff~deploy
+			gosub :DEPLOY~TOPOFF
 		else
 			setvar $fighter~offensive $offensive
 			setvar $fighter~defensive $defensive
@@ -198,14 +217,72 @@
 		setvar $mines~amount $deploy_amount
 		gosub :mines~deploy
 	elseif ($limpet)
-		setvar $limp~personal $personal
-		setvar $limp~amount $deploy_amount
-		gosub :limp~deploy
+		setvar $mines~personal $personal
+		setvar $mines~amount $deploy_amount
+		gosub :mines~deployLimp
 	elseif ($armid)
-		setvar $armid~personal $personal
-		setvar $armid~amount $deploy_amount
-		gosub :armid~deploy
+		setvar $mines~personal $personal
+		setvar $mines~amount $deploy_amount
+		gosub :mines~deployArmid
 	end
+
+:DEPLOY~TOPOFF
+	killalltriggers
+	gosub  :player~currentPrompt
+	setVar $bot~startingLocation $PLAYER~current_prompt
+	setVar $bot~validPrompts "Citadel Command"
+	gosub :bot~checkStartingPrompt
+	if ($bot~startingLocation = "Citadel")
+		send " q "
+		gosub :PLANET~getPlanetInfo
+		send " q "
+	end
+	if ($bot~parm1 <> "o") AND ($bot~parm1 <> "t") AND ($bot~parm1 <> "d")
+		setVar $type "d"
+		isNumber $test CURRENTSECTOR
+		if ($test = TRUE)
+			if ((CURRENTSECTOR > 0) AND (CURRENTSECTOR <= SECTORS))
+				setVar $type SECTOR.FIGS.TYPE[CURRENTSECTOR]
+				if ($type = "Offensive")
+					setVar $type "o"
+				elseif ($type = "Defensive")
+					setVar $type "d"
+				elseif ($type = "Toll")
+					setVar $type "t"
+				else
+					setVar $type "d"
+				end
+			end
+		end
+		setVar $bot~parm1 $type
+	end
+	setVar $to_drop $bot~parm1
+	gosub :DEPLOY~DO_TOPOFF
+	if ($bot~startingLocation = "Citadel")
+		gosub :PLANET~landingSub
+	end
+	setVar $SWITCHBOARD~message "TopOff complete Left "&$ftrs_to_leave&" fighters.*"
+	gosub :SWITCHBOARD~switchboard
+	return
+
+:DEPLOY~DO_TOPOFF
+	:DEPLOY~DO_TOPOFF_AGAIN
+		killalltriggers
+		send " F"
+		waitOn "Your ship can support up to"
+		getWord CURRENTLINE $ftrs_to_leave 10
+		stripText $ftrs_to_leave ","
+		stripText $ftrs_to_leave " "
+		if ($ftrs_to_leave < 1)
+			setVar $ftrs_to_leave 1
+		end
+		send " " & $ftrs_to_leave & " * C " & $to_drop
+		setTextLineTrigger DEPLOY_TOPOFF_SUCCESS :DEPLOY~TOPOFF_SUCCESS "Done. You have "
+		setTextLineTrigger DEPLOY_TOPOFF_FAILURE1 :DEPLOY~DO_TOPOFF_AGAIN "You don't have that many fighters available."
+		setTextLineTrigger DEPLOY_TOPOFF_FAILURE2 :DEPLOY~DO_TOPOFF_AGAIN "Too many fighters in your fleet!  You are limited to"
+		pause
+	:DEPLOY~TOPOFF_SUCCESS
+return
 
 halt
 
@@ -213,8 +290,5 @@ halt
 include "source\include\bot"
 include "source\include\player"
 include "source\include\planet"
-include "source\include\limp"
-include "source\include\armid"
 include "source\include\mines"
 include "source\include\fighter"
-include "source\include\topoff"

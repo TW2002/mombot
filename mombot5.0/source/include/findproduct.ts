@@ -60,15 +60,15 @@ return
 :findproduct~checkproduct
 
 
-setvar $planetinfo~noheader 1
-gosub :planetinfo~planetinfo
+setvar $planet~noheader 1
+gosub :planet~planetinfo
 
 if ($findproduct~product = "C")
 
 
   setvar $findproduct~i 1
   while ($findproduct~i <= 3)
-    if ($planetinfo~colo[$findproduct~i] >= $findproduct~quantity)
+    if ($planet~colo[$findproduct~i] >= $findproduct~quantity)
       setvar $findproduct~category $findproduct~i
       setvar $planetcheck~found 1
       return
@@ -76,7 +76,7 @@ if ($findproduct~product = "C")
     add $findproduct~i 1
   end
 else
-  if ($planetinfo~amount[$findproduct~product] >= $findproduct~quantity)
+  if ($planet~amount[$findproduct~product] >= $findproduct~quantity)
     setvar $planetcheck~found 1
   end
 end

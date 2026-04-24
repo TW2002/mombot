@@ -95,20 +95,20 @@
 
 	
 	if ($cim)
-		gosub :cim~update
+		gosub :update~cim
 		if (($startingLocation = "Citadel") OR ($startingLocation = "Planet"))
 			gosub :PLANET~landingsub
 		end
 	else
 		gosub :PLAYER~turnOffAnsi
 		if ($all or $fighter)
-			gosub :fighters~update
+			gosub :update~fighters
 		end
 		if ($all or $armid)
-			gosub :armids~update
+			gosub :mines~updateArmids
 		end
 		if ($all or $limpet)
-			gosub :limpets~update
+			gosub :mines~updateLimps
 		end
 		gosub :PLAYER~turnOnAnsi
 		if (($startingLocation = "Citadel") OR ($startingLocation = "Planet"))
@@ -117,13 +117,13 @@
 
 		setvar $switchboard~message ""
 		if ($all or $fighter)
-			gosub :fighters~report
+			gosub :update~report
 		end
 		if ($all or $armid)
-			gosub :armids~report
+			gosub :mines~reportArmids
 		end
 		if ($all or $limpet)
-			gosub :limpets~report
+			gosub :mines~reportLimps
 		end
 		if ($SWITCHBOARD~self_command = FALSE)
 			setVar $SWITCHBOARD~self_command 2
@@ -143,8 +143,5 @@ halt
 include "source\include\bot"
 include "source\include\player"
 include "source\include\planet"
-include "source\include\limpets"
-include "source\include\fighters"
-include "source\include\armids"
-include "source\include\cim"
-
+include "source\include\mines"
+include "source\include\update"

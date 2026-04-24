@@ -416,217 +416,19 @@ return
 
 # ============================== START PERSONAL LIMP (LIMP) SUB ==============================
 :savemePersonalLimpet
-	setVar $limp "p"
+	setVar $personal TRUE
+	setVar $amount 1
 	setVar $bot~parm1 1
-	goto :plimp
-
-
-:plimp
-	killalltriggers
-	gosub :player~quikstats
-	if ($player~LIMPETS <= 0)
-		setvar $switchboard~message "Out of limpets!*"
-		gosub :switchboard~switchboard
-		goto :settriggers
-	end
-	if ($startingLocation = "Citadel")
-		send "q q z* h2z" $bot~parm1 "* z " $limp " z * * *l " $planet~planet "* c"
-		setTextLineTrigger toomanypl :toomany_limp "!  You are limited to "
-		setTextLineTrigger plclear :plclear_limp "Done. You have "
-		setTextLineTrigger enemypl :noperdown_limp "These mines are not under your control."
-		setTextLineTrigger notenough :toomany_limp "You don't have that many mines available."
-		pause
-	elseif ($startingLocation = "Command")
-		send "z* h2z" $bot~parm1 "* z " $limp " z * *"
-		setTextLineTrigger toomanypl :toomany_limp "!  You are limited to "
-		setTextLineTrigger plclear :plclear_limp "Done. You have "
-		setTextLineTrigger enemypl :noperdown_limp "These mines are not under your control."
-		setTextLineTrigger notenough :toomany_limp "You don't have that many mines available."
-		pause
-	else
-		setvar $switchboard~message "Not at the correct prompt for deploying limpets.*"
-		gosub :switchboard~switchboard
-		goto :settriggers
-	end
-	
-	
-:plclear_limp
-	killalltriggers
-	if ($startingLocation = "Citadel")
-		setTextTrigger checklimpcommand :continuechecklimpcitadel "Citadel command (?=help)"
-		pause
-		:continuechecklimpcitadel
-		send "s* "
-		setTextLineTrigger perdown :perdown_limp "(Type 2 Limpet) (yours)"
-		setTextLineTrigger cordown :cordown_limp "(Type 2 Limpet) (belong to your Corp)"
-		setTextLineTrigger noperdown :noperdown_limp "Citadel treasury contains"
-		pause
-	elseif ($startingLocation = "Command")
-		setTextTrigger checklimpcommand :continuechecklimpcommand "Command [TL="
-		pause
-		:continuechecklimpcommand
-		send "d* "
-		setTextLineTrigger perdown :perdown_limp "(Type 2 Limpet) (yours)"
-		setTextLineTrigger cordown :cordown_limp "(Type 2 Limpet) (belong to your Corp)"
-		setTextLineTrigger noperdownp :noperdown_limp "Warps to Sector(s)"
-		pause
-	else
-		setvar $switchboard~message "Not at the correct prompt for deploying limpets.*"
-		gosub :switchboard~switchboard
-		goto :settriggers
-	end
-
-:cordown_limp
-	killalltriggers
-	if ($startingLocation = "Citadel")
-		waitOn "Citadel command (?=help)"
-		setvar $switchboard~message  $bot~parm1&" Corporate Limpets Deployed!*"
-		gosub :switchboard~switchboard
-	end
-	if ($startingLocation = "Command")
-		waitOn "Command [TL="
-		setvar $switchboard~message  $bot~parm1&" Corporate Limpets Deployed!*"
-		gosub :switchboard~switchboard
-	end
-	setSectorParameter $player~current_sector "LIMPSEC" TRUE
+	gosub :mines~deployLimp
 	goto :settriggers
-
-
-:perdown_limp
-	killalltriggers
-	if ($startingLocation = "Citadel")
-		waitOn "Citadel command (?=help)"
-		if ($bot~parm1 = 1)
-			setvar $switchboard~message  $bot~parm1&" Personal Limpet Deployed!*"
-			gosub :switchboard~switchboard
-		else
-			setvar $switchboard~message $bot~parm1&" Personal Limpets Deployed!*"
-			gosub :switchboard~switchboard
-		end
-	end
-	if ($startingLocation = "Command")
-		waitOn "Command [TL="
-		if ($bot~parm1 = 1)
-			setvar $switchboard~message $bot~parm1&" Personal Limpet Deployed!*"
-			gosub :switchboard~switchboard
-		else
-			setvar $switchboard~message $bot~parm1&" Personal Limpets Deployed!*"
-			gosub :switchboard~switchboard
-		end
-	end
-	goto :settriggers
-
-:noperdown_limp
-	killalltriggers
-	if ($startingLocation = "Citadel")
-		waitOn "Citadel command (?=help)"
-		setvar $switchboard~message "Sector already has enemy limpets present!*"
-		gosub :switchboard~switchboard
-		goto :settriggers
-	end
-	if ($startingLocation = "Command")
-		waitOn "Command [TL="
-		setvar $switchboard~message "Sector already has enemy limpets present!*"
-		gosub :switchboard~switchboard
-		goto :settriggers
-	end
-
-:toomany_limp
-	killalltriggers
-	if ($startingLocation = "Citadel")
-		waitOn "Citadel command (?=help)"
-		setvar $switchboard~message "Cannot Deploy Limps!*"
-		gosub :switchboard~switchboard
-		goto :settriggers
-	else
-		waitOn "Command [TL="
-		setvar $switchboard~message "Cannot Deploy Limps!*"
-		gosub :switchboard~switchboard
-		goto :settriggers
-	end
 # ============================== END PERSONAL LIMP SUB ==============================
 
 # ============================== MINES (ARMID AND LIMP) SUB ==============================
 :savemeDeployMines
+	setVar $personal FALSE
+	setVar $amount 3
 	setVar $bot~parm1 3
-	setVar $limp "c"
-	setVar $armid "c"
-	
-:mines
-	KillAllTriggers
-	gosub :player~quikstats
-	setVar $startingLocation $player~CURRENT_PROMPT
-	if ($bot~parm1 = 0)
-		setVar $bot~parm1 3
-	end
-	if ($startingLocation <> "Citadel") and ($startingLocation <> "Command")
-     		setvar $switchboard~message "Must start at Citadel or Command Prompt.*"
-     		gosub :switchboard~switchboard
-     		goto :settriggers
-	end
-	if ($startingLocation = "Citadel")
-		send "q "
-		gosub :planet~getPlanetInfo
-		send "c "
-	end
-	setVar $preDeployArmids $player~ARMIDS
-	setvar $preDeployLimpets $player~LIMPETS
-
-
-
-	if ($startingLocation = "Citadel")
-		send "s* "
-		waitOn "Warps to Sector(s) :"
-		setVar $limpener SECTOR.LIMPETS.OWNER[$player~CURRENT_SECTOR]
-		setVar $armidOwner SECTOR.MINES.OWNER[$player~CURRENT_SECTOR]
-		if (($player~ARMIDS <= 0) AND (($armidOwner <> "belong to your Corp") AND ($armidOwner <> "yours")))
-			setvar $switchboard~message "Out of armids!*"
-			gosub :switchboard~switchboard
-			goto :settriggers
-		elseif (($bot~parm1 > $player~ARMIDS) AND (($armidOwner <> "belong to your Corp") AND ($armidOwner <> "yours")))
-			setVar $bot~parm1 $player~ARMIDS
-		end
-		if (($player~LIMPETS <= 0) AND (($limpetOwner <> "belong to your Corp") AND ($limpetOwner <> "yours")))
-			setvar $switchboard~message "Out of limpets!*"
-			gosub :switchboard~switchboard
-			goto :settriggers
-		elseif (($bot~parm1 > $player~LIMPETS) AND (($limpetOwner <> "belong to your Corp") AND ($limpetOwner <> "yours")))
-			setVar $bot~parm1 $player~LIMPETS
-		end
-		send "q q z n h 2 z " $bot~parm1 "*  z" $limp " * * h 1 z " $bot~parm1 "*  z " $armid " * * * l " $planet~planet "* c "
-	end
-	if ($startingLocation = "Command")
-		send "** "
-		waitOn "Warps to Sector(s) :"
-		setVar $limpetOwner SECTOR.LIMPETS.OWNER[$player~CURRENT_SECTOR]
-		setVar $armidOwner SECTOR.MINES.OWNER[$player~CURRENT_SECTOR]
-		send "z n h 2 z " $bot~parm1 "*  z " $limp "  * * h 1 z " $bot~parm1 "*  z" $armid "  * * "
-	end
-	gosub :player~quikstats
-
-	if (($predeployArmids > $player~ARMIDS) AND ($predeployLimpets > $player~LIMPETS))
-		setvar $switchboard~message  $bot~parm1&" Armid and Limpet mines deployed into the sector!*"
-		gosub :switchboard~switchboard
-	elseif ($predeployArmids > $player~ARMIDS)
-		setvar $switchboard~message  $bot~parm1&" Armid mine(s) deployed into the sector!*"
-		gosub :switchboard~switchboard
-	elseif ($predeployLimpets > $player~LIMPETS)
-		setvar $switchboard~message  $bot~parm1&" Limpet mine(s) deployed into the sector!*"
-		gosub :switchboard~switchboard
-	end
-	if ($predeployArmids < $player~ARMIDS)
-		setvar $switchboard~message  ($player~armids-$predeployArmids)&" Armid mines picked up from sector!*"
-		gosub :switchboard~switchboard
-	elseif (($predeployArmids = $player~ARMIDS) AND (($armidOwner <> "belong to your Corp") AND ($armidOwner <> "yours")))
-		setvar $switchboard~message "Enemy armid(s) present in sector, cannot deploy!*"
-		gosub :switchboard~switchboard
-	end
-	if ($predeployLimpets < $player~LIMPETS)
-		setvar $switchboard~message ($player~LIMPETS-$predeployLimpets)&" Limpet mines picked up from sector!*"
-	elseif (($predeployLimpets = $player~LIMPETS) AND (($limpetOwner <> "belong to your Corp") AND ($limpetOwner <> "yours")))
-		setvar $switchboard~message "Enemy limpet(s) present in sector, cannot deploy!*"
-		gosub :switchboard~switchboard
-	end
+	gosub :mines~deploy
 	goto :settriggers
 
 
@@ -635,6 +437,7 @@ return
 
 #INCLUDES:
 include "source\include\bot"
+include "source\include\mines"
 include "source\include\player"
 include "source\include\ship"
 include "source\include\planet"

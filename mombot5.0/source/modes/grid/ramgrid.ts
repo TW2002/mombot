@@ -267,12 +267,12 @@ gosub :BOT~loadVars
                setVar $previous_sector $focus_sector
                setVar $final_sector $focus_sector
                setArray $gridded_sectors $path
-		     setVar $step_Count 2
+		     setVar $step_Count 1
 		     setVar $last_step FALSE
 		     setVar $macro[$count1] ""
-		     while ($step_Count <= ($result_distance[$count1] + 1))
+		     while ($step_Count <= $result_distance[$count1])
 			     setVar $next_Sector $path[$step_Count]
-                    if ($step_Count = ($result_distance[$count1] + 1))
+                    if ($step_Count = $result_distance[$count1])
                          setVar $last_step TRUE
 			     end
 			     goSub :Build_Move_Macro_Routine

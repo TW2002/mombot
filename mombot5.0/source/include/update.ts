@@ -1,5 +1,5 @@
 #============================= REFRESH FIGHTER SUBROUTINE =======================================
-:update
+:update~fighters
 	setvar $switchboard~message "Loading current fighter locations. . .*"
 	gosub :switchboard~switchboard
 	getSectorParameter 2 "FIG_COUNTR" $previousCount
@@ -188,7 +188,7 @@
 return
 # ============================== END REFRESH FIGHTERS (FIGS) SUB ==============================
 
-:report
+:update~report
 	if ($count <> 0)
 		setVar $percent  (($count * 100) / SECTORS)
 		setVar $1percent (($1scount * 100) / $count)
@@ -264,4 +264,220 @@ return
 
 	setvar $switchboard~message $switchboard~message&"          - Fighter Grid Report -*          - "&$count&" sectors, "&$personalCount&" personal. ("&$percent&"%) ("&$gridChange&" Change)*          - T: "&$tollCount&"  O: "&$offCount&"  D:"&$defCount&"*          - DE: "&$1sCountformatted&""&$1percentformatted&" 2S: "&$2sCountformatted&""&$2percentformatted&" 3S: "&$3sCountformatted&""&$3percentformatted&"*          - 4S: "&$4sCountformatted&""&$4percentformatted&" 5S: "&$5sCountformatted&""&$5percentformatted&" 6S: "&$6sCountformatted&""&$6percentformatted&"*          - Upgraded Sxx: "&$upgradedFuelCount&" ("&$gridFuelChange&" Change)*          - Upgraded xBx: "&$upgradedOrgCount&" ("&$gridOrgChange&" Change)*          - Upgraded xxB: "&$upgradedEquipCount&" ("&$gridEquipChange&" Change)*          - Upgraded xxS: "&$upgradedEquipSellCount&" ("&$gridEquipSellChange&" Change)*          - Upgraded Bxx: "&$upgradedFuelBuyCount&" ("&$gridFuelBuyChange&" Change)**"
 
+return
+
+:update~cim
+	loadVar $PLAYER~unlimitedGame
+	loadvar $GAME~ptradesetting
+	loadvar $bot~bot_turn_limit
+	loadVar $game~port_max
+	loadVar $game~ptradesetting
+	loadvar $bot~MCIC_FILE
+
+	gosub :player~quikstats
+	setVar $startingLocation $player~current_prompt
+	isNumber $test $bot~parm1
+	if ($test)
+		if ($bot~parm1 > 0)
+			setVar $upgradeLimit $bot~parm1
+		else
+			setVar $upgradeLimit 10000
+		end
+	else
+		setVar $upgradeLimit 10000
+	end
+	setvar $switchboard~message "Stand By - CIMMING . . .*"
+	gosub :switchboard~switchboard
+	if (($bot~parm1 = "warps") OR ($bot~parm1 = "warp"))
+		send "^iq"
+		setvar $switchboard~message "Warp Data CIM Complete*"
+		gosub :switchboard~switchboard
+		return
+	else
+		send "^rq"
+	end
+	waitFor ": ENDINTERROG"
+	setArray $mcic SECTORS
+:mcic_looper
+	fileExists $mcic_ck $bot~mcic_file
+	if ($mcic_ck = 0)
+		goto :done_mcic_read
+	end
+		setVar $mcic_sec 0
+		setVar $mcic_count 1
+
+:mcic_read_loop
+		read $bot~mcic_file $mcicline $mcic_count
+		if ($mcicline = EOF)
+			goto :done_mcic_read
+		end
+		if ($mcicline = "")
+			add $mcic_count 1
+			goto :mcic_read_loop
+		end
+		getWord $mcicline $mcic_word1 1
+		if ($mcic_word1 = "Sector")
+			getWord $mcicline $mcic_sec 2
+			add $mcic_count 1
+			goto :mcic_read_loop
+		end
+		if ($mcic_sec <= 0)
+			add $mcic_count 1
+			goto :mcic_read_loop
+		end
+		getWord $mcicline $mcic_product 2
+		getWord $mcicline $mcic_line_ck 5
+		if ($mcic_line_ck = "cr")
+			getWord $mcicline $actual_mcic 13
+			stripText $actual_mcic "/-65"
+			if ($actual_mcic = "-65") or  ($actual_mcic = "-64") or  ($actual_mcic = "-63") or  ($actual_mcic = "-62") or  ($actual_mcic = "-61") or  ($actual_mcic = "-60")
+				setVar $mcic[$mcic_sec] $actual_mcic
+				if ($mcic_product = "ore")
+					setSectorParameter $mcic_sec "OREMCIC" $actual_mcic
+				elseif ($mcic_product = "org")
+					setSectorParameter $mcic_sec "ORGMCIC" $actual_mcic
+				elseif ($mcic_product = "equ")
+					setSectorParameter $mcic_sec "EQUMCIC" $actual_mcic
+				end
+			end
+		end
+		if ($mcic_product = "ore") or ($mcic_product = "org") or ($mcic_product = "equ")
+			add $mcic_count 1
+		else
+			add $mcic_count 1
+		end
+		goto :mcic_read_loop
+
+:done_mcic_read
+	setVar $cim_count 1
+
+:cim_looper
+	setVar $sectiona SECTORS
+	divide $sectiona 78
+	setVar $echo_count 1	
+	setVar $upped "  "
+	setvar $switchboard~message  "Processing CIM...*"
+	gosub :switchboard~switchboard
+	gosub :player~quikstats
+	While ($cim_count <= SECTORS)
+		if (port.exists[$cim_count] = 1)
+			setVar $isUpped FALSE
+			setVar $currentfuel PORT.FUEL[$cim_count]
+			multiply $currentfuel 100
+			if (port.percentfuel[$cim_count] <> 0)
+				divide $currentfuel port.percentfuel[$cim_count]
+			end
+			if ($currentfuel > $upgradeLimit)
+				setVar $isUpped TRUE
+			end
+			setVar $currentorg port.org[$cim_count]
+			multiply $currentorg 100
+			if (port.percentorg[$cim_count] <> 0)
+				divide $currentorg port.percentorg[$cim_count]
+			end
+			if ($currentorg > $upgradeLimit)
+				setVar $isUpped TRUE
+			end
+			setVar $currentEquip port.equip[$cim_count]
+			multiply $currentEquip 100
+			if (port.percentequip[$cim_count] <> 0)
+				divide $currentEquip port.percentequip[$cim_count]
+			end
+			if ($currentEquip > $upgradeLimit)
+				setVar $isUpped TRUE
+			end
+			if ($isUpped = TRUE)
+				setVar $upped $upped&" "&$cim_count&" " 
+			end
+		end
+		add $cim_count 1
+		if ($echo_count = $sectiona)
+			echo ansi_13 #178
+			setVar $echo_count 1
+		else
+			add $echo_count 1
+		end
+	end
+
+	if ($startingLocation = "Command")
+		send "tt"
+	elseif ($startingLocation = "Citadel")
+		send "xt"
+	else 
+		return
+	end
+	send "-----" $bot~bot_name "-----*"
+	send "Upped Ports: (At least "&$upgradeLimit&" product level)*"
+	setVar $cimout_count 1
+	while ($cimout_count <= SECTORS)
+		getWordPos $upped $pos " "&$cimout_count&" "
+		if ($pos > 0)
+			setVar $cimTemp $cimout_count & "(" 
+			
+			if (PORT.BUYFUEL[$cimout_count] = 1)
+				setVar $cimTemp $cimTemp&"B" 
+			else
+				setVar $cimTemp $cimTemp&"S" 
+			end
+			if (PORT.BUYORG[$cimout_count] = 1)
+				setVar $cimTemp $cimTemp&"B" 
+			else
+				setVar $cimTemp $cimTemp&"S" 
+			end
+			if (PORT.BUYEQUIP[$cimout_count] = 1)
+				setVar $cimTemp $cimTemp&"B" 
+			else
+				setVar $cimTemp $cimTemp&"S" 
+			end
+			setVar $cimTemp $cimTemp&") "
+			send $cimTemp
+		end
+		add $cimout_count 1
+	end
+	send "***"
+	setVar $upped ""
+	if ($mcic_ck = 1)
+		if ($startingLocation = "Command")
+			send "tt"
+		elseif ($startingLocation = "Citadel")
+			send "xt"
+		else
+			return
+		end
+	else
+			return
+		
+	end
+	send "Ports with MCIC at least -60/-65 :*"
+
+:mcic_send_loop
+	setVar $mcic_send_count 1
+	while ($mcic_send_count <= SECTORS)
+		if ($mcic[$mcic_send_count] <> 0)
+			setVar $cimTemp $mcic_send_count & "(" 
+			
+			if (PORT.BUYFUEL[$mcic_send_count] = 1)
+				setVar $cimTemp $cimTemp&"B" 
+			else
+				setVar $cimTemp $cimTemp&"S" 
+			end
+			if (PORT.BUYORG[$mcic_send_count] = 1)
+				setVar $cimTemp $cimTemp&"B" 
+			else
+				setVar $cimTemp $cimTemp&"S" 
+			end
+			if (PORT.BUYEQUIP[$mcic_send_count] = 1)
+				setVar $cimTemp $cimTemp&"B" 
+			else
+				setVar $cimTemp $cimTemp&"S" 
+			end
+			setVar $cimTemp $cimTemp&") "
+			send $cimTemp & " MCIC = " & $mcic[$mcic_send_count] & "*"
+		end
+		add $mcic_send_count 1
+	end
+	send "***"
+	setvar $switchboard~message "CIM Processing Complete!*"
+	gosub :switchboard~switchboard
+	setArray $mcic 10
 return

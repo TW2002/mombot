@@ -152,6 +152,8 @@ killalltriggers
 setVar $current_ship $ship_1
 setVar $low_turns "NO"
 setVar $skip_ships "NO"
+setVar $shipVoidsSet[$ship_1] FALSE
+setVar $shipVoidsSet[$ship_2] FALSE
 
 # ----------------------------------------
 setVar $maxcycles 8
@@ -170,7 +172,10 @@ setVar $debugdelay 0
 	getSectorParameter $player~current_sector "BUSTED" $bustthissec
 	if ($bustthissec = TRUE)
 		send "'{" $switchboard~bot_name "} - According to my data i've busted here - ending*"
-		gosub :clearadjacent
+		if (($shipVoidsSet[$current_ship] = TRUE) and ($noavoid <> TRUE))
+			gosub :PLAYER~CLEARVOIDADJACENT
+			setVar $shipVoidsSet[$current_ship] FALSE
+		end
 		 gosub :endCNsettings
 		halt
 	end
@@ -184,11 +189,9 @@ setVar $debugdelay 0
         send "'{" $switchboard~bot_name "} - Starting with Credits: " & $init_credits & " Exp: " & $init_exp & " Turns: " & $init_turns & ".*"
         send "*"
         waitFor "(?=Help)?"
-        loadglobal $ship[$current_ship].voids
-        if ((($ship[$current_ship].voids <> "set") and ($noavoid = true)) or ($noavoid <> true))
-	        gosub :voidAdjacent
-	        setVar $ship[$current_ship].voids "set"
-	        saveglobal $ship[$current_ship].voids
+        if ($noavoid <> TRUE)
+	        gosub :PLAYER~VOIDADJACENT
+	        setVar $shipVoidsSet[$current_ship] TRUE
 	    end
         gosub :checkPlanet
         gosub :checkPort
@@ -204,18 +207,19 @@ setVar $debugdelay 0
 	getSectorParameter $player~current_sector "BUSTED" $bustthissec
 	if ($bustthissec = TRUE)
 		send "'{" $switchboard~bot_name "} - According to my data i've busted here - ending*"
-		gosub :clearadjacent
+		if (($shipVoidsSet[$current_ship] = TRUE) and ($noavoid <> TRUE))
+			gosub :PLAYER~CLEARVOIDADJACENT
+			setVar $shipVoidsSet[$current_ship] FALSE
+		end
 		 gosub :endCNsettings
 		halt
 	end
         setVar $holds[$current_ship] $holds
         send "*"
         waitFor "(?=Help)?"
-        loadglobal $ship[$current_ship].voids
-        if ($ship[$current_ship].voids <> "set")
-	        gosub :voidAdjacent
-	        setVar $ship[$current_ship].voids "set"
-	        saveglobal $ship[$current_ship].voids
+        if ($noavoid <> TRUE)
+	        gosub :PLAYER~VOIDADJACENT
+	        setVar $shipVoidsSet[$current_ship] TRUE
 	    end
         gosub :checkPlanet
         gosub :checkPort
@@ -241,16 +245,20 @@ setVar $debugdelay 0
 
 # ----- FINISH
 :finish
-		if ($noavoid <> true)
-	        gosub :clearadjacent
+		if (($shipVoidsSet[$current_ship] = TRUE) and ($noavoid <> TRUE))
+	        gosub :PLAYER~CLEARVOIDADJACENT
+	        setVar $shipVoidsSet[$current_ship] FALSE
 		end
         if ($current_ship = $ship_1)
+               setVar $other_ship $ship_2
                setVar $player~current_sector $sector[$ship_2]
         else
+               setVar $other_ship $ship_1
                setVar $player~current_sector $sector[$ship_1]
         end
-		if (($ship[$current_ship].voids = "set") and ($player~current_sector <> 0) and ($noavoid <> true))
-			gosub :clearadjacent
+		if (($shipVoidsSet[$other_ship] = TRUE) and ($player~current_sector <> 0) and ($noavoid <> TRUE))
+			gosub :PLAYER~CLEARVOIDADJACENT
+			setVar $shipVoidsSet[$other_ship] FALSE
 		end
         gosub :endCNsettings
         setVar $cash_made $player~credits
@@ -490,6 +498,13 @@ setVar $debugdelay 0
                     gosub :getInfo
                     if ($nativeSellAmount <= 0)
                         goto :sellhagglefailed
+                    end
+                    getSectorParameter $player~current_sector "EQUMCIC" $MCIC[$current_ship]
+                    if ($MCIC[$current_ship] = "")
+                        setVar $MCIC[$current_ship] $HAGGLE~MCIC
+                    end
+                    if ($MCIC[$current_ship] = "")
+                        setVar $MCIC[$current_ship] 0
                     end
                     setVar $nativeRevenueMade $player~credits
                     subtract $nativeRevenueMade $nativeTradeCreditsBefore
@@ -1500,7 +1515,7 @@ setVar $debugdelay 0
         return
         
 :swathoff
-	loadglobal $swathoff
+	loadvar $swathoff
     if ($swathoff = 0)
         setTextTrigger swathison :swathison "Command [TL="
         setDelayTrigger swathisoff :swathisoff 2000
@@ -1510,69 +1525,16 @@ setVar $debugdelay 0
         killalltriggers
         setVar $message "Detected SWATH Autohaggle"
         setVar $swathoff 0
-        saveglobal $swathoff
+        savevar $swathoff
         return
 
         :swathisoff
         killalltriggers
         setVar $swathoff 1
-        saveglobal $swathoff
+        savevar $swathoff
     end
     return
     
-:voidadjacent
-    send "*"
-    gosub :player~quikstats
-    
-    if (SECTOR.WARPS[$player~current_sector][1] = 0)
-            send "'{" $switchboard~bot_name "} - This sector has no warps, maybe you need to scan it first*"
-        halt
-    else
-        setVar $voidsect 0
-        :voids
-        add $voidsect 1
-        if ($voidsect < 7)
-            if (SECTOR.WARPS[$player~current_sector][$voidsect] <> 0)
-                send "CV" & SECTOR.WARPS[$player~current_sector][$voidsect] & "*Q"
-            end
-            goto :voids
-        end
-
-        send "'{" $switchboard~bot_name "} - Avoids set on all adjacent sectors*"
-        send "/"
-        waitfor " Sect "
-        return
-    end
-
-
-:clearadjacent
-    if ($noavoid <> true)
-		echo "*[["&$player~current_sector&"]]*"
-		if ($player~current_sector <= 0)
-		   gosub :player~quikstats
-		end
-		if (SECTOR.WARPS[$player~current_sector][1] = 0)
-		    send "'{" $switchboard~bot_name "} - This sector has no warps, maybe you need to scan it first*"
-		    halt
-		else
-		    setVar $voidsect 0
-		    :clearvoids
-		    add $voidsect 1
-		    if ($voidsect < 7)
-		        if (SECTOR.WARPS[$player~current_sector][$voidsect] <> 0)
-		            send "CV0*YN" & SECTOR.WARPS[$player~current_sector][$voidsect] & "*Q"
-		        end
-		        goto :clearvoids
-		    end
-
-		    send "'{" $switchboard~bot_name "} - Avoids cleared on all adjacent sectors*"
-		    send "/"
-		    waitfor " Sect "
-		    return
-		end
-		setvar $ship[$current_ship].voids ""
-		saveglobal $ship[$current_ship].voids 
-	end
 :player~quikstats
 
         # ============================ START QUIKSTAT VARIABLES ==========================

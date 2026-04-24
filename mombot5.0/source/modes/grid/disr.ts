@@ -274,10 +274,10 @@ if ($TST = 0)
 end
 return
 :LOAD_QUIKSTATS
-gosub :QUIKSTATS~QUIKSTATS
-setvar $CURRENT_PROMPT $QUIKSTATS~CURRENT_PROMPT
-setvar $SCAN_TYPE $QUIKSTATS~SCAN_TYPE
-setvar $MINE_DISRUPTORS $QUIKSTATS~MINE_DISRUPTORS
+gosub :PLAYER~QUIKSTATS
+setvar $CURRENT_PROMPT $PLAYER~CURRENT_PROMPT
+setvar $SCAN_TYPE $PLAYER~SCAN_TYPE
+setvar $MINE_DISRUPTORS $PLAYER~MINE_DISRUPTORS
 striptext $CURRENT_PROMPT "<"
 striptext $CURRENT_PROMPT ">"
 return
@@ -345,4 +345,4 @@ end
 send " Q "
 return
 
-include "source\include\quikstats"
+include "source\include\player"

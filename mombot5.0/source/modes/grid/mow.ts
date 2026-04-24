@@ -199,7 +199,7 @@
 		if ($PLAYER~courseLength <= 0)
 			halt
 		end
-		setVar $j 3
+		setVar $j 2
 		setVar $result "q q q * "
 		while ($j <= $PLAYER~courseLength)
 			if ($PLAYER~mowCourse[$j] <> $PLAYER~CURRENT_SECTOR)

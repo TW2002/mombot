@@ -16,19 +16,19 @@ getword $USER_COMMAND_LINE $PARM1 1
 getword $USER_COMMAND_LINE $PARM2 2
 gosub :DOQSETPROTECTIONS
 gosub :PLAYER~CURRENT_PROMPT
-setvar $PROMPT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $PROMPT~VALIDPROMPTS "Planet Citadel"
-gosub :PROMPT~CHECKSTARTINGPROMPT
+setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+setvar $BOT~VALIDPROMPTS "Planet Citadel"
+gosub :BOT~CHECKSTARTINGPROMPT
 setvar $TOTALDAMAGE 0
 setvar $CANNONTYPE $PARM1
 setvar $CANNONDAMAGE $PARM2
-if ($PROMPT~STARTINGLOCATION = "Citadel")
+if ($STARTINGLOCATION = "Citadel")
   send "q"
 end
 gosub :PLANET~GETPLANETINFO
 if ($PLANET~CITADEL < 3)
   send "'{" $SWITCHBOARD~BOT_NAME "} - Planet number " $PLANET~PLANET " does not have a quasar cannon.*"
-  if (($PLANET~CITADEL > 0) and ($PROMPT~STARTINGLOCATION = "Citadel"))
+  if (($PLANET~CITADEL > 0) and ($STARTINGLOCATION = "Citadel"))
     send "c "
   end
 else
@@ -67,7 +67,7 @@ else
     send "l a "&$PERCENTTOSET&"* "
     setvar $DAMAGETYPE "Atmosphere"
   end
-  if ($PROMPT~STARTINGLOCATION = "Planet")
+  if ($STARTINGLOCATION = "Planet")
     send "q "
   end
   setvar $SWITCHBOARD~MESSAGE "Quasar Cannon on planet "&$PLANET~PLANET&" is set to "&$TOTALDAMAGE&". ("&$DAMAGETYPE&")*"
@@ -98,7 +98,7 @@ return
 
 # includes:
 include "source\include\player"
+include "source\include\bot"
 include "source\include\validation"
 include "source\include\switchboard"
 include "source\include\planet"
-include "source\include\prompt"

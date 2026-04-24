@@ -1,5 +1,12 @@
 :INVADER~CHECK_INVADE_MACRO_PARAMS
 killalltriggers
+if (($INVADER~COMMAND = "") or ($INVADER~COMMAND = 0))
+  setvar $INVADER~COMMAND $BOT~COMMAND_TYPED
+  if (($INVADER~COMMAND = "") or ($INVADER~COMMAND = 0))
+    setvar $INVADER~COMMAND $BOT~COMMAND
+  end
+  lowercase $INVADER~COMMAND
+end
 setarray $INVADER~SCAN_ARRAY 1000
 gosub :PLAYER~QUIKSTATS
 setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
@@ -19,7 +26,7 @@ if ($PLAYER~PHOTONS <= 0)
 end
 
 isnumber $INVADER~TEST $BOT~PARM2
-if ((($INVADER~TEST = FALSE) or ($BOT~PARM2 = 0)) and (($BOT~COMMAND <> "pe") and ($BOT~COMMAND <> "ped")))
+if ((($INVADER~TEST = FALSE) or ($BOT~PARM2 = 0)) and (($INVADER~COMMAND <> "pe") and ($INVADER~COMMAND <> "ped")))
   setvar $SWITCHBOARD~MESSAGE "Parameter 2 invalid*"
   gosub :SWITCHBOARD~SWITCHBOARD
   halt
@@ -27,9 +34,9 @@ end
 
 isnumber $INVADER~TEST $BOT~PARM3
 if (($INVADER~TEST = FALSE) or ($BOT~PARM3 = 0))
-  if ($BOT~COMMAND = "pxex")
+  if ($INVADER~COMMAND = "pxex")
     setvar $BOT~PARM3 $PLAYER~SHIP_NUMBER
-  elseif (($BOT~COMMAND = "pxel") or ($BOT~COMMAND = "pxelk"))
+  elseif (($INVADER~COMMAND = "pxel") or ($INVADER~COMMAND = "pxelk"))
     setvar $SWITCHBOARD~MESSAGE "Planet Parameter in-valid*"
     gosub :SWITCHBOARD~SWITCHBOARD
     halt
@@ -91,28 +98,28 @@ if ($PLAYER~STARTINGLOCATION = "Citadel")
 else
   setvar $INVADER~MAC_STARTING $INVADER~PHOTON&"  "
 end
-if ($BOT~COMMAND = "pxex")
+if ($INVADER~COMMAND = "pxex")
   setvar $INVADER~MAC_ENDING "x   "&$BOT~PARM3&"*  q  q  z  n"
   setvar $INVADER~ENDS_IN_SECTOR TRUE
-elseif ($BOT~COMMAND = "pex")
+elseif ($INVADER~COMMAND = "pex")
   setvar $INVADER~MAC_ENDING "x    "&$BOT~PARM2&"*  q  q  *  z  n  *  "
   setvar $INVADER~ENDS_IN_SECTOR TRUE
-elseif ($BOT~COMMAND = "pel")
+elseif ($INVADER~COMMAND = "pel")
   setvar $INVADER~MAC_ENDING "l "&$BOT~PARM2&"*  *"
   setvar $INVADER~ENDS_IN_SECTOR FALSE
-elseif ($BOT~COMMAND = "pxel")
+elseif ($INVADER~COMMAND = "pxel")
   setvar $INVADER~MAC_ENDING "l "&$BOT~PARM3&"*  *  "
   setvar $INVADER~ENDS_IN_SECTOR FALSE
-elseif ($BOT~COMMAND = "pxelk")
+elseif ($INVADER~COMMAND = "pxelk")
   setvar $INVADER~MAC_ENDING "l "&$BOT~PARM3&"*  *  a"&$SHIP~SHIP_MAX_ATTACK&"*"
   setvar $INVADER~ENDS_IN_SECTOR FALSE
-elseif ($BOT~COMMAND = "pelk")
+elseif ($INVADER~COMMAND = "pelk")
   setvar $INVADER~MAC_ENDING "l "&$BOT~PARM2&"*  *  a"&$SHIP~SHIP_MAX_ATTACK&"*"
   setvar $INVADER~ENDS_IN_SECTOR FALSE
-elseif (($BOT~COMMAND = "pxed") or ($BOT~COMMAND = "ped"))
+elseif (($INVADER~COMMAND = "pxed") or ($INVADER~COMMAND = "ped"))
   setvar $INVADER~MAC_ENDING "u  y  n  . *  j  c  *  "
   setvar $INVADER~ENDS_IN_SECTOR FALSE
-elseif (($BOT~COMMAND = "pxedx") or ($BOT~COMMAND = "pedx"))
+elseif (($INVADER~COMMAND = "pxedx") or ($INVADER~COMMAND = "pedx"))
   setvar $INVADER~MAC_ENDING "u  y  n  . *  j  c  *  "&$INVADER~XPORT_BACK
   setvar $INVADER~ENDS_IN_SECTOR TRUE
 else

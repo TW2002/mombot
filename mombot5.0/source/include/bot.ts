@@ -101,6 +101,7 @@ pause
 :BOT~SAVE_THE_VARIABLES
 
 savevar $BOT~COMMAND
+savevar $BOT~COMMAND_TYPED
 savevar $BOT~USER_COMMAND_LINE
 savevar $BOT~BOT_NAME
 savevar $SWITCHBOARD~BOT_NAME
@@ -523,19 +524,14 @@ if ($BOT~GFILE_CHK)
   setvar $SWITCHBOARD~BOT_NAME $BOT~BOT_NAME
   if (CONNECTED = TRUE)
     gosub :PLAYER~QUIKSTATS
-  end
-  if (CONNECTED = TRUE)
-    gosub :PLAYER~QUIKSTATS
     setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
   end
   if ((($PLAYER~STARTINGLOCATION = "Command") or ($PLAYER~STARTINGLOCATION = "Citadel")) and (CONNECTED = TRUE))
     if ($GAME~PTRADESETTING = 0)
       gosub :GAME~GAMESTATS
     end
-    gosub :PLAYER~QUIKSTATS
     gosub :PLAYER~GETINFO
     gosub :SHIP~GETSHIPSTATS
-    gosub :PLAYER~QUIKSTATS
 
     fileexists $SHIP~CAP_FILE_CHK $SHIP~CAP_FILE
     if ($SHIP~CAP_FILE_CHK)
@@ -680,13 +676,12 @@ end
 if ((($PLAYER~STARTINGLOCATION = "Citadel") or ($PLAYER~STARTINGLOCATION = "Command")) and (CONNECTED = TRUE))
   gosub :PLAYER~STARTCNSETTINGS
   killalltriggers
-  gosub :PLAYER~QUIKSTATS
   gosub :PLAYER~GETINFO
   if ($PLAYER~CORP <> 0)
     setvar $BOT~MY_NAME $PLAYER~TRADER_NAME
     trim $BOT~MY_NAME
     setvar $SWITCHBOARD~MESSAGE "Logging corp mates automatically - "
-    if ($PLAYER~CURRENT_PROMPT = "Citadel")
+    if ($PLAYER~STARTINGLOCATION = "Citadel")
       send "xa"
     else
       send "ta"
@@ -722,7 +717,7 @@ if ((($PLAYER~STARTINGLOCATION = "Citadel") or ($PLAYER~STARTINGLOCATION = "Comm
     goto :TA_AGAIN
     :BOT~DONE_TA
     send "q"
-    if ($PLAYER~CURRENT_PROMPT = "Citadel")
+    if ($PLAYER~STARTINGLOCATION = "Citadel")
       waiton "Citadel command ("
     else
       waiton "Command ["
@@ -734,8 +729,6 @@ if ((($PLAYER~STARTINGLOCATION = "Citadel") or ($PLAYER~STARTINGLOCATION = "Comm
     send "'{" $BOT~BOT_NAME "} - Auto Relog - Not Active*"
     setvar $BOT~DORELOG FALSE
   end
-
-  gosub :PLAYER~QUIKSTATS
 
 
   fileexists $BOT~TEAM_FILE_CHECK $BOT~BOT_USER_FILE
@@ -1280,6 +1273,7 @@ goto :WRITE_NEW_HELP_FILE
 :BOT~LOADVARS
 loadvar $BOT~MODE
 loadvar $BOT~COMMAND
+loadvar $BOT~COMMAND_TYPED
 loadvar $BOT~COMMAND_CALLER
 loadvar $BOT~MOMBOT_DIRECTORY
 loadvar $BOT~MOMBOT_CONFIG_FILE

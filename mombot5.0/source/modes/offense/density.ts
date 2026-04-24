@@ -369,8 +369,16 @@
 		if ($player~current_prompt = "Command")
 			gosub :planet~landingsub
 		end
-		setvar $pgrid~pgridSector $adj[$w]
-		gosub :pgrid~run
+		setvar $BOT~COMMAND "pgrid"
+		setvar $BOT~USER_COMMAND_LINE " pgrid " & $adj[$w]
+		setvar $BOT~PARM1 $adj[$w]
+		savevar $BOT~PARM1
+		savevar $BOT~COMMAND
+		savevar $BOT~USER_COMMAND_LINE
+		load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\pgrid.cts"
+		seteventtrigger PGRIDDONE :DENSITY_PGRIDDONE "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\pgrid.cts"
+		pause
+		:DENSITY_PGRIDDONE
 		if ($killport = true)
 			send "s*"
 			waitfor "Warps to Sector(s)"
@@ -447,13 +455,32 @@
 		end
 
 		if ($pel = true)
-			setvar $pel~destination $adj[$w]
 			if ($pel_planet = 0) 
 				# Fake planet number to make script trigger - no scanners so will still land
 				setVar $pel_planet 99999
 			end
-			setvar $pel~pel_planet $pel_planet
-			gosub :pel~run
+			setvar $BOT~COMMAND "invader"
+			setvar $BOT~COMMAND_TYPED "pel"
+			setvar $BOT~USER_COMMAND_LINE " pel "&$adj[$w]&" "&$pel_planet
+			setvar $BOT~PARM1 $adj[$w]
+			setvar $BOT~PARM2 $pel_planet
+			setvar $BOT~PARM3 ""
+			setvar $BOT~PARM4 ""
+			setvar $BOT~PARM5 ""
+			setvar $BOT~PARM6 ""
+			savevar $BOT~PARM1
+			savevar $BOT~PARM2
+			savevar $BOT~PARM3
+			savevar $BOT~PARM4
+			savevar $BOT~PARM5
+			savevar $BOT~PARM6
+			savevar $BOT~COMMAND
+			savevar $BOT~COMMAND_TYPED
+			savevar $BOT~USER_COMMAND_LINE
+			load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\offense\invader.cts"
+			seteventtrigger PELENDED :PELENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\offense\invader.cts"
+			pause
+			:PELENDED
 			halt
 		end
 
@@ -494,18 +521,68 @@
 	setvar $switchboard~message "Density trigger complete.*"
 	gosub :switchboard~switchboard
 
+	return
+
+:HOLO~RUN
+:HOLO~HOLO
+	setvar $BOT~COMMAND "holo"
+	setvar $BOT~USER_COMMAND_LINE " holo"
+	setvar $BOT~PARM1 ""
+	setvar $BOT~PARM2 ""
+	setvar $BOT~PARM3 ""
+	setvar $BOT~PARM4 ""
+	setvar $BOT~PARM5 ""
+	setvar $BOT~PARM6 ""
+	savevar $BOT~COMMAND
+	savevar $BOT~USER_COMMAND_LINE
+	savevar $BOT~PARM1
+	savevar $BOT~PARM2
+	savevar $BOT~PARM3
+	savevar $BOT~PARM4
+	savevar $BOT~PARM5
+	savevar $BOT~PARM6
+	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\holo.cts"
+	seteventtrigger HOLOEND1 :HOLO~HOLOEND1 "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\holo.cts"
+	pause
+:HOLO~HOLOEND1
 return
 
-#INCLUDES:
-include "source\include\bot"
-include "source\include\combat"
-include "source\include\player"
-include "source\include\planet"
-include "source\include\sector"
-include "source\include\pel"
-include "source\include\holo"
-include "source\include\call"
-include "source\include\pgrid"
-include "source\include\ship"
-
-
+:CALL~RUN
+:CALL~CALL
+	setvar $BOT~COMMAND "call"
+	setvar $BOT~PARM1 ""
+	setvar $BOT~USER_COMMAND_LINE " call  "
+	setvar $BOT~PARM2 ""
+	setvar $BOT~PARM3 ""
+	setvar $BOT~PARM4 ""
+	setvar $BOT~PARM5 ""
+	setvar $BOT~PARM6 ""
+	savevar $BOT~COMMAND
+	savevar $BOT~USER_COMMAND_LINE
+	savevar $BOT~PARM1
+	savevar $BOT~PARM2
+	savevar $BOT~PARM3
+	savevar $BOT~PARM4
+	savevar $BOT~PARM5
+	savevar $BOT~PARM6
+	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\defense\call.cts"
+	seteventtrigger CALLEND1 :CALL~CALLEND1 "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\defense\call.cts"
+	pause
+:CALL~CALLEND1
+	gosub :PLAYER~QUIKSTATS
+	if ($PLAYER~CURRENT_PROMPT <> "Citadel")
+		setvar $SWITCHBOARD~MESSAGE "Not on planet even after call saveme.  I'm in real trouble.  Will try again in 15 seconds.*"
+		gosub :SWITCHBOARD~SWITCHBOARD
+		killalltriggers
+		setdelaytrigger CALLRETRY :CALL~CALL 15000
+		pause
+	end
+return
+		
+	#INCLUDES:
+	include "source\include\bot"
+	include "source\include\combat"
+	include "source\include\player"
+	include "source\include\planet"
+	include "source\include\sector"
+	include "source\include\ship"

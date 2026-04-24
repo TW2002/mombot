@@ -509,7 +509,26 @@ return
 
 :dosurround
 	if ($player~surroundPassive = true)
-		gosub :dscan~run		
+		setvar $BOT~COMMAND "dscan"
+		setvar $BOT~USER_COMMAND_LINE " dscan silent"
+		setvar $BOT~PARM1 "silent"
+		setvar $BOT~PARM2 ""
+		setvar $BOT~PARM3 ""
+		setvar $BOT~PARM4 ""
+		setvar $BOT~PARM5 ""
+		setvar $BOT~PARM6 ""
+		savevar $BOT~PARM1
+		savevar $BOT~PARM2
+		savevar $BOT~PARM3
+		savevar $BOT~PARM4
+		savevar $BOT~PARM5
+		savevar $BOT~PARM6
+		savevar $BOT~COMMAND
+		savevar $BOT~USER_COMMAND_LINE
+		load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\dscan.cts"
+		seteventtrigger DSCANDONE :ALIENHUNT_DSCANDONE "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\dscan.cts"
+		pause
+		:ALIENHUNT_DSCANDONE
 	end
 	send "q "
 	gosub :PLANET~getPlanetInfo
@@ -604,7 +623,7 @@ return
 				if ($filterships <> "")
 					setVar $BOT~user_command_line " moveship h silent "&#34&$filterships&#34
 					setVar $BOT~parm1 $MAP~home_sector
-					gosub :moveship~run
+					gosub :runMoveshipScript
 					send "s*  "
 					gosub :player~quikstats
 					setVar $emptyShips SECTOR.SHIPCOUNT[currentsector]
@@ -622,11 +641,11 @@ return
 							setVar $BOT~user_command_line " moveship "&$MAP~stardock&" silent"
 							setVar $BOT~parm1 $MAP~stardock						
 					end
-					gosub :moveship~run
+					gosub :runMoveshipScript
 					if ($startingSector <> currentsector)
-						setvar $mow~destination $startingSector
-						setvar $mow~deploy "1"
-						gosub :mow~run
+						setvar $alienhuntMowDestination $startingSector
+						setvar $alienhuntMowDeploy "1"
+						gosub :runMowScript
 						gosub :PLANET~landingSub
 					end
 				end
@@ -648,7 +667,7 @@ return
 		loadvar $planet~planet_fuel
 		if (($refuel = true) and ($is_fuel_buyer <> true) and ($is_port = true) and ($class > 0) and ($isBusted <> true) and ($under_construction <> true) and ($planet~planet_fuel < ($planet~planet_fuel_max-$game~port_max)))
 			if (($upgrade = true) and ($isUpgradedFuel <> true))
-				gosub :max~run
+				gosub :runPortUpgradeScript
 				gosub :setwindow
 			else
 				gosub :PLAYER~quikstats
@@ -669,9 +688,32 @@ return
 			end
 		end
 		if (($patp = true) and ($planet~planet_fuel < ($planet~planet_fuel_max/10)))
-			setvar $patp~minimum 1000
-			setvar $patp~upgrade true
-			gosub :patp~run
+			setvar $PATP_MINIMUM 1000
+			setvar $PATP_UPGRADE TRUE
+			setvar $PATP_DOCIM ""
+			if ($PATP_MINIMUM = 0)
+			  setvar $PATP_MINIMUM 10000
+			end
+			if ($PATP_UPGRADE = TRUE)
+			  setvar $PATP_UPGRADE "upgrade"
+			end
+			if ($PATP_DOCIM = TRUE)
+			  setvar $PATP_DOCIM "docim"
+			end
+			setvar $BOT~COMMAND "patp"
+			setvar $BOT~USER_COMMAND_LINE " patp "&$PATP_MINIMUM&" "&$PATP_UPGRADE&" "&$PATP_DOCIM&" silent"
+			setvar $BOT~PARM1 $PATP_MINIMUM
+			savevar $BOT~PARM1
+			setvar $BOT~PARM2 $PATP_UPGRADE
+			savevar $BOT~PARM2
+			setvar $BOT~PARM3 $PATP_DOCIM
+			savevar $BOT~PARM3
+			savevar $BOT~COMMAND
+			savevar $BOT~USER_COMMAND_LINE
+			load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\resource\patp.cts"
+			seteventtrigger PATPENDED :ALIENHUNT_PATPENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\resource\patp.cts"
+			pause
+			:ALIENHUNT_PATPENDED
 		end
 		killalltriggers
 return
@@ -732,6 +774,74 @@ return
 	saveVar $window_content
 return
 
+:runMoveshipScript
+	setvar $BOT~COMMAND "moveship"
+	setvar $BOT~PARM2 ""
+	setvar $BOT~PARM3 ""
+	setvar $BOT~PARM4 ""
+	setvar $BOT~PARM5 ""
+	setvar $BOT~PARM6 ""
+	savevar $BOT~PARM1
+	savevar $BOT~PARM2
+	savevar $BOT~PARM3
+	savevar $BOT~PARM4
+	savevar $BOT~PARM5
+	savevar $BOT~PARM6
+	savevar $BOT~COMMAND
+	savevar $BOT~USER_COMMAND_LINE
+	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\resource\moveship.cts"
+	seteventtrigger MOVESHIPENDED :ALIENHUNT_MOVESHIP_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\resource\moveship.cts"
+	pause
+:ALIENHUNT_MOVESHIP_ENDED
+return
+
+:runPortUpgradeScript
+	setvar $PORT_UPGRADE_TYPE "f"
+	setvar $BOT~COMMAND "port"
+	setvar $BOT~USER_COMMAND_LINE " port upgrade "&$PORT_UPGRADE_TYPE&" NOEXP silent "
+	setvar $BOT~PARM1 "upgrade"
+	setvar $BOT~PARM2 ""
+	setvar $BOT~PARM3 ""
+	setvar $BOT~PARM4 ""
+	setvar $BOT~PARM5 ""
+	setvar $BOT~PARM6 ""
+	savevar $BOT~PARM1
+	savevar $BOT~PARM2
+	savevar $BOT~PARM3
+	savevar $BOT~PARM4
+	savevar $BOT~PARM5
+	savevar $BOT~PARM6
+	savevar $BOT~COMMAND
+	savevar $BOT~USER_COMMAND_LINE
+	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\port.cts"
+	seteventtrigger PORTENDED :ALIENHUNT_PORT_UPGRADE_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\port.cts"
+	pause
+:ALIENHUNT_PORT_UPGRADE_ENDED
+return
+
+:runMowScript
+	setVar $BOT~COMMAND "mow"
+	setVar $BOT~USER_COMMAND_LINE " mow "&$alienhuntMowDestination&" "&$alienhuntMowDeploy
+	setVar $BOT~PARM1 $alienhuntMowDestination
+	setVar $BOT~PARM2 $alienhuntMowDeploy
+	setVar $BOT~PARM3 ""
+	setVar $BOT~PARM4 ""
+	setVar $BOT~PARM5 ""
+	setVar $BOT~PARM6 ""
+	saveVar $BOT~PARM1
+	saveVar $BOT~PARM2
+	saveVar $BOT~PARM3
+	saveVar $BOT~PARM4
+	saveVar $BOT~PARM5
+	saveVar $BOT~PARM6
+	saveVar $BOT~COMMAND
+	saveVar $BOT~USER_COMMAND_LINE
+	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\grid\mow.cts"
+	setEventTrigger ALIENHUNT_MOWENDED :ALIENHUNT_MOWENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\grid\mow.cts"
+	pause
+	:ALIENHUNT_MOWENDED
+return
+
 :gohome
 	gosub :PLAYER~quikstats
 	if (CURRENTSECTOR <> $homesector)
@@ -757,6 +867,156 @@ return
 	halt
 return
 
+:DEP~RUN
+:DEP~WITH
+	if ($DEP~AMOUNT = 0)
+		setvar $DEP~AMOUNT ""
+	end
+	setvar $BOT~COMMAND "dep"
+	setvar $BOT~USER_COMMAND_LINE " dep silent"
+	setvar $BOT~PARM1 $DEP~AMOUNT
+	setvar $BOT~PARM2 ""
+	setvar $BOT~PARM3 ""
+	setvar $BOT~PARM4 ""
+	setvar $BOT~PARM5 ""
+	setvar $BOT~PARM6 ""
+	savevar $BOT~PARM1
+	savevar $BOT~PARM2
+	savevar $BOT~PARM3
+	savevar $BOT~PARM4
+	savevar $BOT~PARM5
+	savevar $BOT~PARM6
+	savevar $BOT~COMMAND
+	savevar $BOT~USER_COMMAND_LINE
+	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\dep.cts"
+	seteventtrigger DEPENDED :DEP~WITHENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\dep.cts"
+	pause
+:DEP~WITHENDED
+return
+
+:WITH~RUN
+:WITH~WITH
+	if ($WITH~AMOUNT = 0)
+		setvar $WITH~AMOUNT ""
+	end
+	setvar $BOT~COMMAND "with"
+	setvar $BOT~USER_COMMAND_LINE " with silent"
+	setvar $BOT~PARM1 $WITH~AMOUNT
+	setvar $BOT~PARM2 ""
+	setvar $BOT~PARM3 ""
+	setvar $BOT~PARM4 ""
+	setvar $BOT~PARM5 ""
+	setvar $BOT~PARM6 ""
+	savevar $BOT~PARM1
+	savevar $BOT~PARM2
+	savevar $BOT~PARM3
+	savevar $BOT~PARM4
+	savevar $BOT~PARM5
+	savevar $BOT~PARM6
+	savevar $BOT~COMMAND
+	savevar $BOT~USER_COMMAND_LINE
+	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\with.cts"
+	seteventtrigger WITHENDED :WITH~WITHENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\with.cts"
+	pause
+:WITH~WITHENDED
+return
+
+:BUYFIG~RUN
+:BUYFIG~BUYFIG
+	setvar $BOT~COMMAND "buy"
+	setvar $BOT~USER_COMMAND_LINE " buy fig silent"
+	setvar $BOT~PARM1 "fig"
+	setvar $BOT~PARM2 ""
+	setvar $BOT~PARM3 ""
+	setvar $BOT~PARM4 ""
+	setvar $BOT~PARM5 ""
+	setvar $BOT~PARM6 ""
+	savevar $BOT~PARM1
+	savevar $BOT~PARM2
+	savevar $BOT~PARM3
+	savevar $BOT~PARM4
+	savevar $BOT~PARM5
+	savevar $BOT~PARM6
+	savevar $BOT~COMMAND
+	savevar $BOT~USER_COMMAND_LINE
+	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+	seteventtrigger BUYFIGENDED :BUYFIG~BUYENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+	pause
+:BUYFIG~BUYENDED
+return
+
+:BUYFUEL~RUN
+:BUYFUEL~BUYFUEL
+	setvar $BOT~COMMAND "buy"
+	setvar $BOT~USER_COMMAND_LINE " buy f s silent override"
+	setvar $BOT~PARM1 "f"
+	setvar $BOT~PARM2 "s"
+	setvar $BOT~PARM3 ""
+	setvar $BOT~PARM4 ""
+	setvar $BOT~PARM5 ""
+	setvar $BOT~PARM6 ""
+	savevar $BOT~PARM1
+	savevar $BOT~PARM2
+	savevar $BOT~PARM3
+	savevar $BOT~PARM4
+	savevar $BOT~PARM5
+	savevar $BOT~PARM6
+	savevar $BOT~COMMAND
+	savevar $BOT~USER_COMMAND_LINE
+	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+	seteventtrigger BUYFUELENDED :BUYFUEL~BUYENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+	pause
+:BUYFUEL~BUYENDED
+return
+
+:BUYSHIELD~RUN
+:BUYSHIELD~BUYSHIELD
+	setvar $BOT~COMMAND "buy"
+	setvar $BOT~USER_COMMAND_LINE " buy sh silent"
+	setvar $BOT~PARM1 "sh"
+	setvar $BOT~PARM2 ""
+	setvar $BOT~PARM3 ""
+	setvar $BOT~PARM4 ""
+	setvar $BOT~PARM5 ""
+	setvar $BOT~PARM6 ""
+	savevar $BOT~PARM1
+	savevar $BOT~PARM2
+	savevar $BOT~PARM3
+	savevar $BOT~PARM4
+	savevar $BOT~PARM5
+	savevar $BOT~PARM6
+	savevar $BOT~COMMAND
+	savevar $BOT~USER_COMMAND_LINE
+	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+	seteventtrigger BUYSHIELDENDED :BUYSHIELD~BUYSHIELDENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+	pause
+:BUYSHIELD~BUYSHIELDENDED
+return
+
+:PWARP~MOWENDED
+return
+
+:PWARP~RUN
+	setVar $BOT~COMMAND "pwarp"
+	setVar $BOT~USER_COMMAND_LINE " pwarp " & $PWARP~DESTINATION & " silent"
+	setVar $BOT~PARM1 $PWARP~DESTINATION
+	setVar $BOT~PARM2 $MOW~DEPLOY
+	setVar $BOT~PARM3 ""
+	setVar $BOT~PARM4 ""
+	setVar $BOT~PARM5 ""
+	setVar $BOT~PARM6 ""
+	saveVar $BOT~PARM1
+	saveVar $BOT~PARM2
+	saveVar $BOT~PARM3
+	saveVar $BOT~PARM4
+	saveVar $BOT~PARM5
+	saveVar $BOT~PARM6
+	saveVar $BOT~COMMAND
+	saveVar $BOT~USER_COMMAND_LINE
+	load "scripts\" & $BOT~MOMBOT_DIRECTORY & "\commands\general\pwarp.cts"
+	setEventTrigger PWARPENDED :PWARP~MOWENDED "SCRIPT STOPPED" "scripts\" & $BOT~MOMBOT_DIRECTORY & "\commands\general\pwarp.cts"
+	pause
+
 
 #INCLUDES:
 include "source\include\bot"
@@ -766,17 +1026,5 @@ include "source\include\planet"
 include "source\include\ship"
 include "source\include\grid"
 include "source\include\sector"
-include "source\include\buyfig"
-include "source\include\buyshield"
-include "source\include\dep"
-include "source\include\with"
-include "source\include\dscan"
 include "source\include\fighter"
-include "source\include\moveship"
 include "source\include\xenter"
-include "source\include\mow"
-include "source\include\max"
-include "source\include\pwarp"
-include "source\include\buyfuel"
-include "source\include\scrub"
-include "source\include\patp"

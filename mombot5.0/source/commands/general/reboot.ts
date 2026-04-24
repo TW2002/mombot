@@ -23,17 +23,18 @@
 	while ($i <= $scripts)
 		getWordPos "<><><>"&$scripts[$i] $pos "<><><>mombot"
 		if ($pos > 0)
-			stop $scripts[$i]
 			if ($found = FALSE)
 				setVar $boot_this $scripts[$i]
 				setVar $found TRUE
 			end
+			stop $scripts[$i]
 		end
 		add $i 1
 	end
 	if ($FOUND = FALSE)
 		setVar $SWITCHBOARD~message "No mombot script found to reboot.*"
 		gosub :SWITCHBOARD~switchboard
+		halt
 	end
 	setdelaytrigger waitforreboot :okaynow 3000
 	pause

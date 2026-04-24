@@ -54,9 +54,9 @@
 	end
 
 	if ($bot~parm1 = 0)
-		setVar $planet~_ck_pnego_fueltosell "-1"
-		setVar $planet~_ck_pnego_orgtosell "max"
-		setVar $planet~_ck_pnego_equiptosell "max"
+		setVar $planethaggle~_ck_pnego_fueltosell "-1"
+		setVar $planethaggle~_ck_pnego_orgtosell "max"
+		setVar $planethaggle~_ck_pnego_equiptosell "max"
 	else
 		setvar $amount "max"
 		if ($half = true)
@@ -67,35 +67,35 @@
 		end
 		getwordpos " "&$bot~user_command_line&" " $pos " f "
 		if ($pos > 0)
-			setVar $planet~_ck_pnego_fueltosell $amount
+			setVar $planethaggle~_ck_pnego_fueltosell $amount
 		else
-			setVar $planet~_ck_pnego_fueltosell "-1"
+			setVar $planethaggle~_ck_pnego_fueltosell "-1"
 		end
 
 		getwordpos " "&$bot~user_command_line&" " $pos " o "
 		if ($pos > 0)
-			setVar $planet~_ck_pnego_orgtosell $amount
+			setVar $planethaggle~_ck_pnego_orgtosell $amount
 		else
-			setVar $planet~_ck_pnego_orgtosell "-1"
+			setVar $planethaggle~_ck_pnego_orgtosell "-1"
 		end
 		getwordpos " "&$bot~user_command_line&" " $pos " e "
 		if ($pos > 0)
-			setVar $planet~_ck_pnego_equiptosell $amount
+			setVar $planethaggle~_ck_pnego_equiptosell $amount
 		else
-			setVar $planet~_ck_pnego_equiptosell "-1"
+			setVar $planethaggle~_ck_pnego_equiptosell "-1"
 		end
 	end
 
-	if (($planet~_ck_pnego_fueltosell = "-1") and ($planet~_ck_pnego_orgtosell = "-1") and ($planet~_ck_pnego_equiptosell = "-1"))
+	if (($planethaggle~_ck_pnego_fueltosell = "-1") and ($planethaggle~_ck_pnego_orgtosell = "-1") and ($planethaggle~_ck_pnego_equiptosell = "-1"))
 		setvar $switchboard~message "Please use - neg [item] format*"
 		gosub :switchboard~switchboard
 		halt
 	end
 
 
-	gosub :planet~planetNeg
+	gosub :planethaggle~planetNeg
 
-	setvar $switchboard~message $planet~exit_message&"*"
+	setvar $switchboard~message $planethaggle~exit_message&"*"
 	gosub :switchboard~switchboard
 	halt
 #==================================   END PLANET NEGOTIATE (NEG) SUB  ========================================
@@ -103,4 +103,5 @@
 #INCLUDES:
 include "source\include\bot"
 include "source\include\player"
+include "source\include\planethaggle"
 include "source\include\planet"

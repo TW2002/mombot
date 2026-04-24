@@ -27,25 +27,25 @@ if ($TEST = TRUE)
 else
   setvar $DELAY 0
 end
-gosub :QUIKSTATS~QUIKSTATS
-setvar $STARTINGLOCATION $QUIKSTATS~CURRENT_PROMPT
+gosub :PLAYER~QUIKSTATS
+setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 if ($STARTINGLOCATION <> "Citadel")
   send "'{" $BOT_NAME "} - Must start from Citadel*"
   halt
 end
 send "q"
-gosub :PLANETINFO~GETPLANETINFO
+gosub :PLANET~GETPLANETINFO
 send "q"
 getwordpos $USER_COMMAND_LINE $POS "kill"
 if ($POS > 0)
   setvar $KILL TRUE
-  setvar $TARGETING~PLANET $PLANETINFO~PLANET
+  setvar $TARGETING~PLANET $PLANET~PLANET
   gosub :TARGETING~INITIALIZE_TARGETING
 else
   setvar $KILL FALSE
 end
 
-setvar $HOME $QUIKSTATS~CURRENT_SECTOR
+setvar $HOME $PLAYER~CURRENT_SECTOR
 :LDROP_RE_SCAN
 
 setvar $I 0
@@ -118,7 +118,7 @@ if ($DELAY > 0)
   pause
 end
 :GO_GO_GO
-send "l "&$PLANETINFO~PLANET&"* cp "&$ADJSEC&"*y"
+send "l "&$PLANET~PLANET&"* cp "&$ADJSEC&"*y"
 settextlinetrigger NO_FIG :LDROP_NO_FIG "Your own fighters must be in the destination"
 settextlinetrigger IN_SECTOR :LDROP_IN_SECTOR "-=-=-=- Planetary TransWarp Drive Engaged! -=-=-=-"
 pause
@@ -158,8 +158,7 @@ goto :LDROP_RE_SCAN
 return
 
 # includes:
-include "source\include\quikstats"
+include "source\include\player"
 include "source\include\validation"
-include "source\include\planetinfo"
+include "source\include\planet"
 include "source\include\targeting"
-include "source\include\shipstats"

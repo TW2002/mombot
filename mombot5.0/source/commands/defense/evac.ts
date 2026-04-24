@@ -100,20 +100,35 @@ loadVar $map~home_sector
 				settextlinetrigger no_warp :evac_no_fig "You do not have any fighters in Sector"
 				pause
 
-				:evac_Pwarp
-					killtrigger no_Warp
-					send "y*"
-					if ($i < $evac_total)
-						send "qq  z  n  *  m" $evac_home "*y"
-						SetTextTrigger warp :evac_twarp "All Systems Ready, shall we engage?"
-						SetTextTrigger no_warp :evac_no_warp_back "Do you want to make"
-						pause
+					:evac_Pwarp
+						killtrigger no_Warp
+						send "y*"
+						if ($i < $evac_total)
+							SetTextTrigger twarp_engage :evac_twarp_engage "Do you want to engage the TransWarp drive?"
+							SetTextLineTrigger adj_warp :evac_adj_warp_back "Sector  : "&$evac_home&" "
+							send "qq  z  n  *  m" $evac_home "*"
+							pause
 
-						:evac_twarp
-							killtrigger no_Warp
-							send "y  *  *  *  q  z  n  *"
-					end
-			end
+							:evac_twarp_engage
+								killtrigger twarp_engage
+								send "y"
+								SetTextTrigger warp :evac_twarp "All Systems Ready, shall we engage?"
+								SetTextTrigger no_warp :evac_no_warp_back "Do you want to make this jump blind?"
+								pause
+
+							:evac_twarp
+								gosub :evac_kill_return_warp_triggers
+								send "y  *  *  *  q  z  n  *"
+								waiton "Command [TL="
+								goto :evac_return_done
+
+							:evac_adj_warp_back
+								gosub :evac_kill_return_warp_triggers
+								waiton "Command [TL="
+
+							:evac_return_done
+						end
+				end
 
 		add $i 1
 
@@ -125,11 +140,19 @@ loadVar $map~home_sector
 	halt
 
 
-	:evac_no_warp_back
-		killtrigger warp
-		setvar $switchboard~message "No Fighter at Home Sector.  Shutting down Evac.*"
-		gosub :switchboard~switchboard
-		halt
+		:evac_no_warp_back
+			gosub :evac_kill_return_warp_triggers
+			send "n*"
+			setvar $switchboard~message "Unable to safely T-warp back to the home sector.  Shutting down Evac.*"
+			gosub :switchboard~switchboard
+			halt
+
+		:evac_kill_return_warp_triggers
+			killtrigger twarp_engage
+			killtrigger warp
+			killtrigger no_warp
+			killtrigger adj_warp
+			return
 
 	:evac_no_fig
 		killtrigger warp
