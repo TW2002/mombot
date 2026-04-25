@@ -1,0 +1,21 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: CONNECTIVITY~ENTER_NEW_GAME
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-connectivity
+caption: CONNECTIVITY~ENTER_NEW_GAME
+
+! CONNECTIVITY~ENTER_NEW_GAME
+
+Handles new-game entry/setup logic for native login or reconnect paths.
+
+''Include:'' [[connectivity.ts]]
+''Defined at:'' `/include/connectivity.ts:243`
+
+!! Source Excerpt
+<pre>
+setvar $CONNECTIVITY~TWGSVERSION &quot;&quot;
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

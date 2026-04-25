@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLAYER~CHECKFORTRAVELNAME
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-player
+caption: PLAYER~CHECKFORTRAVELNAME
+
+! PLAYER~CHECKFORTRAVELNAME
+
+Checks a prerequisite or validates current state before the caller continues.
+
+''Include:'' [[player.ts]]
+''Defined at:'' `/include/player.ts:116`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($BOT~PARM1 = &quot;me&quot;)
+  if ($BOT~COMMAND_CALLER = &quot;self&quot;)
+    setvar $SWITCHBOARD~MESSAGE &quot;I don&#x27;t think you need to travel to yourself.*&quot;
+    gosub :SWITCHBOARD~SWITCHBOARD
+    halt
+  end
+  setvar $PLAYER~WHO_CALLED_ME $BOT~COMMAND_CALLER
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

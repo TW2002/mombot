@@ -358,8 +358,8 @@
 		:figdown
 		killalltriggers
 		setvar $switchboard~message ""&$psimac_corp_ftr_drop_amt&" Corporate "&$depType&" Deployed!*"
-		setVar $target $PLAYER~CURRENT_SECTOR
-		gosub :bot~addfigtodata
+		setVar $PLAYER~target $PLAYER~CURRENT_SECTOR
+		gosub :player~addfigtodata
 		gosub :switchboard~switchboard
 		halt
 		:nofigdown

@@ -23,7 +23,7 @@ fi
 
 targets=("$SOURCE/mombot.ts")
 compile_roots=()
-for dir in "$SOURCE/commands" "$SOURCE/modes" "$SOURCE/daemons" "$SOURCE/preload"; do
+for dir in "$SOURCE/commands" "$SOURCE/modes" "$SOURCE/daemons" "$SOURCE/preload" "$SOURCE/startups"; do
   if [[ -d "$dir" ]]; then
     compile_roots+=("$dir")
   fi
@@ -50,7 +50,7 @@ done
 
 if [[ -d "$SOURCE/daemons" ]]; then
   mkdir -p "$SOURCE/startups"
-  for name in watcher viewscreen chat ephaggle; do
+  for name in viewscreen chat ephaggle; do
     src="$SOURCE/daemons/$name.cts"
     dst="$SOURCE/startups/$name.cts"
     if [[ -f "$src" ]]; then

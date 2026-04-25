@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: BOT~LOAD_BOT
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-bot
+caption: BOT~LOAD_BOT
+
+! BOT~LOAD_BOT
+
+Loads core bot startup state and shared configuration.
+
+''Include:'' [[bot.ts]]
+''Defined at:'' `/include/bot.ts:282`
+
+!! Source Excerpt
+<pre>
+setvar $BOT~DO_NOT_RESUSCITATE FALSE
+savevar $BOT~DO_NOT_RESUSCITATE
+loadvar $BOT~MAJOR_VERSION
+loadvar $BOT~MINOR_VERSION
+setvar $BOT~MOMBOT_FOLDER_CONFIG &quot;scripts/mombot&quot;&amp;$BOT~MAJOR_VERSION&amp;&quot;_&quot;&amp;$BOT~MINOR_VERSION&amp;&quot;.cfg&quot;
+fileexists $BOT~FOLDER_CONFIG_EXISTS $BOT~MOMBOT_FOLDER_CONFIG
+if ($BOT~FOLDER_CONFIG_EXISTS)
+  read $BOT~MOMBOT_FOLDER_CONFIG $BOT~MOMBOT_DIRECTORY 1
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

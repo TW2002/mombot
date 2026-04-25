@@ -46,13 +46,13 @@ if ($ISLIMPED = "")
   halt
 end
 
-gosub :QUIKSTATS
-if ($CURRENT_PROMPT <> "Citadel")
+gosub :PLAYER~QUIKSTATS
+if ($PLAYER~CURRENT_PROMPT <> "Citadel")
   send "'{"&$BOT_NAME&"} - Must must start mine sweeper from citadel prompt.*"
   halt
 end
 
-if ($PHOTONS <> 0)
+if ($PLAYER~PHOTONS <> 0)
   send "'{"&$BOT_NAME&"} - Cannot Have Fotons!*"
   halt
 end
@@ -134,7 +134,7 @@ else
 end
 
 gosub :GETINFO
-setvar $HOMESECTOR $CURRENT_SECTOR
+setvar $HOMESECTOR $PLAYER~CURRENT_SECTOR
 
 killalltriggers
 gosub :CHECKAVOIDEDSECTORS
@@ -146,21 +146,21 @@ if (($GRID_LIMPETS = 0) and ($GRID_ARMIDS = 0))
   halt
 end
 
-if (($ORGANIC_HOLDS + ($EQUIPMENT_HOLDS + $COLONIST_HOLDS)) <> 0)
+if (($PLAYER~ORGANIC_HOLDS + ($PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS)) <> 0)
   setvar $MAC ""
-  if ($ORGANIC_HOLDS <> 0)
+  if ($PLAYER~ORGANIC_HOLDS <> 0)
     setvar $MAC $MAC&" T  N  L 2* "
   end
-  if ($EQUIPMENT_HOLDS <> 0)
+  if ($PLAYER~EQUIPMENT_HOLDS <> 0)
     setvar $MAC $MAC&" T  N  L 3* "
   end
-  if ($COLONIST_HOLDS <> 0)
+  if ($PLAYER~COLONIST_HOLDS <> 0)
     setvar $MAC $MAC&" S  N  L 1* "
   end
   if ($MAC <> "")
     send $MAC&" t  n  t  1*  m  n t *  c"
-    gosub :QUIKSTATS
-    if (($ORGANIC_HOLDS + ($EQUIPMENT_HOLDS + $COLONIST_HOLDS)) <> 0)
+    gosub :PLAYER~QUIKSTATS
+    if (($PLAYER~ORGANIC_HOLDS + ($PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS)) <> 0)
       send "'{"&$BOT_NAME&"} - Holds Not Empty*"
       halt
     end
@@ -203,8 +203,8 @@ send $S&" - Deploying: "&$GRID_ARMIDS&" Armids, "&$GRID_LIMPETS&" Limpets*"
 send "*"
 
 while (TRUE)
-  gosub :QUIKSTATS
-  if ($LIMPETS < $GRID_LIMPETS) or ($ARMIDS < $GRID_ARMIDS) or (($MINE_DISRUPTORS = 0) and $DISR)
+  gosub :PLAYER~QUIKSTATS
+  if ($PLAYER~LIMPETS < $GRID_LIMPETS) or ($PLAYER~ARMIDS < $GRID_ARMIDS) or (($PLAYER~MINE_DISRUPTORS = 0) and $DISR)
     if ($REFURB)
       gosub :ATTEMPTREFURB
     else
@@ -215,9 +215,9 @@ while (TRUE)
   gosub :FINDNEXTTARGET
   send "  sz*    "
   waiton "Warps to Sector(s) :"
-  setvar $HAZ_BEFORE SECTOR.NAVHAZ[$CURRENT_SECTOR]
-  setvar $PLANETS_BEFORE SECTOR.PLANETCOUNT[$CURRENT_SECTOR]
-  if (SECTOR.TRADERCOUNT[$CURRENT_SECTOR] <> 0)
+  setvar $HAZ_BEFORE SECTOR.NAVHAZ[$PLAYER~CURRENT_SECTOR]
+  setvar $PLANETS_BEFORE SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR]
+  if (SECTOR.TRADERCOUNT[$PLAYER~CURRENT_SECTOR] <> 0)
     send "'{"&$BOT_NAME&"} -  Trader Is In Sector. Halting!*"
     waiton "Message sent on sub-space channel"
     send "'"&$BOT_NAME&" pwarp "&$HOMESECTOR&"*"
@@ -230,9 +230,9 @@ while (TRUE)
   gosub :CLEARSECTOR
   send "  sz*    "
   waiton "Warps to Sector(s) :"
-  setvar $HAZ_AFTER SECTOR.NAVHAZ[$CURRENT_SECTOR]
-  setvar $PLANETS_AFTER SECTOR.PLANETCOUNT[$CURRENT_SECTOR]
-  if (SECTOR.TRADERCOUNT[$CURRENT_SECTOR] <> 0)
+  setvar $HAZ_AFTER SECTOR.NAVHAZ[$PLAYER~CURRENT_SECTOR]
+  setvar $PLANETS_AFTER SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR]
+  if (SECTOR.TRADERCOUNT[$PLAYER~CURRENT_SECTOR] <> 0)
     send "'{"&$BOT_NAME&"} -  Trader Is In Sector. Halting!*"
     waiton "Message sent on sub-space channel"
     send "'"&$BOT_NAME&" pwarp "&$HOMESECTOR&"*"
@@ -273,15 +273,15 @@ waitfor "Figs Per Attack:"
 getword CURRENTLINE $FIGS 5
 multiply $OFFODD $FIGS
 divide $OFFODD 12
-gosub :QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 return
 :ATTEMPTREFURB
 
 
-setvar $LIMPETCASHNEEDED ((($MAXMINES - $LIMPETS) * $LIMPET_COST) + $LIMPET_REMOVAL_COST)
-setvar $ARMIDCASHNEEDED (($MAXMINES - $ARMIDS) * $ARMID_COST)
+setvar $LIMPETCASHNEEDED ((($MAXMINES - $PLAYER~LIMPETS) * $LIMPET_COST) + $LIMPET_REMOVAL_COST)
+setvar $ARMIDCASHNEEDED (($MAXMINES - $PLAYER~ARMIDS) * $ARMID_COST)
 setvar $CASHNEEDED ($LIMPETCASHNEEDED + $ARMIDCASHNEEDED)
-if ($CASHNEEDED > $CREDITS)
+if ($CASHNEEDED > $PLAYER~CREDITS)
   send "D"
   waiton "Citadel treasury contains "
   getword CURRENTLINE $CITADELCASH 4
@@ -290,11 +290,11 @@ if ($CASHNEEDED > $CREDITS)
     send "'{"&$BOT_NAME&"} - Not enough cash for mine refurbs in treasury or on hand.*"
     halt
   end
-  send "t f "&($CASHNEEDED - $CREDITS)&"* "
+  send "t f "&($CASHNEEDED - $PLAYER~CREDITS)&"* "
 end
 
 setvar $I 1
-setvar $START_SECTOR $CURRENT_SECTOR
+setvar $START_SECTOR $PLAYER~CURRENT_SECTOR
 setvar $WEAREADJDOCK FALSE
 while ($I <= SECTOR.WARPCOUNT[$START_SECTOR])
   setvar $ADJ_START SECTOR.WARPS[$START_SECTOR][$I]
@@ -304,7 +304,7 @@ while ($I <= SECTOR.WARPCOUNT[$START_SECTOR])
   add $I 1
 end
 
-if (($ALIGNMENT < 1000) and ($WEAREADJDOCK = FALSE))
+if (($PLAYER~ALIGNMENT < 1000) and ($WEAREADJDOCK = FALSE))
   setvar $RED_ADJ 0
   gosub :FINDJUMPSECTOR
   if ($RED_ADJ <> 0)
@@ -316,7 +316,7 @@ if (($ALIGNMENT < 1000) and ($WEAREADJDOCK = FALSE))
   end
 end
 
-if ($ALIGNMENT >= 1000)
+if ($PLAYER~ALIGNMENT >= 1000)
   if ($WEAREADJDOCK)
     send "^F"&$STARDOCK&"*"&$START_SECTOR&"*Q/ "
   else
@@ -345,7 +345,7 @@ pause
 
 
 echo "**"&ANSI_14&"Please Stand By"&ANSI_15&" - Calculating Distances...**"
-if (($ALIGNMENT >= 1000) or $WEAREADJDOCK)
+if (($PLAYER~ALIGNMENT >= 1000) or $WEAREADJDOCK)
   getdistance $DIST1 $START_SECTOR $STARDOCK
 else
   getdistance $DIST1 $START_SECTOR $RED_ADJ
@@ -364,23 +364,23 @@ end
 
 setvar $ORE_REQ (($DIST1 + $DIST2) * 3)
 
-if ($ORE_HOLDS < $ORE_REQ)
+if ($PLAYER~ORE_HOLDS < $ORE_REQ)
   send "'{"&$BOT_NAME&"} - Not Enough ORE In Holds To Make Round Trip**"
   halt
 end
 
-if ($TWARP_TYPE = "No")
+if ($PLAYER~TWARP_TYPE = "No")
   send "'{"&$BOT_NAME&"} - Must Have Twarp 1 or 2**"
   halt
 end
 
 if ($UNLIMITEDGAME = 0)
   gosub :TURNSREQUIRED
-  if ($TURNSREQUIRED > $TURNS)
+  if ($TURNSREQUIRED > $PLAYER~TURNS)
     send "'{"&$BOT_NAME&"} - Not Enough Turns. "&ANSI_12&$TURNSREQUIRED&ANSI_15&", Required**"
     halt
-  elseif ($TURNSREQUIRED <= $TURNS)
-    setvar $TMP ($TURNS - $TURNSREQUIRED)
+  elseif ($TURNSREQUIRED <= $PLAYER~TURNS)
+    setvar $TMP ($PLAYER~TURNS - $TURNSREQUIRED)
     if ($TMP <= $BOT_TURN_LIMIT)
       send "'{" $BOT_NAME "} - Proceeding Will Leave Fewer Than "&$BOT_TURN_LIMIT&" Turns!**"
       halt
@@ -400,7 +400,7 @@ halt
 killalltriggers
 waitfor "(?="
 setvar $MSG ""
-if (($ALIGNMENT >= 1000) and ($WEAREADJDOCK = FALSE))
+if (($PLAYER~ALIGNMENT >= 1000) and ($WEAREADJDOCK = FALSE))
   setvar $TWARPTO $STARDOCK
   gosub :DOTWARP
 elseif (($WEAREADJDOCK = FALSE) and ($RED_ADJ <> 0))
@@ -415,14 +415,14 @@ else
   send "'{" $BOT_NAME "} - Unknown Problem Detected. Check TA!**"
   halt
 end
-gosub :QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 
 setvar $_LIMPS "Max"
 setvar $_MINES "Max"
 gosub :DOPURCHASES
 send "Q Q Q Q Z N M "&$START_SECTOR&"* Y  Y  Y  * L Z"&#8&$PLANET&"* p  s  s * * c *"
-gosub :QUIKSTATS
-if ($CURRENT_SECTOR = $STARDOCK)
+gosub :PLAYER~QUIKSTATS
+if ($PLAYER~CURRENT_SECTOR = $STARDOCK)
   send "'{" $BOT_NAME "} - Twarp Error, Should be Hiding on Dock!**"
   halt
 end
@@ -503,10 +503,10 @@ if (($PROMPT = "Computer") or ($PROMPT = "Corporate") or ($PROMPT = "NavPoint"))
   send "q"
   waitfor "Command [TL"
 end
-gosub :QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 setvar $FIGSTODEPLOY 1
 gosub :DEPLOYFIGS
-setvar $SAVETARGET $CURRENT_SECTOR
+setvar $SAVETARGET $PLAYER~CURRENT_SECTOR
 if ($SAVETARGET < 10)
   setvar $SAVETARGET 0000&$SAVETARGET
 elseif ($SAVETARGET < 100)
@@ -518,7 +518,7 @@ elseif ($SAVETARGET < 10000)
 
 end
 send "'"&$SAVETARGET&"=saveme*"
-send "'pickup "&$CURRENT_SECTOR&" ::*"
+send "'pickup "&$PLAYER~CURRENT_SECTOR&" ::*"
 :WAITFORHELP
 
 
@@ -557,7 +557,7 @@ goto :PAUSEGRIDDER
 if ($FIGSTODEPLOY = 0)
   setvar $FIGSTODEPLOY 1
 end
-if (($CURRENT_SECTOR < 11) or ($CURRENT_SECTOR = $STARDOCK))
+if (($PLAYER~CURRENT_SECTOR < 11) or ($PLAYER~CURRENT_SECTOR = $STARDOCK))
   send "'Can't deploy figs in fed*"
   return
 end
@@ -586,7 +586,7 @@ end
 return
 :DISRUPT
 
-if ($MINE_DISRUPTORS = 0)
+if ($PLAYER~MINE_DISRUPTORS = 0)
   return
 end
 setdelaytrigger WHOA_WUZUP :WHOA_WUZUP 4000
@@ -597,16 +597,16 @@ pause
 killalltriggers
 send "'Unknown Problem Occured, Attempting to reach Command Prompt!*  P D 0* 0* 0* * *** * C  Q  Q  Q  Q  Q  Z  2  2  C  Q  *  Z  *  ***  *  *  ^Q"
 waitfor ": ENDINTERROG"
-gosub :QUIKSTATS
-send "'Unknown Problem Occured, at '"&$CURRENT_PROMPT&"' Prompt!*"
+gosub :PLAYER~QUIKSTATS
+send "'Unknown Problem Occured, at '"&$PLAYER~CURRENT_PROMPT&"' Prompt!*"
 halt
 :SCAN_COMPLETE
 killalltriggers
 setarray $ADJ2HIT 6 1
 setvar $IDX 1
 
-while (SECTOR.WARPS[$CURRENT_SECTOR][$IDX] > 0)
-  setvar $ADJ SECTOR.WARPS[$CURRENT_SECTOR][$IDX]
+while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$IDX] > 0)
+  setvar $ADJ SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$IDX]
   if (SECTOR.MINES.QUANTITY[$ADJ] <> 0)
     if ((SECTOR.MINES.OWNER[$ADJ] <> "belong to your Corp") and (SECTOR.MINES.OWNER[$ADJ] <> "yours"))
       setvar $ADJ2HIT[$IDX] $ADJ
@@ -618,7 +618,7 @@ while (SECTOR.WARPS[$CURRENT_SECTOR][$IDX] > 0)
   add $IDX 1
 end
 
-setvar $DISRUPTORS $MINE_DISRUPTORS
+setvar $DISRUPTORS $PLAYER~MINE_DISRUPTORS
 send " C "
 :LETS_GO_AGAIN
 setvar $IDX 1
@@ -691,12 +691,12 @@ return
 :FINDNEXTTARGET
 
 
-getnearestwarps $NEAREST $CURRENT_SECTOR
+getnearestwarps $NEAREST $PLAYER~CURRENT_SECTOR
 setvar $CHECKED ""
 setvar $I 1
 while ($I <= $NEAREST)
   setvar $FOCUS $NEAREST[$I]
-  setvar $CHECKED $CHECKED&" "&$CURRENT_SECTOR&" "
+  setvar $CHECKED $CHECKED&" "&$PLAYER~CURRENT_SECTOR&" "
 
   getwordpos $AVOIDEDSECTORS $POS " "&$FOCUS&" "
   getsectorparameter $FOCUS "FIGSEC" $ISFIGGED
@@ -740,17 +740,17 @@ while ($I <= $NEAREST)
   :WE_GOT_GAME
 
   if ((($ISLIMPED <= 0) or ($ISARMIDED <= 0)) and (($ISFIGGED > 0) and ($POS <= 0)))
-    getdistance $DISTANCETHERE $CURRENT_SECTOR $FOCUS
-    getdistance $DISTANCEBACK $FOCUS $CURRENT_SECTOR
+    getdistance $DISTANCETHERE $PLAYER~CURRENT_SECTOR $FOCUS
+    getdistance $DISTANCEBACK $FOCUS $PLAYER~CURRENT_SECTOR
     if ($DISTANCETHERE < 0)
-      send "^f"&$CURRENT_SECTOR&"*"&$FOCUS&"*q"
+      send "^f"&$PLAYER~CURRENT_SECTOR&"*"&$FOCUS&"*q"
       waiton "ENDINTERROG"
-      getdistance $DISTANCETHERE $CURRENT_SECTOR $FOCUS
+      getdistance $DISTANCETHERE $PLAYER~CURRENT_SECTOR $FOCUS
     end
     if ($DISTANCEBACK < 0)
-      send "^f"&$FOCUS&"*"&$CURRENT_SECTOR&"*q"
+      send "^f"&$FOCUS&"*"&$PLAYER~CURRENT_SECTOR&"*q"
       waiton "ENDINTERROG"
-      getdistance $DISTANCEBACK $FOCUS $CURRENT_SECTOR
+      getdistance $DISTANCEBACK $FOCUS $PLAYER~CURRENT_SECTOR
     end
     if (($DISTANCETHERE > 30) and ($LONGJUMPLIMIT <> 0))
       send "'{" $BOT_NAME "} - Next fighter is over 30 hops away, stopping mine sweeper.*"
@@ -773,7 +773,7 @@ while ($I <= $NEAREST)
     :PWARPYESSHIP1
     killalltriggers
     setvar $AVOIDEDSECTORS $AVOIDEDSECTORS&" "&$FOCUS&" "
-    gosub :QUIKSTATS
+    gosub :PLAYER~QUIKSTATS
     return
     :PWARPNOSHIP1
     killalltriggers
@@ -786,8 +786,8 @@ gosub :GOHOME
 return
 :GOHOME
 
-gosub :QUIKSTATS
-if ($CURRENT_PROMPT = "Citadel")
+gosub :PLAYER~QUIKSTATS
+if ($PLAYER~CURRENT_PROMPT = "Citadel")
   send "p"&$HOMESECTOR&"* y"
   settextlinetrigger PWARP_LOCK :PWARP_LOCK "Locating beam pinpointed"
   settextlinetrigger NO_PWARP_LOCK :NO_PWARP_LOCK "Your own fighters must be"
@@ -816,76 +816,37 @@ else
   halt
 end
 return
-goto :QUIKSTATS_PLAYER_INCLUDE
 include "source\include\player"
-:QUIKSTATS_PLAYER_INCLUDE
-:QUIKSTATS
-gosub :PLAYER~QUIKSTATS
-setvar $CURRENT_PROMPT $PLAYER~CURRENT_PROMPT
-setvar $CURRENT_SECTOR $PLAYER~CURRENT_SECTOR
-setvar $TURNS $PLAYER~TURNS
-setvar $CREDITS $PLAYER~CREDITS
-setvar $FIGHTERS $PLAYER~FIGHTERS
-setvar $SHIELDS $PLAYER~SHIELDS
-setvar $TOTAL_HOLDS $PLAYER~TOTAL_HOLDS
-setvar $ORE_HOLDS $PLAYER~ORE_HOLDS
-setvar $ORGANIC_HOLDS $PLAYER~ORGANIC_HOLDS
-setvar $EQUIPMENT_HOLDS $PLAYER~EQUIPMENT_HOLDS
-setvar $COLONIST_HOLDS $PLAYER~COLONIST_HOLDS
-setvar $PHOTONS $PLAYER~PHOTONS
-setvar $ARMIDS $PLAYER~ARMIDS
-setvar $LIMPETS $PLAYER~LIMPETS
-setvar $GENESIS $PLAYER~GENESIS
-setvar $TWARP_TYPE $PLAYER~TWARP_TYPE
-setvar $CLOAKS $PLAYER~CLOAKS
-setvar $BEACONS $PLAYER~BEACONS
-setvar $ATOMIC $PLAYER~ATOMIC
-setvar $CORBO $PLAYER~CORBO
-setvar $EPROBES $PLAYER~EPROBES
-setvar $MINE_DISRUPTORS $PLAYER~MINE_DISRUPTORS
-setvar $PSYCHIC_PROBE $PLAYER~PSYCHIC_PROBE
-setvar $PLANET_SCANNER $PLAYER~PLANET_SCANNER
-setvar $SCAN_TYPE $PLAYER~SCAN_TYPE
-setvar $ALIGNMENT $PLAYER~ALIGNMENT
-setvar $EXPERIENCE $PLAYER~EXPERIENCE
-setvar $CORP $PLAYER~CORP
-setvar $CORPNUMBER $PLAYER~CORPNUMBER
-setvar $SHIP_NUMBER $PLAYER~SHIP_NUMBER
-setvar $SHIP_TYPE $PLAYER~SHIP_TYPE
-setvar $FULL_CURRENT_PROMPT $PLAYER~FULL_CURRENT_PROMPT
-setvar $FEDSPACE $PLAYER~FEDSPACE
-setvar $SELF_DESTRUCT_PROMPT $PLAYER~SELF_DESTRUCT_PROMPT
-return
 :CLEARSECTOR
 
 
 setvar $LAID_ARMID FALSE
 setvar $LAID_LIMP FALSE
-setvar $BEFORESECTOR $CURRENT_SECTOR
-setvar $BEFORELIMPETS $LIMPETS
-setvar $BEFOREARMIDS $ARMIDS
+setvar $BEFORESECTOR $PLAYER~CURRENT_SECTOR
+setvar $BEFORELIMPETS $PLAYER~LIMPETS
+setvar $BEFOREARMIDS $PLAYER~ARMIDS
 setvar $PLACEDLIMPET FALSE
 setvar $PLACEDARMID FALSE
 
 send "   sz*    "
 
 waiton "Warps to Sector(s) :"
-setvar $LIMPETOWNER SECTOR.LIMPETS.OWNER[$CURRENT_SECTOR]
-setvar $ARMIDOWNER SECTOR.MINES.OWNER[$CURRENT_SECTOR]
+setvar $LIMPETOWNER SECTOR.LIMPETS.OWNER[$PLAYER~CURRENT_SECTOR]
+setvar $ARMIDOWNER SECTOR.MINES.OWNER[$PLAYER~CURRENT_SECTOR]
 gosub :DEPLOYEQUIPMENT
 
 if ($FAST or $NONSAFE)
   while (($PLACEDLIMPET = FALSE) or ($PLACEDARMID = FALSE))
     gosub :ATTEMPTCLEARINGMINES
   end
-  setsectorparameter $CURRENT_SECTOR "MINESEC" TRUE
-  setsectorparameter $CURRENT_SECTOR "LIMPSEC" TRUE
+  setsectorparameter $PLAYER~CURRENT_SECTOR "MINESEC" TRUE
+  setsectorparameter $PLAYER~CURRENT_SECTOR "LIMPSEC" TRUE
 else
   if ($PLACEDARMID)
-    setsectorparameter $CURRENT_SECTOR "MINESEC" TRUE
+    setsectorparameter $PLAYER~CURRENT_SECTOR "MINESEC" TRUE
   end
   if ($PLACEDLIMPET)
-    setsectorparameter $CURRENT_SECTOR "LIMPSEC" TRUE
+    setsectorparameter $PLAYER~CURRENT_SECTOR "LIMPSEC" TRUE
   end
 end
 
@@ -950,18 +911,18 @@ pause
 
 
 send "q  q  h  1  z "&$GRID_ARMIDS&"*  z c  *  h  2  z "&$GRID_LIMPETS&"*  z c  *   l "&$PLANET&"*  c "
-gosub :QUIKSTATS
-if ($BEFORESECTOR <> $CURRENT_SECTOR)
+gosub :PLAYER~QUIKSTATS
+if ($BEFORESECTOR <> $PLAYER~CURRENT_SECTOR)
   gosub :CALLSAVEME
 end
-if ($CURRENT_PROMPT <> "Citadel")
+if ($PLAYER~CURRENT_PROMPT <> "Citadel")
   echo "**Unexpected Problem.. Halting**"
   halt
 end
-if (($BEFORELIMPETS > $LIMPETS) or ($LIMPETS < 3) or ($LIMPETOWNER = "belong to your Corp") or ($LIMPETOWNER = "yours"))
+if (($BEFORELIMPETS > $PLAYER~LIMPETS) or ($PLAYER~LIMPETS < 3) or ($LIMPETOWNER = "belong to your Corp") or ($LIMPETOWNER = "yours"))
   setvar $PLACEDLIMPET TRUE
 end
-if (($BEFOREARMIDS > $ARMIDS) or ($ARMIDS < 3) or ($ARMIDOWNER = "belong to your Corp") or ($ARMIDOWNER = "yours"))
+if (($BEFOREARMIDS > $PLAYER~ARMIDS) or ($PLAYER~ARMIDS < 3) or ($ARMIDOWNER = "belong to your Corp") or ($ARMIDOWNER = "yours"))
   setvar $PLACEDARMID TRUE
 end
 return
@@ -1023,7 +984,7 @@ if ($TWARPTO > 0)
   :TWARP_LOCK
 
   killalltriggers
-  if ($ALIGNMENT >= 1000)
+  if ($PLAYER~ALIGNMENT >= 1000)
     send "y * * p s g y g q "
   else
     send "y  *  *  m "&$STARDOCK&" *  *  p s g y g q "
@@ -1038,9 +999,9 @@ return
 
 
 
-setvar $PHOTONS 0
-setvar $SCAN_TYPE "None"
-setvar $TWARP_TYPE 0
+setvar $PLAYER~PHOTONS 0
+setvar $PLAYER~SCAN_TYPE "None"
+setvar $PLAYER~TWARP_TYPE 0
 setvar $CORPSTRING "[0]"
 send "I"
 waitfor "<Info>"
@@ -1110,70 +1071,70 @@ striptext $TRADER_NAME "Civilian "
 striptext $TRADER_NAME "Annoyance "
 pause
 :GETEXPANDALIGN
-getword CURRENTLINE $EXPERIENCE 5
-getword CURRENTLINE $ALIGNMENT 7
-striptext $EXPERIENCE ","
-striptext $ALIGNMENT ","
-striptext $ALIGNMENT "Alignment="
+getword CURRENTLINE $PLAYER~EXPERIENCE 5
+getword CURRENTLINE $PLAYER~ALIGNMENT 7
+striptext $PLAYER~EXPERIENCE ","
+striptext $PLAYER~ALIGNMENT ","
+striptext $PLAYER~ALIGNMENT "Alignment="
 pause
 :GETCORP
-getword CURRENTLINE $CORP 3
-striptext $CORP ","
-setvar $CORPSTRING "["&$CORP&"]"
+getword CURRENTLINE $PLAYER~CORP 3
+striptext $PLAYER~CORP ","
+setvar $CORPSTRING "["&$PLAYER~CORP&"]"
 pause
 :GETSHIPTYPE
 getwordpos CURRENTLINE $SHIPTYPEEND "Ported="
 subtract $SHIPTYPEEND 18
-cuttext CURRENTLINE $SHIP_TYPE 18 $SHIPTYPEEND
+cuttext CURRENTLINE $PLAYER~SHIP_TYPE 18 $SHIPTYPEEND
 pause
 :GETTPW
 getword CURRENTLINE $TURNS_PER_WARP 5
 pause
 :GETSECT
-getword CURRENTLINE $CURRENT_SECTOR 4
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR 4
 pause
 :GETTURNS
-getword CURRENTLINE $TURNS 4
-if ($TURNS = "Unlimited")
-  setvar $TURNS 65000
+getword CURRENTLINE $PLAYER~TURNS 4
+if ($PLAYER~TURNS = "Unlimited")
+  setvar $PLAYER~TURNS 65000
   setvar $UNLIMITEDGAME TRUE
 end
 savevar $UNLIMITEDGAME
 pause
 :GETHOLDS
 setvar $LINE CURRENTLINE
-getword $LINE $TOTAL_HOLDS 4
+getword $LINE $PLAYER~TOTAL_HOLDS 4
 getwordpos $LINE $TEXTPOS "Ore="
 if ($TEXTPOS <> 0)
   cuttext CURRENTLINE $TEMP $TEXTPOS 100
-  getword $TEMP $ORE_HOLDS 1
-  striptext $ORE_HOLDS "Ore="
+  getword $TEMP $PLAYER~ORE_HOLDS 1
+  striptext $PLAYER~ORE_HOLDS "Ore="
 else
-  setvar $ORE_HOLDS 0
+  setvar $PLAYER~ORE_HOLDS 0
 end
 getwordpos $LINE $TEXTPOS "Organics="
 if ($TEXTPOS <> 0)
   cuttext CURRENTLINE $TEMP $TEXTPOS 100
-  getword $TEMP $ORGANIC_HOLDS 1
-  striptext $ORGANIC_HOLDS "Organics="
+  getword $TEMP $PLAYER~ORGANIC_HOLDS 1
+  striptext $PLAYER~ORGANIC_HOLDS "Organics="
 else
-  setvar $ORGANIC_HOLDS 0
+  setvar $PLAYER~ORGANIC_HOLDS 0
 end
 getwordpos $LINE $TEXTPOS "Equipment="
 if ($TEXTPOS <> 0)
   cuttext CURRENTLINE $TEMP $TEXTPOS 100
-  getword $TEMP $EQUIPMENT_HOLDS 1
-  striptext $EQUIPMENT_HOLDS "Equipment="
+  getword $TEMP $PLAYER~EQUIPMENT_HOLDS 1
+  striptext $PLAYER~EQUIPMENT_HOLDS "Equipment="
 else
-  setvar $EQUIPMENT_HOLDS 0
+  setvar $PLAYER~EQUIPMENT_HOLDS 0
 end
 getwordpos $LINE $TEXTPOS "Colonists="
 if ($TEXTPOS <> 0)
   cuttext CURRENTLINE $TEMP $TEXTPOS 100
-  getword $TEMP $COLONIST_HOLDS 1
-  striptext $COLONIST_HOLDS "Colonists="
+  getword $TEMP $PLAYER~COLONIST_HOLDS 1
+  striptext $PLAYER~COLONIST_HOLDS "Colonists="
 else
-  setvar $COLONIST_HOLDS 0
+  setvar $PLAYER~COLONIST_HOLDS 0
 end
 getwordpos $LINE $TEXTPOS "Empty="
 if ($TEXTPOS <> 0)
@@ -1185,30 +1146,30 @@ else
 end
 pause
 :GETFIGHTERS
-getword CURRENTLINE $FIGHTERS 3
-striptext $FIGHTERS ","
+getword CURRENTLINE $PLAYER~FIGHTERS 3
+striptext $PLAYER~FIGHTERS ","
 pause
 :GETSHIELDS
-getword CURRENTLINE $SHIELDS 4
-striptext $SHIELDS ","
+getword CURRENTLINE $PLAYER~SHIELDS 4
+striptext $PLAYER~SHIELDS ","
 pause
 :GETPHOTONS
-getword CURRENTLINE $PHOTONS 3
+getword CURRENTLINE $PLAYER~PHOTONS 3
 pause
 :GETSCANTYPE
-getword CURRENTLINE $SCAN_TYPE 4
+getword CURRENTLINE $PLAYER~SCAN_TYPE 4
 pause
 :GETTWARPTYPE1
 getword CURRENTLINE $TWARP_1_RANGE 4
-setvar $TWARP_TYPE 1
+setvar $PLAYER~TWARP_TYPE 1
 pause
 :GETTWARPTYPE2
 getword CURRENTLINE $TWARP_2_RANGE 4
-setvar $TWARP_TYPE 2
+setvar $PLAYER~TWARP_TYPE 2
 pause
 :GETCREDITS
-getword CURRENTLINE $CREDITS 3
-striptext $CREDITS ","
+getword CURRENTLINE $PLAYER~CREDITS 3
+striptext $PLAYER~CREDITS ","
 pause
 :GETINFODONE
 killtrigger GETINFODONE
@@ -1256,7 +1217,7 @@ end
 :GETPLANETINFO
 gosub :PLANET~GETPLANETINFO
 setvar $PLANET $PLANET~PLANET
-setvar $CURRENT_SECTOR $PLANET~CURRENT_SECTOR
+setvar $PLAYER~CURRENT_SECTOR $PLANET~CURRENT_SECTOR
 setvar $PLANET_FUEL $PLANET~PLANET_FUEL
 setvar $PLANET_FUEL_MAX $PLANET~PLANET_FUEL_MAX
 setvar $PLANET_ORGANICS $PLANET~PLANET_ORGANICS

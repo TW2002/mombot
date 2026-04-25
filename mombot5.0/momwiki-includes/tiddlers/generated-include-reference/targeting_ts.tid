@@ -1,0 +1,27 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: targeting.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: targeting.ts
+
+! targeting.ts
+
+Targeting initialization and scan helpers for attack flows.
+
+''Source:'' `/include/targeting.ts`
+
+!! Significant Exported Routines
+* [[TARGETING~INITIALIZETARGETING]] - Initializes targeting state for attack-capable routines.
+* [[TARGETING~INITIALIZE_TARGETING]] - Initializes targeting state for attack-capable routines.
+* [[TARGETING~SCANITCITKILL]] - Scans and prepares citkill targeting data.
+* [[TARGETING~SCANIT_CIT_KILL]] - Scans and prepares citkill targeting data.
+
+!! Direct Include Users
+* `/daemons/online.ts`
+* `/modes/grid/mow.ts`
+* `/modes/offense/plock.ts`
+* `/preload/_ldrop.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

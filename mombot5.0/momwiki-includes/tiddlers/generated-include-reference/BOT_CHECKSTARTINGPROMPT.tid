@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: BOT~CHECKSTARTINGPROMPT
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-bot
+caption: BOT~CHECKSTARTINGPROMPT
+
+! BOT~CHECKSTARTINGPROMPT
+
+Validates that the current prompt is one of the prompts a command allows before it continues.
+
+''Include:'' [[bot.ts]]
+''Defined at:'' `/include/bot.ts:1`
+
+!! Source Excerpt
+<pre>
+if ($PLAYER~CURRENT_PROMPT = 0)
+  gosub :PLAYER~CURRENTPROMPT
+end
+getwordpos &quot; &quot;&amp;$BOT~VALIDPROMPTS&amp;&quot; &quot; $BOT~POS $PLAYER~CURRENT_PROMPT
+if ($BOT~POS &lt;= 0)
+  setvar $SWITCHBOARD~MESSAGE &quot;Invalid starting prompt: [&quot;&amp;$PLAYER~CURRENT_PROMPT&amp;&quot;]. Valid prompt(s) for this command: [&quot;&amp;$BOT~VALIDPROMPTS&amp;&quot;]*&quot;
+  gosub :SWITCHBOARD~SWITCHBOARD
+  goto :WAIT_FOR_COMMAND
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

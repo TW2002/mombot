@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: MENUS~ADD_GAME
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-menus
+caption: MENUS~ADD_GAME
+
+! MENUS~ADD_GAME
+
+Shared `menus` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+''Include:'' [[menus.ts]]
+''Defined at:'' `/include/menus.ts:1113`
+
+!! Source Excerpt
+<pre>
+setvar $MENUS~NEW_BOT_NAME &quot;&quot;
+getinput $MENUS~NEW_BOT_NAME ANSI_13&amp;&quot;What is the &#x27;in game&#x27; name of the bot? (one word, no spaces)&quot;&amp;ANSI_7
+striptext $MENUS~NEW_BOT_NAME &quot;^&quot;
+striptext $MENUS~NEW_BOT_NAME &quot; &quot;
+lowercase $MENUS~NEW_BOT_NAME
+if ($MENUS~NEW_BOT_NAME = &quot;&quot;)
+  goto :ADD_GAME
+end
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

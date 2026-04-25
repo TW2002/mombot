@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLAYER~STARTCNSETTINGS
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-player
+caption: PLAYER~STARTCNSETTINGS
+
+! PLAYER~STARTCNSETTINGS
+
+Loads or initializes CN settings through the shared player path.
+
+''Include:'' [[player.ts]]
+''Defined at:'' `/include/player.ts:973`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+send &quot;CN&quot;
+settextlinetrigger ANSI1 :CNCHECK &quot;(1) ANSI graphics            - Off&quot;
+settextlinetrigger ANIM1 :CNCHECK &quot;(2) Animation display        - On&quot;
+settextlinetrigger PAGE1 :CNCHECK &quot;(3) Page on messages         - On&quot;
+settextlinetrigger SETSSCHN :SETSSCHN &quot;(4) Sub-space radio channel&quot;
+settextlinetrigger SILENCE1 :CNCHECK &quot;(7) Silence ALL messages     - Yes&quot;
+settextlinetrigger ABORTDISPLAY1 :CNCHECK &quot;(9) Abort display on keys    - ALL KEYS&quot;
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

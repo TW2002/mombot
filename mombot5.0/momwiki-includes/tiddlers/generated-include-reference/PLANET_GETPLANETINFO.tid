@@ -1,0 +1,22 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLANET~GETPLANETINFO
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-planet
+caption: PLANET~GETPLANETINFO
+
+! PLANET~GETPLANETINFO
+
+Parses the current planet screen and fills the shared planet variables.
+
+''Include:'' [[planet.ts]]
+''Defined at:'' `/include/planet.ts:162`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $PLANET~NOHEADER 0
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

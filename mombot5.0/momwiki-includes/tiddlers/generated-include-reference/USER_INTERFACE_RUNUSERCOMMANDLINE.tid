@@ -1,0 +1,25 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: USER_INTERFACE~RUNUSERCOMMANDLINE
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-user_interface
+caption: USER_INTERFACE~RUNUSERCOMMANDLINE
+
+! USER_INTERFACE~RUNUSERCOMMANDLINE
+
+Dispatches a resolved command line through the bot user-interface layer.
+
+''Include:'' [[user_interface.ts]]
+''Defined at:'' `/include/user_interface.ts:155`
+
+!! Source Excerpt
+<pre>
+setvar $BOT~USER_COMMAND_LINE $BOT~USER_COMMAND_LINE&amp;&quot;              &quot;
+setvar $USER_INTERFACE~AUTHORIZATION 9
+setvar $USER_INTERFACE~USER_SEC_LEVEL 9
+gosub :CHECK_FOR_MULTI_COMMANDS
+goto :COMMAND_PROCESSING
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

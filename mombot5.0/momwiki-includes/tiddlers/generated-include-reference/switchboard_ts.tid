@@ -1,0 +1,26 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: switchboard.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: switchboard.ts
+
+! switchboard.ts
+
+Subspace and switchboard messaging helper routines.
+
+''Source:'' `/include/switchboard.ts`
+
+!! Significant Exported Routines
+* [[SWITCHBOARD~SWITCHBOARD]] - Sends formatted status or report lines through the shared switchboard/subspace path.
+
+!! Direct Include Users
+* `/commands/general/qset.ts`
+* `/commands/general/refresh.ts`
+* `/commands/general/scrub.ts`
+* `/commands/offense/invader.ts`
+* `/include/bot.ts`
+* `/modes/cashing/merch.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

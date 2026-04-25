@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: MENUS~ECHOHOTKEYS
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-menus
+caption: MENUS~ECHOHOTKEYS
+
+! MENUS~ECHOHOTKEYS
+
+Displays shared output through the bot UI layer.
+
+''Include:'' [[menus.ts]]
+''Defined at:'' `/include/menus.ts:1037`
+
+!! Source Excerpt
+<pre>
+setarray $MENUS~H 34
+setarray $MENUS~QSS 34
+setvar $MENUS~H[1] &quot;Auto Kill            &quot;
+setvar $MENUS~H[2] &quot;Auto Capture         &quot;
+setvar $MENUS~H[3] &quot;Auto Refurb          &quot;
+setvar $MENUS~H[4] &quot;Surround             &quot;
+setvar $MENUS~H[5] &quot;Holo-Torp            &quot;
+setvar $MENUS~H[6] &quot;Transwarp Drive      &quot;
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

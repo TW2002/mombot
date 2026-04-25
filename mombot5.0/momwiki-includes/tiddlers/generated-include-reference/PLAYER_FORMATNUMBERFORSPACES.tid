@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLAYER~FORMATNUMBERFORSPACES
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-player
+caption: PLAYER~FORMATNUMBERFORSPACES
+
+! PLAYER~FORMATNUMBERFORSPACES
+
+Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+''Include:'' [[player.ts]]
+''Defined at:'' `/include/player.ts:332`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($PLAYER~INPUTVARIABLE &lt; 10)
+  setvar $PLAYER~OUTPUTVARIABLE &quot;    &quot;&amp;$PLAYER~INPUTVARIABLE
+elseif ($PLAYER~INPUTVARIABLE &lt; 100)
+  setvar $PLAYER~OUTPUTVARIABLE &quot;   &quot;&amp;$PLAYER~INPUTVARIABLE
+elseif ($PLAYER~INPUTVARIABLE &lt; 1000)
+  setvar $PLAYER~OUTPUTVARIABLE &quot;  &quot;&amp;$PLAYER~INPUTVARIABLE
+elseif ($PLAYER~INPUTVARIABLE &lt; 10000)
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

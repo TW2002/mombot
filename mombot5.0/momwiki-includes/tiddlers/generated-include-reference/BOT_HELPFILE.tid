@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: BOT~HELPFILE
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-bot
+caption: BOT~HELPFILE
+
+! BOT~HELPFILE
+
+Resolves and loads the matching help text for the active command or mode.
+
+''Include:'' [[bot.ts]]
+''Defined at:'' `/include/bot.ts:1175`
+
+!! Source Excerpt
+<pre>
+setvar $BOT~ONLY_HELP FALSE
+if (($BOT~PARM1 = &quot;help&quot;) or ($BOT~PARM1 = &quot;?&quot;))
+  setvar $BOT~ONLY_HELP TRUE
+end
+if (($SWITCHBOARD~SELF_COMMAND &lt;&gt; FALSE) and (($BOT~PARM1 = &quot;!&quot;) or ($BOT~PARM1 = &quot;menu&quot;)))
+  goto :SELF_MENU
+end
+setvar $BOT~HELP_FILE &quot;scripts\&quot;&amp;$BOT~MOMBOT_DIRECTORY&amp;&quot;\help\&quot;&amp;$BOT~COMMAND&amp;&quot;.txt&quot;
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

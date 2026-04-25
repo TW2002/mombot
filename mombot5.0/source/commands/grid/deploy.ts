@@ -32,7 +32,6 @@
 	setVar $BOT~help[29]  $BOT~tab&"                    >put 100 personal"
 	gosub :bot~helpfile
 
-
 	setVar $bot~bot_name $SWITCHBOARD~bot_name
 	
 	gosub :PLAYER~quikstats
@@ -201,13 +200,13 @@
 		if ($topoff)
 			gosub :DEPLOY~TOPOFF
 		else
-			setvar $fighter~offensive $offensive
-			setvar $fighter~defensive $defensive
-			setvar $fighter~toll $toll
-			setvar $fighter~corporate $corporate
-			setvar $fighter~personal $personal
-			setvar $fighter~amount $deploy_amount
-			gosub :fighter~deploy
+			setvar $fighters~offensive $offensive
+			setvar $fighters~defensive $defensive
+			setvar $fighters~toll $toll
+			setvar $fighters~corporate $corporate
+			setvar $fighters~personal $personal
+			setvar $fighters~amount $deploy_amount
+			gosub :fighters~deploy
 		end
 	elseif (($limpet) and ($armid))
 		setvar $mines~personal $personal
@@ -291,4 +290,4 @@ include "source\include\bot"
 include "source\include\player"
 include "source\include\planet"
 include "source\include\mines"
-include "source\include\fighter"
+include "source\include\fighters"

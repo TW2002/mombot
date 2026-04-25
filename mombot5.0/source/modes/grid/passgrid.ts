@@ -113,6 +113,7 @@
 	setVar $LOG_EVENT	0
 	setVar $HOLO		FALSE
 	setVar $TRACKER	FALSE
+	setVar $restoreHaggle 0
 	setVar $EQU_MIN 50
 	setVar $EQU_MIN_BUY 25
 	setVar $DROP_TWENTY	0
@@ -364,16 +365,10 @@
 		goSub :getPersonalPlanets
 	end
 
-	
-
 	goto :Lets_Get_It_On
 
 :Lets_Get_It_On
     getTime $Stamp "t d/m/yy"
-
-	stop $FILENAME
-	stop $FILENAME
-
 	if ($TRACKER)
 		setVar $MCICd	0
 		setArray $MCIC	SECTORS
@@ -465,9 +460,10 @@
 	if ($UNLIM = FALSE)
 		if ($PLAYER~TURNS <= $Turn_Limit)
 			goto :PASSGRID_MAIN_DONE
-		end
+	end
 	end
 		:To_The_Top
+		gosub :RestoreHaggle
 		setVar $anon_ptr 1
 		setTextLineTrigger	TurnsGone	:TurnsGone	"Do you want instructions (Y/N) [N]?"
 
@@ -497,6 +493,10 @@
 
 				if ((PORT.CLASS[$player~CURRENT_SECTOR] = 3) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 4) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 5) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 7))
 					#Echo "***Stupid Attmpt**"
+					if (HAGGLE)
+						setVar $restoreHaggle 1
+						autohaggle off
+					end
 					send "P T ** 0* 0* "
 					
 				end
@@ -1286,6 +1286,7 @@
 		end
 		goto :PASSGRID_MAIN_LOOP
 	:PASSGRID_MAIN_DONE
+	gosub :RestoreHaggle
 
 	if ($UNLIM = 0)
 		if (CURRENTTURNS <= $Turn_Limit)
@@ -1298,6 +1299,7 @@
 	halt
 
 :TurnsGone
+	gosub :RestoreHaggle
 	killAllTriggers
 	send "   *   *    *   /"
 	waiton #179 & "Turns"
@@ -1483,16 +1485,16 @@
 	setTextLineTrigger sectorlinetrig :sectorsline " > "
 	send "^f*"&$destination&"*nq"
 	pause
-:sectorsline
-	killAllTriggers
-	setVar $line CURRENTLINE
-	replacetext $line ">" " "
-	striptext $line "("
-	striptext $line ")"
-	setVar $line $line&" "
-	getWordPos $line $pos "So what's the point?"
-	getWordPos $line $pos2 ": ENDINTERROG"
-	getWordPos $line $pos3 "*** Error"
+	:sectorsline
+		killAllTriggers
+		setVar $line CURRENTLINE
+		replacetext $line ">" " "
+		striptext $line "("
+		striptext $line ")"
+		setVar $line $line&" "
+		getWordPos $line $pos "So what's the point?"
+		getWordPos $line $pos2 ": ENDINTERROG"
+		getWordPos $line $pos3 "*** Error"
 
 	if (($pos > 0) OR ($pos2 > 0))
 		setVar $courseLength 0
@@ -1503,20 +1505,20 @@
 	if (($pos <= 0) AND ($pos2 <= 0))
 		setVar $sectors $sectors & " " & $line
 	end
-	getWordPos $line $pos " "&$destination&" "
-	getWordPos $line $pos2 "("&$destination&")"
-	getWordPos $line $pos3 "TO"
-	if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
-		goto :gotSectors
-	else
+		getWordPos $line $pos " "&$destination&" "
+		getWordPos $line $pos2 "("&$destination&")"
+		getWordPos $line $pos3 "TO"
+		if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
+			goto :gotSectors
+		end
+	:waitForNextCourseLine
 		setTextLineTrigger sectorlinetrig :sectorsline " > "
 		setTextLineTrigger sectorlinetrig2 :sectorsline " "&$destination&" "
 		setTextLineTrigger sectorlinetrig3 :sectorsline " "&$destination
 		setTextLineTrigger sectorlinetrig4 :sectorsline "("&$destination&")"
 		setTextLineTrigger donePath :sectorsline "So what's the point?"
 		setTextLineTrigger donePath2 :sectorsline ": ENDINTERROG"
-	end
-	pause
+		pause
 
 :gotSectors
 	killAllTriggers
@@ -1769,11 +1771,7 @@ return
 	
 	:preadDone
 		killAllTriggers
-
-
-	
-
-return
+	return
 
 
 include "source\include\bot"

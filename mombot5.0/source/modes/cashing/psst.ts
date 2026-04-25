@@ -45,12 +45,12 @@ if ($SHIP1NEEDSPORT)
         goto :ENDSST
         :PWARPYESSHIP1
         killalltriggers
-        gosub :QUIKSTATS
+        gosub :PLAYER~QUIKSTATS
         setvar $SHIP1NEEDSPORT FALSE
         setvar $SHIP1SECTOR $FOCUS
         gosub :GETSSTPORTINFO
-        setvar $SHIP1TOTALHOLDS $TOTAL_HOLDS
-        setvar $SHIP1EQUIPMENT $EQUIPMENT_HOLDS
+        setvar $SHIP1TOTALHOLDS $PLAYER~TOTAL_HOLDS
+        setvar $SHIP1EQUIPMENT $PLAYER~EQUIPMENT_HOLDS
         gosub :DISPLAYCREDITS
         send "q *q *"
         if ($P1CHK = 1)
@@ -119,12 +119,12 @@ if ($SHIP2NEEDSPORT)
         goto :ENDSST
         :PWARPYESSHIP2
         killalltriggers
-        gosub :QUIKSTATS
+        gosub :PLAYER~QUIKSTATS
         setvar $SHIP2NEEDSPORT FALSE
         setvar $SHIP2SECTOR $FOCUS
         gosub :GETSSTPORTINFO
-        setvar $SHIP2TOTALHOLDS $TOTAL_HOLDS
-        setvar $SHIP2EQUIPMENT $EQUIPMENT_HOLDS
+        setvar $SHIP2TOTALHOLDS $PLAYER~TOTAL_HOLDS
+        setvar $SHIP2EQUIPMENT $PLAYER~EQUIPMENT_HOLDS
         gosub :DISPLAYCREDITS
         send "q *q *"
         if ($P2CHK = 1)
@@ -157,7 +157,7 @@ return
 :STEAL
 
 if (($ISBUSTED1 <> TRUE) and ($ISBUSTED2 <> TRUE))
-  setvar $MAXSTEAL (($EXPERIENCE / $STEAL_FACTOR) - 1)
+  setvar $MAXSTEAL (($PLAYER~EXPERIENCE / $STEAL_FACTOR) - 1)
   setvar $SEND ""
   if ($INSHIP1)
     if ($SHIP1EQUIPMENT > 0)
@@ -227,7 +227,7 @@ settextlinetrigger FAKEBUST :BUSTED "Do you want instructions (Y/N) [N]?"
 pause
 :SUCCESS
 
-add $EXPERIENCE $STAKE
+add $PLAYER~EXPERIENCE $STAKE
 if ($INSHIP1)
   setvar $SHIP2EQUIPMENT 1
 else
@@ -278,46 +278,7 @@ end
 waiton "<Computer deactivated>"
 
 return
-goto :QUIKSTATS_PLAYER_INCLUDE
 include "source\include\player"
-:QUIKSTATS_PLAYER_INCLUDE
-:QUIKSTATS
-gosub :PLAYER~QUIKSTATS
-setvar $CURRENT_PROMPT $PLAYER~CURRENT_PROMPT
-setvar $CURRENT_SECTOR $PLAYER~CURRENT_SECTOR
-setvar $TURNS $PLAYER~TURNS
-setvar $CREDITS $PLAYER~CREDITS
-setvar $FIGHTERS $PLAYER~FIGHTERS
-setvar $SHIELDS $PLAYER~SHIELDS
-setvar $TOTAL_HOLDS $PLAYER~TOTAL_HOLDS
-setvar $ORE_HOLDS $PLAYER~ORE_HOLDS
-setvar $ORGANIC_HOLDS $PLAYER~ORGANIC_HOLDS
-setvar $EQUIPMENT_HOLDS $PLAYER~EQUIPMENT_HOLDS
-setvar $COLONIST_HOLDS $PLAYER~COLONIST_HOLDS
-setvar $PHOTONS $PLAYER~PHOTONS
-setvar $ARMIDS $PLAYER~ARMIDS
-setvar $LIMPETS $PLAYER~LIMPETS
-setvar $GENESIS $PLAYER~GENESIS
-setvar $TWARP_TYPE $PLAYER~TWARP_TYPE
-setvar $CLOAKS $PLAYER~CLOAKS
-setvar $BEACONS $PLAYER~BEACONS
-setvar $ATOMIC $PLAYER~ATOMIC
-setvar $CORBO $PLAYER~CORBO
-setvar $EPROBES $PLAYER~EPROBES
-setvar $MINE_DISRUPTORS $PLAYER~MINE_DISRUPTORS
-setvar $PSYCHIC_PROBE $PLAYER~PSYCHIC_PROBE
-setvar $PLANET_SCANNER $PLAYER~PLANET_SCANNER
-setvar $SCAN_TYPE $PLAYER~SCAN_TYPE
-setvar $ALIGNMENT $PLAYER~ALIGNMENT
-setvar $EXPERIENCE $PLAYER~EXPERIENCE
-setvar $CORP $PLAYER~CORP
-setvar $CORPNUMBER $PLAYER~CORPNUMBER
-setvar $SHIP_NUMBER $PLAYER~SHIP_NUMBER
-setvar $SHIP_TYPE $PLAYER~SHIP_TYPE
-setvar $FULL_CURRENT_PROMPT $PLAYER~FULL_CURRENT_PROMPT
-setvar $FEDSPACE $PLAYER~FEDSPACE
-setvar $SELF_DESTRUCT_PROMPT $PLAYER~SELF_DESTRUCT_PROMPT
-return
 :START_SCRIPT
 
 
@@ -344,8 +305,8 @@ loadvar $ALPHA_CENTAURI
 loadvar $STARDOCK
 loadvar $SUBSPACE
 
-gosub :QUIKSTATS
-setvar $STARTINGLOCATION $CURRENT_PROMPT
+gosub :PLAYER~QUIKSTATS
+setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 isnumber $ISPARAMONENUMBER $PARM1
 isnumber $ISPARAMTWONUMBER $PARM2
 isnumber $ISPARAMTHREENUMBER $PARM3
@@ -376,11 +337,11 @@ end
 setvar $PORTAVERAGE 1
 send "jy*"
 setvar $CASHDEPOSITED 0
-gosub :QUIKSTATS
-setvar $STARTCASH $CREDITS
+gosub :PLAYER~QUIKSTATS
+setvar $STARTCASH $PLAYER~CREDITS
 setarray $PLANET1FUEL 3
 setarray $PLANET2FUEL 3
-setvar $PSST_SHIP1 $SHIP_NUMBER
+setvar $PSST_SHIP1 $PLAYER~SHIP_NUMBER
 
 if (($PSST_SHIP2 <= 0) or ($PSST_PLANET1 <= 0) or ($PSST_PLANET2 <= 0) or ($STEAL_FACTOR <= 0))
   send "'This module should be run from the MOM Bot.*"
@@ -388,7 +349,7 @@ if (($PSST_SHIP2 <= 0) or ($PSST_PLANET1 <= 0) or ($PSST_PLANET2 <= 0) or ($STEA
   savevar $MODE
   halt
 end
-setvar $STARTINGSECTOR $CURRENT_SECTOR
+setvar $STARTINGSECTOR $PLAYER~CURRENT_SECTOR
 setvar $INSHIP1 TRUE
 setvar $P1CHK 3
 setvar $P2CHK 3
@@ -457,8 +418,8 @@ else
 end
 send "'{" $BOT_NAME "} Minimum transport range of these two ships is "&$TRANSPORTRANGE&".*"
 
-setvar $SHIP1SECTOR $CURRENT_SECTOR
-setvar $SHIP2SECTOR $CURRENT_SECTOR
+setvar $SHIP1SECTOR $PLAYER~CURRENT_SECTOR
+setvar $SHIP2SECTOR $PLAYER~CURRENT_SECTOR
 setvar $SHIP1NEEDSPORT TRUE
 setvar $SHIP2NEEDSPORT TRUE
 setvar $I 1
@@ -474,7 +435,7 @@ while (TRUE)
   getsectorparameter $SHIP1SECTOR "BUSTED" $ISBUSTED1
   getsectorparameter $SHIP2SECTOR "BUSTED" $ISBUSTED2
   while ($BUSTED = FALSE)
-    if (($UNLIMITEDGAME = FALSE) and ($TURNS <= $BOT_TURN_LIMIT))
+    if (($UNLIMITEDGAME = FALSE) and ($PLAYER~TURNS <= $BOT_TURN_LIMIT))
       goto :ENDSST
     end
     gosub :STEAL
@@ -524,7 +485,7 @@ return
 setvar $FOUNDSHIP2 FALSE
 killalltriggers
 send "wn*"
-settextlinetrigger OTHER :SHIPLINE " "&$CURRENT_SECTOR&" "
+settextlinetrigger OTHER :SHIPLINE " "&$PLAYER~CURRENT_SECTOR&" "
 settextlinetrigger NOSHIPS :SHIPDONE "You do not own any other ships in this sector!"
 pause
 :SHIPLINE
@@ -535,7 +496,7 @@ getword CURRENTLINE $TEMPID 1
 if ($TEMPID = $PSST_SHIP2)
   setvar $FOUNDSHIP2 TRUE
 end
-settextlinetrigger OTHER :SHIPLINE " "&$CURRENT_SECTOR&" "
+settextlinetrigger OTHER :SHIPLINE " "&$PLAYER~CURRENT_SECTOR&" "
 settextlinetrigger NOMORE :SHIPDONE "Choose which ship to tow "
 pause
 :SHIPDONE
@@ -568,7 +529,7 @@ getword CURRENTLINE $EQUIPPERC 4
 striptext $EQUIPPERC "%"
 setvar $X 10000
 if ($EQUIPPERC = 0)
-  setvar $EQUIPATPORT[$FOCUS] ($TOTAL_HOLDS + 50)
+  setvar $EQUIPATPORT[$FOCUS] ($PLAYER~TOTAL_HOLDS + 50)
 else
   divide $X $EQUIPPERC
   multiply $X $EQUIPBUY
@@ -620,24 +581,24 @@ goto :ENDSST
 killalltriggers
 send "q q p ty"
 waiton "You have "
-getword CURRENTLINE $CREDITS 3
-striptext $CREDITS ","
+getword CURRENTLINE $PLAYER~CREDITS 3
+striptext $PLAYER~CREDITS ","
 waiton "A  Cargo holds     :"
 getword CURRENTLINE $HOLDSTOBUY 10
 send "a "&$HOLDSTOBUY&"* y q q q * "
 if ($INSHIP1)
-  if ($CREDITS > 5000000)
-    send "l "&$PSST_PLANET1&"* c t t "&($CREDITS - 5000000)&"* p "&$SHIP1SECTOR&"*y"
-    add $CASHDEPOSITED ($CREDITS - 5000000)
-    setvar $CREDITS 5000000
+  if ($PLAYER~CREDITS > 5000000)
+    send "l "&$PSST_PLANET1&"* c t t "&($PLAYER~CREDITS - 5000000)&"* p "&$SHIP1SECTOR&"*y"
+    add $CASHDEPOSITED ($PLAYER~CREDITS - 5000000)
+    setvar $PLAYER~CREDITS 5000000
   else
     send "l "&$PSST_PLANET1&"* c p "&$SHIP1SECTOR&"*y"
   end
 else
-  if ($CREDITS > 5000000)
-    send "l "&$PSST_PLANET2&"* c t t "&($CREDITS - 5000000)&"* p "&$SHIP2SECTOR&"*y"
-    add $CASHDEPOSITED ($CREDITS - 5000000)
-    setvar $CREDITS 5000000
+  if ($PLAYER~CREDITS > 5000000)
+    send "l "&$PSST_PLANET2&"* c t t "&($PLAYER~CREDITS - 5000000)&"* p "&$SHIP2SECTOR&"*y"
+    add $CASHDEPOSITED ($PLAYER~CREDITS - 5000000)
+    setvar $PLAYER~CREDITS 5000000
   else
     send "l "&$PSST_PLANET2&"* c p "&$SHIP2SECTOR&"*y"
   end
@@ -678,7 +639,7 @@ end
 setvar $FORMATTEDDEPOSITEDCREDITS $SPENTCREDITS&$FORMATTEDDEPOSITEDCREDITS
 
 setvar $FORMATTEDONHANDCREDITS ""
-setvar $SPENTCREDITS $CREDITS
+setvar $SPENTCREDITS $PLAYER~CREDITS
 getlength $SPENTCREDITS $LENGTH
 while ($LENGTH > 3)
   cuttext $SPENTCREDITS $SNIPPET ($LENGTH - 2) 9999
@@ -688,13 +649,13 @@ while ($LENGTH > 3)
 end
 setvar $FORMATTEDONHANDCREDITS $SPENTCREDITS&$FORMATTEDONHANDCREDITS
 add $PORTAVERAGE $CASHDEPOSITED
-add $PORTAVERAGE $CREDITS
+add $PORTAVERAGE $PLAYER~CREDITS
 subtract $PORTAVERAGE $STARTCASH
 if ($NUMBERBUSTED = 0)
   setvar $NUMBERBUSTED 1
 end
 divide $PORTAVERAGE $NUMBERBUSTED
-setwindowcontents "CASH" "    Cash Deposited: "&$FORMATTEDDEPOSITEDCREDITS&"*      Cash On Hand: "&$FORMATTEDONHANDCREDITS&"*  Busted xxB Ports: "&$NUMBERBUSTED&"*     Planet 1 Fuel: "&$PLANET1FUEL[1]&"*     Planet 2 Fuel: "&$PLANET2FUEL[1]&"*  Credits per Port: "&$PORTAVERAGE&"*        Experience: "&$EXPERIENCE&"*"
+setwindowcontents "CASH" "    Cash Deposited: "&$FORMATTEDDEPOSITEDCREDITS&"*      Cash On Hand: "&$FORMATTEDONHANDCREDITS&"*  Busted xxB Ports: "&$NUMBERBUSTED&"*     Planet 1 Fuel: "&$PLANET1FUEL[1]&"*     Planet 2 Fuel: "&$PLANET2FUEL[1]&"*  Credits per Port: "&$PORTAVERAGE&"*        Experience: "&$PLAYER~EXPERIENCE&"*"
 
 
 return
@@ -756,7 +717,7 @@ if (($PLANET1FUEL[1] < 100000) and (($PLANET1FUEL[2] < 100000) and ($PLANET1FUEL
   send "'{" $BOT_NAME "} - Planet(s) low on fuel, stopping script.  Put total of "&$FORMATTEDDEPOSITEDCREDITS&" credits in treasury.*"
 elseif (($PLANET2FUEL[1] < 100000) and (($PLANET2FUEL[2] < 100000) and ($PLANET2FUEL[3] < 100000)))
   send "'{" $BOT_NAME "} - Planet(s) low on fuel, stopping script.  Put total of "&$FORMATTEDDEPOSITEDCREDITS&" credits in treasury.*"
-elseif (($UNLIMITEDGAME = FALSE) and ($TURNS <= $BOT_TURN_LIMIT))
+elseif (($UNLIMITEDGAME = FALSE) and ($PLAYER~TURNS <= $BOT_TURN_LIMIT))
   send "'{" $BOT_NAME "} - Too low turns to continue Planet SST.*"
 else
   send "'{" $BOT_NAME "} - All known xxB ports in the grid are used up.  Put total of "&$FORMATTEDDEPOSITEDCREDITS&" credits in treasury.*"

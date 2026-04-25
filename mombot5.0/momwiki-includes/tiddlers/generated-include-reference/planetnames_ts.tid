@@ -1,0 +1,21 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: planetnames.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: planetnames.ts
+
+! planetnames.ts
+
+Planet-name array and planet-list helper routines.
+
+''Source:'' `/include/planetnames.ts`
+
+!! Significant Exported Routines
+* [[PLANETNAMES~MAKE_PLANET_ARRAY]] - Builds the planet-name array used by makeplanet and related planet-list logic.
+
+!! Direct Include Users
+* `/modes/resource/makeplanet.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

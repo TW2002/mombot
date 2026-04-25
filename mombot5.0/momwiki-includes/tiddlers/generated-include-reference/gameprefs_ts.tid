@@ -1,0 +1,23 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: gameprefs.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: gameprefs.ts
+
+! gameprefs.ts
+
+Helpers for applying or restoring game preference settings.
+
+''Source:'' `/include/gameprefs.ts`
+
+!! Significant Exported Routines
+* [[gameprefs~setgameprefs]] - Applies stored game preferences back into the current game session.
+
+!! Direct Include Users
+* `/modes/cashing/wppt.ts`
+* `/modes/resource/upgrade.ts`
+* `/mombot.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

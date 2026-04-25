@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: COMBAT~FASTATTACK
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-combat
+caption: COMBAT~FASTATTACK
+
+! COMBAT~FASTATTACK
+
+Runs the fast-attack combat macro against the current target.
+
+''Include:'' [[combat.ts]]
+''Defined at:'' `/include/combat.ts:1`
+
+!! Source Excerpt
+<pre>
+setvar $COMBAT~TARGETSTRING &quot;a&quot;
+setvar $PLAYER~ISFOUND FALSE
+setvar $COMBAT~TARGETSHOTGUN &quot;a z z y z&quot;&amp;$SHIP~SHIP_MAX_ATTACK&amp;&quot;* * a z z * y z&quot;&amp;$SHIP~SHIP_MAX_ATTACK&amp;&quot;* * a z z * * y z&quot;&amp;$SHIP~SHIP_MAX_ATTACK&amp;&quot;* * &quot;
+if ($SHIP~SHIP_MAX_ATTACK &lt;= 0)
+  gosub :SHIP~GETSHIPSTATS
+end
+setvar $COMBAT~FEDSPACE FALSE
+if (($PLAYER~CURRENT_SECTOR = STARDOCK) or ($PLAYER~CURRENT_SECTOR &lt;= 10))
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

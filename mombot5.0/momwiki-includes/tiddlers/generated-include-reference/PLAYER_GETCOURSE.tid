@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLAYER~GETCOURSE
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-player
+caption: PLAYER~GETCOURSE
+
+! PLAYER~GETCOURSE
+
+Resolves a course/path between sectors for callers that need route data.
+
+''Include:'' [[player.ts]]
+''Defined at:'' `/include/player.ts:1640`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if (($PLAYER~DESTINATION &lt;= 0) or ($PLAYER~DESTINATION = &quot;&quot;))
+  setvar $PLAYER~COURSELENGTH 0
+  return
+end
+if (($PLAYER~STARTING_POINT &lt;= 0) or ($PLAYER~STARTING_POINT = &quot;&quot;))
+  setvar $PLAYER~STARTING_POINT CURRENTSECTOR
+end
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

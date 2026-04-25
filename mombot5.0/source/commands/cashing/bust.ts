@@ -23,9 +23,9 @@ else
   halt
 end
 :START
-gosub :QUIKSTATS
-setvar $START_PROMPT $CURRENT_PROMPT
-if ($CREDITS < 1000000)
+gosub :PLAYER~QUIKSTATS
+setvar $START_PROMPT $PLAYER~CURRENT_PROMPT
+if ($PLAYER~CREDITS < 1000000)
   send "'{" $BOT_NAME "} - Not Enough Cash on Hand*"
   halt
 end
@@ -36,7 +36,7 @@ else
   send "'{" $BOT_NAME "} - Invalid Experience Amount.*"
   halt
 end
-if ($EXPERIENCE > $EXPERIENCEAMOUNT)
+if ($PLAYER~EXPERIENCE > $EXPERIENCEAMOUNT)
   send "'{" $BOT_NAME "} - Desired Experience Reached.*"
   if ($START_PROMPT = "<StarDock>")
     send "p  s"
@@ -44,27 +44,27 @@ if ($EXPERIENCE > $EXPERIENCEAMOUNT)
   halt
 end
 
-if (($CURRENT_PROMPT <> "Command") and ($CURRENT_PROMPT <> "<StarDock>"))
+if (($PLAYER~CURRENT_PROMPT <> "Command") and ($PLAYER~CURRENT_PROMPT <> "<StarDock>"))
   send "'{" $BOT_NAME "} - Script must be run from Command or StarDock.*"
   halt
 end
-if ($CORP > 1)
-  setvar $CORP "Yes"
+if ($PLAYER~CORP > 1)
+  setvar $PLAYER~CORP "Yes"
 else
-  setvar $CORP "No"
+  setvar $PLAYER~CORP "No"
 end
-setvar $SCANNER $PLANET_SCANNER
+setvar $SCANNER $PLAYER~PLANET_SCANNER
 :RUN
 
 killalltriggers
-if ($EXPERIENCE > $EXPERIENCEAMOUNT)
+if ($PLAYER~EXPERIENCE > $EXPERIENCEAMOUNT)
   send "'{" $BOT_NAME "} - Desired Experience Reached.*"
   if ($START_PROMPT = "<StarDock>")
     send "p  s"
   end
   halt
 end
-if ($CURRENT_PROMPT = "<StarDock>")
+if ($PLAYER~CURRENT_PROMPT = "<StarDock>")
   send "q  "
 end
 add $COUNT 1
@@ -76,8 +76,8 @@ if ($COUNT > 5)
   setvar $COUNT 1
   goto :RUN
 end
-gosub :QUIKSTATS
-if (($CREDITS < 1000000) and ($ATOMIC < 1)) or (($CREDITS < 1000000) and ($GENESIS < 1))
+gosub :PLAYER~QUIKSTATS
+if (($PLAYER~CREDITS < 1000000) and ($PLAYER~ATOMIC < 1)) or (($PLAYER~CREDITS < 1000000) and ($PLAYER~GENESIS < 1))
   if ($START_PROMPT = "<StarDock>")
     send "p  s"
   end
@@ -114,49 +114,10 @@ send "qq"
 killtrigger CREATE
 send "* * p s h a"
 waitfor "How many Atomic Detonators do you want"
-gettext CURRENTLINE $ATOMIC "(Max " ")"
-send $ATOMIC "* t"
+gettext CURRENTLINE $PLAYER~ATOMIC "(Max " ")"
+send $PLAYER~ATOMIC "* t"
 waitfor "How many Genesis Torpedoes do you want"
-gettext CURRENTLINE $GENESIS "(Max " ")"
-send $GENESIS "* q q "
+gettext CURRENTLINE $PLAYER~GENESIS "(Max " ")"
+send $PLAYER~GENESIS "* q q "
 goto :RUN
-goto :QUIKSTATS_PLAYER_INCLUDE
 include "source\include\player"
-:QUIKSTATS_PLAYER_INCLUDE
-:QUIKSTATS
-gosub :PLAYER~QUIKSTATS
-setvar $CURRENT_PROMPT $PLAYER~CURRENT_PROMPT
-setvar $CURRENT_SECTOR $PLAYER~CURRENT_SECTOR
-setvar $TURNS $PLAYER~TURNS
-setvar $CREDITS $PLAYER~CREDITS
-setvar $FIGHTERS $PLAYER~FIGHTERS
-setvar $SHIELDS $PLAYER~SHIELDS
-setvar $TOTAL_HOLDS $PLAYER~TOTAL_HOLDS
-setvar $ORE_HOLDS $PLAYER~ORE_HOLDS
-setvar $ORGANIC_HOLDS $PLAYER~ORGANIC_HOLDS
-setvar $EQUIPMENT_HOLDS $PLAYER~EQUIPMENT_HOLDS
-setvar $COLONIST_HOLDS $PLAYER~COLONIST_HOLDS
-setvar $PHOTONS $PLAYER~PHOTONS
-setvar $ARMIDS $PLAYER~ARMIDS
-setvar $LIMPETS $PLAYER~LIMPETS
-setvar $GENESIS $PLAYER~GENESIS
-setvar $TWARP_TYPE $PLAYER~TWARP_TYPE
-setvar $CLOAKS $PLAYER~CLOAKS
-setvar $BEACONS $PLAYER~BEACONS
-setvar $ATOMIC $PLAYER~ATOMIC
-setvar $CORBO $PLAYER~CORBO
-setvar $EPROBES $PLAYER~EPROBES
-setvar $MINE_DISRUPTORS $PLAYER~MINE_DISRUPTORS
-setvar $PSYCHIC_PROBE $PLAYER~PSYCHIC_PROBE
-setvar $PLANET_SCANNER $PLAYER~PLANET_SCANNER
-setvar $SCAN_TYPE $PLAYER~SCAN_TYPE
-setvar $ALIGNMENT $PLAYER~ALIGNMENT
-setvar $EXPERIENCE $PLAYER~EXPERIENCE
-setvar $CORP $PLAYER~CORP
-setvar $CORPNUMBER $PLAYER~CORPNUMBER
-setvar $SHIP_NUMBER $PLAYER~SHIP_NUMBER
-setvar $SHIP_TYPE $PLAYER~SHIP_TYPE
-setvar $FULL_CURRENT_PROMPT $PLAYER~FULL_CURRENT_PROMPT
-setvar $FEDSPACE $PLAYER~FEDSPACE
-setvar $SELF_DESTRUCT_PROMPT $PLAYER~SELF_DESTRUCT_PROMPT
-return

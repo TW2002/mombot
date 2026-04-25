@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: INVADER~CHECK_INVADE_MACRO_PARAMS
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-invader
+caption: INVADER~CHECK_INVADE_MACRO_PARAMS
+
+! INVADER~CHECK_INVADE_MACRO_PARAMS
+
+Checks a prerequisite or validates current state before the caller continues.
+
+''Include:'' [[invader.ts]]
+''Defined at:'' `/include/invader.ts:1`
+
+!! Source Excerpt
+<pre>
+killalltriggers
+if (($INVADER~COMMAND = &quot;&quot;) or ($INVADER~COMMAND = 0))
+  setvar $INVADER~COMMAND $BOT~COMMAND_TYPED
+  if (($INVADER~COMMAND = &quot;&quot;) or ($INVADER~COMMAND = 0))
+    setvar $INVADER~COMMAND $BOT~COMMAND
+  end
+  lowercase $INVADER~COMMAND
+end
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

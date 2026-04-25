@@ -1,0 +1,26 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: SECTOR~GETAUTOSECTORDATA
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-sector
+caption: SECTOR~GETAUTOSECTORDATA
+
+! SECTOR~GETAUTOSECTORDATA
+
+Loads sector data for the current/implicit sector.
+
+''Include:'' [[sector.ts]]
+''Defined at:'' `/include/sector.ts:1`
+
+!! Source Excerpt
+<pre>
+setvar $SECTOR~ENDLINE &quot;_ENDLINE_&quot;
+setvar $SECTOR~STARTLINE &quot;_STARTLINE_&quot;
+setarray $SECTOR~ADJACENT 7
+setarray $SECTOR~ADJACENT_SECTOR 7
+setvar $SECTOR~ADJCOUNT 1
+killalltriggers
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

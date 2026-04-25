@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: SHIP~GETSHIPSTATS
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-ship
+caption: SHIP~GETSHIPSTATS
+
+! SHIP~GETSHIPSTATS
+
+Parses the ship computer/stat screen and loads shared ship values.
+
+''Include:'' [[ship.ts]]
+''Defined at:'' `/include/ship.ts:148`
+
+!! Source Excerpt
+<pre>
+send &quot;c;&quot;
+settextlinetrigger GETSHIPOFFENSE :SHIPOFFENSEODDS &quot;Offensive Odds: &quot;
+settextlinetrigger GETSHIPFIGHTERS :SHIPMAXFIGSPERATTACK &quot; TransWarp Drive:   &quot;
+settextlinetrigger GETSHIPMINES :SHIPMAXMINES &quot; Mine Max:  &quot;
+settextlinetrigger GETSHIPGENESIS :SHIPMAXGENESIS &quot; Genesis Max:  &quot;
+settextlinetrigger GETSHIPSHIELDS :SHIPMAXSHIELDS &quot;Maximum Shields:&quot;
+settextlinetrigger GETSHIPRANGE :SHIPTRANSPORTRANGE &quot;Transport Range:&quot;
+pause
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

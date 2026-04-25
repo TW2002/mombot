@@ -1,0 +1,29 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: map.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: map.ts
+
+! map.ts
+
+ANSI map display and navigation rendering helpers.
+
+''Source:'' `/include/map.ts`
+
+!! Significant Exported Routines
+* [[MAP~DISPLAYSECTOR]] - Renders the sector display view used by sector/data commands.
+* [[MAP~COMMAS]] - Formats large numeric values with comma separators for display.
+* [[MAP~DISPLAYADJACENTGRIDANSI]] - Builds the adjacent-sector ANSI grid view used by the bot UI.
+
+!! Direct Include Users
+* `/commands/data/sector.ts`
+* `/commands/data/select.ts`
+* `/commands/general/dep.ts`
+* `/commands/general/with.ts`
+* `/modes/general/xenter.ts`
+* `/mombot.ts`
+* `/preload/_macro_kit.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

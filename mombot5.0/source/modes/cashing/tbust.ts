@@ -16,7 +16,7 @@ loadvar $STARDOCK
 loadvar $COMMAND
 
 
-gosub :QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 :LOAD
 fileexists $DOESHELPFILEEXIST "scripts\MOMBot\Help\"&$COMMAND&".txt"
 if ($DOESHELPFILEEXIST <> TRUE)
@@ -33,7 +33,7 @@ if ($DOESHELPFILEEXIST <> TRUE)
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [red]          = Will Attempt negative align"
   send "'{" $BOT_NAME "} - Writing help file for this command in Help directory.*"
 end
-if ($TOTAL_HOLDS < 10)
+if ($PLAYER~TOTAL_HOLDS < 10)
   send "'{" $BOT_NAME "} - You need at least 10 Holds to create a planet.*"
   halt
 end
@@ -47,10 +47,10 @@ else
   send "'{" $BOT_NAME "} - Invalid Experience amount entered. *"
   halt
 end
-if ($CURRENT_PROMPT = "Command")
+if ($PLAYER~CURRENT_PROMPT = "Command")
   send "p ss ys *q"
 end
-if (($CURRENT_PROMPT <> "<StarDock>") and ($CURRENT_PROMPT <> "Command"))
+if (($PLAYER~CURRENT_PROMPT <> "<StarDock>") and ($PLAYER~CURRENT_PROMPT <> "Command"))
   send "'{" $BOT_NAME "} - Must start from StarDock or Command Prompt*"
   halt
 end
@@ -82,14 +82,14 @@ getwordpos $USER_COMMAND_LINE $POS "red"
 if ($POS > 0)
   setvar $MAKERED "true"
 end
-if ($PARM1 < $EXPERIENCE)
+if ($PARM1 < $PLAYER~EXPERIENCE)
   send "'{" $BOT_NAME "} - Already at or Above Desired Experience*"
   halt
 end
 setvar $NEEDEDCYCLES ($PARM1 / 75)
 :CHECK_CORP
 
-if ($CORP > 0)
+if ($PLAYER~CORP > 0)
   gosub :SILENCEMESSAGES
   goto :CHECKAUTOFLEE
 else
@@ -131,7 +131,7 @@ waitfor "<StarDock> Where to?"
 send " q  c  n  2  q  q  p  s"
 waitfor "<StarDock> Where to?"
 if ($UNLIMITEDGAME <> 1)
-  subtract $TURNS 1
+  subtract $PLAYER~TURNS 1
 end
 goto :CHECKCN9
 :CHECKCN9
@@ -179,7 +179,7 @@ pause
 killtrigger HOWMANYDETS
 getword CURRENTLINE $MAXDETS 9
 striptext $MAXDETS ")"
-setvar $MAXDETS ($MAXDETS + $ATOMIC)
+setvar $MAXDETS ($MAXDETS + $PLAYER~ATOMIC)
 send "0*t"
 settextlinetrigger GETGTORPCOST :GETGTORPCOST "Aldus Genesis Torpedo."
 pause
@@ -195,7 +195,7 @@ pause
 killtrigger HOWMANYGTORPS
 getword CURRENTLINE $MAXGTORPS 9
 striptext $MAXGTORPS ")"
-setvar $MAXGTORPS ($MAXGTORPS + $GENESIS)
+setvar $MAXGTORPS ($MAXGTORPS + $PLAYER~GENESIS)
 send "0*q"
 waitfor "See you later."
 :REDCHECK
@@ -207,13 +207,13 @@ end
 
 if ($UNLIMITEDGAME = 1)
   goto :FIXCN9
-elseif (($TURNS = 0) and ($UNLIMITEDGAME <> 1))
+elseif (($PLAYER~TURNS = 0) and ($UNLIMITEDGAME <> 1))
   send "'{" $BOT_NAME "} - Turns to low to Run TBust! *"
   gosub :HEARMESSAGES
   halt
-elseif (($TURNS < 50) and ($OVERRIDE = TRUE))
+elseif (($PLAYER~TURNS < 50) and ($OVERRIDE = TRUE))
   goto :FIXCN9
-elseif ($TURNS < 50)
+elseif ($PLAYER~TURNS < 50)
   gosub :HEARMESSAGES
   send "'{" $BOT_NAME "} - Turns to low to Run TBust!*"
   halt
@@ -225,7 +225,7 @@ if ($CN9 = "all")
   setvar $CN9 "space"
   waitfor "Landing on Federation StarDock."
   if ($UNLIMITEDGAME <> 1)
-    subtract $TURNS 1
+    subtract $PLAYER~TURNS 1
   end
 end
 :GETUSERINPUT
@@ -235,13 +235,13 @@ if (($MAXDETS = $MAXGTORPS) or ($MAXDETS < $MAXGTORPS))
 else
   setvar $MAXPERCYCLE $MAXGTORPS
 end
-setvar $TOTALINITIALCREDS ($CREDITS + $BANKCREDS)
-setvar $TOTALCYCLES (((($CREDITS + $BANKCREDS) / ($GTORPCOST + $DETCOST)) - 1) + $ATOMIC)
-if ($CREDITS < ($GTORPCOST + $DETCOST))
+setvar $TOTALINITIALCREDS ($PLAYER~CREDITS + $BANKCREDS)
+setvar $TOTALCYCLES (((($PLAYER~CREDITS + $BANKCREDS) / ($GTORPCOST + $DETCOST)) - 1) + $PLAYER~ATOMIC)
+if ($PLAYER~CREDITS < ($GTORPCOST + $DETCOST))
   send "'{" $BOT_NAME "} - Need more Credits to bust.*"
   halt
 else
-  setvar $TOTALCYCLES ((($CREDITS / ($GTORPCOST + $DETCOST)) - 1) + $ATOMIC)
+  setvar $TOTALCYCLES ((($PLAYER~CREDITS / ($GTORPCOST + $DETCOST)) - 1) + $PLAYER~ATOMIC)
 end
 :FINALPREPBEFOREBUSTING
 
@@ -255,21 +255,21 @@ elseif ($BUSTMODE = "max")
 end
 send "@"
 waitfor "hundredths"
-gosub :QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 gosub :CHECKSTATUS
-if ($TURNS < (($NEEDEDCYCLES / $MAXPERCYCLE) + 2))
+if ($PLAYER~TURNS < (($NEEDEDCYCLES / $MAXPERCYCLE) + 2))
   if ($UNLIMITEDGAME <> 1)
     gosub :HEARMESSAGES
     send "'{" $BOT_NAME "} - Not Enough Turns*"
     halt
   end
 end
-if ($ATOMIC < $MAXPERCYCLE)
-  send "h  a  " ($MAXPERCYCLE - $ATOMIC) "*q"
+if ($PLAYER~ATOMIC < $MAXPERCYCLE)
+  send "h  a  " ($MAXPERCYCLE - $PLAYER~ATOMIC) "*q"
   waitfor "See you later"
 end
-if ($GENESIS < $MAXPERCYCLE)
-  send "h  t  " ($MAXPERCYCLE - $GENESIS) "*q"
+if ($PLAYER~GENESIS < $MAXPERCYCLE)
+  send "h  t  " ($MAXPERCYCLE - $PLAYER~GENESIS) "*q"
   waitfor "See you later"
 end
 :STARTBUSTCYCLE
@@ -301,14 +301,14 @@ killtrigger INVALIDREGNUM
 killtrigger BUSTOK
 send "@"
 waitfor "hundredths"
-gosub :QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 gosub :CHECKSTATUS
-if (($ATOMIC >= $TEMPCYCLES) and ($GENESIS >= $TEMPCYCLES))
+if (($PLAYER~ATOMIC >= $TEMPCYCLES) and ($PLAYER~GENESIS >= $TEMPCYCLES))
   setvar $BUYDETQTY 0
   setvar $BUYTORPQTY 0
 else
-  setvar $BUYDETQTY ($TEMPCYCLES - $ATOMIC)
-  setvar $BUYTORPQTY ($TEMPCYCLES - $GENESIS)
+  setvar $BUYDETQTY ($TEMPCYCLES - $PLAYER~ATOMIC)
+  setvar $BUYTORPQTY ($TEMPCYCLES - $PLAYER~GENESIS)
 end
 send "h  a  " $BUYDETQTY "*  t  " $BUYTORPQTY "*  q"
 if ($RANDOMDELAY = "TRUE")
@@ -322,7 +322,7 @@ killtrigger INVALIDREGNUM
 setvar $PLANETNUMS ""
 send "@"
 waitfor "hundredths"
-gosub :QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 gosub :CHECKSTATUS
 send "h  t  1*  q"
 waitfor "<StarDock>"
@@ -376,7 +376,7 @@ end
 
 send "@"
 waitfor "hundredths"
-gosub :QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 gosub :CHECKSTATUS
 if ($EXTRAPLANETS >= 1)
   send "h  a  1*  q"
@@ -420,25 +420,25 @@ killtrigger TRIEDTOMOVE
 goto :BUSTOK
 :CHECKSTATUS
 
-if ($CURRENT_PROMPT <> "<StarDock>")
+if ($PLAYER~CURRENT_PROMPT <> "<StarDock>")
   gosub :HEARMESSAGES
   send "p  s  t"
   send "'{" $BOT_NAME "} - Houston, we have a problem...*"
   halt
 end
-if ($EXPERIENCE >= $PARM1)
+if ($PLAYER~EXPERIENCE >= $PARM1)
   gosub :HEARMESSAGES
   send "'{" $BOT_NAME "} - Target Exp Reached!*"
   halt
 end
-if (($TURNS < 10) and ($UNLIMITEDGAME <> 1))
+if (($PLAYER~TURNS < 10) and ($UNLIMITEDGAME <> 1))
   gosub :HEARMESSAGES
   send "'{" $BOT_NAME "} - Not Enough Turns to Continue!*"
   halt
 end
 :RESUME
 
-if ($CREDITS < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
+if ($PLAYER~CREDITS < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
   if ($CORPIEBANKER = TRUE)
     send "ge"
     settextlinetrigger VIEWBANKACCT :VIEWBANKACCT "credits in your account."
@@ -450,7 +450,7 @@ if ($CREDITS < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
     striptext $BANKCREDS ","
     send "q"
     waitfor "<StarDock> Where to?"
-    if (($CREDITS + $BANKCREDS) < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
+    if (($PLAYER~CREDITS + $BANKCREDS) < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
       if ($CORPIEBANKER = TRUE)
         gosub :HEARMESSAGES
         send "'{" $BOT_NAME "} - Need Creds in bank to continue. Waiting on Transfer*"
@@ -469,20 +469,20 @@ if ($CREDITS < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
         striptext $BANKCREDS ","
         send "q"
         waitfor "<StarDock> Where to?"
-        if (($CREDITS + $BANKCREDS) < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
+        if (($PLAYER~CREDITS + $BANKCREDS) < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
           send "'{" $BOT_NAME "} - Not enough Creds in bank*"
           settextlinetrigger WAITFORCREDS :WAITFORCREDS "your Galactic bank account."
           pause
         else
           subtract $BANKCREDS (($GTORPCOST + $DETCOST) * $MAXPERCYCLE)
-          send "g  w" ((($GTORPCOST + $DETCOST) * $MAXPERCYCLE) - $CREDITS) "*  q"
+          send "g  w" ((($GTORPCOST + $DETCOST) * $MAXPERCYCLE) - $PLAYER~CREDITS) "*  q"
           gosub :SILENCEMESSAGES
           waitfor "<StarDock>"
         end
       end
     else
       subtract $BANKCREDS (($GTORPCOST + $DETCOST) * $MAXPERCYCLE)
-      send "g  w" ((($GTORPCOST + $DETCOST) * $MAXPERCYCLE) - $CREDITS) "*  q"
+      send "g  w" ((($GTORPCOST + $DETCOST) * $MAXPERCYCLE) - $PLAYER~CREDITS) "*  q"
       waitfor "<StarDock>"
     end
   end
@@ -530,7 +530,7 @@ else
 end
 :FIXALIGN
 
-if (($ALIGNMENT > 0) and ($ALIGNMENT < 200))
+if (($PLAYER~ALIGNMENT > 0) and ($PLAYER~ALIGNMENT < 200))
   send "ttmafia*y"
   settexttrigger GETMAFIAPWPRICE :GETMAFIAPWPRICE "will ye pay?"
   pause
@@ -542,7 +542,7 @@ if (($ALIGNMENT > 0) and ($ALIGNMENT < 200))
   striptext $MAFIAPWPRICE ","
   send "n*q"
   waitfor "You make a hasty exit from the Tavern."
-  setvar $FIXALIGN $ALIGNMENT
+  setvar $FIXALIGN $PLAYER~ALIGNMENT
   setvar $FIXALIGNCREDS (($FIXALIGN * 250) + $MAFIAPWPRICE)
   setvar $NEWMAFIAPW "use mombot more"
   goto :GETMAFIAPW
@@ -615,47 +615,8 @@ send "y" ($FIXALIGN * 250) "*q"
 waitfor "<StarDock>"
 send "@"
 waitfor "hundredths"
-gosub :QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 :FIXALIGNRETURN
 
 return
-goto :QUIKSTATS_PLAYER_INCLUDE
 include "source\include\player"
-:QUIKSTATS_PLAYER_INCLUDE
-:QUIKSTATS
-gosub :PLAYER~QUIKSTATS
-setvar $CURRENT_PROMPT $PLAYER~CURRENT_PROMPT
-setvar $CURRENT_SECTOR $PLAYER~CURRENT_SECTOR
-setvar $TURNS $PLAYER~TURNS
-setvar $CREDITS $PLAYER~CREDITS
-setvar $FIGHTERS $PLAYER~FIGHTERS
-setvar $SHIELDS $PLAYER~SHIELDS
-setvar $TOTAL_HOLDS $PLAYER~TOTAL_HOLDS
-setvar $ORE_HOLDS $PLAYER~ORE_HOLDS
-setvar $ORGANIC_HOLDS $PLAYER~ORGANIC_HOLDS
-setvar $EQUIPMENT_HOLDS $PLAYER~EQUIPMENT_HOLDS
-setvar $COLONIST_HOLDS $PLAYER~COLONIST_HOLDS
-setvar $PHOTONS $PLAYER~PHOTONS
-setvar $ARMIDS $PLAYER~ARMIDS
-setvar $LIMPETS $PLAYER~LIMPETS
-setvar $GENESIS $PLAYER~GENESIS
-setvar $TWARP_TYPE $PLAYER~TWARP_TYPE
-setvar $CLOAKS $PLAYER~CLOAKS
-setvar $BEACONS $PLAYER~BEACONS
-setvar $ATOMIC $PLAYER~ATOMIC
-setvar $CORBO $PLAYER~CORBO
-setvar $EPROBES $PLAYER~EPROBES
-setvar $MINE_DISRUPTORS $PLAYER~MINE_DISRUPTORS
-setvar $PSYCHIC_PROBE $PLAYER~PSYCHIC_PROBE
-setvar $PLANET_SCANNER $PLAYER~PLANET_SCANNER
-setvar $SCAN_TYPE $PLAYER~SCAN_TYPE
-setvar $ALIGNMENT $PLAYER~ALIGNMENT
-setvar $EXPERIENCE $PLAYER~EXPERIENCE
-setvar $CORP $PLAYER~CORP
-setvar $CORPNUMBER $PLAYER~CORPNUMBER
-setvar $SHIP_NUMBER $PLAYER~SHIP_NUMBER
-setvar $SHIP_TYPE $PLAYER~SHIP_TYPE
-setvar $FULL_CURRENT_PROMPT $PLAYER~FULL_CURRENT_PROMPT
-setvar $FEDSPACE $PLAYER~FEDSPACE
-setvar $SELF_DESTRUCT_PROMPT $PLAYER~SELF_DESTRUCT_PROMPT
-return

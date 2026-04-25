@@ -52,7 +52,7 @@ while ($I <= $NEARARRAY)
   getsectorparameter $FOCUS "FIGSEC" $ISFIGGED2
 
   if (($ISFIGGED2 = TRUE) and ($SOURCE <> $FOCUS))
-    getcourse $COURSE $SOURCE $FOCUS
+    getcoursedijkstra $COURSE $SOURCE $FOCUS
     setvar $I 1
     setvar $FCOUNT 0
     setvar $DIRECTIONS ""

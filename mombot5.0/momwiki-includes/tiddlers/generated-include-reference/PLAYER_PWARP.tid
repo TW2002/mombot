@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLAYER~PWARP
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-player
+caption: PLAYER~PWARP
+
+! PLAYER~PWARP
+
+Runs the shared pwarp movement path.
+
+''Include:'' [[player.ts]]
+''Defined at:'' `/include/player.ts:653`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $PLAYER~PWARPSUCCESS FALSE
+if ($PLAYER~SCAN)
+  send &quot;q *c p&quot; $PLAYER~WARPTO &quot;*ys&quot;
+else
+  send &quot;q *c p&quot; $PLAYER~WARPTO &quot;*y&quot;
+end
+waiton &quot;Planet #&quot;
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

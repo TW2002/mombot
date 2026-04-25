@@ -1,0 +1,22 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: xenter.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: xenter.ts
+
+! xenter.ts
+
+Exit/xenter wrapper routines for leaving sectors or returning from call flows.
+
+''Source:'' `/include/xenter.ts`
+
+!! Significant Exported Routines
+* [[XENTER~RUN]] - Runs the shared xenter/exit wrapper flow.
+
+!! Direct Include Users
+* `/commands/defense/call.ts`
+* `/modes/cashing/alienhunt.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

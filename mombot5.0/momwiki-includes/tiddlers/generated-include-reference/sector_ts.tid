@@ -1,0 +1,34 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: sector.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: sector.ts
+
+! sector.ts
+
+Sector-data loading helpers for the database and live sector state.
+
+''Source:'' `/include/sector.ts`
+
+!! Significant Exported Routines
+* [[SECTOR~GETSECTORDATA]] - Loads sector data for a specific sector into the shared sector variables.
+* [[SECTOR~GETAUTOSECTORDATA]] - Loads sector data for the current/implicit sector.
+
+!! Direct Include Users
+* `/commands/offense/cap.ts`
+* `/commands/offense/kill.ts`
+* `/modes/cashing/alienhunt.ts`
+* `/modes/grid/mow.ts`
+* `/modes/grid/wander.ts`
+* `/modes/offense/citcap.ts`
+* `/modes/offense/citkill.ts`
+* `/modes/offense/density.ts`
+* `/modes/offense/dockkill.ts`
+* `/modes/offense/drop.ts`
+* `/modes/offense/pdrop.ts`
+* `/modes/offense/plock.ts`
+* `/mombot.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

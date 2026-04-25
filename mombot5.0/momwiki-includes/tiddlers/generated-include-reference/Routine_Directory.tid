@@ -1,0 +1,166 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: Routine Directory
+type: text/vnd.tiddlywiki
+tags: mombot include-reference directory
+
+! Routine Directory
+
+Routines: 103
+
+!! bot.ts
+* [[BOT~LOADVARS]] - Loads the standard bot variable set and shared runtime state before command logic runs.
+* [[BOT~HELPFILE]] - Resolves and loads the matching help text for the active command or mode.
+* [[BOT~CHECKSTARTINGPROMPT]] - Validates that the current prompt is one of the prompts a command allows before it continues.
+* [[BOT~BANNER]] - Prints the standard command banner and status framing used across many scripts.
+* [[BOT~KILLTHETRIGGERS]] - Clears bot-managed triggers before switching flows or re-entering a prompt parser.
+* [[BOT~WAIT_FOR_COMMAND]] - Waits until the game is back at a normal command prompt before continuing.
+* [[BOT~ECHO]] - Displays shared output through the bot UI layer.
+* [[BOT~ENTER_MENU_DEAF]] - Shared `bot` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[BOT~EXIT_MENU_DEAF]] - Shared `bot` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[BOT~LOAD_THE_VARIABLES]] - Loads shared state or cached data for later command use.
+* [[BOT~LOAD_WATCHER_VARIABLES]] - Loads shared state or cached data for later command use.
+* [[BOT~BIGDELAY_KILLTHETRIGGERS]] - Runs or prepares a shared combat sequence.
+* [[BOT~DISCONNECTTRIGGERS]] - Shared `bot` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[BOT~DISPLAYHELP]] - Displays help text through the shared bot help path.
+* [[BOT~GETINITIAL_SETTINGS]] - Runs the initial settings/data gather path needed after a fresh setup or reset.
+* [[BOT~HELP_FILE]] - Shared `bot` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[BOT~LOAD_BOT]] - Loads core bot startup state and shared configuration.
+* [[BOT~LOAD_HOTKEY_CONFIG]] - Loads shared state or cached data for later command use.
+* [[BOT~SAVE_THE_VARIABLES]] - Saves shared state or cached data back to storage.
+* [[BOT~WRITE_HOTKEY_CONFIG]] - Shared `bot` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+!! combat.ts
+* [[COMBAT~INIT]] - Initializes shared combat state and attack settings before a combat macro runs.
+* [[COMBAT~FASTCAPTURE]] - Runs the fast capture path used by cap and capture-oriented scripts.
+* [[COMBAT~FASTATTACK]] - Runs the fast-attack combat macro against the current target.
+* [[COMBAT~FASTCITADELATTACK]] - Runs the citadel-specific fast-attack sequence.
+* [[COMBAT~HOLOKILL]] - Coordinates holo kill logic after a scan or targeting pass.
+
+!! connectivity.ts
+* [[CONNECTIVITY~ENTER_NEW_GAME]] - Handles new-game entry/setup logic for native login or reconnect paths.
+* [[CONNECTIVITY~MOVING]] - Marks and handles transient movement state during login or reconnect flows.
+
+!! findproduct.ts
+* [[findproduct~findproduct]] - Searches candidate planets for the product or colonist profile a caller needs.
+
+!! game.ts
+* [[GAME~GAMESTATS]] - Pulls game stats and updates shared game-wide values from the live game prompt.
+
+!! gameprefs.ts
+* [[gameprefs~setgameprefs]] - Applies stored game preferences back into the current game session.
+
+!! grid.ts
+* [[GRID~SURROUND]] - Runs the shared surround routine used by surround-capable combat and grid scripts.
+
+!! haggle.ts
+* [[haggle~haggle]] - Performs the standard port haggle routine and updates shared haggle values.
+
+!! internal_commands.ts
+* [[INTERNAL_COMMANDS~CALCTIME]] - Shared `internal_commands` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[INTERNAL_COMMANDS~RELOG_ATTEMPT]] - Shared `internal_commands` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+!! invader.ts
+* [[INVADER~CHECK_INVADE_MACRO_PARAMS]] - Checks a prerequisite or validates current state before the caller continues.
+* [[INVADER~START_INVADE_MACRO]] - Shared `invader` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+!! map.ts
+* [[MAP~DISPLAYSECTOR]] - Renders the sector display view used by sector/data commands.
+* [[MAP~COMMAS]] - Formats large numeric values with comma separators for display.
+* [[MAP~DISPLAYADJACENTGRIDANSI]] - Builds the adjacent-sector ANSI grid view used by the bot UI.
+
+!! menus.ts
+* [[MENUS~DOSPLASHSCREEN]] - Builds or displays the native splash screen.
+* [[MENUS~ADD_GAME]] - Shared `menus` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[MENUS~DONEPREFER]] - Completes preference editing and returns from the native preferences menu.
+* [[MENUS~ECHOHOTKEYS]] - Displays shared output through the bot UI layer.
+* [[MENUS~PREGAMEMENULOAD]] - Shared `menus` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+!! modules.ts
+* [[MODULES~CLEAR]] - Runs the shared clear behavior used by the clear command wrapper.
+* [[MODULES~XENTER]] - Runs the shared xenter behavior used by exit/xenter wrappers.
+
+!! move.ts
+* [[move~move]] - Executes the shared move-product movement routine used by upgrade and makeplanet paths.
+
+!! planet.ts
+* [[PLANET~GETPLANETINFO]] - Parses the current planet screen and fills the shared planet variables.
+* [[PLANET~LANDINGSUB]] - Handles landing on the requested planet and returning to the expected prompt.
+* [[PLANET~LOADPLANETINFO]] - Loads cached planet-file data into shared planet variables and arrays.
+* [[PLANET~GETPLANETSTATS]] - Refreshes shared planet stats from the live game prompts.
+* [[PLANET~LANDONPLANETENTERCITADEL]] - Lands on a planet and enters the citadel in one shared path.
+* [[PLANET~PLANETINFO]] - Runs the deeper planet parser used by callers that need full production arrays and construction state.
+* [[PLANETCHECK~PLANETCHECK]] - Runs the legacy planet-check path used by findproduct compatibility logic.
+* [[PLANET~COUNTPLANETS]] - Counts planets in the current sector or current working set.
+
+!! planethaggle.ts
+* [[PLANETHAGGLE~BUY]] - Runs the shared planet buy/buydown path for merch, salesman, and patp.
+* [[PLANETHAGGLE~PLANETNEG]] - Runs the shared planet sell negotiation path.
+
+!! planetnames.ts
+* [[PLANETNAMES~MAKE_PLANET_ARRAY]] - Builds the planet-name array used by makeplanet and related planet-list logic.
+
+!! player.ts
+* [[PLAYER~QUIKSTATS]] - Refreshes the current prompt and player/ship quickstats from the live game output.
+* [[PLAYER~CURRENTPROMPT]] - Parses the current prompt and updates shared prompt/location state.
+* [[PLAYER~GETINFO]] - Loads broader player state than quikstats, including prompt and game context details.
+* [[PLAYER~TWARP]] - Runs the shared transwarp movement path.
+* [[PLAYER~STARTHAGGLE]] - Initializes the shared haggle setup used before haggle-capable flows.
+* [[PLAYER~TURNOFFANSI]] - Turns ANSI off through the shared player prompt path.
+* [[PLAYER~TURNONANSI]] - Turns ANSI back on through the shared player prompt path.
+* [[PLAYER~MOVEINTOSECTOR]] - Moves into a target sector while preserving shared movement state.
+* [[PLAYER~CHECKFORTRAVELNAME]] - Checks a prerequisite or validates current state before the caller continues.
+* [[PLAYER~GETCOURSE]] - Resolves a course/path between sectors for callers that need route data.
+* [[PLAYER~VOIDADJACENT]] - Sets adjacent-sector avoids for the current ship/session.
+* [[PLAYER~BWARP]] - Runs the shared blind-warp movement path.
+* [[PLAYER~CLEARADJACENT]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[PLAYER~FORMATNUMBERFORSPACES]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[PLAYER~FORMATPERCENTAGESFORSPACES]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[PLAYER~PWARP]] - Runs the shared pwarp movement path.
+* [[PLAYER~STARTCNSETTINGS]] - Loads or initializes CN settings through the shared player path.
+* [[PLAYER~TOPOFF]] - Tops off holds or resources through the shared player helper path.
+* [[PLAYER~ADDFIGTODATA]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[PLAYER~CLEARVOIDADJACENT]] - Clears adjacent-sector avoids that were previously set.
+* [[PLAYER~FINDJUMPSECTOR]] - Loads or renders shared sector state for the caller.
+* [[PLAYER~GETPORTINFO]] - Reads live game or cached state into shared include variables.
+* [[PLAYER~SWATHOFF]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+!! port.ts
+* [[PORT~BUILDPORT]] - Builds a port through the shared port helper path.
+* [[PORT~DESTROYPORT]] - Destroys a port through the shared port helper path.
+* [[PORT~UPGRADEPORT]] - Upgrades a port through the shared port helper path.
+* [[PORT~DOMAXPORT]] - Runs the max-port helper path used by merch/maxport flows.
+* [[PORT~SHIPSELL]] - Handles the shared ship-sale path used by ship-move/resource flows.
+
+!! search.ts
+* [[SEARCH~FIND]] - Runs the shared search routine used by the find command.
+
+!! sector.ts
+* [[SECTOR~GETSECTORDATA]] - Loads sector data for a specific sector into the shared sector variables.
+* [[SECTOR~GETAUTOSECTORDATA]] - Loads sector data for the current/implicit sector.
+
+!! ship.ts
+* [[SHIP~GETSHIPSTATS]] - Parses the ship computer/stat screen and loads shared ship values.
+* [[SHIP~LOADSHIPINFO]] - Loads cached ship information from saved ship data.
+* [[SHIP~GETSHIPCAPSTATS]] - Parses ship capability stats such as holds, fighters, and transport range.
+* [[SHIP~SAVETHESHIP]] - Persists the current ship’s saved data back to storage.
+
+!! switchboard.ts
+* [[SWITCHBOARD~SWITCHBOARD]] - Sends formatted status or report lines through the shared switchboard/subspace path.
+
+!! targeting.ts
+* [[TARGETING~INITIALIZETARGETING]] - Initializes targeting state for attack-capable routines.
+* [[TARGETING~INITIALIZE_TARGETING]] - Initializes targeting state for attack-capable routines.
+* [[TARGETING~SCANITCITKILL]] - Scans and prepares citkill targeting data.
+* [[TARGETING~SCANIT_CIT_KILL]] - Scans and prepares citkill targeting data.
+
+!! update.ts
+* [[update~cim]] - Runs the shared CIM update routine.
+* [[update~fighters]] - Runs the shared fighter update/import routine.
+* [[update~report]] - Builds the shared update report output.
+
+!! user_interface.ts
+* [[USER_INTERFACE~RUNUSERCOMMANDLINE]] - Dispatches a resolved command line through the bot user-interface layer.
+
+!! xenter.ts
+* [[XENTER~RUN]] - Runs the shared xenter/exit wrapper flow.

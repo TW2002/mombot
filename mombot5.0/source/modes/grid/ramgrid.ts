@@ -24,7 +24,6 @@ gosub :BOT~loadVars
 	gosub :player~quikstats
 	setVar $UNLIM $PLAYER~UNLIMITEDGAME
 
-		
 	if ($player~photons > 0)
 		setVar $SWITCHBOARD~message "Yeah Nah, we don't do this with photons.*"
 		gosub :SWITCHBOARD~switchboard
@@ -40,7 +39,6 @@ gosub :BOT~loadVars
 
 	goSub :load_Fig_Array
 	
-
 :Build_Initial_Density_Report_Data
      setVar $Density_File GAMENAME&"-Density_Reports.txt"
 	getDate $date
@@ -51,7 +49,6 @@ gosub :BOT~loadVars
 	end
 	setVar $final_Density_Report ANSI_12&"Ram Unfigged Gridder Density Report:*"
 	setVar $final_Density_Found_Count 0
-
 
 	:Load_Settings
 		killAllTriggers
@@ -162,7 +159,6 @@ gosub :BOT~loadVars
 #     echo ANSI_10&"**Ship TPW: " ANSI_14&$ship_TPW "*" ANSI_10&"Max Attack Figs: " ANSI_14&$max_attack_figs "*"
      waitFor "Command [TL="
 
-
 :Warn_Gridding
 	setVar $SWITCHBOARD~message "Ram Nearest Unfigged Gridder starting in a few seconds...*"
 	gosub :SWITCHBOARD~switchboard
@@ -209,10 +205,12 @@ gosub :BOT~loadVars
      goto :End
 
 :Ended_Early
-     send "r * * "
-	if ($saveme = 1)
-		gosub :callSaveMe
-		halt
+	     gosub :player~quikstats
+	     setVar $focus_sector $player~CURRENT_SECTOR
+	     send "r * * "
+		if ($saveme = 1)
+			gosub :callSaveMe
+			halt
 	end
  
         send "'Ram-Grid: Gridder Podded / Stuck in sector: " $focus_sector "*"
@@ -267,12 +265,12 @@ gosub :BOT~loadVars
                setVar $previous_sector $focus_sector
                setVar $final_sector $focus_sector
                setArray $gridded_sectors $path
-		     setVar $step_Count 1
+		     setVar $step_Count 2
 		     setVar $last_step FALSE
 		     setVar $macro[$count1] ""
-		     while ($step_Count <= $result_distance[$count1])
+		     while ($step_Count <= ($result_distance[$count1] + 1))
 			     setVar $next_Sector $path[$step_Count]
-                    if ($step_Count = $result_distance[$count1])
+                    if ($step_Count = ($result_distance[$count1] + 1))
                          setVar $last_step TRUE
 			     end
 			     goSub :Build_Move_Macro_Routine
@@ -300,18 +298,38 @@ gosub :BOT~loadVars
      Return
 
 :Verify_End_Of_Run
-     gosub :player~quikstats
-     if ($unlim = TRUE)
-          setVar $have_turns 65520
-     else
+	     gosub :player~quikstats
+	     if ($unlim = TRUE)
+	          setVar $have_turns 65520
+	     else
           setVar $have_turns  $player~TURNS
-     end
-     setVar $have_figs $player~FIGHTERS
-     setVar $focus_sector $player~CURRENT_SECTOR
-     if ($focus_sector <> $final_sector)
-          goto :Ended_Early
-     end
-     Return
+	     end
+	     setVar $have_figs $player~FIGHTERS
+	     setVar $focus_sector $player~CURRENT_SECTOR
+	     if ($focus_sector <> $final_sector)
+	          if ($focus_sector > 10)
+	               if ($PLAYER~CURRENT_PROMPT = "Citadel")
+	                    send "q q "
+	                    gosub :player~quikstats
+	                    setVar $focus_sector $player~CURRENT_SECTOR
+	               elseif ($PLAYER~CURRENT_PROMPT = "Planet")
+	                    send "q "
+	                    gosub :player~quikstats
+	                    setVar $focus_sector $player~CURRENT_SECTOR
+	               elseif ($PLAYER~CURRENT_PROMPT = "Computer")
+	                    send "q"
+	                    gosub :player~quikstats
+	                    setVar $focus_sector $player~CURRENT_SECTOR
+	               end
+	          end
+	          if ($focus_sector > 10)
+	               setVar $SWITCHBOARD~message "Route ended in " & $focus_sector & " instead of " & $final_sector & ". Resuming from current sector.*"
+	               gosub :SWITCHBOARD~switchboard
+	               return
+	          end
+	          goto :Ended_Early
+	     end
+	     Return
 
 
 

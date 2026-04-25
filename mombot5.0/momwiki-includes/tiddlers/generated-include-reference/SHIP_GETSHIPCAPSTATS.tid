@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: SHIP~GETSHIPCAPSTATS
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-ship
+caption: SHIP~GETSHIPCAPSTATS
+
+! SHIP~GETSHIPCAPSTATS
+
+Parses ship capability stats such as holds, fighters, and transport range.
+
+''Include:'' [[ship.ts]]
+''Defined at:'' `/include/ship.ts:1`
+
+!! Source Excerpt
+<pre>
+send &quot;cn&quot;
+waiton &quot;(2) Animation display&quot;
+getword CURRENTLINE $SHIP~ANSI_ONOFF 5
+if ($SHIP~ANSI_ONOFF = &quot;On&quot;)
+  send &quot;2qq&quot;
+else
+  send &quot;qq&quot;
+end
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

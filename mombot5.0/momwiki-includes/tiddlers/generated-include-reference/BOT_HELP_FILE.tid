@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: BOT~HELP_FILE
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-bot
+caption: BOT~HELP_FILE
+
+! BOT~HELP_FILE
+
+Shared `bot` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+''Include:'' [[bot.ts]]
+''Defined at:'' `/include/bot.ts:1214`
+
+!! Source Excerpt
+<pre>
+setvar $BOT~HELP_FILE &quot;scripts\&quot;&amp;$BOT~MOMBOT_DIRECTORY&amp;&quot;\help\&quot;&amp;$BOT~COMMAND&amp;&quot;.txt&quot;
+fileexists $BOT~DOESHELPFILEEXIST $BOT~HELP_FILE
+setvar $BOT~ONLY_HELP FALSE
+if (($BOT~PARM1 = &quot;help&quot;) or ($BOT~PARM1 = &quot;?&quot;))
+  setvar $BOT~ONLY_HELP TRUE
+end
+if ($BOT~DOESHELPFILEEXIST)
+  setvar $BOT~I 1
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

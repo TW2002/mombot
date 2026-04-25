@@ -1,0 +1,23 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: TARGETING~SCANIT_CIT_KILL
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-targeting
+caption: TARGETING~SCANIT_CIT_KILL
+
+! TARGETING~SCANIT_CIT_KILL
+
+Scans and prepares citkill targeting data.
+
+''Include:'' [[targeting.ts]]
+''Defined at:'' `/include/targeting.ts:277`
+
+!! Source Excerpt
+<pre>
+gosub :CHECKFORVICTIMSFROMCITADEL
+echo ANSI_12 &quot;*NO Targets*&quot;
+return
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

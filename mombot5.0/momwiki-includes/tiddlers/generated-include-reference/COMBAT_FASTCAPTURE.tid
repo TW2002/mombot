@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: COMBAT~FASTCAPTURE
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-combat
+caption: COMBAT~FASTCAPTURE
+
+! COMBAT~FASTCAPTURE
+
+Runs the fast capture path used by cap and capture-oriented scripts.
+
+''Include:'' [[combat.ts]]
+''Defined at:'' `/include/combat.ts:150`
+
+!! Source Excerpt
+<pre>
+setvar $PLAYER~ISFOUND FALSE
+setvar $COMBAT~TARGETISALIEN FALSE
+setvar $COMBAT~STILLSHIELDS FALSE
+setvar $COMBAT~SHIP_FIGHTERS 0
+loadvar $SHIP~SHIP_MAX_ATTACK
+loadvar $SHIP~SHIP_OFFENSIVE_ODDS
+if ($SHIP~SHIP_MAX_ATTACK &lt;= 0)
+  gosub :SHIP~GETSHIPSTATS
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

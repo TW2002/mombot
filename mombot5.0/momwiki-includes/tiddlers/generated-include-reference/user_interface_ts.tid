@@ -1,0 +1,22 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: user_interface.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: user_interface.ts
+
+! user_interface.ts
+
+Command-line dispatch and alias-resolution helpers for the bot shell.
+
+''Source:'' `/include/user_interface.ts`
+
+!! Significant Exported Routines
+* [[USER_INTERFACE~RUNUSERCOMMANDLINE]] - Dispatches a resolved command line through the bot user-interface layer.
+
+!! Direct Include Users
+* `/commands/general/run.ts`
+* `/mombot.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

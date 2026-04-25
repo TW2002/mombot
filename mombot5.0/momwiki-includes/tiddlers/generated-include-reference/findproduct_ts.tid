@@ -1,0 +1,22 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: findproduct.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: findproduct.ts
+
+! findproduct.ts
+
+Planet-product search helpers used when choosing planets with needed stock or colonists.
+
+''Source:'' `/include/findproduct.ts`
+
+!! Significant Exported Routines
+* [[findproduct~findproduct]] - Searches candidate planets for the product or colonist profile a caller needs.
+
+!! Direct Include Users
+* `/modes/resource/makeplanet.ts`
+* `/modes/resource/upgrade.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

@@ -1,0 +1,26 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: menus.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: menus.ts
+
+! menus.ts
+
+Native menu-building, splash-screen, and preference UI helpers.
+
+''Source:'' `/include/menus.ts`
+
+!! Significant Exported Routines
+* [[MENUS~DOSPLASHSCREEN]] - Builds or displays the native splash screen.
+* [[MENUS~ADD_GAME]] - Shared `menus` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[MENUS~DONEPREFER]] - Completes preference editing and returns from the native preferences menu.
+* [[MENUS~ECHOHOTKEYS]] - Displays shared output through the bot UI layer.
+* [[MENUS~PREGAMEMENULOAD]] - Shared `menus` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+!! Direct Include Users
+* `/commands/general/help.ts`
+* `/mombot.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: BOT~ENTER_MENU_DEAF
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-bot
+caption: BOT~ENTER_MENU_DEAF
+
+! BOT~ENTER_MENU_DEAF
+
+Shared `bot` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+''Include:'' [[bot.ts]]
+''Defined at:'' `/include/bot.ts:1336`
+
+!! Source Excerpt
+<pre>
+if ($BOT~MENU_DEAF_DEPTH &lt;= 0)
+  getdeafclients $BOT~MENU_DEAF_RESTORE
+end
+add $BOT~MENU_DEAF_DEPTH 1
+setdeafclients TRUE
+setvar $BOT~BOTISDEAF TRUE
+savevar $BOT~BOTISDEAF
+return
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

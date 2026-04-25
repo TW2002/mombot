@@ -1,18 +1,3 @@
-:MAP~ADDFIGTODATA
-
-
-
-
-
-
-
-
-
-
-
-
-setsectorparameter $MAP~TARGET "FIGSEC" TRUE
-return
 :MAP~COMMAS
 
 
@@ -675,16 +660,6 @@ else
     getlength $MAP~TEMP $MAP~TEMPLENGTH
   end
 end
-return
-:MAP~REMOVEFIGFROMDATA
-
-
-getsectorparameter $MAP~TARGET "FIGSEC" $MAP~CHECK
-if ($MAP~CHECK = TRUE)
-  getsectorparameter 2 "FIG_COUNT" $MAP~FIGCOUNT
-  setsectorparameter 2 "FIG_COUNT" ($MAP~FIGCOUNT - 1)
-end
-setsectorparameter $MAP~TARGET "FIGSEC" FALSE
 return
 :MAP~FORMAT_SECTOR_OWNER
 

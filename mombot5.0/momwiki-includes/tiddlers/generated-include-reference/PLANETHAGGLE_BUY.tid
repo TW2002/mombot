@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLANETHAGGLE~BUY
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-planethaggle
+caption: PLANETHAGGLE~BUY
+
+! PLANETHAGGLE~BUY
+
+Runs the shared planet buy/buydown path for merch, salesman, and patp.
+
+''Include:'' [[planethaggle.ts]]
+''Defined at:'' `/include/planethaggle.ts:1433`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $PLAYER~OVERHAGGLEMULTIPLE 147
+setvar $PLAYER~CYCLEBUFFER 1
+setvar $PLAYER~CYCLEBUFFERLIMIT 20
+setvar $PLAYER~BUYDOWN_RESTORE_HAGGLE 0
+setvar $PLAYER~BUYDOWN_USENATIVEHAGGLE 0
+if (HAGGLE)
+  if ($PLAYER~BUYTYPE = &quot;s&quot;)
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

@@ -1,8 +1,6 @@
 goto :_START_
+
 :SWATHOFF
-
-
-
 if ($SWATHOFF = FALSE)
   settexttrigger SWATHISON :SWATHISON "Command [TL="
   setdelaytrigger SWATHISOFF :SWATHISOFF 2000
@@ -19,27 +17,22 @@ if ($SWATHOFF = FALSE)
   setvar $SWATHOFF TRUE
 end
 return
+
 :CHOOSEHAGGLE
-
-
-
 if ($BUYDOWN_MODE = "Speedbuy")
   gosub :BUYNOHAGGLE
 else
   gosub :BUYHAGGLE
 end
-
-
 return
+
 :BUYHAGGLE
-
-
 setvar $EMPTY $PLAYER~TOTAL_HOLDS
 send "*"
 settextlinetrigger BUYFIRSTOFFER :BUYFIRSTOFFER "We'll sell them for"
 pause
-:BUYFIRSTOFFER
 
+:BUYFIRSTOFFER
 getword CURRENTLINE $OFFER 5
 striptext $OFFER ","
 
@@ -62,6 +55,7 @@ elseif ($BUYDOWN_MODE = "Worst Price")
   divide $COUNTER 100
 end
 send $COUNTER&"*"
+
 :BUYOFFERLOOP
 settextlinetrigger BUYPRICE :BUYPRICE "We'll sell them for"
 settextlinetrigger BUYFINALOFFER :BUYFINALOFFER "Our final offer"
@@ -80,6 +74,7 @@ settextlinetrigger BUYSCREWUP9 :BUYSCREWUP "So, you think I'm as stupid as you l
 settextlinetrigger BUYSCREWUP10 :BUYSCREWUP "What do you take me for, a fool?  Make a real offer!"
 pause
 pause
+
 :BUYSCREWUP
 killalltriggers
 if ($BUYDOWN_MODE = "Best Price")
@@ -112,6 +107,7 @@ if ($COUNTER <= $OLD_COUNTER)
 end
 send $COUNTER&"*"
 goto :BUYOFFERLOOP
+
 :BUYFINALOFFER
 killalltriggers
 setvar $OLD_OFFER $OFFER
@@ -141,6 +137,7 @@ getword CURRENTLINE $EXP_BONUS 7
 add $EXP $EXP_BONUS
 add $JETBONUS $EXP_BONUS
 goto :BUYOFFERLOOP
+
 :BUYEMPTY
 killalltriggers
 getword CURRENTLINE $PLAYER~CREDITS 3
@@ -158,9 +155,8 @@ return
 :BUYHAGGLESUCCEEDED
 setvar $BUYHAGGLE 1
 return
+
 :BUYNOHAGGLE
-
-
 if ($SWATHOFF = 0)
   waiton "How many holds of"
   send "*"
@@ -176,12 +172,11 @@ if ($CYCLEBUFFER = $CYCLEBUFFERLIMIT)
   waiton " Sect "
 end
 return
-:INITIATE_BUY_DOWN
 
+:INITIATE_BUY_DOWN
 setvar $PLAYER~TURNS_NEEDED 0
 setvar $PLAYER~TURNS_ALLOWED $PLAYER~TURNS
 subtract $PLAYER~TURNS_ALLOWED 1
-
 
 if ($BUYDOWN_FUELROUNDS > 0)
   setvar $FUELROUNDS 0
@@ -251,6 +246,7 @@ if ($BUYDOWN_EQUIPROUNDS > 0)
   add $PLAYER~TURNS_NEEDED $EQUIPROUNDS
   subtract $PLAYER~TURNS_ALLOWED $EQUIPROUNDS
 end
+
 if (($FUELROUNDS = 0) and (($ORGROUNDS = 0) and ($EQUIPROUNDS = 0)))
   if ($STARTINGLOCATION = "Citadel")
     send "C "
@@ -261,8 +257,8 @@ if (($FUELROUNDS = 0) and (($ORGROUNDS = 0) and ($EQUIPROUNDS = 0)))
   gosub :CLEARADJACENT
   goto :BUYDOWNEXIT
 end
-:GETMODE
 
+:GETMODE
 if ($BUYDOWN_MODE = 1)
   setvar $BUYDOWN_MODE "Speedbuy"
 elseif ($BUYDOWN_MODE = 2)
@@ -279,7 +275,6 @@ setvar $EQUIPROUNDSLEFT $EQUIPROUNDS
 setvar $FUEL_CREDS_NEEDED 0
 setvar $ORG_CREDS_NEEDED 0
 setvar $EQUIP_CREDS_NEEDED 0
-
 
 if ($FUELROUNDS > 0)
   setvar $FUEL_CREDS_NEEDED $FUELROUNDS
@@ -336,8 +331,8 @@ if ($TOTAL_CREDS_NEEDED > $PLAYER~CREDITS)
   end
 end
 setvar $INIT_CREDITS $PLAYER~CREDITS
-:BUYDOWNEQUIP
 
+:BUYDOWNEQUIP
 if ($EQUIPROUNDSLEFT > 0)
   if ($BUYDOWN_MODE = "Speedbuy")
     send "Q P T  "
@@ -360,8 +355,8 @@ if ($EQUIPROUNDS > 0)
     setvar $OUTPUT $OUTPUT&" - Equipment overhaggled at "&$OVERHAGGLEMULTIPLE&"*"
   end
 end
-:BUYDOWNORG
 
+:BUYDOWNORG
 if ($ORGROUNDSLEFT > 0)
   if ($BUYDOWN_MODE = "Speedbuy")
     send "Q P T  "
@@ -399,9 +394,8 @@ if ($FUELROUNDS > 0)
     setvar $OUTPUT $OUTPUT&" - Fuel Ore overhaggled at "&$OVERHAGGLEMULTIPLE&"*"
   end
 end
+
 :BUYDOWNFINISH
-
-
 if ($STARTINGLOCATION = "Citadel")
   send "C "
   waitfor "<Enter Citadel>"
@@ -411,7 +405,6 @@ else
 end
 
 gosub :PLAYER~QUIKSTATS
-
 setvar $PLAYER~CREDITS_SPENT ($INIT_CREDITS - $PLAYER~CREDITS)
 
 gosub :CLEARADJACENT
@@ -425,7 +418,6 @@ if (($PLAYER~CREDITS > $STARTINGCREDITS) and ($STARTINGLOCATION = "Citadel"))
   setvar $SWITCHBOARD~MESSAGE "I put back extra funds taken for buydown.*"
   gosub :SWITCHBOARD~SWITCHBOARD
 end
-
 
 setvar $SWITCHBOARD~MESSAGE $OUTPUT&"   *"
 if ($PLAYER~UNLIMITEDGAME)
@@ -443,9 +435,8 @@ setvar $BOT~WORSTPRICE $ORIGINAL_WORSTPRICE_VALUE
 savevar $BOT~WORSTPRICE
 
 goto :BUYDOWNEXIT
+
 :_START_
-
-
 gosub :BOT~LOADVARS
 setvar $BUYDOWN_RESTORE_HAGGLE 0
 
@@ -619,17 +610,16 @@ if (HAGGLE)
   autohaggle off
 end
 goto :INITIATE_BUY_DOWN
-:BUYDOWNEXIT
 
+:BUYDOWNEXIT
 if ($BUYDOWN_RESTORE_HAGGLE = 1)
   autohaggle on
 end
 setvar $SWITCHBOARD~MESSAGE "Buy down exiting --- "&$EXIT_MESSAGE&"*"
 gosub :SWITCHBOARD~SWITCHBOARD
 halt
+
 :VOIDADJACENT
-
-
 setvar $I 1
 send "  C  "
 while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$I] <> 0)
@@ -655,8 +645,8 @@ end
 send "   Q"
 waiton "<Computer deactivated>"
 return
-:FIGHTER_START
 
+:FIGHTER_START
 setvar $BUYS FALSE
 setvar $CANBUY 0
 if ($BOT~PARM2 = "")
@@ -698,8 +688,8 @@ else
   gosub :SWITCHBOARD~SWITCHBOARD
   goto :FIGHTER_NOWARP
 end
-:FIGHTER_WARPIT
 
+:FIGHTER_WARPIT
 send "y "
 :FIGHTER_ALREADY
 killalltriggers
@@ -746,6 +736,7 @@ else
   gosub :SWITCHBOARD~SWITCHBOARD
   goto :FIGHTER_END
 end
+
 :FIGHTER_NOWARP2
 killalltriggers
 if ($MAP~RYLOS > 0)
@@ -755,17 +746,18 @@ setvar $SWITCHBOARD~MESSAGE "No fighter at either class 0!*"
 gosub :SWITCHBOARD~SWITCHBOARD
 setvar $BUYS FALSE
 goto :FIGHTER_END
-:FIGHTER_ARRIVED
 
+:FIGHTER_ARRIVED
 killalltriggers
 send "q q* p t"
 settexttrigger BUYFIGLIMP :REMOVELIMP "removal? : (Y/N)"
 settexttrigger BUYFIGNOLIMP :BUYTHEFIGS "credits per fighter"
 pause
-:REMOVELIMP
 
+:REMOVELIMP
 send "y"
 pause
+
 :BUYTHEFIGS
 killtrigger BUYFIGLIMP
 getword CURRENTLINE $CANBUY 8
@@ -786,21 +778,21 @@ else
   gosub :SWITCHBOARD~SWITCHBOARD
   goto :FIGHTER_END
 end
-:FIGHTER_ARRIVED2
 
+:FIGHTER_ARRIVED2
 send "l " $PLANET~PLANET "*  mnl*"
 settexttrigger MAXPFIGHTERS :FIGHTER_MAXPFIGHTERS "You can't put more than"
 settexttrigger FIGHTERSUCCESS :FIGHTER_ARRIVED "Done!"
 pause
-:FIGHTER_MAXPFIGHTERS
 
+:FIGHTER_MAXPFIGHTERS
 killalltriggers
 send "c"
 setvar $BUYS TRUE
 setvar $SWITCHBOARD~MESSAGE "Fighters maxxed out on planet "&$PLANET~PLANET&".*"
 gosub :SWITCHBOARD~SWITCHBOARD
-:FIGHTER_END
 
+:FIGHTER_END
 if ($BUYS = FALSE)
   setvar $SWITCHBOARD~MESSAGE "No fighters able to be purchased*"
   gosub :SWITCHBOARD~SWITCHBOARD
@@ -815,10 +807,8 @@ else
   end
 end
 halt
+
 :SHIELD_START
-
-
-
 setvar $BUYS FALSE
 send "gt"
 waiton "and the Shield System"
@@ -839,6 +829,7 @@ if ($PLAYER~CURRENT_SECTOR = $MAP~ALPHA_CENTAURI)
   end
 end
 killalltriggers
+
 :SHIELD_SUB_SHIELDBUY
 if ($PLAYER~CURRENT_SECTOR = $MAP~ALPHA_CENTAURI)
   if (PORT.CLASS[$PLAYER~CURRENT_SECTOR] = 0)
@@ -856,8 +847,8 @@ else
   gosub :SWITCHBOARD~SWITCHBOARD
   goto :SHIELD_NOWARP
 end
-:SHIELD_WARPIT
 
+:SHIELD_WARPIT
 killalltriggers
 send "y  s*"
 gosub :PLAYER~QUIKSTATS
@@ -869,8 +860,8 @@ else
   setvar $SWITCHBOARD~MESSAGE "Sector "&$MAP~ALPHA_CENTAURI&" has no class 0 port in it!*"
   gosub :SWITCHBOARD~SWITCHBOARD
 end
-:SHIELD_NOFIG
 
+:SHIELD_NOFIG
 killalltriggers
 if ($MAP~ALPHA_CENTAURI > 0)
   setsectorparameter $MAP~ALPHA_CENTAURI "FIGSEC" FALSE
@@ -892,6 +883,7 @@ else
   gosub :SWITCHBOARD~SWITCHBOARD
   goto :SHIELD_END
 end
+
 :SHIELD_CHECKIT
 killalltriggers
 send "s* "
@@ -903,8 +895,8 @@ else
   gosub :SWITCHBOARD~SWITCHBOARD
   goto :SHIELD_END
 end
-:SHIELD_NOWARP2
 
+:SHIELD_NOWARP2
 killalltriggers
 if ($MAP~RYLOS > 0)
   setsectorparameter $MAP~RYLOS "FIGSEC" FALSE
@@ -913,8 +905,8 @@ setvar $SWITCHBOARD~MESSAGE "No Fighter at either Class 0!*"
 gosub :SWITCHBOARD~SWITCHBOARD
 setvar $BUYS FALSE
 goto :SHIELD_END
-:SHIELD_ARRIVED
 
+:SHIELD_ARRIVED
 killalltriggers
 send "q  q  z  n  p  t  y"
 waiton "C  Shield Points   :"
@@ -928,8 +920,8 @@ elseif ($CANBUY = 0)
   gosub :SWITCHBOARD~SWITCHBOARD
   goto :SHIELD_END
 end
-:SHIELD_ARRIVED2
 
+:SHIELD_ARRIVED2
 send "L " $PLANET~PLANET "*  cgt"
 waiton "and the Shield System"
 getword CURRENTLINE $CURRENT_SHIELDS 3
@@ -938,8 +930,8 @@ send $CURRENT_SHIELDS "*"
 settexttrigger MAXPSHIELDS :SHIELD_MAXPSHIELDS "The planet is limited to"
 settexttrigger SHIELDSUCCESS :SHIELD_ARRIVED "Citadel command"
 pause
-:SHIELD_MAXPSHIELDS
 
+:SHIELD_MAXPSHIELDS
 killalltriggers
 getword CURRENTLINE $MAXPSHIELDS 6
 subtract $MAXPSHIELDS $CURPSHIELDS
@@ -948,8 +940,8 @@ setvar $BUYS TRUE
 setvar $SWITCHBOARD~MESSAGE "Shields maxxed out on planet "&$PLANET~PLANET&".*"
 gosub :SWITCHBOARD~SWITCHBOARD
 goto :SHIELD_END
-:SHIELD_END
 
+:SHIELD_END
 if ($BUYS = FALSE)
   setvar $SWITCHBOARD~MESSAGE "No shields able to be purchased*"
   gosub :SWITCHBOARD~SWITCHBOARD
@@ -965,10 +957,8 @@ else
   end
 end
 halt
-:GETPORTINFO
-:GETPORTINFO
 
-
+:GETPORTINFO
 send "C R*Q"
 setvar $VALIDPORTFOUND FALSE
 settextlinetrigger FOUNDPORT :FOUNDPORT2 "Items     Status  Trading % of max OnBoard"
@@ -977,12 +967,12 @@ settextlinetrigger NOPORT2 :NOPORT2 "You have never visted sector"
 settextlinetrigger NOPORT3 :NOPORT2 "credits / next hold"
 settextlinetrigger NOPORT4 :NOPORT2 "A  Cargo holds     :"
 pause
-:NOPORT2
 
+:NOPORT2
 killalltriggers
 return
-:FOUNDPORT2
 
+:FOUNDPORT2
 killtrigger FOUNDPORT
 killtrigger NOPORT
 killtrigger NOPORT2
@@ -991,29 +981,30 @@ setvar $FUELSELLING 0
 setvar $ORGSELLING 0
 setvar $EQUIPSELLING 0
 setvar $VALIDPORTFOUND TRUE
+
 :GETSELLING
 settextlinetrigger PORTFUELINFO :PORTFUELINFO2 "Fuel Ore   Selling"
 settextlinetrigger PORTORGINFO :PORTORGINFO2 "Organics   Selling"
 settextlinetrigger PORTEQUIPINFO :PORTEQUIPINFO2 "Equipment  Selling"
 settextlinetrigger GOTALLPORTINFO :GOTALLPORTINFO2 "<Computer deactivated>"
 pause
-:PORTFUELINFO2
 
+:PORTFUELINFO2
 getword CURRENTLINE $FUELSELLING 4
 settextlinetrigger PORTFUELINFO :PORTFUELINFO2 "Fuel Ore   Selling"
 pause
-:PORTORGINFO2
 
+:PORTORGINFO2
 getword CURRENTLINE $ORGSELLING 3
 settextlinetrigger PORTORGINFO :PORTORGINFO2 "Organics   Selling"
 pause
-:PORTEQUIPINFO2
 
+:PORTEQUIPINFO2
 getword CURRENTLINE $EQUIPSELLING 3
 settextlinetrigger PORTEQUIPINFO :PORTEQUIPINFO2 "Equipment  Selling"
 pause
-:GOTALLPORTINFO2
 
+:GOTALLPORTINFO2
 killalltriggers
 return
 

@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLANETHAGGLE~PLANETNEG
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-planethaggle
+caption: PLANETHAGGLE~PLANETNEG
+
+! PLANETHAGGLE~PLANETNEG
+
+Runs the shared planet sell negotiation path.
+
+''Include:'' [[planethaggle.ts]]
+''Defined at:'' `/include/planethaggle.ts:2`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $PLANETHAGGLE~OUTPUT_FILE &quot;&quot;
+setvar $PLANETHAGGLE~SELLDELAY 0
+setvar $PLANETHAGGLE~OREMCIC &quot;-90&quot;
+setvar $PLANETHAGGLE~ORGMCIC &quot;-75&quot;
+setvar $PLANETHAGGLE~EQUMCIC &quot;-65&quot;
+setvar $PLANETHAGGLE~VERSION &quot;3.0.0&quot;
+setvar $PLANETHAGGLE~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

@@ -1,12 +1,12 @@
-gosub :QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 setvar $MAX 100
 setarray $SHIPS $MAX
 loadvar $BOT_NAME
 loadvar $UNLIMITEDGAME
-setvar $MY_SHIP $SHIP_NUMBER
-setvar $MY_CRED $CREDITS
+setvar $MY_SHIP $PLAYER~SHIP_NUMBER
+setvar $MY_CRED $PLAYER~CREDITS
 
-if ($CURRENT_PROMPT = "<StarDock>")
+if ($PLAYER~CURRENT_PROMPT = "<StarDock>")
   setvar $IDX 0
   send "ss"
   waiton "-----------------------------------------------------"
@@ -43,7 +43,7 @@ else
 end
 if ($IDX <> 0)
   setvar $REQ (($IDX * 2) + 2)
-  if (($UNLIMITEDGAME = 0) and ($TURNS < $REQ))
+  if (($UNLIMITEDGAME = 0) and ($PLAYER~TURNS < $REQ))
     send "'{"&$BOT_NAME&"} - Not Enough Turns to Scrub ("&$REQ&" Turns Required)*"
     halt
   end
@@ -78,14 +78,14 @@ if ($IDX <> 0)
   end
   send "Q  X    "&$MY_SHIP&"*    * P S G YG Q"
   waiton "You leave the Galactic Bank."
-  gosub :QUIKSTATS
+  gosub :PLAYER~QUIKSTATS
   send "'*"
   waiton "Type sub-space message"
   send "{"&$BOT_NAME&"} - Scrub-A-Dub-Dub*"
   send "          Ships Found : "&$IDX&"*"
   send "             Scrubbed : "&$SCRUBBED&"*"
   if ($SCRUBBED <> 0)
-    setvar $CASHAMOUNT ($MY_CRED - $CREDITS)
+    setvar $CASHAMOUNT ($MY_CRED - $PLAYER~CREDITS)
     gosub :COMMASIZE
     send "                Spent : $"&$CASHAMOUNT&"*"
   end
@@ -98,46 +98,7 @@ if ($IDX <> 0)
 end
 
 halt
-goto :QUIKSTATS_PLAYER_INCLUDE
 include "source\include\player"
-:QUIKSTATS_PLAYER_INCLUDE
-:QUIKSTATS
-gosub :PLAYER~QUIKSTATS
-setvar $CURRENT_PROMPT $PLAYER~CURRENT_PROMPT
-setvar $CURRENT_SECTOR $PLAYER~CURRENT_SECTOR
-setvar $TURNS $PLAYER~TURNS
-setvar $CREDITS $PLAYER~CREDITS
-setvar $FIGHTERS $PLAYER~FIGHTERS
-setvar $SHIELDS $PLAYER~SHIELDS
-setvar $TOTAL_HOLDS $PLAYER~TOTAL_HOLDS
-setvar $ORE_HOLDS $PLAYER~ORE_HOLDS
-setvar $ORGANIC_HOLDS $PLAYER~ORGANIC_HOLDS
-setvar $EQUIPMENT_HOLDS $PLAYER~EQUIPMENT_HOLDS
-setvar $COLONIST_HOLDS $PLAYER~COLONIST_HOLDS
-setvar $PHOTONS $PLAYER~PHOTONS
-setvar $ARMIDS $PLAYER~ARMIDS
-setvar $LIMPETS $PLAYER~LIMPETS
-setvar $GENESIS $PLAYER~GENESIS
-setvar $TWARP_TYPE $PLAYER~TWARP_TYPE
-setvar $CLOAKS $PLAYER~CLOAKS
-setvar $BEACONS $PLAYER~BEACONS
-setvar $ATOMIC $PLAYER~ATOMIC
-setvar $CORBO $PLAYER~CORBO
-setvar $EPROBES $PLAYER~EPROBES
-setvar $MINE_DISRUPTORS $PLAYER~MINE_DISRUPTORS
-setvar $PSYCHIC_PROBE $PLAYER~PSYCHIC_PROBE
-setvar $PLANET_SCANNER $PLAYER~PLANET_SCANNER
-setvar $SCAN_TYPE $PLAYER~SCAN_TYPE
-setvar $ALIGNMENT $PLAYER~ALIGNMENT
-setvar $EXPERIENCE $PLAYER~EXPERIENCE
-setvar $CORP $PLAYER~CORP
-setvar $CORPNUMBER $PLAYER~CORPNUMBER
-setvar $SHIP_NUMBER $PLAYER~SHIP_NUMBER
-setvar $SHIP_TYPE $PLAYER~SHIP_TYPE
-setvar $FULL_CURRENT_PROMPT $PLAYER~FULL_CURRENT_PROMPT
-setvar $FEDSPACE $PLAYER~FEDSPACE
-setvar $SELF_DESTRUCT_PROMPT $PLAYER~SELF_DESTRUCT_PROMPT
-return
 :COMMASIZE
 
 if ($CASHAMOUNT < 1000)

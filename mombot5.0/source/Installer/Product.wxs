@@ -293,7 +293,7 @@
     <File Id="FIncludeBot" Source="..\include\bot.ts"/>
     <File Id="FIncludeCombat" Source="..\include\combat.ts"/>
     <File Id="FIncludeConnectivity" Source="..\include\connectivity.ts"/>
-    <File Id="FIncludeFighter" Source="..\include\fighter.ts"/>
+    <File Id="FIncludeFighter" Source="..\include\fighters.ts"/>
     <File Id="FIncludeGame" Source="..\include\game.ts"/>
     <File Id="FIncludeGrid" Source="..\include\grid.ts"/>
     <File Id="FIncludeInternalCommands" Source="..\include\internal_commands.ts"/>

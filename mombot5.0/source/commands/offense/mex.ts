@@ -1,13 +1,13 @@
 loadvar $USER_COMMAND_LINE
 loadvar $BOT_NAME
 
-gosub :QUIKSTATS
-if (($CURRENT_PROMPT <> "Citadel") and ($CURRENT_PROMPT <> "Command"))
+gosub :PLAYER~QUIKSTATS
+if (($PLAYER~CURRENT_PROMPT <> "Citadel") and ($PLAYER~CURRENT_PROMPT <> "Command"))
   send "'{" $BOT_NAME "} - Must start MEX From Citadel or Command Prompts!*"
   halt
 end
 
-setvar $STARTPROMPT $CURRENT_PROMPT
+setvar $STARTPROMPT $PLAYER~CURRENT_PROMPT
 
 if ($STARTPROMPT = "Citadel")
   send "qdc"
@@ -58,8 +58,8 @@ if ($PARM2 = $PARM3)
   halt
 end
 setvar $IDX 1
-while (SECTOR.WARPS[$CURRENT_SECTOR][$IDX] <> 0)
-  if (SECTOR.WARPS[$CURRENT_SECTOR][$IDX] = $PARM1)
+while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$IDX] <> 0)
+  if (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$IDX] = $PARM1)
     goto :ADJ_FOUND
   end
   add $IDX 1
@@ -79,10 +79,10 @@ end
 
 gosub :PAD
 settextlinetrigger NADDA :NADDA "You do not own any other ships in this sector!"
-settextlinetrigger SAFE :SAFE $PARM2&" "&$PAD&$CURRENT_SECTOR&" "
+settextlinetrigger SAFE :SAFE $PARM2&" "&$PAD&$PLAYER~CURRENT_SECTOR&" "
 if ($PARM3 >= 1)
   gosub :PAD
-  settextlinetrigger TOWN :TOWN $PARM3&" "&$PAD&$CURRENT_SECTOR&" "
+  settextlinetrigger TOWN :TOWN $PARM3&" "&$PAD&$PLAYER~CURRENT_SECTOR&" "
 end
 settextlinetrigger DONE :DONE "Choose which ship to tow (Q=Quit)"
 pause
@@ -194,49 +194,10 @@ end
 send "**"
 waiton "Sub-space comm-link terminated"
 return
-goto :QUIKSTATS_PLAYER_INCLUDE
 include "source\include\player"
-:QUIKSTATS_PLAYER_INCLUDE
-:QUIKSTATS
-gosub :PLAYER~QUIKSTATS
-setvar $CURRENT_PROMPT $PLAYER~CURRENT_PROMPT
-setvar $CURRENT_SECTOR $PLAYER~CURRENT_SECTOR
-setvar $TURNS $PLAYER~TURNS
-setvar $CREDITS $PLAYER~CREDITS
-setvar $FIGHTERS $PLAYER~FIGHTERS
-setvar $SHIELDS $PLAYER~SHIELDS
-setvar $TOTAL_HOLDS $PLAYER~TOTAL_HOLDS
-setvar $ORE_HOLDS $PLAYER~ORE_HOLDS
-setvar $ORGANIC_HOLDS $PLAYER~ORGANIC_HOLDS
-setvar $EQUIPMENT_HOLDS $PLAYER~EQUIPMENT_HOLDS
-setvar $COLONIST_HOLDS $PLAYER~COLONIST_HOLDS
-setvar $PHOTONS $PLAYER~PHOTONS
-setvar $ARMIDS $PLAYER~ARMIDS
-setvar $LIMPETS $PLAYER~LIMPETS
-setvar $GENESIS $PLAYER~GENESIS
-setvar $TWARP_TYPE $PLAYER~TWARP_TYPE
-setvar $CLOAKS $PLAYER~CLOAKS
-setvar $BEACONS $PLAYER~BEACONS
-setvar $ATOMIC $PLAYER~ATOMIC
-setvar $CORBO $PLAYER~CORBO
-setvar $EPROBES $PLAYER~EPROBES
-setvar $MINE_DISRUPTORS $PLAYER~MINE_DISRUPTORS
-setvar $PSYCHIC_PROBE $PLAYER~PSYCHIC_PROBE
-setvar $PLANET_SCANNER $PLAYER~PLANET_SCANNER
-setvar $SCAN_TYPE $PLAYER~SCAN_TYPE
-setvar $ALIGNMENT $PLAYER~ALIGNMENT
-setvar $EXPERIENCE $PLAYER~EXPERIENCE
-setvar $CORP $PLAYER~CORP
-setvar $CORPNUMBER $PLAYER~CORPNUMBER
-setvar $SHIP_NUMBER $PLAYER~SHIP_NUMBER
-setvar $SHIP_TYPE $PLAYER~SHIP_TYPE
-setvar $FULL_CURRENT_PROMPT $PLAYER~FULL_CURRENT_PROMPT
-setvar $FEDSPACE $PLAYER~FEDSPACE
-setvar $SELF_DESTRUCT_PROMPT $PLAYER~SELF_DESTRUCT_PROMPT
-return
 :PAD
 setvar $PAD ""
-getlength $CURRENT_SECTOR $LEN
+getlength $PLAYER~CURRENT_SECTOR $LEN
 if ($LEN = 1)
   setvar $PAD "    "
 elseif ($LEN = 2)

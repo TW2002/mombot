@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: BOT~SAVE_THE_VARIABLES
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-bot
+caption: BOT~SAVE_THE_VARIABLES
+
+! BOT~SAVE_THE_VARIABLES
+
+Saves shared state or cached data back to storage.
+
+''Include:'' [[bot.ts]]
+''Defined at:'' `/include/bot.ts:101`
+
+!! Source Excerpt
+<pre>
+savevar $BOT~COMMAND
+savevar $BOT~COMMAND_TYPED
+savevar $BOT~USER_COMMAND_LINE
+savevar $BOT~BOT_NAME
+savevar $SWITCHBOARD~BOT_NAME
+savevar $BOT~SELF_COMMAND
+savevar $SWITCHBOARD~SELF_COMMAND
+savevar $BOT~PARM1
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

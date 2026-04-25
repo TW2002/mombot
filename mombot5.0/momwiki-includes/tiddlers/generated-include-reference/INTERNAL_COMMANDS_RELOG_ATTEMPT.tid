@@ -1,0 +1,22 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: INTERNAL_COMMANDS~RELOG_ATTEMPT
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-internal_commands
+caption: INTERNAL_COMMANDS~RELOG_ATTEMPT
+
+! INTERNAL_COMMANDS~RELOG_ATTEMPT
+
+Shared `internal_commands` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+''Include:'' [[internal_commands.ts]]
+''Defined at:'' `/include/internal_commands.ts:612`
+
+!! Source Excerpt
+<pre>
+setvar $BOT~USER_COMMAND_LINE &quot;relog &quot;&amp;$BOT~PARM1&amp;&quot; &quot;&amp;$BOT~PARM2&amp;&quot; &quot;&amp;$BOT~PARM3&amp;&quot; &quot;&amp;$BOT~PARM4&amp;&quot; &quot;&amp;$BOT~PARM5&amp;&quot; &quot;&amp;$BOT~PARM6&amp;&quot; &quot;&amp;$BOT~PARM7&amp;&quot; &quot;&amp;$BOT~PARM8
+goto :USER_INTERFACE~RUNUSERCOMMANDLINE
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

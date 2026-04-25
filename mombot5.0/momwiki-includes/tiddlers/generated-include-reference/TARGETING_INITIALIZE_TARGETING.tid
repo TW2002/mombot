@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: TARGETING~INITIALIZE_TARGETING
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-targeting
+caption: TARGETING~INITIALIZE_TARGETING
+
+! TARGETING~INITIALIZE_TARGETING
+
+Initializes targeting state for attack-capable routines.
+
+''Include:'' [[targeting.ts]]
+''Defined at:'' `/include/targeting.ts:1`
+
+!! Source Excerpt
+<pre>
+setvar $TARGETING~REALTRADERCOUNT 0
+setvar $TARGETING~FAKETRADERCOUNT 0
+setvar $TARGETING~CORPIECOUNT 0
+setvar $TARGETING~EMPTYSHIPCOUNT 0
+setvar $TARGETING~CONTAINSBEACON FALSE
+setarray $TARGETING~TRADERS 200
+setvar $TARGETING~RANKSLENGTH 47
+setarray $TARGETING~RANKS $TARGETING~RANKSLENGTH
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: update~fighters
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-update
+caption: update~fighters
+
+! update~fighters
+
+Runs the shared fighter update/import routine.
+
+''Include:'' [[update.ts]]
+''Defined at:'' `/include/update.ts:2`
+
+!! Source Excerpt
+<pre>
+setvar $switchboard~message &quot;Loading current fighter locations. . .*&quot;
+	gosub :switchboard~switchboard
+	getSectorParameter 2 &quot;FIG_COUNTR&quot; $previousCount
+	getSectorParameter 2 &quot;FUEL_COUNT&quot; $previousFuelCount
+	getSectorParameter 2 &quot;ORG_COUNT&quot; $previousOrgCount
+	getSectorParameter 2 &quot;EQU_COUNT&quot; $previousEquipCount
+	getSectorParameter 2 &quot;EQS_COUNT&quot; $previousEquipSellCount
+	getSectorParameter 2 &quot;FB_COUNT&quot; $previousFuelBuyCount
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

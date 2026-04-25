@@ -14,9 +14,9 @@ killalltriggers
 setvar $STUFFMOVED ""
 setvar $ROUNDS 0
 setvar $moveextra 0
-gosub :QUIKSTATS
-echo "total_holds: " $TOTAL_HOLDS "*"
-setvar $STARTLOCATION $CURRENT_PROMPT
+gosub :PLAYER~QUIKSTATS
+echo "total_holds: " $PLAYER~TOTAL_HOLDS "*"
+setvar $STARTLOCATION $PLAYER~CURRENT_PROMPT
 if (($STARTLOCATION <> "Citadel") and ($STARTLOCATION <> "Planet"))
   send "'{" $BOT_NAME "} - Mover must be run from Citadel or Planet prompt.*"
   halt
@@ -56,13 +56,13 @@ elseif ($PARM3 <= 0)
   send "'{" $BOT_NAME "} - Must choose more than 0 rounds to move*"
   halt
 elseif ($PARM3 > 1000)
-  gosub :QUIKSTATS
-  if ($TOTAL_HOLDS <= 0)
+  gosub :PLAYER~QUIKSTATS
+  if ($PLAYER~TOTAL_HOLDS <= 0)
     send "'{" $BOT_NAME "} - Unable to determine ship holds from stats.*"
     halt
   end
-  setvar $MOVEHOLDS ($PARM3 / $TOTAL_HOLDS)
-  setvar $moveextra ($PARM3 - ($TOTAL_HOLDS * $MOVEHOLDS))
+  setvar $MOVEHOLDS ($PARM3 / $PLAYER~TOTAL_HOLDS)
+  setvar $moveextra ($PARM3 - ($PLAYER~TOTAL_HOLDS * $MOVEHOLDS))
   setvar $movetrips $MOVEHOLDS
   if ($moveextra > 0)
     add $movetrips 1
@@ -88,33 +88,33 @@ elseif (($STUFFMOVED = "Fuel") or ($STUFFMOVED = "Fuel Colonists"))
   setvar $STUFF 1
   if ($moveall = TRUE)
     if ($STUFFMOVED = "Fuel Colonists")
-      setvar $MOVEHOLDS ($PLANET_FUEL_COLONISTS / $TOTAL_HOLDS)
-      setvar $moveextra $PLANET_FUEL_COLONISTS - ($MOVEHOLDS * $TOTAL_HOLDS)
+      setvar $MOVEHOLDS ($PLANET_FUEL_COLONISTS / $PLAYER~TOTAL_HOLDS)
+      setvar $moveextra $PLANET_FUEL_COLONISTS - ($MOVEHOLDS * $PLAYER~TOTAL_HOLDS)
     else
-      setvar $MOVEHOLDS ($PLANET_FUEL / $TOTAL_HOLDS)
-      setvar $moveextra $PLANET_FUEL - ($MOVEHOLDS * $TOTAL_HOLDS)
+      setvar $MOVEHOLDS ($PLANET_FUEL / $PLAYER~TOTAL_HOLDS)
+      setvar $moveextra $PLANET_FUEL - ($MOVEHOLDS * $PLAYER~TOTAL_HOLDS)
     end
   end
 elseif (($STUFFMOVED = "Organics") or ($STUFFMOVED = "Organic Colonists"))
   setvar $STUFF 2
   if ($moveall = TRUE)
     if ($STUFFMOVED = "Organic Colonists")
-      setvar $MOVEHOLDS ($PLANET_ORGANICS_COLONISTS / $TOTAL_HOLDS)
-      setvar $moveextra $PLANET_ORGANICS_COLONISTS - ($MOVEHOLDS * $TOTAL_HOLDS)
+      setvar $MOVEHOLDS ($PLANET_ORGANICS_COLONISTS / $PLAYER~TOTAL_HOLDS)
+      setvar $moveextra $PLANET_ORGANICS_COLONISTS - ($MOVEHOLDS * $PLAYER~TOTAL_HOLDS)
     else
-      setvar $MOVEHOLDS ($PLANET_ORGANICS / $TOTAL_HOLDS)
-      setvar $moveextra $PLANET_ORGANICS - ($MOVEHOLDS * $TOTAL_HOLDS)
+      setvar $MOVEHOLDS ($PLANET_ORGANICS / $PLAYER~TOTAL_HOLDS)
+      setvar $moveextra $PLANET_ORGANICS - ($MOVEHOLDS * $PLAYER~TOTAL_HOLDS)
     end
   end
 elseif (($STUFFMOVED = "Equipment") or ($STUFFMOVED = "Equipment Colonists"))
   setvar $STUFF 3
   if ($moveall = TRUE)
     if ($STUFFMOVED = "Equipment Colonists")
-      setvar $MOVEHOLDS ($PLANET_EQUIPMENT_COLONISTS / $TOTAL_HOLDS)
-      setvar $moveextra $PLANET_EQUIPMENT_COLONISTS - ($MOVEHOLDS * $TOTAL_HOLDS)
+      setvar $MOVEHOLDS ($PLANET_EQUIPMENT_COLONISTS / $PLAYER~TOTAL_HOLDS)
+      setvar $moveextra $PLANET_EQUIPMENT_COLONISTS - ($MOVEHOLDS * $PLAYER~TOTAL_HOLDS)
     else
-      setvar $MOVEHOLDS ($PLANET_EQUIPMENT / $TOTAL_HOLDS)
-      setvar $moveextra $PLANET_EQUIPMENT - ($MOVEHOLDS * $TOTAL_HOLDS)
+      setvar $MOVEHOLDS ($PLANET_EQUIPMENT / $PLAYER~TOTAL_HOLDS)
+      setvar $moveextra $PLANET_EQUIPMENT - ($MOVEHOLDS * $PLAYER~TOTAL_HOLDS)
     end
   end
 end
@@ -179,52 +179,13 @@ else
   send "'{" $BOT_NAME "} - Moved "&$PARM3&" loads of "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
 end
 halt
-goto :QUIKSTATS_PLAYER_INCLUDE
 include "source\include\player"
-:QUIKSTATS_PLAYER_INCLUDE
-:QUIKSTATS
-gosub :PLAYER~QUIKSTATS
-setvar $CURRENT_PROMPT $PLAYER~CURRENT_PROMPT
-setvar $CURRENT_SECTOR $PLAYER~CURRENT_SECTOR
-setvar $TURNS $PLAYER~TURNS
-setvar $CREDITS $PLAYER~CREDITS
-setvar $FIGHTERS $PLAYER~FIGHTERS
-setvar $SHIELDS $PLAYER~SHIELDS
-setvar $TOTAL_HOLDS $PLAYER~TOTAL_HOLDS
-setvar $ORE_HOLDS $PLAYER~ORE_HOLDS
-setvar $ORGANIC_HOLDS $PLAYER~ORGANIC_HOLDS
-setvar $EQUIPMENT_HOLDS $PLAYER~EQUIPMENT_HOLDS
-setvar $COLONIST_HOLDS $PLAYER~COLONIST_HOLDS
-setvar $PHOTONS $PLAYER~PHOTONS
-setvar $ARMIDS $PLAYER~ARMIDS
-setvar $LIMPETS $PLAYER~LIMPETS
-setvar $GENESIS $PLAYER~GENESIS
-setvar $TWARP_TYPE $PLAYER~TWARP_TYPE
-setvar $CLOAKS $PLAYER~CLOAKS
-setvar $BEACONS $PLAYER~BEACONS
-setvar $ATOMIC $PLAYER~ATOMIC
-setvar $CORBO $PLAYER~CORBO
-setvar $EPROBES $PLAYER~EPROBES
-setvar $MINE_DISRUPTORS $PLAYER~MINE_DISRUPTORS
-setvar $PSYCHIC_PROBE $PLAYER~PSYCHIC_PROBE
-setvar $PLANET_SCANNER $PLAYER~PLANET_SCANNER
-setvar $SCAN_TYPE $PLAYER~SCAN_TYPE
-setvar $ALIGNMENT $PLAYER~ALIGNMENT
-setvar $EXPERIENCE $PLAYER~EXPERIENCE
-setvar $CORP $PLAYER~CORP
-setvar $CORPNUMBER $PLAYER~CORPNUMBER
-setvar $SHIP_NUMBER $PLAYER~SHIP_NUMBER
-setvar $SHIP_TYPE $PLAYER~SHIP_TYPE
-setvar $FULL_CURRENT_PROMPT $PLAYER~FULL_CURRENT_PROMPT
-setvar $FEDSPACE $PLAYER~FEDSPACE
-setvar $SELF_DESTRUCT_PROMPT $PLAYER~SELF_DESTRUCT_PROMPT
-return
 :GETINFO
 
 
-setvar $PHOTONS 0
-setvar $SCAN_TYPE "None"
-setvar $TWARP_TYPE 0
+setvar $PLAYER~PHOTONS 0
+setvar $PLAYER~SCAN_TYPE "None"
+setvar $PLAYER~TWARP_TYPE 0
 setvar $CORPSTRING "[0]"
 setvar $IGSTAT 0
 send "I"
@@ -299,70 +260,70 @@ striptext $TRADER_NAME "Annoyance "
 
 pause
 :GETEXPANDALIGN
-getword CURRENTLINE $EXPERIENCE 5
-getword CURRENTLINE $ALIGNMENT 7
-striptext $EXPERIENCE ","
-striptext $ALIGNMENT ","
-striptext $ALIGNMENT "Alignment="
+getword CURRENTLINE $PLAYER~EXPERIENCE 5
+getword CURRENTLINE $PLAYER~ALIGNMENT 7
+striptext $PLAYER~EXPERIENCE ","
+striptext $PLAYER~ALIGNMENT ","
+striptext $PLAYER~ALIGNMENT "Alignment="
 pause
 :GETCORP
-getword CURRENTLINE $CORP 3
-striptext $CORP ","
-setvar $CORPSTRING "["&$CORP&"]"
+getword CURRENTLINE $PLAYER~CORP 3
+striptext $PLAYER~CORP ","
+setvar $CORPSTRING "["&$PLAYER~CORP&"]"
 pause
 :GETSHIPTYPE
 getwordpos CURRENTLINE $SHIPTYPEEND "Ported="
 subtract $SHIPTYPEEND 18
-cuttext CURRENTLINE $SHIP_TYPE 18 $SHIPTYPEEND
+cuttext CURRENTLINE $PLAYER~SHIP_TYPE 18 $SHIPTYPEEND
 pause
 :GETTPW
 getword CURRENTLINE $TURNS_PER_WARP 5
 pause
 :GETSECT
-getword CURRENTLINE $CURRENT_SECTOR 4
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR 4
 pause
 :GETTURNS
-getword CURRENTLINE $TURNS 4
-if ($TURNS = "Unlimited")
-  setvar $TURNS 65000
+getword CURRENTLINE $PLAYER~TURNS 4
+if ($PLAYER~TURNS = "Unlimited")
+  setvar $PLAYER~TURNS 65000
   setvar $UNLIMITEDGAME TRUE
 end
 savevar $UNLIMITEDGAME
 pause
 :GETHOLDS
 setvar $LINE CURRENTLINE
-getword $LINE $TOTAL_HOLDS 4
+getword $LINE $PLAYER~TOTAL_HOLDS 4
 getwordpos $LINE $TEXTPOS "Ore="
 if ($TEXTPOS <> 0)
   cuttext CURRENTLINE $TEMP $TEXTPOS 100
-  getword $TEMP $ORE_HOLDS 1
-  striptext $ORE_HOLDS "Ore="
+  getword $TEMP $PLAYER~ORE_HOLDS 1
+  striptext $PLAYER~ORE_HOLDS "Ore="
 else
-  setvar $ORE_HOLDS 0
+  setvar $PLAYER~ORE_HOLDS 0
 end
 getwordpos $LINE $TEXTPOS "Organics="
 if ($TEXTPOS <> 0)
   cuttext CURRENTLINE $TEMP $TEXTPOS 100
-  getword $TEMP $ORGANIC_HOLDS 1
-  striptext $ORGANIC_HOLDS "Organics="
+  getword $TEMP $PLAYER~ORGANIC_HOLDS 1
+  striptext $PLAYER~ORGANIC_HOLDS "Organics="
 else
-  setvar $ORGANIC_HOLDS 0
+  setvar $PLAYER~ORGANIC_HOLDS 0
 end
 getwordpos $LINE $TEXTPOS "Equipment="
 if ($TEXTPOS <> 0)
   cuttext CURRENTLINE $TEMP $TEXTPOS 100
-  getword $TEMP $EQUIPMENT_HOLDS 1
-  striptext $EQUIPMENT_HOLDS "Equipment="
+  getword $TEMP $PLAYER~EQUIPMENT_HOLDS 1
+  striptext $PLAYER~EQUIPMENT_HOLDS "Equipment="
 else
-  setvar $EQUIPMENT_HOLDS 0
+  setvar $PLAYER~EQUIPMENT_HOLDS 0
 end
 getwordpos $LINE $TEXTPOS "Colonists="
 if ($TEXTPOS <> 0)
   cuttext CURRENTLINE $TEMP $TEXTPOS 100
-  getword $TEMP $COLONIST_HOLDS 1
-  striptext $COLONIST_HOLDS "Colonists="
+  getword $TEMP $PLAYER~COLONIST_HOLDS 1
+  striptext $PLAYER~COLONIST_HOLDS "Colonists="
 else
-  setvar $COLONIST_HOLDS 0
+  setvar $PLAYER~COLONIST_HOLDS 0
 end
 getwordpos $LINE $TEXTPOS "Empty="
 if ($TEXTPOS <> 0)
@@ -374,30 +335,30 @@ else
 end
 pause
 :GETFIGHTERS
-getword CURRENTLINE $FIGHTERS 3
-striptext $FIGHTERS ","
+getword CURRENTLINE $PLAYER~FIGHTERS 3
+striptext $PLAYER~FIGHTERS ","
 pause
 :GETSHIELDS
-getword CURRENTLINE $SHIELDS 4
-striptext $SHIELDS ","
+getword CURRENTLINE $PLAYER~SHIELDS 4
+striptext $PLAYER~SHIELDS ","
 pause
 :GETPHOTONS
-getword CURRENTLINE $PHOTONS 3
+getword CURRENTLINE $PLAYER~PHOTONS 3
 pause
 :GETSCANTYPE
-getword CURRENTLINE $SCAN_TYPE 4
+getword CURRENTLINE $PLAYER~SCAN_TYPE 4
 pause
 :GETTWARPTYPE1
 getword CURRENTLINE $TWARP_1_RANGE 4
-setvar $TWARP_TYPE 1
+setvar $PLAYER~TWARP_TYPE 1
 pause
 :GETTWARPTYPE2
 getword CURRENTLINE $TWARP_2_RANGE 4
-setvar $TWARP_TYPE 2
+setvar $PLAYER~TWARP_TYPE 2
 pause
 :GETCREDITS
-getword CURRENTLINE $CREDITS 3
-striptext $CREDITS ","
+getword CURRENTLINE $PLAYER~CREDITS 3
+striptext $PLAYER~CREDITS ","
 if ($IGSTAT = 0)
   setvar $IGSTAT "NO IG"
 end
@@ -431,7 +392,7 @@ return
 :GETPLANETINFO
 gosub :PLANET~GETPLANETINFO
 setvar $PLANET $PLANET~PLANET
-setvar $CURRENT_SECTOR $PLANET~CURRENT_SECTOR
+setvar $PLAYER~CURRENT_SECTOR $PLANET~CURRENT_SECTOR
 setvar $PLANET_FUEL $PLANET~PLANET_FUEL
 setvar $PLANET_FUEL_MAX $PLANET~PLANET_FUEL_MAX
 setvar $PLANET_ORGANICS $PLANET~PLANET_ORGANICS

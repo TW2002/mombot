@@ -1,0 +1,21 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: search.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: search.ts
+
+! search.ts
+
+Search helpers for sector and path-based lookups.
+
+''Source:'' `/include/search.ts`
+
+!! Significant Exported Routines
+* [[SEARCH~FIND]] - Runs the shared search routine used by the find command.
+
+!! Direct Include Users
+* `/commands/data/find.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

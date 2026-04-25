@@ -1,0 +1,25 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLAYER~CURRENTPROMPT
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-player
+caption: PLAYER~CURRENTPROMPT
+
+! PLAYER~CURRENTPROMPT
+
+Parses the current prompt and updates shared prompt/location state.
+
+''Include:'' [[player.ts]]
+''Defined at:'' `/include/player.ts:205`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+settexttrigger PROMPT :ALLPROMPTSCATCH #145&amp;#8
+setdelaytrigger PROMPT_DELAY :CURRENT_PROMPT_DELAY 5000
+send #145
+pause
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

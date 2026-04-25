@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLANET~LANDONPLANETENTERCITADEL
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-planet
+caption: PLANET~LANDONPLANETENTERCITADEL
+
+! PLANET~LANDONPLANETENTERCITADEL
+
+Lands on a planet and enters the citadel in one shared path.
+
+''Include:'' [[planet.ts]]
+''Defined at:'' `/include/planet.ts:670`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+send &quot;l &quot;&amp;$PLANET~PLANET&amp;&quot;*tnl1*tnl2*tnl3*snl1*snl2*snl3*c &quot;
+waiton &quot;Fuel Ore&quot;
+getword CURRENTLINE $PLANET~PLANETFUEL 6
+striptext $PLANET~PLANETFUEL &quot;,&quot;
+getword CURRENTLINE $PLANET~PLANET_FUEL 6
+striptext $PLANET~PLANET_FUEL &quot;,&quot;
+send &quot;/&quot;
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

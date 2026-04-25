@@ -1,0 +1,22 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: invader.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: invader.ts
+
+! invader.ts
+
+Shared invader command helpers for checking and starting invade macros.
+
+''Source:'' `/include/invader.ts`
+
+!! Significant Exported Routines
+* [[INVADER~CHECK_INVADE_MACRO_PARAMS]] - Checks a prerequisite or validates current state before the caller continues.
+* [[INVADER~START_INVADE_MACRO]] - Shared `invader` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+!! Direct Include Users
+* `/commands/offense/invader.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

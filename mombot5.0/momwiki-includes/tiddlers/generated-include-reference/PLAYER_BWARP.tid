@@ -1,0 +1,26 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLAYER~BWARP
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-player
+caption: PLAYER~BWARP
+
+! PLAYER~BWARP
+
+Runs the shared blind-warp movement path.
+
+''Include:'' [[player.ts]]
+''Defined at:'' `/include/player.ts:11`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+send &quot;b&quot;
+settexttrigger NOBWARP :NOBWARP &quot;Would you like to place a subspace order for one? &quot;
+settexttrigger YESBWARP :YESBWARP &quot;Beam to what sector? (U=&quot;
+settexttrigger IGBWARP :BWARPPHOTONED &quot;Your ship was hit by a Photon and has been disabled&quot;
+pause
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

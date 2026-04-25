@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: BOT~LOAD_THE_VARIABLES
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-bot
+caption: BOT~LOAD_THE_VARIABLES
+
+! BOT~LOAD_THE_VARIABLES
+
+Loads shared state or cached data for later command use.
+
+''Include:'' [[bot.ts]]
+''Defined at:'' `/include/bot.ts:191`
+
+!! Source Excerpt
+<pre>
+loadvar $BOT~CORPNAME
+loadvar $GAME~GAME_MENU_PROMPT_ANSI
+loadvar $GAME~GAME_MENU_PROMPT
+loadvar $BOT~ALARM_LIST
+loadvar $PLAYER~OFFENSECAPPING
+loadvar $PLAYER~CAPPINGALIENS
+loadvar $PLANET~PLANET
+loadvar $GAME~ATOMIC_COST
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

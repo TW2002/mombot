@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLANET~LANDINGSUB
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-planet
+caption: PLANET~LANDINGSUB
+
+! PLANET~LANDINGSUB
+
+Handles landing on the requested planet and returning to the expected prompt.
+
+''Include:'' [[planet.ts]]
+''Defined at:'' `/include/planet.ts:578`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :KILLLANDINGTRIGGERS
+send &quot;lz&quot; #8 $PLANET~PLANET &quot;*&quot;
+setvar $PLANET~SUCESSFULCITADEL FALSE
+setvar $PLANET~SUCESSFULPLANET FALSE
+settextlinetrigger NOPLANET :NOPLANET &quot;There isn&#x27;t a planet in this sector.&quot;
+settextlinetrigger NO_LAND :NO_LAND &quot;since it couldn&#x27;t possibly stand&quot;
+settextlinetrigger PLANET :PLANET &quot;Planet #&quot;
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

@@ -32,7 +32,7 @@
 	end
 	send "^f"&$start&"*"&$destination&"*q "
 	waitOn ": ENDINTERROG"
-	getCourse $course $start $destination   
+	getCourseDijkstra $course $start $destination   
 	setVar $i 1
 	setVar $directions ""
 	while ($i <= $course)

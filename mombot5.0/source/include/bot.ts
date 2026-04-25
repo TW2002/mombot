@@ -829,29 +829,6 @@ loadvar $PLANET~PLANET
 loadvar $PLAYER~CURRENT_SECTOR
 return
 
-:BOT~ADDFIGTODATA
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-setsectorparameter $BOT~TARGET "FIGSEC" TRUE
-return
-
-
 :BOT~BANNER
 
 
@@ -2063,18 +2040,6 @@ killalltriggers
 echo ANSI_14 "*[["&ANSI_15&$BOT~SCRIPT_TITLE&" paused. To restart, re-enter citadel prompt"&ANSI_14&"]]*"&ANSI_7
 settexttrigger RESTART :RESTARTING "Citadel command ("
 pause
-
-
-:BOT~REMOVEFIGFROMDATA
-
-
-getsectorparameter $BOT~TARGET "FIGSEC" $BOT~CHECK
-if ($BOT~CHECK = TRUE)
-  getsectorparameter 2 "FIG_COUNT" $BOT~FIGCOUNT
-  setsectorparameter 2 "FIG_COUNT" ($BOT~FIGCOUNT - 1)
-end
-setsectorparameter $BOT~TARGET "FIGSEC" FALSE
-return
 
 
 :BOT~RESTARTING

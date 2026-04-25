@@ -1,3 +1,4 @@
+systemscript
 setTextOutTrigger fed :fed "`"
 pause
 

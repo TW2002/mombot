@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: MODULES~CLEAR
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-modules
+caption: MODULES~CLEAR
+
+! MODULES~CLEAR
+
+Runs the shared clear behavior used by the clear command wrapper.
+
+''Include:'' [[modules.ts]]
+''Defined at:'' `/include/modules.ts:1`
+
+!! Source Excerpt
+<pre>
+loadvar $GAME~GAME_MENU_PROMPT
+gosub :PLAYER~QUIKSTATS
+setvar $MODULES~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+if ((CURRENTSECTOR = $MAP~STARDOCK) or (CURRENTSECTOR &lt;= 10))
+  setvar $SWITCHBOARD~MESSAGE &quot;Can&#x27;t clear fedspace.*&quot;
+  gosub :SWITCHBOARD~SWITCHBOARD
+  return
+end
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

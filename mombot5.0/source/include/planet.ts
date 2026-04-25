@@ -522,26 +522,26 @@ waiton "Average Interval Lag"
 waiton "Which planet type are you interested in (?=List)"
 
 :PLANET~SHP_LOOP
-settextlinetrigger GRAB_PLANET :SHP_PLANETNAMES "> "
+settextlinetrigger GRAB_PLANET :PLANET~SHP_PLANETNAMES "> "
 pause
 :PLANET~SHP_PLANETNAMES
 if (CURRENTLINE = "")
-  goto :SHP_LOOP
+  goto :PLANET~SHP_LOOP
 end
 getword CURRENTLINE $PLANET~STOPPER 1
 if ($PLANET~STOPPER = "<+>")
   send "+"
   waiton "(?=List) ?"
   setvar $PLANET~NEXTPAGE 1
-  goto :SHP_LOOP
+  goto :PLANET~SHP_LOOP
 elseif ($PLANET~STOPPER = "<Q>")
-  goto :SHP_GETPLANETSTATS
+  goto :PLANET~SHP_GETPLANETSTATS
 end
 if ($PLANET~NEXTPAGE = 1)
   setvar $PLANET~PLANETNAME CURRENTLINE
   striptext $PLANET~PLANETNAME "<A> "
   if ($PLANET~PLANETNAME = $PLANET~FIRSTPLANETNAME)
-    goto :SHP_GETPLANETSTATS
+    goto :PLANET~SHP_GETPLANETSTATS
   end
   setvar $PLANET~NEXTPAGE 0
 end
@@ -550,7 +550,7 @@ if ($PLANET~TOTALPLANETS = 1)
   setvar $PLANET~FIRSTPLANETNAME CURRENTLINE
   striptext $PLANET~FIRSTPLANETNAME "<A> "
 end
-goto :SHP_LOOP
+goto :PLANET~SHP_LOOP
 :PLANET~SHP_GETPLANETSTATS
 setvar $PLANET~PLANETSTATLOOP 0
 :PLANET~SHP_PLANETSTATS
@@ -562,7 +562,7 @@ while ($PLANET~PLANETSTATLOOP < $PLANET~TOTALPLANETS)
     setvar $PLANET~ALPHALOOP 1
   end
   send $PLANET~ALPHA[$PLANET~ALPHALOOP]
-  settextlinetrigger SN :SN "Planet Category #"
+  settextlinetrigger SN :PLANET~SN "Planet Category #"
   pause
   :PLANET~SN
   setvar $PLANET~LINE CURRENTLINE
@@ -650,6 +650,81 @@ return
 gosub :KILLLANDINGTRIGGERS
 setvar $PLANET~SUCESSFULCITADEL TRUE
 setvar $PLANET~STARTINGLOCATION "Citadel"
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLANET~PWARP
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	setvar $PLANET~DO_SCAN FALSE
+	if ($PLANET~PWARP_SCAN = TRUE)
+		setvar $PLANET~DO_SCAN TRUE
+	end
+	setvar $PLANET~PWARP_SCAN FALSE
+	send "q *"
+	waitOn "Planet #"
+	getWord CURRENTLINE $planet~planet 2
+	stripText $planet~planet "#"
+	saveVar $planet~planet
+
+	send "c p" $PLAYER~warpto "*"
+
+	setTextLineTrigger pwarp_lock       :pwarp_lock     "Locating beam pinpointed"
+	setTextLineTrigger no_pwarp_lock    :no_pwarp_lock  "Your own fighters must be"
+	setTextLineTrigger already      :already    "You are already in that sector!"
+	setTextLineTrigger no_ore       :no_ore     "You do not have enough Fuel Ore"
+	setTextLineTrigger No_pwarp     :noPwarp    "This Citadel does not have a Planetary TransWarp"
+	setTextLineTrigger wrong_number     :wrong_number   "Invalid Sector number,"
+	pause
+
+	:wrong_number
+		killalltriggers
+		setVar $SWITCHBOARD~message "Not a valid sector to pwarp to!*"
+		gosub :SWITCHBOARD~switchboard
+		return		
+	:noPwarp
+		killalltriggers
+		setVar $SWITCHBOARD~message "Planet Does Not Have A Planetary TransWarp Drive!*"
+		gosub :SWITCHBOARD~switchboard
+		return
+	:no_pwarp_lock
+		killalltriggers
+		setVar $bot~target $PLAYER~warpto
+		setVar $PLAYER~target $bot~target
+		gosub :player~removefigfromdata
+		setVar $SWITCHBOARD~message "No fighter down at that location!*"
+		gosub :SWITCHBOARD~switchboard
+		return
+	:no_ore
+		killalltriggers
+		setVar $SWITCHBOARD~message "Not enough fuel for that pwarp.*"
+		gosub :SWITCHBOARD~switchboard
+		return
+	:pwarp_lock
+		killalltriggers
+		send "y"
+		waitOn "Planet is now in sector"
+		setVar $SWITCHBOARD~message "Planet #"&$planet~planet&" moved to sector "&$PLAYER~warpto&".*"
+		gosub :SWITCHBOARD~switchboard
+		setVar $bot~target $PLAYER~warpto
+		setVar $PLAYER~target $bot~target
+		loadVar $planet~planet
+		isNumber $test $planet~planet
+		if ($test)
+			if (($planet~planet <> ".") and ($planet~planet > 0))
+				setSectorParameter $planet~planet "PSECTOR" $bot~target
+			end
+		end
+		#gosub :player~addfigtodata
+		if ($PLANET~DO_SCAN = TRUE)
+			send "s"
+			waiton "Warps to Sector(s) :"
+			send "* "
+		end
+		return
+	:already
+		killalltriggers
+		setVar $SWITCHBOARD~message "Planet already in that sector!.*"
+		gosub :SWITCHBOARD~switchboard
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

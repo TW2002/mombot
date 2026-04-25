@@ -65,7 +65,8 @@ gosub :BOT~loadVars
 			gosub :PLANET~landingSub
 		end
 		setVar $bot~target $PLAYER~warpto
-		gosub :bot~addfigtodata
+		setVar $PLAYER~target $bot~target
+		gosub :player~addfigtodata
 		setVar $SWITCHBOARD~message $PLAYER~msg&"*"
 		gosub :SWITCHBOARD~switchboard
 	end

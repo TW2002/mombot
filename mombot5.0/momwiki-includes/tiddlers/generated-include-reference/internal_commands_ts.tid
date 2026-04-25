@@ -1,0 +1,23 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: internal_commands.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: internal_commands.ts
+
+! internal_commands.ts
+
+Native-bot internal command helpers for timing, relog, and control actions.
+
+''Source:'' `/include/internal_commands.ts`
+
+!! Significant Exported Routines
+* [[INTERNAL_COMMANDS~CALCTIME]] - Shared `internal_commands` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[INTERNAL_COMMANDS~RELOG_ATTEMPT]] - Shared `internal_commands` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+!! Direct Include Users
+* `/commands/general/run.ts`
+* `/mombot.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

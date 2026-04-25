@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: MAP~DISPLAYSECTOR
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-map
+caption: MAP~DISPLAYSECTOR
+
+! MAP~DISPLAYSECTOR
+
+Renders the sector display view used by sector/data commands.
+
+''Include:'' [[map.ts]]
+''Defined at:'' `/include/map.ts:461`
+
+!! Source Excerpt
+<pre>
+setvar $MAP~I $MAP~DISPLAYSECTOR
+setvar $MAP~OUTPUT ANSI_10&amp;&quot;    Sector  &quot;&amp;ANSI_14&amp;&quot;: &quot;&amp;ANSI_11&amp;$MAP~I&amp;ANSI_2&amp;&quot; in &quot;
+setvar $MAP~CONSTELLATION SECTOR.CONSTELLATION[$MAP~I]
+if ($MAP~CONSTELLATION = &quot;The Federation.&quot;)
+  setvar $MAP~OUTPUT $MAP~OUTPUT&amp;ANSI_10&amp;$MAP~CONSTELLATION&amp;&quot;*&quot;
+else
+  setvar $MAP~OUTPUT $MAP~OUTPUT&amp;ANSI_1&amp;$MAP~CONSTELLATION&amp;&quot;*&quot;
+end
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

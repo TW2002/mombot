@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: INTERNAL_COMMANDS~CALCTIME
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-internal_commands
+caption: INTERNAL_COMMANDS~CALCTIME
+
+! INTERNAL_COMMANDS~CALCTIME
+
+Shared `internal_commands` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+''Include:'' [[internal_commands.ts]]
+''Defined at:'' `/include/internal_commands.ts:357`
+
+!! Source Excerpt
+<pre>
+setvar $INTERNAL_COMMANDS~HOURS 0
+setvar $INTERNAL_COMMANDS~MINUTES 0
+setvar $INTERNAL_COMMANDS~SECONDS 0
+setvar $INTERNAL_COMMANDS~TESTTIME $INTERNAL_COMMANDS~TIMETOLOGBACKIN
+if ($INTERNAL_COMMANDS~TESTTIME &gt;= 3600)
+  setvar $INTERNAL_COMMANDS~HOURS ($INTERNAL_COMMANDS~TESTTIME / 3600)
+  setvar $INTERNAL_COMMANDS~TESTTIME ($INTERNAL_COMMANDS~TESTTIME - ($INTERNAL_COMMANDS~HOURS * 3600))
+end
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

@@ -1,0 +1,23 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: update.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: update.ts
+
+! update.ts
+
+CIM and fighter update helpers used by update/report paths.
+
+''Source:'' `/include/update.ts`
+
+!! Significant Exported Routines
+* [[update~cim]] - Runs the shared CIM update routine.
+* [[update~fighters]] - Runs the shared fighter update/import routine.
+* [[update~report]] - Builds the shared update report output.
+
+!! Direct Include Users
+* `/commands/data/update.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

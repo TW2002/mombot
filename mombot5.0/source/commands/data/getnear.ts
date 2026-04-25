@@ -1,4 +1,4 @@
-gosub :QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 setvar $VERSION "1.1a"
 setvar $MOM GAMENAME&".nego"
 setarray $PORT SECTORS
@@ -39,8 +39,8 @@ if (($PORT_MAX = 0) and ($GAME~PORT_MAX > 0))
   savevar $PORT_MAX
 end
 
-if (($PORT_MAX = 0) and (($CURRENT_PROMPT = "Command") or ($CURRENT_PROMPT = "Citadel")))
-  setvar $PLAYER~STARTINGLOCATION $CURRENT_PROMPT
+if (($PORT_MAX = 0) and (($PLAYER~CURRENT_PROMPT = "Command") or ($PLAYER~CURRENT_PROMPT = "Citadel")))
+  setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
   gosub :GAME~GAMESTATS
   loadvar $GAME~PORT_MAX
   if ($GAME~PORT_MAX > 0)
@@ -70,7 +70,7 @@ end
 send "'{"&$BOT_NAME&"} GETNEAR "&$VERSION&" - Searching For Ports BUYERS & SELLERS ...*"
 waitfor "Message sent on sub-space channel"
 
-getnearestwarps $LOOKUP $CURRENT_SECTOR
+getnearestwarps $LOOKUP $PLAYER~CURRENT_SECTOR
 setvar $IDX 1
 while ($IDX <= $LOOKUP)
   setvar $FOCUS $LOOKUP[$IDX]
@@ -79,7 +79,7 @@ while ($IDX <= $LOOKUP)
       if (PORT.EQUIP[$FOCUS] >= $PARM1)
         getsectorparameter $FOCUS "FIGSEC" $FIG
         if ($FIG <> 0)
-          getdistance $DIST $CURRENT_SECTOR $FOCUS
+          getdistance $DIST $PLAYER~CURRENT_SECTOR $FOCUS
           if ($DIST = "-1")
             setvar $DIST 0
           end
@@ -103,7 +103,7 @@ while ($IDX <= $LOOKUP)
       if (PORT.EQUIP[$FOCUS] >= $PARM1)
         getsectorparameter $FOCUS "FIGSEC" $FIG
         if ($FIG <> 0)
-          getdistance $DIST $CURRENT_SECTOR $FOCUS
+          getdistance $DIST $PLAYER~CURRENT_SECTOR $FOCUS
           if ($DIST = "-1")
             setvar $DIST 0
           end
@@ -212,12 +212,6 @@ return
 # includes:
 include "source\include\game"
 include "source\include\player"
-:QUIKSTATS
-gosub :PLAYER~QUIKSTATS
-setvar $CURRENT_PROMPT $PLAYER~CURRENT_PROMPT
-setvar $CURRENT_SECTOR $PLAYER~CURRENT_SECTOR
-setvar $TURNS $PLAYER~TURNS
-return
 :PAD
 
 

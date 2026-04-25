@@ -1,0 +1,107 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: planet.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: planet.ts
+
+! planet.ts
+
+Planet parsing, landing, planet-file loading, and shared planet-state routines.
+
+''Source:'' `/include/planet.ts`
+
+!! Significant Exported Routines
+* [[PLANET~GETPLANETINFO]] - Parses the current planet screen and fills the shared planet variables.
+* [[PLANET~LANDINGSUB]] - Handles landing on the requested planet and returning to the expected prompt.
+* [[PLANET~LOADPLANETINFO]] - Loads cached planet-file data into shared planet variables and arrays.
+* [[PLANET~GETPLANETSTATS]] - Refreshes shared planet stats from the live game prompts.
+* [[PLANET~LANDONPLANETENTERCITADEL]] - Lands on a planet and enters the citadel in one shared path.
+* [[PLANET~PLANETINFO]] - Runs the deeper planet parser used by callers that need full production arrays and construction state.
+* [[PLANETCHECK~PLANETCHECK]] - Runs the legacy planet-check path used by findproduct compatibility logic.
+* [[PLANET~COUNTPLANETS]] - Counts planets in the current sector or current working set.
+
+!! Direct Include Users
+* `/commands/cashing/mega.ts`
+* `/commands/cashing/neg.ts`
+* `/commands/cashing/rob.ts`
+* `/commands/data/armids.ts`
+* `/commands/data/corpinfo.ts`
+* `/commands/data/disp.ts`
+* `/commands/data/dscan.ts`
+* `/commands/data/figs.ts`
+* `/commands/data/holo.ts`
+* `/commands/data/limps.ts`
+* `/commands/data/overload.ts`
+* `/commands/data/plist.ts`
+* `/commands/data/pscan.ts`
+* `/commands/data/qreport.ts`
+* `/commands/data/slist.ts`
+* `/commands/data/update.ts`
+* `/commands/defense/evac.ts`
+* `/commands/defense/hazkill.ts`
+* `/commands/general/land.ts`
+* `/commands/general/logoff.ts`
+* `/commands/general/qset.ts`
+* `/commands/general/refresh.ts`
+* `/commands/general/relog.ts`
+* `/commands/general/scrub.ts`
+* `/commands/general/topoff.ts`
+* `/commands/general/tow.ts`
+* `/commands/general/twarp.ts`
+* `/commands/general/xport.ts`
+* `/commands/grid/clearfig.ts`
+* `/commands/grid/deploy.ts`
+* `/commands/grid/pgrid.ts`
+* `/commands/grid/port.ts`
+* `/commands/grid/surround.ts`
+* `/commands/offense/htorp.ts`
+* `/commands/resource/buy.ts`
+* `/commands/resource/dump.ts`
+* `/commands/resource/max.ts`
+* `/commands/resource/refurb.ts`
+* `/daemons/teammega.ts`
+* `/modes/cashing/alienhunt.ts`
+* `/modes/cashing/furb.ts`
+* `/modes/cashing/merch.ts`
+* `/modes/cashing/salesman.ts`
+* `/modes/cashing/sdt.ts`
+* `/modes/cashing/wrob.ts`
+* `/modes/cashing/wsst.ts`
+* `/modes/defense/citfill.ts`
+* `/modes/defense/reloader.ts`
+* `/modes/defense/runaway.ts`
+* `/modes/defense/saveme.ts`
+* `/modes/defense/unstack.ts`
+* `/modes/general/xenter.ts`
+* `/modes/grid/gridcheck.ts`
+* `/modes/grid/limpshovel.ts`
+* `/modes/grid/minesweep.ts`
+* `/modes/grid/mow.ts`
+* `/modes/grid/ugrid.ts`
+* `/modes/offense/boton.ts`
+* `/modes/offense/citcap.ts`
+* `/modes/offense/citkill.ts`
+* `/modes/offense/density.ts`
+* `/modes/offense/foton.ts`
+* `/modes/offense/pdrop.ts`
+* `/modes/offense/plock.ts`
+* `/modes/resource/colo.ts`
+* `/modes/resource/dump.ts`
+* `/modes/resource/ecolo.ts`
+* `/modes/resource/farm.ts`
+* `/modes/resource/fillships.ts`
+* `/modes/resource/makeplanet.ts`
+* `/modes/resource/move.ts`
+* `/modes/resource/movefig.ts`
+* `/modes/resource/moveship.ts`
+* `/modes/resource/patp.ts`
+* `/modes/resource/pimp.ts`
+* `/modes/resource/strip.ts`
+* `/modes/resource/stripships.ts`
+* `/modes/resource/upgrade.ts`
+* `/preload/_kazi.ts`
+* `/preload/_ldrop.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

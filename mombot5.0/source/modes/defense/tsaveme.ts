@@ -11,8 +11,8 @@ loadvar $BOT_NAME
 :START
 
 
-gosub :QUIKSTATS
-setvar $LOCATION $CURRENT_PROMPT
+gosub :PLAYER~QUIKSTATS
+setvar $LOCATION $PLAYER~CURRENT_PROMPT
 if (($LOCATION <> "Command") and ($LOCATION <> "Citadel"))
   send "'{" $BOT_NAME "} - T-warp Saveme must be run from the Command or Citadel Prompt*"
   halt
@@ -20,7 +20,7 @@ end
 :TYPE
 if ($LOCATION = "Command")
   setvar $TYPE "TWarp"
-  setvar $SECTOR $CURRENT_SECTOR
+  setvar $SECTOR $PLAYER~CURRENT_SECTOR
 elseif ($LOCATION = "Citadel")
   setvar $TYPE "BWarp"
   send "qd"
@@ -28,7 +28,7 @@ elseif ($LOCATION = "Citadel")
   getword CURRENTLINE $PLANET 2
   striptext $PLANET "#"
   send " t n l 1* t n l 2* t n l 3* s n l 1* s n l 2* s n l 3* t n t 1* c s* "
-  setvar $SECTOR $CURRENT_SECTOR
+  setvar $SECTOR $PLAYER~CURRENT_SECTOR
 end
 
 
@@ -215,18 +215,18 @@ goto :MAIN
 
 
 send " w * * z q n z q n "
-gosub :QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 if ($TYPE = "BWarp")
   settextlinetrigger NOT_AT_HOME :EXIT_COMPLETELY "That planet is not in this sector."
   send " l "&$PLANET&"*"
   waitfor "Landing sequence engaged..."
   send " t n l 1* t n l 2* t n l 3* s n l 1* s n l 2* s n l 3* t n t 1* c s* "
-  if ($CURRENT_SECTOR = $SECTOR)
+  if ($PLAYER~CURRENT_SECTOR = $SECTOR)
     send "'{" $BOT_NAME "} - " $TYPE " Saveme - Arrived at Return Sector. Ready for another save.*"
   end
   goto :MAIN
 else
-  if ($TSAVEME_SCRUB = $CURRENT_SECTOR)
+  if ($TSAVEME_SCRUB = $PLAYER~CURRENT_SECTOR)
     send "'{" $BOT_NAME "} - " $TYPE " Saveme - Arrived at Scrub Sector.*"
     send "'{" $BOT_NAME "} - " $TYPE " Saveme - Please Exit/Enter to Remove Limpet.*"
   end
@@ -242,43 +242,4 @@ send "'{" $BOT_NAME "} - " $TYPE " Saveme - Please Exit/Enter to Remove Limpet.*
 send "'{" $BOT_NAME "} - Saveme - Powering Down...*"
 send "**"
 halt
-goto :QUIKSTATS_PLAYER_INCLUDE
 include "source\include\player"
-:QUIKSTATS_PLAYER_INCLUDE
-:QUIKSTATS
-gosub :PLAYER~QUIKSTATS
-setvar $CURRENT_PROMPT $PLAYER~CURRENT_PROMPT
-setvar $CURRENT_SECTOR $PLAYER~CURRENT_SECTOR
-setvar $TURNS $PLAYER~TURNS
-setvar $CREDITS $PLAYER~CREDITS
-setvar $FIGHTERS $PLAYER~FIGHTERS
-setvar $SHIELDS $PLAYER~SHIELDS
-setvar $TOTAL_HOLDS $PLAYER~TOTAL_HOLDS
-setvar $ORE_HOLDS $PLAYER~ORE_HOLDS
-setvar $ORGANIC_HOLDS $PLAYER~ORGANIC_HOLDS
-setvar $EQUIPMENT_HOLDS $PLAYER~EQUIPMENT_HOLDS
-setvar $COLONIST_HOLDS $PLAYER~COLONIST_HOLDS
-setvar $PHOTONS $PLAYER~PHOTONS
-setvar $ARMIDS $PLAYER~ARMIDS
-setvar $LIMPETS $PLAYER~LIMPETS
-setvar $GENESIS $PLAYER~GENESIS
-setvar $TWARP_TYPE $PLAYER~TWARP_TYPE
-setvar $CLOAKS $PLAYER~CLOAKS
-setvar $BEACONS $PLAYER~BEACONS
-setvar $ATOMIC $PLAYER~ATOMIC
-setvar $CORBO $PLAYER~CORBO
-setvar $EPROBES $PLAYER~EPROBES
-setvar $MINE_DISRUPTORS $PLAYER~MINE_DISRUPTORS
-setvar $PSYCHIC_PROBE $PLAYER~PSYCHIC_PROBE
-setvar $PLANET_SCANNER $PLAYER~PLANET_SCANNER
-setvar $SCAN_TYPE $PLAYER~SCAN_TYPE
-setvar $ALIGNMENT $PLAYER~ALIGNMENT
-setvar $EXPERIENCE $PLAYER~EXPERIENCE
-setvar $CORP $PLAYER~CORP
-setvar $CORPNUMBER $PLAYER~CORPNUMBER
-setvar $SHIP_NUMBER $PLAYER~SHIP_NUMBER
-setvar $SHIP_TYPE $PLAYER~SHIP_TYPE
-setvar $FULL_CURRENT_PROMPT $PLAYER~FULL_CURRENT_PROMPT
-setvar $FEDSPACE $PLAYER~FEDSPACE
-setvar $SELF_DESTRUCT_PROMPT $PLAYER~SELF_DESTRUCT_PROMPT
-return

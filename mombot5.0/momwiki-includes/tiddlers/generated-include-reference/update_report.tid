@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: update~report
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-update
+caption: update~report
+
+! update~report
+
+Builds the shared update report output.
+
+''Include:'' [[update.ts]]
+''Defined at:'' `/include/update.ts:191`
+
+!! Source Excerpt
+<pre>
+if ($count &lt;&gt; 0)
+		setVar $percent  (($count * 100) / SECTORS)
+		setVar $1percent (($1scount * 100) / $count)
+		setVar $2percent (($2scount * 100) / $count)
+		setVar $3percent (($3scount * 100) / $count)
+		setVar $4percent (($4scount * 100) / $count)
+		setVar $5percent (($5scount * 100) / $count)
+		setVar $6percent (($6scount * 100) / $count)
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

@@ -25,13 +25,13 @@ if ($DOESHELPFILEEXIST <> TRUE)
 end
 window "MOWWINDOW" 250 80 "Sectors Gridded" "ONTOP"
 setarray $COURSE 80
-gosub :QUIKSTATS
-if ($CURRENT_PROMPT <> "Citadel")
+gosub :PLAYER~QUIKSTATS
+if ($PLAYER~CURRENT_PROMPT <> "Citadel")
   send "'{" $BOT_NAME "} - You must run this script from the Citadel prompt.*"
   halt
 end
-setvar $LOCATION $CURRENT_PROMPT
-setvar $HOMESECTOR $CURRENT_SECTOR
+setvar $LOCATION $PLAYER~CURRENT_PROMPT
+setvar $HOMESECTOR $PLAYER~CURRENT_SECTOR
 setvar $LASTDESTINATION 1
 send "c;q"
 waiton "Max Figs Per Attack:"
@@ -99,8 +99,8 @@ goto :DOAGAIN
 :MOW
 
 
-gosub :QUIKSTATS
-if ($MAXFIGATTACK2 > $FIGHTERS)
+gosub :PLAYER~QUIKSTATS
+if ($MAXFIGATTACK2 > $PLAYER~FIGHTERS)
   setvar $MAXFIGATTACK2 9999
 end
 setvar $J 2
@@ -116,16 +116,16 @@ while ($J <= $COURSELENGTH)
   add $J 1
 end
 send $RESULT&"zr* "
-gosub :QUIKSTATS
-if ($CURRENT_SECTOR <> $DESTINATION)
+gosub :PLAYER~QUIKSTATS
+if ($PLAYER~CURRENT_SECTOR <> $DESTINATION)
   setvar $WINDOWDATA "Sectors Figged: "&$COUNT&" out of "&SECTORS&"*Current Target: "&$DESTINATION&"*Target Status: DANGER - Call Save Me Activated!"
   setwindowcontents "MOWWINDOW" $WINDOWDATA
   gosub :CALLSAVEME
 
 else
   send "f 1* c d  mz "&$HOMESECTOR&"*y  y    *    "
-  gosub :QUIKSTATS
-  if ($CURRENT_SECTOR <> $HOMESECTOR)
+  gosub :PLAYER~QUIKSTATS
+  if ($PLAYER~CURRENT_SECTOR <> $HOMESECTOR)
     gosub :CALLSAVEME
   end
   setvar $WINDOWDATA "Sectors Figged: "&$COUNT&" out of "&SECTORS&"*Current Target: "&$DESTINATION&"*Target Status: Returned Home Safely*"&$DATABASECOUNT&" sectors left in database*"
@@ -224,46 +224,7 @@ while ($I <= SECTORS)
   add $I 1
 end
 return
-goto :QUIKSTATS_PLAYER_INCLUDE
 include "source\include\player"
-:QUIKSTATS_PLAYER_INCLUDE
-:QUIKSTATS
-gosub :PLAYER~QUIKSTATS
-setvar $CURRENT_PROMPT $PLAYER~CURRENT_PROMPT
-setvar $CURRENT_SECTOR $PLAYER~CURRENT_SECTOR
-setvar $TURNS $PLAYER~TURNS
-setvar $CREDITS $PLAYER~CREDITS
-setvar $FIGHTERS $PLAYER~FIGHTERS
-setvar $SHIELDS $PLAYER~SHIELDS
-setvar $TOTAL_HOLDS $PLAYER~TOTAL_HOLDS
-setvar $ORE_HOLDS $PLAYER~ORE_HOLDS
-setvar $ORGANIC_HOLDS $PLAYER~ORGANIC_HOLDS
-setvar $EQUIPMENT_HOLDS $PLAYER~EQUIPMENT_HOLDS
-setvar $COLONIST_HOLDS $PLAYER~COLONIST_HOLDS
-setvar $PHOTONS $PLAYER~PHOTONS
-setvar $ARMIDS $PLAYER~ARMIDS
-setvar $LIMPETS $PLAYER~LIMPETS
-setvar $GENESIS $PLAYER~GENESIS
-setvar $TWARP_TYPE $PLAYER~TWARP_TYPE
-setvar $CLOAKS $PLAYER~CLOAKS
-setvar $BEACONS $PLAYER~BEACONS
-setvar $ATOMIC $PLAYER~ATOMIC
-setvar $CORBO $PLAYER~CORBO
-setvar $EPROBES $PLAYER~EPROBES
-setvar $MINE_DISRUPTORS $PLAYER~MINE_DISRUPTORS
-setvar $PSYCHIC_PROBE $PLAYER~PSYCHIC_PROBE
-setvar $PLANET_SCANNER $PLAYER~PLANET_SCANNER
-setvar $SCAN_TYPE $PLAYER~SCAN_TYPE
-setvar $ALIGNMENT $PLAYER~ALIGNMENT
-setvar $EXPERIENCE $PLAYER~EXPERIENCE
-setvar $CORP $PLAYER~CORP
-setvar $CORPNUMBER $PLAYER~CORPNUMBER
-setvar $SHIP_NUMBER $PLAYER~SHIP_NUMBER
-setvar $SHIP_TYPE $PLAYER~SHIP_TYPE
-setvar $FULL_CURRENT_PROMPT $PLAYER~FULL_CURRENT_PROMPT
-setvar $FEDSPACE $PLAYER~FEDSPACE
-setvar $SELF_DESTRUCT_PROMPT $PLAYER~SELF_DESTRUCT_PROMPT
-return
 :CALLSAVEME
 
 
@@ -280,10 +241,10 @@ if (($PROMPT = "Computer") or ($PROMPT = "Corporate") or ($PROMPT = "NavPoint"))
   send "q"
   waitfor "Command [TL"
 end
-gosub :QUIKSTATS
+gosub :PLAYER~QUIKSTATS
 setvar $FIGSTODEPLOY 1
 gosub :DEPLOYFIGS
-setvar $SAVETARGET $CURRENT_SECTOR
+setvar $SAVETARGET $PLAYER~CURRENT_SECTOR
 if ($SAVETARGET < 10)
   setvar $SAVETARGET 0000&$SAVETARGET
 elseif ($SAVETARGET < 100)
@@ -295,7 +256,7 @@ elseif ($SAVETARGET < 10000)
 
 end
 send "'"&$SAVETARGET&"=saveme*"
-send "'pickup "&$CURRENT_SECTOR&" ::*"
+send "'pickup "&$PLAYER~CURRENT_SECTOR&" ::*"
 :WAITFORHELP
 
 
@@ -334,7 +295,7 @@ halt
 if ($FIGSTODEPLOY = 0)
   setvar $FIGSTODEPLOY 1
 end
-if (($CURRENT_SECTOR < 11) or ($CURRENT_SECTOR = STARDOCK))
+if (($PLAYER~CURRENT_SECTOR < 11) or ($PLAYER~CURRENT_SECTOR = STARDOCK))
   send "'Can't deploy figs in fed*"
   return
 end

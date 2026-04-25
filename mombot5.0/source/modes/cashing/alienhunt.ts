@@ -10,8 +10,6 @@
 	#for auto kill on surround
 	setvar $grid~kill true
 
- 
-
 	setVar $BOT~help[1]  $BOT~tab&"alienhunt {corp} {sell} {refuel} {upgrade} {cannon} {return}"
 	setVar $BOT~help[2]  $BOT~tab&"          {passive} {buyfig} {buyshield} {patp} {home} "
 	setVar $BOT~help[3]  $BOT~tab&"          {"&#34&"ship_filter"&#34&"} {"&#34&"alien_filter"&#34&"} "
@@ -50,7 +48,6 @@
 	setVar $END_FIG_HIT_OWNER "'s"
 	
 	Window alienhunt_script 560 170 ("Alienhunt - " & GAMENAME) ONTOP
-
 
 	getSectorParameter SECTORS "FIGSEC" $isFigged
 	if (($MAP~stardock = 0) OR ($MAP~stardock = ""))
@@ -342,16 +339,18 @@
 		:bot~restart
 		gosub :validateFighterHit
 		gosub :attackandmoveship
-		gosub :dosurround
-		gosub :attackandmoveship
+		if ($targetsFound = TRUE)
+			gosub :dosurround
+			gosub :attackandmoveship
+		end
 	end
 	halt
 
-:validateFighterHit
-	send "q "
-	gosub :planet~getplanetinfo
-	gosub :setwindow
-	send "c "
+	:validateFighterHit
+		send "q "
+		gosub :planet~getplanetinfo
+		gosub :setwindow
+		gosub :ensureCitadelForPwarp
 	if ($planet~planet_fighters < ($planet~planet_fighters_max/10))
 		if ($buyfig = true)
 			gosub :with~run
@@ -391,6 +390,11 @@
 	:checkFighter
 		cutText CURRENTLINE&" " $radio 1 1
 		getText CURRENTLINE $dropSector $START_FIG_HIT $END_FIG_HIT
+		isNumber $isDropSectorNumeric $dropSector
+		if ($isDropSectorNumeric <> TRUE)
+			setTextLineTrigger fig :checkFighter "Deployed Fighters Report Sector"
+			pause
+		end
 		getText CURRENTANSILINE $alien_check $START_FIG_HIT_OWNER $END_FIG_HIT_OWNER
 		getWordPos $alien_check $apos $ALIEN_ANSI
 		setvar $fighter_line CURRENTLINE
@@ -407,9 +411,13 @@
 
 	:go_to_drop_sector
 		killAllTriggers
+		isNumber $isDropSectorNumeric $dropSector
+		if ($isDropSectorNumeric <> TRUE)
+			return
+		end
 		if ($dropSector <> $player~current_sector)
 			if ($cannon = true)
-                send "*ls0* la0*  "
+	                send "*ls0* la0*  "
             end
             send "p " $dropSector "*y"
 			setTextLineTrigger pwarpNotOk :pwarpTryAdjacent "You do not have any fighters in Sector "
@@ -426,34 +434,38 @@
 			gosub :findAdjacent
 			gosub :attemptDrop
 			gosub :dosurround
-			setvar $pwarp~destination $dropSector
+			setvar $player~warpto $dropSector
 			gosub :ensureCitadelForPwarp
-			gosub :pwarp~run
+			gosub :planet~pwarp
 			setVar $index 1
 			setVar $checkSector SECTOR.WARPS[$dropSector][$index]
 			while ($checkSector > 0)
-				setvar $pwarp~destination $checksector
+				setvar $player~warpto $checksector
 				gosub :ensureCitadelForPwarp
-				gosub :pwarp~run
+				gosub :planet~pwarp
 				gosub :attackandmoveship
 				add $index 1
 				setVar $checkSector SECTOR.WARPS[$dropSector][$index]
 			end
 			return
-		:pwarpConfirmed
-			killalltriggers
-			gosub :player~quikstats
+	:pwarpConfirmed
+		killalltriggers
+		gosub :player~quikstats
+		gosub :attackandmoveship
+		if ($targetsFound = TRUE)
 			gosub :dosurround
 			gosub :attackandmoveship
-			if ($dropSector <= 0)
-				setvar $dropsector $player~current_sector
-			end
-			setVar $index 1
+		end
+		isNumber $isDropSectorNumeric $dropSector
+		if (($isDropSectorNumeric <> TRUE) or ($dropSector <= 0))
+			setvar $dropsector $player~current_sector
+		end
+		setVar $index 1
 			setVar $checkSector SECTOR.WARPS[$dropSector][$index]
 			while ($checkSector > 0)
-				setvar $pwarp~destination $checksector
+				setvar $player~warpto $checksector
 				gosub :ensureCitadelForPwarp
-				gosub :pwarp~run
+				gosub :planet~pwarp
 				gosub :attackandmoveship
 				add $index 1
 				setVar $checkSector SECTOR.WARPS[$dropSector][$index]
@@ -487,24 +499,47 @@ return
 	if ($targetCount > 0)
 		getRnd $randomTarget 1 $targetCount
 		setVar $gotoSector $targetSectors[$randomTarget]
-		setvar $pwarp~destination $gotoSector
+		setvar $player~warpto $gotoSector
 		gosub :ensureCitadelForPwarp
-		gosub :pwarp~run
+		gosub :planet~pwarp
 	end
 	
 return
 
-:ensureCitadelForPwarp
-	gosub :PLAYER~quikstats
-	if ($PLAYER~CURRENT_PROMPT = "Command")
-		gosub :PLANET~landingSub
+	:ensureCitadelForPwarp
 		gosub :PLAYER~quikstats
-	end
-	if ($PLAYER~CURRENT_PROMPT = "Planet")
-		send "c "
-		gosub :PLAYER~quikstats
-	end
-return
+		if ($PLAYER~CURRENT_PROMPT = "Computer")
+			send "q"
+			gosub :PLAYER~quikstats
+		end
+		if ($PLAYER~CURRENT_PROMPT = "Command")
+			gosub :PLANET~landingSub
+			gosub :PLAYER~quikstats
+		end
+		if ($PLAYER~CURRENT_PROMPT = "Planet")
+			send "c "
+			settexttrigger ALIENHUNT_CITADEL_READY :ALIENHUNT_CITADEL_READY "Citadel command (?=help)"
+			settexttrigger ALIENHUNT_CITADEL_MISROUTE :ALIENHUNT_CITADEL_MISROUTE "Computer command [TL="
+			pause
+			:ALIENHUNT_CITADEL_READY
+				killalltriggers
+				gosub :PLAYER~quikstats
+				return
+			:ALIENHUNT_CITADEL_MISROUTE
+				killalltriggers
+				send "q"
+				gosub :PLAYER~quikstats
+				if ($PLAYER~CURRENT_PROMPT = "Command")
+					gosub :PLANET~landingSub
+					gosub :PLAYER~quikstats
+				end
+				if ($PLAYER~CURRENT_PROMPT = "Planet")
+					send "c "
+					waiton "Citadel command (?=help)"
+					gosub :PLAYER~quikstats
+				end
+		end
+	return
 
 
 :dosurround
@@ -601,19 +636,13 @@ return
 				if ($figcount <= 0)
 					if ((CURRENTSECTOR > 10) and (CURRENTSECTOR <> STARDOCK))
 						setvar $bot~startingLocation $PLAYER~CURRENT_PROMPT
-						setvar $fighter~offensive false
-						setvar $fighter~defensive true
-						setvar $fighter~toll false
-						setvar $fighter~corporate true
-						setvar $fighter~personal false
-						setvar $fighter~amount 1
-						gosub :fighter~deploy
-						gosub :PLAYER~quikstats
-						if ($PLAYER~CURRENT_PROMPT = "Planet")
-							send "c "
+						setvar $fighters~amount 1
+							gosub :fighters~deploy
 							gosub :PLAYER~quikstats
+							if ($PLAYER~CURRENT_PROMPT = "Planet")
+								gosub :ensureCitadelForPwarp
+							end
 						end
-					end
 				elseif (($figOwner <> "belong to your Corp") AND ($figOwner <> "yours"))
 					gosub :xenter~run
 				end		
@@ -653,7 +682,6 @@ return
 				if ($player~current_prompt = "Command")
 					gosub :PLANET~landingSub
 				end
-			end
 		end
 
 		killalltriggers
@@ -669,17 +697,15 @@ return
 			if (($upgrade = true) and ($isUpgradedFuel <> true))
 				gosub :runPortUpgradeScript
 				gosub :setwindow
-			else
-				gosub :PLAYER~quikstats
-				if ($PLAYER~CURRENT_PROMPT = "Planet")
-					send "c "
-					waiton "Citadel command (?=help)"
+				else
 					gosub :PLAYER~quikstats
-				end
-				if ($PLAYER~CURRENT_PROMPT = "Citadel")
-					send "c r*q "
-					waiton "Citadel command (?=help)"
-					gosub :PLAYER~quikstats
+					if ($PLAYER~CURRENT_PROMPT = "Citadel")
+						send "q q "
+						gosub :PLAYER~quikstats
+					elseif ($PLAYER~CURRENT_PROMPT = "Planet")
+						send "q "
+						gosub :PLAYER~quikstats
+					end
 				end
 			end
 			setvar $fuel PORT.FUEL[currentsector]
@@ -725,6 +751,10 @@ return
 		return
 	end
 	getText CURRENTLINE $dropSector "Your mines in " " did"
+	isNumber $isDropSectorNumeric $dropSector
+	if ($isDropSectorNumeric <> TRUE)
+		return
+	end
 	getText CURRENTANSILINE&"[][][]" $alien_check "Your mines in" "[][][]"
 	getWordPos CURRENTLINE $pos " damage to "
 	getWordPos $alien_check $apos $ALIEN_ANSI
@@ -842,22 +872,21 @@ return
 	:ALIENHUNT_MOWENDED
 return
 
-:gohome
+	:gohome
 	gosub :PLAYER~quikstats
 	if (CURRENTSECTOR <> $homesector)
-		setvar $pwarp~destination $homesector
+		setvar $player~warpto $homesector
 		gosub :ensureCitadelForPwarp
-		gosub :pwarp~run
+		gosub :planet~pwarp
 	end
 	gosub :PLAYER~quikstats
 	if ($PLAYER~CURRENT_PROMPT = "Command")
 		gosub :PLANET~landingSub
 		gosub :PLAYER~quikstats
 	end
-	if ($PLAYER~CURRENT_PROMPT = "Planet")
-		send "c "
-		gosub :PLAYER~quikstats
-	end
+		if ($PLAYER~CURRENT_PROMPT = "Planet")
+			gosub :ensureCitadelForPwarp
+		end
 	if ($cannon = true)
 		send " *ls"&$percentToSet&"* la"&$starting_atmos_cannon&"*"  
 	end
@@ -993,31 +1022,6 @@ return
 :BUYSHIELD~BUYSHIELDENDED
 return
 
-:PWARP~MOWENDED
-return
-
-:PWARP~RUN
-	setVar $BOT~COMMAND "pwarp"
-	setVar $BOT~USER_COMMAND_LINE " pwarp " & $PWARP~DESTINATION & " silent"
-	setVar $BOT~PARM1 $PWARP~DESTINATION
-	setVar $BOT~PARM2 $MOW~DEPLOY
-	setVar $BOT~PARM3 ""
-	setVar $BOT~PARM4 ""
-	setVar $BOT~PARM5 ""
-	setVar $BOT~PARM6 ""
-	saveVar $BOT~PARM1
-	saveVar $BOT~PARM2
-	saveVar $BOT~PARM3
-	saveVar $BOT~PARM4
-	saveVar $BOT~PARM5
-	saveVar $BOT~PARM6
-	saveVar $BOT~COMMAND
-	saveVar $BOT~USER_COMMAND_LINE
-	load "scripts\" & $BOT~MOMBOT_DIRECTORY & "\commands\general\pwarp.cts"
-	setEventTrigger PWARPENDED :PWARP~MOWENDED "SCRIPT STOPPED" "scripts\" & $BOT~MOMBOT_DIRECTORY & "\commands\general\pwarp.cts"
-	pause
-
-
 #INCLUDES:
 include "source\include\bot"
 include "source\include\combat"
@@ -1026,5 +1030,5 @@ include "source\include\planet"
 include "source\include\ship"
 include "source\include\grid"
 include "source\include\sector"
-include "source\include\fighter"
+include "source\include\fighters"
 include "source\include\xenter"

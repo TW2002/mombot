@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLAYER~TURNOFFANSI
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-player
+caption: PLAYER~TURNOFFANSI
+
+! PLAYER~TURNOFFANSI
+
+Turns ANSI off through the shared player prompt path.
+
+''Include:'' [[player.ts]]
+''Defined at:'' `/include/player.ts:1167`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+send &quot;c n&quot;
+killalltriggers
+waiton &quot;(1) ANSI graphics&quot;
+getword CURRENTLINE $PLAYER~ANSISTATUS 5
+waiton &quot;(2) Animation display&quot;
+getword CURRENTLINE $PLAYER~ANIMATIONSTATUS 5
+if ($PLAYER~ANIMATIONSTATUS = &quot;On&quot;)
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

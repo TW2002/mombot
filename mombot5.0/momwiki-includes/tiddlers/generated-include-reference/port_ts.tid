@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: port.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: port.ts
+
+! port.ts
+
+Port build, destroy, upgrade, max, and ship-sale helpers.
+
+''Source:'' `/include/port.ts`
+
+!! Significant Exported Routines
+* [[PORT~BUILDPORT]] - Builds a port through the shared port helper path.
+* [[PORT~DESTROYPORT]] - Destroys a port through the shared port helper path.
+* [[PORT~UPGRADEPORT]] - Upgrades a port through the shared port helper path.
+* [[PORT~DOMAXPORT]] - Runs the max-port helper path used by merch/maxport flows.
+* [[PORT~SHIPSELL]] - Handles the shared ship-sale path used by ship-move/resource flows.
+
+!! Direct Include Users
+* `/commands/general/port.ts`
+* `/commands/grid/port.ts`
+* `/modes/cashing/merch.ts`
+* `/modes/resource/moveship.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

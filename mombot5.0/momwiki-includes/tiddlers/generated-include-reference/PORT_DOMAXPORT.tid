@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PORT~DOMAXPORT
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-port
+caption: PORT~DOMAXPORT
+
+! PORT~DOMAXPORT
+
+Runs the max-port helper path used by merch/maxport flows.
+
+''Include:'' [[port.ts]]
+''Defined at:'' `/include/port.ts:142`
+
+!! Source Excerpt
+<pre>
+send &quot;o z&quot; $PORT~PRODUCT &quot;z0* &quot;
+settextlinetrigger NOREALPORTHERE :WRONGPORTTYPE &quot;Do you want to initiate construction on this port?&quot;
+settextlinetrigger CONSTRUCTION :WRONGPORTTYPE &quot;Do you want instructions (Y/N)&quot;
+waiton &quot;, 0 to quit)&quot;
+killalltriggers
+getword CURRENTLINE $PORT~UPGRADEAMOUNT 9
+striptext $PORT~UPGRADEAMOUNT &quot;(&quot;
+send &quot;o &quot;
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

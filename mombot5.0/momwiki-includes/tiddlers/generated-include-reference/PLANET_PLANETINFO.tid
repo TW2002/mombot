@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLANET~PLANETINFO
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-planet
+caption: PLANET~PLANETINFO
+
+! PLANET~PLANETINFO
+
+Runs the deeper planet parser used by callers that need full production arrays and construction state.
+
+''Include:'' [[planet.ts]]
+''Defined at:'' `/include/planet.ts:165`
+
+!! Source Excerpt
+<pre>
+setvar $PLANET~PLANET 0
+setvar $PLANET~CURRENT_SECTOR 0
+setvar $PLANET~PLANET_FUEL 0
+setvar $PLANET~PLANET_FUEL_MAX 0
+setvar $PLANET~PLANET_ORGANICS 0
+setvar $PLANET~PLANET_ORGANICS_MAX 0
+setvar $PLANET~PLANET_EQUIPMENT 0
+setvar $PLANET~PLANET_EQUIPMENT_MAX 0
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

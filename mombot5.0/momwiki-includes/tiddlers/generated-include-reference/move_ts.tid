@@ -1,0 +1,23 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: move.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: move.ts
+
+! move.ts
+
+Shared movement logic for moving product and navigating between sectors or planets.
+
+''Source:'' `/include/move.ts`
+
+!! Significant Exported Routines
+* [[move~move]] - Executes the shared move-product movement routine used by upgrade and makeplanet paths.
+
+!! Direct Include Users
+* `/modes/cashing/wppt.ts`
+* `/modes/resource/makeplanet.ts`
+* `/modes/resource/upgrade.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

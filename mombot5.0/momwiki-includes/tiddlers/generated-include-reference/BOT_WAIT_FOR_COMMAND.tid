@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: BOT~WAIT_FOR_COMMAND
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-bot
+caption: BOT~WAIT_FOR_COMMAND
+
+! BOT~WAIT_FOR_COMMAND
+
+Waits until the game is back at a normal command prompt before continuing.
+
+''Include:'' [[bot.ts]]
+''Defined at:'' `/include/bot.ts:27`
+
+!! Source Excerpt
+<pre>
+killalltriggers
+if (CONNECTED)
+  setvar $CONNECTIVITY~RELOGGING FALSE
+  savevar $CONNECTIVITY~RELOGGING
+end
+setvar $USER_INTERFACE~ROUTING &quot;&quot;
+setvar $USER_INTERFACE~TEMP_BOT_NAME &quot;&quot;
+loadvar $BOT~BOTISDEAF
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

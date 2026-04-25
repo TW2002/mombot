@@ -1,0 +1,24 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: game.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: game.ts
+
+! game.ts
+
+Game-wide metadata parsing, especially game stats and universe-level information.
+
+''Source:'' `/include/game.ts`
+
+!! Significant Exported Routines
+* [[GAME~GAMESTATS]] - Pulls game stats and updates shared game-wide values from the live game prompt.
+
+!! Direct Include Users
+* `/commands/data/getnear.ts`
+* `/commands/general/refresh.ts`
+* `/mombot.ts`
+* `/preload/_dock_shopper.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

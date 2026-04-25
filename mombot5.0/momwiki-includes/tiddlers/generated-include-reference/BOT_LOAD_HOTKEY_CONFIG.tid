@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: BOT~LOAD_HOTKEY_CONFIG
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-bot
+caption: BOT~LOAD_HOTKEY_CONFIG
+
+! BOT~LOAD_HOTKEY_CONFIG
+
+Loads shared state or cached data for later command use.
+
+''Include:'' [[bot.ts]]
+''Defined at:'' `/include/bot.ts:1395`
+
+!! Source Excerpt
+<pre>
+gosub :BOT~INIT_HOTKEY_DEFAULTS
+fileexists $BOT~CONFIG_EXISTS $BOT~MOMBOT_CONFIG_FILE
+if ($BOT~CONFIG_EXISTS)
+  readtoarray $BOT~MOMBOT_CONFIG_FILE $BOT~HOTKEY_CONFIG_LINES
+  if ($BOT~HOTKEY_CONFIG_LINES = 33)
+    gosub :BOT~APPLY_HOTKEY_CONFIG
+    if ($BOT~HOTKEY_CONFIG_VALID = TRUE)
+      delete &quot;scripts/&quot;&amp;$BOT~MOMBOT_DIRECTORY&amp;&quot;/hotkeys.cfg&quot;
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

@@ -455,12 +455,15 @@
 						goto :callSaveMe
 					end
 					if (($player~total_holds <> $player~ore_holds) AND (($player~ore_holds < 100) OR ($player~unlimited_game = TRUE)) AND ((PORT.EXISTS[$PLAYER~CURRENT_SECTOR] = TRUE) AND (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = FALSE) AND (PORT.CLASS[$PLAYER~CURRENT_SECTOR] > 0) AND (PORT.CLASS[$PLAYER~CURRENT_SECTOR] < 9)))
-						gosub :player~isEpHaggle
-						if ($player~isEpHaggle)
+						if (HAGGLE)
+							send "pt*"
+							waitFor "<Port>"
+							waitFor "How many holds of Fuel Ore do you want to buy ["
+							waitFor "Your offer ["
+							waitFor "Command [TL="
+						else
 							send "pt*"
 							gosub :PLAYER~startHaggle
-						else
-							send "pt****   "
 						end
 						add $total_turns 1
 						gosub :PLAYER~quikstats
@@ -552,7 +555,6 @@
 	end
 
 	halt
-
 
 
 

@@ -1,0 +1,23 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: grid.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: grid.ts
+
+! grid.ts
+
+Shared surround and grid-control helpers used by several grid and cashing paths.
+
+''Source:'' `/include/grid.ts`
+
+!! Significant Exported Routines
+* [[GRID~SURROUND]] - Runs the shared surround routine used by surround-capable combat and grid scripts.
+
+!! Direct Include Users
+* `/commands/grid/surround.ts`
+* `/modes/cashing/alienhunt.ts`
+* `/modes/cashing/salesman.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

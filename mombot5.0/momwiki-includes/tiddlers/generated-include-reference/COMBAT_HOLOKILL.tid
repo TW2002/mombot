@@ -1,0 +1,19 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: COMBAT~HOLOKILL
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-combat
+caption: COMBAT~HOLOKILL
+
+! COMBAT~HOLOKILL
+
+Coordinates holo kill logic after a scan or targeting pass.
+
+''Include:'' [[combat.ts]]
+''Defined at:'' `/include/combat.ts:767`
+
+!! Source Excerpt
+No source excerpt was captured for this label.
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

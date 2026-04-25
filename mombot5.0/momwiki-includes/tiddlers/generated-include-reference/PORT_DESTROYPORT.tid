@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PORT~DESTROYPORT
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-port
+caption: PORT~DESTROYPORT
+
+! PORT~DESTROYPORT
+
+Destroys a port through the shared port helper path.
+
+''Include:'' [[port.ts]]
+''Defined at:'' `/include/port.ts:67`
+
+!! Source Excerpt
+<pre>
+gosub :PLAYER~QUIKSTATS
+setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+setvar $PORT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+setvar $BOT~VALIDPROMPTS &quot;Citadel Command&quot;
+gosub :BOT~CHECKSTARTINGPROMPT
+if ($PORT~STARTINGLOCATION = &quot;Command&quot;)
+  send &quot;** &quot;
+  waiton &quot;Warps to Sector(s)&quot;
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

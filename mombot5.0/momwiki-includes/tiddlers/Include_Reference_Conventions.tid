@@ -1,0 +1,14 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: Include Reference Conventions
+type: text/vnd.tiddlywiki
+tags: mombot include-reference guide
+
+! Include Reference Conventions
+
+* ''Include file:'' a file under `source/include`.
+* ''Significant exported routine:'' a namespaced label like `PLAYER~QUIKSTATS` or `PLANET~GETPLANETINFO` that is called from outside its own include file.
+* ''Direct include users:'' files that explicitly `include "source\include\..."` that include file.
+* ''External callers:'' files that `gosub` or `goto` the routine label from outside its owning include file.
+
+Retired scripts are intentionally excluded from the caller counts so the reference stays focused on the current tree.

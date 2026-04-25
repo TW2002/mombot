@@ -1,0 +1,28 @@
+created: 20260424133603000
+modified: 20260424133603000
+title: PLANETNAMES~MAKE_PLANET_ARRAY
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-planetnames
+caption: PLANETNAMES~MAKE_PLANET_ARRAY
+
+! PLANETNAMES~MAKE_PLANET_ARRAY
+
+Builds the planet-name array used by makeplanet and related planet-list logic.
+
+''Include:'' [[planetnames.ts]]
+''Defined at:'' `/include/planetnames.ts:2`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setarray $planetnames~PLANET_NAMES 1000
+setvar $planetnames~PLANET_NAMES[1] &quot;LoneStar&#x27;s Circle&quot;
+setvar $planetnames~PLANET_NAMES[2] &quot;Manton Outpost&quot;
+setvar $planetnames~PLANET_NAMES[3] &quot;Triax Annex&quot;
+setvar $planetnames~PLANET_NAMES[4] &quot;New Ovid&quot;
+setvar $planetnames~PLANET_NAMES[5] &quot;Napier Minor&quot;
+setvar $planetnames~PLANET_NAMES[6] &quot;New Barite&quot;
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.
