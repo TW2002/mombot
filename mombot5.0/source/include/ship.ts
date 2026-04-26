@@ -204,10 +204,10 @@ striptext $SHIP~SHIP_MAX_HOLDS " "
 	striptext $SHIP~SHIP_XPORT_RANGE " "
 	savevar $SHIP~SHIP_XPORT_RANGE
 	send "q"
-	settexttrigger WAITON45 :SHIP~WAITON45 "Command [TL="
-	settexttrigger WAITON45CITADEL :SHIP~WAITON45 "Citadel command (?=help)"
+	settexttrigger WAITON45 :SHIP~GETSHIPSTATS_RETURNPROMPT "Command [TL="
+	settexttrigger WAITON45CITADEL :SHIP~GETSHIPSTATS_RETURNPROMPT "Citadel command (?=help)"
 	pause
-	:SHIP~WAITON45
+	:SHIP~GETSHIPSTATS_RETURNPROMPT
 	killalltriggers
 	return
 :SHIP~LOADSHIPINFO

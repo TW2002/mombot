@@ -140,7 +140,6 @@ goto :Starting
 	send "Q"
 	gosub :planet~getPlanetInfo
 	send "C "
-	setVar $targeting~PLANET $planet~planet
 	gosub :combat~init
 	gosub :ship~getshipstats
 	setvar $game~hasAliens false
@@ -327,8 +326,6 @@ return
 include "source\include\bot"
 include "source\include\combat"
 include "source\include\player"
-include "source\include\targeting"
 include "source\include\planet"
 include "source\include\ship"
 include "source\include\sector"
-

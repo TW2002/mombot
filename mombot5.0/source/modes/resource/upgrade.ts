@@ -6,8 +6,8 @@ loadvar $PARM5
 loadvar $PARM6
 loadvar $PARM7
 loadvar $PARM8
-:SCRIPTCHECK
 
+:SCRIPTCHECK
 listactivescripts $SCRIPTS
 listactivescripts $SCRIPTSX
 :DUPLICATES
@@ -88,8 +88,16 @@ setvar $holds $PLAYER~TOTAL_HOLDS
 
 setvar $planetloop~loopsub ":CHECKPLANET"
 setvar $planetloop~ignorelist $ignorelist
+setvar $planetupgrade~failed 0
 gosub :PLANETLOOP
 gosub :VOIDADJUN
+if ($planetupgrade~failed = 0)
+  setvar $switchboard~message "Successfully upgraded all planets in sector " $sector ".*"
+  gosub :switchboard~switchboard
+else
+  setvar $switchboard~message "Unable to upgrade all planets in sector " $sector ".*"
+  gosub :switchboard~switchboard
+end
 halt
 
 :CHECKPLANET
@@ -1017,7 +1025,6 @@ return
 
 :VOIDADJ
 
-
 killalltriggers
 setvar $I 1
 setvar $WARPS SECTOR.WARPCOUNT[CURRENTSECTOR]
@@ -1033,6 +1040,7 @@ if ($NUM = 1)
   waitfor ": ENDINTERROG"
 end
 return
+
 :VOIDADJUN
 
 setvar $I 1
@@ -1057,3 +1065,5 @@ include "source\include\findproduct"
 include "source\include\haggle"
 include "source\include\player"
 include "source\include\gameprefs"
+include "source\include\switchboard"
+include "source\include\bot"

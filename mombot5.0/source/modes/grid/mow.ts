@@ -277,13 +277,23 @@
 				send "s* "
 			else
 				setVar $bot~startingLocation "Citadel"
-				gosub :targeting~scanitcitkill
+				gosub :scanitcitkill
 			end
 		elseif ($are_we_docking = FALSE)
 			send "*"
 		end
 return
 # ======================     END MOW SUBROUTINES     ==========================
+
+:scanitcitkill
+	gosub :PLAYER~quikstats
+	gosub :SECTOR~getSectorData
+	if ($SECTOR~CORPIECOUNT < $SECTOR~REALTRADERCOUNT)
+		gosub :COMBAT~FASTCITADELATTACK
+		goto :scanitcitkill
+	end
+	echo ANSI_12 "*NO Targets*"
+return
 
 
 :wait_for_command
@@ -521,7 +531,6 @@ return
 #INCLUDES:
 include "source\include\bot"
 include "source\include\combat"
-include "source\include\targeting"
 include "source\include\player"
 include "source\include\planet"
 include "source\include\ship"

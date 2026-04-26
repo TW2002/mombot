@@ -39,8 +39,7 @@ send "q"
 getwordpos $USER_COMMAND_LINE $POS "kill"
 if ($POS > 0)
   setvar $KILL TRUE
-  setvar $TARGETING~PLANET $PLANET~PLANET
-  gosub :TARGETING~INITIALIZE_TARGETING
+  gosub :COMBAT~INIT
 else
   setvar $KILL FALSE
 end
@@ -131,7 +130,7 @@ goto :LDROP_SCAN
 
 killalltriggers
 if ($KILL)
-  gosub :TARGETING~SCANIT_CIT_KILL
+  gosub :SCANITCITKILL
 else
   send "s* "
 end
@@ -157,8 +156,22 @@ goto :LDROP_RE_SCAN
 
 return
 
+:SCANITCITKILL
+gosub :PLAYER~QUIKSTATS
+setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+gosub :SECTOR~GETSECTORDATA
+if ($SECTOR~CORPIECOUNT < $SECTOR~REALTRADERCOUNT)
+  gosub :COMBAT~FASTCITADELATTACK
+  goto :SCANITCITKILL
+end
+echo ANSI_12 "*NO Targets*"
+return
+
 # includes:
+include "source\include\bot"
+include "source\include\combat"
 include "source\include\player"
+include "source\include\ship"
 include "source\include\validation"
 include "source\include\planet"
-include "source\include\targeting"
+include "source\include\sector"

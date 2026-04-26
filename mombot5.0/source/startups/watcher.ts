@@ -42,7 +42,6 @@ setTextLineTrigger  addfigs      :addFigs     ">[Figged:"
 setTextLineTrigger  planetmoved      :updatePlanetMovement     " moved to sector "
 setTextLineTrigger      fightersadd     :addFig         "Should they be (D)efensive, (O)ffensive or Charge a (T)oll ?"
 setTextLineTrigger  getPlanetNumber :setPlanetNumber    "Planet #"
-setTextTrigger  sectordata      :checkSectorData    "(?=Help)? :"
 setTextLineTrigger  getshipstats    :setShipOffensiveOdds   "Offensive Odds: "
 setTextLineTrigger  getshipmaxfighters  :setShipMaxFigAttack    " TransWarp Drive:   "
 setTextLineTrigger  captureLevelPlanet  :captureLevelPlanet " Level "
@@ -561,7 +560,6 @@ return
 			echo ANSI_5 "[" ANSI_9 "MSL" ANSI_5 "] : "
 		end
 	end
-	setTextTrigger  sectordata      :checkSectorData    "(?=Help)? :"
 	pause
 # ============================ END CHECK SECTOR DATA ========================================
 # ============================== START GET SHIP STATS TRIGGERS==============================
