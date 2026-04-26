@@ -1,5 +1,6 @@
-DSCAN - Displays Density scans on subspace
-
-        dscan {fed}
-
-        {fed}   Redirect To Fed comm-link
+                     
+   
+                 <<<< dscan >>>>
+   
+     dscan 
+       Sends density scan to subspace

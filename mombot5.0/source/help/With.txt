@@ -1,3 +1,7 @@
-WITH - Withdrawls cash from citadel treasury.
-
-       with {cash to withdrawl}
+                     
+   
+                  <<<< with >>>>
+   
+     with {cash to withdrawl} 
+       Withdrawls cash from citadel treasury.
+             default is max credits possible

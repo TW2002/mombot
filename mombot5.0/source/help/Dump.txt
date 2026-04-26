@@ -1,8 +1,16 @@
-DUMP - Jettisons colos off of planet
-  
-       dump [type]
- 
-       [type] = use [f]uel,
-                    [o]rg, 
-                    [e]quip, 
-                    [a]ll
+                     
+   
+                  <<<< dump >>>>
+   
+     Dump resources from planet quickly and jettisons them  
+      
+     Options:
+     [planet# | all]   - Planet number or all to strip all planets in sector.
+                 {f}   - Strip fuel ore
+                 {o}   - Strip organics
+                 {e}   - Strip equipment
+                {fc}   - Strip fuel ore colonists
+                {oc}   - Strip organic colonists
+                {ec}   - Strip equipment colonists
+               {fig}   - Strip fighters
+               {turbo} - Does in a macro burst

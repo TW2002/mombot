@@ -10,7 +10,7 @@
              {set} -  Will set an avoid 
                                              
            {clear} -  Will clear an avoid if a sector number
-                      is provided, otherwise 'clear' by itself
+                      is provided, otherwise clear by itself
                       will clear all avoids.
             
      Usage: 

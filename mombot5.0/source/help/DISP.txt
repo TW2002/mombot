@@ -1,5 +1,7 @@
-DISP Displays current sector over ss
-
-     disp {fed}
-
-     {fed}  - Optionally redirect output over FedComm
+                     
+   
+                  <<<< disp >>>>
+   
+     dep {cash to deposit} 
+       Deposits cash into citadel treasury.
+             default is max credits possible

@@ -1,0 +1,11 @@
+                     
+   
+                 <<<< repeat >>>>
+   
+     Repeats bot commands 
+           
+     repeat [delay in seconds] [bot command]
+              
+     Options: 
+     {delay in seconds} - seconds to delay before calling bot command again
+          {bot command} - bot command to run, parameters and all

@@ -1,5 +1,6 @@
-TRICON - Will Play Tricon until Win or Rounds Hit
-
-      tricon {rounds} 
-
-      [rounds] - Number of rounds to play.
+                     
+   
+                 <<<< tricon >>>>
+   
+     Plays tricon for you
+       - Must be started at stardock

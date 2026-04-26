@@ -1,3 +1,8 @@
-LAND - Lands on planet in the sector.
-
-       land [planet number]
+                     
+   
+                  <<<< land >>>>
+   
+        Lands on a planet.          
+                    
+         land {planet#}  
+             

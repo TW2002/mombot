@@ -5,6 +5,8 @@
 
 /momwiki/
 
+/Release/mombot
+
 # Compiled Mombot Files
 /[Cc]ommands/
 /[Dd]aemons/

@@ -1,3 +1,19 @@
-PWARP - Planetary Warp to a Target Sector
-
-        pwarp [sector] 
+                     
+   
+                 <<<< pwarp >>>>
+   
+     pwarp {sector:#} {"trader_name"} 
+           
+             planet warps to sector 
+           
+         Options: 
+                {sector:#} - sector to pwarp to 
+           {"trader_name"} - trader to pwarp to
+              
+         Examples:
+                    >p 233 - normal pwarp
+              >p planet 12 - pwarp to last known 
+                             location of planet 12 
+                   >p mind - pwarp to a corp member with mind
+                             in their name
+          >p "mind dagger" - pwarp to corp member

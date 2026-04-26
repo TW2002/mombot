@@ -1,7 +1,11 @@
-XPORT - Transports bot into another ship. Will attempt 
-        to reland on planet if started there and possible.
-
-        xport [ship number] {Password}
-
-	{Password}   - Include if target ship requires a
-                       Password
+                     
+   
+                 <<<< xport >>>>
+   
+     xport [ship number | list] [password]
+           
+       xports into ship or display xport list 
+           
+         {ship number}  ship number to tow
+                {list}  list all xport ships in range
+            {password}  if ship has password

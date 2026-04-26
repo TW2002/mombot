@@ -1,9 +1,12 @@
-GETVAR - Displays Bots Local Vairables Over Sub-Space
-
-         setvar {a|r|s|h|b|x}
-
-         a  - Alpha Centauri
-         r  - Rylos
-         s  - StarDock
-         b  - BackDoor to Stardock
-         x  - Safe Xport Ship
+                     
+   
+                 <<<< getvar >>>>
+   
+     getvar
+       Displays bot variables
+         s - stardock
+         r - rylos
+         a - alpha centauri
+         b - backdoor
+         x - safe ship
+        tl - turn limit

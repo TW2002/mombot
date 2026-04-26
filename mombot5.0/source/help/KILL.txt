@@ -1,3 +1,6 @@
-KILL -  Current Sector Kill Command
-        Scans Current-Sector for any enemy Traders and
-        sends multiple attack waves.
+                     
+   
+                  <<<< kill >>>>
+   
+     kill   
+         Kills any enemy players.   

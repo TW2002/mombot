@@ -1,9 +1,13 @@
-SETVAR - Set Bots Local Vairables
-
-         setvar {a|r|s|h|b|x}
-
-         a  - Alpha Centauri
-         r  - Rylos
-         s  - StarDock
-         b  - BackDoor to Stardock
-         x  - Safe Xport Ship
+                     
+   
+                 <<<< setvar >>>>
+   
+     setvar
+       Sets bot variables
+         s - stardock
+         r - rylos
+         a - alpha centauri
+         b - backdoor
+         x - safe ship
+        tl - turn limit
+         h - home sector

@@ -1,3 +1,6 @@
-HTORP - Holo Photon
-        Performs a Holo-Scan and launches a Photon into any
-        adjacent sector that contains another Trader.
+                     
+   
+                 <<<< htorp >>>>
+   
+     htorp 
+       - Holoscans and then photons if enemy in adjacent sector.

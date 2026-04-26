@@ -1400,9 +1400,11 @@ return
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :PLAYER~INIT
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setarray $PLAYER~TRADERS 50
-setarray $PLAYER~FAKETRADERS 50
+setarray $PLAYER~TRADERS 200
+setarray $PLAYER~FAKETRADERS 200
 setarray $PLAYER~EMPTYSHIPS 100
+
+:PLAYER~INITRANKS
 setvar $PLAYER~RANKSLENGTH 46
 setarray $PLAYER~RANKS $PLAYER~RANKSLENGTH
 setvar $PLAYER~RANKS[1] "36mCivilian"

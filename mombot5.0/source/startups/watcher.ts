@@ -61,8 +61,18 @@ setTextLineTrigger foundbigbubble :foundbigbubble "[Found Big Bubble]"
 setTextLineTrigger foundbigtunnel :foundbigtunnel "[Found Big Tunnel]"
 setTextLineTrigger ferrengihitcorp :ferrengihitcorp "Your Corp's fighters in sector "
 setTextLineTrigger ferrengihitpers :ferrengihitpers "Your fighters in sector "
+setTextLineTrigger underattack1 :underattack "Shipboard Computers"
+setTextLineTrigger underattack2 :underattack "is powering up weapons systems!"
 pause
 
+:underattack
+setvar $BOT~REDALERT TRUE
+savevar $BOT~REDALERT
+killtrigger underattack1
+killtrigger underattack2
+setTextLineTrigger underattack1 :underattack "Shipboard Computers"
+setTextLineTrigger underattack2 :underattack "is powering up weapons systems!"
+pause
 
 :foundbigbubble
 	getText CURRENTLINE $bsec " Door: " " Internal Sec:"
