@@ -103,25 +103,25 @@ end
 setsectorparameter RYLOS "MSLSEC" TRUE
 :RUN_TERRA1
 setvar $FROM 1
-getcoursedijkstra $WARP $FROM STARDOCK
+getcourse $WARP $FROM STARDOCK
 setvar $C 1
-while ($C < $WARP)
+while ($C <= $WARP)
   setsectorparameter $WARP[$C] "MSLSEC" TRUE
   add $C 1
 end
 :RUN_TERRA2
 
-getcoursedijkstra $WARP $FROM ALPHACENTAURI
+getcourse $WARP $FROM ALPHACENTAURI
 setvar $C 1
-while ($C < $WARP)
+while ($C <= $WARP)
   setsectorparameter $WARP[$C] "MSLSEC" TRUE
   add $C 1
 end
 :RUN_TERRA3
 
-getcoursedijkstra $WARP $FROM RYLOS
+getcourse $WARP $FROM RYLOS
 setvar $C 1
-while ($C < $WARP)
+while ($C <= $WARP)
   setsectorparameter $WARP[$C] "MSLSEC" TRUE
   add $C 1
 end
@@ -129,75 +129,75 @@ end
 
 setsectorparameter STARDOCK "MSLSEC" TRUE
 setvar $FROM STARDOCK
-getcoursedijkstra $WARP $FROM 1
+getcourse $WARP $FROM 1
 setvar $C 1
-while ($C < $WARP)
+while ($C <= $WARP)
   setsectorparameter $WARP[$C] "MSLSEC" TRUE
   add $C 1
 end
 :RUN_DOCK2
 
-getcoursedijkstra $WARP $FROM ALPHACENTAURI
+getcourse $WARP $FROM ALPHACENTAURI
 setvar $C 1
-while ($C < $WARP)
+while ($C <= $WARP)
   setsectorparameter $WARP[$C] "MSLSEC" TRUE
   add $C 1
 end
 :RUN_DOCK3
 
-getcoursedijkstra $WARP $FROM RYLOS
+getcourse $WARP $FROM RYLOS
 setvar $C 1
-while ($C < $WARP)
+while ($C <= $WARP)
   setsectorparameter $WARP[$C] "MSLSEC" TRUE
   add $C 1
 end
 :RUN_AC1
 
 setvar $FROM ALPHACENTAURI
-getcoursedijkstra $WARP $FROM 1
+getcourse $WARP $FROM 1
 setvar $C 1
-while ($C < $WARP)
+while ($C <= $WARP)
   setsectorparameter $WARP[$C] "MSLSEC" TRUE
   add $C 1
 end
 :RUN_AC2
 
-getcoursedijkstra $WARP $FROM STARDOCK
+getcourse $WARP $FROM STARDOCK
 setvar $C 1
-while ($C < $WARP)
+while ($C <= $WARP)
   setsectorparameter $WARP[$C] "MSLSEC" TRUE
   add $C 1
 end
 :RUN_AC3
 
-getcoursedijkstra $WARP $FROM RYLOS
+getcourse $WARP $FROM RYLOS
 setvar $C 1
-while ($C < $WARP)
+while ($C <= $WARP)
   setsectorparameter $WARP[$C] "MSLSEC" TRUE
   add $C 1
 end
 :RUN_RYLOS1
 
 setvar $FROM RYLOS
-getcoursedijkstra $WARP $FROM 1
+getcourse $WARP $FROM 1
 setvar $C 1
-while ($C < $WARP)
+while ($C <= $WARP)
   setsectorparameter $WARP[$C] "MSLSEC" TRUE
   add $C 1
 end
 :RUN_RYLOS2
 
-getcoursedijkstra $WARP $FROM STARDOCK
+getcourse $WARP $FROM STARDOCK
 setvar $C 1
-while ($C < $WARP)
+while ($C <= $WARP)
   setsectorparameter $WARP[$C] "MSLSEC" TRUE
   add $C 1
 end
 :RUN_RYLOS3
 
-getcoursedijkstra $WARP $FROM ALPHACENTAURI
+getcourse $WARP $FROM ALPHACENTAURI
 setvar $C 1
-while ($C < $WARP)
+while ($C <= $WARP)
   setsectorparameter $WARP[$C] "MSLSEC" TRUE
   add $C 1
 end

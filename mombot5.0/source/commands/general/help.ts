@@ -94,6 +94,14 @@
 	else
 		getFileList $commandList "scripts\"&$bot~mombot_directory&"\commands\"&$BOT~parm1&"\*.cts"
 		getFileList $modeList "scripts\"&$bot~mombot_directory&"\modes\"&$BOT~parm1&"\*.cts"
+		getFileList $localCommandList "scripts\"&$bot~mombot_directory&"\local\commands\"&$BOT~parm1&"\*.cts"
+		if ($localCommandList <= 0)
+			getFileList $localCommandList "scripts/"&$bot~mombot_directory&"/local/commands/"&$BOT~parm1&"/*.cts"
+		end
+		getFileList $localModeList "scripts\"&$bot~mombot_directory&"\local\modes\"&$BOT~parm1&"\*.cts"
+		if ($localModeList <= 0)
+			getFileList $localModeList "scripts/"&$bot~mombot_directory&"/local/modes/"&$BOT~parm1&"/*.cts"
+		end
 		setVar $maxStringLength 34
 		setVar $paddingDashes "                                 "
 		upperCase $BOT~parm1
@@ -126,11 +134,33 @@
 				end
 				add $i 1
 			end
+			setVar $i 1
+			while ($i <= $localCommandList)
+				setVar $tempCommand $localCommandList[$i]&"###"
+				stripText $tempCommand "scripts\"&$bot~mombot_directory&"\local\commands\"&$BOT~parm1&"\"
+				stripText $tempCommand "scripts/"&$bot~mombot_directory&"/local/commands/"&$BOT~parm1&"/"
+				stripText $tempCommand ".cts###"
+				upperCase $tempCommand
+				cutText $tempCommand&" " $hidden 1 1
+				if ($hidden = "_")
+					getLength $tempCommand $tempLength
+					if (($SWITCHBOARD~self_command = TRUE) AND ($tempLength > 1))
+						cutText $tempCommand $tempCommand 2 9999
+						setVar $currentList $currentList&" [<><>HIDDEN<><>]"&$tempCommand&" "
+					end
+				else
+					getWordPos $currentList $pos " "&$tempCommand&" "
+					if ($pos <= 0)
+						setVar $currentList $currentList&" "&$tempCommand&" "
+					end
+				end
+				add $i 1
+			end
 			setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  *             "&ansi_2&"-="&ansi_10&"Commands"&ansi_2&"=-"&ansi_15&"            *"
 			setVar $commandCount 0
 			setVar $bufferCount 0
 			gosub :bufferList
-		if ($modelist > 0)
+		if (($modelist > 0) or ($localModeList > 0))
 			setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  *              "&ansi_2&"-="&ansi_10&"Modes"&ansi_2&"=-"&ansi_15&"              *"
 			setVar $currentList " "
 			setVar $i 1
@@ -147,7 +177,32 @@
 						setVar $currentList $currentList&" [<><>HIDDEN<><>]"&$tempCommand&" "
 					end
 				else
-					setVar $currentList $currentList&" "&$tempCommand&" "
+					getWordPos $currentList $pos " "&$tempCommand&" "
+					if ($pos <= 0)
+						setVar $currentList $currentList&" "&$tempCommand&" "
+					end
+				end
+				add $i 1
+			end
+			setVar $i 1
+			while ($i <= $localModeList)
+				setVar $tempCommand $localModeList[$i]&"###"
+				stripText $tempCommand "scripts\"&$bot~mombot_directory&"\local\modes\"&$BOT~parm1&"\"
+				stripText $tempCommand "scripts/"&$bot~mombot_directory&"/local/modes/"&$BOT~parm1&"/"
+				stripText $tempCommand ".cts###"
+				upperCase $tempCommand
+				cutText $tempCommand&" " $hidden 1 1
+				if ($hidden = "_")
+					getLength $tempCommand $tempLength
+					if (($SWITCHBOARD~self_command = TRUE) AND ($tempLength > 1))
+						cutText $tempCommand $tempCommand 2 9999
+						setVar $currentList $currentList&" [<><>HIDDEN<><>]"&$tempCommand&" "
+					end
+				else
+					getWordPos $currentList $pos " "&$tempCommand&" "
+					if ($pos <= 0)
+						setVar $currentList $currentList&" "&$tempCommand&" "
+					end
 				end
 				add $i 1
 			end
@@ -240,7 +295,11 @@ return
 	if ($daemonList <= 0)
 		getFileList $daemonList "scripts/"&$bot~mombot_directory&"/daemons/*.cts"
 	end
-	if ($daemonList > 0)
+	getFileList $localDaemonList "scripts\"&$bot~mombot_directory&"\local\daemons\*.cts"
+	if ($localDaemonList <= 0)
+		getFileList $localDaemonList "scripts/"&$bot~mombot_directory&"/local/daemons/*.cts"
+	end
+	if (($daemonList > 0) or ($localDaemonList > 0))
 		setVar $paddingDashes "                                 "
 		setVar $currentList ""
 		setVar $maxStringLength 68
@@ -251,6 +310,18 @@ return
 			stripText $tempCommand "scripts/"&$bot~mombot_directory&"/daemons/"
 			stripText $tempCommand ".cts###"
 			setVar $currentList $currentList&" "&$tempCommand&" "
+			add $i 1
+		end
+		setVar $i 1
+		while ($i <= $localDaemonList)
+			setVar $tempCommand $localDaemonList[$i]&"###"
+			stripText $tempCommand "scripts\"&$bot~mombot_directory&"\local\daemons\"
+			stripText $tempCommand "scripts/"&$bot~mombot_directory&"/local/daemons/"
+			stripText $tempCommand ".cts###"
+			getWordPos $currentList $pos " "&$tempCommand&" "
+			if ($pos <= 0)
+				setVar $currentList $currentList&" "&$tempCommand&" "
+			end
 			add $i 1
 		end
 		setVar $SWITCHBOARD~message ""

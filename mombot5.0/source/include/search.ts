@@ -188,10 +188,12 @@ while ($SEARCH~I <= $SEARCH~NEARARRAY)
   gosub :SEARCH~LOAD_DEADEND_STATE
   getword SECTOR.FIGS.OWNER[$SEARCH~FOCUS] $SEARCH~FIGOWNER 3
   if ((($SEARCH~SOURCE <> $SEARCH~FOCUS) and (($SEARCH~FOCUS > 10) and ($SEARCH~FOCUS <> $MAP~STARDOCK))) and (((($SEARCH~NEAR = "de") and ($SEARCH~CHECK_DEADEND = TRUE))) or ((($SEARCH~ISFIGGED2 = FALSE) and (($SEARCH~NEAR = "uf") or ($SEARCH~NEAR = "nf") or (($SEARCH~NEAR = "owner") and ($SEARCH~FIGOWNER = "Corp#"&$SEARCH~TARGET_CORP&",")) or (($SEARCH~NEAR = "ufde") and ($SEARCH~CHECK_DEADEND = TRUE)))) or (($SEARCH~ISFIGGED2 = TRUE) and (($SEARCH~NEAR = "f") or (($SEARCH~NEAR = "fde") and ($SEARCH~CHECK_DEADEND = TRUE)))))))
-    getcoursedijkstra $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
+    getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
     setvar $SEARCH~HOPS $SEARCH~COURSE
     if ($SEARCH~HOPS > 0)
-      subtract $SEARCH~HOPS 1
+      setvar $SEARCH~COURSELENGTH ($SEARCH~COURSE + 1)
+    else
+      setvar $SEARCH~COURSELENGTH 0
     end
     setvar $SEARCH~I 1
     setvar $SEARCH~FCOUNT 0
@@ -209,7 +211,7 @@ while ($SEARCH~I <= $SEARCH~NEARARRAY)
     elseif ($SEARCH~NEAR = "fde")
       setvar $SWITCHBOARD~MESSAGE "Nearest Fig'd DE"
     end
-    if ($SEARCH~COURSE = 2)
+    if ($SEARCH~COURSE = 1)
       while (SECTOR.WARPS[$SEARCH~SOURCE][$SEARCH~I] > 0)
         setvar $SEARCH~TEMPCHECK SECTOR.WARPS[$SEARCH~SOURCE][$SEARCH~I]
         setvar $SEARCH~CHECK_SECTOR $SEARCH~TEMPCHECK
@@ -242,7 +244,7 @@ while ($SEARCH~I <= $SEARCH~NEARARRAY)
         setvar $SEARCH~RETURN_DATA $SWITCHBOARD~MESSAGE&" adjacent to "&$SEARCH~SOURCE&" is*    [ "&$SEARCH~DIRECTIONS&"]"
       end
     else
-      while ($SEARCH~I <= $SEARCH~COURSE)
+      while ($SEARCH~I <= $SEARCH~COURSELENGTH)
         setvar $SEARCH~CHECK_SECTOR $SEARCH~COURSE[$SEARCH~I]
         gosub :SEARCH~LOAD_FIG_STATE
         setvar $SEARCH~ISFIGGED3 $SEARCH~CHECK_FIGGED
@@ -302,25 +304,16 @@ while ($SEARCH~I <= $SEARCH~NEARARRAY)
       end
       if (($SEARCH~FOUNDFUELPORT = TRUE) and (($SEARCH~FOUNDORGPORT = TRUE) and ($SEARCH~FOUNDEQUIPPORT = TRUE)))
         if ($SEARCH~LOOP_DATA = 1)
-          getcoursedijkstra $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
+          getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
           setvar $SEARCH~HOPS $SEARCH~COURSE
-          if ($SEARCH~HOPS > 0)
-            subtract $SEARCH~HOPS 1
-          end
           setvar $SEARCH~RETURN_DATA "Nearest Figged upgraded "&$SEARCH~PTYPE&" port(s) to "&$SEARCH~SOURCE&": "&$SEARCH~FOCUS&" ("&$SEARCH~HOPS&" hops)"
         elseif ($SEARCH~LOOP_DATA = 2)
-          getcoursedijkstra $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
+          getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
           setvar $SEARCH~HOPS $SEARCH~COURSE
-          if ($SEARCH~HOPS > 0)
-            subtract $SEARCH~HOPS 1
-          end
           setvar $SEARCH~RETURN_DATA $SEARCH~RETURN_DATA&", "&$SEARCH~FOCUS&" ("&$SEARCH~HOPS&" hops)"
         else
-          getcoursedijkstra $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
+          getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
           setvar $SEARCH~HOPS $SEARCH~COURSE
-          if ($SEARCH~HOPS > 0)
-            subtract $SEARCH~HOPS 1
-          end
           setvar $SEARCH~RETURN_DATA $SEARCH~RETURN_DATA&", and "&$SEARCH~FOCUS&" ("&$SEARCH~HOPS&" hops)"
           setvar $SEARCH~LOOP_DATA 1
           return
@@ -334,25 +327,16 @@ while ($SEARCH~I <= $SEARCH~NEARARRAY)
         if (((($SEARCH~PORG = "b") and (PORT.BUYORG[$SEARCH~FOCUS] = 1)) or (($SEARCH~PORG = "s") and (PORT.BUYORG[$SEARCH~FOCUS] = 0))) or ($SEARCH~PORG = "x"))
           if (((($SEARCH~PEQUIP = "b") and (PORT.BUYEQUIP[$SEARCH~FOCUS] = 1)) or (($SEARCH~PEQUIP = "s") and (PORT.BUYEQUIP[$SEARCH~FOCUS] = 0))) or ($SEARCH~PEQUIP = "x"))
             if ($SEARCH~LOOP_DATA = 1)
-              getcoursedijkstra $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
+              getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
               setvar $SEARCH~HOPS $SEARCH~COURSE
-              if ($SEARCH~HOPS > 0)
-                subtract $SEARCH~HOPS 1
-              end
               setvar $SEARCH~RETURN_DATA "Nearest Figged "&$SEARCH~PTYPE&" port(s) to "&$SEARCH~SOURCE&": "&$SEARCH~FOCUS&" ("&$SEARCH~HOPS&" hops)"
             elseif ($SEARCH~LOOP_DATA = 2)
-              getcoursedijkstra $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
+              getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
               setvar $SEARCH~HOPS $SEARCH~COURSE
-              if ($SEARCH~HOPS > 0)
-                subtract $SEARCH~HOPS 1
-              end
               setvar $SEARCH~RETURN_DATA $SEARCH~RETURN_DATA&", "&$SEARCH~FOCUS&" ("&$SEARCH~HOPS&" hops)"
             else
-              getcoursedijkstra $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
+              getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
               setvar $SEARCH~HOPS $SEARCH~COURSE
-              if ($SEARCH~HOPS > 0)
-                subtract $SEARCH~HOPS 1
-              end
               setvar $SEARCH~RETURN_DATA $SEARCH~RETURN_DATA&", and "&$SEARCH~FOCUS&" ("&$SEARCH~HOPS&" hops)"
               setvar $SEARCH~LOOP_DATA 1
               return

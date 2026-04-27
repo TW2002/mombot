@@ -370,69 +370,16 @@ return
 
 
 :voidadjacent
-	
-	setVar $voidSector CURRENTSECTOR
-	gosub :voidadjacentPPT
-	
-
-return
-:clearadjacent
-	
-	setVar $voidSector CURRENTSECTOR
-	gosub :clearadjacentPPT
-
-return
-
-:voidadjacentPPT
-	getSector $voidSector $sectorInfo
-	if ($sectorInfo.warp[1] = 0)
-		send "'This sector has no warps, maybe you need to scan it first*"
-		halt
-	else
-		setVar $voidsect 0
-		:voids
-		add $voidsect 1
-		if ($voidsect < 7)
-			if ($sectorInfo.warp[$voidsect] <> 0)
-		
-		send "CV" & $sectorInfo.warp[$voidsect] & "*Q"
-		
-			end
-			goto :voids
-		end
+	setVar $PLAYER~CURRENT_SECTOR CURRENTSECTOR
+	gosub :PLAYER~VOIDADJACENT
 	setVar $SWITCHBOARD~message "Avoids set on adjacent sectors!*"
 	gosub :SWITCHBOARD~switchboard
-	   
-		send "/"
-		waitfor " Sect "    
-	end
 return
-
-:clearadjacentPPT
-	getSector $voidSector $sectorInfo
-	if ($sectorInfo.warp[1] = 0)
-		setvar $switchboard~message "-This sector has no warps, try to scan it first!*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	else
-		setVar $voidsect 0
-		:clearvoids
-		add $voidsect 1
-		if ($voidsect < 7)
-			if ($sectorInfo.warp[$voidsect] <> 0)
-		
-		send "CV0*YN" & $sectorInfo.warp[$voidsect] & "*Q"
-		
-			end
-			goto :clearvoids
-		end
-
-		setVar $SWITCHBOARD~message "Avoids cleared on adjacent sectors!*"
+:clearadjacent
+	setVar $PLAYER~CURRENT_SECTOR CURRENTSECTOR
+	gosub :PLAYER~CLEARADJACENT
+	setVar $SWITCHBOARD~message "Avoids cleared on adjacent sectors!*"
 	gosub :SWITCHBOARD~switchboard
-	   
-		send "/"
-		waitfor " Sect "
-	end
 return
 
 halt

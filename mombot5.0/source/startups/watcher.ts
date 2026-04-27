@@ -67,7 +67,6 @@ pause
 
 :underattack
 setvar $BOT~REDALERT TRUE
-savevar $BOT~REDALERT
 killtrigger underattack1
 killtrigger underattack2
 setTextLineTrigger underattack1 :underattack "Shipboard Computers"

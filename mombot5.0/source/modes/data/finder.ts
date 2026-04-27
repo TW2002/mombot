@@ -52,7 +52,7 @@ while ($I <= $NEARARRAY)
   getsectorparameter $FOCUS "FIGSEC" $ISFIGGED2
 
   if (($ISFIGGED2 = TRUE) and ($SOURCE <> $FOCUS))
-    getcoursedijkstra $COURSE $SOURCE $FOCUS
+    getcourse $COURSE $SOURCE $FOCUS
     setvar $I 1
     setvar $FCOUNT 0
     setvar $DIRECTIONS ""
@@ -72,7 +72,8 @@ while ($I <= $NEARARRAY)
         setvar $RETURN_DATA "Adjacent Fig to "&$SOURCE&" is [ "&$DIRECTIONS&"] "
       end
     else
-      while ($I <= $COURSE)
+      setvar $COURSELENGTH ($COURSE + 1)
+      while ($I <= $COURSELENGTH)
         setvar $DIRECTIONS $DIRECTIONS&$COURSE[$I]&" "
         add $I 1
       end

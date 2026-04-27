@@ -15,6 +15,8 @@ loadvar $STARDOCK
 loadvar $COMMAND
 goto :FIGMOVE
 include "source\include\planet"
+include "source\include\player"
+include "source\include\ship"
 :FIGMOVE
 :MOVEFIG
 
@@ -65,7 +67,8 @@ elseif ($STARTINGLOCATION <> "Planet")
 end
 send "mnl*"
 gosub :PLAYER~QUIKSTATS
-gosub :GETPLANETINFO
+gosub :PLANET~GETPLANETINFO
+setvar $PLANET $PLANET~PLANET
 setvar $SECTOR_FIGS 0
 send "q  q  z  n  **   "
 waiton "Warps to Sector(s) :"
@@ -95,8 +98,8 @@ if (($FIGQUANT <> 0) and (($FIGOWNER <> "belong to your Corp") and ($FIGOWNER <>
   halt
 end
 
-setvar $PLANET_FIGS_ROOM $PLANET_FIGHTERS_MAX
-subtract $PLANET_FIGS_ROOM $PLANET_FIGHTERS
+setvar $PLANET_FIGS_ROOM $PLANET~PLANET_FIGHTERS_MAX
+subtract $PLANET_FIGS_ROOM $PLANET~PLANET_FIGHTERS
 
 gosub :GETSHIPSTATS
 
@@ -108,18 +111,19 @@ while ($I <= $PLANETCOUNT)
   end
   send "l " $PLANETS[$I] "*"
   waiton "Planet command (?=help) [D]"
-  gosub :GETPLANETINFO
+  gosub :PLANET~GETPLANETINFO
+  setvar $PLANET $PLANET~PLANET
   :START
 
   killalltriggers
   if ($MOVETOSECTOR = "s")
     if ($MOVE = 0)
-      setvar $MOVE $PLANET_FIGHTERS
+      setvar $MOVE $PLANET~PLANET_FIGHTERS
       setvar $TOTAL_MOVED 0
     end
     setvar $END_FIGS $SECTOR_FIGS
     add $END_FIGS $MOVE
-    if ($MOVE > $PLANET_FIGHTERS)
+    if ($MOVE > $PLANET~PLANET_FIGHTERS)
       send "'{" $BOT_NAME "} - Not Enough Figs on Planet*"
       if ($STARTINGLOCATION = "Citadel")
         send "c "
@@ -275,59 +279,10 @@ pause
 :DONE
 return
 include "source\include\player"
-:GETPLANETINFO
-gosub :PLANET~GETPLANETINFO
-setvar $PLANET $PLANET~PLANET
-setvar $PLAYER~CURRENT_SECTOR $PLANET~CURRENT_SECTOR
-setvar $PLANET_FUEL $PLANET~PLANET_FUEL
-setvar $PLANET_FUEL_MAX $PLANET~PLANET_FUEL_MAX
-setvar $PLANET_ORGANICS $PLANET~PLANET_ORGANICS
-setvar $PLANET_ORGANICS_MAX $PLANET~PLANET_ORGANICS_MAX
-setvar $PLANET_EQUIPMENT $PLANET~PLANET_EQUIPMENT
-setvar $PLANET_EQUIPMENT_MAX $PLANET~PLANET_EQUIPMENT_MAX
-setvar $PLANET_FIGHTERS $PLANET~PLANET_FIGHTERS
-setvar $PLANET_FIGHTERS_MAX $PLANET~PLANET_FIGHTERS_MAX
-setvar $CITADEL $PLANET~CITADEL
-setvar $CITADEL_CREDITS $PLANET~CITADEL_CREDITS
-setvar $ATMOSPHERE_CANNON $PLANET~ATMOSPHERE_CANNON
-setvar $SECTOR_CANNON $PLANET~SECTOR_CANNON
-return
-killtrigger CITADELSTART
-killtrigger CANNON
-
-return
 :GETSHIPSTATS
-
-
-send "c;q"
-settextlinetrigger GETSHIPOFFENSE :SHIPOFFENSEODDS "Offensive Odds: "
-settextlinetrigger GETSHIPFIGHTERS :SHIPMAXFIGSPERATTACK " TransWarp Drive:   "
-settextlinetrigger GETSHIPMINES :SHIPMAXMINES " Mine Max:  "
-pause
-:SHIPOFFENSEODDS
-
-getwordpos CURRENTANSILINE $POS "[0;31m:[1;36m1"
-if ($POS > 0)
-  gettext CURRENTANSILINE $SHIP_OFFENSIVE_ODDS "Offensive Odds[1;33m:[36m " "[0;31m:[1;36m1"
-  striptext $SHIP_OFFENSIVE_ODDS "."
-  striptext $SHIP_OFFENSIVE_ODDS " "
-  gettext CURRENTANSILINE $SHIP_FIGHTERS_MAX "Max Fighters[1;33m:[36m" "[0;32m Offensive Odds"
-  striptext $SHIP_FIGHTERS_MAX ","
-  striptext $SHIP_FIGHTERS_MAX " "
-end
-pause
-:SHIPMAXMINES
-gettext CURRENTLINE $SHIP_MINES_MAX "Mine Max:" "Beacon Max:"
-striptext $SHIP_MINES_MAX " "
-pause
-:SHIPMAXFIGSPERATTACK
-
-getwordpos CURRENTANSILINE $POS "[0m[32m Max Figs Per Attack[1;33m:[36m"
-if ($POS > 0)
-  gettext CURRENTANSILINE $SHIP_MAX_ATTACK "[0m[32m Max Figs Per Attack[1;33m:[36m" "[0;32mTransWarp"
-  striptext $SHIP_MAX_ATTACK " "
-end
-killtrigger GETSHIPOFFENCE
-killtrigger GETSHIPFIGHTERS
-killtrigger GETSHIPMINES
+gosub :SHIP~GETSHIPSTATS
+setvar $SHIP_OFFENSIVE_ODDS $SHIP~SHIP_OFFENSIVE_ODDS
+setvar $SHIP_FIGHTERS_MAX $SHIP~SHIP_FIGHTERS_MAX
+setvar $SHIP_MINES_MAX $SHIP~SHIP_MINES_MAX
+setvar $SHIP_MAX_ATTACK $SHIP~SHIP_MAX_ATTACK
 return
