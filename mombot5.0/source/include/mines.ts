@@ -547,3 +547,233 @@
 	end
 	setVar $mines~ready TRUE
 	return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:MINES~CLEAR
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+loadvar $GAME~GAME_MENU_PROMPT
+gosub :PLAYER~QUIKSTATS
+setvar $MINES~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+if ((CURRENTSECTOR = $MAP~STARDOCK) or (CURRENTSECTOR <= 10))
+  setvar $SWITCHBOARD~MESSAGE "Can't clear fedspace.*"
+  gosub :SWITCHBOARD~SWITCHBOARD
+  return
+end
+setvar $BOT~VALIDPROMPTS "Command Citadel"
+gosub :BOT~CHECKSTARTINGPROMPT
+
+setvar $MINES~BWARP FALSE
+if ($MINES~STARTINGLOCATION = "Citadel")
+  send "q"
+  gosub :PLANET~GETPLANETINFO
+  send "c  s*"
+  if (($PLANET~PLANET_TRANSPORT >= 1) and ($PLAYER~UNLIMITEDGAME = TRUE))
+    setvar $MINES~BWARP TRUE
+  end
+else
+  send "*"
+end
+getwordpos " "&$BOT~USER_COMMAND_LINE&" " $MINES~POS " bwarp "
+if ($MINES~POS > 0)
+  setvar $MINES~BWARP TRUE
+end
+
+setvar $MINES~BEFORELIMPETS $PLAYER~LIMPETS
+setvar $MINES~BEFOREARMIDS $PLAYER~ARMIDS
+setvar $MINES~PLACEDLIMPET FALSE
+setvar $MINES~PLACEDARMID FALSE
+waiton "Warps to Sector(s) :"
+gosub :REFRESH_CLEAR_SECTOR_STATE
+if ($MINES~SECTORCLEAR = TRUE)
+  setvar $SWITCHBOARD~MESSAGE "Current Sector Already Clear of Enemy Mines!*"
+  return
+end
+if (($PLAYER~LIMPETS <= 0) and ($MINES~LIMPETCOUNT > 0) and (($MINES~LIMPETOWNER <> "belong to your Corp") and ($MINES~LIMPETOWNER <> "yours")))
+  setvar $SWITCHBOARD~MESSAGE "Need limpets to clear this sector*"
+  return
+end
+if (($PLAYER~ARMIDS <= 0) and ($MINES~ARMIDCOUNT > 0) and (($MINES~ARMIDOWNER <> "belong to your Corp") and ($MINES~ARMIDOWNER <> "yours")))
+  setvar $SWITCHBOARD~MESSAGE "Need armids to clear this sector*"
+  return
+end
+
+gosub :ATTEMPTCLEARINGMINES
+while (($MINES~PLACEDLIMPET = FALSE) or ($MINES~PLACEDARMID = FALSE))
+  gosub :ATTEMPTCLEARINGMINES
+end
+
+setsectorparameter $PLAYER~CURRENT_SECTOR "LIMPSEC" TRUE
+setsectorparameter $PLAYER~CURRENT_SECTOR "MINESEC" TRUE
+setvar $SWITCHBOARD~MESSAGE "Sector Cleared*"
+return
+
+:MINES~ATTEMPTCLEARINGMINES
+killtrigger LAID_LIMP
+killtrigger LAID_ARMID
+setvar $MINES~LAID_ARMID $MINES~PLACEDARMID
+setvar $MINES~LAID_LIMP $MINES~PLACEDLIMPET
+
+if ($MINES~BWARP = TRUE)
+  setvar $MINES~I 0
+  setvar $MINES~BWARP_MOVE "b"&$PLAYER~CURRENT_SECTOR&"*"
+  setvar $MINES~BWARP_CLEAR "y   *  l j"&#8&#8&#8&#8&#8&$PLANET~PLANET&"*  j  c  *  "
+
+  if ($MINES~RECKLESS <> TRUE)
+    while ($MINES~I <= 5)
+      killtrigger 1
+      killtrigger 2
+      killtrigger 3
+      killtrigger 4
+      settexttrigger 1 :NO_BWARP_LOCK "Do you want to make this transport blind?"
+      settexttrigger 2 :BWARP_LOCK "All Systems Ready, shall we engage?"
+      settextlinetrigger 3 :BWARPNOFUEL "This planet does not have enough Fuel Ore to transport you."
+      settexttrigger 4 :SWITCHTONONBWARP "Your ship was hit by a Photon and has been disabled."
+      send $MINES~BWARP_MOVE
+      pause
+      :MINES~NO_BWARP_LOCK
+
+      killalltriggers
+      send "n "
+      setvar $SWITCHBOARD~MESSAGE "Fighter is gone from sector!  Stopping, check for enemies!*"
+      gosub :SWITCHBOARD~SWITCHBOARD
+      halt
+      :MINES~BWARPNOFUEL
+
+      killalltriggers
+      setvar $SWITCHBOARD~MESSAGE "Not enough fuel on the planet! Stopping.*"
+      gosub :SWITCHBOARD~SWITCHBOARD
+      halt
+      :MINES~BWARP_LOCK
+      send $MINES~BWARP_CLEAR
+
+      add $MINES~I 1
+    end
+  else
+    send $MINES~BWARP_MOVE "  " $MINES~BWARP_CLEAR $MINES~BWARP_MOVE "  " $MINES~BWARP_CLEAR $MINES~BWARP_MOVE "  " $MINES~BWARP_CLEAR $MINES~BWARP_MOVE "  " $MINES~BWARP_CLEAR $MINES~BWARP_MOVE "  " $MINES~BWARP_CLEAR
+  end
+
+  killtrigger 1
+  killtrigger 2
+  killtrigger 3
+  if ($PLAYER~SURROUNDMINE <= 0)
+    setvar $PLAYER~SURROUNDMINE 3
+  end
+  if ($PLAYER~SURROUNDLIMP <= 0)
+    setvar $PLAYER~SURROUNDLIMP 3
+  end
+  setvar $MINES~GRID_ARMIDS $PLAYER~SURROUNDMINE
+  setvar $MINES~GRID_LIMPETS $PLAYER~SURROUNDLIMP
+  if ($MINES~GRID_ARMIDS = 0)
+    setvar $MINES~_ARMIDS_ " "
+    setvar $MINES~PLACEDARMID TRUE
+  else
+    setvar $MINES~_ARMIDS_ " h 1 z "&$MINES~GRID_ARMIDS&"* z c * "
+    settextlinetrigger LAID_ARMID :LAID_ARMID "Armid mine(s) on board."
+  end
+  if ($MINES~GRID_LIMPETS = 0)
+    setvar $MINES~_LIMPS_ " "
+    setvar $MINES~PLACEDLIMPET TRUE
+  else
+    setvar $MINES~_LIMPS_ "h 2 z "&$MINES~GRID_LIMPETS&"* z c * "
+    settextlinetrigger LAID_LIMP :LAID_LIMP "Limpet mine(s) on board."
+  end
+
+  send "q  q  "&$MINES~_ARMIDS_&$MINES~_LIMPS_&" l "&$PLANET~PLANET&"*  c  "
+
+  gosub :PLAYER~QUIKSTATS
+  waiton "Citadel command"
+
+else
+  :MINES~SWITCHTONONBWARP
+  setvar $MINES~MINESTODEPLOY $MINES~GRID_ARMIDS
+  setvar $MINES~LIMPSTODEPLOY $MINES~GRID_LIMPETS
+  gosub :PLAYER~QUIKSTATS
+  if ($PLAYER~CURRENT_PROMPT = "Qcannon")
+    send "s" $MINES~PERCENTTOSET "* "
+    gosub :PLAYER~QUIKSTATS
+  end
+  gosub :CLEAR_SECTOR_ATTEMPTCLEARINGMINES
+  gosub :PLAYER~QUIKSTATS
+  setsectorparameter $PLAYER~CURRENT_SECTOR "MINESEC" TRUE
+  setsectorparameter $PLAYER~CURRENT_SECTOR "LIMPSEC" TRUE
+  setvar $MINES~LAID_ARMID TRUE
+  setvar $MINES~LAID_LIMP TRUE
+  setvar $MINES~PLACEDLIMPET TRUE
+  setvar $MINES~PLACEDARMID TRUE
+end
+return
+:MINES~LAID_ARMID
+setvar $MINES~LAID_ARMID TRUE
+setvar $MINES~PLACEDARMID TRUE
+pause
+:MINES~LAID_LIMP
+setvar $MINES~LAID_LIMP TRUE
+setvar $MINES~PLACEDLIMPET TRUE
+pause
+:MINES~REFRESH_CLEAR_SECTOR_STATE
+setvar $MINES~LIMPETOWNER SECTOR.LIMPETS.OWNER[$PLAYER~CURRENT_SECTOR]
+setvar $MINES~ARMIDOWNER SECTOR.MINES.OWNER[$PLAYER~CURRENT_SECTOR]
+setvar $MINES~LIMPETCOUNT SECTOR.LIMPETS.QUANTITY[$PLAYER~CURRENT_SECTOR]
+setvar $MINES~ARMIDCOUNT SECTOR.MINES.QUANTITY[$PLAYER~CURRENT_SECTOR]
+setvar $MINES~SECTORCLEAR FALSE
+if ((($MINES~LIMPETCOUNT <= 0) or (($MINES~LIMPETOWNER = "belong to your Corp") or ($MINES~LIMPETOWNER = "yours"))) and ((($MINES~ARMIDCOUNT <= 0) or (($MINES~ARMIDOWNER = "belong to your Corp") or ($MINES~ARMIDOWNER = "yours")))))
+  setvar $MINES~SECTORCLEAR TRUE
+end
+return
+
+:MINES~CLEAR_SECTOR_ATTEMPTCLEARINGMINES
+setvar $MINES~I 0
+gosub :REFRESH_CLEAR_SECTOR_STATE
+while (($MINES~I < 10) and ($MINES~SECTORCLEAR <> TRUE))
+  gosub :MODULES~XENTER
+  add $MINES~I 1
+  gosub :REFRESH_CLEAR_SECTOR_STATE
+end
+gosub :PLAYER~QUIKSTATS
+
+if ($MINES~STARTINGLOCATION = "Citadel")
+  send "q qq z n *  "
+end
+if ($PLAYER~SURROUNDMINE <= 0)
+  setvar $PLAYER~SURROUNDMINE 3
+end
+if ($PLAYER~SURROUNDLIMP <= 0)
+  setvar $PLAYER~SURROUNDLIMP 3
+end
+if ($MINES~MINESTODEPLOY <= 0)
+  if ($PLAYER~ARMIDS < $PLAYER~SURROUNDMINE)
+    setvar $MINES~MINESTODEPLOY $PLAYER~ARMIDS
+  else
+    setvar $MINES~MINESTODEPLOY $PLAYER~SURROUNDMINE
+  end
+end
+if ($MINES~LIMPSTODEPLOY <= 0)
+  if ($PLAYER~LIMPETS < $PLAYER~SURROUNDLIMP)
+    setvar $MINES~LIMPSTODEPLOY $PLAYER~LIMPETS
+  else
+    setvar $MINES~LIMPSTODEPLOY $PLAYER~SURROUNDLIMP
+  end
+end
+setvar $MINES~CLEARMAC ""
+if (($MINES~ARMIDOWNER <> "belong to your Corp") and ($MINES~ARMIDOWNER <> "yours"))
+  setvar $MINES~CLEARMAC $MINES~CLEARMAC&"h  1  z "&$MINES~MINESTODEPLOY&"*  z c  *  "
+end
+if (($MINES~LIMPETOWNER <> "belong to your Corp") and ($MINES~LIMPETOWNER <> "yours"))
+  setvar $MINES~CLEARMAC $MINES~CLEARMAC&"h  2  z "&$MINES~LIMPSTODEPLOY&"*  z c  *   "
+end
+send $MINES~CLEARMAC
+gosub :PLAYER~QUIKSTATS
+if (($MINES~BEFORELIMPETS > $PLAYER~LIMPETS) or ($MINES~LIMPETOWNER = "belong to your Corp") or ($MINES~LIMPETOWNER = "yours"))
+  setvar $MINES~PLACEDLIMPET TRUE
+end
+if (($MINES~BEFOREARMIDS > $PLAYER~ARMIDS) or ($MINES~ARMIDOWNER = "belong to your Corp") or ($MINES~ARMIDOWNER = "yours"))
+  setvar $MINES~PLACEDARMID TRUE
+end
+if ($MINES~STARTINGLOCATION = "Citadel")
+  send "l j"&#8&$PLANET~PLANET&"* c  "
+end
+return
+
+include "source\include\bot"
+include "source\include\player"
+include "source\include\modules"

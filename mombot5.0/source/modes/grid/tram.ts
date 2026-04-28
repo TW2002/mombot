@@ -1,7 +1,7 @@
 gosub :BOT~loadVars
 
 
-	setVar $BOT~help[1]  $BOT~tab&"    Chain-first tram gridder for mombot"
+	setVar $BOT~help[1]  $BOT~tab&"    Ram gridder for mombot based on LoneStar's chains algorithm"
 	setVar $BOT~help[2]  $BOT~tab&"    Uses chain selection first, then falls back to single sectors."
 	setVar $BOT~help[3]  $BOT~tab&"    Best when there are clusters of adjacent unfigged sectors."
 	setVar $BOT~help[4]  $BOT~tab&"    REFRESH FIG LIST!"
@@ -330,20 +330,36 @@ gosub :BOT~loadVars
 	     end
 	     setVar $have_figs $player~FIGHTERS
 	     setVar $focus_sector $player~CURRENT_SECTOR
+	     gosub :Get_Current_Prompt_Sector
+	     if ($prompt_sector > 0)
+	          setVar $focus_sector $prompt_sector
+	     end
 	     if ($focus_sector <> $final_sector)
 	          if ($focus_sector > 10)
 	               if ($PLAYER~CURRENT_PROMPT = "Citadel")
 	                    send "q q "
 	                    gosub :player~quikstats
 	                    setVar $focus_sector $player~CURRENT_SECTOR
+	                    gosub :Get_Current_Prompt_Sector
+	                    if ($prompt_sector > 0)
+	                         setVar $focus_sector $prompt_sector
+	                    end
 	               elseif ($PLAYER~CURRENT_PROMPT = "Planet")
 	                    send "q "
 	                    gosub :player~quikstats
 	                    setVar $focus_sector $player~CURRENT_SECTOR
+	                    gosub :Get_Current_Prompt_Sector
+	                    if ($prompt_sector > 0)
+	                         setVar $focus_sector $prompt_sector
+	                    end
 	               elseif ($PLAYER~CURRENT_PROMPT = "Computer")
 	                    send "q"
 	                    gosub :player~quikstats
 	                    setVar $focus_sector $player~CURRENT_SECTOR
+	                    gosub :Get_Current_Prompt_Sector
+	                    if ($prompt_sector > 0)
+	                         setVar $focus_sector $prompt_sector
+	                    end
 	               end
 	          end
 	          if ($focus_sector > 10)
@@ -417,7 +433,7 @@ gosub :BOT~loadVars
                     setVar $ADJ 1
                     while ($ADJ <= SECTOR.WARPCOUNT[$TEMP])
                          setVar $test SECTOR.WARPS[$TEMP][$ADJ]
-                         getWordPos $CHAIN $POS (" " & $test & " ")
+                         getWordPos (" " & $CHAIN & " ") $POS (" " & $test & " ")
                          if ($fig_grid[$test] = 0) AND ($POS = 0) AND ($test > 10) AND ($test <> STARDOCK) AND (SECTOR.WARPCOUNT[$test] > 0) AND (SECTOR.WARPINCOUNT[$test] > 0)
                               setVar $TEMP $test
                               goto :Scan_Near_Chain_Got_Link
@@ -452,7 +468,18 @@ gosub :BOT~loadVars
                          end
                     end
 
-                    if ($score >= $SIZEOF_CHAIN)
+                    setVar $chain_path_overlap FALSE
+                    setVar $j 2
+                    while ($j <= ($LINKS + 1)) AND ($chain_path_overlap = FALSE)
+                         getWord $CHAIN $path_test_sector $j
+                         gosub :Path_Contains_Sector
+                         if ($path_contains = TRUE)
+                              setVar $chain_path_overlap TRUE
+                         end
+                         add $j 1
+                    end
+
+                    if ($score >= $SIZEOF_CHAIN) AND ($chain_path_overlap = FALSE)
                          setVar $j 2
                          while ($j <= ($LINKS + 1))
                               add $path_length 1
@@ -470,6 +497,33 @@ gosub :BOT~loadVars
      return
 	
 
+
+
+###############################################################################
+
+:Get_Current_Prompt_Sector
+     setVar $prompt_sector 0
+     getWordPos $PLAYER~FULL_CURRENT_PROMPT $pos "]:["
+     if ($pos > 0)
+          getText $PLAYER~FULL_CURRENT_PROMPT $prompt_sector "]:[" "]"
+          isNumber $test $prompt_sector
+          if ($test = 0)
+               setVar $prompt_sector 0
+          end
+     end
+     return
+
+:Path_Contains_Sector
+     setVar $path_contains FALSE
+     setVar $path_scan 1
+     while ($path_scan <= $path_length)
+          if ($path[$path_scan] = $path_test_sector)
+               setVar $path_contains TRUE
+               return
+          end
+          add $path_scan 1
+     end
+     return
 
 
 ###############################################################################

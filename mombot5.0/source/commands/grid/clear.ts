@@ -8,10 +8,9 @@
 	setVar $SWITCHBOARD~bot_name $bot~bot_name
 	setVar $SWITCHBOARD~self_command $self_command
 
-	
 	setvar $switchboard~message "Clearing Current Sector*"
 	gosub :SWITCHBOARD~switchboard
-	gosub :modules~clear
+	gosub :mines~clear
 	gosub :switchboard~switchboard
 	halt
 	
@@ -20,3 +19,4 @@
 include "source\include\bot"
 include "source\include\player"
 include "source\include\modules"
+include "source\include\mines"

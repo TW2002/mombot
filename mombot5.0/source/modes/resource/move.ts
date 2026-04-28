@@ -47,7 +47,6 @@ isnumber $TEST $PARM3
 if ($TEST = FALSE)
   if ($PARM3 = "")
     setvar $moveall TRUE
-    goto :STARTMOVER
   else
     send "'{" $BOT_NAME "} - Mover Rounds Parameter in-valid*"
     halt

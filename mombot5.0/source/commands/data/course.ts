@@ -30,12 +30,21 @@
 			halt
 		end
 	end
-	send "^f"&$start&"*"&$destination&"*q "
-	waitOn ": ENDINTERROG"
-	getCourseDijkstra $course $start $destination   
+	getCourse $course $start $destination
+	if ($course <= 0)
+		send "^f"&$start&"*"&$destination&"*q "
+		waitOn ": ENDINTERROG"
+		getCourse $course $start $destination
+	end
+	if ($course <= 0)
+		setVar $SWITCHBOARD~message "No path to that sector.*"
+		gosub :SWITCHBOARD~switchboard
+		halt
+	end
 	setVar $i 1
+	setVar $course_length ($course + 1)
 	setVar $directions ""
-	while ($i <= $course)
+	while ($i <= $course_length)
 		getSectorParameter $course[$i] "FIGSEC" $isFigged
 		if ($isFigged = "")
 			setvar $isFigged false
@@ -45,7 +54,7 @@
 		else
 			setVar $directions $directions&$course[$i]  
 		end
-		if ($i <> $course)
+		if ($i <> $course_length)
 			setVar $directions $directions&" > "
 		end
 		add $i 1
