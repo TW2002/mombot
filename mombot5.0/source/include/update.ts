@@ -481,3 +481,5 @@ return
 	gosub :switchboard~switchboard
 	setArray $mcic 10
 return
+
+include "source\include\player"

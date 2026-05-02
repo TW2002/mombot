@@ -300,8 +300,8 @@ while ($LOOPI <= $PORTPAIRSI)
 
     gosub :BALANCETRADE
     if ($PORTPAIRS[$LOOPI][4] = 1)
-      setvar $PLAYER~MOVEINTOSECTOR $SEC
-      gosub :PLAYER~MOVEINTOSECTOR
+      setvar $MOVE~MOVEINTOSECTOR $SEC
+      gosub :MOVE~MOVEINTOSECTOR
     else
       setvar $PLAYER~WARPTO $SEC
       gosub :PLAYER~TWARP
@@ -740,4 +740,3 @@ return
 
 # includes:
 include "source\include\bot"
-include "source\include\player"

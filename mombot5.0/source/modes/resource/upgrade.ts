@@ -91,6 +91,7 @@ setvar $planetloop~ignorelist $ignorelist
 setvar $planetupgrade~failed 0
 gosub :PLANETLOOP
 gosub :VOIDADJUN
+loadvar $SWITCHBOARD~BOT_NAME
 if ($planetupgrade~failed = 0)
   setvar $switchboard~message "Successfully upgraded all planets in sector " $sector ".*"
   gosub :switchboard~switchboard
@@ -1059,11 +1060,8 @@ end
 return
 
 # includes:
-include "source\include\planet"
-include "source\include\move"
 include "source\include\findproduct"
 include "source\include\haggle"
-include "source\include\player"
-include "source\include\gameprefs"
-include "source\include\switchboard"
+include "source\include\moveproduct"
+include "source\include\seekproduct"
 include "source\include\bot"

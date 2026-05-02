@@ -540,3 +540,8 @@ if (($MENUS~COMMAND_TO_ISSUE <> "") and ($MENUS~COMMAND_TO_ISSUE <> 0))
   goto :USER_INTERFACE~RUNUSERCOMMANDLINE
 end
 return
+
+include "source\include\gameprefs"
+include "source\include\user_interface"
+include "source\include\player"
+include "source\include\bot"

@@ -1,5 +1,44 @@
-:MAP~COMMAS
+:MAP~GETBACKDOOR
+loadvar $MAP~STARDOCK
+if ($MAP~STARDOCK > 0) and (SECTOR.WARPCOUNT[$MAP~STARDOCK] = 6)
+  setdeafclients TRUE
+  send "^"
+  setvar $i 1
+  while ($i <= 6)
+    send "S" & SECTOR.WARPS[$MAP~STARDOCK][$i] & "*"
+    add $i 1
+  end
+  #getcourse $course 1 $MAP~STARDOCK
+  settextlinetrigger route :route "1 >"
+  send "^F1*" & $MAP~STARDOCK & "*"
+  pause
+  :route
+  splittext CURRENTLINE $sects " > "
+  setvar $i 1
+  while ($i <= 6)
+    send "C" & SECTOR.WARPS[$MAP~STARDOCK][$i] & "*"
+    add $i 1
+  end
+  settexttrigger endi :endi "ENDINTERROG"
+  send "Q"
+  pause
+  :endi
+  setdeafclients FALSE
+  setvar $num $sects
+  if ($num > 0)
+    setvar $bd $sects[($num - 1)]
+    striptext $bd " "
+    if ($bd > 0)
+      setvar $MAP~BACKDOOR $bd
+      savevar $MAP~BACKDOOR
+    end
+  end
+end
+return
 
+include "source\include\player"
+
+:MAP~COMMAS
 
 if ($MAP~VALUE < 1000)
 
@@ -22,9 +61,8 @@ elseif ($MAP~VALUE <= 999999999)
   setvar $MAP~VALUE $MAP~TMP
 end
 return
+
 :MAP~DISPLAYADJACENTGRIDANSI
-
-
 setvar $MAP~MARKER_BEACON 1
 setvar $MAP~LIMPET_MINE 2
 setvar $MAP~ARMID_MINE 10

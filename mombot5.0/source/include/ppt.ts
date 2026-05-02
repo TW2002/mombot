@@ -1,0 +1,2 @@
+:PPT~NAMESPACE
+return

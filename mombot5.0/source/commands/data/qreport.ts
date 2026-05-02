@@ -115,6 +115,4 @@ send $QUASAROUTPUT
 halt
 
 # includes:
-include "source\include\player"
-include "source\include\validation"
 include "source\include\planet"

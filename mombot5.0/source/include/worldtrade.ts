@@ -1,0 +1,2 @@
+:WORLDTRADE~NAMESPACE
+return

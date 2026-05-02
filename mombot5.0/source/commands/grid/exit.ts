@@ -6,33 +6,33 @@ if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
     halt
 end
 
-isnumber $MODULES~TEST $BOT~PARM1
-if ($MODULES~TEST = FALSE)
+isnumber $XENTER~TEST $BOT~PARM1
+if ($XENTER~TEST = FALSE)
   setvar $BOT~PARM1 1
 else
   if ($BOT~PARM1 <= 0)
     setvar $BOT~PARM1 1
   end
 end
-getwordpos $BOT~USER_COMMAND_LINE $MODULES~POS "fill"
-if ($MODULES~POS > 0)
-  setvar $MODULES~REFILL TRUE
+getwordpos $BOT~USER_COMMAND_LINE $XENTER~POS "fill"
+if ($XENTER~POS > 0)
+  setvar $XENTER~REFILL TRUE
 else
-  setvar $MODULES~REFILL FALSE
+  setvar $XENTER~REFILL FALSE
 end
 
 setvar $I 1
 
 while ($I <= $BOT~PARM1)
-  gosub :MODULES~XENTER
+  gosub :XENTER~XENTER
 
-  if ($MODULES~STARTINGLOCATION = "Command")
+  if ($XENTER~STARTINGLOCATION = "Command")
     if (($PLAYER~CURRENT_SECTOR > 10) and ($PLAYER~CURRENT_SECTOR <> $MAP~STARDOCK))
-      if ($MODULES~REFILL = TRUE)
+      if ($XENTER~REFILL = TRUE)
         gosub :PLAYER~TOPOFF
       else
         if ($I = $BOT~PARM1)
-          if ($MODULES~STARTINGLOCATION = "Command")
+          if ($XENTER~STARTINGLOCATION = "Command")
             send "f z1* z c d * "
           end
         end
@@ -52,6 +52,4 @@ gosub :SWITCHBOARD~SWITCHBOARD
 halt
 
 #INCLUDES:
-include "source\include\bot"
-include "source\include\player"
-include "source\include\modules"
+include "source\include\xenter"

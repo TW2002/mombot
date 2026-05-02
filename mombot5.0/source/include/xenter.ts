@@ -1,23 +1,45 @@
 :XENTER~RUN
 :XENTER~XENTER
-setvar $BOT~COMMAND "exit"
-setvar $BOT~USER_COMMAND_LINE " exit silent"
-setvar $BOT~PARM1 "silent"
-setvar $BOT~PARM2 ""
-setvar $BOT~PARM3 ""
-setvar $BOT~PARM4 ""
-setvar $BOT~PARM5 ""
-setvar $BOT~PARM6 ""
-savevar $BOT~PARM1
-savevar $BOT~PARM2
-savevar $BOT~PARM3
-savevar $BOT~PARM4
-savevar $BOT~PARM5
-savevar $BOT~PARM6
-savevar $BOT~COMMAND
-savevar $BOT~USER_COMMAND_LINE
-load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\exit.cts"
-seteventtrigger XENTERENDED :XENTERENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\exit.cts"
+
+gosub :PLAYER~QUIKSTATS
+loadvar $GAME~GAME_MENU_PROMPT
+
+setvar $XENTER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+setvar $BOT~VALIDPROMPTS "Command Citadel"
+gosub :BOT~CHECKSTARTINGPROMPT
+if ($XENTER~STARTINGLOCATION = "Citadel")
+  send "q m n t *"
+  gosub :PLANET~GETPLANETINFO
+  send "c "
+end
+
+:XENTER~EXIT_XENTER
+if ($XENTER~STARTINGLOCATION = "Command")
+  setvar $XENTER~EXIT_MAC "q y * "
+  setvar $XENTER~EXIT_ENTER " t* * *"&$BOT~PASSWORD&"*    *    *       za9999*   z*   /"
+else
+  setvar $XENTER~EXIT_MAC "r   y   * * "
+  setvar $XENTER~EXIT_ENTER " t* * *"&$BOT~PASSWORD&"*    *    *    m * * *   q  *    *    *     za9999*   z*   f z1* z c d *  l j"&#8&$PLANET~PLANET&"* c  /"
+end
+
+killtrigger 1
+killtrigger 2
+killtrigger 3
+send $XENTER~EXIT_MAC
+settexttrigger 1 :PICKGAME "Selection (? for menu)"
+settexttrigger 2 :ENTER_CHOICE_XENTER "Enter your choice:"
+settexttrigger 3 :PICKGAME $GAME~GAME_MENU_PROMPT
 pause
+
+:XENTER~ENTER_CHOICE_XENTER
+killtrigger 1
+killtrigger 2
+killtrigger 3
+send $XENTER~EXIT_ENTER
+waiton #179
+
 :XENTER~XENTERENDED
 return
+
+include "source\include\game"
+include "source\include\bot"

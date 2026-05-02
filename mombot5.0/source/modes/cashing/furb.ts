@@ -853,6 +853,4 @@ echo "*### $planet~CITADEL_furb " $planet~CITADEL_furb
 return
 
 #INCLUDES:
-include "source\include\player"
-include "source\include\planet"
 include "source\include\bot"

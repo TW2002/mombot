@@ -1,179 +1,187 @@
-goto :_START_
+gosub :BOT~LOADVARS
+setvar $BUYDOWN_RESTORE_HAGGLE 0
 
-:SWATHOFF
-if ($SWATHOFF = FALSE)
-  settexttrigger SWATHISON :SWATHISON "Command [TL="
-  setdelaytrigger SWATHISOFF :SWATHISOFF 2000
-  pause
-  :SWATHISON
+setvar $BOT~HELP[1] $BOT~TAB&"BUY - Buy Product from port in Sector or Fighters and/or"
+setvar $BOT~HELP[2] $BOT~TAB&"      shields from Rylos or Alpha"
+setvar $BOT~HELP[3] $BOT~TAB&"      "
+setvar $BOT~HELP[4] $BOT~TAB&"  - buy [product] {mode} {cycles}"
+setvar $BOT~HELP[5] $BOT~TAB&"  - [product] = [f]uel or [o]rg or [e]quip"
+setvar $BOT~HELP[6] $BOT~TAB&"  - [mode]    = [b]est or [s]peed or [w]orst - default is speed"
+setvar $BOT~HELP[7] $BOT~TAB&"  - [cycles]  = number of cycles             - default is max"
+setvar $BOT~HELP[8] $BOT~TAB&"  - [override] = allows product buydowns with less than 200 holds"
+setvar $BOT~HELP[9] $BOT~TAB&"     "
+setvar $BOT~HELP[10] $BOT~TAB&"  - buy [hardware] {amount}"
+setvar $BOT~HELP[11] $BOT~TAB&"  - [hardware]= [fig]hters or [sh]ields or [m]ines"
+setvar $BOT~HELP[12] $BOT~TAB&"  - [amount]  = number to purchase, default is maximum"
+setvar $BOT~HELP[13] $BOT~TAB&"      "
+setvar $BOT~HELP[14] $BOT~TAB&"  - Originally written by Cherokee.     "
+setvar $BOT~HELP[15] $BOT~TAB&"  - Now integrated with EP Haggle if it is running "
+gosub :BOT~HELPFILE
 
-  killalltriggers
-  setvar $SWATHOFFMESSAGE "Detected SWATH Autohaggle"
-  setvar $SWATHOFF FALSE
-  return
-  :SWATHISOFF
+loadvar $GAME~PORT_MAX
+setvar $OVERHAGGLEMULTIPLE 147
+setvar $CYCLEBUFFER 1
+setvar $CYCLEBUFFERLIMIT 20
 
-  killalltriggers
-  setvar $SWATHOFF TRUE
+gosub :PLAYER~QUIKSTATS
+setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+if (($STARTINGLOCATION <> "Citadel") and ($STARTINGLOCATION <> "Planet"))
+  setvar $SWITCHBOARD~MESSAGE "Must start at Citadel or Planet Prompt for Buy Down*"
+  gosub :SWITCHBOARD~SWITCHBOARD
+  halt
 end
-return
 
-:CHOOSEHAGGLE
-if ($BUYDOWN_MODE = "Speedbuy")
-  gosub :BUYNOHAGGLE
-else
-  gosub :BUYHAGGLE
-end
-return
-
-:BUYHAGGLE
-setvar $EMPTY $PLAYER~TOTAL_HOLDS
-send "*"
-settextlinetrigger BUYFIRSTOFFER :BUYFIRSTOFFER "We'll sell them for"
-pause
-
-:BUYFIRSTOFFER
-getword CURRENTLINE $OFFER 5
-striptext $OFFER ","
-
-gosub :SWATHOFF
-if ($SWATHOFF = 0)
-  send "L "&$PLANET~PLANET&"* "
-  if ($STARTINGLOCATION = "Citadel")
-    send "C "
+if ($BOT~PARM1 = "sh")
+  if ($STARTINGLOCATION <> "Citadel")
+    setvar $SWITCHBOARD~MESSAGE "Shield Buyer must be run from the Citadel"
+    gosub :SWITCHBOARD~SWITCHBOARD
+    halt
   end
-  setvar $EXIT_MESSAGE $SWATHOFFMESSAGE
+  goto :SHIELD_START
+end
+if ($BOT~PARM1 = "fig")
+  if ($STARTINGLOCATION <> "Citadel")
+    setvar $SWITCHBOARD~MESSAGE "Fighter Buyer must be run from the Citadel"
+    gosub :SWITCHBOARD~SWITCHBOARD
+    halt
+  end
+  goto :FIGHTER_START
+end
+
+if ($PLAYER~TOTAL_HOLDS < 200)
+  getwordpos $BOT~USER_COMMAND_LINE $POS "override"
+  if ($POS = 0)
+    setvar $EXIT_MESSAGE "This ship has less than 200 holds, cannot buydown without override.*"
+    goto :BUYDOWNEXIT
+  end
+end
+
+setvar $OUTPUT ""
+setvar $EQUIPROUNDS 0
+setvar $ORGROUNDS 0
+setvar $FUELROUNDS 0
+isnumber $ISNUMBER2 $BOT~PARM2
+isnumber $ISNUMBER3 $BOT~PARM3
+if ($ISNUMBER2)
+  if ($BOT~PARM2 > 0)
+    setvar $BUYDOWNROUNDSFROMPARAM $BOT~PARM2
+  else
+    setvar $BUYDOWNROUNDSFROMPARAM 999999
+  end
+elseif ($ISNUMBER3)
+  if ($BOT~PARM3 > 0)
+    setvar $BUYDOWNROUNDSFROMPARAM $BOT~PARM3
+  else
+    setvar $BUYDOWNROUNDSFROMPARAM 999999
+  end
+else
+  setvar $BUYDOWNROUNDSFROMPARAM 999999
+end
+getwordpos " "&$BOT~USER_COMMAND_LINE&" " $ISWORST " w "
+getwordpos " "&$BOT~USER_COMMAND_LINE&" " $ISBEST " b "
+if ($ISWORST > 0)
+  setvar $BUYDOWN_MODE 3
+elseif ($ISBEST > 0)
+  setvar $BUYDOWN_MODE 2
+else
+  setvar $BUYDOWN_MODE 1
+end
+if ($BOT~PARM1 = "e")
+  setvar $BUYDOWN_EQUIPROUNDS $BUYDOWNROUNDSFROMPARAM
+  setvar $BUYDOWN_ORGROUNDS 0
+  setvar $BUYDOWN_FUELROUNDS 0
+elseif ($BOT~PARM1 = "o")
+  setvar $BUYDOWN_EQUIPROUNDS 0
+  setvar $BUYDOWN_ORGROUNDS $BUYDOWNROUNDSFROMPARAM
+  setvar $BUYDOWN_FUELROUNDS 0
+elseif ($BOT~PARM1 = "f")
+  setvar $BUYDOWN_EQUIPROUNDS 0
+  setvar $BUYDOWN_ORGROUNDS 0
+  setvar $BUYDOWN_FUELROUNDS $BUYDOWNROUNDSFROMPARAM
+else
+  setvar $SWITCHBOARD~MESSAGE "Please use format buy [type] {speed} {#cycles} {override}*"
+  gosub :SWITCHBOARD~SWITCHBOARD
+  halt
+
+end
+
+if ($STARTINGLOCATION = "Citadel")
+  send "Q  "
+end
+
+if (($PLAYER~ORE_HOLDS + ($PLAYER~ORGANIC_HOLDS + ($PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))) <> 0)
+  setvar $MAC ""
+  if ($PLAYER~ORE_HOLDS <> 0)
+    setvar $MAC "  T N L 1* "
+  end
+  if ($PLAYER~ORGANIC_HOLDS <> 0)
+    setvar $MAC $MAC&" T N L 2* "
+  end
+  if ($PLAYER~EQUIPMENT_HOLDS <> 0)
+    setvar $MAC $MAC&" T N L 3* "
+  end
+  if ($PLAYER~COLONIST_HOLDS <> 0)
+    setvar $MAC $MAC&" S N L 1* "
+  end
+  if ($MAC <> "")
+    send $MAC
+    gosub :PLAYER~QUIKSTATS
+    if (($PLAYER~ORE_HOLDS + ($PLAYER~ORGANIC_HOLDS + ($PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))) <> 0)
+      setvar $SWITCHBOARD~MESSAGE "Holds Not Empty*"
+      gosub :SWITCHBOARD~SWITCHBOARD
+      halt
+    end
+  end
+end
+
+gosub :PLANET~GETPLANETINFO
+
+if ($STARTINGLOCATION = "Citadel")
+  send "C"
+  waiton "Citadel command (?=help)"
+  send "S* "
+else
+  send "Q D"
+end
+
+waiton "Warps to Sector(s) :"
+gosub :PLAYER~GETINFO
+
+gosub :VOIDADJACENT
+
+setvar $port~fuelselling 0
+setvar $port~orgselling 0
+setvar $port~equipselling 0
+setvar $PORT~STARTINGLOCATION $STARTINGLOCATION
+gosub :port~getportinfo
+
+if ($PORT~NOPORT = 0)
+  setvar $VALIDPORTFOUND TRUE
+else
+  setvar $VALIDPORTFOUND FALSE
+end
+
+if ($VALIDPORTFOUND <> TRUE)
+  setvar $EXIT_MESSAGE "No valid port found"
+  if ($STARTINGLOCATION <> "Citadel")
+    gosub :PLANET~LANDINGSUB
+  end
+  gosub :CLEARADJACENT
   goto :BUYDOWNEXIT
 end
 
-setvar $COUNTER $OFFER
-if ($BUYDOWN_MODE = "Best Price")
-  multiply $COUNTER 92
-  divide $COUNTER 100
-elseif ($BUYDOWN_MODE = "Worst Price")
-  multiply $COUNTER $OVERHAGGLEMULTIPLE
-  divide $COUNTER 100
-end
-send $COUNTER&"*"
-
-:BUYOFFERLOOP
-settextlinetrigger BUYPRICE :BUYPRICE "We'll sell them for"
-settextlinetrigger BUYFINALOFFER :BUYFINALOFFER "Our final offer"
-settextlinetrigger BUYNOTINTERESTED :BUYNOTINTERESTED "We're not interested."
-settextlinetrigger BUYEXPERIENCE :BUYEXPERIENCE "experience point(s)"
-settextlinetrigger BUYEMPTY :BUYEMPTY "empty cargo holds"
-settextlinetrigger BUYSCREWUP1 :BUYSCREWUP "Get real ion-brain, make me a real offer."
-settextlinetrigger BUYSCREWUP2 :BUYSCREWUP "This is the big leagues Jr.  Make a real offer."
-settextlinetrigger BUYSCREWUP3 :BUYSCREWUP "My patience grows short with you."
-settextlinetrigger BUYSCREWUP4 :BUYSCREWUP "I have much better things to do than waste my time.  Try again."
-settextlinetrigger BUYSCREWUP5 :BUYSCREWUP "HA! HA, ha hahahhah hehehe hhhohhohohohh!  You choke me up!"
-settextlinetrigger BUYSCREWUP6 :BUYSCREWUP "Quit playing around, you're wasting my time!"
-settextlinetrigger BUYSCREWUP7 :BUYSCREWUP "Make a real offer or get the "
-settextlinetrigger BUYSCREWUP8 :BUYSCREWUP "WHAT?!@!? you must be crazy!"
-settextlinetrigger BUYSCREWUP9 :BUYSCREWUP "So, you think I'm as stupid as you look? Make a real offer."
-settextlinetrigger BUYSCREWUP10 :BUYSCREWUP "What do you take me for, a fool?  Make a real offer!"
-pause
-pause
-
-:BUYSCREWUP
-killalltriggers
-if ($BUYDOWN_MODE = "Best Price")
-  multiply $COUNTER 102
-  divide $COUNTER 100
-elseif ($BUYDOWN_MODE = "Worst Price")
-  subtract $OVERHAGGLEMULTIPLE 1
-  setvar $COUNTER $OFFER
-  multiply $COUNTER $OVERHAGGLEMULTIPLE
-  divide $COUNTER 100
-end
-send $COUNTER&"*"
-goto :BUYOFFERLOOP
-:BUYPRICE
-killalltriggers
-setvar $OLD_OFFER $OFFER
-setvar $OLD_COUNTER $COUNTER
-getword CURRENTLINE $OFFER 5
-striptext $OFFER ","
-setvar $OFFER_PCT $OFFER
-multiply $OFFER_PCT 1000
-divide $OFFER_PCT $OLD_OFFER
-if ($OFFER_PCT > 990)
-  setvar $OFFER_PCT 990
-end
-multiply $COUNTER 1000
-divide $COUNTER $OFFER_PCT
-if ($COUNTER <= $OLD_COUNTER)
-  add $COUNTER 1
-end
-send $COUNTER&"*"
-goto :BUYOFFERLOOP
-
-:BUYFINALOFFER
-killalltriggers
-setvar $OLD_OFFER $OFFER
-setvar $OLD_COUNTER $COUNTER
-getword CURRENTLINE $OFFER 5
-striptext $OFFER ","
-setvar $OFFER_CHANGE $OFFER
-subtract $OFFER_CHANGE $OLD_OFFER
-subtract $OFFER_CHANGE 1
-multiply $OFFER_CHANGE 25
-divide $OFFER_CHANGE 10
-subtract $COUNTER $OFFER_CHANGE
-if ($COUNTER = $OLD_COUNTER)
-  add $COUNTER 1
-end
-add $COUNTER 1
-send $COUNTER&"*"
-goto :BUYOFFERLOOP
-:BUYNOTINTERESTED
-killalltriggers
-send "0* "
-send "0* "
-goto :BUYHAGGLEFAILED
-:BUYEXPERIENCE
-killalltriggers
-getword CURRENTLINE $EXP_BONUS 7
-add $EXP $EXP_BONUS
-add $JETBONUS $EXP_BONUS
-goto :BUYOFFERLOOP
-
-:BUYEMPTY
-killalltriggers
-getword CURRENTLINE $PLAYER~CREDITS 3
-striptext $PLAYER~CREDITS ","
-setvar $OLDEMPTY $EMPTY
-getword CURRENTLINE $EMPTY 6
-if ($OLDEMPTY = $EMPTY)
-  goto :BUYHAGGLEFAILED
+if ($STARTINGLOCATION = "Citadel")
+  send "Q"
 else
-  goto :BUYHAGGLESUCCEEDED
+  send "L "&$PLANET~PLANET&"* "
 end
-:BUYHAGGLEFAILED
-setvar $BUYHAGGLE 0
-return
-:BUYHAGGLESUCCEEDED
-setvar $BUYHAGGLE 1
-return
 
-:BUYNOHAGGLE
-if ($SWATHOFF = 0)
-  waiton "How many holds of"
-  send "*"
-  gosub :SWATHOFF
-  send "*"
-else
-  send "**"
+waiton "Planet command (?="
+if (HAGGLE)
+  setvar $BUYDOWN_RESTORE_HAGGLE 1
+  autohaggle off
 end
-add $CYCLEBUFFER 1
-if ($CYCLEBUFFER = $CYCLEBUFFERLIMIT)
-  setvar $CYCLEBUFFER 1
-  send "/"
-  waiton " Sect "
-end
-return
 
-:INITIATE_BUY_DOWN
 setvar $PLAYER~TURNS_NEEDED 0
 setvar $PLAYER~TURNS_ALLOWED $PLAYER~TURNS
 subtract $PLAYER~TURNS_ALLOWED 1
@@ -182,8 +190,8 @@ if ($BUYDOWN_FUELROUNDS > 0)
   setvar $FUELROUNDS 0
   setvar $PLANET~PLANETFUELROOM $PLANET~PLANET_FUEL_MAX
   subtract $PLANET~PLANETFUELROOM $PLANET~PLANET_FUEL
-  setvar $MAXFUELTOBUY $FUELSELLING
-  if ($FUELSELLING > $PLANET~PLANETFUELROOM)
+  setvar $MAXFUELTOBUY $port~fuelselling
+  if ($port~fuelselling > $PLANET~PLANETFUELROOM)
     setvar $MAXFUELTOBUY $PLANET~PLANETFUELROOM
   end
   setvar $MAXFUELROUNDS $MAXFUELTOBUY
@@ -205,8 +213,8 @@ if ($BUYDOWN_ORGROUNDS > 0)
   setvar $ORGROUNDS 0
   setvar $PLANET~PLANETORGROOM $PLANET~PLANET_ORGANICS_MAX
   subtract $PLANET~PLANETORGROOM $PLANET~PLANET_ORGANICS
-  setvar $MAXORGTOBUY $ORGSELLING
-  if ($ORGSELLING > $PLANET~PLANETORGROOM)
+  setvar $MAXORGTOBUY $port~orgselling
+  if ($port~orgselling > $PLANET~PLANETORGROOM)
     setvar $MAXORGTOBUY $PLANET~PLANETORGROOM
   end
   setvar $MAXORGROUNDS $MAXORGTOBUY
@@ -228,8 +236,8 @@ if ($BUYDOWN_EQUIPROUNDS > 0)
   setvar $EQUIPROUNDS 0
   setvar $PLANET~PLANETEQUIPROOM $PLANET~PLANET_EQUIPMENT_MAX
   subtract $PLANET~PLANETEQUIPROOM $PLANET~PLANET_EQUIPMENT
-  setvar $MAXEQUIPTOBUY $EQUIPSELLING
-  if ($EQUIPSELLING > $PLANET~PLANETEQUIPROOM)
+  setvar $MAXEQUIPTOBUY $port~equipselling
+  if ($port~equipselling > $PLANET~PLANETEQUIPROOM)
     setvar $MAXEQUIPTOBUY $PLANET~PLANETEQUIPROOM
   end
   setvar $MAXEQUIPROUNDS $MAXEQUIPTOBUY
@@ -339,10 +347,10 @@ if ($EQUIPROUNDSLEFT > 0)
   else
     send "Q P T"
   end
-  if ($FUELSELLING > 0)
+  if ($port~fuelselling > 0)
     send "0* "
   end
-  if ($ORGSELLING > 0)
+  if ($port~orgselling > 0)
     send "0*"
   end
   gosub :CHOOSEHAGGLE
@@ -363,7 +371,7 @@ if ($ORGROUNDSLEFT > 0)
   else
     send "Q P T"
   end
-  if ($FUELSELLING > 0)
+  if ($port~fuelselling > 0)
     send "0*"
   end
   gosub :CHOOSEHAGGLE
@@ -434,183 +442,6 @@ setvar $EXIT_MESSAGE "Normal Exit"
 setvar $BOT~WORSTPRICE $ORIGINAL_WORSTPRICE_VALUE
 savevar $BOT~WORSTPRICE
 
-goto :BUYDOWNEXIT
-
-:_START_
-gosub :BOT~LOADVARS
-setvar $BUYDOWN_RESTORE_HAGGLE 0
-
-setvar $BOT~HELP[1] $BOT~TAB&"BUY - Buy Product from port in Sector or Fighters and/or"
-setvar $BOT~HELP[2] $BOT~TAB&"      shields from Rylos or Alpha"
-setvar $BOT~HELP[3] $BOT~TAB&"      "
-setvar $BOT~HELP[4] $BOT~TAB&"  - buy [product] {mode} {cycles}"
-setvar $BOT~HELP[5] $BOT~TAB&"  - [product] = [f]uel or [o]rg or [e]quip"
-setvar $BOT~HELP[6] $BOT~TAB&"  - [mode]    = [b]est or [s]peed or [w]orst - default is speed"
-setvar $BOT~HELP[7] $BOT~TAB&"  - [cycles]  = number of cycles             - default is max"
-setvar $BOT~HELP[8] $BOT~TAB&"  - [override] = allows product buydowns with less than 200 holds"
-setvar $BOT~HELP[9] $BOT~TAB&"     "
-setvar $BOT~HELP[10] $BOT~TAB&"  - buy [hardware] {amount}"
-setvar $BOT~HELP[11] $BOT~TAB&"  - [hardware]= [fig]hters or [sh]ields or [m]ines"
-setvar $BOT~HELP[12] $BOT~TAB&"  - [amount]  = number to purchase, default is maximum"
-setvar $BOT~HELP[13] $BOT~TAB&"      "
-setvar $BOT~HELP[14] $BOT~TAB&"  - Originally written by Cherokee.     "
-setvar $BOT~HELP[15] $BOT~TAB&"  - Now integrated with EP Haggle if it is running "
-gosub :BOT~HELPFILE
-
-
-loadvar $GAME~PORT_MAX
-
-setvar $OVERHAGGLEMULTIPLE 147
-setvar $CYCLEBUFFER 1
-setvar $CYCLEBUFFERLIMIT 20
-
-gosub :PLAYER~QUIKSTATS
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-if (($STARTINGLOCATION <> "Citadel") and ($STARTINGLOCATION <> "Planet"))
-  setvar $SWITCHBOARD~MESSAGE "Must start at Citadel or Planet Prompt for Buy Down*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
-end
-
-if ($BOT~PARM1 = "sh")
-  if ($STARTINGLOCATION <> "Citadel")
-    setvar $SWITCHBOARD~MESSAGE "Shield Buyer must be run from the Citadel"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
-  goto :SHIELD_START
-end
-if ($BOT~PARM1 = "fig")
-  if ($STARTINGLOCATION <> "Citadel")
-    setvar $SWITCHBOARD~MESSAGE "Fighter Buyer must be run from the Citadel"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
-  goto :FIGHTER_START
-end
-
-if ($PLAYER~TOTAL_HOLDS < 200)
-  getwordpos $BOT~USER_COMMAND_LINE $POS "override"
-  if ($POS = 0)
-    setvar $EXIT_MESSAGE "This ship has less than 200 holds, cannot buydown without override.*"
-    goto :BUYDOWNEXIT
-  end
-end
-
-setvar $OUTPUT ""
-setvar $EQUIPROUNDS 0
-setvar $ORGROUNDS 0
-setvar $FUELROUNDS 0
-isnumber $ISNUMBER2 $BOT~PARM2
-isnumber $ISNUMBER3 $BOT~PARM3
-if ($ISNUMBER2)
-  if ($BOT~PARM2 > 0)
-    setvar $BUYDOWNROUNDSFROMPARAM $BOT~PARM2
-  else
-    setvar $BUYDOWNROUNDSFROMPARAM 999999
-  end
-elseif ($ISNUMBER3)
-  if ($BOT~PARM3 > 0)
-    setvar $BUYDOWNROUNDSFROMPARAM $BOT~PARM3
-  else
-    setvar $BUYDOWNROUNDSFROMPARAM 999999
-  end
-else
-  setvar $BUYDOWNROUNDSFROMPARAM 999999
-end
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $ISWORST " w "
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $ISBEST " b "
-if ($ISWORST > 0)
-  setvar $BUYDOWN_MODE 3
-elseif ($ISBEST > 0)
-  setvar $BUYDOWN_MODE 2
-else
-  setvar $BUYDOWN_MODE 1
-end
-if ($BOT~PARM1 = "e")
-  setvar $BUYDOWN_EQUIPROUNDS $BUYDOWNROUNDSFROMPARAM
-  setvar $BUYDOWN_ORGROUNDS 0
-  setvar $BUYDOWN_FUELROUNDS 0
-elseif ($BOT~PARM1 = "o")
-  setvar $BUYDOWN_EQUIPROUNDS 0
-  setvar $BUYDOWN_ORGROUNDS $BUYDOWNROUNDSFROMPARAM
-  setvar $BUYDOWN_FUELROUNDS 0
-elseif ($BOT~PARM1 = "f")
-  setvar $BUYDOWN_EQUIPROUNDS 0
-  setvar $BUYDOWN_ORGROUNDS 0
-  setvar $BUYDOWN_FUELROUNDS $BUYDOWNROUNDSFROMPARAM
-else
-  setvar $SWITCHBOARD~MESSAGE "Please use format buy [type] {speed} {#cycles} {override}*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
-
-end
-if ($STARTINGLOCATION = "Citadel")
-  send "Q  "
-end
-
-if (($PLAYER~ORE_HOLDS + ($PLAYER~ORGANIC_HOLDS + ($PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))) <> 0)
-  setvar $MAC ""
-  if ($PLAYER~ORE_HOLDS <> 0)
-    setvar $MAC "  T N L 1* "
-  end
-  if ($PLAYER~ORGANIC_HOLDS <> 0)
-    setvar $MAC $MAC&" T N L 2* "
-  end
-  if ($PLAYER~EQUIPMENT_HOLDS <> 0)
-    setvar $MAC $MAC&" T N L 3* "
-  end
-  if ($PLAYER~COLONIST_HOLDS <> 0)
-    setvar $MAC $MAC&" S N L 1* "
-  end
-  if ($MAC <> "")
-    send $MAC
-    gosub :PLAYER~QUIKSTATS
-    if (($PLAYER~ORE_HOLDS + ($PLAYER~ORGANIC_HOLDS + ($PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))) <> 0)
-      setvar $SWITCHBOARD~MESSAGE "Holds Not Empty*"
-      gosub :SWITCHBOARD~SWITCHBOARD
-      halt
-    end
-  end
-end
-
-gosub :PLANET~GETPLANETINFO
-
-if ($STARTINGLOCATION = "Citadel")
-  send "C"
-  waiton "Citadel command (?=help)"
-  send "S* "
-else
-  send "Q D"
-end
-waiton "Warps to Sector(s) :"
-
-gosub :PLAYER~GETINFO
-gosub :VOIDADJACENT
-gosub :GETPORTINFO
-
-if ($VALIDPORTFOUND <> TRUE)
-  setvar $EXIT_MESSAGE "No valid port found"
-  if ($STARTINGLOCATION <> "Citadel")
-    gosub :PLANET~LANDINGSUB
-  end
-  gosub :CLEARADJACENT
-  goto :BUYDOWNEXIT
-end
-
-if ($STARTINGLOCATION = "Citadel")
-  send "Q"
-else
-  send "L "&$PLANET~PLANET&"* "
-end
-
-waiton "Planet command (?="
-if (HAGGLE)
-  setvar $BUYDOWN_RESTORE_HAGGLE 1
-  autohaggle off
-end
-goto :INITIATE_BUY_DOWN
-
 :BUYDOWNEXIT
 if ($BUYDOWN_RESTORE_HAGGLE = 1)
   autohaggle on
@@ -618,6 +449,34 @@ end
 setvar $SWITCHBOARD~MESSAGE "Buy down exiting --- "&$EXIT_MESSAGE&"*"
 gosub :SWITCHBOARD~SWITCHBOARD
 halt
+
+:CHOOSEHAGGLE
+setvar $PLAYER~BUYDOWN_RETURN_ON_ABORT TRUE
+setvar $PLAYER~BUYDOWN_ABORTED FALSE
+setvar $PLAYER~BUYDOWN_MODE $BUYDOWN_MODE
+setvar $PLAYER~OVERHAGGLEMULTIPLE $OVERHAGGLEMULTIPLE
+setvar $PLAYER~STARTINGLOCATION $STARTINGLOCATION
+setvar $PLAYER~CYCLEBUFFER $CYCLEBUFFER
+setvar $PLAYER~CYCLEBUFFERLIMIT $CYCLEBUFFERLIMIT
+setvar $PLAYER~JETBONUS $JETBONUS
+
+if ($BUYDOWN_MODE = "Speedbuy")
+  gosub :PLANETHAGGLE~BUYNOHAGGLE
+else
+  gosub :PLANETHAGGLE~BUYHAGGLE
+end
+
+setvar $CYCLEBUFFER $PLAYER~CYCLEBUFFER
+setvar $JETBONUS $PLAYER~JETBONUS
+setvar $BUYHAGGLE $PLAYER~BUYHAGGLE
+setvar $PLAYER~BUYDOWN_RETURN_ON_ABORT FALSE
+
+if ($PLAYER~BUYDOWN_ABORTED = TRUE)
+  setvar $PLAYER~BUYDOWN_ABORTED FALSE
+  setvar $EXIT_MESSAGE $PLAYER~EXIT_MESSAGE
+  goto :BUYDOWNEXIT
+end
+return
 
 :VOIDADJACENT
 setvar $I 1
@@ -958,58 +817,6 @@ else
 end
 halt
 
-:GETPORTINFO
-send "C R*Q"
-setvar $VALIDPORTFOUND FALSE
-settextlinetrigger FOUNDPORT :FOUNDPORT2 "Items     Status  Trading % of max OnBoard"
-settextlinetrigger NOPORT :NOPORT2 "I have no information about a port in that sector."
-settextlinetrigger NOPORT2 :NOPORT2 "You have never visted sector"
-settextlinetrigger NOPORT3 :NOPORT2 "credits / next hold"
-settextlinetrigger NOPORT4 :NOPORT2 "A  Cargo holds     :"
-pause
-
-:NOPORT2
-killalltriggers
-return
-
-:FOUNDPORT2
-killtrigger FOUNDPORT
-killtrigger NOPORT
-killtrigger NOPORT2
-killtrigger NOPORT3
-setvar $FUELSELLING 0
-setvar $ORGSELLING 0
-setvar $EQUIPSELLING 0
-setvar $VALIDPORTFOUND TRUE
-
-:GETSELLING
-settextlinetrigger PORTFUELINFO :PORTFUELINFO2 "Fuel Ore   Selling"
-settextlinetrigger PORTORGINFO :PORTORGINFO2 "Organics   Selling"
-settextlinetrigger PORTEQUIPINFO :PORTEQUIPINFO2 "Equipment  Selling"
-settextlinetrigger GOTALLPORTINFO :GOTALLPORTINFO2 "<Computer deactivated>"
-pause
-
-:PORTFUELINFO2
-getword CURRENTLINE $FUELSELLING 4
-settextlinetrigger PORTFUELINFO :PORTFUELINFO2 "Fuel Ore   Selling"
-pause
-
-:PORTORGINFO2
-getword CURRENTLINE $ORGSELLING 3
-settextlinetrigger PORTORGINFO :PORTORGINFO2 "Organics   Selling"
-pause
-
-:PORTEQUIPINFO2
-getword CURRENTLINE $EQUIPSELLING 3
-settextlinetrigger PORTEQUIPINFO :PORTEQUIPINFO2 "Equipment  Selling"
-pause
-
-:GOTALLPORTINFO2
-killalltriggers
-return
-
 # includes:
-include "source\include\player"
-include "source\include\bot"
-include "source\include\planet"
-include "source\include\ship"
+include "source\include\planethaggle"
+include "source\include\port"

@@ -1,0 +1,2 @@
+:WPPT~NAMESPACE
+return

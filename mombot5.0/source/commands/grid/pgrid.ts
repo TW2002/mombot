@@ -444,9 +444,6 @@ return
 
 # includes:
 include "source\include\bot"
-include "source\include\player"
-include "source\include\planet"
-include "source\include\ship"
 
 # - Commented this out because it - checkstartingprompt already refers to this - we get duplicate label
 #include "source\include\player"

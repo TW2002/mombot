@@ -15,7 +15,6 @@ loadvar $STARDOCK
 loadvar $COMMAND
 goto :FIGMOVE
 include "source\include\planet"
-include "source\include\player"
 include "source\include\ship"
 :FIGMOVE
 :MOVEFIG
@@ -278,7 +277,6 @@ settextlinetrigger GETEND :DONE "Land on which planet "
 pause
 :DONE
 return
-include "source\include\player"
 :GETSHIPSTATS
 gosub :SHIP~GETSHIPSTATS
 setvar $SHIP_OFFENSIVE_ODDS $SHIP~SHIP_OFFENSIVE_ODDS

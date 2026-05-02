@@ -190,6 +190,9 @@
 					halt
 				end
 			end
+			if ($MAP~STARDOCK > 0) and ($MAP~BACKDOOR = 0)
+				gosub :MAP~GETBACKDOOR
+			end
 			loadvar $relog_message
 			if (($relog_message <> "") and ($relog_message <> "0"))
 				setvar $switchboard~message $relog_message
@@ -298,5 +301,3 @@ return
 
 #INCLUDES:
 include "source\include\bot"
-include "source\include\player"
-include "source\include\planet"

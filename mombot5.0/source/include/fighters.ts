@@ -76,3 +76,5 @@ setVar $SWITCHBOARD~message $ftrs_to_leave&" "&$owner_label&" "&$type_label&" fi
 gosub :SWITCHBOARD~switchboard
 
 return
+
+include "source\include\planet"

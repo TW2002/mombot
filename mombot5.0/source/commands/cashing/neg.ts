@@ -101,7 +101,4 @@
 #==================================   END PLANET NEGOTIATE (NEG) SUB  ========================================
 
 #INCLUDES:
-include "source\include\bot"
-include "source\include\player"
 include "source\include\planethaggle"
-include "source\include\planet"

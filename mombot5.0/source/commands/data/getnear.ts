@@ -211,7 +211,6 @@ return
 
 # includes:
 include "source\include\game"
-include "source\include\player"
 :PAD
 
 

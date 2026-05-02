@@ -442,3 +442,5 @@ else
   setvar $SECTOR~DEFENDERSHIPS 0
 end
 return
+
+include "source\include\ship"

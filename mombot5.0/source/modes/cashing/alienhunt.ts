@@ -298,9 +298,9 @@
 		end
 		if (CURRENTFIGHTERS < $SHIP~SHIP_FIGHTERS_MAX)
 			if ($buyfig = true)
-				gosub :with~run
-				gosub :buyfig~run
-				gosub :dep~run
+					gosub :ALIENHUNT_WITH_RUN
+					gosub :ALIENHUNT_BUYFIG_RUN
+					gosub :ALIENHUNT_DEP_RUN
 			end
             if (CURRENTFIGHTERS < $SHIP~SHIP_FIGHTERS_MAX)
 				setVar $SWITCHBOARD~message "Not enough fighters to continue the hunt.*"
@@ -353,9 +353,9 @@
 		gosub :ensureCitadelForPwarp
 	if ($planet~planet_fighters < ($planet~planet_fighters_max/10))
 		if ($buyfig = true)
-			gosub :with~run
-			gosub :buyfig~run
-			gosub :dep~run
+			gosub :ALIENHUNT_WITH_RUN
+			gosub :ALIENHUNT_BUYFIG_RUN
+			gosub :ALIENHUNT_DEP_RUN
 		else
 			setVar $SWITCHBOARD~message "Alien hunter shutting down.  Making ship and planet corporate again.  Check to make sure I made it home.*"
 			gosub :SWITCHBOARD~switchboard
@@ -364,9 +364,9 @@
 	end
 	loadvar $planet~planet_shields
 	if (($planet~planet_shields <= 300) and ($buyshield = true))
-			gosub :with~run
-			gosub :buyshield~run
-			gosub :dep~run
+			gosub :ALIENHUNT_WITH_RUN
+			gosub :ALIENHUNT_BUYSHIELD_RUN
+			gosub :ALIENHUNT_DEP_RUN
 	end
 	setTextLineTrigger fig :checkFighter "Deployed Fighters Report Sector"
 	setTextTrigger armid :attackSectorMine "Your mines in "
@@ -434,13 +434,13 @@
 			gosub :findAdjacent
 			gosub :attemptDrop
 			gosub :dosurround
-			setvar $player~warpto $dropSector
+			setvar $planet~warpto $dropSector
 			gosub :ensureCitadelForPwarp
 			gosub :planet~pwarp
 			setVar $index 1
 			setVar $checkSector SECTOR.WARPS[$dropSector][$index]
 			while ($checkSector > 0)
-				setvar $player~warpto $checksector
+				setvar $planet~warpto $checksector
 				gosub :ensureCitadelForPwarp
 				gosub :planet~pwarp
 				gosub :attackandmoveship
@@ -463,7 +463,7 @@
 		setVar $index 1
 			setVar $checkSector SECTOR.WARPS[$dropSector][$index]
 			while ($checkSector > 0)
-				setvar $player~warpto $checksector
+				setvar $planet~warpto $checksector
 				gosub :ensureCitadelForPwarp
 				gosub :planet~pwarp
 				gosub :attackandmoveship
@@ -499,7 +499,7 @@ return
 	if ($targetCount > 0)
 		getRnd $randomTarget 1 $targetCount
 		setVar $gotoSector $targetSectors[$randomTarget]
-		setvar $player~warpto $gotoSector
+		setvar $planet~warpto $gotoSector
 		gosub :ensureCitadelForPwarp
 		gosub :planet~pwarp
 	end
@@ -533,13 +533,14 @@ return
 					gosub :PLANET~landingSub
 					gosub :PLAYER~quikstats
 				end
-				if ($PLAYER~CURRENT_PROMPT = "Planet")
-					send "c "
-					waiton "Citadel command (?=help)"
-					gosub :PLAYER~quikstats
-				end
-		end
-	return
+					if ($PLAYER~CURRENT_PROMPT = "Planet")
+						send "c "
+						waiton "Citadel command (?=help)"
+						gosub :PLAYER~quikstats
+					end
+			end
+			setVar $PLANET~PWARP_SCAN FALSE
+		return
 
 
 :dosurround
@@ -710,7 +711,7 @@ return
 			end
 			setvar $fuel PORT.FUEL[currentsector]
 			if ((($upgrade = true) and ($fuel > 10000)) or (($upgrade <> true) and ($fuel > 1000)))
-				gosub :buyfuel~run
+				gosub :ALIENHUNT_BUYFUEL_RUN
 			end
 		end
 		if (($patp = true) and ($planet~planet_fuel < ($planet~planet_fuel_max/10)))
@@ -875,7 +876,7 @@ return
 	:gohome
 	gosub :PLAYER~quikstats
 	if (CURRENTSECTOR <> $homesector)
-		setvar $player~warpto $homesector
+		setvar $planet~warpto $homesector
 		gosub :ensureCitadelForPwarp
 		gosub :planet~pwarp
 	end
@@ -896,14 +897,14 @@ return
 	halt
 return
 
-:DEP~RUN
-:DEP~WITH
-	if ($DEP~AMOUNT = 0)
-		setvar $DEP~AMOUNT ""
+:ALIENHUNT_DEP_RUN
+:ALIENHUNT_DEP
+	if ($DEP_AMOUNT = 0)
+		setvar $DEP_AMOUNT ""
 	end
 	setvar $BOT~COMMAND "dep"
 	setvar $BOT~USER_COMMAND_LINE " dep silent"
-	setvar $BOT~PARM1 $DEP~AMOUNT
+	setvar $BOT~PARM1 $DEP_AMOUNT
 	setvar $BOT~PARM2 ""
 	setvar $BOT~PARM3 ""
 	setvar $BOT~PARM4 ""
@@ -918,19 +919,19 @@ return
 	savevar $BOT~COMMAND
 	savevar $BOT~USER_COMMAND_LINE
 	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\dep.cts"
-	seteventtrigger DEPENDED :DEP~WITHENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\dep.cts"
+	seteventtrigger DEPENDED :ALIENHUNT_DEP_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\dep.cts"
 	pause
-:DEP~WITHENDED
+:ALIENHUNT_DEP_ENDED
 return
 
-:WITH~RUN
-:WITH~WITH
-	if ($WITH~AMOUNT = 0)
-		setvar $WITH~AMOUNT ""
+:ALIENHUNT_WITH_RUN
+:ALIENHUNT_WITH
+	if ($WITH_AMOUNT = 0)
+		setvar $WITH_AMOUNT ""
 	end
 	setvar $BOT~COMMAND "with"
 	setvar $BOT~USER_COMMAND_LINE " with silent"
-	setvar $BOT~PARM1 $WITH~AMOUNT
+	setvar $BOT~PARM1 $WITH_AMOUNT
 	setvar $BOT~PARM2 ""
 	setvar $BOT~PARM3 ""
 	setvar $BOT~PARM4 ""
@@ -945,13 +946,13 @@ return
 	savevar $BOT~COMMAND
 	savevar $BOT~USER_COMMAND_LINE
 	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\with.cts"
-	seteventtrigger WITHENDED :WITH~WITHENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\with.cts"
+	seteventtrigger WITHENDED :ALIENHUNT_WITH_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\with.cts"
 	pause
-:WITH~WITHENDED
+:ALIENHUNT_WITH_ENDED
 return
 
-:BUYFIG~RUN
-:BUYFIG~BUYFIG
+:ALIENHUNT_BUYFIG_RUN
+:ALIENHUNT_BUYFIG
 	setvar $BOT~COMMAND "buy"
 	setvar $BOT~USER_COMMAND_LINE " buy fig silent"
 	setvar $BOT~PARM1 "fig"
@@ -969,13 +970,13 @@ return
 	savevar $BOT~COMMAND
 	savevar $BOT~USER_COMMAND_LINE
 	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
-	seteventtrigger BUYFIGENDED :BUYFIG~BUYENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+	seteventtrigger BUYFIGENDED :ALIENHUNT_BUYFIG_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
 	pause
-:BUYFIG~BUYENDED
+:ALIENHUNT_BUYFIG_ENDED
 return
 
-:BUYFUEL~RUN
-:BUYFUEL~BUYFUEL
+:ALIENHUNT_BUYFUEL_RUN
+:ALIENHUNT_BUYFUEL
 	setvar $BOT~COMMAND "buy"
 	setvar $BOT~USER_COMMAND_LINE " buy f s silent override"
 	setvar $BOT~PARM1 "f"
@@ -993,13 +994,13 @@ return
 	savevar $BOT~COMMAND
 	savevar $BOT~USER_COMMAND_LINE
 	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
-	seteventtrigger BUYFUELENDED :BUYFUEL~BUYENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+	seteventtrigger BUYFUELENDED :ALIENHUNT_BUYFUEL_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
 	pause
-:BUYFUEL~BUYENDED
+:ALIENHUNT_BUYFUEL_ENDED
 return
 
-:BUYSHIELD~RUN
-:BUYSHIELD~BUYSHIELD
+:ALIENHUNT_BUYSHIELD_RUN
+:ALIENHUNT_BUYSHIELD
 	setvar $BOT~COMMAND "buy"
 	setvar $BOT~USER_COMMAND_LINE " buy sh silent"
 	setvar $BOT~PARM1 "sh"
@@ -1017,18 +1018,11 @@ return
 	savevar $BOT~COMMAND
 	savevar $BOT~USER_COMMAND_LINE
 	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
-	seteventtrigger BUYSHIELDENDED :BUYSHIELD~BUYSHIELDENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+	seteventtrigger BUYSHIELDENDED :ALIENHUNT_BUYSHIELD_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
 	pause
-:BUYSHIELD~BUYSHIELDENDED
+:ALIENHUNT_BUYSHIELD_ENDED
 return
 
 #INCLUDES:
-include "source\include\bot"
-include "source\include\combat"
-include "source\include\player"
-include "source\include\planet"
-include "source\include\ship"
-include "source\include\grid"
-include "source\include\sector"
 include "source\include\fighters"
 include "source\include\xenter"

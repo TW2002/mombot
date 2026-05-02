@@ -41,8 +41,8 @@
 			gosub :SWITCHBOARD~switchboard
 			goto :wait_for_command
 		else
-			setVar $PLAYER~warpto $bot~parm1
-			if ($PLAYER~CURRENT_SECTOR = $PLAYER~warpto)
+			setVar $PLANET~warpto $bot~parm1
+			if ($PLAYER~CURRENT_SECTOR = $PLANET~warpto)
 				setVar $SWITCHBOARD~message "Already in that sector!*"
 				gosub :SWITCHBOARD~switchboard
 				goto :wait_for_command
@@ -62,5 +62,3 @@
 
 # includes:
 include "source\include\bot"
-include "source\include\player"
-include "source\include\planet"

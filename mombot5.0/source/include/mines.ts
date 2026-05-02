@@ -725,7 +725,7 @@ return
 setvar $MINES~I 0
 gosub :REFRESH_CLEAR_SECTOR_STATE
 while (($MINES~I < 10) and ($MINES~SECTORCLEAR <> TRUE))
-  gosub :MODULES~XENTER
+  gosub :XENTER~XENTER
   add $MINES~I 1
   gosub :REFRESH_CLEAR_SECTOR_STATE
 end
@@ -774,6 +774,6 @@ if ($MINES~STARTINGLOCATION = "Citadel")
 end
 return
 
+include "source\include\xenter"
+include "source\include\planet"
 include "source\include\bot"
-include "source\include\player"
-include "source\include\modules"

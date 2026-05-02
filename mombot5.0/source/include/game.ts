@@ -572,6 +572,8 @@ else
   setvar $GAME~DELAY $GAME~CHECK1
 end
 return
+
+include "source\include\player"
 :GAME~GETCOST
 
 

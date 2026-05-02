@@ -168,10 +168,5 @@ echo ANSI_12 "*NO Targets*"
 return
 
 # includes:
-include "source\include\bot"
 include "source\include\combat"
-include "source\include\player"
-include "source\include\ship"
-include "source\include\validation"
 include "source\include\planet"
-include "source\include\sector"

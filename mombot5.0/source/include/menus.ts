@@ -315,9 +315,13 @@ elseif ($MENUS~CHOSEN_OPTION = "V")
   if ($BOT~SILENT_RUNNING)
     setvar $BOT~SILENT_RUNNING FALSE
     savevar $BOT~SILENT_RUNNING
+    setvar $silent_running FALSE
+    savevar $silent_running
   else
     setvar $BOT~SILENT_RUNNING TRUE
     savevar $BOT~SILENT_RUNNING
+    setvar $silent_running TRUE
+    savevar $silent_running
   end
 elseif ($MENUS~CHOSEN_OPTION = "K")
   if ($PLAYER~SURROUND_BEFORE_HKILL)
@@ -1740,3 +1744,5 @@ setdeafclients FALSE
 getinput $MENUS~RESPONSE $MENUS~QUESTION
 setdeafclients TRUE
 return
+
+include "source\include\internal_commands"

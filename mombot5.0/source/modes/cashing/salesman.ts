@@ -690,7 +690,7 @@
 			if ($player~current_prompt <> "Citadel")
 				setvar $switchboard~message "Not at correct prompt after mine deploy!  Maybe planet is gone?  Check please!*"
 				gosub :switchboard~switchboard
-				gosub :navigate~callsaveme
+				gosub :combat~callsaveme
 			end
 		end
 
@@ -1225,9 +1225,4 @@ return
 
 
 #INCLUDES:
-include "source\include\bot"
-include "source\include\player"
 include "source\include\planethaggle"
-include "source\include\planet"
-include "source\include\ship"
-include "source\include\grid"

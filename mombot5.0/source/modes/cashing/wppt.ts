@@ -13,7 +13,9 @@ setVar $BOT~help[10]  $BOT~tab&"                     2 - avoids nothing         
 setVar $BOT~help[11]  $BOT~tab&"                                                                  "
 setVar $BOT~help[12]  $BOT~tab&"     {pay}             - pays tolls                               "
 setVar $BOT~help[13]  $BOT~tab&"                                                                  "
-setVar $BOT~help[14]  $BOT~tab&"     Fig type/count come from your Mombot tab-~ preferences      "
+setVar $BOT~help[14]  $BOT~tab&"     {fast}            - go fast, turn left :)                    "
+setVar $BOT~help[15]  $BOT~tab&"                                                                  "
+setVar $BOT~help[16]  $BOT~tab&"     Fig type/count come from your Mombot tab-~ preferences      "
 
 gosub :BOT~helpfile
 
@@ -37,10 +39,6 @@ end
 reqRecording
 logging off
 
-# Native haggle owns the offer flow for wppt.
-setVar $haggle~hagglefactor 0
-setVar $PPT~BATCHMODE 0
-
 if (($bot~parm1 = 0) OR ($bot~parm1 = 1) OR ($bot~parm1 = 2))
   setVar $Move~ScanHolo $bot~parm1
 else
@@ -53,6 +51,17 @@ else
   setVar $Move~Evasion 0
 end
 
+getWordPos " "&$bot~user_command_line&" " $pos " fast "
+if ($pos > 0)
+  setVar $batch 1
+  if (HAGGLE)
+    setvar $haggle_switch 1
+    autohaggle off
+  end
+else
+  setVar $batch 0
+end
+
 getWordPos " "&$bot~user_command_line&" " $pos " pay "
 if ($pos > 0)
   setVar $Move~Attack 3
@@ -62,31 +71,31 @@ end
 setVar $Move~PortPriority 1
 
 if ($PLAYER~DROPOFFENSIVE = TRUE)
-  setVar $WPPT~DEPLOYFIG "o"
+  setVar $WPPT_DEPLOYFIG "o"
 elseif ($PLAYER~DROPTOLL = TRUE)
-  setVar $WPPT~DEPLOYFIG "t"
+  setVar $WPPT_DEPLOYFIG "t"
 else
-  setVar $WPPT~DEPLOYFIG "d"
+  setVar $WPPT_DEPLOYFIG "d"
 end
 
 if ($PLAYER~SURROUNDFIGS > 0)
-  setVar $Move~ExtraSend "f z" & $PLAYER~SURROUNDFIGS & "*zc" & $WPPT~DEPLOYFIG & "*  "
+  setVar $Move~ExtraSend "f z" & $PLAYER~SURROUNDFIGS & "*zc" & $WPPT_DEPLOYFIG & "*  "
   setVar $Move~ExtraSendAll 1
-  setVar $PPT~DropFigs 1
+  setVar $PPT_DROPFIGS 1
 else
   setVar $Move~ExtraSend ""
   setVar $Move~ExtraSendAll 0
-  setVar $PPT~DropFigs 0
+  setVar $PPT_DROPFIGS 0
 end
 
-loadVar $PPT~SAVED
-if ($PPT~SAVED)
-  loadVar $PPT~PERCTRADE
+loadVar $PPT_SAVED
+if ($PPT_SAVED)
+  loadVar $PPT_PERCTRADE
 else
-  setVar $PPT~PERCTRADE 20
-  saveVar $PPT~PERCTRADE
-  setVar $PPT~SAVED 1
-  saveVar $PPT~SAVED
+  setVar $PPT_PERCTRADE 20
+  saveVar $PPT_PERCTRADE
+  setVar $PPT_SAVED 1
+  saveVar $PPT_SAVED
 end
 
 setVar $PortCheck~Danger 1
@@ -128,10 +137,6 @@ else
 end
 
 setvar $ppt~oneway 0
-
-if ($ppt~batchmode = 0)
-  setvar $ppt~batchmode 0
-end
 
 send "cr*r" $ppt~sectorb "*q"
 
@@ -201,7 +206,7 @@ divide $ppt~sellamountb $ppt~x
 divide $ppt~buyamounta $ppt~x
 divide $ppt~buyamountb $ppt~x
 
-if ($haggle~hagglefactor = 0)
+if ($batch)
   setvar $ppt~clock 4
 else
   setvar $ppt~clock 0
@@ -222,22 +227,12 @@ if (($ppt~sectora <> STARDOCK) and ($ppt~sectora > 10))
 end
 
 setvar $ppt~firstrun 1
-:ppt~porta
-if ($ppt~batchmode <> 1)
-  if (($ppt~sellamounta <= 0) or ($ppt~buyamountb <= 0))
-    setvar $ppt~native_buyproduct "None"
-  else
-    setvar $ppt~native_buyproduct $ppt~proda
-  end
-  gosub :PPT~NATIVEPORT
-  goto :PPT~PORTA_AFTER
-end
 
-:ppt~porta_batch
+:ppt~porta
 send "pt"
-if ($haggle~hagglefactor = 0)
+if ($batch)
   if ($ppt~onhand <> "None")
-    send "*"
+    send "**"
   end
   if (($ppt~sellamounta <= 0) or ($ppt~buyamountb <= 0))
     if (PORT.CLASS[$ppt~sectora] < 8)
@@ -249,21 +244,21 @@ if ($haggle~hagglefactor = 0)
   else
     if (PORT.BUYFUEL[$ppt~sectora] = 0)
       if ($ppt~proda = "Fuel")
-        send "*"
+        send "**"
       else
         send "0*"
       end
     end
     if (PORT.BUYORG[$ppt~sectora] = 0)
       if ($ppt~proda = "Organics")
-        send "*"
+        send "**"
       else
         send "0*"
       end
     end
     if (PORT.BUYEQUIP[$ppt~sectora] = 0)
       if ($ppt~proda = "Equipment")
-        send "*"
+        send "**"
       else
         send "0*"
       end
@@ -287,16 +282,15 @@ else
   gosub :haggle~haggle
   setvar $ppt~credits $haggle~credits
   if ($haggle~abort = 1)
-    goto :PPT~PORTA
+    goto :ppt~porta
   end
 end
-:ppt~porta_after
 subtract $ppt~buyamounta 1
 subtract $ppt~sellamounta 1
 
 if (($ppt~sellamounta <= "-1") or ($ppt~buyamountb <= "-1"))
   setvar $ppt~sector $ppt~sectora
-  if (($haggle~hagglefactor = 0) and ($ppt~batchmode = 1) and $ppt~displayoff)
+  if (($batch) and $ppt~displayoff)
     send "cn 9 qq"
   end
   return
@@ -311,13 +305,13 @@ end
 if ($ppt~firstrun = 1)
   setvar $ppt~firstrun 0
 
-  if (($haggle~hagglefactor = 0) and ($ppt~batchmode = 1))
+  if ($batch)
     setvar $ppt~displayoff 1
     send "cn 9 qq"
   end
 
   if (($ppt~sectorb <> STARDOCK) and (($ppt~sectorb > 10) and ($ppt~dropfigs = 1)))
-    send $move~extrasend
+    send "f1*ct"
   end
 
   waiton "Warping to Sector "&$ppt~sectorb
@@ -325,9 +319,9 @@ if ($ppt~firstrun = 1)
 
   getdistance $ppt~distance $ppt~sectorb $ppt~sectora
   if ($ppt~distance = 1)
-    goto :PPT~PORTB
+    goto :ppt~portb
   else
-    if (($haggle~hagglefactor = 0) and ($ppt~batchmode = 1) and $ppt~displayoff)
+    if (($batch) and $ppt~displayoff)
       send "cn 9 qq"
     end
 
@@ -339,25 +333,14 @@ if ($ppt~firstrun = 1)
     end
     return
   end
-else
-  waiton "Command [TL="
-end
-:ppt~portb
-if ($ppt~batchmode <> 1)
-  if (($ppt~sellamountb <= 0) or ($ppt~buyamounta <= 0))
-    setvar $ppt~native_buyproduct "None"
-  else
-    setvar $ppt~native_buyproduct $ppt~prodb
-  end
-  gosub :PPT~NATIVEPORT
-  goto :PPT~PORTB_AFTER
 end
 
-:ppt~portb_batch
+:ppt~portb
 send "pt"
-if ($haggle~hagglefactor = 0)
+
+if ($batch)
   if ($ppt~onhand <> "None")
-    send "*"
+    send "**"
   end
   if (($ppt~sellamountb <= 0) or ($ppt~buyamounta <= 0))
     if (PORT.CLASS[$ppt~sectorb] < 8)
@@ -369,29 +352,27 @@ if ($haggle~hagglefactor = 0)
   else
     if (PORT.BUYFUEL[$ppt~sectorb] = 0)
       if ($ppt~prodb = "Fuel")
-        send "*"
+        send "**"
       else
         send "0*"
       end
     end
     if (PORT.BUYORG[$ppt~sectorb] = 0)
       if ($ppt~prodb = "Organics")
-        send "*"
+        send "**"
       else
         send "0*"
       end
     end
     if (PORT.BUYEQUIP[$ppt~sectorb] = 0)
       if ($ppt~prodb = "Equipment")
-        send "*"
+        send "**"
       else
         send "0*"
       end
     end
-
     setvar $ppt~onhand $ppt~prodb
   end
-
   if ($ppt~clock > 0)
     waitfor "<Port>"
     waitfor "Command [TL="
@@ -407,15 +388,15 @@ else
   gosub :haggle~haggle
   setvar $ppt~credits $haggle~credits
   if ($haggle~abort = 1)
-    goto :PPT~PORTB
+    goto :ppt~portb
   end
 end
-:ppt~portb_after
+
 subtract $ppt~buyamountb 1
 subtract $ppt~sellamountb 1
 
 if (($ppt~sellamountb <= "-1") or ($ppt~buyamounta <= "-1"))
-  if (($haggle~hagglefactor = 0) and ($ppt~batchmode = 1) and $ppt~displayoff)
+  if (($batch) and $ppt~displayoff)
     send "cn 9 qq"
   end
 
@@ -429,88 +410,7 @@ else
   send $ppt~sectora
 end
 
-waiton "Command [TL="
-
-goto :PPT~PORTA
-
-:ppt~nativeport
-setvar $ppt~portactive 0
-send "pt"
-:ppt~nativeport_wait
-settextlinetrigger PPTSTART1 :PPT~NATIVEPORT_PROGRESS "<Port>"
-settextlinetrigger PPTSTART2 :PPT~NATIVEPORT_PROGRESS "Docking..."
-settexttrigger PPTSTART3 :PPT~NATIVEPORT_PROGRESS "Your offer ["
-settexttrigger PPTQTY :PPT~NATIVEPORT_QTY "How many holds of "
-if ($ppt~portactive = 1)
-  settexttrigger PPTDONE1 :PPT~NATIVEPORT_DONE "Command [TL="
-  settexttrigger PPTDONE2 :PPT~NATIVEPORT_DONE "Citadel command"
-end
-pause
-
-:ppt~nativeport_progress
-killalltriggers
-setvar $ppt~portactive 1
-goto :PPT~NATIVEPORT_WAIT
-
-:ppt~nativeport_qty
-killalltriggers
-setvar $ppt~portactive 1
-setvar $ppt~line CURRENTLINE
-gosub :PPT~HANDLENATIVEQTY
-goto :PPT~NATIVEPORT_WAIT
-
-:ppt~nativeport_done
-killalltriggers
-return
-
-:ppt~handlenativeqty
-setvar $ppt~tradeproduct "None"
-setvar $ppt~isbuy 0
-setvar $ppt~issell 0
-
-getwordpos $ppt~line $ppt~x " do you want to buy "
-if ($ppt~x > 0)
-  setvar $ppt~isbuy 1
-else
-  setvar $ppt~issell 1
-end
-
-getwordpos $ppt~line $ppt~x "Fuel"
-if ($ppt~x > 0)
-  setvar $ppt~tradeproduct "Fuel"
-else
-  getwordpos $ppt~line $ppt~x "Organics"
-  if ($ppt~x > 0)
-    setvar $ppt~tradeproduct "Organics"
-  else
-    getwordpos $ppt~line $ppt~x "Equipment"
-    if ($ppt~x > 0)
-      setvar $ppt~tradeproduct "Equipment"
-    end
-  end
-end
-
-if ($ppt~issell = 1)
-  if (($ppt~tradeproduct = "None") and ($ppt~onhand <> "None"))
-    setvar $ppt~tradeproduct $ppt~onhand
-  end
-
-  if (($ppt~onhand <> "None") and ($ppt~tradeproduct = $ppt~onhand))
-    send "*"
-    setvar $ppt~onhand "None"
-  else
-    send "0*"
-  end
-  return
-end
-
-if (($ppt~isbuy = 1) and ($ppt~tradeproduct = $ppt~native_buyproduct))
-  send "*"
-  setvar $ppt~onhand $ppt~tradeproduct
-else
-  send "0*"
-end
-return
+goto :ppt~porta
 
 :worldtrade~worldtrade
 setvar $move~checksub ":WORLDTRADE~SUB_MOVECHECK"
@@ -522,6 +422,7 @@ setvar $gameprefs~animation[$gameprefs~bank] "OFF"
 setvar $gameprefs~abortdisplayall[$gameprefs~bank] "OFF"
 setvar $gameprefs~screenpauses[$gameprefs~bank] "OFF"
 gosub :gameprefs~setgameprefs
+
 :worldtrade~start
 if (($worldtrade~credits >= $worldtrade~quota) and ($worldtrade~quota > 0))
   return
@@ -557,7 +458,7 @@ elseif ((SECTOR.FIGS.OWNER[$move~cursector] = "yours") or (SECTOR.FIGS.OWNER[$mo
     gosub :ppt~ppt
 
     if ($ppt~aborted = 0)
-      if ($haggle~hagglefactor = 0)
+      if ($batch)
         gosub :PLAYER~QUIKSTATS
         setvar $worldtrade~credits $PLAYER~CREDITS
       else
@@ -734,6 +635,5 @@ return
 # includes:
 include "source\include\bot"
 include "source\include\haggle"
-include "source\include\move"
-include "source\include\player"
-include "source\include\gameprefs"
+include "source\include\ppt"
+include "source\include\worldtrade"

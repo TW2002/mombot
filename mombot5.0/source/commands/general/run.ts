@@ -40,7 +40,7 @@ halt
 return
 
 
-:MAIN~module_vars
+:module_vars
 	saveVar $bot~command
 	saveVar $bot~user_command_line
 	setVar $switchboard~bot_name $bot~bot_name
@@ -56,14 +56,14 @@ return
 	saveVar $bot~parm8
 	saveVar $bot~bot_turn_limit
 	saveVar $player~unlimitedGame
-	gosub :MAIN~backwards_compatible
+	gosub :backwards_compatible
 return
 
 :bot~wait_for_command
 halt
 
 
-:MAIN~backwards_compatible
+:backwards_compatible
 	setVar  $safe_ship $bot~safe_ship
 	saveVar $safe_ship
 	setVar  $safe_planet $bot~safe_planet
@@ -76,6 +76,8 @@ halt
 	saveVar $bot_name
 	setVar $self_command $bot~self_command
 	saveVar $self_command
+	setVar $command_caller $bot~command_caller
+	saveVar $command_caller
 	setvar $parm1 $bot~parm1
 	setvar $parm2 $bot~parm2
 	setvar $parm3 $bot~parm3
@@ -223,6 +225,4 @@ halt
 return
 
 #-=-=-=-=-includes-=-=-=-=-
-include "source\include\bot"
-include "source\include\internal_commands"
 include "source\include\user_interface"

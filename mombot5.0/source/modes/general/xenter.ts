@@ -1,55 +1,40 @@
 logging "OFF"
 gosub :BOT~LOADVARS
-:EXIT
-:XENTER
+:XENTER~RUN
 
 
 
 
-killalltriggers
-gosub :PLAYER~QUIKSTATS
-isnumber $TEST $BOT~PARM1
-if ($TEST = FALSE)
+isnumber $XENTER~TEST $BOT~PARM1
+if ($XENTER~TEST = FALSE)
   setvar $BOT~PARM1 1
 else
   if ($BOT~PARM1 <= 0)
     setvar $BOT~PARM1 1
   end
 end
-getwordpos $BOT~USER_COMMAND_LINE $POS "fill"
-if ($POS > 0)
-  setvar $REFILL TRUE
+getwordpos $BOT~USER_COMMAND_LINE $XENTER~POS "fill"
+if ($XENTER~POS > 0)
+  setvar $XENTER~REFILL TRUE
 else
-  setvar $REFILL FALSE
+  setvar $XENTER~REFILL FALSE
 end
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $BOT~VALIDPROMPTS "Command Citadel"
-gosub :BOT~CHECKSTARTINGPROMPT
-if ($STARTINGLOCATION = "Citadel")
-  send "q m n t *"
-  gosub :PLANET~GETPLANETINFO
-  send "q "
-end
-:EXIT_XENTER
-setvar $I 1
-while ($I <= $BOT~PARM1)
-  send "q y * t* * *" $BOT~PASSWORD "*    *    *       za9999*   z*   /"
-  waiton #179
+:XENTER~RUNLOOP
+setvar $XENTER~I 1
+while ($XENTER~I <= $BOT~PARM1)
+  gosub :XENTER~XENTER
   if (($PLAYER~CURRENT_SECTOR > 10) and ($PLAYER~CURRENT_SECTOR <> $MAP~STARDOCK))
-    if ($REFILL = TRUE)
+    if ($XENTER~REFILL = TRUE)
       gosub :PLAYER~TOPOFF
     else
-      if ($I = $BOT~PARM1)
+      if ($XENTER~I = $BOT~PARM1)
         send "f z1* z c d * "
       end
     end
   end
-  add $I 1
+  add $XENTER~I 1
 end
-:DONEEXITENTER
-if ($STARTINGLOCATION = "Citadel")
-  send "l j"&#8&$PLANET~PLANET&"*  m * * * c "
-end
+:XENTER~DONE
 killalltriggers
 gosub :PLAYER~QUIKSTATS
 if ($BOT~PARM1 > 1)
@@ -64,8 +49,4 @@ gosub :SWITCHBOARD~SWITCHBOARD
 halt
 
 # includes:
-include "source\include\bot"
-include "source\include\player"
-include "source\include\validation"
-include "source\include\planet"
-include "source\include\map"
+include "source\include\xenter"

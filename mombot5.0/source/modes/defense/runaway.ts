@@ -197,30 +197,30 @@ loadVar $bot~parm8
 
 :run_pwarp
 	if ($firstrun <> 0)
-		setVar $player~warpto $firstrun
+		setVar $planet~warpto $firstrun
 		setVar $firstrun 0
 	else
 		gosub :getNewRunAwaySector
 	end
 	if ($doEvacuate)
-		setVar $bot~parm1 $player~warpto
+		setVar $bot~parm1 $planet~warpto
 		goto :evac_start
 	end
-	setVar $player~warpto $player~warpto
+	setVar $planet~PWARP_SCAN FALSE
 	setVar $player~bot_name $switchboard~bot_name
-	gosub :player~pwarp
+	gosub :planet~pwarp
 	gosub :player~quikstats
-	if ($player~CURRENT_SECTOR <> $player~warpto)
+	if ($player~CURRENT_SECTOR <> $planet~warpto)
 		goto :run_pwarp
 	end
 	setVar $runsec $player~CURRENT_SECTOR
 	goto :getsettings
 
 :getNewRunAwaySector
-	setVar $player~warpto 0
-	while ($player~warpto <= 0)
+	setVar $planet~warpto 0
+	while ($planet~warpto <= 0)
 		getRnd $random 1 $run_database_count
-		setVar $player~warpto $run_database[$random]
+		setVar $planet~warpto $run_database[$random]
 	end
 return
 #============================== END RUNAWAY (RUNAWAY) SUB ==============================
@@ -350,7 +350,7 @@ return
 		if ($mode = "Runaway")
 			send "qqq* "
 			gosub :getNewRunAwaySector
-			setVar $target_sector $player~warpto
+			setVar $target_sector $planet~warpto
 			goto :evac_move
 		end
 		send "'{" $switchboard~bot_name "} - No Fighter at Target Sector.  Shutting down Evac.*"
@@ -383,4 +383,3 @@ return
 return
 
 include "source\include\planet"
-include "source\include\player"

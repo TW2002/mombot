@@ -602,9 +602,7 @@ return
 # includes:
 
 include "source\include\bot"
-include "source\include\move"
 include "source\include\findproduct"
 include "source\include\haggle"
-include "source\include\player"
-include "source\include\planet"
+include "source\include\makeplanet"
 include "source\include\planetnames"

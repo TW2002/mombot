@@ -626,3 +626,6 @@ goto :USER_INTERFACE~RUNUSERCOMMANDLINE
 
 switchbot $BOT~PARM1
 halt
+
+include "source\include\user_interface"
+include "source\include\bot"

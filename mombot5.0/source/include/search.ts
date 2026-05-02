@@ -372,3 +372,5 @@ if ($SEARCH~KNOWN_WARPS = 1)
   end
 end
 return
+
+include "source\include\switchboard"

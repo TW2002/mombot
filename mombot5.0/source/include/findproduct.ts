@@ -12,12 +12,12 @@ setvar $findproduct~location 0
 
 if (SECTOR.PLANETCOUNT[$findproduct~sector] > 0)
 
-  setvar $planetcheck~ignorelist $findproduct~ignorelist
-  setvar $planetcheck~planetchecksub ":FINDPRODUCT~CHECKPRODUCT"
-  gosub :planetcheck~planetcheck
+  setvar $planet~planetcheck_ignorelist $findproduct~ignorelist
+  setvar $planet~planetchecksub ":FINDPRODUCT~CHECKPRODUCT"
+  gosub :planet~planetcheck
 
-  if ($planetcheck~found > 0)
-    setvar $findproduct~location $planetcheck~found
+  if ($planet~planetcheck_found > 0)
+    setvar $findproduct~location $planet~planetcheck_found
 
     if ($findproduct~stayonplanet = 0)
       send "q"
@@ -70,19 +70,21 @@ if ($findproduct~product = "C")
   while ($findproduct~i <= 3)
     if ($planet~colo[$findproduct~i] >= $findproduct~quantity)
       setvar $findproduct~category $findproduct~i
-      setvar $planetcheck~found 1
+      setvar $planet~planetcheck_found 1
       return
     end
     add $findproduct~i 1
   end
 else
   if ($planet~amount[$findproduct~product] >= $findproduct~quantity)
-    setvar $planetcheck~found 1
+    setvar $planet~planetcheck_found 1
   end
 end
 
-if ($planetcheck~found = 0)
-  setvar $findproduct~ignorelist $findproduct~ignorelist&" "&$planetcheck~check_planet
+if ($planet~planetcheck_found = 0)
+  setvar $findproduct~ignorelist $findproduct~ignorelist&" "&$planet~planetcheck_check_planet
 end
 
 return
+
+include "source\include\planet"

@@ -16,7 +16,7 @@ savevar $bot~minor_version
 gosub :combat~init
 goto :BOT~load_bot
 
-:MAIN~module_vars
+:module_vars
 	saveVar $bot~command
 	saveVar $bot~command_typed
 	saveVar $bot~user_command_line
@@ -34,13 +34,13 @@ goto :BOT~load_bot
 	saveVar $bot~bot_turn_limit
 	saveVar $player~unlimitedGame
 	savevar $bot~letter
-	gosub :MAIN~backwards_compatible
+	gosub :backwards_compatible
 return
 
 
 
 
-:MAIN~backwards_compatible
+:backwards_compatible
 	setVar  $safe_ship $bot~safe_ship
 	saveVar $safe_ship
 	setVar  $safe_planet $bot~safe_planet
@@ -55,6 +55,8 @@ return
 	saveVar $bot_name
 	setVar $self_command $bot~self_command
 	saveVar $self_command
+	setVar $command_caller $bot~command_caller
+	saveVar $command_caller
 	setvar $parm1 $bot~parm1
 	setvar $parm2 $bot~parm2
 	setvar $parm3 $bot~parm3
@@ -243,16 +245,6 @@ return
 
 
 #INCLUDES:
-include "source\include\bot"
-include "source\include\connectivity"
-include "source\include\menus"
-include "source\include\internal_commands"
-include "source\include\user_interface"
-include "source\include\modules"
-include "source\include\player"
-include "source\include\ship"
-include "source\include\gameprefs"
-include "source\include\combat"
-include "source\include\sector"
-include "source\include\map"
 include "source\include\game"
+include "source\include\combat"
+include "source\include\bot"

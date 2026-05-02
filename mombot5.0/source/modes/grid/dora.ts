@@ -690,12 +690,12 @@ return
 						if ($hasFig = "")
 							setVar $hasFig 0
 						end
-						if ($hasFig = 1)
-							add $stat_moves 1
-							add $stat_retreats 1
-							setVar $PLAYER~moveIntoSector $stackSector
-							gosub :PLAYER~moveIntoSector
-							gosub :player~quikstats
+							if ($hasFig = 1)
+								add $stat_moves 1
+								add $stat_retreats 1
+								setVar $MOVE~moveIntoSector $stackSector
+								gosub :MOVE~moveIntoSector
+								gosub :player~quikstats
 							if (PORT.BUYORE[$PLAYER~CURRENT_SECTOR] = 0)
 								send "jy"
 								send "p t *  *  "
@@ -734,8 +734,8 @@ return
 					if ($hasFig = 1)
 						add $stat_moves 1
 						add $stat_retreats 1
-						setVar $PLAYER~moveIntoSector $stackSector
-						gosub :PLAYER~moveIntoSector
+						setVar $MOVE~moveIntoSector $stackSector
+						gosub :MOVE~moveIntoSector
 						gosub :player~quikstats
 						goSub :checkPassingTrading
 	
@@ -773,16 +773,16 @@ return
 		while ($i <= $newOptions)
 			if ($newi[$i] <> $bestSector)
 
-				setVar $PLAYER~moveIntoSector $newi[$i] 
-				gosub :PLAYER~moveIntoSector
+				setVar $MOVE~moveIntoSector $newi[$i] 
+				gosub :MOVE~moveIntoSector
 				setSectorParameter  $newi[$i] "FIGSEC" TRUE
 				gosub :player~quikstats
 				send "sd"
 				goSub :checkPassingTrading
 				add $stat_moves 1
 				add $stat_figsdown 1		
-				setVar $PLAYER~moveIntoSector $returnSector 
-				gosub :PLAYER~moveIntoSector
+				setVar $MOVE~moveIntoSector $returnSector 
+				gosub :MOVE~moveIntoSector
 				gosub :player~quikstats
 				add $stat_moves 1
 			end
@@ -1552,8 +1552,8 @@ return
 	else
 		setVar $origin $PLAYER~CURRENT_SECTOR
 
-		setVar $PLAYER~moveIntoSector $bestSector
-		gosub :PLAYER~moveIntoSector
+		setVar $MOVE~moveIntoSector $bestSector
+		gosub :MOVE~moveIntoSector
 		setSectorParameter $bestSector "FIGSEC" TRUE
 		waitfor "Warps to S"
 		waitfor "Command ["
@@ -1849,4 +1849,3 @@ return
 return
 
 include "source\include\bot"
-include "source\include\player"

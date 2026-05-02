@@ -185,7 +185,6 @@ killtrigger CITNOTBUILTYET
 setvar $SUCESSFULCITADEL TRUE
 setvar $STARTINGLOCATION "Citadel"
 return
-include "source\include\player"
 :GETPLANETINFO
 gosub :PLANET~GETPLANETINFO
 setvar $PLANET $PLANET~PLANET

@@ -31,7 +31,7 @@ if ($PLAYER~FIGHTERS <= 0)
     gosub :PLAYER~QUIKSTATS
     if ($PLAYER~FIGHTERS <= 0)
       setvar $SWITCHBOARD~MESSAGE ANSI_12&"*You have no fighters even after refurb.  Hiding out on dock.*"&ANSI_7
-      gosub :BOT~ECHO
+      gosub :COMBAT~ECHO
     end
     if ($PLAYER~CURRENT_SECTOR = $MAP~STARDOCK)
       send " q q q "
@@ -43,7 +43,7 @@ if ($PLAYER~FIGHTERS <= 0)
     gosub :PLAYER~QUIKSTATS
     if ($PLAYER~FIGHTERS <= 0)
       setvar $SWITCHBOARD~MESSAGE ANSI_12&"*You have no fighters.*"&ANSI_7
-      gosub :BOT~ECHO
+      gosub :COMBAT~ECHO
       return
     end
   end
@@ -92,7 +92,7 @@ if (($SECTOR~EMPTYSHIPCOUNT + ($SECTOR~FAKETRADERCOUNT + $SECTOR~REALTRADERCOUNT
 else
 
   setvar $SWITCHBOARD~MESSAGE "*You have no targets.*"
-  gosub :BOT~ECHO
+  gosub :COMBAT~ECHO
 
   goto :STOPPINGPOINT
 end
@@ -133,14 +133,14 @@ if ($PLAYER~ISFOUND = TRUE)
 else
 
   setvar $SWITCHBOARD~MESSAGE "*You have no valid targets.*"
-  gosub :BOT~ECHO
+  gosub :COMBAT~ECHO
 
   goto :STOPPINGPOINT
 end
 if (($SECTOR~PASSIVE = TRUE) and ($COMBAT~STARTING_FIGHTERS < $COMBAT~ENEMY_FIGHTERS))
   setvar $PLAYER~FIGHTERS $COMBAT~STARTING_FIGHTERS
   setvar $SWITCHBOARD~MESSAGE "*Enemy has too many fighters to attack auto ("&$COMBAT~ENEMY_FIGHTERS&").*"
-  gosub :BOT~ECHO
+  gosub :COMBAT~ECHO
 else
   send $COMBAT~ATTACKSTRING&"* "
 end
@@ -282,7 +282,7 @@ if ($PLAYER~ISFOUND = FALSE)
     halt
   end
   setvar $SWITCHBOARD~MESSAGE "*You have no targets.*"
-  gosub :BOT~ECHO
+  gosub :COMBAT~ECHO
   goto :CAPSTOPPINGPOINT
 else
   if ($PLAYER~STARTINGLOCATION = "Citadel")
@@ -468,7 +468,7 @@ else
       pause
     end
     setvar $SWITCHBOARD~MESSAGE "*They attacked me, switching to 1 fighter attacks.*"
-    gosub :BOT~ECHO
+    gosub :COMBAT~ECHO
     setvar $COMBAT~SHIP_FIGHTERS 1
     :COMBAT~CAP_IT
     killtrigger COMBAT_SCAN
@@ -611,8 +611,8 @@ else
   send "q m***c "
   gosub :PLAYER~QUIKSTATS
   if ($PLAYER~FIGHTERS <= 0)
-    send "'{" $SWITCHBOARD~BOT_NAME "} - Out of fighters, shutting down "&$BOT~COMMAND&".*"
-    setvar $KILLING~ERROR TRUE
+    send "'{" $SWITCHBOARD~BOT_NAME "} - Out of fighters, shutting down "&$command&".*"
+    setvar $COMBAT~ERROR TRUE
     return
   end
 end
@@ -648,7 +648,7 @@ else
     halt
   end
   setvar $SWITCHBOARD~MESSAGE ANSI_12&"*You have no targets.*"&ANSI_7
-  gosub :BOT~ECHO
+  gosub :COMBAT~ECHO
   return
 end
 if ($PLAYER~ISFOUND = TRUE)
@@ -687,7 +687,7 @@ if ($PLAYER~ISFOUND = TRUE)
       getwordpos $PLAYER~TRADERS[($COMBAT~C - 1)][1] $COMBAT~POS $PLAYER~THISKILLTARGET
       if (($PLAYER~LASTKILLTARGET <> "") and ($PLAYER~THISKILLTARGET <> $PLAYER~LASTKILLTARGET))
         setvar $SWITCHBOARD~MESSAGE "*Target has changed, time to rescan..*"
-        gosub :BOT~ECHO
+        gosub :COMBAT~ECHO
         send " c "
         goto :DONEKILL
       end
@@ -755,7 +755,7 @@ else
     halt
   end
   setvar $SWITCHBOARD~MESSAGE ANSI_12&"*You have no valid targets.*"&ANSI_7
-  gosub :BOT~ECHO
+  gosub :COMBAT~ECHO
   return
 end
 :COMBAT~DONEKILL
@@ -923,7 +923,7 @@ if ($COMBAT~SLINGSHOT)
     gosub :PLAYER~QUIKSTATS
   end
   if ($PLAYER~CURRENT_SECTOR <> $COMBAT~HKILL_START_SECTOR)
-    gosub :CALLSAVEME
+    gosub :COMBAT~CALLSAVEME
     setvar $SWITCHBOARD~MESSAGE "After save me, resetting.*"
   else
     setvar $SWITCHBOARD~MESSAGE $COMBAT~TITLE&" - Attacking sector "&$COMBAT~TEST_SECTOR&".*"
@@ -968,7 +968,7 @@ else
   end
   gosub :PLAYER~QUIKSTATS
   if ($PLAYER~CURRENT_SECTOR <> $COMBAT~HKILL_START_SECTOR)
-    gosub :CALLSAVEME
+    gosub :COMBAT~CALLSAVEME
     gosub :PLAYER~QUIKSTATS
     setvar $SWITCHBOARD~MESSAGE "After save me, resetting.*"
   else
@@ -980,24 +980,24 @@ end
 return
 :COMBAT~CALLSAVEME
 
-setvar $BOT~COMMAND "call"
-setvar $BOT~PARM1 ""
-setvar $BOT~USER_COMMAND_LINE " call  "
-setvar $BOT~PARM2 ""
-setvar $BOT~PARM3 ""
-setvar $BOT~PARM4 ""
-setvar $BOT~PARM5 ""
-setvar $BOT~PARM6 ""
-savevar $BOT~COMMAND
-savevar $BOT~USER_COMMAND_LINE
-savevar $BOT~PARM1
-savevar $BOT~PARM2
-savevar $BOT~PARM3
-savevar $BOT~PARM4
-savevar $BOT~PARM5
-savevar $BOT~PARM6
-load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\defense\call.cts"
-seteventtrigger CALLEND1 :CALLEND1 "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\defense\call.cts"
+setvar $command "call"
+setvar $parm1 ""
+setvar $user_command_line " call  "
+setvar $parm2 ""
+setvar $parm3 ""
+setvar $parm4 ""
+setvar $parm5 ""
+setvar $parm6 ""
+savevar $command
+savevar $user_command_line
+savevar $parm1
+savevar $parm2
+savevar $parm3
+savevar $parm4
+savevar $parm5
+savevar $parm6
+load "scripts\"&$mombot_directory&"\commands\defense\call.cts"
+seteventtrigger CALLEND1 :COMBAT~CALLEND1 "SCRIPT STOPPED" "scripts\"&$mombot_directory&"\commands\defense\call.cts"
 pause
 :COMBAT~CALLEND1
 return
@@ -1104,7 +1104,7 @@ else
 end
 gosub :PLAYER~QUIKSTATS
 if ($PLAYER~CURRENT_SECTOR <> $COMBAT~HKILL_START_SECTOR)
-  gosub :CALLSAVEME
+  gosub :COMBAT~CALLSAVEME
   gosub :PLAYER~QUIKSTATS
   setvar $SWITCHBOARD~MESSAGE "After save me, resetting.*"
 else
@@ -1112,3 +1112,17 @@ else
   setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~MESSAGE&"Attack made and back in original sector!*"
 end
 return
+
+:COMBAT~ECHO
+getdeafclients $COMBAT~BOTISDEAF
+if ($COMBAT~BOTISDEAF)
+  setvar $COMBAT~SILENT_RUNNING TRUE
+  gosub :SWITCHBOARD~SWITCHBOARD
+else
+  echo $SWITCHBOARD~MESSAGE
+end
+return
+
+include "source\include\grid"
+include "source\include\sector"
+include "source\include\player"

@@ -69,5 +69,3 @@ halt
 
 # includes:
 include "source\include\bot"
-include "source\include\player"
-include "source\include\planet"

@@ -77,8 +77,5 @@ gosub :COMBAT~FASTCAPTURE
 halt
 
 # includes:
-include "source\include\bot"
 include "source\include\combat"
-include "source\include\ship"
-include "source\include\player"
-include "source\include\sector"
+include "source\include\bot"

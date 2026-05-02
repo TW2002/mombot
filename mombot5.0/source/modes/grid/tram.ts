@@ -6,7 +6,7 @@ gosub :BOT~loadVars
 	setVar $BOT~help[3]  $BOT~tab&"    Best when there are clusters of adjacent unfigged sectors."
 	setVar $BOT~help[4]  $BOT~tab&"    REFRESH FIG LIST!"
 	setVar $BOT~help[5]  $BOT~tab&"    "
-		setVar $BOT~help[6]  $BOT~tab&"    tram [stop_turns] [stop_fighters] {saveme} {quiet}"
+		setVar $BOT~help[6]  $BOT~tab&"    tram [stop_turns] [stop_fighters] {saveme} {quiet} {burst:n}"
 	setVar $BOT~help[7]  $BOT~tab&"       "
 	setVar $BOT~help[8]  $BOT~tab&" Options:"
 	setVar $BOT~help[9]  $BOT~tab&"    "
@@ -14,11 +14,12 @@ gosub :BOT~loadVars
 	setVar $BOT~help[11]  $BOT~tab&"   [stop_fighters]  stop when you get to these fighters"
 		setVar $BOT~help[12]  $BOT~tab&"   {saveme}  when gridder is stuck it will call saveme to be safe"
 		setVar $BOT~help[13]  $BOT~tab&"   {quiet}   suppress running Total Gridded / Efficiency messages"
-		setVar $BOT~help[14] $BOT~tab&"                   "
+		setVar $BOT~help[14] $BOT~tab&"   {burst:n} number of macros to burst at once, default 4"
+		setVar $BOT~help[15] $BOT~tab&"                   "
 	
 	gosub :bot~helpfile
 
-	setVar $BOT~script_title "Tram Chain Gridder"
+	setVar $BOT~script_title "Train Ram Gridder - Jump Aboard the Choo Choo!"
 	gosub :BOT~banner
 
 	gosub :player~quikstats
@@ -51,13 +52,14 @@ gosub :BOT~loadVars
 	setVar $final_Density_Found_Count 0
 
 	:Load_Settings
-		killAllTriggers
-			setVar $minimum_turns 0
-			setVar $minimum_figs 0
-			setVar $saveme 0
-			setVar $quiet 0
-			setArray $numeric 3
-			setVar $numericCount 0
+			killAllTriggers
+				setVar $minimum_turns 0
+				setVar $minimum_figs 0
+				setVar $saveme 0
+				setVar $quiet 0
+				setVar $burst_size 4
+				setArray $numeric 3
+				setVar $numericCount 0
 
 		getWord $bot~user_command_line $bot~parm1 1
 		getWord $bot~user_command_line $bot~parm2 2
@@ -67,10 +69,34 @@ gosub :BOT~loadVars
 		if ($pos > 0)
 			setVar $saveme 1
 		end
-		getwordpos " "&$bot~user_command_line&" " $pos " quiet "
-		if ($pos > 0)
-			setVar $quiet 1
-		end
+			getwordpos " "&$bot~user_command_line&" " $pos " quiet "
+			if ($pos > 0)
+				setVar $quiet 1
+			end
+
+			setVar $token_index 1
+			getWord $bot~user_command_line $token $token_index
+			while ($token <> 0)
+				if ($token = "burst")
+					getWord $bot~user_command_line $burst_value ($token_index + 1)
+					isNumber $test $burst_value
+					if ($test)
+						setVar $burst_size $burst_value
+					end
+				else
+					getWordPos $token $pos "burst:"
+					if ($pos = 1)
+						setVar $burst_value $token
+						replaceText $burst_value "burst:" ""
+						isNumber $test $burst_value
+						if ($test)
+							setVar $burst_size $burst_value
+						end
+					end
+				end
+				add $token_index 1
+				getWord $bot~user_command_line $token $token_index
+			end
 
 		isNumber $test $bot~parm1
 		if ($test)
@@ -114,13 +140,20 @@ gosub :BOT~loadVars
 				gosub :SWITCHBOARD~switchboard
 				halt
 			end
-	elseif ($minimum_figs < 50)
-		setVar $SWITCHBOARD~message "Stop Fighters must be a number greater than 49!.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
-		if (STARDOCK = 0)
-		send "V"
+		elseif ($minimum_figs < 50)
+			setVar $SWITCHBOARD~message "Stop Fighters must be a number greater than 49!.*"
+			gosub :SWITCHBOARD~switchboard
+			halt
+		end
+		if ($burst_size < 1)
+			setVar $SWITCHBOARD~message "Burst size must be a number from 1 to 10.*"
+			gosub :SWITCHBOARD~switchboard
+			halt
+		elseif ($burst_size > 10)
+			setVar $burst_size 10
+		end
+			if (STARDOCK = 0)
+			send "V"
 		waitFor "The StarDock is located in sector "
 		getWord CURRENTLINE $map~stardock 7
 		stripText $map~stardock "."
@@ -166,20 +199,22 @@ gosub :BOT~loadVars
 		setVar $SWITCHBOARD~message "Unlimited turn game detected. Stopping at " & $minimum_figs & " fighters.*"
 	else
 		setVar $SWITCHBOARD~message "Stopping at "& $minimum_turns & " turns and " & $minimum_figs & " fighters.*"
-	end
-	gosub :SWITCHBOARD~switchboard
-	if ($saveme = 1)
-		setVar $SWITCHBOARD~message "I will call SAVE ME when stuck!*"
+		end
 		gosub :SWITCHBOARD~switchboard
+		setVar $SWITCHBOARD~message "Burst size set to " & $burst_size & " macros per batch.*"
+		gosub :SWITCHBOARD~switchboard
+		if ($saveme = 1)
+			setVar $SWITCHBOARD~message "I will call SAVE ME when stuck!*"
+			gosub :SWITCHBOARD~switchboard
 	else
 		setVar $SWITCHBOARD~message "SAVEME NOT IN USE!!!*"
 		gosub :SWITCHBOARD~switchboard
 	end
 	
-	setDelayTrigger delay :wait 5000
-	pause
-	:wait
-	killalltriggers
+	#setDelayTrigger delay :wait 500
+	#pause
+	#:wait
+	#killalltriggers
 
 :Start_Gridding
 
@@ -227,7 +262,8 @@ gosub :BOT~loadVars
 :Build_Array
      setArray $target_sector 10
      setArray $result_distance 10
-     setArray $macro 10
+     setArray $macro $burst_size
+     setArray $macro_path SECTORS
      setArray $Path_sectors 0
      setVar $path_sector_count 0
      setVar $macro_hops 0
@@ -241,7 +277,7 @@ gosub :BOT~loadVars
      if ($player~unlimitedGame = TRUE)
           setVar $projected_Turns 65520
      end
-     while ($count1 <= 10) AND ($projected_Turns > $minimum_turns)
+     while ($count1 <= $burst_size) AND ($projected_Turns > $minimum_turns)
           setVar $using_chain FALSE
           setVar $focus_sector 0
           goSub :Get_Near_Chain
@@ -274,7 +310,7 @@ gosub :BOT~loadVars
                     setVar $step_Count 1
                     setVar $last_step FALSE
                     while ($step_Count <= $path_length)
-                         setVar $next_Sector $path[$step_Count]
+                         setVar $next_Sector $macro_path[$step_Count]
                          if ($step_Count = $path_length)
                               setVar $last_step TRUE
                          end
@@ -286,16 +322,16 @@ gosub :BOT~loadVars
                     add $built_macros 1
                     add $total_targets $newgrid
                     add $total_hops $result_Distance[$count1]
-               else
-                    getCourse $path $previous_sector $focus_sector
-                    setArray $gridded_sectors $path
-		          setVar $step_Count 2
-		          setVar $last_step FALSE
-		          while ($step_Count <= ($result_distance[$count1] + 1))
-			          setVar $next_Sector $path[$step_Count]
+	               else
+                    getCourse $route $previous_sector $focus_sector
+                    setArray $gridded_sectors $route
+			          setVar $step_Count 2
+			          setVar $last_step FALSE
+			          while ($step_Count <= ($result_distance[$count1] + 1))
+				          setVar $next_Sector $route[$step_Count]
                          if ($step_Count = ($result_distance[$count1] + 1))
                               setVar $last_step TRUE
-			          end
+				          end
 			          goSub :Build_Move_Macro_Routine
 			          setVar $macro[$count1] $macro[$count1]&$macro_text
 			          add $step_Count 1
@@ -333,6 +369,7 @@ gosub :BOT~loadVars
 	     gosub :Get_Current_Prompt_Sector
 	     if ($prompt_sector > 0)
 	          setVar $focus_sector $prompt_sector
+	          setVar $PLAYER~CURRENT_SECTOR $prompt_sector
 	     end
 	     if ($focus_sector <> $final_sector)
 	          if ($focus_sector > 10)
@@ -343,6 +380,7 @@ gosub :BOT~loadVars
 	                    gosub :Get_Current_Prompt_Sector
 	                    if ($prompt_sector > 0)
 	                         setVar $focus_sector $prompt_sector
+	                         setVar $PLAYER~CURRENT_SECTOR $prompt_sector
 	                    end
 	               elseif ($PLAYER~CURRENT_PROMPT = "Planet")
 	                    send "q "
@@ -351,6 +389,7 @@ gosub :BOT~loadVars
 	                    gosub :Get_Current_Prompt_Sector
 	                    if ($prompt_sector > 0)
 	                         setVar $focus_sector $prompt_sector
+	                         setVar $PLAYER~CURRENT_SECTOR $prompt_sector
 	                    end
 	               elseif ($PLAYER~CURRENT_PROMPT = "Computer")
 	                    send "q"
@@ -359,6 +398,7 @@ gosub :BOT~loadVars
 	                    gosub :Get_Current_Prompt_Sector
 	                    if ($prompt_sector > 0)
 	                         setVar $focus_sector $prompt_sector
+	                         setVar $PLAYER~CURRENT_SECTOR $prompt_sector
 	                    end
 	               end
 	          end
@@ -403,6 +443,12 @@ gosub :BOT~loadVars
      setVar $newgrid 0
      setVar $path_length 0
      setVar $SIZEOF_CHAIN 4
+     setArray $nearest 0
+     getnearestwarps $nearest $previous_sector
+     setVar $nearest_limit $nearest
+     if ($nearest_limit > 600)
+          setVar $nearest_limit 600
+     end
 
      while ($SIZEOF_CHAIN > 0) AND ($chain_found = FALSE)
           goSub :Scan_Near_Chain_Size
@@ -413,14 +459,11 @@ gosub :BOT~loadVars
      return
 
 :Scan_Near_Chain_Size
-     setArray $nearest 0
      setVar $newgrid 0
      setVar $path_length 0
 
-     getnearestwarps $nearest $previous_sector
-
      setVar $n 0
-     while ($n < $nearest) AND ($chain_found = FALSE)
+     while ($n < $nearest_limit) AND ($chain_found = FALSE)
           add $n 1
           setVar $PTR $nearest[$n]
           if ($PTR <= 10) OR ($PTR = STARDOCK) OR ($PTR = $previous_sector) OR ($fig_grid[$PTR] > 0)
@@ -448,52 +491,54 @@ gosub :BOT~loadVars
                     end
                end
 
-               if ($LINKS >= $SIZEOF_CHAIN)
-                    setVar $chain_start $PTR
-                    getWord $CHAIN $chain_target ($LINKS + 1)
-                    setVar $score $LINKS
-                    setVar $newgrid $LINKS
-                    setVar $path_length 0
+	               if ($LINKS >= $SIZEOF_CHAIN)
+	                    setVar $chain_start $PTR
+	                    getWord $CHAIN $chain_target ($LINKS + 1)
+	                    setVar $score $LINKS
+	                    setVar $newgrid $LINKS
+	                    setVar $path_length 0
 
-                    getCourse $course $previous_sector $chain_start
-                    setVar $j 1
-                    while ($j <= $course)
-                         add $j 1
-                         add $path_length 1
-                         setVar $path[$path_length] $course[$j]
-                         if ($fig_grid[$course[$j]] > 0)
-                              subtract $score 1
-                         else
-                              add $newgrid 1
-                         end
-                    end
+	                    getCourse $course $previous_sector $chain_start
+	                    if ($course > 0)
+	                         setVar $j 1
+	                         while ($j <= $course)
+	                              add $j 1
+	                              add $path_length 1
+	                              setVar $macro_path[$path_length] $course[$j]
+	                              if ($fig_grid[$course[$j]] > 0)
+	                                   subtract $score 1
+	                              else
+	                                   add $newgrid 1
+	                              end
+	                         end
 
-                    setVar $chain_path_overlap FALSE
-                    setVar $j 2
-                    while ($j <= ($LINKS + 1)) AND ($chain_path_overlap = FALSE)
-                         getWord $CHAIN $path_test_sector $j
-                         gosub :Path_Contains_Sector
-                         if ($path_contains = TRUE)
-                              setVar $chain_path_overlap TRUE
-                         end
-                         add $j 1
-                    end
+	                         setVar $chain_path_overlap FALSE
+	                         setVar $j 2
+	                         while ($j <= ($LINKS + 1)) AND ($chain_path_overlap = FALSE)
+	                              getWord $CHAIN $path_test_sector $j
+	                              gosub :Path_Contains_Sector
+	                              if ($path_contains = TRUE)
+	                                   setVar $chain_path_overlap TRUE
+	                              end
+	                              add $j 1
+	                         end
 
-                    if ($score >= $SIZEOF_CHAIN) AND ($chain_path_overlap = FALSE)
-                         setVar $j 2
-                         while ($j <= ($LINKS + 1))
-                              add $path_length 1
-                              getWord $CHAIN $var $j
-                              setVar $path[$path_length] $var
-                              add $j 1
-                         end
-                         if ($path_length > 0)
-                              setVar $chain_found TRUE
-                         end
-                    end
-               end
-          end
-     end
+	                         if ($score >= $SIZEOF_CHAIN) AND ($chain_path_overlap = FALSE)
+	                              setVar $j 2
+	                              while ($j <= ($LINKS + 1))
+	                                   add $path_length 1
+	                                   getWord $CHAIN $var $j
+	                                   setVar $macro_path[$path_length] $var
+	                                   add $j 1
+	                              end
+	                              if ($path_length > 0)
+	                                   setVar $chain_found TRUE
+	                              end
+	                         end
+	                    end
+	               end
+	          end
+	     end
      return
 	
 
@@ -517,7 +562,7 @@ gosub :BOT~loadVars
      setVar $path_contains FALSE
      setVar $path_scan 1
      while ($path_scan <= $path_length)
-          if ($path[$path_scan] = $path_test_sector)
+          if ($macro_path[$path_scan] = $path_test_sector)
                setVar $path_contains TRUE
                return
           end
@@ -529,11 +574,21 @@ gosub :BOT~loadVars
 ###############################################################################
 
 :Breadth_UnFigged_Search
-     
+     setVar $search_require_warpin TRUE
+     gosub :Breadth_UnFigged_Search_Pass
+     if ($target_sector[$count1] <= 0)
+          # If warp-in data is incomplete, allow a second pass that still
+          # grids reachable sectors instead of stopping immediately.
+          setVar $search_require_warpin FALSE
+          gosub :Breadth_UnFigged_Search_Pass
+     end
+     return
+
+:Breadth_UnFigged_Search_Pass
      setArray $search_que 0
      setArray $search_Flagged 0
      setArray $distance 0
-	setVar $search_start $focus_sector
+	setVar $search_start $previous_sector
 	setVar $search_bottom 1
 	setVar $search_top 1
 	setVar $search_que[1] $search_start
@@ -549,11 +604,13 @@ gosub :BOT~loadVars
                if ($search_flagged[$adj_search_test] = 0)
                     setVar $distance[$adj_search_test] ($distance[$search_focus] + 1)
 #                   echo ANSI_10&"*Now testing: " $adj_search_test "*"
-                    if ($fig_grid[$adj_search_test] = 0) AND ($adj_search_test <> STARDOCK) AND ($adj_search_test > 10) AND (SECTOR.WARPCOUNT[$adj_search_test] > 0) AND (SECTOR.WARPINCOUNT[$adj_search_test] > 0)
-                         setVar $target_sector[$count1] $adj_search_test
-                         setVar $result_distance[$count1] $distance[$adj_search_test]
-#                         echo ANSI_10&"*Target sector: " ANSI_14&$target_sector[$count1] ANSI_10&"  Distance: " ANSI_14&$result_distance[$count1] "*"
-                         return
+                    if ($fig_grid[$adj_search_test] = 0) AND ($adj_search_test <> STARDOCK) AND ($adj_search_test > 10) AND (SECTOR.WARPCOUNT[$adj_search_test] > 0)
+                         if ($search_require_warpin = FALSE) OR (SECTOR.WARPINCOUNT[$adj_search_test] > 0)
+                              setVar $target_sector[$count1] $adj_search_test
+                              setVar $result_distance[$count1] $distance[$adj_search_test]
+#                             echo ANSI_10&"*Target sector: " ANSI_14&$target_sector[$count1] ANSI_10&"  Distance: " ANSI_14&$result_distance[$count1] "*"
+                              return
+                         end
                     end
                     setVar $search_flagged[$adj_search_test] 1
                     add $search_top 1
@@ -677,4 +734,3 @@ gosub :BOT~loadVars
 
 #INCLUDES:
 include "source\include\bot"
-include "source\include\player"

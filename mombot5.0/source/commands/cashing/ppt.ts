@@ -567,11 +567,11 @@ halt
 			gosub :SWITCHBOARD~switchboard
 			halt
 		end
-	else
-		setVar $PLAYER~moveIntoSector $moveTo
-		gosub :PLAYER~moveIntoSector	
-	end
-return
+		else
+			setVar $MOVE~moveIntoSector $moveTo
+			gosub :MOVE~moveIntoSector	
+		end
+	return
 
 :portandtrade
 	
@@ -1227,4 +1227,3 @@ halt
 #INCLUDES:
 
 include "source\include\bot"
-include "source\include\player"

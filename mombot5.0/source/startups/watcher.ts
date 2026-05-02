@@ -735,7 +735,7 @@ pause
 		pause
 	end
 
-	if ($bot~do_not_resuscitate <> true)
+		if ($bot~do_not_resuscitate <> true)
 		setvar $found false
 		listActiveScripts $scripts
 		setvar $i 1
@@ -752,7 +752,7 @@ pause
 			ECHO "**"&ansi_2&"["&ansi_4&"No mombot is running, automatically booting up mombot."&ansi_2&"]**"
 			load "scripts\"&$bot~mombot_directory&"\mombot.cts"
 		end
-		killtrigger         checkifbotalive
-		setdelaytrigger		checkifbotalive       :checkifbotalive 60000
-		pause
-	end
+			killtrigger         checkifbotalive
+			setdelaytrigger		checkifbotalive       :checkifbotalive 60000
+			pause
+		end

@@ -288,12 +288,12 @@ pause
 
 :announce
 	killalltriggers
-	gosub :authenticateannounce
-	if ($auth_result)
-		setvar $switchboard~message "*Save Me - Running from planet " & $planet~planet & "*---Command List---*" & $bot~bot_name & " Deploy Mines*" & $bot~bot_name & " Personal Limp*----End of List---** "
-		gosub :switchboard~message
-	end
-	goto :Settriggers
+		gosub :authenticateannounce
+		if ($auth_result)
+			setvar $switchboard~message "*Save Me - Running from planet " & $planet~planet & "*---Command List---*" & $bot~bot_name & " Deploy Mines*" & $bot~bot_name & " Personal Limp*----End of List---** "
+			gosub :switchboard~switchboard
+		end
+		goto :Settriggers
 
 :authenticateannounce
     killalltriggers
@@ -436,8 +436,4 @@ return
 
 
 #INCLUDES:
-include "source\include\bot"
 include "source\include\mines"
-include "source\include\player"
-include "source\include\ship"
-include "source\include\planet"

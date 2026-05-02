@@ -16,7 +16,4 @@
 	
 
 # includes:
-include "source\include\bot"
-include "source\include\player"
-include "source\include\modules"
 include "source\include\mines"

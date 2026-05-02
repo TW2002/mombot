@@ -506,4 +506,3 @@ gosub :BOT~loadVars
 
 #INCLUDES:
 include "source\include\bot"
-include "source\include\player"

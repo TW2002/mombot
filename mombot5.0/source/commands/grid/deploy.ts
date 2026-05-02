@@ -198,7 +198,7 @@
 
 	if ($fighter)
 		if ($topoff)
-			gosub :DEPLOY~TOPOFF
+			gosub :TOPOFF
 		else
 			setvar $fighters~offensive $offensive
 			setvar $fighters~defensive $defensive
@@ -225,7 +225,7 @@
 		gosub :mines~deployArmid
 	end
 
-:DEPLOY~TOPOFF
+:TOPOFF
 	killalltriggers
 	gosub  :player~currentPrompt
 	setVar $bot~startingLocation $PLAYER~current_prompt
@@ -256,7 +256,7 @@
 		setVar $bot~parm1 $type
 	end
 	setVar $to_drop $bot~parm1
-	gosub :DEPLOY~DO_TOPOFF
+	gosub :DO_TOPOFF
 	if ($bot~startingLocation = "Citadel")
 		gosub :PLANET~landingSub
 	end
@@ -264,8 +264,8 @@
 	gosub :SWITCHBOARD~switchboard
 	return
 
-:DEPLOY~DO_TOPOFF
-	:DEPLOY~DO_TOPOFF_AGAIN
+:DO_TOPOFF
+	:DO_TOPOFF_AGAIN
 		killalltriggers
 		send " F"
 		waitOn "Your ship can support up to"
@@ -276,18 +276,15 @@
 			setVar $ftrs_to_leave 1
 		end
 		send " " & $ftrs_to_leave & " * C " & $to_drop
-		setTextLineTrigger DEPLOY_TOPOFF_SUCCESS :DEPLOY~TOPOFF_SUCCESS "Done. You have "
-		setTextLineTrigger DEPLOY_TOPOFF_FAILURE1 :DEPLOY~DO_TOPOFF_AGAIN "You don't have that many fighters available."
-		setTextLineTrigger DEPLOY_TOPOFF_FAILURE2 :DEPLOY~DO_TOPOFF_AGAIN "Too many fighters in your fleet!  You are limited to"
+		setTextLineTrigger DEPLOY_TOPOFF_SUCCESS :TOPOFF_SUCCESS "Done. You have "
+		setTextLineTrigger DEPLOY_TOPOFF_FAILURE1 :DO_TOPOFF_AGAIN "You don't have that many fighters available."
+		setTextLineTrigger DEPLOY_TOPOFF_FAILURE2 :DO_TOPOFF_AGAIN "Too many fighters in your fleet!  You are limited to"
 		pause
-	:DEPLOY~TOPOFF_SUCCESS
+	:TOPOFF_SUCCESS
 return
 
 halt
 
 #INCLUDES:
-include "source\include\bot"
-include "source\include\player"
-include "source\include\planet"
 include "source\include\mines"
 include "source\include\fighters"

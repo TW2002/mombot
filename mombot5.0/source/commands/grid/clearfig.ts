@@ -158,7 +158,5 @@ striptext $CURRENT_PROMPT #8
 return
 
 # includes:
-include "source\include\player"
-include "source\include\validation"
 include "source\include\planet"
 include "source\include\ship"

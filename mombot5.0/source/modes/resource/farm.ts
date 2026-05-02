@@ -14,10 +14,8 @@ loadvar $PARM6
 loadvar $PARM7
 loadvar $PARM8
 loadvar $COMMAND
-goto :FARM_START
-include "source\include\planet"
-:FARM_START
 
+:FARM_START
 fileexists $DOESHELPFILEEXIST "scripts\MOMBot\Help\"&$COMMAND&".txt"
 if ($DOESHELPFILEEXIST <> TRUE)
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "- farm {set} {clear} {list}                                 "
@@ -387,12 +385,18 @@ if ($TOTAL_HOLDS <> $EMPTY_HOLDS)
   setvar $EXIT_MESSAGE "Planet full, cannot empty ship holds"
   goto :BUYDOWNEXIT
 end
-gosub :GETPORTINFO
+gosub :port~getportinfo
+killalltriggers
 if ($LOCATION = "Citadel")
   send "Q"
 else
   send "L "&$PLANETTOFILL&"* "
 end
+if ($PORT~NOPORT = 1)
+  setvar $EXIT_MESSAGE "No port found"
+  goto :BUYDOWNEXIT
+end
+
 setdelaytrigger INITPAUSE :INITPAUSE 500
 gosub :SETCONNECTIONTRIGGERS
 pause
@@ -412,8 +416,8 @@ if ($BUYDOWN_FUELROUNDS > 0)
   setvar $FUELROUNDS 0
   setvar $PLANETFUELROOM $PLANETFUELMAX
   subtract $PLANETFUELROOM $PLANETFUEL
-  setvar $MAXFUELTOBUY $FUELSELLING
-  if ($FUELSELLING > $PLANETFUELROOM)
+  setvar $MAXFUELTOBUY $port~fuelselling
+  if ($port~fuelselling > $PLANETFUELROOM)
     setvar $MAXFUELTOBUY $PLANETFUELROOM
   end
   setvar $MAXFUELROUNDS $MAXFUELTOBUY
@@ -435,8 +439,8 @@ if ($BUYDOWN_ORGROUNDS > 0)
   setvar $ORGROUNDS 0
   setvar $PLANETORGROOM $PLANETORGMAX
   subtract $PLANETORGROOM $PLANETORG
-  setvar $MAXORGTOBUY $ORGSELLING
-  if ($ORGSELLING > $PLANETORGROOM)
+  setvar $MAXORGTOBUY $port~orgselling
+  if ($port~orgselling > $PLANETORGROOM)
     setvar $MAXORGTOBUY $PLANETORGROOM
   end
   setvar $MAXORGROUNDS $MAXORGTOBUY
@@ -459,8 +463,8 @@ if ($BUYDOWN_EQUIPROUNDS > 0)
   setvar $EQUIPROUNDS 0
   setvar $PLANETEQUIPROOM $PLANETEQUIPMAX
   subtract $PLANETEQUIPROOM $PLANETEQUIP
-  setvar $MAXEQUIPTOBUY $EQUIPSELLING
-  if ($EQUIPSELLING > $PLANETEQUIPROOM)
+  setvar $MAXEQUIPTOBUY $port~equipselling
+  if ($port~equipselling > $PLANETEQUIPROOM)
     setvar $MAXEQUIPTOBUY $PLANETEQUIPROOM
   end
   setvar $MAXEQUIPROUNDS $MAXEQUIPTOBUY
@@ -562,10 +566,10 @@ setvar $INIT_CREDITS $CREDITS
 
 if ($EQUIPROUNDSLEFT > 0)
   send "Q P T  "
-  if ($FUELSELLING > 0)
+  if ($port~fuelselling > 0)
     send "0* "
   end
-  if ($ORGSELLING > 0)
+  if ($port~orgselling > 0)
     send "0*"
   end
   gosub :CHOOSEHAGGLE
@@ -582,7 +586,7 @@ end
 
 if ($ORGROUNDSLEFT > 0)
   send "Q P T  "
-  if ($FUELSELLING > 0)
+  if ($port~fuelselling > 0)
     send "0*"
   end
   gosub :CHOOSEHAGGLE
@@ -631,65 +635,14 @@ if ($CREDITS > $STARTINGCASH)
     send "Q"
   end
 end
+
 :BUYDOWNEXIT
-
-
 return
+
 :GETPORTINFO
 
-
-
-
-
-
-send "S*CR*Q"
-gosub :SETCONNECTIONTRIGGERS
-settextlinetrigger FOUNDPORT :FOUNDPORT2 "Items     Status  Trading % of max OnBoard"
-settextlinetrigger NOPORT :NOPORT2 "I have no information about a port in that sector."
-settextlinetrigger NOPORT2 :NOPORT2 "You have never visted sector"
-settextlinetrigger NOPORT3 :NOPORT2 "credits / next hold"
-pause
-:NOPORT2
-
-killalltriggers
-if ($LOCATION <> "Citadel")
-  send "L "&$PLANETTOFILL&"* "
-end
-setvar $EXIT_MESSAGE "No port found"
-goto :BUYDOWNEXIT
-:FOUNDPORT2
-
-killalltriggers
-setvar $FUELSELLING 0
-setvar $ORGSELLING 0
-setvar $EQUIPSELLING 0
-:GETSELLING
-
-settextlinetrigger PORTFUELINFO :PORTFUELINFO2 "Fuel Ore   Selling"
-gosub :SETCONNECTIONTRIGGERS
-settextlinetrigger PORTORGINFO :PORTORGINFO2 "Organics   Selling"
-settextlinetrigger PORTEQUIPINFO :PORTEQUIPINFO2 "Equipment  Selling"
-settextlinetrigger GOTALLPORTINFO :GOTALLPORTINFO2 "<Computer deactivated>"
-pause
-:PORTFUELINFO2
-
-killalltriggers
-getword CURRENTLINE $FUELSELLING 4
-goto :GETSELLING
-:PORTORGINFO2
-
-killalltriggers
-getword CURRENTLINE $ORGSELLING 3
-goto :GETSELLING
-:PORTEQUIPINFO2
-
-killalltriggers
-getword CURRENTLINE $EQUIPSELLING 3
-goto :GETSELLING
-:GOTALLPORTINFO2
-
-killalltriggers
 return
+
 :GETPLANETINFO
 gosub :SETCONNECTIONTRIGGERS
 gosub :PLANET~GETPLANETINFO
@@ -1155,3 +1108,5 @@ seteventtrigger DISCOD1 :DISCOD "CONNECTION LOST"
 seteventtrigger DISCOD2 :DISCOD "Connections have been temporarily disabled."
 
 return
+
+include "source\include\port"

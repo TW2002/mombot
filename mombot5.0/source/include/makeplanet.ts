@@ -1,0 +1,2 @@
+:MAKEPLANET~NAMESPACE
+return

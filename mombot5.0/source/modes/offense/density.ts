@@ -416,11 +416,12 @@
 	
 		if ($escape = true)
 
-			setVar $PLAYER~WARPTO $escape_sector
+			setVar $PLANET~WARPTO $escape_sector
+			setVar $PLANET~PWARP_SCAN FALSE
 			gosub :player~quikstats
 
 			if ($player~current_prompt = "Citadel")
-				gosub :PLAYER~pwarp
+				gosub :PLANET~pwarp
 			end
 		end
 	
@@ -451,7 +452,7 @@
 		end
 
 		if ($holo = true)
-			gosub :holo~run
+			gosub :HOLO_RUN
 		end
 
 		if ($pel = true)
@@ -485,13 +486,14 @@
 		end
 
 		if ($call = true)
-			gosub :call~run
+			gosub :CALL_RUN
 		end
 
 		if ($escape = true)
 			killalltriggers
 
-			setVar $PLAYER~WARPTO $escape_sector
+			setVar $PLANET~WARPTO $escape_sector
+			setVar $PLANET~PWARP_SCAN FALSE
 			if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
 				gosub :player~quikstats
 				if (($player~current_prompt <> "Citadel") and ($player~current_prompt <> "Planet"))
@@ -499,7 +501,7 @@
 				end
 				gosub :player~quikstats
 				if ($player~current_prompt = "Citadel")
-					gosub :PLAYER~pwarp
+					gosub :PLANET~pwarp
 				else
 					goto :twarp
 				end
@@ -523,8 +525,8 @@
 
 	return
 
-:HOLO~RUN
-:HOLO~HOLO
+:HOLO_RUN
+:HOLO
 	setvar $BOT~COMMAND "holo"
 	setvar $BOT~USER_COMMAND_LINE " holo"
 	setvar $BOT~PARM1 ""
@@ -542,13 +544,13 @@
 	savevar $BOT~PARM5
 	savevar $BOT~PARM6
 	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\holo.cts"
-	seteventtrigger HOLOEND1 :HOLO~HOLOEND1 "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\holo.cts"
+	seteventtrigger HOLOEND1 :HOLO_END1 "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\holo.cts"
 	pause
-:HOLO~HOLOEND1
+:HOLO_END1
 return
 
-:CALL~RUN
-:CALL~CALL
+:CALL_RUN
+:CALL
 	setvar $BOT~COMMAND "call"
 	setvar $BOT~PARM1 ""
 	setvar $BOT~USER_COMMAND_LINE " call  "
@@ -566,23 +568,19 @@ return
 	savevar $BOT~PARM5
 	savevar $BOT~PARM6
 	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\defense\call.cts"
-	seteventtrigger CALLEND1 :CALL~CALLEND1 "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\defense\call.cts"
+	seteventtrigger CALLEND1 :CALL_END1 "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\defense\call.cts"
 	pause
-:CALL~CALLEND1
+:CALL_END1
 	gosub :PLAYER~QUIKSTATS
 	if ($PLAYER~CURRENT_PROMPT <> "Citadel")
 		setvar $SWITCHBOARD~MESSAGE "Not on planet even after call saveme.  I'm in real trouble.  Will try again in 15 seconds.*"
 		gosub :SWITCHBOARD~SWITCHBOARD
 		killalltriggers
-		setdelaytrigger CALLRETRY :CALL~CALL 15000
+		setdelaytrigger CALLRETRY :CALL 15000
 		pause
 	end
 return
 		
 	#INCLUDES:
-	include "source\include\bot"
 	include "source\include\combat"
-	include "source\include\player"
-	include "source\include\planet"
-	include "source\include\sector"
-	include "source\include\ship"
+	include "source\include\bot"

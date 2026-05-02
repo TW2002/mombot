@@ -1049,6 +1049,3 @@ return
 
 # includes:
 include "source\include\bot"
-include "source\include\player"
-include "source\include\validation"
-include "source\include\planet"

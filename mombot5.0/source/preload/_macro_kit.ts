@@ -1234,5 +1234,3 @@ else
 			halt
 end
 include "source\include\bot"
-include "source\include\player"
-include "source\include\map"

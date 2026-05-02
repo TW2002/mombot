@@ -505,9 +505,4 @@ setsectorparameter $NEARFIG "FIGSEC" FALSE
 goto :TRYAGAIN2
 
 # includes:
-include "source\include\bot"
-include "source\include\switchboard"
-include "source\include\player"
 include "source\include\planethaggle"
-include "source\include\planet"
-include "source\include\port"

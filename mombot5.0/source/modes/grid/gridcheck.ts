@@ -324,7 +324,6 @@ else
   send $FIGSTODEPLOY&"* ZC D* '"&$FIGSTODEPLOY&" figs deployed*"
 end
 return
-include "source\include\player"
 :GETLINE
 
 

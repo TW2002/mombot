@@ -26,5 +26,5 @@ gosub :search~find
 halt
 
 # includes:
-include "source\include\bot"
 include "source\include\search"
+include "source\include\bot"

@@ -1,10 +1,11 @@
-:move~move
-
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:MOVE~MOVE
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 settextlinetrigger 1 :GETSECTOR "Sector  : "
 pause
+
 :move~getsector
 getword CURRENTLINE $move~cursector 3
-
 
 setvar $move~history[9] $move~history[8]
 setvar $move~history[8] $move~history[7]
@@ -27,8 +28,8 @@ if ($move~confirmsector = 1)
   settexttrigger MINES :MINEPROMPT "Mined Sector:"
   settexttrigger ARRIVED :ARRIVED "Command [TL="
   pause
+  
   :move~tollfigs
-
   setvar $move~paidtoll FALSE
   if ($move~attack = 3)
 
@@ -39,16 +40,16 @@ if ($move~confirmsector = 1)
     send "a9999*"
   end
   pause
+  
   :move~figs
-
   send "a9999*"
   pause
+  
   :move~mineprompt
-
   send "*"
   pause
+  
   :move~arrived
-
   killtrigger TOLLFIGS
   killtrigger FIGS
   killtrigger MINES
@@ -67,14 +68,12 @@ if ($move~found = 1)
   return
 end
 
-
 if (($move~scanholo = 2) and ($move~noscan < 2))
   setvar $move~scannedholo 1
   send "shsd"
   waiton "Relative Density Scan"
   waiton "Command [TL="
 elseif ($move~noscan = 0)
-
   setvar $move~scannedholo 0
   send "sd"
   waiton "Relative Density Scan"
@@ -82,16 +81,15 @@ elseif ($move~noscan = 0)
 end
 
 getsector $move~cursector $move~cursector
+
 :move~assess
-
-
 setvar $move~i 1
 setvar $move~bestscore 1000
 setvar $move~bestwarp 0
 setvar $move~bestattack 0
 setvar $move~willholo 0
-:move~testwarp
 
+:move~testwarp
 if ($move~cursector.warp[$move~i] > 0)
   setvar $move~score 0
   setvar $move~safe 1
@@ -156,8 +154,8 @@ if ($move~cursector.warp[$move~i] > 0)
     setvar $move~willholo 1
   end
 
-
   setvar $move~x 1
+ 
   :move~checkhistory
   if ($move~x <= 10)
     if ($move~history[$move~x] = $move~cursector.warp[$move~i])
@@ -167,7 +165,7 @@ if ($move~cursector.warp[$move~i] > 0)
       add $move~score $move~m
     end
     add $move~x 1
-    goto :CHECKHISTORY
+    goto :move~checkhistory
   end
 
   if ($move~portpriority = 1)
@@ -184,7 +182,6 @@ if ($move~cursector.warp[$move~i] > 0)
     end
   end
 
-
   getrnd $move~random 1 5
   add $move~score $move~random
 
@@ -195,21 +192,19 @@ if ($move~cursector.warp[$move~i] > 0)
   end
 
   add $move~i 1
-  goto :TESTWARP
+  goto :move~testwarp
 end
 
 if ($move~bestscore > 400)
-
   setvar $move~willholo 1
 end
 
 if (($move~willholo = 1) and (($move~scannedholo = 0) and ($move~scanholo = 1)))
-
   send "sh"
   waitfor "Sector  : "
   waitfor "Command [TL="
   setvar $move~scannedholo 1
-  goto :ASSESS
+  goto :move~assess
 end
 
 if (($move~bestscore > 400) and ($move~evasion = 1))
@@ -217,8 +212,8 @@ if (($move~bestscore > 400) and ($move~evasion = 1))
   halt
 end
 
-
 setvar $move~figcount SECTOR.FIGS.QUANTITY[$move~cursector]
+
 if (($move~paidtoll <> TRUE) and ($move~extrasend <> ""))
   if (($move~extrasendall = 1) and (($move~cursector > 10) and ($move~cursector <> STARDOCK)))
     send $move~extrasend
@@ -227,13 +222,11 @@ if (($move~paidtoll <> TRUE) and ($move~extrasend <> ""))
   end
 end
 
-
 if ((SECTORS > 5000) or ($move~bestwarp < 600))
   setvar $move~warpsuffix "*"
 else
   setvar $move~warpsuffix "."
 end
-
 
 if (($move~bestsafe = 2) and ($move~attack = 1)) or ($move~attack = 2)
   send $move~bestwarp $move~warpsuffix "*na9999**"
@@ -242,4 +235,36 @@ else
   setvar $move~confirmsector 1
 end
 
-goto :MOVE
+goto :MOVE~MOVE
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:MOVE~MOVEINTOSECTOR
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $MOVE~RESULT ""
+setvar $MOVE~DROPFIGS TRUE
+setvar $MOVE~RESULT $MOVE~RESULT&"m "&$MOVE~MOVEINTOSECTOR&"*"
+if (($MOVE~MOVEINTOSECTOR > 10) and ($MOVE~MOVEINTOSECTOR <> $MAP~STARDOCK))
+  if ($PLAYER~FIGHTERS > $SHIP~SHIP_MAX_ATTACK)
+    setvar $MOVE~RESULT $MOVE~RESULT&"za"&$SHIP~SHIP_MAX_ATTACK&"* * "
+  else
+    setvar $MOVE~RESULT $MOVE~RESULT&"za"&$PLAYER~FIGHTERS&"* * "
+  end
+end
+if ($PLAYER~SURROUNDFIGS <= 0)
+  setvar $PLAYER~SURROUNDFIGS 1
+end
+if (($MOVE~MOVEINTOSECTOR > 10) and ($MOVE~MOVEINTOSECTOR <> $MAP~STARDOCK))
+  if ($PLAYER~SURROUNDFIGS > 0)
+    setvar $MOVE~RESULT $MOVE~RESULT&"f  z  "&$PLAYER~SURROUNDFIGS&"* z  c  d  *  "
+  end
+  if ($PLAYER~SURROUNDLIMP > 0)
+    setvar $MOVE~RESULT $MOVE~RESULT&"  H  2  Z  "&$PLAYER~SURROUNDLIMP&"*  Z C  *  "
+  end
+  if ($PLAYER~SURROUNDMINE > 0)
+    setvar $MOVE~RESULT $MOVE~RESULT&"  H  1  Z  "&$PLAYER~SURROUNDMINE&"*  Z C  *  "
+  end
+end
+send $MOVE~RESULT
+setvar $PLAYER~CURRENT_SECTOR $MOVE~MOVEINTOSECTOR
+return
+

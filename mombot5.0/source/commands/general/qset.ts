@@ -97,8 +97,4 @@ killalltriggers
 return
 
 # includes:
-include "source\include\player"
 include "source\include\bot"
-include "source\include\validation"
-include "source\include\switchboard"
-include "source\include\planet"

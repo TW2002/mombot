@@ -1414,5 +1414,3 @@ return
 
 # includes:
 include "include/bot.ts"
-include "include/switchboard.ts"
-include "include/player.ts"

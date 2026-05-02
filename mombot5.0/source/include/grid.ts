@@ -125,3 +125,5 @@ if ((($PLAYER~SURROUNDFIGS > 0) and ($PLAYER~FIGHTERS > $PLAYER~SURROUNDFIGS)) a
 end
 send $GRID~SURROUNDSTRING
 return
+
+include "source\include\ship"

@@ -37,121 +37,121 @@ return
 
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANETCHECK~PLANETCHECK
+:PLANET~PLANETCHECK
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLANETCHECK~I 1
-setvar $PLANETCHECK~IGNORECOUNT 0
+setvar $PLANET~PLANETCHECK_I 1
+setvar $PLANET~PLANETCHECK_IGNORECOUNT 0
 
-:PLANETCHECK~LOADIGNORE
-getword $PLANETCHECK~IGNORELIST $PLANETCHECK~IGNORE[$PLANETCHECK~I] $PLANETCHECK~I
-if ($PLANETCHECK~IGNORE[$PLANETCHECK~I] <> 0)
-  add $PLANETCHECK~I 1
-  add $PLANETCHECK~IGNORECOUNT 1
-  goto :PLANETCHECK~LOADIGNORE
+:PLANET~PLANETCHECK_LOADIGNORE
+getword $PLANET~PLANETCHECK_IGNORELIST $PLANET~PLANETCHECK_IGNORE[$PLANET~PLANETCHECK_I] $PLANET~PLANETCHECK_I
+if ($PLANET~PLANETCHECK_IGNORE[$PLANET~PLANETCHECK_I] <> 0)
+  add $PLANET~PLANETCHECK_I 1
+  add $PLANET~PLANETCHECK_IGNORECOUNT 1
+  goto :PLANET~PLANETCHECK_LOADIGNORE
 end
 
-setvar $PLANETCHECK~IGNORELIST ""
-setvar $PLANETCHECK~FOUND 0
+setvar $PLANET~PLANETCHECK_IGNORELIST ""
+setvar $PLANET~PLANETCHECK_FOUND 0
 send "l"
 
-settextlinetrigger PLANETCHECK_NOPLANET :PLANETCHECK~NOPLANET "There isn't a planet in this sector."
-settextlinetrigger PLANETCHECK_MULTIPLEPLANETS :PLANETCHECK~MULTIPLEPLANETS "Registry# and Planet Name"
-settextlinetrigger PLANETCHECK_SINGLEPLANET :PLANETCHECK~SINGLEPLANET "Landing sequence engaged..."
+settextlinetrigger PLANETCHECK_NOPLANET :PLANET~PLANETCHECK_NOPLANET "There isn't a planet in this sector."
+settextlinetrigger PLANETCHECK_MULTIPLEPLANETS :PLANET~PLANETCHECK_MULTIPLEPLANETS "Registry# and Planet Name"
+settextlinetrigger PLANETCHECK_SINGLEPLANET :PLANET~PLANETCHECK_SINGLEPLANET "Landing sequence engaged..."
 pause
 
-:PLANETCHECK~NOPLANET
+:PLANET~PLANETCHECK_NOPLANET
 killtrigger PLANETCHECK_MULTIPLEPLANETS
 killtrigger PLANETCHECK_SINGLEPLANET
 return
 
-:PLANETCHECK~MULTIPLEPLANETS
+:PLANET~PLANETCHECK_MULTIPLEPLANETS
 killtrigger PLANETCHECK_SINGLEPLANET
 killtrigger PLANETCHECK_NOPLANET
-setvar $PLANETCHECK~LASTID 0
+setvar $PLANET~PLANETCHECK_LASTID 0
 
-:PLANETCHECK~NEXTPLANET
-settexttrigger PLANETCHECK_PLANETSCHECKED :PLANETCHECK~PLANETSCHECKED "Land on which planet <Q to abort>"
-settextlinetrigger PLANETCHECK_GETID :PLANETCHECK~GETID "<"
+:PLANET~PLANETCHECK_NEXTPLANET
+settexttrigger PLANETCHECK_PLANETSCHECKED :PLANET~PLANETCHECK_PLANETSCHECKED "Land on which planet <Q to abort>"
+settextlinetrigger PLANETCHECK_GETID :PLANET~PLANETCHECK_GETID "<"
 pause
 
-:PLANETCHECK~GETID
-getword CURRENTLINE $PLANETCHECK~WORD 1
-if ($PLANETCHECK~WORD = "Owned")
-  settextlinetrigger PLANETCHECK_GETID :PLANETCHECK~GETID "<"
+:PLANET~PLANETCHECK_GETID
+getword CURRENTLINE $PLANET~PLANETCHECK_WORD 1
+if ($PLANET~PLANETCHECK_WORD = "Owned")
+  settextlinetrigger PLANETCHECK_GETID :PLANET~PLANETCHECK_GETID "<"
   pause
 end
 
 killtrigger PLANETCHECK_PLANETSCHECKED
-setvar $PLANETCHECK~LINE CURRENTLINE
-striptext $PLANETCHECK~LINE "<"
-striptext $PLANETCHECK~LINE ">"
-getword $PLANETCHECK~LINE $PLANETCHECK~ID 1
-if ($PLANETCHECK~ID = "Land")
-  goto :PLANETCHECK~PLANETSCHECKED
+setvar $PLANET~PLANETCHECK_LINE CURRENTLINE
+striptext $PLANET~PLANETCHECK_LINE "<"
+striptext $PLANET~PLANETCHECK_LINE ">"
+getword $PLANET~PLANETCHECK_LINE $PLANET~PLANETCHECK_ID 1
+if ($PLANET~PLANETCHECK_ID = "Land")
+  goto :PLANET~PLANETCHECK_PLANETSCHECKED
 end
 
-gosub :PLANETCHECK~SUB_CHECKIGNORE
+gosub :PLANET~PLANETCHECK_SUB_CHECKIGNORE
 
-if (($PLANETCHECK~ID > $PLANETCHECK~LASTID) and ($PLANETCHECK~IGNORE = 0))
-  send $PLANETCHECK~ID "*"
-  setvar $PLANETCHECK~LASTID $PLANETCHECK~ID
-  gosub :PLANETCHECK~SUB_CHECK
+if (($PLANET~PLANETCHECK_ID > $PLANET~PLANETCHECK_LASTID) and ($PLANET~PLANETCHECK_IGNORE = 0))
+  send $PLANET~PLANETCHECK_ID "*"
+  setvar $PLANET~PLANETCHECK_LASTID $PLANET~PLANETCHECK_ID
+  gosub :PLANET~PLANETCHECK_SUB_CHECK
 
-  if ($PLANETCHECK~FOUND <> 0)
+  if ($PLANET~PLANETCHECK_FOUND <> 0)
     return
   end
 
   send "ql"
   waitfor "Registry# and Planet Name"
 end
-goto :PLANETCHECK~NEXTPLANET
+goto :PLANET~PLANETCHECK_NEXTPLANET
 
-:PLANETCHECK~PLANETSCHECKED
+:PLANET~PLANETCHECK_PLANETSCHECKED
 killtrigger PLANETCHECK_GETID
 send "q*"
 return
 
-:PLANETCHECK~SINGLEPLANET
+:PLANET~PLANETCHECK_SINGLEPLANET
 killtrigger PLANETCHECK_MULTIPLEPLANETS
 killtrigger PLANETCHECK_NOPLANET
-gosub :PLANETCHECK~SUB_CHECK
-if ($PLANETCHECK~FOUND = 0)
+gosub :PLANET~PLANETCHECK_SUB_CHECK
+if ($PLANET~PLANETCHECK_FOUND = 0)
   send "q"
 end
 return
 
-:PLANETCHECK~SUB_CHECK
-settextlinetrigger PLANETCHECK_CHECK_GETPLANET :PLANETCHECK~CHECK_GETPLANET "Planet #"
+:PLANET~PLANETCHECK_SUB_CHECK
+settextlinetrigger PLANETCHECK_CHECK_GETPLANET :PLANET~PLANETCHECK_CHECK_GETPLANET "Planet #"
 pause
 
-:PLANETCHECK~CHECK_GETPLANET
-getword CURRENTLINE $PLANETCHECK~CHECK_PLANET 2
-striptext $PLANETCHECK~CHECK_PLANET "#"
+:PLANET~PLANETCHECK_CHECK_GETPLANET
+getword CURRENTLINE $PLANET~PLANETCHECK_CHECK_PLANET 2
+striptext $PLANET~PLANETCHECK_CHECK_PLANET "#"
 
-setvar $PLANETCHECK~ID $PLANETCHECK~CHECK_PLANET
-gosub :PLANETCHECK~SUB_CHECKIGNORE
+setvar $PLANET~PLANETCHECK_ID $PLANET~PLANETCHECK_CHECK_PLANET
+gosub :PLANET~PLANETCHECK_SUB_CHECKIGNORE
 
-if ($PLANETCHECK~IGNORE = 0)
-  gosub $PLANETCHECK~PLANETCHECKSUB
+if ($PLANET~PLANETCHECK_IGNORE = 0)
+  gosub $PLANET~PLANETCHECKSUB
 
-  if ($PLANETCHECK~FOUND = 1)
-    setvar $PLANETCHECK~FOUND $PLANETCHECK~CHECK_PLANET
+  if ($PLANET~PLANETCHECK_FOUND = 1)
+    setvar $PLANET~PLANETCHECK_FOUND $PLANET~PLANETCHECK_CHECK_PLANET
   end
 end
 
 return
 
-:PLANETCHECK~SUB_CHECKIGNORE
-setvar $PLANETCHECK~J 1
-setvar $PLANETCHECK~IGNORE 0
+:PLANET~PLANETCHECK_SUB_CHECKIGNORE
+setvar $PLANET~PLANETCHECK_J 1
+setvar $PLANET~PLANETCHECK_IGNORE 0
 
-:PLANETCHECK~CHECKIGNORE_LOOP
-if ($PLANETCHECK~J <= $PLANETCHECK~IGNORECOUNT)
-  if ($PLANETCHECK~IGNORE[$PLANETCHECK~J] = $PLANETCHECK~ID)
-    setvar $PLANETCHECK~IGNORE 1
+:PLANET~PLANETCHECK_CHECKIGNORE_LOOP
+if ($PLANET~PLANETCHECK_J <= $PLANET~PLANETCHECK_IGNORECOUNT)
+  if ($PLANET~PLANETCHECK_IGNORE[$PLANET~PLANETCHECK_J] = $PLANET~PLANETCHECK_ID)
+    setvar $PLANET~PLANETCHECK_IGNORE 1
   else
-    add $PLANETCHECK~J 1
-    goto :PLANETCHECK~CHECKIGNORE_LOOP
+    add $PLANET~PLANETCHECK_J 1
+    goto :PLANET~PLANETCHECK_CHECKIGNORE_LOOP
   end
 end
 
@@ -656,6 +656,8 @@ return
 :PLANET~PWARP
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	setvar $PLANET~DO_SCAN FALSE
+	setvar $PLANET~PWARPSUCCESS FALSE
+	setvar $PLANET~MSG ""
 	if ($PLANET~PWARP_SCAN = TRUE)
 		setvar $PLANET~DO_SCAN TRUE
 	end
@@ -666,7 +668,7 @@ return
 	stripText $planet~planet "#"
 	saveVar $planet~planet
 
-	send "c p" $PLAYER~warpto "*"
+	send "c p" $PLANET~warpto "*"
 
 	setTextLineTrigger pwarp_lock       :pwarp_lock     "Locating beam pinpointed"
 	setTextLineTrigger no_pwarp_lock    :no_pwarp_lock  "Your own fighters must be"
@@ -678,24 +680,28 @@ return
 
 	:wrong_number
 		killalltriggers
+		setvar $PLANET~MSG "Not a valid sector to pwarp to!"
 		setVar $SWITCHBOARD~message "Not a valid sector to pwarp to!*"
 		gosub :SWITCHBOARD~switchboard
 		return		
 	:noPwarp
 		killalltriggers
+		setvar $PLANET~MSG "Planet Does Not Have A Planetary TransWarp Drive!"
 		setVar $SWITCHBOARD~message "Planet Does Not Have A Planetary TransWarp Drive!*"
 		gosub :SWITCHBOARD~switchboard
 		return
 	:no_pwarp_lock
 		killalltriggers
-		setVar $bot~target $PLAYER~warpto
-		setVar $PLAYER~target $bot~target
+		setVar $PLANET~target $PLANET~warpto
+		setVar $PLAYER~target $PLANET~target
+		setvar $PLANET~MSG "No fighter down at that location!"
 		gosub :player~removefigfromdata
 		setVar $SWITCHBOARD~message "No fighter down at that location!*"
 		gosub :SWITCHBOARD~switchboard
 		return
 	:no_ore
 		killalltriggers
+		setvar $PLANET~MSG "Not enough fuel for that pwarp."
 		setVar $SWITCHBOARD~message "Not enough fuel for that pwarp.*"
 		gosub :SWITCHBOARD~switchboard
 		return
@@ -703,15 +709,17 @@ return
 		killalltriggers
 		send "y"
 		waitOn "Planet is now in sector"
-		setVar $SWITCHBOARD~message "Planet #"&$planet~planet&" moved to sector "&$PLAYER~warpto&".*"
+		setvar $PLANET~PWARPSUCCESS TRUE
+		setvar $PLANET~MSG "Planet #"&$planet~planet&" moved to sector "&$PLANET~warpto&"."
+		setVar $SWITCHBOARD~message $PLANET~MSG&"*"
 		gosub :SWITCHBOARD~switchboard
-		setVar $bot~target $PLAYER~warpto
-		setVar $PLAYER~target $bot~target
+		setVar $PLANET~target $PLANET~warpto
+		setVar $PLAYER~target $PLANET~target
 		loadVar $planet~planet
 		isNumber $test $planet~planet
 		if ($test)
 			if (($planet~planet <> ".") and ($planet~planet > 0))
-				setSectorParameter $planet~planet "PSECTOR" $bot~target
+				setSectorParameter $planet~planet "PSECTOR" $PLANET~target
 			end
 		end
 		#gosub :player~addfigtodata
@@ -723,6 +731,8 @@ return
 		return
 	:already
 		killalltriggers
+		setvar $PLANET~PWARPSUCCESS TRUE
+		setvar $PLANET~MSG "Planet already in that sector!."
 		setVar $SWITCHBOARD~message "Planet already in that sector!.*"
 		gosub :SWITCHBOARD~switchboard
 return
@@ -807,3 +817,5 @@ else
   echo "*No Planet File Found!*"
 end
 return
+
+include "source\include\player"

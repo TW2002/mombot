@@ -145,6 +145,8 @@ while ($SHIP~SHIPSTATLOOP < $SHIP~TOTALSHIPS)
 end
 send "qq"
 return
+
+include "source\include\switchboard"
 :SHIP~GETSHIPSTATS
 
 

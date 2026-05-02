@@ -986,8 +986,5 @@ return
 return
 
 #INCLUDES:
-include "source\include\bot"
 include "source\include\combat"
-include "source\include\player"
-include "source\include\ship"
-include "source\include\sector"
+include "source\include\bot"
