@@ -463,7 +463,7 @@
 							waitFor "Command [TL="
 						else
 							send "pt*"
-							gosub :PLAYER~startHaggle
+							gosub :HAGGLE~startHaggle
 						end
 						add $total_turns 1
 						gosub :PLAYER~quikstats
@@ -825,3 +825,4 @@ return
 #INCLUDES:
 include "source\include\combat"
 include "source\include\bot"
+include "source\include\haggle"

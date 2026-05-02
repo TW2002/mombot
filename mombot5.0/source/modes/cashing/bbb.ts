@@ -140,7 +140,7 @@ while ($y < $trips)
 	send $oreholds "*"
 
 	if (HAGGLE = FALSE)
-		gosub :PLAYER~startHaggle
+		gosub :HAGGLE~startHaggle
 		setVar $cred2 $PLAYER~nCredits
 	else
 		killalltriggers
@@ -158,7 +158,7 @@ while ($y < $trips)
 	send $org_holds "*"
 
 	if (HAGGLE = FALSE)
-		gosub :PLAYER~startHaggle
+		gosub :HAGGLE~startHaggle
 		setVar $cred3 $PLAYER~nCredits
 	else
 		killalltriggers
@@ -176,7 +176,7 @@ while ($y < $trips)
 	send $equip_holds "*"
 
 	if (HAGGLE = FALSE)
-		gosub :PLAYER~startHaggle
+		gosub :HAGGLE~startHaggle
 		setVar $cred4 $PLAYER~nCredits
 	else
 		killalltriggers
@@ -418,3 +418,4 @@ halt
 
 #INCLUDES:
 include "source\include\bot"
+include "source\include\haggle"

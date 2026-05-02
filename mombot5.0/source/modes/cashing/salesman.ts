@@ -361,7 +361,7 @@
 								add $totalFuelHolds $player~total_holds
 							else
 								send "l " $planet~planet "*  t  *  * 2*  q P**"
-								gosub :PLAYER~startHaggle
+								gosub :HAGGLE~startHaggle
 								send "0 * 0 *  /"
 								if ($PLAYER~ni <> TRUE)
 									subtract $player~turnsSellingProduct 1
@@ -405,7 +405,7 @@
 								add $totalOrganicHolds $player~total_holds
 							else
 								send "l " $planet~planet "*  t  *  * 2*  q P**"
-								gosub :PLAYER~startHaggle
+								gosub :HAGGLE~startHaggle
 								send "0 * 0 *  /"
 								if ($PLAYER~ni <> TRUE)
 									subtract $player~turnsSellingProduct 1
@@ -442,7 +442,7 @@
 								add $totalEquipmentHolds $player~total_holds
 							else
 								send "l " $planet~planet "*  t  *  * 3*  q P**"
-								gosub :PLAYER~startHaggle
+								gosub :HAGGLE~startHaggle
 								send "0 * 0 *  /"
 								if ($PLAYER~ni <> TRUE)
 									subtract $player~turnsSellingProduct 1
@@ -1226,3 +1226,4 @@ return
 
 #INCLUDES:
 include "source\include\planethaggle"
+include "source\include\haggle"

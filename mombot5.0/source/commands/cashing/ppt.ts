@@ -825,9 +825,9 @@ return
 				else
 					setVar $cCredits $nCredits
 				end	
-		elseif ($haggle = "h")
-			gosub :PLAYER~startHaggle
-		end
+			elseif ($haggle = "h")
+				gosub :HAGGLE~startHaggle
+			end
 	else
 		send "  *  "
 	end
@@ -1227,3 +1227,4 @@ halt
 #INCLUDES:
 
 include "source\include\bot"
+include "source\include\haggle"
