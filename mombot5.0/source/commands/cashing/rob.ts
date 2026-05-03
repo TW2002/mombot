@@ -1,9 +1,10 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	loadVar $GAME~rob_factor
 	loadvar $bot~subspace
 		
-	setVar $BOT~help[1] $BOT~tab&"Attempts to rob a port"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"Attempts to rob a port"
+	gosub :HELP~HELPFILE
 
 :rob
 	gosub :PLAYER~quikstats
@@ -15,7 +16,7 @@
 			gosub :switchboard~switchboard
 			halt
 		end
-	gosub :bot~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	cutText $PLAYER~ALIGNMENT $neg_ck 1 1
 	stripText $PLAYER~ALIGNMENT "-"
 	if ((($PLAYER~ALIGNMENT < 100) and ($neg_ck = "-")) OR ($neg_ck <> "-"))
@@ -142,4 +143,7 @@
 
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

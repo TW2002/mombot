@@ -130,7 +130,7 @@
 	end
 	setTextLineTrigger tooManyArmid :tooManyArmid "!  You are limited to "
 	setTextLineTrigger armidDone :armidDone "Done. You have "
-	setTextLineTrigger armidEnemy :armidEnemy "These mines are not under your control."
+	setTextLineTrigger armidEnemy :armidBlocked "These mines are not under your control."
 	setTextLineTrigger armidNotEnough :armidNotEnough "You don't have that many mines available."
 	pause
 
@@ -233,7 +233,7 @@
 	end
 	setTextLineTrigger tooManyLimp :tooManyLimp "!  You are limited to "
 	setTextLineTrigger limpDone :limpDone "Done. You have "
-	setTextLineTrigger limpEnemy :limpEnemy "These mines are not under your control."
+	setTextLineTrigger limpEnemy :limpBlocked "These mines are not under your control."
 	setTextLineTrigger limpNotEnough :limpNotEnough "You don't have that many mines available."
 	pause
 
@@ -476,11 +476,11 @@
 :markLimpet
 	killTrigger corporate
 	killTrigger personal
-	setVar $temp CURRENTLINE
-	stripText $temp #42
-	setVar $limpetOutput $limpetOutput&"             "&$temp&"*"
-	killTrigger unfreezingTrigger
-	setDelayTrigger unfreezingTrigger :unfreezebot 10000
+		setVar $temp CURRENTLINE
+		stripText $temp #42
+		setVar $limpetOutput $limpetOutput&"             "&$temp&"*"
+		killTrigger unfreezingTrigger
+		setDelayTrigger unfreezingTrigger :unfreezebot 10000
 	setTextLineTrigger corporate :markLimpet " Corp"
 	setTextLineTrigger personal :markLimpet "Personal "
 	pause
@@ -505,17 +505,22 @@
 	write $BOT~LIMP_COUNT_FILE $count
 	return
 
-:reportLimps
-	setVar $percent (($count * 100) / SECTORS)
+	:reportLimps
+		setVar $percent (($count * 100) / SECTORS)
 	setVar $gridChange ($count - $previousCount)
 	if ($gridChange > 0)
 		setVar $gridChange "+"&$gridChange
 	end
 	setVar $player~limpetsGridded TRUE
-	setVar $switchboard~message $SWITCHBOARD~message&"          - Limpet Grid Report -*          - "&$count&" sectors, "&$personalCount&" personal. ("&$percent&"%) ("&$gridChange&" Change)*          - Activated  Limpet  Scan*            *             Sector    Personal/Corp*            ========================*"&$limpetOutput&"*"
-	return
+		setVar $switchboard~message $SWITCHBOARD~message&"          - Limpet Grid Report -*          - "&$count&" sectors, "&$personalCount&" personal. ("&$percent&"%) ("&$gridChange&" Change)*          - Activated  Limpet  Scan*            *             Sector    Personal/Corp*            ========================*"&$limpetOutput&"*"
+		return
 
-:mineProtections
+	:unfreezebot
+		echo "*Bot timed out, unfreezing..*"
+		setDeafClients false
+		halt
+
+	:mineProtections
 	setVar $mines~ready FALSE
 	killAllTriggers
 	gosub :PLAYER~quikstats
@@ -560,7 +565,7 @@ if ((CURRENTSECTOR = $MAP~STARDOCK) or (CURRENTSECTOR <= 10))
   return
 end
 setvar $BOT~VALIDPROMPTS "Command Citadel"
-gosub :BOT~CHECKSTARTINGPROMPT
+gosub :PLAYER~CHECKSTARTINGPROMPT
 
 setvar $MINES~BWARP FALSE
 if ($MINES~STARTINGLOCATION = "Citadel")
@@ -774,6 +779,6 @@ if ($MINES~STARTINGLOCATION = "Citadel")
 end
 return
 
+include "source\include\player"
 include "source\include\xenter"
 include "source\include\planet"
-include "source\include\bot"

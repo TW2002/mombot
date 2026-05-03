@@ -1,4 +1,5 @@
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 if (($BOT~PARM1 = "?") or ($BOT~PARM1 = "help"))
   goto :WAIT_FOR_COMMAND
 end
@@ -9,7 +10,7 @@ killalltriggers
 gosub :PLAYER~CURRENTPROMPT
 setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 setvar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :BOT~CHECKSTARTINGPROMPT
+gosub :PLAYER~CHECKSTARTINGPROMPT
 if ($BOT~STARTINGLOCATION = "Citadel")
   send " q "
   gosub :PLANET~GETPLANETINFO
@@ -63,9 +64,12 @@ return
 :WAIT_FOR_COMMAND
 
 
-setvar $BOT~HELP[1] $BOT~TAB&"topoff - fill up ship with fighters from sector "
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"topoff - fill up ship with fighters from sector "
+gosub :HELP~HELPFILE
 halt
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

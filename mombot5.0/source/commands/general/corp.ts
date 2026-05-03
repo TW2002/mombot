@@ -1,16 +1,17 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	loadvar $bot~corppassword
 	loadvar $player~corpnumber
 
 		
-	setVar $BOT~help[1]  $BOT~tab&"- corp [join/drop] [corp number] [password]                "
-	setVar $BOT~help[2]  $BOT~tab&"      join        - Will join Corporation                          "
-	setVar $BOT~help[3]  $BOT~tab&"      drop        - Will Drop current corporation                  "
-	setVar $BOT~help[4]  $BOT~tab&"      corp number - The corp number to join                        "
-	setVar $BOT~help[5]  $BOT~tab&"      password    - The corp password                              "
-	setVar $BOT~help[6]  $BOT~tab&"*NOTE: If corp and password were previously used via bot           "
-	setVar $BOT~help[7]  $BOT~tab&"       the corp number and password will be saved                  "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"- corp [join/drop] [corp number] [password]                "
+	setVar $HELP~HELP[2]  $HELP~TAB&"      join        - Will join Corporation                          "
+	setVar $HELP~HELP[3]  $HELP~TAB&"      drop        - Will Drop current corporation                  "
+	setVar $HELP~HELP[4]  $HELP~TAB&"      corp number - The corp number to join                        "
+	setVar $HELP~HELP[5]  $HELP~TAB&"      password    - The corp password                              "
+	setVar $HELP~HELP[6]  $HELP~TAB&"*NOTE: If corp and password were previously used via bot           "
+	setVar $HELP~HELP[7]  $HELP~TAB&"       the corp number and password will be saved                  "
+	gosub :HELP~HELPFILE
 
 
 # ============================== Corp Join/Drop (CORP) ==============================
@@ -120,4 +121,6 @@
 
 
 # includes:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

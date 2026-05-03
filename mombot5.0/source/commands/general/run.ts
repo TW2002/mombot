@@ -1,4 +1,4 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
 
 	setArray $INTERNALCOMMANDLISTS 7
 	setVar $bot~internalCommandLists[1]  " stopall stop listall reset emq bot relog tow refresh login logoff unlock lift with dep callin about cn extern twarp bwarp pwarp relog help switchbot "
@@ -225,4 +225,5 @@ halt
 return
 
 #-=-=-=-=-includes-=-=-=-=-
+include "source\include\loadvars"
 include "source\include\user_interface"

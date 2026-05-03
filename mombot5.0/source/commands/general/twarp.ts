@@ -1,25 +1,26 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1]  $BOT~tab&"twarp {sector:#} {"&#34&"trader_name"&#34&"} {p} "
-	setVar $BOT~help[2]  $BOT~tab&"      "
-	setVar $BOT~help[3]  $BOT~tab&"        transwarps to sector as quickly "
-	setVar $BOT~help[4]  $BOT~tab&"        and safely as possible.   "
-	setVar $BOT~help[5]  $BOT~tab&"      "
-	setVar $BOT~help[6]  $BOT~tab&"    Options: "
-	setVar $BOT~help[7]  $BOT~tab&"           {sector:#} - sector to twarp to "
-	setVar $BOT~help[8]  $BOT~tab&"      {"&#34&"trader_name"&#34&"} - trader to twarp to"
-	setVar $BOT~help[9]  $BOT~tab&"                  {p} - attempt to port after twarp"
-	setVar $BOT~help[10] $BOT~tab&"         "
-	setVar $BOT~help[11] $BOT~tab&"    Examples:"
-	setVar $BOT~help[12] $BOT~tab&"            >t 233    - normal twarp"
-	setVar $BOT~help[13] $BOT~tab&"            >t 233 12 - twarp, then land on planet 12"
-	setVar $BOT~help[14] $BOT~tab&"            >t 233 p  - twarp, then port"
-	setVar $BOT~help[15] $BOT~tab&"         >t planet 12 - twarp to last known "
-	setVar $BOT~help[16] $BOT~tab&"                        location of planet 12 and land"
-	setVar $BOT~help[17] $BOT~tab&"              >t mind - twarp to a corp member with mind"
-	setVar $BOT~help[18] $BOT~tab&"                        in their name"
-	setVar $BOT~help[19] $BOT~tab&"     >t "&#34&"mind dagger"&#34&" - twarp to corp member"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"twarp {sector:#} {"&#34&"trader_name"&#34&"} {p} "
+	setVar $HELP~HELP[2]  $HELP~TAB&"      "
+	setVar $HELP~HELP[3]  $HELP~TAB&"        transwarps to sector as quickly "
+	setVar $HELP~HELP[4]  $HELP~TAB&"        and safely as possible.   "
+	setVar $HELP~HELP[5]  $HELP~TAB&"      "
+	setVar $HELP~HELP[6]  $HELP~TAB&"    Options: "
+	setVar $HELP~HELP[7]  $HELP~TAB&"           {sector:#} - sector to twarp to "
+	setVar $HELP~HELP[8]  $HELP~TAB&"      {"&#34&"trader_name"&#34&"} - trader to twarp to"
+	setVar $HELP~HELP[9]  $HELP~TAB&"                  {p} - attempt to port after twarp"
+	setVar $HELP~HELP[10] $HELP~TAB&"         "
+	setVar $HELP~HELP[11] $HELP~TAB&"    Examples:"
+	setVar $HELP~HELP[12] $HELP~TAB&"            >t 233    - normal twarp"
+	setVar $HELP~HELP[13] $HELP~TAB&"            >t 233 12 - twarp, then land on planet 12"
+	setVar $HELP~HELP[14] $HELP~TAB&"            >t 233 p  - twarp, then port"
+	setVar $HELP~HELP[15] $HELP~TAB&"         >t planet 12 - twarp to last known "
+	setVar $HELP~HELP[16] $HELP~TAB&"                        location of planet 12 and land"
+	setVar $HELP~HELP[17] $HELP~TAB&"              >t mind - twarp to a corp member with mind"
+	setVar $HELP~HELP[18] $HELP~TAB&"                        in their name"
+	setVar $HELP~HELP[19] $HELP~TAB&"     >t "&#34&"mind dagger"&#34&" - twarp to corp member"
+	gosub :HELP~HELPFILE
 
 
 # ======================     START TWARP SUBROUTINES     =================
@@ -30,7 +31,7 @@ gosub :BOT~loadVars
 	gosub :PLAYER~quikstats
 	setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
 	setVar $bot~validPrompts "Command <Underground> Do How Corporate Citadel Planet Computer Terra <StarDock> <FedPolice> <Tavern> <Libram <Galactic <Hardware <Shipyards>"
-	gosub :bot~checkstartingprompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	gosub :player~checkfortravelname
 	if ($PLAYER~TWARP_TYPE = "No")
 		setVar $SWITCHBOARD~message "This ship does not have a transwarp drive!*"
@@ -114,4 +115,7 @@ halt
 
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

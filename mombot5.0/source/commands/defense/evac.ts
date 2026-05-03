@@ -1,10 +1,11 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1] $BOT~tab&"EVAC - Evacuate Planet(s)"
-	setVar $BOT~help[2] $BOT~tab&"       Moves all movable planets in Current-Sector to target sector."
-	setVar $BOT~help[3] $BOT~tab&"                  "
-	setVar $BOT~help[4] $BOT~tab&"      evac [sector]"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"EVAC - Evacuate Planet(s)"
+	setVar $HELP~HELP[2] $HELP~TAB&"       Moves all movable planets in Current-Sector to target sector."
+	setVar $HELP~HELP[3] $HELP~TAB&"                  "
+	setVar $HELP~HELP[4] $HELP~TAB&"      evac [sector]"
+	gosub :HELP~HELPFILE
 
 loadVar $map~stardock
 loadVar $map~rylos
@@ -165,4 +166,7 @@ loadVar $map~home_sector
 
 # ======================     END PLANET MOVER (EVAC) SUBROUTINE    ==========================
 #INCLUDES:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

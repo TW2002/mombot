@@ -1,2 +1,0 @@
-:SEEKPRODUCT~NAMESPACE
-return

@@ -71,7 +71,7 @@ gosub :PLAYER~QUIKSTATS
 setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 setvar $PORT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 setvar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :BOT~CHECKSTARTINGPROMPT
+gosub :PLAYER~CHECKSTARTINGPROMPT
 
 if ($PORT~STARTINGLOCATION = "Command")
   send "** "
@@ -141,7 +141,7 @@ gosub :PLAYER~QUIKSTATS
 setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 setvar $PORT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 setvar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :BOT~CHECKSTARTINGPROMPT
+gosub :PLAYER~CHECKSTARTINGPROMPT
 
 if ($PORT~STARTINGLOCATION = "Command")
   send "** "
@@ -219,7 +219,7 @@ gosub :PLAYER~QUIKSTATS
 setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 setvar $PORT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 setvar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :BOT~CHECKSTARTINGPROMPT
+gosub :PLAYER~CHECKSTARTINGPROMPT
 
 getwordpos " "&$BOT~USER_COMMAND_LINE&" " $PORT~POS " f "
 if ($PORT~POS > 0)
@@ -412,7 +412,7 @@ if ($PORT~STARTINGLOCATION = "Command")
 elseif ($PORT~STARTINGLOCATION = "StarDock")
   send "s"
 elseif ($PORT~STARTINGLOCATION = "Shipyard")
-  goto :STARTSELL
+  goto :STARTSHIPSELL
 end
 
 :PORT~STARTSHIPSELL
@@ -487,6 +487,9 @@ elseif ($PORT~CASHAMOUNT <= 999999999)
 end
 return
 
-include "source\include\bot"
+include "source\include\player"
+include "source\include\planet"
+include "source\include\ship"
+include "source\include\switchboard"
 
 halt

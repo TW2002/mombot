@@ -215,4 +215,32 @@ waiton "Sector  :"
 waiton "Warps to Sector(s) :"
 goto :rerun
 
+:MSGS_ON
+	:ON_AGAIN
+	setTextTrigger onMSGS_ON :onMSGS_ON "Displaying all messages."
+	setTextTrigger onMSGS_OFF :onMSGS_OFF "Silencing all messages."
+	send "|"
+	pause
+	:onMSGS_OFF
+	killAllTriggers
+	goto :ON_AGAIN
+	:onMSGS_ON
+	killAllTriggers
+	setVar $MSGS_ON TRUE
+	return
+
+:MSGS_OFF
+	:OFF_AGAIN
+	setTextTrigger offMSGS_OFF :offMSGS_OFF "Silencing all messages."
+	setTextTrigger offMSGS_ON :offMSGS_ON "Displaying all messages."
+	send "|"
+	pause
+	:offMSGS_ON
+	killAllTriggers
+	goto :OFF_AGAIN
+	:offMSGS_OFF
+	setVar $MSGS_ON FALSE
+	killAllTriggers
+	return
+
 include "source\include\player"

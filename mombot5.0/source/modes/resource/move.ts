@@ -8,6 +8,7 @@ loadvar $PARM4
 loadvar $PARM5
 goto :MOVER
 include "source\include\planet"
+include "source\include\validation"
 :MOVER
 
 killalltriggers
@@ -187,7 +188,7 @@ setvar $TURNS_PER_WARP $PLAYER~TURNS_PER_WARP
 setvar $TWARP_1_RANGE $PLAYER~TWARP_1_RANGE
 setvar $TWARP_2_RANGE $PLAYER~TWARP_2_RANGE
 setvar $EMPTY_HOLDS $PLAYER~EMPTY_HOLDS
-gosub :VALIDATION
+gosub :VALIDATION~VALIDATION
 
 return
 :GETPLANETINFO

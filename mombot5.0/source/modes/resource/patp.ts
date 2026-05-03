@@ -1,26 +1,27 @@
 	logging off
-		gosub :BOT~loadVars
+		gosub :LOADVARS~LOADVARS
+		gosub :HELP~INITIALIZE
 										loadVar $PLAYER~unlimitedGame
 
 
-	setVar $BOT~help[1]  $BOT~tab&"              PATP - Pay At The Pump               "
-	setVar $BOT~help[2]  $BOT~tab&"  patp [min port fuel] {turbo} {upgrade} {buyhalf}"
-	setVar $BOT~help[3]  $BOT~tab&"       {docim} {destroyports}"
-	setVar $BOT~help[4]  $BOT~tab&"       "
-	setVar $BOT~help[5]  $BOT~tab&"        "
-	setVar $BOT~help[6]  $BOT~tab&"Options:"
-	setVar $BOT~help[7]  $BOT~tab&"    [min port fuel]  minimum fuel a port must have to visit it"
-	setVar $BOT~help[8]  $BOT~tab&"    [turbo]          puts all buydowns in a burst"
-	setVar $BOT~help[9]  $BOT~tab&"    [upgrade]        upgrades fuel in each port"
-	setVar $BOT~help[10] $BOT~tab&"    [buyhalf]        empties ports halfway"
-	setVar $BOT~help[11] $BOT~tab&"    [docim]          does cim check before patp"
-	setVar $BOT~help[12] $BOT~tab&"    [destroyports]   destroys every port it drains if you "
-	setVar $BOT~help[13] $BOT~tab&"    [bubble]         only visits bubble sectors  "
-	setVar $BOT~help[14] $BOT~tab&"                     have enough fighters"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"              PATP - Pay At The Pump               "
+	setVar $HELP~HELP[2]  $HELP~TAB&"  patp [min port fuel] {turbo} {upgrade} {buyhalf}"
+	setVar $HELP~HELP[3]  $HELP~TAB&"       {docim} {destroyports}"
+	setVar $HELP~HELP[4]  $HELP~TAB&"       "
+	setVar $HELP~HELP[5]  $HELP~TAB&"        "
+	setVar $HELP~HELP[6]  $HELP~TAB&"Options:"
+	setVar $HELP~HELP[7]  $HELP~TAB&"    [min port fuel]  minimum fuel a port must have to visit it"
+	setVar $HELP~HELP[8]  $HELP~TAB&"    [turbo]          puts all buydowns in a burst"
+	setVar $HELP~HELP[9]  $HELP~TAB&"    [upgrade]        upgrades fuel in each port"
+	setVar $HELP~HELP[10] $HELP~TAB&"    [buyhalf]        empties ports halfway"
+	setVar $HELP~HELP[11] $HELP~TAB&"    [docim]          does cim check before patp"
+	setVar $HELP~HELP[12] $HELP~TAB&"    [destroyports]   destroys every port it drains if you "
+	setVar $HELP~HELP[13] $HELP~TAB&"    [bubble]         only visits bubble sectors  "
+	setVar $HELP~HELP[14] $HELP~TAB&"                     have enough fighters"
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Pay At The Pump"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Pay At The Pump starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 
   
@@ -317,7 +318,7 @@
 					send "c r*"
 					waiton "Computer command ["
 					send "q "
-					gosub :landOnPlanetEnterCitadel
+					gosub :PLANET~landOnPlanetEnterCitadel
 				end
 			end
 			if (($PLAYER~CREDITS + $planet~CITADEL_CREDITS) < 1000000)
@@ -375,12 +376,17 @@ return
 
 
 
-:noFigAtLocation
-	setSectorParameter $NearFig "FIGSEC" FALSE
-	goto :tryAgain2
+	:noFigAtLocation
+		setSectorParameter $NearFig "FIGSEC" FALSE
+		goto :tryAgain2
+
+	:doneNoFuel2
+		setVar $SWITCHBOARD~message "Not enough fuel to continue.*"
+		gosub :SWITCHBOARD~switchboard
+		goto :donePATP
 
 
-:setWindow
+	:setWindow
 
 	setarray $window_lines 8
 	setvar $window_lines[1] "* PATP Planet: " & $planet~planet
@@ -418,4 +424,8 @@ return
 return
 
 #INCLUDES:
+include "source\include\loadvars"
 include "source\include\planethaggle"
+include "source\include\planet"
+include "source\include\help"
+include "source\include\switchboard"

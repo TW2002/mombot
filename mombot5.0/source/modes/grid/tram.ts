@@ -1,26 +1,27 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 
-	setVar $BOT~help[1]  $BOT~tab&"    Ram gridder for mombot based on LoneStar's chains algorithm"
-	setVar $BOT~help[2]  $BOT~tab&"    Uses chain selection first, then falls back to single sectors."
-	setVar $BOT~help[3]  $BOT~tab&"    Best when there are clusters of adjacent unfigged sectors."
-	setVar $BOT~help[4]  $BOT~tab&"    REFRESH FIG LIST!"
-	setVar $BOT~help[5]  $BOT~tab&"    "
-		setVar $BOT~help[6]  $BOT~tab&"    tram [stop_turns] [stop_fighters] {saveme} {quiet} {burst:n}"
-	setVar $BOT~help[7]  $BOT~tab&"       "
-	setVar $BOT~help[8]  $BOT~tab&" Options:"
-	setVar $BOT~help[9]  $BOT~tab&"    "
-	setVar $BOT~help[10]  $BOT~tab&"   [stop_turns]     stop when you get to these turns "
-	setVar $BOT~help[11]  $BOT~tab&"   [stop_fighters]  stop when you get to these fighters"
-		setVar $BOT~help[12]  $BOT~tab&"   {saveme}  when gridder is stuck it will call saveme to be safe"
-		setVar $BOT~help[13]  $BOT~tab&"   {quiet}   suppress running Total Gridded / Efficiency messages"
-		setVar $BOT~help[14] $BOT~tab&"   {burst:n} number of macros to burst at once, default 4"
-		setVar $BOT~help[15] $BOT~tab&"                   "
+	setVar $HELP~HELP[1]  $HELP~TAB&"    Ram gridder for mombot based on LoneStar's chains algorithm"
+	setVar $HELP~HELP[2]  $HELP~TAB&"    Uses chain selection first, then falls back to single sectors."
+	setVar $HELP~HELP[3]  $HELP~TAB&"    Best when there are clusters of adjacent unfigged sectors."
+	setVar $HELP~HELP[4]  $HELP~TAB&"    REFRESH FIG LIST!"
+	setVar $HELP~HELP[5]  $HELP~TAB&"    "
+		setVar $HELP~HELP[6]  $HELP~TAB&"    tram [stop_turns] [stop_fighters] {saveme} {quiet} {burst:n}"
+	setVar $HELP~HELP[7]  $HELP~TAB&"       "
+	setVar $HELP~HELP[8]  $HELP~TAB&" Options:"
+	setVar $HELP~HELP[9]  $HELP~TAB&"    "
+	setVar $HELP~HELP[10]  $HELP~TAB&"   [stop_turns]     stop when you get to these turns "
+	setVar $HELP~HELP[11]  $HELP~TAB&"   [stop_fighters]  stop when you get to these fighters"
+		setVar $HELP~HELP[12]  $HELP~TAB&"   {saveme}  when gridder is stuck it will call saveme to be safe"
+		setVar $HELP~HELP[13]  $HELP~TAB&"   {quiet}   suppress running Total Gridded / Efficiency messages"
+		setVar $HELP~HELP[14] $HELP~TAB&"   {burst:n} number of macros to burst at once, default 4"
+		setVar $HELP~HELP[15] $HELP~TAB&"                   "
 	
-	gosub :bot~helpfile
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Train Ram Gridder - Jump Aboard the Choo Choo!"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Train Ram Gridder - Jump Aboard the Choo Choo! starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 	gosub :player~quikstats
 	setVar $UNLIM $PLAYER~UNLIMITEDGAME
@@ -733,4 +734,7 @@ gosub :BOT~loadVars
 
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

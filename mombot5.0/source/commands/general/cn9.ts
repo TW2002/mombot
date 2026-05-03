@@ -1,17 +1,18 @@
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 loadvar $BOT~USERNAME
 loadvar $BOT~LETTER
 loadvar $BOT~PASSWORD
 loadvar $BOT~SUBSPACE
 
-setvar $BOT~HELP[1] $BOT~TAB&"cn9"
-setvar $BOT~HELP[2] $BOT~TAB&"  - Resets the cn settings in the game to bot desirable settings."
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"cn9"
+setvar $HELP~HELP[2] $HELP~TAB&"  - Resets the cn settings in the game to bot desirable settings."
+gosub :HELP~HELPFILE
 
 
 gosub :PLAYER~CURRENTPROMPT
 setvar $BOT~VALIDPROMPTS "Citadel Command Computer"
-gosub :BOT~CHECKSTARTINGPROMPT
+gosub :PLAYER~CHECKSTARTINGPROMPT
 if ($PLAYER~STARTINGLOCATION = "Computer")
   send "q"
 end
@@ -21,4 +22,6 @@ gosub :SWITCHBOARD~SWITCHBOARD
 halt
 
 # includes:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

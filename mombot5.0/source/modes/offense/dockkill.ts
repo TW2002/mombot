@@ -1,21 +1,22 @@
 	logging off
-		gosub :BOT~loadVars
+		gosub :LOADVARS~LOADVARS
+		gosub :HELP~INITIALIZE
 									
 
-	setVar $BOT~help[1]  $BOT~tab&"Scans for targets and autokills in sector."
-	setVar $BOT~help[2]  $BOT~tab&"         "
-	setVar $BOT~help[3]  $BOT~tab&"  Options: "
-	setVar $BOT~help[4]  $BOT~tab&"      {off} - Turns off script "
-	setVar $BOT~help[5]  $BOT~tab&"      {pod} - Only shoots pods"
-	setVar $BOT~help[6]  $BOT~tab&"     {meat} - meatgrinder mode"
-	setVar $BOT~help[7]  $BOT~tab&"      {cap} - capture instead of kill"
-	setVar $BOT~help[8]  $BOT~tab&"       {dt} - doubletap mode"
-	setVar $BOT~help[9]  $BOT~tab&"       {sg} - shotgun mode"
-	setVar $BOT~help[10] $BOT~tab&" {defender} - pops a planet before attacking"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"Scans for targets and autokills in sector."
+	setVar $HELP~HELP[2]  $HELP~TAB&"         "
+	setVar $HELP~HELP[3]  $HELP~TAB&"  Options: "
+	setVar $HELP~HELP[4]  $HELP~TAB&"      {off} - Turns off script "
+	setVar $HELP~HELP[5]  $HELP~TAB&"      {pod} - Only shoots pods"
+	setVar $HELP~HELP[6]  $HELP~TAB&"     {meat} - meatgrinder mode"
+	setVar $HELP~HELP[7]  $HELP~TAB&"      {cap} - capture instead of kill"
+	setVar $HELP~HELP[8]  $HELP~TAB&"       {dt} - doubletap mode"
+	setVar $HELP~HELP[9]  $HELP~TAB&"       {sg} - shotgun mode"
+	setVar $HELP~HELP[10] $HELP~TAB&" {defender} - pops a planet before attacking"
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Dock Killer"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Dock Killer starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 	gosub :combat~init 
 	setVar $SWITCHBOARD~self_command TRUE
 	
@@ -277,5 +278,7 @@ return
 
 #INCLUDES:
 include "source\include\combat"
-include "source\include\bot"
+include "source\include\loadvars"
 
+include "source\include\help"
+include "source\include\switchboard"

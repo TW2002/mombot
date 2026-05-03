@@ -1,36 +1,37 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	loadvar $game~port_max
 
-	setVar $BOT~help[1]   $BOT~tab&"  deploy/put/lay/place {number} {type} {pers | corp} "
-	setVar $BOT~help[2]   $BOT~tab&"     "
-	setVar $BOT~help[3]   $BOT~tab&"  Command to replace old climp/plimp/mines/cmine/pmine "
-	setVar $BOT~help[4]   $BOT~tab&"  commands.  Old syntax still works but can also use new"
-	setVar $BOT~help[5]   $BOT~tab&"  options"
-	setVar $BOT~help[6]   $BOT~tab&"     "
-	setVar $BOT~help[7]   $BOT~tab&"   [topoff] - will fill ship up with fighters from sector "
-	setVar $BOT~help[8]   $BOT~tab&"              Example:"
-	setVar $BOT~help[9]   $BOT~tab&"                    >topoff"
-	setVar $BOT~help[10]  $BOT~tab&"     "
-	setVar $BOT~help[11]  $BOT~tab&"   [plimp | climp | cmine | pmine] - drops mines (default 1)"
-	setVar $BOT~help[12]  $BOT~tab&"              Examples: "
-	setVar $BOT~help[13]  $BOT~tab&"                    >plimp "
-	setVar $BOT~help[14]  $BOT~tab&"                    >place 100 limp"
-	setVar $BOT~help[15]  $BOT~tab&"                    >put p limp"
-	setVar $BOT~help[16]  $BOT~tab&"                    >lay 250 corp mine"
-	setVar $BOT~help[17]  $BOT~tab&"                    >deploy l p "
-	setVar $BOT~help[18]  $BOT~tab&"                    >plimp 3 "
-	setVar $BOT~help[19]  $BOT~tab&"      "
-	setVar $BOT~help[20]  $BOT~tab&"    [mines] - drops both mine types (default 3) "
-	setVar $BOT~help[21]  $BOT~tab&"              Examples:   "
-	setVar $BOT~help[22]  $BOT~tab&"                    >lay 250 mines"
-	setVar $BOT~help[23]  $BOT~tab&"                    >mines"
-	setVar $BOT~help[24]  $BOT~tab&"   "
-	setVar $BOT~help[25]  $BOT~tab&"   [deploy] - puts fighter into sector (default)"
-	setVar $BOT~help[26]  $BOT~tab&"              Examples: "
-	setVar $BOT~help[27]  $BOT~tab&"                    >deploy 10000 figs"
-	setVar $BOT~help[28]  $BOT~tab&"                    >deploy 100000"
-	setVar $BOT~help[29]  $BOT~tab&"                    >put 100 personal"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]   $HELP~TAB&"  deploy/put/lay/place {number} {type} {pers | corp} "
+	setVar $HELP~HELP[2]   $HELP~TAB&"     "
+	setVar $HELP~HELP[3]   $HELP~TAB&"  Command to replace old climp/plimp/mines/cmine/pmine "
+	setVar $HELP~HELP[4]   $HELP~TAB&"  commands.  Old syntax still works but can also use new"
+	setVar $HELP~HELP[5]   $HELP~TAB&"  options"
+	setVar $HELP~HELP[6]   $HELP~TAB&"     "
+	setVar $HELP~HELP[7]   $HELP~TAB&"   [topoff] - will fill ship up with fighters from sector "
+	setVar $HELP~HELP[8]   $HELP~TAB&"              Example:"
+	setVar $HELP~HELP[9]   $HELP~TAB&"                    >topoff"
+	setVar $HELP~HELP[10]  $HELP~TAB&"     "
+	setVar $HELP~HELP[11]  $HELP~TAB&"   [plimp | climp | cmine | pmine] - drops mines (default 1)"
+	setVar $HELP~HELP[12]  $HELP~TAB&"              Examples: "
+	setVar $HELP~HELP[13]  $HELP~TAB&"                    >plimp "
+	setVar $HELP~HELP[14]  $HELP~TAB&"                    >place 100 limp"
+	setVar $HELP~HELP[15]  $HELP~TAB&"                    >put p limp"
+	setVar $HELP~HELP[16]  $HELP~TAB&"                    >lay 250 corp mine"
+	setVar $HELP~HELP[17]  $HELP~TAB&"                    >deploy l p "
+	setVar $HELP~HELP[18]  $HELP~TAB&"                    >plimp 3 "
+	setVar $HELP~HELP[19]  $HELP~TAB&"      "
+	setVar $HELP~HELP[20]  $HELP~TAB&"    [mines] - drops both mine types (default 3) "
+	setVar $HELP~HELP[21]  $HELP~TAB&"              Examples:   "
+	setVar $HELP~HELP[22]  $HELP~TAB&"                    >lay 250 mines"
+	setVar $HELP~HELP[23]  $HELP~TAB&"                    >mines"
+	setVar $HELP~HELP[24]  $HELP~TAB&"   "
+	setVar $HELP~HELP[25]  $HELP~TAB&"   [deploy] - puts fighter into sector (default)"
+	setVar $HELP~HELP[26]  $HELP~TAB&"              Examples: "
+	setVar $HELP~HELP[27]  $HELP~TAB&"                    >deploy 10000 figs"
+	setVar $HELP~HELP[28]  $HELP~TAB&"                    >deploy 100000"
+	setVar $HELP~HELP[29]  $HELP~TAB&"                    >put 100 personal"
+	gosub :HELP~HELPFILE
 
 	setVar $bot~bot_name $SWITCHBOARD~bot_name
 	
@@ -54,7 +55,7 @@
 		getword $line $word $i $nothing
 		if (($word = "?") or ($word = "help"))
 			setvar $bot~parm1 "?"
-			gosub :bot~helpfile
+			gosub :HELP~HELPFILE
 			halt
 		end
 		if ($word <> $nothing)
@@ -230,7 +231,7 @@
 	gosub  :player~currentPrompt
 	setVar $bot~startingLocation $PLAYER~current_prompt
 	setVar $bot~validPrompts "Citadel Command"
-	gosub :bot~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	if ($bot~startingLocation = "Citadel")
 		send " q "
 		gosub :PLANET~getPlanetInfo
@@ -286,5 +287,8 @@ return
 halt
 
 #INCLUDES:
+include "source\include\player"
+include "source\include\loadvars"
 include "source\include\mines"
 include "source\include\fighters"
+include "source\include\help"

@@ -1,23 +1,24 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1]  $BOT~tab&"bwarp {sector:#} {"&#34&"trader_name"&#34&"} {p}"
-	setVar $BOT~help[2]  $BOT~tab&"      "
-	setVar $BOT~help[3]  $BOT~tab&"        planet transports to sector"
-	setVar $BOT~help[4]  $BOT~tab&"       "
-	setVar $BOT~help[5]  $BOT~tab&"    Options: "
-	setVar $BOT~help[6]  $BOT~tab&"           {sector:#} - sector to bwarp to "
-	setVar $BOT~help[7]  $BOT~tab&"      {"&#34&"trader_name"&#34&"} - trader to bwarp to"
-	setVar $BOT~help[8]  $BOT~tab&"                  {p} - port after bwarping in "
-	setVar $BOT~help[9]  $BOT~tab&"         "
-	setVar $BOT~help[10] $BOT~tab&"    Examples:"
-	setVar $BOT~help[11] $BOT~tab&"               >b 233 - normal bwarp"
-	setVar $BOT~help[12] $BOT~tab&"             >b 233 p - bwarp to sector, and port "
-	setVar $BOT~help[13] $BOT~tab&"         >b planet 12 - bwarp to last known "
-	setVar $BOT~help[14] $BOT~tab&"                        location of planet 12 "
-	setVar $BOT~help[15] $BOT~tab&"              >b mind - bwarp to a corp member with mind"
-	setVar $BOT~help[16] $BOT~tab&"                        in their name"
-	setVar $BOT~help[17] $BOT~tab&"     >b "&#34&"mind dagger"&#34&" - bwarp to corp member"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"bwarp {sector:#} {"&#34&"trader_name"&#34&"} {p}"
+	setVar $HELP~HELP[2]  $HELP~TAB&"      "
+	setVar $HELP~HELP[3]  $HELP~TAB&"        planet transports to sector"
+	setVar $HELP~HELP[4]  $HELP~TAB&"       "
+	setVar $HELP~HELP[5]  $HELP~TAB&"    Options: "
+	setVar $HELP~HELP[6]  $HELP~TAB&"           {sector:#} - sector to bwarp to "
+	setVar $HELP~HELP[7]  $HELP~TAB&"      {"&#34&"trader_name"&#34&"} - trader to bwarp to"
+	setVar $HELP~HELP[8]  $HELP~TAB&"                  {p} - port after bwarping in "
+	setVar $HELP~HELP[9]  $HELP~TAB&"         "
+	setVar $HELP~HELP[10] $HELP~TAB&"    Examples:"
+	setVar $HELP~HELP[11] $HELP~TAB&"               >b 233 - normal bwarp"
+	setVar $HELP~HELP[12] $HELP~TAB&"             >b 233 p - bwarp to sector, and port "
+	setVar $HELP~HELP[13] $HELP~TAB&"         >b planet 12 - bwarp to last known "
+	setVar $HELP~HELP[14] $HELP~TAB&"                        location of planet 12 "
+	setVar $HELP~HELP[15] $HELP~TAB&"              >b mind - bwarp to a corp member with mind"
+	setVar $HELP~HELP[16] $HELP~TAB&"                        in their name"
+	setVar $HELP~HELP[17] $HELP~TAB&"     >b "&#34&"mind dagger"&#34&" - bwarp to corp member"
+	gosub :HELP~HELPFILE
 
 
 # ======================     START BWARP SUBROUTINES     =================
@@ -33,7 +34,7 @@ gosub :BOT~loadVars
 
 	setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
 	setVar $bot~validPrompts "Citadel"
-	gosub :bot~checkstartingprompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	gosub :player~checkfortravelname
 	gosub :travelProtections
 	gosub :player~bwarp
@@ -84,5 +85,7 @@ halt
 
 
 # includes:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
 
+include "source\include\help"

@@ -1,4 +1,5 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	loadVar $bot~safe_ship
 
 if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
@@ -20,7 +21,7 @@ end
 		goto :wait_for_command
 	end
 	setVar $bot~validPrompts "Citadel Command Planet"
-	gosub :bot~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	setvar $PLAYER~startingLocation $player~current_prompt
 	isNumber $result $bot~parm1
 	isNumber $safeship_result $bot~safe_ship
@@ -105,14 +106,14 @@ end
 #============================== END XPORT (XPORT) SUB ==============================
 
 :wait_for_command
-	setVar $BOT~help[1]  $BOT~tab&"xport [ship number | list] [password]"
-	setVar $BOT~help[2]  $BOT~tab&"      "
-	setVar $BOT~help[3]  $BOT~tab&"  xports into ship or display xport list "
-	setVar $BOT~help[4]  $BOT~tab&"      "
-	setVar $BOT~help[5]  $BOT~tab&"    {ship number}  ship number to tow"
-	setVar $BOT~help[6]  $BOT~tab&"           {list}  list all xport ships in range"
-	setVar $BOT~help[7]  $BOT~tab&"       {password}  if ship has password"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"xport [ship number | list] [password]"
+	setVar $HELP~HELP[2]  $HELP~TAB&"      "
+	setVar $HELP~HELP[3]  $HELP~TAB&"  xports into ship or display xport list "
+	setVar $HELP~HELP[4]  $HELP~TAB&"      "
+	setVar $HELP~HELP[5]  $HELP~TAB&"    {ship number}  ship number to tow"
+	setVar $HELP~HELP[6]  $HELP~TAB&"           {list}  list all xport ships in range"
+	setVar $HELP~HELP[7]  $HELP~TAB&"       {password}  if ship has password"
+	gosub :HELP~HELPFILE
 halt
 
 
@@ -122,7 +123,7 @@ halt
 	setArray $scan_array 1000
 	setVar $player~startingLocation $PLAYER~CURRENT_PROMPT
 	setVar $bot~validPrompts "Citadel Command"
-	gosub :bot~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	if ($PLAYER~startingLocation = "Citadel")
 		send " q "
 		gosub :PLANET~getPlanetInfo
@@ -208,4 +209,7 @@ halt
 return
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

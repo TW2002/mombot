@@ -1,9 +1,10 @@
 	reqRecording
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
 	loadVar $GAME~GENESIS_COST
 	loadVar $GAME~ATOMIC_COST
-	loadVar $MAP~STARDOCK 
+	loadVar $MAP~STARDOCK
 	loadvar $bot~folder
 	loadvar $game~MAX_PLANETS_PER_SECTOR
 	loadvar $planet~planet_file
@@ -13,17 +14,17 @@
 	setVar $BUBBLE_LIST $bot~folder&"/bubble.list"
 	setVar $BOT~command "unstack"
 
-	setVar $BOT~help[1]  $BOT~tab&"  Moves overloaded planets automatically" 
-	setVar $BOT~help[2]  $BOT~tab&"  into FARM or BUBBLE sectors."
-	setVar $BOT~help[3]  $BOT~tab&"       "
-	setVar $BOT~help[4]  $BOT~tab&" unstack {planet#1} {planet#2} ... {planet#x} {restack}"
-	setVar $BOT~help[5]  $BOT~tab&"       "
-	setVar $BOT~help[6]  $BOT~tab&"      Options: "
-	setVar $BOT~help[7]  $BOT~tab&"        {planet#} - will not move listed planets"
-	setVar $BOT~help[8]  $BOT~tab&"        {restack} - restacks last unstacked planets"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"  Moves overloaded planets automatically"
+	setVar $HELP~HELP[2]  $HELP~TAB&"  into FARM or BUBBLE sectors."
+	setVar $HELP~HELP[3]  $HELP~TAB&"       "
+	setVar $HELP~HELP[4]  $HELP~TAB&" unstack {planet#1} {planet#2} ... {planet#x} {restack}"
+	setVar $HELP~HELP[5]  $HELP~TAB&"       "
+	setVar $HELP~HELP[6]  $HELP~TAB&"      Options: "
+	setVar $HELP~HELP[7]  $HELP~TAB&"        {planet#} - will not move listed planets"
+	setVar $HELP~HELP[8]  $HELP~TAB&"        {restack} - restacks last unstacked planets"
+	gosub :HELP~HELPFILE
 
-	
+
 
 
 
@@ -56,7 +57,7 @@
 		loadvar $restack_location
 		loadvar $restack_id
 		setarray $id 10000
-		setVar $j 1	
+		setVar $j 1
 		setVar $temp_id ""
 		setvar $skip " "
 		while ($temp_id <> "[][][]")
@@ -75,7 +76,7 @@
 	else
 		setvar $restack_id ""
 		setvar $restack_location ""
-		setVar $j 1	
+		setVar $j 1
 		setVar $temp ""
 		setvar $skip " "
 		while ($temp <> "[][][]")
@@ -125,7 +126,7 @@
 			if ($planet~CITADELs[$player~current_sector] > $game~MAX_PLANETS_PER_SECTOR)
 				setVar $j 1
 				setvar $planet~planets_to_move ($planet~CITADELs[$player~current_sector] - $game~MAX_PLANETS_PER_SECTOR)
-				setvar $planet~planets_moved 0 
+				setvar $planet~planets_moved 0
 
 				while ($j <= $planet~planetCount)
 					getwordpos $skip $pos " "&$planet~planets[$j]&" "
@@ -159,7 +160,7 @@
 									settextlinetrigger 1 :warp_it_balance "All Systems Ready, shall we engage?"
 									settextlinetrigger 2 :no_warp_balance "You do not have any fighters in Sector"
 									setTextLineTrigger 3 :warp_it_balance "You are already in that sector!"
-									pause			
+									pause
 
 									:warp_it_balance
 										setvar $planet~CITADELs[$focus] ($planet~CITADELs[$focus] + 1)
@@ -183,12 +184,12 @@
 											goto :done_moving_planets
 										end
 
-									:no_warp_balance					
+									:no_warp_balance
 										killtrigger 1
 										killtrigger 2
 										killtrigger 3
 										goto :done_moving_this_planet
-										
+
 								else
 									:notit
 									setVar $nearfig 0
@@ -208,7 +209,7 @@
 								end
 								# The adjacents of $focus were all queued, now on to the next one.
 								add $bottom 1
-							end	
+							end
 						end
 						:done_moving_this_planet
 						send "qq* "
@@ -338,7 +339,7 @@ return
 			settextlinetrigger 1 :warp_it_unbalance "All Systems Ready, shall we engage?"
 			settextlinetrigger 2 :no_warp_unbalance "You do not have any fighters in Sector"
 			setTextLineTrigger 3 :warp_it_unbalance "You are already in that sector!"
-			pause			
+			pause
 		end
 		:warp_it_unbalance
 
@@ -358,4 +359,8 @@ return
 
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\ship"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

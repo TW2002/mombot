@@ -1,13 +1,14 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	loadvar $bot~username
 	loadvar $bot~letter
 	loadvar $bot~password
 	loadvar $bot~servername
 
 	setvar $bot~command "relog"	
-	setVar $BOT~help[1] $BOT~tab&"relog"
-	setVar $BOT~help[2] $BOT~tab&"  - attempt to log the bot back into the game"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"relog"
+	setVar $HELP~HELP[2] $HELP~TAB&"  - attempt to log the bot back into the game"
+	gosub :HELP~HELPFILE
 
 
 	:relog_attempt
@@ -300,4 +301,8 @@ return
 return
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\player"
+include "source\include\planet"
+include "source\include\map"

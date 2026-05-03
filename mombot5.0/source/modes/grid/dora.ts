@@ -18,7 +18,8 @@
 #     - normal move through one way - did the m to no where, at 12 -
 
 
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 loadVar $game~port_max
 loadVar $game~ptradesetting
@@ -35,33 +36,33 @@ loadvar $BOT~BOT_NAME
 # ORE
 
 
-setVar $BOT~help[1]  $BOT~tab&" Dora the Explorer"
-setVar $BOT~help[2]  $BOT~tab&" Expores universe, no ZTM required, optional trades."
-setVar $BOT~help[3]  $BOT~tab&" "
-setVar $BOT~help[4]  $BOT~tab&" dora [turnsstop] {all/org/buys/none} {ports/warps} "
-setVar $BOT~help[5]  $BOT~tab&"                    {mcicsell/mcicbuy/mcicboth}"
-setVar $BOT~help[6]  $BOT~tab&" - [turnsstop] - Will stop exploring once we reach these turns."
-setVar $BOT~help[7]  $BOT~tab&" - {all}       - All fuel<>equip org<>equip options"
-setVar $BOT~help[8]  $BOT~tab&" - {org}       - All org<>equip options"
-setVar $BOT~help[9]  $BOT~tab&" - {buys}      - BSB<>BSB combos"
-setVar $BOT~help[10]  $BOT~tab&" - {none}      - No trading"
-setVar $BOT~help[11]  $BOT~tab&"               When any trades applied, script will trade any port"
-setVar $BOT~help[12]  $BOT~tab&"               it passes where it can sell a full load."
-setVar $BOT~help[13]  $BOT~tab&" "
-setVar $BOT~help[14]  $BOT~tab&" - {ports}     - Priortises gridding ports"
-setVar $BOT~help[15]  $BOT~tab&" - {warps}     - Priortises gridding high warp density"
-setVar $BOT~help[16]  $BOT~tab&" "
-setVar $BOT~help[17]  $BOT~tab&" - {mcicsell}  - Test XXS ports for MCIC "
-setVar $BOT~help[18]  $BOT~tab&" - {mcicbuy}   - Test XXB ports for MCIC "
-setVar $BOT~help[19]  $BOT~tab&" - {mcicboth}  - Test all ports for MCIC "
-setVar $BOT~help[20]  $BOT~tab&" "
-setVar $BOT~help[21]  $BOT~tab&" - {deldata }  Deletes explored sectors "
+setVar $HELP~HELP[1]  $HELP~TAB&" Dora the Explorer"
+setVar $HELP~HELP[2]  $HELP~TAB&" Expores universe, no ZTM required, optional trades."
+setVar $HELP~HELP[3]  $HELP~TAB&" "
+setVar $HELP~HELP[4]  $HELP~TAB&" dora [turnsstop] {all/org/buys/none} {ports/warps} "
+setVar $HELP~HELP[5]  $HELP~TAB&"                    {mcicsell/mcicbuy/mcicboth}"
+setVar $HELP~HELP[6]  $HELP~TAB&" - [turnsstop] - Will stop exploring once we reach these turns."
+setVar $HELP~HELP[7]  $HELP~TAB&" - {all}       - All fuel<>equip org<>equip options"
+setVar $HELP~HELP[8]  $HELP~TAB&" - {org}       - All org<>equip options"
+setVar $HELP~HELP[9]  $HELP~TAB&" - {buys}      - BSB<>BSB combos"
+setVar $HELP~HELP[10]  $HELP~TAB&" - {none}      - No trading"
+setVar $HELP~HELP[11]  $HELP~TAB&"               When any trades applied, script will trade any port"
+setVar $HELP~HELP[12]  $HELP~TAB&"               it passes where it can sell a full load."
+setVar $HELP~HELP[13]  $HELP~TAB&" "
+setVar $HELP~HELP[14]  $HELP~TAB&" - {ports}     - Priortises gridding ports"
+setVar $HELP~HELP[15]  $HELP~TAB&" - {warps}     - Priortises gridding high warp density"
+setVar $HELP~HELP[16]  $HELP~TAB&" "
+setVar $HELP~HELP[17]  $HELP~TAB&" - {mcicsell}  - Test XXS ports for MCIC "
+setVar $HELP~HELP[18]  $HELP~TAB&" - {mcicbuy}   - Test XXB ports for MCIC "
+setVar $HELP~HELP[19]  $HELP~TAB&" - {mcicboth}  - Test all ports for MCIC "
+setVar $HELP~HELP[20]  $HELP~TAB&" "
+setVar $HELP~HELP[21]  $HELP~TAB&" - {deldata }  Deletes explored sectors "
 
 
-gosub :BOT~helpfile
+gosub :HELP~HELPFILE
 
-setVar $BOT~script_title "Hola - Lets take a looksie!"
-gosub :BOT~banner
+setvar $SWITCHBOARD~MESSAGE "Hola - Lets take a looksie! starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
 
 gosub :player~quikstats
 setvar $startcredits $player~credits
@@ -1203,6 +1204,24 @@ return
 
 
 
+:checkCorpPlanet
+	setVar $planetFound 0
+	setVar $checki 1
+	while (($checki <= SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR]) AND ($planetFound = 0))
+		getWord SECTOR.PLANETS[$PLAYER~CURRENT_SECTOR][$checki] $checkplanet 1
+		if ($checkplanet <> "")
+			setVar $planetFound 1
+		end
+		add $checki 1
+	end
+return
+
+
+:checkCorpAtDock
+	setVar $corpNotAtDock TRUE
+return
+
+
 :restockself
 	add $stat_refurbs 1
 	send "d"
@@ -1848,4 +1867,8 @@ return
 
 return
 
-include "source\include\bot"
+include "source\include\move"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

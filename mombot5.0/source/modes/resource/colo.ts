@@ -1,26 +1,27 @@
 logging off
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 #HELP FILE
-        setVar $BOT~help[1]  $BOT~tab&"Gets colos from Terra  "
-        setVar $BOT~help[2]  $BOT~tab&"  "
-        setVar $BOT~help[3]  $BOT~tab&"colo [r/s/m/t/p] {misc} {t/b} {f} {c:x}  "
-        setVar $BOT~help[4]  $BOT~tab&"         "
-        setVar $BOT~help[5]  $BOT~tab&"Options: "
-        setVar $BOT~help[6]  $BOT~tab&"   - [r/s/m/t/p] = [r]ed/[s]peed/[m]ilk/[t]imed/speed [p]ort"
-        setVar $BOT~help[7]  $BOT~tab&"     speed = cycles - cycles to grab colos (default max)"
-        setVar $BOT~help[8]  $BOT~tab&"     milk  = min colos - min colos before grab (default 0)"
-        setVar $BOT~help[9]  $BOT~tab&"     timed = delay  - time to wait each cycle (default 15 seconds)"
-        setVar $BOT~help[10]  $BOT~tab&"    red   = jump sector - sector next to terra (can place planet there too)"
-        setVar $BOT~help[11]  $BOT~tab&"     speed port   = same as speed but uses port for ore"
-        setVar $BOT~help[12] $BOT~tab&"   - [misc]  = cycles/min colos/delay"
-        setVar $BOT~help[13] $BOT~tab&"   - [t/b]   = [t]warp/[b]warp  (default is [t]warp)"
-        setVar $BOT~help[14] $BOT~tab&"   - [f]   = Bwarp [S] Mode Only - Pick up fuel every 2nd trip"
-        setVar $BOT~help[15] $BOT~tab&"   - [c:x]   = [c]amo holds (example: c:3 adds 3 holds extra fuel)"
-        gosub :bot~helpfile
+        setVar $HELP~HELP[1]  $HELP~TAB&"Gets colos from Terra  "
+        setVar $HELP~HELP[2]  $HELP~TAB&"  "
+        setVar $HELP~HELP[3]  $HELP~TAB&"colo [r/s/m/t/p] {misc} {t/b} {f} {c:x}  "
+        setVar $HELP~HELP[4]  $HELP~TAB&"         "
+        setVar $HELP~HELP[5]  $HELP~TAB&"Options: "
+        setVar $HELP~HELP[6]  $HELP~TAB&"   - [r/s/m/t/p] = [r]ed/[s]peed/[m]ilk/[t]imed/speed [p]ort"
+        setVar $HELP~HELP[7]  $HELP~TAB&"     speed = cycles - cycles to grab colos (default max)"
+        setVar $HELP~HELP[8]  $HELP~TAB&"     milk  = min colos - min colos before grab (default 0)"
+        setVar $HELP~HELP[9]  $HELP~TAB&"     timed = delay  - time to wait each cycle (default 15 seconds)"
+        setVar $HELP~HELP[10]  $HELP~TAB&"    red   = jump sector - sector next to terra (can place planet there too)"
+        setVar $HELP~HELP[11]  $HELP~TAB&"     speed port   = same as speed but uses port for ore"
+        setVar $HELP~HELP[12] $HELP~TAB&"   - [misc]  = cycles/min colos/delay"
+        setVar $HELP~HELP[13] $HELP~TAB&"   - [t/b]   = [t]warp/[b]warp  (default is [t]warp)"
+        setVar $HELP~HELP[14] $HELP~TAB&"   - [f]   = Bwarp [S] Mode Only - Pick up fuel every 2nd trip"
+        setVar $HELP~HELP[15] $HELP~TAB&"   - [c:x]   = [c]amo holds (example: c:3 adds 3 holds extra fuel)"
+        gosub :HELP~HELPFILE
 
-setVar $BOT~script_title "Colonizer"
-gosub :BOT~banner
+setvar $SWITCHBOARD~MESSAGE "Colonizer starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
 
 
 # ======================     START COLO (COLO) SUBROUTINE    ==========================
@@ -915,4 +916,8 @@ halt
 	goto :colo_next
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

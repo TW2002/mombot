@@ -1,49 +1,50 @@
 	reqRecording
 	logging off
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	setVar $BOT~command "select"
 	loadVar $BOT~bot_turn_limit
 	loadVar $MAP~stardock
 	loadvar $bot~subspace
 	loadvar $switchboard~self_command
 
-	setVar $BOT~help[1]   $BOT~tab&"select {planet|trader|ship|anomoly|unexplored|sector|port}"
-	setVar $BOT~help[2]   $BOT~tab&"       {port:type} {count:#} {mark:PARAM} {none|dist|route}"
-	setVar $BOT~help[3]   $BOT~tab&"       {warps:#} {beam:botname} {limit:#} {from:#} {to:#}"
-	setVar $BOT~help[4]   $BOT~tab&"       {secure | paranoid}"
-	setVar $BOT~help[5]   $BOT~tab&"       "
-	setVar $BOT~help[6]   $BOT~tab&"     Searches TWX database for known info."
-	setVar $BOT~help[7]   $BOT~tab&"     You can use selectors = > < like !"
-	setVar $BOT~help[8]   $BOT~tab&"      "
-	setVar $BOT~help[9]   $BOT~tab&"     {mark:PARAM}  marks sectors PARAM=1 default QUERY=1 "
-	setVar $BOT~help[10]  $BOT~tab&"     {port:type}   match ports to pattern (xbx, sbb, xxx)"
-	setVar $BOT~help[11]  $BOT~tab&"                  "
-	setVar $BOT~help[12]  $BOT~tab&"    Examples:  "
-	setVar $BOT~help[13]  $BOT~tab&"              >select traders bubble=false equ-mcic<=60"
-	setVar $BOT~help[14]  $BOT~tab&"              >select planet like "&#34&"<<<< (a)"&#34
-	setVar $BOT~help[15]  $BOT~tab&"              >select port port.f>10000 figsec=true"
-	setVar $BOT~help[16]  $BOT~tab&"              >select port port.o>10000 figsec=false"
-	setVar $BOT~help[17]  $BOT~tab&"              >select port port.e>10000 warps:1"
-	setVar $BOT~help[18]  $BOT~tab&"              >select sector fig.owner=1 armid.owner=kane"
-	setVar $BOT~help[19]  $BOT~tab&"              >select sector limp.owner=3 limp.count>10"
-	setVar $BOT~help[20]  $BOT~tab&"              >select sector armid.count>100"
-	setVar $BOT~help[21]  $BOT~tab&"              >select sector limp.owner!3 "
-	setVar $BOT~help[22]  $BOT~tab&"         "
-	setVar $BOT~help[23]  $BOT~tab&"         {dist} - All results include distance from current. "
-	setVar $BOT~help[24]  $BOT~tab&"        {route} - Plots a basic shortest path (slow). "
-	setVar $BOT~help[25]  $BOT~tab&"          {ppt} - Finds port pair trading ports  "
-	setVar $BOT~help[26]  $BOT~tab&"      {warps:#} - Restrict matches to nwarps  "
-	setVar $BOT~help[27]  $BOT~tab&"      {count:#} - limit results to sectors with a  "
-	setVar $BOT~help[28]  $BOT~tab&"                  minimum count of planets/traders/ships"
-	setVar $BOT~help[29]  $BOT~tab&"      {limit:#} - limit query results to first n found "
-	setVar $BOT~help[30]  $BOT~tab&" {beam:botname} - Beam to bot name  "
-	setVar $BOT~help[31]  $BOT~tab&"   {origin:sec} - Specify which sector to use for DIST "
-	setVar $BOT~help[32]  $BOT~tab&"     {backdoor} - Result must include a backdoor "
-	setVar $BOT~help[33]  $BOT~tab&"       {from:#} - Lowest sector number to include "
-	setVar $BOT~help[34]  $BOT~tab&"         {to:#} - Highest sector number to include "
+	setVar $HELP~HELP[1]   $HELP~TAB&"select {planet|trader|ship|anomoly|unexplored|sector|port}"
+	setVar $HELP~HELP[2]   $HELP~TAB&"       {port:type} {count:#} {mark:PARAM} {none|dist|route}"
+	setVar $HELP~HELP[3]   $HELP~TAB&"       {warps:#} {beam:botname} {limit:#} {from:#} {to:#}"
+	setVar $HELP~HELP[4]   $HELP~TAB&"       {secure | paranoid}"
+	setVar $HELP~HELP[5]   $HELP~TAB&"       "
+	setVar $HELP~HELP[6]   $HELP~TAB&"     Searches TWX database for known info."
+	setVar $HELP~HELP[7]   $HELP~TAB&"     You can use selectors = > < like !"
+	setVar $HELP~HELP[8]   $HELP~TAB&"      "
+	setVar $HELP~HELP[9]   $HELP~TAB&"     {mark:PARAM}  marks sectors PARAM=1 default QUERY=1 "
+	setVar $HELP~HELP[10]  $HELP~TAB&"     {port:type}   match ports to pattern (xbx, sbb, xxx)"
+	setVar $HELP~HELP[11]  $HELP~TAB&"                  "
+	setVar $HELP~HELP[12]  $HELP~TAB&"    Examples:  "
+	setVar $HELP~HELP[13]  $HELP~TAB&"              >select traders bubble=false equ-mcic<=60"
+	setVar $HELP~HELP[14]  $HELP~TAB&"              >select planet like "&#34&"<<<< (a)"&#34
+	setVar $HELP~HELP[15]  $HELP~TAB&"              >select port port.f>10000 figsec=true"
+	setVar $HELP~HELP[16]  $HELP~TAB&"              >select port port.o>10000 figsec=false"
+	setVar $HELP~HELP[17]  $HELP~TAB&"              >select port port.e>10000 warps:1"
+	setVar $HELP~HELP[18]  $HELP~TAB&"              >select sector fig.owner=1 armid.owner=kane"
+	setVar $HELP~HELP[19]  $HELP~TAB&"              >select sector limp.owner=3 limp.count>10"
+	setVar $HELP~HELP[20]  $HELP~TAB&"              >select sector armid.count>100"
+	setVar $HELP~HELP[21]  $HELP~TAB&"              >select sector limp.owner!3 "
+	setVar $HELP~HELP[22]  $HELP~TAB&"         "
+	setVar $HELP~HELP[23]  $HELP~TAB&"         {dist} - All results include distance from current. "
+	setVar $HELP~HELP[24]  $HELP~TAB&"        {route} - Plots a basic shortest path (slow). "
+	setVar $HELP~HELP[25]  $HELP~TAB&"          {ppt} - Finds port pair trading ports  "
+	setVar $HELP~HELP[26]  $HELP~TAB&"      {warps:#} - Restrict matches to nwarps  "
+	setVar $HELP~HELP[27]  $HELP~TAB&"      {count:#} - limit results to sectors with a  "
+	setVar $HELP~HELP[28]  $HELP~TAB&"                  minimum count of planets/traders/ships"
+	setVar $HELP~HELP[29]  $HELP~TAB&"      {limit:#} - limit query results to first n found "
+	setVar $HELP~HELP[30]  $HELP~TAB&" {beam:botname} - Beam to bot name  "
+	setVar $HELP~HELP[31]  $HELP~TAB&"   {origin:sec} - Specify which sector to use for DIST "
+	setVar $HELP~HELP[32]  $HELP~TAB&"     {backdoor} - Result must include a backdoor "
+	setVar $HELP~HELP[33]  $HELP~TAB&"       {from:#} - Lowest sector number to include "
+	setVar $HELP~HELP[34]  $HELP~TAB&"         {to:#} - Highest sector number to include "
 
 	# ham select ports ore-mcic<-70
-	gosub :bot~helpfile
+	gosub :HELP~HELPFILE
 
 	#setVar $BOT~script_title "Select"
 	#gosub :BOT~banner
@@ -1058,4 +1059,6 @@ return
 
 
 #INCLUDES:
+include "source\include\loadvars"
 include "source\include\bot"
+include "source\include\help"

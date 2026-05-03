@@ -1,22 +1,23 @@
 # Beam File
 
 loadVar $switchboard~bot_name
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 	
-setVar $BOT~help[1]  $BOT~tab&"   Beam Data to Corp Mate"
-setVar $BOT~help[2]  $BOT~tab&"   "
-setVar $BOT~help[3]  $BOT~tab&"   beam [file/param] [filename.txt/param] [botname] "
-setVar $BOT~help[4]  $BOT~tab&"                                 {override} {delete}"
-setVar $BOT~help[5]  $BOT~tab&"   File should be in mombot game directory"
-setVar $BOT~help[6]  $BOT~tab&"   "
-setVar $BOT~help[7]  $BOT~tab&"   {override} - copy over their existing file "
-setVar $BOT~help[8]  $BOT~tab&"   {delete}   - delete their existing params "
-setVar $BOT~help[9]  $BOT~tab&"   "
-setVar $BOT~help[10]  $BOT~tab&"   >beam file ports.txt ham"
-setVar $BOT~help[11]  $BOT~tab&"   "
-setVar $BOT~help[12]  $BOT~tab&"   >beam param targets ham"
+setVar $HELP~HELP[1]  $HELP~TAB&"   Beam Data to Corp Mate"
+setVar $HELP~HELP[2]  $HELP~TAB&"   "
+setVar $HELP~HELP[3]  $HELP~TAB&"   beam [file/param] [filename.txt/param] [botname] "
+setVar $HELP~HELP[4]  $HELP~TAB&"                                 {override} {delete}"
+setVar $HELP~HELP[5]  $HELP~TAB&"   File should be in mombot game directory"
+setVar $HELP~HELP[6]  $HELP~TAB&"   "
+setVar $HELP~HELP[7]  $HELP~TAB&"   {override} - copy over their existing file "
+setVar $HELP~HELP[8]  $HELP~TAB&"   {delete}   - delete their existing params "
+setVar $HELP~HELP[9]  $HELP~TAB&"   "
+setVar $HELP~HELP[10]  $HELP~TAB&"   >beam file ports.txt ham"
+setVar $HELP~HELP[11]  $HELP~TAB&"   "
+setVar $HELP~HELP[12]  $HELP~TAB&"   >beam param targets ham"
 
-gosub :bot~helpfile
+gosub :HELP~HELPFILE
 
 
 
@@ -413,4 +414,5 @@ return
 
 return
 # includes:
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

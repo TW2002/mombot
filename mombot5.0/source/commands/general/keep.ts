@@ -1,18 +1,19 @@
 setVar $includesDir ".\includes"
 
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
-setVar $BOT~help[1] $BOT~tab&"keep {amount} "
-setVar $BOT~help[2] $BOT~tab&"   Will withdraw or deposit to/from citadel so you"
-setVar $BOT~help[3] $BOT~tab&"   have the amount of credits requested."
-setVar $BOT~help[4] $BOT~tab&"     "
-setVar $BOT~help[5] $BOT~tab&"   Examples:"
-setVar $BOT~help[6] $BOT~tab&"      >keep 500k"
-setVar $BOT~help[7] $BOT~tab&"      >keep 2m"
-setVar $BOT~help[8] $BOT~tab&"      >keep 200000"
-setVar $BOT~help[8] $BOT~tab&"     "
-setVar $BOT~help[8] $BOT~tab&"                     - Author: Deign "
-gosub :bot~helpfile
+setVar $HELP~HELP[1] $HELP~TAB&"keep {amount} "
+setVar $HELP~HELP[2] $HELP~TAB&"   Will withdraw or deposit to/from citadel so you"
+setVar $HELP~HELP[3] $HELP~TAB&"   have the amount of credits requested."
+setVar $HELP~HELP[4] $HELP~TAB&"     "
+setVar $HELP~HELP[5] $HELP~TAB&"   Examples:"
+setVar $HELP~HELP[6] $HELP~TAB&"      >keep 500k"
+setVar $HELP~HELP[7] $HELP~TAB&"      >keep 2m"
+setVar $HELP~HELP[8] $HELP~TAB&"      >keep 200000"
+setVar $HELP~HELP[8] $HELP~TAB&"     "
+setVar $HELP~HELP[8] $HELP~TAB&"                     - Author: Deign "
+gosub :HELP~HELPFILE
 
 gosub :player~quikstats
 setVar $loc $player~CURRENT_PROMPT
@@ -78,4 +79,6 @@ killTrigger treas
 goto :treasReturn
 
 #includes
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

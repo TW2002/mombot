@@ -1,27 +1,28 @@
 	reqRecording
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	setVar $BOT~command "saveme"
 	loadVar $BOT~bot_turn_limit
 	loadVar $MAP~stardock
 	loadvar $bot~subspace
 	loadvar $switchboard~self_command
 
-	setVar $BOT~help[1]    $BOT~tab&"saveme [on/off] {delay} {"&#34&"target name"&#34&"} "
-	setVar $BOT~help[2]    $BOT~tab&"       "
-	setVar $BOT~help[3]    $BOT~tab&"      {delay} - number of seconds to wait before "
-	setVar $BOT~help[4]    $BOT~tab&"                moving planet back to starting sector"         
-	setVar $BOT~help[5]    $BOT~tab&"{target name} - saveme for only one player "
-	setVar $BOT~help[6]    $BOT~tab&"   {defender} - Let's corp mates ride shields"
-	setVar $BOT~help[7]    $BOT~tab&"                and lift. "
-	setVar $BOT~help[8]    $BOT~tab&"       {kill} - Kill option to attack."
-	setVar $BOT~help[9]    $BOT~tab&"                              "
-	setVar $BOT~help[10]   $BOT~tab&"    While running saveme, you can say: "
-	setVar $BOT~help[11]   $BOT~tab&"         bot_name personal limp - drop personal limp "
-	setVar $BOT~help[12]   $BOT~tab&"         bot_name deploy mines - drop corporate mines"
-	setVar $BOT~help[13]   $BOT~tab&"         abort saveme - cancel saveme call"
-	setVar $BOT~help[14]   $BOT~tab&"         "
-	setVar $BOT~help[15]   $BOT~tab&"               - Originally written by Cherokee"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]    $HELP~TAB&"saveme [on/off] {delay} {"&#34&"target name"&#34&"} "
+	setVar $HELP~HELP[2]    $HELP~TAB&"       "
+	setVar $HELP~HELP[3]    $HELP~TAB&"      {delay} - number of seconds to wait before "
+	setVar $HELP~HELP[4]    $HELP~TAB&"                moving planet back to starting sector"
+	setVar $HELP~HELP[5]    $HELP~TAB&"{target name} - saveme for only one player "
+	setVar $HELP~HELP[6]    $HELP~TAB&"   {defender} - Let's corp mates ride shields"
+	setVar $HELP~HELP[7]    $HELP~TAB&"                and lift. "
+	setVar $HELP~HELP[8]    $HELP~TAB&"       {kill} - Kill option to attack."
+	setVar $HELP~HELP[9]    $HELP~TAB&"                              "
+	setVar $HELP~HELP[10]   $HELP~TAB&"    While running saveme, you can say: "
+	setVar $HELP~HELP[11]   $HELP~TAB&"         bot_name personal limp - drop personal limp "
+	setVar $HELP~HELP[12]   $HELP~TAB&"         bot_name deploy mines - drop corporate mines"
+	setVar $HELP~HELP[13]   $HELP~TAB&"         abort saveme - cancel saveme call"
+	setVar $HELP~HELP[14]   $HELP~TAB&"         "
+	setVar $HELP~HELP[15]   $HELP~TAB&"               - Originally written by Cherokee"
+	gosub :HELP~HELPFILE
 
 
 	setVar $PLAYER~save TRUE
@@ -36,7 +37,7 @@ setVar $defenders 0
 setVar $cannonAtmos 0
 setVar $millevel 0
 
-		
+
 # ============================== START ACTIVATE SAVEME (SAVEME) ==============================
 :saveme
 
@@ -82,7 +83,7 @@ setVar $millevel 0
 		send "c "
 		setVar $targetingPerson FALSE
 		getWordPos $bot~user_command_line $pos #34
-		if ($pos > 0)	
+		if ($pos > 0)
 			setvar $bot~user_command_line $bot~user_command_line&" "
 			getText " "&$bot~user_command_line&" " $target " "&#34 #34&" "
 			if ($target <> "")
@@ -95,14 +96,14 @@ setVar $millevel 0
 			end
 		end
 		getWordPos $bot~user_command_line $pos " defender"
-		if ($pos > 0)	
+		if ($pos > 0)
 			setVar $defmsg "Running with Defender*"
 			setVar $defender 1
 			getWordPos $bot~user_command_line $pos " kill"
 			if ($pos > 0)
 				setVar $defender_kill 1
 				setVar $defmsg "Running with Defender and Kill.*"
-				setvar $switchboard~message $defmsg 
+				setvar $switchboard~message $defmsg
 				gosub :switchboard~switchboard
 			end
 			goSub :checkDefenders
@@ -311,21 +312,21 @@ return
 	# can't wait for this one, we just hope for the best!
 
 	send "'defender mac r ^M ^M *"
-	
-	
+
+
 	if ($defender_kill = 1)
 		setDelayTrigger killwait :killwait 400
 		pause
 		:killwait
 		send "'defender kill*"
-		
+
 	end
 	setTextLineTrigger wrongprompt :wrongprompt "Wrong prompt for auto kill"
 	setTextLineTrigger resetsaveme :resetsaveme "resetsaveme"
 	pause
 	:wrongprompt
 		killtrigger wrongprompt
-		send "'defender kill*" 
+		send "'defender kill*"
 		pause
 	:resetsaveme
 
@@ -336,8 +337,8 @@ return
 
 	setVar $defenders 0
 	send "'defender callout*"
-	
-	
+
+
 	setDelayTrigger defwait :defwait 3000
 	:defmore
 	setTextLineTrigger deffound :deffound "Team: defender"
@@ -356,16 +357,16 @@ return
 	else
 		setvar $switchboard~message "We have defenders.*"
 		gosub :switchboard~switchboard
-		
+
 	end
-		
+
 return
 :setdefender
-	
+
 	goSub :disArmPlanet
 
 	send "'defender mac l" & $planet~planet & "^M^M*"
-	
+
 	setVar $defresp 0
 
 	setDelayTrigger defwaitland :defwaitland 3000
@@ -384,30 +385,30 @@ return
 		gosub :switchboard~switchboard
 		halt
 	end
-	
+
 	goSub :armPlanet
 return
 
 :disArmPlanet
-	
+
 	setVar $cannonAtmos $planet~ATMOSPHERE_CANNON
 	setVar $millevel $planet~MILITARYREACTION
 	setvar $switchboard~message "Disarming planet from Atmos Cannon: "& $cannonAtmos &" and MR:" & $millevel & "*"
 	gosub :switchboard~switchboard
-	
+
 	send "la0*m0*qopc"
 	waitfor "<Enter Citadel>"
-	
+
 return
 
 :armPlanet
-	
+
 	setvar $switchboard~message "Arming planet to Atmos Cannon: "& $cannonAtmos &" and MR:" & $millevel & "*"
 	gosub :switchboard~switchboard
-	
+
 	send "la" $cannonAtmos "*m" $millevel "*qocc"
 	waitfor "<Enter Citadel>"
-	
+
 return
 
 # ============================== END DEFENDER ROUTINES ==============================
@@ -436,4 +437,7 @@ return
 
 
 #INCLUDES:
+include "source\include\ship"
+include "source\include\loadvars"
 include "source\include\mines"
+include "source\include\help"

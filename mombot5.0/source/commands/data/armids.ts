@@ -1,13 +1,14 @@
 logging "OFF"
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 loadvar $BOT~ARMID_COUNT_FILE
 
-setvar $BOT~HELP[1] $BOT~TAB&"Refreshes Deployed Armid List"
-setvar $BOT~HELP[2] $BOT~TAB&"  - Will show difference since last command was run."
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"Refreshes Deployed Armid List"
+setvar $HELP~HELP[2] $HELP~TAB&"  - Will show difference since last command was run."
+gosub :HELP~HELPFILE
 
-setvar $BOT~SCRIPT_TITLE "Armid Report"
-gosub :BOT~BANNER
+setvar $SWITCHBOARD~MESSAGE "Armid Report starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
 
 loadvar $ARMID_COUNT_FILE
 loadvar $BOT~ARMID_FILE
@@ -141,4 +142,8 @@ write $BOT~ARMID_COUNT_FILE $COUNT
 return
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

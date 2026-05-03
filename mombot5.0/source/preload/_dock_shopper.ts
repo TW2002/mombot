@@ -1,4 +1,4 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
 
 #=============================================  DOCK SHOPPER MENU  ==================================================
 :dock_shopper
@@ -43,7 +43,7 @@
     setVar $startingLocation $PLAYER~CURRENT_PROMPT
     setVar $bot~validPrompts "Command Citadel"
     setVar $bot~startingLocation $startingLocation
-    gosub :bot~checkStartingPrompt
+    gosub :PLAYER~CHECKSTARTINGPROMPT
     if ($startingLocation = "Citadel")
         send " Q DC  "
         waitfor "Planet #"
@@ -978,5 +978,6 @@ return
 #============================================= END DOCK SHOPPER MENU  ==================================================
 
 #INCLUDES:
+include "source\include\player"
 include "source\include\game"
-include "source\include\bot"
+include "source\include\loadvars"

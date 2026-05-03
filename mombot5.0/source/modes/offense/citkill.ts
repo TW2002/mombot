@@ -1,28 +1,29 @@
 	logging off
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	loadVar $GAME~LATENCY
-	setVar $BOT~help[1]  $BOT~tab&"citkill {"&#34&"player name"&#34&"|corp#} {sg} {dt}"
-	setVar $BOT~help[2]  $BOT~tab&"        {empty} {smart} {override}"
-	setVar $BOT~help[3]  $BOT~tab&"Citadel Killer destroys enemy ships from planet citadel."
-	setVar $BOT~help[4]  $BOT~tab&"  "
-	setVar $BOT~help[5]  $BOT~tab&"{"&#34&"player name"&#34&"}   - Player to target, name must be"
-	setVar $BOT~help[6]  $BOT~tab&"                    surrounded by double quotes"
-	setVar $BOT~help[7]  $BOT~tab&"{corp#}           - Corporation number to target"
-	setVar $BOT~help[8]  $BOT~tab&"{sg}              - Shotgun mode, fires waves at"
-	setVar $BOT~help[9]  $BOT~tab&"                    first three possible targets"
-	setVar $BOT~help[10] $BOT~tab&"{dt}              - Doubletap mode, fires two waves"
-	setVar $BOT~help[11] $BOT~tab&"                    before refurbing"
-	setVar $BOT~help[12] $BOT~tab&"{empty}           - Will capture empty ships in sector"
-	setVar $BOT~help[13] $BOT~tab&"{smart}           - Notices changes in ship type/target"
-	setVar $BOT~help[14] $BOT~tab&"{override}        - Overrides safety on attacking defender bonus ships"
-	setVar $BOT~help[15] $BOT~tab&"{photon} (NA)     - Will fire photon to adjacent fig hits"
-	setVar $BOT~help[16] $BOT~tab&"{onetap}          - fire once only"
-	setVar $BOT~help[17] $BOT~tab&"{slowmo}          - Adds random pause between waves."
+	setVar $HELP~HELP[1]  $HELP~TAB&"citkill {"&#34&"player name"&#34&"|corp#} {sg} {dt}"
+	setVar $HELP~HELP[2]  $HELP~TAB&"        {empty} {smart} {override}"
+	setVar $HELP~HELP[3]  $HELP~TAB&"Citadel Killer destroys enemy ships from planet citadel."
+	setVar $HELP~HELP[4]  $HELP~TAB&"  "
+	setVar $HELP~HELP[5]  $HELP~TAB&"{"&#34&"player name"&#34&"}   - Player to target, name must be"
+	setVar $HELP~HELP[6]  $HELP~TAB&"                    surrounded by double quotes"
+	setVar $HELP~HELP[7]  $HELP~TAB&"{corp#}           - Corporation number to target"
+	setVar $HELP~HELP[8]  $HELP~TAB&"{sg}              - Shotgun mode, fires waves at"
+	setVar $HELP~HELP[9]  $HELP~TAB&"                    first three possible targets"
+	setVar $HELP~HELP[10] $HELP~TAB&"{dt}              - Doubletap mode, fires two waves"
+	setVar $HELP~HELP[11] $HELP~TAB&"                    before refurbing"
+	setVar $HELP~HELP[12] $HELP~TAB&"{empty}           - Will capture empty ships in sector"
+	setVar $HELP~HELP[13] $HELP~TAB&"{smart}           - Notices changes in ship type/target"
+	setVar $HELP~HELP[14] $HELP~TAB&"{override}        - Overrides safety on attacking defender bonus ships"
+	setVar $HELP~HELP[15] $HELP~TAB&"{photon} (NA)     - Will fire photon to adjacent fig hits"
+	setVar $HELP~HELP[16] $HELP~TAB&"{onetap}          - fire once only"
+	setVar $HELP~HELP[17] $HELP~TAB&"{slowmo}          - Adds random pause between waves."
 	
-	gosub :bot~helpfile
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Citadel Killer"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Citadel Killer starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 	:cit_kill
 	
@@ -247,5 +248,8 @@
 halt
 
 #INCLUDES:
+include "source\include\planet"
 include "source\include\combat"
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

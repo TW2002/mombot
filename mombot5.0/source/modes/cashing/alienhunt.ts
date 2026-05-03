@@ -1,4 +1,5 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	
     loadVar $MAP~STARDOCK
 	loadVar $MAP~home_sector
@@ -10,34 +11,35 @@
 	#for auto kill on surround
 	setvar $grid~kill true
 
-	setVar $BOT~help[1]  $BOT~tab&"alienhunt {corp} {sell} {refuel} {upgrade} {cannon} {return}"
-	setVar $BOT~help[2]  $BOT~tab&"          {passive} {buyfig} {buyshield} {patp} {home} "
-	setVar $BOT~help[3]  $BOT~tab&"          {"&#34&"ship_filter"&#34&"} {"&#34&"alien_filter"&#34&"} "
-	setVar $BOT~help[4]  $BOT~tab&"           "
-	setVar $BOT~help[5]  $BOT~tab&"Hunts down aliens and captures their ships.  "
-	setVar $BOT~help[6]  $BOT~tab&"Will automatically turn ships and planet personal."
-	setVar $BOT~help[7]  $BOT~tab&"Will use shields on planet as well."
-	setVar $BOT~help[8]  $BOT~tab&"Best to use with a defender ship."
-	setVar $BOT~help[9]  $BOT~tab&"         "
-	setVar $BOT~help[10] $BOT~tab&"Options: "
-	setVar $BOT~help[11] $BOT~tab&"          {off} - Turns off script and sets planet and ship corporate."
-	setVar $BOT~help[12] $BOT~tab&"         {corp} - Doesn't turn everything personal."
-	setVar $BOT~help[13] $BOT~tab&"         {sell} - Sell everyship you capture at dock and deposit the cash."
-	setVar $BOT~help[14] $BOT~tab&"       {refuel} - Refuel planet if possible."
-	setVar $BOT~help[15] $BOT~tab&"      {upgrade} - Upgrade fuel port if possible."
-	setVar $BOT~help[16] $BOT~tab&"       {cannon} - Will reset cannon levels after hunting alien."
-	setVar $BOT~help[17] $BOT~tab&"       {return} - Return to starting sector after each hunt."
-	setVar $BOT~help[18] $BOT~tab&"      {passive} - Surround passively when hunting."
-	setVar $BOT~help[19] $BOT~tab&"       {buyfig} - Auto buy figs when low.  Withdraws from citadel."
-	setVar $BOT~help[20] $BOT~tab&"    {buyshield} - Auto buy shields when low.  Withdraws from citadel."
-	setVar $BOT~help[21] $BOT~tab&"         {patp} - When planet is less than 10% of fuel, run patp."
-	setVar $BOT~help[22] $BOT~tab&"         {home} - Move ships to starting sector instead of stardock."
-	setVar $BOT~help[23] $BOT~tab&"{"&#34&"ship_filter"&#34&"} - move ships matching this home, stardock for the others"
-	setVar $BOT~help[24] $BOT~tab&"{"&#34&"alien_filter"&#34&"} - ignore aliens matching this text"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"alienhunt {corp} {sell} {refuel} {upgrade} {cannon} {return}"
+	setVar $HELP~HELP[2]  $HELP~TAB&"          {passive} {buyfig} {buyshield} {patp} {home} "
+	setVar $HELP~HELP[3]  $HELP~TAB&"          {"&#34&"ship_filter"&#34&"} {"&#34&"alien_filter"&#34&"} "
+	setVar $HELP~HELP[4]  $HELP~TAB&"           "
+	setVar $HELP~HELP[5]  $HELP~TAB&"Hunts down aliens and captures their ships.  "
+	setVar $HELP~HELP[6]  $HELP~TAB&"Will automatically turn ships and planet personal."
+	setVar $HELP~HELP[7]  $HELP~TAB&"Will use shields on planet as well."
+	setVar $HELP~HELP[8]  $HELP~TAB&"Best to use with a defender ship."
+	setVar $HELP~HELP[9]  $HELP~TAB&"         "
+	setVar $HELP~HELP[10] $HELP~TAB&"Options: "
+	setVar $HELP~HELP[11] $HELP~TAB&"          {off} - Turns off script and sets planet and ship corporate."
+	setVar $HELP~HELP[12] $HELP~TAB&"         {corp} - Doesn't turn everything personal."
+	setVar $HELP~HELP[13] $HELP~TAB&"         {sell} - Sell everyship you capture at dock and deposit the cash."
+	setVar $HELP~HELP[14] $HELP~TAB&"       {refuel} - Refuel planet if possible."
+	setVar $HELP~HELP[15] $HELP~TAB&"      {upgrade} - Upgrade fuel port if possible."
+	setVar $HELP~HELP[16] $HELP~TAB&"       {cannon} - Will reset cannon levels after hunting alien."
+	setVar $HELP~HELP[17] $HELP~TAB&"       {return} - Return to starting sector after each hunt."
+	setVar $HELP~HELP[18] $HELP~TAB&"      {passive} - Surround passively when hunting."
+	setVar $HELP~HELP[19] $HELP~TAB&"       {buyfig} - Auto buy figs when low.  Withdraws from citadel."
+	setVar $HELP~HELP[20] $HELP~TAB&"    {buyshield} - Auto buy shields when low.  Withdraws from citadel."
+	setVar $HELP~HELP[21] $HELP~TAB&"         {patp} - When planet is less than 10% of fuel, run patp."
+	setVar $HELP~HELP[22] $HELP~TAB&"         {home} - Move ships to starting sector instead of stardock."
+	setVar $HELP~HELP[23] $HELP~TAB&"{"&#34&"ship_filter"&#34&"} - move ships matching this home, stardock for the others"
+	setVar $HELP~HELP[24] $HELP~TAB&"{"&#34&"alien_filter"&#34&"} - ignore aliens matching this text"
+	gosub :HELP~HELPFILE
  
-	setVar $BOT~script_title "Alien Hunter"
-	gosub :BOT~banner
+ :restart
+	setvar $SWITCHBOARD~MESSAGE "Alien Hunter starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 	setVar $PLAYER~save TRUE
 
@@ -375,8 +377,30 @@
 	setTextLineTrigger 	power 	:pwarpConfirmed 	"is powering up weapons systems!"
 	settextlinetrigger  wave    :pwarpConfirmed    " launches a wave of fighters at the "
 	
-	gosub :bot~disconnecttriggers
+	gosub :DISCONNECTTRIGGERS
 	pause
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:DISCONNECTTRIGGERS
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+settexttrigger PAUSE :PAUSING "Planet command (?="
+settexttrigger PAUSE2 :PAUSING "Computer command ["
+settexttrigger PAUSE3 :PAUSING "Corporate command ["
+return
+
+:PAUSING
+killalltriggers
+echo ANSI_14 "*[["&ANSI_15&$BOT~SCRIPT_TITLE&" paused. To restart, re-enter citadel prompt"&ANSI_14&"]]*"&ANSI_7
+settexttrigger RESTART :RESTARTING "Citadel command ("
+pause
+
+:RESTARTING
+killalltriggers
+echo ANSI_14 "*[[" ANSI_15 "Alien Hunter restarted" ANSI_14 "]]*" ANSI_7
+goto :RESTART
+
+
+
 
 	:attackSectorMine
 		gosub :validateMineHit
@@ -1024,5 +1048,10 @@ return
 return
 
 #INCLUDES:
+include "source\include\bot"
+include "source\include\combat"
+include "source\include\loadvars"
 include "source\include\fighters"
 include "source\include\xenter"
+include "source\include\help"
+include "source\include\switchboard"

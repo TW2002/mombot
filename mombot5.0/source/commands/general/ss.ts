@@ -1,10 +1,12 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1]  $BOT~tab&"ss - send subspace messages  "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"ss - send subspace messages  "
+	gosub :HELP~HELPFILE
 
 	send "'"&$BOT~user_command_line&"*"
 	halt
     
 #INCLUDES:
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

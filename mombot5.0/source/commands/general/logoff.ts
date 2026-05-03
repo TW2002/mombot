@@ -1,15 +1,16 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1] $BOT~tab&"logoff {minutes} {cloak}"
-	setVar $BOT~help[2] $BOT~tab&"  - logs off now and optionally relogs after a timer"
-	setVar $BOT~help[3] $BOT~tab&"logout {minutes} {cloak}"
-	setVar $BOT~help[4] $BOT~tab&"  - alias for logoff"
-	setVar $BOT~help[5] $BOT~tab&"Examples:"
-	setVar $BOT~help[6] $BOT~tab&"  >logoff        - log off until manually restarted"
-	setVar $BOT~help[7] $BOT~tab&"  >logoff 10     - log off and relog in 10 minutes"
-	setVar $BOT~help[8] $BOT~tab&"  >logout cloak  - cloak and log off until manually restarted"
-	setVar $BOT~help[9] $BOT~tab&"  >logoff 30 cloak - cloak out and relog in 30 minutes"
-	gosub :BOT~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"logoff {minutes} {cloak}"
+	setVar $HELP~HELP[2] $HELP~TAB&"  - logs off now and optionally relogs after a timer"
+	setVar $HELP~HELP[3] $HELP~TAB&"logout {minutes} {cloak}"
+	setVar $HELP~HELP[4] $HELP~TAB&"  - alias for logoff"
+	setVar $HELP~HELP[5] $HELP~TAB&"Examples:"
+	setVar $HELP~HELP[6] $HELP~TAB&"  >logoff        - log off until manually restarted"
+	setVar $HELP~HELP[7] $HELP~TAB&"  >logoff 10     - log off and relog in 10 minutes"
+	setVar $HELP~HELP[8] $HELP~TAB&"  >logout cloak  - cloak and log off until manually restarted"
+	setVar $HELP~HELP[9] $HELP~TAB&"  >logoff 30 cloak - cloak out and relog in 30 minutes"
+	gosub :HELP~HELPFILE
 
 	if (($BOT~parm1 = "?") or ($BOT~parm1 = "help"))
 		halt
@@ -41,6 +42,12 @@
 	if ($pos > 0)
 		setVar $cloakingOut TRUE
 	end
+	if ($quittingWithNoTimer)
+		setvar $bot~do_not_resuscitate true
+		savevar $bot~do_not_resuscitate
+		setvar $bot~dorelog false
+		savevar $bot~dorelog
+	end
 	if (($cloakingOut = TRUE) AND ($PLAYER~CLOAKS > 0))
 		if ($quittingWithNoTimer)
 			send "'{" $SWITCHBOARD~bot_name "} - Logging and cloaking out until I am at keys to login again.*"
@@ -66,8 +73,6 @@
 	disconnect
 	setVar $timer 0
 	if ($quittingWithNoTimer)
-		setvar $bot~do_not_resuscitate true
-		savevar $bot~do_not_resuscitate
 		halt
 	end
 	setTextOutTrigger logearly :endLogoffGame #32
@@ -120,4 +125,7 @@
 return
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\player"
+include "source\include\planet"

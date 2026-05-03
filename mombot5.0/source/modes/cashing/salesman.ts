@@ -1,4 +1,5 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
 	loadvar $GAME~ptradesetting
 	loadVar $game~goldenabled
@@ -14,31 +15,31 @@
 	loadVar $game~LIMPET_REMOVAL_COST
 
 
-	setVar $BOT~help[1]  $BOT~tab&"Visits all ports in grid and buys fuel"
-	setVar $BOT~help[2]  $BOT~tab&"and sells/buys organics and equipment."
-	setVar $BOT~help[3]  $BOT~tab&" "
-	setVar $BOT~help[4]  $BOT~tab&"salesman [min port product] ({neg}otiate OR {hold}byhold)"
-	setVar $BOT~help[5]  $BOT~tab&"{docim} {upgradefuel}"
-	setVar $BOT~help[6]  $BOT~tab&"         "
-	setVar $BOT~help[7]  $BOT~tab&"Options: "
-	setVar $BOT~help[8]  $BOT~tab&"   {neg/hold}    Determines planet negotiate or hold selling"
-	setVar $BOT~help[9]  $BOT~tab&"   {docim}       Does cim before starting route"
-	setVar $BOT~help[10] $BOT~tab&"   {upgradefuel} Upgrades fuel ports selling fuel"
-	setVar $BOT~help[11] $BOT~tab&"     {haggle}    Uses native haggle for trading"
-	setVar $BOT~help[12] $BOT~tab&"   {nohaggle}    Doesn't haggle when buying product"
-	setVar $BOT~help[13] $BOT~tab&"   {sellfuel}    Sells fuel during travels"
-	setVar $BOT~help[14] $BOT~tab&"       {grid}    Surround grid as you go"
-	setVar $BOT~help[15] $BOT~tab&"        {rob}    Rob ports after buying down"
-	setVar $BOT~help[16] $BOT~tab&"    {upgrade}    Slowly upgrade each port as it goes"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"Visits all ports in grid and buys fuel"
+	setVar $HELP~HELP[2]  $HELP~TAB&"and sells/buys organics and equipment."
+	setVar $HELP~HELP[3]  $HELP~TAB&" "
+	setVar $HELP~HELP[4]  $HELP~TAB&"salesman [min port product] ({neg}otiate OR {hold}byhold)"
+	setVar $HELP~HELP[5]  $HELP~TAB&"{docim} {upgradefuel}"
+	setVar $HELP~HELP[6]  $HELP~TAB&"         "
+	setVar $HELP~HELP[7]  $HELP~TAB&"Options: "
+	setVar $HELP~HELP[8]  $HELP~TAB&"   {neg/hold}    Determines planet negotiate or hold selling"
+	setVar $HELP~HELP[9]  $HELP~TAB&"   {docim}       Does cim before starting route"
+	setVar $HELP~HELP[10] $HELP~TAB&"   {upgradefuel} Upgrades fuel ports selling fuel"
+	setVar $HELP~HELP[11] $HELP~TAB&"     {haggle}    Uses native haggle for trading"
+	setVar $HELP~HELP[12] $HELP~TAB&"   {nohaggle}    Doesn't haggle when buying product"
+	setVar $HELP~HELP[13] $HELP~TAB&"   {sellfuel}    Sells fuel during travels"
+	setVar $HELP~HELP[14] $HELP~TAB&"       {grid}    Surround grid as you go"
+	setVar $HELP~HELP[15] $HELP~TAB&"        {rob}    Rob ports after buying down"
+	setVar $HELP~HELP[16] $HELP~TAB&"    {upgrade}    Slowly upgrade each port as it goes"
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Traveling Salesman"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Traveling Salesman starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 	setVar $PLAYER~save TRUE
 
 
-		
+
 :merchant
 	gosub :PLAYER~quikstats
 	setVar $startingLocation $PLAYER~CURRENT_PROMPT
@@ -47,9 +48,9 @@
 		gosub :SWITCHBOARD~switchboard
  		halt
 	end
-	
+
 	setVar $buyFuel TRUE
-	
+
 	getWordPos $bot~user_command_line $pos "docim"
 	if ($pos > 0)
 		setVar $docim TRUE
@@ -129,14 +130,14 @@
 		halt
 	end
 
-	loadvar $PLAYER~surroundFigs 
-	loadvar $PLAYER~surroundMine 
-	loadvar $PLAYER~surroundLimp 
-	loadvar $PLAYER~surroundAvoidAllPlanets 
-	loadvar $PLAYER~surroundAvoidShieldedOnly 
-	loadvar $PLAYER~surroundOverwrite 
+	loadvar $PLAYER~surroundFigs
+	loadvar $PLAYER~surroundMine
+	loadvar $PLAYER~surroundLimp
+	loadvar $PLAYER~surroundAvoidAllPlanets
+	loadvar $PLAYER~surroundAvoidShieldedOnly
+	loadvar $PLAYER~surroundOverwrite
 
-	setvar $PLAYER~surroundNormal false 
+	setvar $PLAYER~surroundNormal false
 	setvar $player~surroundPassive true
 
 
@@ -158,8 +159,8 @@
 
 	gosub :PLAYER~quikstats
 	setVar $sectorCount 10
-	setVar $totalHolds 0 
-	setVar $spentCredits 0 
+	setVar $totalHolds 0
+	setVar $spentCredits 0
 	setVar $startingSector $PLAYER~CURRENT_SECTOR
 	setVar $sellingOrg TRUE
 	setVar $sellingEquip TRUE
@@ -226,7 +227,7 @@
 			end
 			# The adjacents of $focus were all queued, now on to the next one.
 			add $bottom 1
-		end	
+		end
 			setVar $SWITCHBOARD~message "Can't find a route to any other ports.*"
 			gosub :SWITCHBOARD~switchboard
      		goto :doneMerchant
@@ -238,7 +239,7 @@
 				setTextLineTrigger same :emptyPort2 "You are already in that sector!"
 				setTextLineTrigger didnotwarp :noFigAtLocation "Your own fighters must be in the destination to make a safe jump."
 				setTextLineTrigger notEnoughFuel :doneNoFuel2 "You do not have enough Fuel Ore on this planet to make the jump."
-				pause			
+				pause
 				:emptyPort2
 					send "y "
 					setSectorParameter $NearFig "FIGSEC" TRUE
@@ -310,22 +311,22 @@
 						setVar  $planethaggle~_ck_pnego_equiptosell "-1"
 					end
 					gosub :PLANETHAGGLE~planetNeg
-				else	
+				else
 					killAllTriggers
 					gosub :PLAYER~quikstats
 					send "q"
 					waitOn "Planet command (?"
 					gosub :PLANET~getPlanetInfo
 					send "c"
-	
+
 					send "q q *cr*q"
 					waitOn "Fuel Ore"
 					getWord CURRENTLINE $totalPortFuel 4
 					waitOn "Organics"
 					getWord CURRENTLINE $totalPortOrganics 3
 					waitOn "Equipment"
-					getWord CURRENTLINE $totalPortEquipment 3		
-					
+					getWord CURRENTLINE $totalPortEquipment 3
+
 					waitOn "<Computer deactivated>"
 					if ((PORT.BUYFUEL[$NearFig] = TRUE) AND ($sellfuel = true) AND ($planet~planetfuel >= 100000))
 						if ($planet~planetFuel < $totalPortFuel)
@@ -340,7 +341,7 @@
 							goto :doneMerchant
 						end
 						send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
-							
+
 						while ($player~turnsSellingProduct > 0)
 							if ($nativeHaggleMode)
 								setVar $salesmanTradeSellFuel 1
@@ -384,7 +385,7 @@
 							goto :doneMerchant
 						end
 						send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
-							
+
 						while ($player~turnsSellingProduct > 0)
 							if ($nativeHaggleMode)
 								setVar $salesmanTradeSellFuel 0
@@ -498,7 +499,7 @@
 						gosub :PLAYER~quikstats
 						end
 					end
-										
+
 				send "#"
 				waitOn "                            Who's Playing"
 				send "cr*"
@@ -525,7 +526,7 @@
 				if ($do_rob = true)
 					gosub :rob
 				end
-			end	
+			end
 		end
 		:doneMerchant
 			send "p"&$startingSector&"*y"
@@ -540,23 +541,28 @@
 
 
 
-:noFigAtLocation
-	setSectorParameter $NearFig "FIGSEC" FALSE
-	goto :tryAgain2
+	:noFigAtLocation
+		setSectorParameter $NearFig "FIGSEC" FALSE
+		goto :tryAgain2
+
+	:doneNoFuel2
+		setVar $SWITCHBOARD~message "Not enough fuel to continue.*"
+		gosub :SWITCHBOARD~switchboard
+		goto :doneMerchant
 
 
-:rob
-		
+	:rob
+
 	killalltriggers
 	gosub :player~quikstats
 	setVar $startingLocation $player~current_prompt
-	
+
 	getSectorParameter $player~current_sector "BUSTED" $isBusted
 	if ($isBusted = true)
 		return
 	end
 	cutText $player~alignment $neg_ck 1 1
-	
+
 	stripText $player~alignment "-"
 	if ($player~alignment < 100) and ($neg_ck = "-")
 		return
@@ -604,16 +610,16 @@
 		echo "*Port has less than "&$minimumPort&" credits on it.*"
 		send "0*"
 		setVar $rob 0
-	elseif ($port_cash >= $rob) 
+	elseif ($port_cash >= $rob)
 		send $rob "*"
 	elseif ($port_cash < $rob)
 		setVar $rob $port_cash
 		send $rob "*"
 	end
 	if ($port_cash < $minimumPort)
-		setVar $checkedPorts[$player~current_sector] TRUE	
+		setVar $checkedPorts[$player~current_sector] TRUE
 		setVar $EMPTY_GRID[$player~current_sector] TRUE
-		write $bot~no_credits_file $player~current_sector		
+		write $bot~no_credits_file $player~current_sector
 	end
 	setTextLineTrigger port_empty :rob_suc "Maybe some other day, eh?"
 	setTextLineTrigger mega_suc :rob_suc "Success!"
@@ -639,20 +645,20 @@
 
 :rob_not_valid
 	killalltriggers
-	setVar $checkedPorts[$player~current_sector] TRUE	
+	setVar $checkedPorts[$player~current_sector] TRUE
 	setVar $EMPTY_GRID[$player~current_sector] TRUE
-	write $bot~no_credits_file $player~current_sector	
+	write $bot~no_credits_file $player~current_sector
 	setVar $rob 0
-	setVar $original_port_cash 0	
+	setVar $original_port_cash 0
 :rob_suc
 	killalltriggers
 	if ($startingLocation = "Citadel")
 		send "l " $planet~planet "* c t t " $rob "* "
 	end
 	if ($rob > $original_port_cash)
-		setVar $checkedPorts[$player~current_sector] TRUE	
+		setVar $checkedPorts[$player~current_sector] TRUE
 		setVar $EMPTY_GRID[$player~current_sector] TRUE
-		write $bot~no_credits_file $player~current_sector				
+		write $bot~no_credits_file $player~current_sector
 	end
 	if ($rob > 0)
 		setVar $laststeal $player~current_sector
@@ -670,7 +676,7 @@
 
 	saveVar $BOT~command
 	saveVar $BOT~user_command_line
-	saveVar $bot~parm1 
+	saveVar $bot~parm1
 
 	load "scripts\"&$bot~mombot_directory&"\commands\grid\deploy.cts"
 	setEventTrigger        minesend        :minesend "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\grid\deploy.cts"
@@ -704,12 +710,12 @@ return
 	setVar $cashNeeded ($limpetCashNeeded+$armidCashNeeded)
 	setVar $furbing TRUE
 	if ($cashNeeded > $player~credits)
-		send "D" 
+		send "D"
 		waitOn "Citadel treasury contains "
 		getWord CURRENTLINE $planet~CITADELCash 4
 		stripText $planet~CITADELCash ","
 		if ($planet~CITADELCash < $cashNeeded)
-			send "'{" & $bot~bot_name & "} - Not enough cash for mine refurbs in treasury or on hand.*"	
+			send "'{" & $bot~bot_name & "} - Not enough cash for mine refurbs in treasury or on hand.*"
 			goto :haltSalesman
 		end
 		send "t f "&($cashNeeded-$player~credits)&"* "
@@ -848,7 +854,7 @@ return
 			goto :haltSalesman
 		end
 		send "q tnt1* c "
-	
+
 
 return
 
@@ -925,16 +931,16 @@ return
 			KillAlltriggers
 			if ($player~alignment >= 1000)
 				if ($furbing)
-					setVar $str "y * * p s g y g q " 
+					setVar $str "y * * p s g y g q "
 				else
-					setVar $str "y * *  " 
+					setVar $str "y * *  "
 				end
 				send $str
 			else
 				if ($furbing)
 					setVar $str "y  *  *  m " & $map~stardock & " *  *  p s g y g q "
 				else
-					setVar $str "y * *  " 
+					setVar $str "y * *  "
 				end
 				send $str
 			end
@@ -952,7 +958,6 @@ return
 	send "b" $player~warpto "*"
 	setTextTrigger go :go5 "TransWarp Locked"
 	setTextTrigger no :no5 "No locating beam found"
-	goSub :delayTrigger
 	pause
 
 :no5
@@ -1223,7 +1228,37 @@ return
 	end
 	return
 
+:select_boomsec
+	setVar $i 1
+	setVar $foundBoomSec FALSE
+	while ($i <= $database_count)
+		if (getSectorParameter $i "FIGSEC" = TRUE)
+			setVar $foundBoomSec TRUE
+			send "l " & #8 & $planet~planet & "* c"
+			gosub :player~quikstats
+			goto :tryAgain2
+		end
+		add $i 1
+	end
+	if ($foundBoomSec = FALSE)
+		send "'{" & $bot~bot_name & "} - No FIGs found in database!**"
+		goto :haltSalesman
+	end
+
+:haltSalesman
+	setVar $SWITCHBOARD~message "No FIGs found in database!*"
+	gosub :SWITCHBOARD~switchboard
+	halt
+
 
 #INCLUDES:
+include "source\include\player"
+include "source\include\planet"
+include "source\include\ship"
+include "source\include\grid"
+include "source\include\combat"
+include "source\include\loadvars"
 include "source\include\planethaggle"
 include "source\include\haggle"
+include "source\include\help"
+include "source\include\switchboard"

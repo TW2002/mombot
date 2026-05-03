@@ -1,30 +1,31 @@
 logging "OFF"
-gosub :bot~loadvars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 loadvar $player~unlimitedgame
 loadvar $game~ptradesetting
 loadvar $bot~bot_turn_limit
 loadvar $bot~mcic_file
 
-setvar $bot~help[1] $bot~tab&"           Visits all ports in grid and sells organics          "
-setvar $bot~help[2] $bot~tab&"           and/or equipment.       "
-setvar $bot~help[3] $bot~tab&"       "
-setvar $bot~help[4] $bot~tab&" merch {sector param} {min port product} [o | e] {args}  "
-setvar $bot~help[6] $bot~tab&"       "
-setvar $bot~help[7] $bot~tab&"Arguments:"
-setvar $bot~help[8] $bot~tab&"    {neg/hold}   Determines planet negotiate or hold "
-setvar $bot~help[9] $bot~tab&"                 selling approach"
-setvar $bot~help[10] $bot~tab&"     {skipcim}   Uses current cim data and skips searching"
-setvar $bot~help[11] $bot~tab&"       {docim}   Does cim check before starting and skips searching"
-setvar $bot~help[12] $bot~tab&"     {buyfuel}   Buys all the fuel in fuel selling ports on route"
-setvar $bot~help[13] $bot~tab&"        {half}   sell half of port (neg only for now) "
-setvar $bot~help[14] $bot~tab&"       {upequ}   upgrade good equipment ports"
-setvar $bot~help[15] $bot~tab&"       {uporg}   upgrade good organics ports"
-setvar $bot~help[16] $bot~tab&"    {upmcic #}   maximum mcic to upgrade (default: -60)"
-setvar $bot~help[17] $bot~tab&"  {sellmcic #}   minimum mcic to sell product (default: none)"
-gosub :bot~helpfile
+setvar $HELP~HELP[1] $HELP~TAB&"           Visits all ports in grid and sells organics          "
+setvar $HELP~HELP[2] $HELP~TAB&"           and/or equipment.       "
+setvar $HELP~HELP[3] $HELP~TAB&"       "
+setvar $HELP~HELP[4] $HELP~TAB&" merch {sector param} {min port product} [o | e] {args}  "
+setvar $HELP~HELP[6] $HELP~TAB&"       "
+setvar $HELP~HELP[7] $HELP~TAB&"Arguments:"
+setvar $HELP~HELP[8] $HELP~TAB&"    {neg/hold}   Determines planet negotiate or hold "
+setvar $HELP~HELP[9] $HELP~TAB&"                 selling approach"
+setvar $HELP~HELP[10] $HELP~TAB&"     {skipcim}   Uses current cim data and skips searching"
+setvar $HELP~HELP[11] $HELP~TAB&"       {docim}   Does cim check before starting and skips searching"
+setvar $HELP~HELP[12] $HELP~TAB&"     {buyfuel}   Buys all the fuel in fuel selling ports on route"
+setvar $HELP~HELP[13] $HELP~TAB&"        {half}   sell half of port (neg only for now) "
+setvar $HELP~HELP[14] $HELP~TAB&"       {upequ}   upgrade good equipment ports"
+setvar $HELP~HELP[15] $HELP~TAB&"       {uporg}   upgrade good organics ports"
+setvar $HELP~HELP[16] $HELP~TAB&"    {upmcic #}   maximum mcic to upgrade (default: -60)"
+setvar $HELP~HELP[17] $HELP~TAB&"  {sellmcic #}   minimum mcic to sell product (default: none)"
+gosub :HELP~HELPFILE
 
-setvar $bot~script_title "Planet Merchant"
-gosub :bot~banner
+setvar $SWITCHBOARD~MESSAGE "Planet Merchant starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
 :MERCHANT
 
 
@@ -494,6 +495,10 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
     gosub :player~quikstats
   end
 end
+:DONENOFUEL2
+setvar $switchboard~message "Not enough fuel to continue.*"
+gosub :switchboard~switchboard
+goto :DONEMERCHANT
 :DONEMERCHANT
 send "p"&$STARTINGSECTOR&"*y"
 setvar $switchboard~message "Planet Merchant completed.*"
@@ -505,4 +510,7 @@ setsectorparameter $NEARFIG "FIGSEC" FALSE
 goto :TRYAGAIN2
 
 # includes:
+include "source\include\loadvars"
 include "source\include\planethaggle"
+include "source\include\help"
+include "source\include\switchboard"

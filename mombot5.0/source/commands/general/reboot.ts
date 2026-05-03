@@ -1,8 +1,9 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 		
-	setVar $BOT~help[1] $BOT~tab&"Reboot"
-	setVar $BOT~help[2] $BOT~tab&"  - Kill bot and restart it"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"Reboot"
+	setVar $HELP~HELP[2] $HELP~TAB&"  - Kill bot and restart it"
+	gosub :HELP~HELPFILE
 
 	if (ISNATIVEBOT = TRUE)
 		setVar $SWITCHBOARD~message "Rebooting native Mombot..*"
@@ -47,4 +48,5 @@
 
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

@@ -1,6 +1,7 @@
 	reqrecording
 
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
 	loadVar $GAME~GENESIS_COST
 	loadVar $GAME~ATOMIC_COST
@@ -14,21 +15,21 @@
 
 	setVar $BOT~command "wsst"
 
-	setVar $BOT~help[1]   $BOT~tab&"World Sell-Steal-Transport "
-	setVar $BOT~help[2]   $BOT~tab&" - wsst [ship2] {cash dropoff} {f} {s} {safe|passive} {furbpoint} "
-	setVar $BOT~help[3]   $BOT~tab&"   Options: "
-	setVar $BOT~help[4]   $BOT~tab&"     {cash dropoff} - if started from planet citadel  "
-	setVar $BOT~help[5]   $BOT~tab&"     {f}            - buy fighters"
-	setVar $BOT~help[6]   $BOT~tab&"     {s}            - buy shields "
-	setVar $BOT~help[7]   $BOT~tab&"     {safe}         - Will not mow to locations, scans and moves"
-	setVar $BOT~help[8]   $BOT~tab&"     {passive}      - Will be safe, as well as avoid any enemy fighters "
-	setVar $BOT~help[9]   $BOT~tab&"     {furbpoint}    - Terra, Dock (default), Alpha, Rylos "
-	setVar $BOT~help[10]  $BOT~tab&"     {limp}         - Will lay 3 limps/sector if Furbing at Dock. "
-	setVar $BOT~help[11]  $BOT~tab&"     {armid}        - Will lay 3 armids/sector if Furbing at Dock. "
-	setVar $BOT~help[12]  $BOT~tab&"     {quiet}        - Will not braodcast BUSTED msg's on SubSpace  "
-	setVar $BOT~help[13]  $BOT~tab&"     {x100}         - Will Drop 100 Fighters per sector "
+	setVar $HELP~HELP[1]   $HELP~TAB&"World Sell-Steal-Transport "
+	setVar $HELP~HELP[2]   $HELP~TAB&" - wsst [ship2] {cash dropoff} {f} {s} {safe|passive} {furbpoint} "
+	setVar $HELP~HELP[3]   $HELP~TAB&"   Options: "
+	setVar $HELP~HELP[4]   $HELP~TAB&"     {cash dropoff} - if started from planet citadel  "
+	setVar $HELP~HELP[5]   $HELP~TAB&"     {f}            - buy fighters"
+	setVar $HELP~HELP[6]   $HELP~TAB&"     {s}            - buy shields "
+	setVar $HELP~HELP[7]   $HELP~TAB&"     {safe}         - Will not mow to locations, scans and moves"
+	setVar $HELP~HELP[8]   $HELP~TAB&"     {passive}      - Will be safe, as well as avoid any enemy fighters "
+	setVar $HELP~HELP[9]   $HELP~TAB&"     {furbpoint}    - Terra, Dock (default), Alpha, Rylos "
+	setVar $HELP~HELP[10]  $HELP~TAB&"     {limp}         - Will lay 3 limps/sector if Furbing at Dock. "
+	setVar $HELP~HELP[11]  $HELP~TAB&"     {armid}        - Will lay 3 armids/sector if Furbing at Dock. "
+	setVar $HELP~HELP[12]  $HELP~TAB&"     {quiet}        - Will not braodcast BUSTED msg's on SubSpace  "
+	setVar $HELP~HELP[13]  $HELP~TAB&"     {x100}         - Will Drop 100 Fighters per sector "
 
-	gosub :bot~helpfile
+	gosub :HELP~HELPFILE
 
 	setvar $player~save true
 
@@ -1990,7 +1991,7 @@ return
 			setTextLineTrigger twarp_lock 		:twarp_lock "TransWarp Locked"
 			setTextLineTrigger no_twrp_lock 	:no_twarp_lock "No locating beam found"
 			setTextLineTrigger twarp_adj 		:twarp_adj "<Set NavPoint>"
-			setTextLineTrigger no_fuel 		:itwarpNoFuel "You do not have enough Fuel Ore"
+			setTextLineTrigger no_fuel 		:twarpNoFuel "You do not have enough Fuel Ore"
 			pause
 		:twarpNoFuel
 			killAllTriggers
@@ -2051,7 +2052,7 @@ return
 	send "b" $warpto "*"
 	setTextTrigger go :go5 "TransWarp Locked"
 	setTextTrigger no :no5 "No locating beam found"
-	goSub :delayTrigger
+	#goSub :delayTrigger
 	pause
 
 :no5
@@ -2066,4 +2067,8 @@ return
 	return
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\ship"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

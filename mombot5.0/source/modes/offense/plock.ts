@@ -6,7 +6,8 @@
 #				fixed :plockFinished, sent " n s* ", if the planet is a
 #				level 6, this would have no effect
 
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
 	loadvar $GAME~ptradesetting
 	loadVar $game~goldenabled
@@ -22,18 +23,18 @@
 	loadVar $game~LIMPET_REMOVAL_COST
 
 
-	setVar $BOT~help[1]  $BOT~tab&"plock {sector} {kill} {fastkill} {fastdrop}"
-	setVar $BOT~help[2]  $BOT~tab&"    "
-	setVar $BOT~help[3]  $BOT~tab&"   Pre-locks with planet onto a sector."
-	setVar $BOT~help[4]  $BOT~tab&"    "
-	setVar $BOT~help[5]  $BOT~tab&"    Options: "
-	setVar $BOT~help[6]  $BOT~tab&"      {kill} - attempts citkill after landing"
-	setVar $BOT~help[7]  $BOT~tab&"  {fastkill} - macro kill after landing"
-	setVar $BOT~help[8]  $BOT~tab&"  {fastdrop} - deploys fighters after landing"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"plock {sector} {kill} {fastkill} {fastdrop}"
+	setVar $HELP~HELP[2]  $HELP~TAB&"    "
+	setVar $HELP~HELP[3]  $HELP~TAB&"   Pre-locks with planet onto a sector."
+	setVar $HELP~HELP[4]  $HELP~TAB&"    "
+	setVar $HELP~HELP[5]  $HELP~TAB&"    Options: "
+	setVar $HELP~HELP[6]  $HELP~TAB&"      {kill} - attempts citkill after landing"
+	setVar $HELP~HELP[7]  $HELP~TAB&"  {fastkill} - macro kill after landing"
+	setVar $HELP~HELP[8]  $HELP~TAB&"  {fastdrop} - deploys fighters after landing"
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Plock"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Plock starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 
 goto :Starting
@@ -323,5 +324,8 @@ goto :Starting
 	send $send
 return
 # ======================     END PLOCK (PLOCK) SUBROUTINE     ==========================
+include "source\include\planet"
 include "source\include\combat"
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

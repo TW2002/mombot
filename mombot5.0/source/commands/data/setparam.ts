@@ -1,17 +1,18 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
 
-	setVar $BOT~help[1]  $BOT~tab&"Set sector parameters"
-	setVar $BOT~help[2]  $BOT~tab&"      setparam [parameter] [value] {sector} "
-	setVar $BOT~help[3]  $BOT~tab&"       "
-	setVar $BOT~help[4]  $BOT~tab&"Usage: "
-	setVar $BOT~help[5]  $BOT~tab&"       >setparam BUSTED 1 45"
-	setVar $BOT~help[6]  $BOT~tab&"       >setparam FIGSEC 1 "
-	setVar $BOT~help[7]  $BOT~tab&"        "
-	setVar $BOT~help[8]  $BOT~tab&"       Note: assumes current sector if sector isn't entered"
-	setVar $BOT~help[9]  $BOT~tab&"       "
-	setVar $BOT~help[10] $BOT~tab&"       Original Author: Deign"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"Set sector parameters"
+	setVar $HELP~HELP[2]  $HELP~TAB&"      setparam [parameter] [value] {sector} "
+	setVar $HELP~HELP[3]  $HELP~TAB&"       "
+	setVar $HELP~HELP[4]  $HELP~TAB&"Usage: "
+	setVar $HELP~HELP[5]  $HELP~TAB&"       >setparam BUSTED 1 45"
+	setVar $HELP~HELP[6]  $HELP~TAB&"       >setparam FIGSEC 1 "
+	setVar $HELP~HELP[7]  $HELP~TAB&"        "
+	setVar $HELP~HELP[8]  $HELP~TAB&"       Note: assumes current sector if sector isn't entered"
+	setVar $HELP~HELP[9]  $HELP~TAB&"       "
+	setVar $HELP~HELP[10] $HELP~TAB&"       Original Author: Deign"
+	gosub :HELP~HELPFILE
 
 
 setVar $name $bot~parm1
@@ -43,4 +44,5 @@ setvar $switchboard~message "Parameter "&$name&" has been set to "&$value&" in s
 gosub :switchboard~switchboard
 
 halt
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

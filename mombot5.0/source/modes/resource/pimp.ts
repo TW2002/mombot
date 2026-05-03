@@ -1,21 +1,22 @@
 reqRecording
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 loadvar $map~backdoor
 
 
-	setVar $BOT~help[1] $BOT~tab&"PIMP - Makes planets and strips them of product "
-	setVar $BOT~help[2] $BOT~tab&"   "
-	setVar $BOT~help[3] $BOT~tab&"pimp {"&#34&"planet name"&#34&"} {f} {o} {e}"
-	setVar $BOT~help[4] $BOT~tab&"      "
-	setVar $BOT~help[5] $BOT~tab&"[planet name] - creates planet with this name (default"
-	setVar $BOT~help[6] $BOT~tab&"                is random name)"
-	setVar $BOT~help[7] $BOT~tab&"          [f] - fuel"
-	setVar $BOT~help[8] $BOT~tab&"          [o] - organics"
-	setVar $BOT~help[9] $BOT~tab&"          [e] - equipment"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"PIMP - Makes planets and strips them of product "
+	setVar $HELP~HELP[2] $HELP~TAB&"   "
+	setVar $HELP~HELP[3] $HELP~TAB&"pimp {"&#34&"planet name"&#34&"} {f} {o} {e}"
+	setVar $HELP~HELP[4] $HELP~TAB&"      "
+	setVar $HELP~HELP[5] $HELP~TAB&"[planet name] - creates planet with this name (default"
+	setVar $HELP~HELP[6] $HELP~TAB&"                is random name)"
+	setVar $HELP~HELP[7] $HELP~TAB&"          [f] - fuel"
+	setVar $HELP~HELP[8] $HELP~TAB&"          [o] - organics"
+	setVar $HELP~HELP[9] $HELP~TAB&"          [e] - equipment"
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "product pimp"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "product pimp starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 
 		
@@ -579,4 +580,8 @@ return
 		end
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

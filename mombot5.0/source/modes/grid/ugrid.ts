@@ -1058,7 +1058,7 @@ if ($WARPTO > 0)
   settextlinetrigger TWARP_LOCK :TWARP_LOCK "TransWarp Locked"
   settextlinetrigger NO_TWRP_LOCK :NO_TWARP_LOCK "No locating beam found"
   settextlinetrigger TWARP_ADJ :TWARP_ADJ "<Set NavPoint>"
-  settextlinetrigger NO_FUEL :ITWARPNOFUEL "You do not have enough Fuel Ore"
+  settextlinetrigger NO_FUEL :TWARPNOFUEL "You do not have enough Fuel Ore"
   pause
   :TWARPNOFUEL
   killalltriggers

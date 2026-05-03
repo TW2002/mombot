@@ -1,4 +1,5 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+		gosub :HELP~INITIALIZE
 	
 	setArray $TYPES 7
 	setVar $TYPES[1] "General"
@@ -11,12 +12,14 @@
 
 
 	
-	setVar $BOT~help[1] $BOT~tab&"help - displays help files for commands "
-	setVar $BOT~help[2] $BOT~tab&"	   "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"help - displays help files for commands "
+		setVar $HELP~HELP[2] $HELP~TAB&"   "
+	gosub :HELP~HELPFILE
+	setVar $helpTargetText $BOT~USER_COMMAND_LINE
+	stripText $helpTargetText " "
 
 
-		if ($BOT~parm1 <> "")
+		if ($helpTargetText <> "")
 			lowerCase $BOT~parm1
 			setVar $i 1
 			while ($i <= 7)
@@ -59,8 +62,8 @@
 			setVar $BOT~parm1 $resolvedHelpCommand
 			fileExists $doesExist "scripts\"&$bot~mombot_directory&"\help\"&$BOT~parm1&".txt"
 			if ($doesExist)
-				readToArray "scripts\"&$bot~mombot_directory&"\help\"&$BOT~parm1&".txt" $bot~help
-				gosub :bot~displayhelp
+				readToArray "scripts\"&$bot~mombot_directory&"\help\"&$BOT~parm1&".txt" $HELP~HELP
+				gosub :HELP~DISPLAYHELP
 
 			else
 				setVar $SWITCHBOARD~message "No help file available for "&$BOT~parm1&".*"
@@ -373,4 +376,6 @@ return
 
 
 # includes:
+include "source\include\loadvars"
 include "source\include\menus"
+include "source\include\help"

@@ -1,20 +1,21 @@
 #Look at making mow holo more efficent
 #turn limit or reporting? 
 loadVar $switchboard~bot_name
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 clearAllAvoids
 #HELP FILE
-setVar $BOT~help[1]  $BOT~tab&"   The Wall"
-setVar $BOT~help[2]  $BOT~tab&"  "
-setVar $BOT~help[3]  $BOT~tab&"   wall [Origin] [Distance] {holo} {limit:n}"
-setVar $BOT~help[4]  $BOT~tab&"         "
-setVar $BOT~help[5]  $BOT~tab&"   Plots courses to find all sectors Distance from Origin"
-setVar $BOT~help[6]  $BOT~tab&"         "
-setVar $BOT~help[7]  $BOT~tab&"   holo - Will holo all unexplored sectors."
-setVar $BOT~help[8]  $BOT~tab&"   limit:n - will only mow N plots"
-setVar $BOT~help[9]  $BOT~tab&"  designed for day 1 use with no ZTM."
+setVar $HELP~HELP[1]  $HELP~TAB&"   The Wall"
+setVar $HELP~HELP[2]  $HELP~TAB&"  "
+setVar $HELP~HELP[3]  $HELP~TAB&"   wall [Origin] [Distance] {holo} {limit:n}"
+setVar $HELP~HELP[4]  $HELP~TAB&"         "
+setVar $HELP~HELP[5]  $HELP~TAB&"   Plots courses to find all sectors Distance from Origin"
+setVar $HELP~HELP[6]  $HELP~TAB&"         "
+setVar $HELP~HELP[7]  $HELP~TAB&"   holo - Will holo all unexplored sectors."
+setVar $HELP~HELP[8]  $HELP~TAB&"   limit:n - will only mow N plots"
+setVar $HELP~HELP[9]  $HELP~TAB&"  designed for day 1 use with no ZTM."
 
-gosub :bot~helpfile
+gosub :HELP~HELPFILE
 
 
 gosub :PLAYER~quikstats
@@ -789,6 +790,8 @@ return
 
 ##########
 	#INCLUDES:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
 
 
+include "source\include\help"

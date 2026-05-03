@@ -18,7 +18,7 @@
 
 
 
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
 setvar $I 0
 setvar $MYCOUNT 0
 setvar $NUMFIG 0
@@ -41,7 +41,7 @@ setvar $OUTPUT "SubSpace"
 
 
 setvar $BOT~VALIDPROMPTS "Citadel Planet Command"
-gosub :BOT~CHECKSTARTINGPROMPT
+gosub :PLAYER~CHECKSTARTINGPROMPT
 if (($PLAYER~STARTINGLOCATION = "Citadel") or ($PLAYER~STARTINGLOCATION = "Planet"))
   send " q "
   gosub :PLANET~GETPLANETINFO
@@ -731,4 +731,6 @@ getconsoleinput $INKEY SINGLEKEY
 halt
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"

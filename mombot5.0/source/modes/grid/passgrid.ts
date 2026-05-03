@@ -43,44 +43,45 @@
 		
 	reqRecording
 	clearAllAvoids
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
 	loadVar $MAP~rylos
 	loadVar $MAP~alpha_centauri
 	loadVar $BOT~LIMP_FILE 		
 	loadVar $BOT~ARMID_FILE 
 
-	setVar $BOT~help[1]  $BOT~tab&"       LS Passive Gridder - Still the best "
-	setVar $BOT~help[2]  $BOT~tab&"       "
-	setVar $BOT~help[3]  $BOT~tab&" lspassgrid [stopturns] {a1/a2/a3} {l1/l2/l3} {ports}"
-	setVar $BOT~help[4]  $BOT~tab&"            {holo} {trade} {restock} {filter} {ignore:}"
-	setVar $BOT~help[5]  $BOT~tab&" Options:"
-	setVar $BOT~help[6]  $BOT~tab&"    [stopturns]     Passive Grid Stops at here"
-	setVar $BOT~help[7]  $BOT~tab&"	   {a1/a2/a3}      Drop 1/2/3 Armid Mines"
-	setVar $BOT~help[8]  $BOT~tab&"	   {l1/l2/l3}      Drop 1/2/3 Limpet Mines"
-	setVar $BOT~help[9]  $BOT~tab&"    {ports}         Grabs port reports"
-	setVar $BOT~help[10]  $BOT~tab&"    {holo}         Holo Scans to ensure sectors safe"
-	setVar $BOT~help[11]  $BOT~tab&"    {trade}        Will trade ports looking for Equ MCIC"
-	setVar $BOT~help[12]  $BOT~tab&"                   Requires EP Haggle or equiv"
-	setVar $BOT~help[13]  $BOT~tab&"    {safe}         Twarps to Limpet sectors only"
-	setVar $BOT~help[14]  $BOT~tab&"    {paranoid}     Twarp to Limpet and Mines only"
-	setVar $BOT~help[15]  $BOT~tab&"    {nextreport}   Next sector requires an adj port report."
-	setVar $BOT~help[16]  $BOT~tab&"    {restock}      Buys more Limpets and Mines."
-	setVar $BOT~help[17]  $BOT~tab&"    {filter}       Filters mines/armids/planets to detect"
-	setVar $BOT~help[18]  $BOT~tab&"                   safe sectors. run >limps >armids 1st"
-	setVar $BOT~help[19]  $BOT~tab&"    {ignorea}      Uses holo scan to passive grid alien figs"
-	setVar $BOT~help[20]  $BOT~tab&"    {resume}       Roughly resumes last run"
-	setVar $BOT~help[21]  $BOT~tab&"    {ignore:}      Ignore corp or trader fighters"
-	setVar $BOT~help[22]  $BOT~tab&"    {skip:}        Skips sectors with this param !=0 !=''"
-	setVar $BOT~help[23]  $BOT~tab&"    {lock:PARAM=n} Lock grid to this param - WHICHBUB=2"
-	setVar $BOT~help[24]  $BOT~tab&"    {twenty}       Drop 20 fighters in density 0 sectors"
-	setVar $BOT~help[25]  $BOT~tab&"    Doesn't require ZTM but works better"
-	setVar $BOT~help[26]  $BOT~tab&"    Works best with T-Warp to reroute"
+	setVar $HELP~HELP[1]  $HELP~TAB&"       LS Passive Gridder - Still the best "
+	setVar $HELP~HELP[2]  $HELP~TAB&"       "
+	setVar $HELP~HELP[3]  $HELP~TAB&" lspassgrid [stopturns] {a1/a2/a3} {l1/l2/l3} {ports}"
+	setVar $HELP~HELP[4]  $HELP~TAB&"            {holo} {trade} {restock} {filter} {ignore:}"
+	setVar $HELP~HELP[5]  $HELP~TAB&" Options:"
+	setVar $HELP~HELP[6]  $HELP~TAB&"    [stopturns]     Passive Grid Stops at here"
+	setVar $HELP~HELP[7]  $HELP~TAB&"	   {a1/a2/a3}      Drop 1/2/3 Armid Mines"
+	setVar $HELP~HELP[8]  $HELP~TAB&"	   {l1/l2/l3}      Drop 1/2/3 Limpet Mines"
+	setVar $HELP~HELP[9]  $HELP~TAB&"    {ports}         Grabs port reports"
+	setVar $HELP~HELP[10]  $HELP~TAB&"    {holo}         Holo Scans to ensure sectors safe"
+	setVar $HELP~HELP[11]  $HELP~TAB&"    {trade}        Will trade ports looking for Equ MCIC"
+	setVar $HELP~HELP[12]  $HELP~TAB&"                   Requires EP Haggle or equiv"
+	setVar $HELP~HELP[13]  $HELP~TAB&"    {safe}         Twarps to Limpet sectors only"
+	setVar $HELP~HELP[14]  $HELP~TAB&"    {paranoid}     Twarp to Limpet and Mines only"
+	setVar $HELP~HELP[15]  $HELP~TAB&"    {nextreport}   Next sector requires an adj port report."
+	setVar $HELP~HELP[16]  $HELP~TAB&"    {restock}      Buys more Limpets and Mines."
+	setVar $HELP~HELP[17]  $HELP~TAB&"    {filter}       Filters mines/armids/planets to detect"
+	setVar $HELP~HELP[18]  $HELP~TAB&"                   safe sectors. run >limps >armids 1st"
+	setVar $HELP~HELP[19]  $HELP~TAB&"    {ignorea}      Uses holo scan to passive grid alien figs"
+	setVar $HELP~HELP[20]  $HELP~TAB&"    {resume}       Roughly resumes last run"
+	setVar $HELP~HELP[21]  $HELP~TAB&"    {ignore:}      Ignore corp or trader fighters"
+	setVar $HELP~HELP[22]  $HELP~TAB&"    {skip:}        Skips sectors with this param !=0 !=''"
+	setVar $HELP~HELP[23]  $HELP~TAB&"    {lock:PARAM=n} Lock grid to this param - WHICHBUB=2"
+	setVar $HELP~HELP[24]  $HELP~TAB&"    {twenty}       Drop 20 fighters in density 0 sectors"
+	setVar $HELP~HELP[25]  $HELP~TAB&"    Doesn't require ZTM but works better"
+	setVar $HELP~HELP[26]  $HELP~TAB&"    Works best with T-Warp to reroute"
 
-	gosub :bot~helpfile
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "LoneStar's Passive Gridder"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "LoneStar's Passive Gridder starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 	
 	setVar $TAGLINE     "LoneStar's Passive Gridder"
 	setVar $TAGLINEB     $BOT~bot_name
@@ -1774,4 +1775,7 @@ return
 	return
 
 
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

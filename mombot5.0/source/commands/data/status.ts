@@ -1,13 +1,14 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1] $BOT~tab&"Reports information about bot on subspace  "
-	setVar $BOT~help[2] $BOT~tab&"        "
-	setVar $BOT~help[3] $BOT~tab&"Special stats that are bot specific:        "
-	setVar $BOT~help[4] $BOT~tab&"  - Planet #: Last planet landed on"
-	setVar $BOT~help[5] $BOT~tab&"  - Team Name: What team name your bot respondeds to, if any"
-	setVar $BOT~help[6] $BOT~tab&"  - Bot mode:  What mode your bot is currently running"
-	setVar $BOT~help[7] $BOT~tab&"        "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"Reports information about bot on subspace  "
+	setVar $HELP~HELP[2] $HELP~TAB&"        "
+	setVar $HELP~HELP[3] $HELP~TAB&"Special stats that are bot specific:        "
+	setVar $HELP~HELP[4] $HELP~TAB&"  - Planet #: Last planet landed on"
+	setVar $HELP~HELP[5] $HELP~TAB&"  - Team Name: What team name your bot respondeds to, if any"
+	setVar $HELP~HELP[6] $HELP~TAB&"  - Bot mode:  What mode your bot is currently running"
+	setVar $HELP~HELP[7] $HELP~TAB&"        "
+	gosub :HELP~HELPFILE
 
 	loadvar $planet~planet
 	loadvar $bot~mode
@@ -293,4 +294,6 @@ halt
 
 
 # includes:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

@@ -1,16 +1,17 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
 
-	setVar $BOT~help[1]  $BOT~tab&"setvar"
-	setVar $BOT~help[2]  $BOT~tab&"  Sets bot variables"
-	setVar $BOT~help[3]  $BOT~tab&"    s - stardock"
-	setVar $BOT~help[4]  $BOT~tab&"    r - rylos"
-	setVar $BOT~help[5]  $BOT~tab&"    a - alpha centauri"
-	setVar $BOT~help[6]  $BOT~tab&"    b - backdoor"
-	setVar $BOT~help[7]  $BOT~tab&"    x - safe ship"
-	setVar $BOT~help[8]  $BOT~tab&"   tl - turn limit"
-	setVar $BOT~help[9]  $BOT~tab&"    h - home sector"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"setvar"
+	setVar $HELP~HELP[2]  $HELP~TAB&"  Sets bot variables"
+	setVar $HELP~HELP[3]  $HELP~TAB&"    s - stardock"
+	setVar $HELP~HELP[4]  $HELP~TAB&"    r - rylos"
+	setVar $HELP~HELP[5]  $HELP~TAB&"    a - alpha centauri"
+	setVar $HELP~HELP[6]  $HELP~TAB&"    b - backdoor"
+	setVar $HELP~HELP[7]  $HELP~TAB&"    x - safe ship"
+	setVar $HELP~HELP[8]  $HELP~TAB&"   tl - turn limit"
+	setVar $HELP~HELP[9]  $HELP~TAB&"    h - home sector"
+	gosub :HELP~HELPFILE
 
 	getWord $BOT~user_command_line $BOT~parm1 1
 	isNumber $test $BOT~parm2
@@ -104,4 +105,5 @@
 halt
 
 # includes:
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

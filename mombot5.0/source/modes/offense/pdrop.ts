@@ -2,7 +2,8 @@ reqRecording
 # Mind Over Matter Planet Drop
 # Author: Mind Dagger
 
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	setVar $BOT~command "pdrop"
 	loadVar $BOT~bot_turn_limit
 	loadVar $MAP~stardock
@@ -10,49 +11,49 @@ reqRecording
 	loadvar $switchboard~self_command
 	loadvar $ship~ship_max_attack
 
-	setVar $BOT~help[1]   $BOT~tab&"pdrop {delay:#} {d|a|s|da|de} {fm|f|m|uf} {return} {kill}     "
-	setVar $BOT~help[2]   $BOT~tab&"      {fastkill} {defender} {perfect} {density} {lock}        "
-	setVar $BOT~help[3]   $BOT~tab&"      {plockt:#} {figs:#} {offensive} {twohops} {retrigger}   "
-	setVar $BOT~help[4]   $BOT~tab&"      {densityx} {iglift}                                     "
-	setVar $BOT~help[5]   $BOT~tab&"        "
-	setVar $BOT~help[6]   $BOT~tab&"  {delay:#} - delay before dropping in milliseconds"
-	setVar $BOT~help[7]   $BOT~tab&"        {d} - direct drop"
-	setVar $BOT~help[8]   $BOT~tab&"        {a} - adjacent drop"
-	setVar $BOT~help[9]   $BOT~tab&"        {s} - surround drop"
-	setVar $BOT~help[10]  $BOT~tab&"       {da} - direct, then adjacent drop"
-	setVar $BOT~help[11]  $BOT~tab&"       {de} - dead end drop"
-	setVar $BOT~help[12]  $BOT~tab&"       {fm} - trigger on fighter and mine hits"
-	setVar $BOT~help[13]  $BOT~tab&"        {f} - trigger on fighter hits only"
-	setVar $BOT~help[14]  $BOT~tab&"        {m} - trigger on mines only"
-	setVar $BOT~help[15]  $BOT~tab&"       {uf} - trigger on mines with no fighters"
-	setVar $BOT~help[16]  $BOT~tab&"   {return} - will return planet home after 10 seconds"
-	setVar $BOT~help[17]  $BOT~tab&"     {kill} - checks for enemy, and kills if possible"
-	setVar $BOT~help[18]  $BOT~tab&" {fastkill} - does kill mac without checking"
-	setVar $BOT~help[19]  $BOT~tab&" {defender} - sets and lifts IG capable defender"
-	setVar $BOT~help[20]  $BOT~tab&"  {perfect} - Only drops adjacent when it is only option"
-	setVar $BOT~help[21]  $BOT~tab&"  {density} - Drops adjacent, runs density photon"
-	setVar $BOT~help[22]  $BOT~tab&"     {lock} - Locks on sector then halts"
-	setVar $BOT~help[23]  $BOT~tab&" {plockt:#} - Plock delay before retrigger. Default is no retrigger."
-	setVar $BOT~help[24]  $BOT~tab&"   {figs:#} - drop this many figs to sector on landing"
-	setVar $BOT~help[25]  $BOT~tab&"{offensive} - make figs offensive, default defense."	
-	setVar $BOT~help[26]  $BOT~tab&"  {twohops} - deadend drop, make sure de 2 hops or more away"	
-	setVar $BOT~help[27]  $BOT~tab&"{retrigger} - Keep hunting for targets"	
-	setVar $BOT~help[28]  $BOT~tab&" {densityx} - Density < 40 for xport in and deploy"
-	setVar $BOT~help[29]  $BOT~tab&"   {iglift} - sets and lifts IG self"
-	setVar $BOT~help[30]  $BOT~tab&"    "
-	setVar $BOT~help[31]  $BOT~tab&"   Examples:"
-	setVar $BOT~help[32]  $BOT~tab&"      >pdrop delay:10000 d f return kill"
-	setVar $BOT~help[33]  $BOT~tab&"      >pdrop 1000 da fm "
-	setVar $BOT~help[34]  $BOT~tab&"      >pdrop a f kill"
-	
-		
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]   $HELP~TAB&"pdrop {delay:#} {d|a|s|da|de} {fm|f|m|uf} {return} {kill}     "
+	setVar $HELP~HELP[2]   $HELP~TAB&"      {fastkill} {defender} {perfect} {density} {lock}        "
+	setVar $HELP~HELP[3]   $HELP~TAB&"      {plockt:#} {figs:#} {offensive} {twohops} {retrigger}   "
+	setVar $HELP~HELP[4]   $HELP~TAB&"      {densityx} {iglift}                                     "
+	setVar $HELP~HELP[5]   $HELP~TAB&"        "
+	setVar $HELP~HELP[6]   $HELP~TAB&"  {delay:#} - delay before dropping in milliseconds"
+	setVar $HELP~HELP[7]   $HELP~TAB&"        {d} - direct drop"
+	setVar $HELP~HELP[8]   $HELP~TAB&"        {a} - adjacent drop"
+	setVar $HELP~HELP[9]   $HELP~TAB&"        {s} - surround drop"
+	setVar $HELP~HELP[10]  $HELP~TAB&"       {da} - direct, then adjacent drop"
+	setVar $HELP~HELP[11]  $HELP~TAB&"       {de} - dead end drop"
+	setVar $HELP~HELP[12]  $HELP~TAB&"       {fm} - trigger on fighter and mine hits"
+	setVar $HELP~HELP[13]  $HELP~TAB&"        {f} - trigger on fighter hits only"
+	setVar $HELP~HELP[14]  $HELP~TAB&"        {m} - trigger on mines only"
+	setVar $HELP~HELP[15]  $HELP~TAB&"       {uf} - trigger on mines with no fighters"
+	setVar $HELP~HELP[16]  $HELP~TAB&"   {return} - will return planet home after 10 seconds"
+	setVar $HELP~HELP[17]  $HELP~TAB&"     {kill} - checks for enemy, and kills if possible"
+	setVar $HELP~HELP[18]  $HELP~TAB&" {fastkill} - does kill mac without checking"
+	setVar $HELP~HELP[19]  $HELP~TAB&" {defender} - sets and lifts IG capable defender"
+	setVar $HELP~HELP[20]  $HELP~TAB&"  {perfect} - Only drops adjacent when it is only option"
+	setVar $HELP~HELP[21]  $HELP~TAB&"  {density} - Drops adjacent, runs density photon"
+	setVar $HELP~HELP[22]  $HELP~TAB&"     {lock} - Locks on sector then halts"
+	setVar $HELP~HELP[23]  $HELP~TAB&" {plockt:#} - Plock delay before retrigger. Default is no retrigger."
+	setVar $HELP~HELP[24]  $HELP~TAB&"   {figs:#} - drop this many figs to sector on landing"
+	setVar $HELP~HELP[25]  $HELP~TAB&"{offensive} - make figs offensive, default defense."
+	setVar $HELP~HELP[26]  $HELP~TAB&"  {twohops} - deadend drop, make sure de 2 hops or more away"
+	setVar $HELP~HELP[27]  $HELP~TAB&"{retrigger} - Keep hunting for targets"
+	setVar $HELP~HELP[28]  $HELP~TAB&" {densityx} - Density < 40 for xport in and deploy"
+	setVar $HELP~HELP[29]  $HELP~TAB&"   {iglift} - sets and lifts IG self"
+	setVar $HELP~HELP[30]  $HELP~TAB&"    "
+	setVar $HELP~HELP[31]  $HELP~TAB&"   Examples:"
+	setVar $HELP~HELP[32]  $HELP~TAB&"      >pdrop delay:10000 d f return kill"
+	setVar $HELP~HELP[33]  $HELP~TAB&"      >pdrop 1000 da fm "
+	setVar $HELP~HELP[34]  $HELP~TAB&"      >pdrop a f kill"
 
-	setVar $BOT~script_title "Planet Dropper"
-	gosub :BOT~banner
+
+	gosub :HELP~HELPFILE
+
+	setvar $SWITCHBOARD~MESSAGE "Planet Dropper starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 	setVar $PLAYER~save TRUE
-	gosub :combat~init 
+	gosub :combat~init
 
 	getSectorParameter SECTORS "FIGSEC" $isFigged
 
@@ -80,7 +81,7 @@ reqRecording
 		send "'{" $bot~bot_name "} - It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
 		halt
 	end
-	
+
 	gosub :player~quikstats
 	setVar $startingLocation $player~current_prompt
 	setVar $script_ver "Mind Over Matter Bot P-drop"
@@ -90,14 +91,14 @@ reqRecording
 	        halt
 	end
 
-	loadvar $ship~CAP_FILE	
+	loadvar $ship~CAP_FILE
 	fileExists $CAP_FILE_chk $ship~CAP_FILE
 	if ($CAP_FILE_chk)
 		gosub :ship~loadshipinfo
 	else
 		gosub :ship~getShipCapStats
 		gosub :ship~loadShipInfo
-	end 
+	end
 
 	gosub :ship~getshipstats
 
@@ -227,13 +228,13 @@ reqRecording
 
 	getWordPos $bot~user_command_line $pos "plockt:"
 	if ($pos > 0)
-		
+
 		setVar $cline $bot~user_command_line & " "
 		getText $cline $plockTimer "plockt:" " "
 	else
 		setVar $plockTimer 0
 	end
-		
+
 
 	getWordPos $bot~user_command_line $pos "defender"
 	if ($pos > 0)
@@ -241,7 +242,7 @@ reqRecording
 	else
 		setVar $defender FALSE
 	end
-	
+
 	getWordPos $bot~user_command_line $pos "perfect"
 	if ($pos > 0)
 		setVar $perfect TRUE
@@ -276,7 +277,7 @@ reqRecording
 	else
 		setVar $density FALSE
 	end
-	
+
 	getWordPos $bot~user_command_line $pos "densityx"
 	if ($pos > 0)
 		setVar $densityx TRUE
@@ -302,7 +303,7 @@ reqRecording
 	gosub :getName
 	setVar $script_ver "Planet Drop"
 
-	setVar $dropSector 0 
+	setVar $dropSector 0
 	setVar $ENDLINE "_ENDLINE_"
 	setVar $STARTLINE "_STARTLINE_"
 	cutText CURRENTLINE $location 1 7
@@ -314,8 +315,8 @@ reqRecording
 	waitFor "Figs Per Attack:"
 	getWord CURRENTLINE $maxFigAttack 5
 
-	
-	
+
+
 
 	gosub :planetStats
 
@@ -337,11 +338,11 @@ reqRecording
 	end
 	if ($lock)
 		setVar $message $message&"*       Plock Mode: Enabled"
-	end 
+	end
 	if ($attackOnSight)
 		format $planet~planet_fighters $formatted_fighters NUMBER
 		if ($capture)
-			setVar $message $message&"*         Auto Cap: Enabled With "&$formatted_fighters&" Fighters"		
+			setVar $message $message&"*         Auto Cap: Enabled With "&$formatted_fighters&" Fighters"
 		else
 			setVar $message $message&"*        Auto Kill: Enabled With "&$formatted_fighters&" Fighters"
 		end
@@ -355,7 +356,7 @@ reqRecording
 	if ($retrigger)
 		setVar $message $message&"*        ReTrigger: We will keep firing whether we hit or miss."
 	end
-	
+
 	if ($defender = 1)
 		setVar $message $message&"*         Defender: Will set and reset IG enabled Corp Mate"
 	end
@@ -371,7 +372,7 @@ reqRecording
 	if ($iglift = 1)
 		setVar $message $message&"*           IGLift: I will lift on landing and hold."
 	end
-	
+
 	if ($randomAttack)
 		setVar $message $message&"*   Attack Pattern: Random"
 	elseif ($firstAttack)
@@ -389,7 +390,7 @@ reqRecording
 	else
 		setVar $message $message&"*   Attack Pattern: Last Available Target"
 	end
-	setVar $message $message&"*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-**"	
+	setVar $message $message&"*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-**"
 	send $message
 	if ($defender = 1)
 		goSub :checkDefenders
@@ -403,7 +404,7 @@ reqRecording
 	:startTargeting
 		killAllTriggers
 		if (($returnHome = TRUE) AND ($isManual <> TRUE) AND ($player~current_sector <> $homeSector))
-			setVar $timeInMilli (($returnHomeDelay * 1000)+100)			
+			setVar $timeInMilli (($returnHomeDelay * 1000)+100)
 			echo ANSI_6 "*    [" ANSI_14 "Returning Home In " ANSI_15 $returnHomeDelay ANSI_14 " Seconds" ANSI_6 "]*" ANSI_7
 			setDelayTrigger homeDelay :goHome $timeInMilli
 		end
@@ -424,7 +425,7 @@ reqRecording
 		setTextTrigger pause4 :pausing "Transfer To or From the Treasury (T/F)"
 		setTextTrigger pause5 :pausing "Qcannon Control Type :"
 		setTextTrigger pause6 :pausing "Beam to what sector? (U=Upgrade"
-		setTextOutTrigger redoSettings :doSettings "%" 
+		setTextOutTrigger redoSettings :doSettings "%"
 		#setTextLineTrigger scriptcheck :answer "script?"
     		#setTextLineTrigger scriptcheck2 :answer "Script?"
     		setVar $isManual FALSE
@@ -444,19 +445,24 @@ reqRecording
 			setDelayTrigger		delay	:scan	30000
 		end
 		pause
-			
+
 		:scan
 			killAllTriggers
 			goSub :checkForVictims
 			goto :startTargeting
-		
-		:keepAlive
-			killAllTriggers
-			gosub :warning
-			goto :startTargeting
-	
-		:pausing
-			killAllTriggers
+
+			:keepAlive
+				killAllTriggers
+				gosub :warning
+				goto :startTargeting
+
+			:doSettings
+				killAllTriggers
+				goSub :waitforrestart
+				goto :startTargeting
+
+			:pausing
+				killAllTriggers
 			echo ANSI_6 "*[" ANSI_14 $script_ver " paused. To restart, re-enter Citadel Prompt" ANSI_6 "]*" ANSI_7
 			setTextTrigger restart :restarting "Citadel command ("
 			pause
@@ -465,7 +471,7 @@ reqRecording
 				echo ANSI_6 "*[" ANSI_14 $script_ver " restarted" ANSI_6 "]*" ANSI_7
 				goSub :getSectorLocation
 				goto :startTargeting
-	
+
 		:answer
 			killalltriggers
  			gosub :authenticate
@@ -475,19 +481,19 @@ reqRecording
 				waitOn "Sub-space comm-link terminated"
 			end
 			goto :startTargeting
-		
+
 		:goHome
 			killAllTriggers
-			
+
 			if ($dropftrs)
 
 				goSub :retrieveFigs
-					
+
 			end
-				
-			
+
+
 			send "p " $homeSector "*y"
-		
+
 		:manualPwarp
 				killAllTriggers
 				if ($attackOnSight)
@@ -536,7 +542,7 @@ reqRecording
 						end
 						setVar $send $send&"q q fz"&$figstodrop&"*z c d * l "&$planet~planet&"*  m  *** c  "
 					end
-					if ($fastkill = true)	
+					if ($fastkill = true)
 						setvar $send $send&"q q a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** c  "
 					end
 					if ($iglift = 1)
@@ -553,7 +559,7 @@ reqRecording
 
 				if ($attackOnSight)
 					goSub :checkForVictims
-				end	
+				end
 				goSub :getSectorLocation
 
 				if ($player~current_sector <> $dropSector)
@@ -585,7 +591,7 @@ reqRecording
 						goSub :setdefender
 					end
 				end
-			elseif ($dropDescription = "Adjacent")	
+			elseif ($dropDescription = "Adjacent")
 				if ($density = 1)
 					gosub :findAdjacentDensity
 				else
@@ -602,14 +608,14 @@ reqRecording
 					killAllTriggers
 					goSub :liftDefenders
 				end
-				
+
 				goSub :getSectorLocation
 				if ($attackOnSight)
 					goSub :checkForVictims
 				end
 				if ($player~current_sector <> $gotoSector)
 					send "'Planet did not arrive, resetting*"
-					
+
 				else
 					if ($iglift = 1)
 						send "'IGLift Initiated! send reset command to re-enable PDROP (resetpdrop or -)*"
@@ -628,9 +634,9 @@ reqRecording
 
 				if ($dropFtrs = true)
 					goSub :retrieveFigs
-					
+
 				end
-			elseif ($dropDescription = "Adjacent, then Direct")			
+			elseif ($dropDescription = "Adjacent, then Direct")
 				gosub :findAdjacent
 				goSub :attemptDrop
 				send "p " $dropSector "* y "
@@ -678,7 +684,7 @@ reqRecording
 				if ($attackOnSight)
 					goSub :checkForVictims
 				end
-				if ($iglift = 1) 
+				if ($iglift = 1)
 					send "'IGLift Initiated! send reset command to re-enable PDROP (resetpdrop or -)*"
 					waitfor "resetpdrop"
 					goSub :waitforrestart
@@ -709,7 +715,7 @@ reqRecording
 				else
 					if ($attackOnSight)
 						goSub :checkForVictims
-					end	
+					end
 					goto :startTargeting
 				end
 				:pwarpTryAdjacent
@@ -718,11 +724,11 @@ reqRecording
 					gosub :findAdjacent
 					gosub :attemptDrop
 					goto :startTargeting
-			
+
 			end
 
 		goto :startTargeting
-	
+
 
 :end
 	killAllTriggers
@@ -743,7 +749,7 @@ reqRecording
 			setVar $checkSector SECTOR.WARPS[$dropSector][$i]
 		end
 	end
-	
+
 	if ($isFound)
 		setVar $i 2
 		setVar $checkSector SECTOR.WARPS[$retreatSector][$i]
@@ -764,14 +770,14 @@ reqRecording
 			gosub :dopwarp
 		else
 			echo "** No Adjacent Fig Next To Possible Retreat Sector **"
-		end		
+		end
 	else
 		echo "** No Possible Retreat Sector **"
-	end		
+	end
 return
 
 :attemptDrop
-	
+
 	if ($targetCount > 0)
 		getRnd $randomTarget 1 $targetCount
 		if ($dropDelay > 0) and ($lock = false)
@@ -790,7 +796,7 @@ return
 				gosub :dopwarp
 			end
 	end
-	
+
 return
 
 :dopwarp
@@ -834,7 +840,7 @@ return
 		goto :pwarpFinished
 	:pwarpYes
 		killAllTriggers
-	:pwarpFinished		
+	:pwarpFinished
 		goSub :getSectorLocation
 
 return
@@ -857,7 +863,7 @@ return
 		goto :setplocktriggers
 		killalltriggers
 		goto :startTargeting
-		halt	
+		halt
 return
 :clearScreen
 	echo #27 & "[2J"
@@ -900,7 +906,7 @@ return
 	send "q"
 	gosub :planet~getPlanetInfo
 	setVar $planet~planetFighters $planet~PLANET_FIGHTERS
-	
+
 	if ($dropftrs)
 
 		if ($planet~planet_FIGHTERS < $dropFigQuant)
@@ -916,7 +922,7 @@ return
 		setVar $moved 0
 
 		while ($moved < $dropFigQuant)
-			
+
 			setVar $toMove ($dropFigQuant - $moved)
 
 			if ($toMove >= $maxFigAttack)
@@ -939,13 +945,13 @@ return
 	send " s*  "
 	setVar $figOwner SECTOR.FIGS.OWNER[$player~current_sector]
 	setVar $figQuant SECTOR.FIGS.QUANTITY[$player~current_sector]
-	
+
 	waitfor "<Scan Sector>"
 	waitfor "Citadel treasury contains"
-	
+
 
 	if ($figQuant <> 0) AND (($figOwner = "belong to your Corp") or ($figOwner = "yours"))
-		
+
 		setVar $retFigMacro ""
 		setVar $moved 0
 		setVar $sectorQuant $figQuant
@@ -955,7 +961,7 @@ return
 			setVar $retQuant $dropFigQuant
 		end
 		while ($moved < $retQuant)
-			
+
 			setVar $toMove ($retQuant - $moved)
 
 			if ($toMove >= $ship~SHIP_FIGHTERS_MAX)
@@ -966,11 +972,11 @@ return
 				setVar $thisMove $toMove
 				setVar $moved $moved + $thisMove
 				setVar $sectorQuant ($sectorQuant - $thisMove)
-				
+
 			end
-			
+
 			if ($sectorQuant = 0)
-				
+
 				setVar $retFigMacro $retFigMacro & "q m n l* q fz 1* * zc" & $dropftrsType & " * l" & $planet~planet & " *m* t * ccq"
 
 			else
@@ -982,7 +988,7 @@ return
 	end
 
 	send $retFigMacro
-	
+
 return
 
 :warning
@@ -994,7 +1000,7 @@ return
 	waitOn "<Enter Citadel>"
 return
 
-:leaveCitadelAndPlanet	
+:leaveCitadelAndPlanet
 	send "q q"
 	waitOn "Blasting off from"
 	waitOn "Command [TL"
@@ -1037,7 +1043,7 @@ return
 		gosub :combat~fastCapture
 		goto :scanit_again
 	end
-return	
+return
 
 
 
@@ -1055,7 +1061,7 @@ return
 
 	stripText $planet~planet "#"
 	SetVar $isManual FALSE
-	gosub :getstats
+	gosub :player~quikstats
 return
 
 :getSectorLocation
@@ -1268,7 +1274,7 @@ return
 	# We actually want warps IN for density scan.
 
         getSectorParameter $dropSector "FIGSEC" $isFigged
-        
+
 	if (($perfect =TRUE) and (SECTOR.WARPCOUNT[$dropSector] <> 2))
 		echo "*Not a perfect firing solution"
 		return
@@ -1290,7 +1296,7 @@ return
 		echo "No Targets..*"
 		setVar $targetSectors[1] $CURRENT_LOCATION
 	end
-        
+
 
 return
 
@@ -1300,7 +1306,7 @@ return
     if (($triggerDescription = "Unfigged Mines") AND ($isFigged = TRUE))
             return
     else
-   
+
 		getNearestWarps $nearest $dropSector
 		setVar $i 1
         setVar $targetCount 1
@@ -1314,7 +1320,7 @@ return
 					waitOn "ENDINTERROG"
 					getDistance $distance $dropSector $focus
 				end
-			end			
+			end
 
  			if (($isFigged = TRUE) AND (SECTOR.WARPCOUNT[$focus] = 1)) AND ((($twohops = true) and ($distance >= 2)) OR ($twohops <> true))
 				#found dead end with fighter!
@@ -1333,7 +1339,7 @@ return
 :densityDrop_toslow
 
 	waitfor "Citadel command"
-	
+
 	setVar $BOT~command "foton"
 	setVar $BOT~user_command_line " on d "
 	setVar $BOT~parm1 "on"
@@ -1356,8 +1362,8 @@ return
 	setVar $checks 0
 
 	:check_dens
-		
-		
+
+
 
 		setVar $mm 0
 		setVar $i 1
@@ -1425,7 +1431,7 @@ return
 		waiton "Relative Density Scan"
 		add $checks 1
 	:looky
-		
+
 		killtrigger dtop_dtorp
 		killtrigger getsec
 		killtrigger alldone
@@ -1434,7 +1440,7 @@ return
 		setTextLineTrigger dtop_dtorp :manual_stop $bot~bot_name & " foton off"
 		setTextLineTrigger getSec :looksec "Sector"
 		setTextTrigger donelook :donelook "Command [TL="
-		
+
 		pause
 
 	:looksec
@@ -1442,7 +1448,7 @@ return
 		stripText $temp "("
 		stripText $temp ")"
 		stripText $temp " "
-		
+
 		setvar $adjsec[$y] $temp
 		getText CURRENTLINE $Density[$y] "==>" "Warps :"
 		stripText $density[$y] ","
@@ -1493,21 +1499,21 @@ return
 	# can't wait for this one, we just hope for the best!
 
 	send "'defender mac r ^M ^M ^M f 0^M *"
-	
-	
+
+
 	if ($defender_kill = 1)
 		setDelayTrigger killwait :killwait 400
 		pause
 		:killwait
 		send "'defender kill*"
-		
+
 	end
 	setTextLineTrigger wrongprompt :wrongprompt "Wrong prompt for auto kill"
 	setDelayTrigger promtpw :promtpw 500
 	pause
 	:wrongprompt
 		killtrigger wrongprompt
-		send "'defender kill*" 
+		send "'defender kill*"
 		pause
 	:promtpw
 
@@ -1517,8 +1523,8 @@ return
 
 	setVar $defenders 0
 	send "'defender callout*"
-	
-	
+
+
 	setDelayTrigger defwait :defwait 3000
 	:defmore
 	setTextLineTrigger deffound :deffound "Team: defender"
@@ -1543,7 +1549,7 @@ return
 		:igone
 		:igtwo
 			killalltriggers
-		
+
 		send "s"
 		setVar $secFigs 0
 		waitfor "Sector  :"
@@ -1558,12 +1564,12 @@ return
 			add $secFigs 500
 			send "'defender mac f" $secFigs "^Mcd*"
 			waitfor "Macro Complete"
-	
+
 		setvar $switchboard~message "We have defenders.*"
 		gosub :switchboard~switchboard
-		
+
 	end
-		
+
 return
 :resetdefender
 	setDelayTrigger quickpause :quickpause 500
@@ -1575,7 +1581,7 @@ return
 return
 
 :setdefender
-	
+
 	goSub :disArmPlanet
 	send "'defender mac l" & $planet~planet & "^M^M*"
 	setVar $defresp 0
@@ -1595,30 +1601,30 @@ return
 		gosub :switchboard~switchboard
 		halt
 	end
-	
+
 	goSub :armPlanet
 return
 
 :disArmPlanet
-	
+
 	setVar $cannonAtmos $planet~ATMOSPHERE_CANNON
 	setVar $millevel $planet~MILITARYREACTION
 	setvar $switchboard~message "Disarming planet from Atmos Cannon: "& $cannonAtmos &" and MR:" & $millevel & "*"
 	gosub :switchboard~switchboard
-	
+
 	send "la0*m0*qopc"
 	waitfor "hould this be a (C)orporate or (P)ersonal planet"
-	
+
 return
 
 :armPlanet
-	
+
 	setvar $switchboard~message "Arming planet to Atmos Cannon: "& $cannonAtmos &" and MR:" & $millevel & "*"
 	gosub :switchboard~switchboard
-	
+
 	send "la" $cannonAtmos "*m" $millevel "*qocc"
 	waitfor "<Enter Citadel>"
-	
+
 return
 
 # ============================== END DEFENDER ROUTINES ==============================
@@ -1628,7 +1634,7 @@ return
 	send "l" $planet~planet "*c"
 	waitfor "<Enter Citadel>"
 	gosub :player~quikstats
-return 
+return
 :liftAndCheckIG
 
 	send "i"
@@ -1647,7 +1653,7 @@ return
 		waitfor "<Enter Citadel>"
 	:igLiftYes
 		killalltriggers
-	
+
 	gosub :player~quikstats
 return
 
@@ -1658,7 +1664,7 @@ return
 	#send "'"&$SWITCHBOARD~bot_name&" movefig p*"
 	#setEventTrigger		movefigended		:movefigended "SCRIPT STOPPED" #"scripts\"&$bot~mombot_directory&"\Modes\Resource\movefig.cts"
 	#pause
-	#:movefigended	             
+	#:movefigended
 
 	setVar $BOT~command "movefig"
 	setVar $BOT~user_command_line " movefig p "& $dropFigQuant &" "
@@ -1782,7 +1788,7 @@ return
 	if ($attackOnSight)
 		goSub :checkForVictims
 	end
-	if ($iglift = 1) 
+	if ($iglift = 1)
 		send "'IGLift Initiated! send reset command to re-enable PDROP (resetpdrop or -)*"
 		waitfor "resetpdrop"
 		goSub :waitforrestart
@@ -1806,5 +1812,8 @@ return
 
 #####
 #INCLUDES:
+include "source\include\planet"
 include "source\include\combat"
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

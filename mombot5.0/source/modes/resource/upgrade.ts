@@ -453,20 +453,20 @@ else
 end
 
 if ($gather~product = "C")
-  setvar $moveproduct~sourcecategory $findproduct~category
-  setvar $moveproduct~destcategory $gather~destcategory
+  setvar $sourcecategory $findproduct~category
+  setvar $destcategory $gather~destcategory
 end
 
-setvar $moveproduct~source $gather~found
-setvar $moveproduct~sourcesector $gather~sourcesector
-setvar $moveproduct~dest $gather~planetid
-setvar $moveproduct~destsector $gather~sector
-setvar $moveproduct~product $gather~product
-setvar $moveproduct~quantity ($gather~quantity - $gather~gathered)
-setvar $moveproduct~safe 0
-gosub :moveproduct~moveproduct
+setvar $source $gather~found
+setvar $sourcesector $gather~sourcesector
+setvar $dest $gather~planetid
+setvar $destsector $gather~sector
+setvar $product $gather~product
+setvar $quantity ($gather~quantity - $gather~gathered)
+setvar $safe 0
+gosub :moveproduct
 
-add $gather~gathered $moveproduct~moved
+add $gather~gathered $moved
 
 if ($gather~gathered < $gather~quantity)
   send "q"
@@ -497,320 +497,320 @@ end
 
 return
 
-:SEEKPRODUCT~SEEKPRODUCT
-if ($SEEKPRODUCT~HOLDS = 0)
+:seekproduct
+if ($seek_holds = 0)
   gosub :PLAYER~QUIKSTATS
-  setvar $SEEKPRODUCT~HOLDS $PLAYER~TOTAL_HOLDS
+  setvar $seek_holds $PLAYER~TOTAL_HOLDS
 end
 
-:SEEKPRODUCT~GOGATHER
-setvar $MOVE~CHECKSUB ":SEEKPRODUCT~CHECKSECTOR"
+:seek_gogather
+setvar $MOVE~CHECKSUB ":seek_checksector"
 send "d"
 gosub :MOVE~MOVE
 
-if ($SEEKPRODUCT~FOUND = "P")
-:SEEKPRODUCT~BUYPRODUCT
-  if ($SEEKPRODUCT~PRODUCT = 1)
+if ($seek_found = "P")
+:seek_buyproduct
+  if ($seek_product = 1)
     setvar $HAGGLE~BUYPROD "Fuel"
-  elseif ($SEEKPRODUCT~PRODUCT = 2)
+  elseif ($seek_product = 2)
     setvar $HAGGLE~BUYPROD "Organics"
   else
     setvar $HAGGLE~BUYPROD "Equipment"
   end
 
   setvar $HAGGLE~QUANTITY 0
-  setvar $HAGGLE~SECTOR $SEEKPRODUCT~SOURCESECTOR
+  setvar $HAGGLE~SECTOR $seek_source_sector
   send "pt"
   gosub :HAGGLE~HAGGLE
 
   if ($HAGGLE~ABORT)
-    goto :SEEKPRODUCT~BUYPRODUCT
+    goto :seek_buyproduct
   end
 else
-  send "tnt"&$SEEKPRODUCT~PRODUCT "*q"
+  send "tnt"&$seek_product "*q"
 end
 return
 
-:SEEKPRODUCT~CHECKSECTOR
-setvar $FINDPRODUCT~QUANTITY $SEEKPRODUCT~HOLDS
-setvar $FINDPRODUCT~PRODUCT $SEEKPRODUCT~PRODUCT
-setvar $FINDPRODUCT~IGNORELIST $SEEKPRODUCT~IGNORELIST
+:seek_checksector
+setvar $FINDPRODUCT~QUANTITY $seek_holds
+setvar $FINDPRODUCT~PRODUCT $seek_product
+setvar $FINDPRODUCT~IGNORELIST $seek_ignorelist
 setvar $FINDPRODUCT~STAYONPLANET 1
 setvar $FINDPRODUCT~SECTOR $MOVE~CURSECTOR
 
 gosub :FINDPRODUCT~FINDPRODUCT
 
-setvar $SEEKPRODUCT~IGNORELIST $FINDPRODUCT~IGNORELIST
+setvar $seek_ignorelist $FINDPRODUCT~IGNORELIST
 
 if ($FINDPRODUCT~LOCATION <> 0)
   setvar $MOVE~FOUND 1
-  setvar $SEEKPRODUCT~SOURCESECTOR $MOVE~CURSECTOR
-  setvar $SEEKPRODUCT~FOUND $FINDPRODUCT~LOCATION
+  setvar $seek_source_sector $MOVE~CURSECTOR
+  setvar $seek_found $FINDPRODUCT~LOCATION
 end
 
 return
 
-:MOVEPRODUCT~MOVEPRODUCT
+:moveproduct
 gosub :PLAYER~QUIKSTATS
 
 if ($PLAYER~PLANET_SCANNER = "Yes")
-  setvar $MOVEPRODUCT~PSCAN 1
+  setvar $pscan 1
 else
-  setvar $MOVEPRODUCT~PSCAN 0
+  setvar $pscan 0
 end
-setvar $MOVEPRODUCT~CREDITS $PLAYER~CREDITS
-setvar $MOVEPRODUCT~MOVED 0
-setvar $MOVEPRODUCT~RESTORE_HAGGLE 0
+setvar $credits $PLAYER~CREDITS
+setvar $moved 0
+setvar $restore_haggle 0
 
-if (($MOVEPRODUCT~SOURCE = "P") and HAGGLE)
-  setvar $MOVEPRODUCT~RESTORE_HAGGLE 1
+if (($source = "P") and HAGGLE)
+  setvar $restore_haggle 1
   autohaggle off
 end
 
-if ($MOVEPRODUCT~PRODUCT = 4)
-  send "qc;ql " $MOVEPRODUCT~SOURCE "* "
-  settextlinetrigger GETMAXFIGS :MOVEPRODUCT~GETMAXFIGS "Max Fighters:"
+if ($product = 4)
+  send "qc;ql " $source "* "
+  settextlinetrigger GETMAXFIGS :getmaxfigs "Max Fighters:"
   pause
 
-:MOVEPRODUCT~GETMAXFIGS
-  cuttext CURRENTLINE $MOVEPRODUCT~HOLDS 48 7
-  striptext $MOVEPRODUCT~HOLDS ","
-  striptext $MOVEPRODUCT~HOLDS " "
+:getmaxfigs
+  cuttext CURRENTLINE $product_holds 48 7
+  striptext $product_holds ","
+  striptext $product_holds " "
 else
-  setvar $MOVEPRODUCT~HOLDS $PLAYER~TOTAL_HOLDS
+  setvar $product_holds $PLAYER~TOTAL_HOLDS
 end
 
-if ($MOVEPRODUCT~SOURCESECTOR <> $MOVEPRODUCT~DESTSECTOR)
-  setvar $MOVEPRODUCT~SAFE 1
+if ($sourcesector <> $destsector)
+  setvar $safe 1
 end
 
-if ($MOVEPRODUCT~PRODUCT = "C")
-  setvar $MOVEPRODUCT~PICKUPTEXT "snt"&$MOVEPRODUCT~SOURCECATEGORY
-  setvar $MOVEPRODUCT~DROPOFFTEXT "snl"&$MOVEPRODUCT~DESTCATEGORY
-  setvar $MOVEPRODUCT~WAITTEXT "Which production group are you changing?"
-elseif ($MOVEPRODUCT~PRODUCT = 4)
-  setvar $MOVEPRODUCT~PICKUPTEXT "mnt"
-  setvar $MOVEPRODUCT~DROPOFFTEXT "mnl"
-  setvar $MOVEPRODUCT~WAITTEXT "There are currently "
+if ($product = "C")
+  setvar $pickuptext "snt"&$sourcecategory
+  setvar $dropofftext "snl"&$destcategory
+  setvar $waittext "Which production group are you changing?"
+elseif ($product = 4)
+  setvar $pickuptext "mnt"
+  setvar $dropofftext "mnl"
+  setvar $waittext "There are currently "
 else
-  setvar $MOVEPRODUCT~PICKUPTEXT "tnt"&$MOVEPRODUCT~PRODUCT
-  setvar $MOVEPRODUCT~DROPOFFTEXT "tnl"&$MOVEPRODUCT~PRODUCT
-  setvar $MOVEPRODUCT~WAITTEXT "Which product are you leaving?"
+  setvar $pickuptext "tnt"&$product
+  setvar $dropofftext "tnl"&$product
+  setvar $waittext "Which product are you leaving?"
 end
 
-if (($MOVEPRODUCT~SOURCE = "P") and ($MOVEPRODUCT~PORTQUANTITY = 0))
+if (($source = "P") and ($portquantity = 0))
   send "cr*q"
   waiton "Commerce report for "
 
-  if ($MOVEPRODUCT~PRODUCT = 1)
-    settextlinetrigger GETPRODUCT :MOVEPRODUCT~GETPRODUCT "Fuel Ore   "
-  elseif ($MOVEPRODUCT~PRODUCT = 2)
-    settextlinetrigger GETPRODUCT :MOVEPRODUCT~GETPRODUCT "Organics   "
+  if ($product = 1)
+    settextlinetrigger GETPRODUCT :getproduct "Fuel Ore   "
+  elseif ($product = 2)
+    settextlinetrigger GETPRODUCT :getproduct "Organics   "
   else
-    settextlinetrigger GETPRODUCT :MOVEPRODUCT~GETPRODUCT "Equipment  "
+    settextlinetrigger GETPRODUCT :getproduct "Equipment  "
   end
   pause
 
-:MOVEPRODUCT~GETPRODUCT
-  if ($MOVEPRODUCT~PRODUCT = 1)
-    getword CURRENTLINE $MOVEPRODUCT~PORTQUANTITY 4
+:getproduct
+  if ($product = 1)
+    getword CURRENTLINE $portquantity 4
   else
-    getword CURRENTLINE $MOVEPRODUCT~PORTQUANTITY 3
+    getword CURRENTLINE $portquantity 3
   end
 end
 
-if ($MOVEPRODUCT~SOURCE = "P")
-  if ($MOVEPRODUCT~PORTQUANTITY < $MOVEPRODUCT~QUANTITY)
-    setvar $MOVEPRODUCT~QUANTITY $MOVEPRODUCT~PORTQUANTITY
+if ($source = "P")
+  if ($portquantity < $quantity)
+    setvar $quantity $portquantity
   end
 else
   send "d"
   setvar $PLANET~NOHEADER 1
   gosub :PLANET~PLANETINFO
 
-  if ($MOVEPRODUCT~PRODUCT = "C")
-    if ($PLANET~COLO[$MOVEPRODUCT~SOURCECATEGORY] < $MOVEPRODUCT~QUANTITY)
-      setvar $MOVEPRODUCT~QUANTITY $PLANET~COLO[$MOVEPRODUCT~SOURCECATEGORY]
+  if ($product = "C")
+    if ($PLANET~COLO[$sourcecategory] < $quantity)
+      setvar $quantity $PLANET~COLO[$sourcecategory]
     end
   else
-    if ($PLANET~AMOUNT[$MOVEPRODUCT~PRODUCT] < $MOVEPRODUCT~QUANTITY)
-      setvar $MOVEPRODUCT~QUANTITY $PLANET~AMOUNT[$MOVEPRODUCT~PRODUCT]
+    if ($PLANET~AMOUNT[$product] < $quantity)
+      setvar $quantity $PLANET~AMOUNT[$product]
     end
   end
 end
 
-if ($MOVEPRODUCT~SAFE)
-  setvar $MOVEPRODUCT~FIRSTRUN 1
-  setvar $MOVEPRODUCT~FINISHED 0
+if ($safe)
+  setvar $firstrun 1
+  setvar $finished 0
 
-  if ($MOVEPRODUCT~PRODUCT = "C")
-    setvar $MOVEPRODUCT~PLANETAMOUNT $PLANET~COLO[$MOVEPRODUCT~SOURCECATEGORY]
+  if ($product = "C")
+    setvar $planetamount $PLANET~COLO[$sourcecategory]
   else
-    setvar $MOVEPRODUCT~PLANETAMOUNT $PLANET~AMOUNT[$MOVEPRODUCT~PRODUCT]
+    setvar $planetamount $PLANET~AMOUNT[$product]
   end
 
-:MOVEPRODUCT~SAFECYCLE
-  if ($MOVEPRODUCT~QUANTITY < $MOVEPRODUCT~HOLDS)
-    setvar $MOVEPRODUCT~PICKUP $MOVEPRODUCT~QUANTITY
+:safecycle
+  if ($quantity < $product_holds)
+    setvar $pickup $quantity
   else
-    setvar $MOVEPRODUCT~PICKUP $MOVEPRODUCT~HOLDS
+    setvar $pickup $product_holds
   end
 
-  if ($MOVEPRODUCT~SOURCE = "P")
-    if ($MOVEPRODUCT~PICKUP = 0)
-      gosub :MOVEPRODUCT~SUB_LANDDEST
-      waiton "Planet #"&$MOVEPRODUCT~DEST
+  if ($source = "P")
+    if ($pickup = 0)
+      gosub :sub_landdest
+      waiton "Planet #"&$dest
       waiton "Planet command (?=help)"
-      gosub :MOVEPRODUCT~RESTOREHAGGLE
+      gosub :restorehaggle
       return
     end
 
-    if ($MOVEPRODUCT~PRODUCT = 1)
-      setvar $MOVEPRODUCT~BUYPROD "Fuel"
-    elseif ($MOVEPRODUCT~PRODUCT = 2)
-      setvar $MOVEPRODUCT~BUYPROD "Organics"
+    if ($product = 1)
+      setvar $buyprod "Fuel"
+    elseif ($product = 2)
+      setvar $buyprod "Organics"
     else
-      setvar $MOVEPRODUCT~BUYPROD "Equipment"
+      setvar $buyprod "Equipment"
     end
 
-:MOVEPRODUCT~RETRYHAGGLE
+:retryhaggle
     send "pt"
-    setvar $MOVEPRODUCT~SECTOR $MOVEPRODUCT~SOURCESECTOR
+    setvar $trade_sector $sourcesector
 
-    if ($MOVEPRODUCT~PICKUP < $MOVEPRODUCT~HOLDS)
-      setvar $MOVEPRODUCT~QUANTITY $MOVEPRODUCT~PICKUP
+    if ($pickup < $product_holds)
+      setvar $quantity $pickup
     end
 
     waiton "Docking..."
-    settextlinetrigger BUY :MOVEPRODUCT~BUY "We are selling up to "
-    settextlinetrigger SELL :MOVEPRODUCT~SELL "We are buying up to "
+    settextlinetrigger BUY :buy "We are selling up to "
+    settextlinetrigger SELL :sell "We are buying up to "
     pause
 
-:MOVEPRODUCT~BUY
+:buy
     killtrigger GETCREDITS
     killtrigger DONE
-    settexttrigger ONHAND :MOVEPRODUCT~BUYONHAND "]?"
+    settexttrigger ONHAND :buyonhand "]?"
     pause
 
-:MOVEPRODUCT~SELL
-    goto :MOVEPRODUCT~BUY
+:sell
+    goto :buy
 
-:MOVEPRODUCT~BUYONHAND
-    getword CURRENTLINE $MOVEPRODUCT~PRODUCT 5
-    if ($MOVEPRODUCT~PRODUCT <> $MOVEPRODUCT~BUYPROD)
+:buyonhand
+    getword CURRENTLINE $product 5
+    if ($product <> $buyprod)
       send "0*"
-      settexttrigger GETCREDITS :MOVEPRODUCT~GETCREDITS "empty cargo holds."
+      settexttrigger GETCREDITS :getcredits "empty cargo holds."
       pause
     end
     send "*"
 
-    settexttrigger GETCREDITS :MOVEPRODUCT~GETCREDITS "empty cargo holds."
+    settexttrigger GETCREDITS :getcredits "empty cargo holds."
     pause
 
-:MOVEPRODUCT~GETCREDITS
+:getcredits
     killtrigger CLASS0
     killtrigger BUY
     killtrigger SELL
-    getword CURRENTLINE $MOVEPRODUCT~CREDITS 3
-    striptext $MOVEPRODUCT~CREDITS ","
-    settextlinetrigger BUY :MOVEPRODUCT~BUY "We are selling up to "
-    settextlinetrigger SELL :MOVEPRODUCT~SELL "We are buying up to "
-    settexttrigger HAGGLEDONE :MOVEPRODUCT~HAGGLEDONE "Command [TL="
+    getword CURRENTLINE $credits 3
+    striptext $credits ","
+    settextlinetrigger BUY :buy "We are selling up to "
+    settextlinetrigger SELL :sell "We are buying up to "
+    settexttrigger HAGGLEDONE :haggledone "Command [TL="
     pause
 
-:MOVEPRODUCT~HAGGLEDONE
+:haggledone
     killtrigger BUY
     killtrigger SELL
 
-    if ($MOVEPRODUCT~ABORT)
-      goto :MOVEPRODUCT~RETRYHAGGLE
+    if ($abort)
+      goto :retryhaggle
     end
 
-    if ($MOVEPRODUCT~CREDITS < 10000)
-      setvar $MOVEPRODUCT~FINISHED 1
+    if ($credits < 10000)
+      setvar $finished 1
     end
   else
-    if ($MOVEPRODUCT~FIRSTRUN = 0)
+    if ($firstrun = 0)
       setvar $PLANET~NOHEADER 1
       gosub :PLANET~PLANETINFO
 
-      if ($MOVEPRODUCT~PRODUCT = "C")
-        setvar $MOVEPRODUCT~PLANETAMOUNT $PLANET~COLO[$MOVEPRODUCT~SOURCECATEGORY]
+      if ($product = "C")
+        setvar $planetamount $PLANET~COLO[$sourcecategory]
       else
-        setvar $MOVEPRODUCT~PLANETAMOUNT $PLANET~AMOUNT[$MOVEPRODUCT~PRODUCT]
+        setvar $planetamount $PLANET~AMOUNT[$product]
       end
     end
 
-    if ($MOVEPRODUCT~PLANETAMOUNT < $MOVEPRODUCT~PICKUP)
-      setvar $MOVEPRODUCT~PICKUP $MOVEPRODUCT~PLANETAMOUNT
+    if ($planetamount < $pickup)
+      setvar $pickup $planetamount
     end
 
-    if ($MOVEPRODUCT~PICKUP = 0)
-      setvar $MOVEPRODUCT~FINISHED 1
+    if ($pickup = 0)
+      setvar $finished 1
       send "q"
     else
-      if ($MOVEPRODUCT~PICKUP = $MOVEPRODUCT~HOLDS)
-        send $MOVEPRODUCT~PICKUPTEXT "*q"
+      if ($pickup = $product_holds)
+        send $pickuptext "*q"
       else
-        send $MOVEPRODUCT~PICKUPTEXT $MOVEPRODUCT~PICKUP "*q"
+        send $pickuptext $pickup "*q"
       end
     end
   end
 
-  if ($MOVEPRODUCT~SOURCESECTOR <> $MOVEPRODUCT~DESTSECTOR)
-    setvar $MOVEPRODUCT~WARPDEST $MOVEPRODUCT~DESTSECTOR
-    gosub :MOVEPRODUCT~WARPTO
+  if ($sourcesector <> $destsector)
+    setvar $warpdest $destsector
+    gosub :warpto
   end
 
-  if ($MOVEPRODUCT~FINISHED)
-    gosub :MOVEPRODUCT~SUB_LANDDEST
+  if ($finished)
+    gosub :sub_landdest
     waiton "<Preparing ship to land"
   else
-    if ($MOVEPRODUCT~PSCAN or (SECTOR.PLANETCOUNT[$MOVEPRODUCT~DESTSECTOR] > 1))
-      send "l " $MOVEPRODUCT~DEST "*" $MOVEPRODUCT~DROPOFFTEXT "*"
+    if ($pscan or (SECTOR.PLANETCOUNT[$destsector] > 1))
+      send "l " $dest "*" $dropofftext "*"
     else
-      send "l " $MOVEPRODUCT~DROPOFFTEXT "*"
+      send "l " $dropofftext "*"
     end
-    waiton $MOVEPRODUCT~WAITTEXT
+    waiton $waittext
   end
 
   waiton "Planet command (?=help)"
-  subtract $MOVEPRODUCT~QUANTITY $MOVEPRODUCT~PICKUP
-  add $MOVEPRODUCT~MOVED $MOVEPRODUCT~PICKUP
+  subtract $quantity $pickup
+  add $moved $pickup
 
-  if (($MOVEPRODUCT~QUANTITY <= 0) or $MOVEPRODUCT~FINISHED)
-    gosub :MOVEPRODUCT~RESTOREHAGGLE
+  if (($quantity <= 0) or $finished)
+    gosub :restorehaggle
     return
   end
 
   send "q"
 
-  if ($MOVEPRODUCT~SOURCESECTOR <> $MOVEPRODUCT~DESTSECTOR)
-    setvar $MOVEPRODUCT~WARPDEST $MOVEPRODUCT~SOURCESECTOR
-    gosub :MOVEPRODUCT~WARPTO
+  if ($sourcesector <> $destsector)
+    setvar $warpdest $sourcesector
+    gosub :warpto
   end
 
-  if ($MOVEPRODUCT~SOURCE <> "P")
-    gosub :MOVEPRODUCT~SUB_LANDSOURCE
+  if ($source <> "P")
+    gosub :sub_landsource
   end
 
-  setvar $MOVEPRODUCT~FIRSTRUN 0
-  goto :MOVEPRODUCT~SAFECYCLE
+  setvar $firstrun 0
+  goto :safecycle
 else
-  setvar $MOVEPRODUCT~CYCLES ($MOVEPRODUCT~QUANTITY / $MOVEPRODUCT~HOLDS)
-  setvar $MOVEPRODUCT~REMAINDER ($MOVEPRODUCT~QUANTITY - ($MOVEPRODUCT~CYCLES * $MOVEPRODUCT~HOLDS))
+  setvar $cycles ($quantity / $product_holds)
+  setvar $remainder ($quantity - ($cycles * $product_holds))
 
-  if ($MOVEPRODUCT~REMAINDER > 0)
-    add $MOVEPRODUCT~CYCLES 1
+  if ($remainder > 0)
+    add $cycles 1
   end
 
-  if ($MOVEPRODUCT~SOURCE <> "P")
+  if ($source <> "P")
     send "q"
   end
 
-  if ($MOVEPRODUCT~CYCLES <= 0)
-    gosub :MOVEPRODUCT~SUB_LANDDEST
-    gosub :MOVEPRODUCT~RESTOREHAGGLE
+  if ($cycles <= 0)
+    gosub :sub_landdest
+    gosub :restorehaggle
     return
   end
 
@@ -819,131 +819,131 @@ else
   setvar $GAMEPREFS~ANSI[$GAMEPREFS~BANK] "ON"
   gosub :GAMEPREFS~SETGAMEPREFS
 
-  setvar $MOVEPRODUCT~CLOCK 3
+  setvar $clock 3
 
-:MOVEPRODUCT~CYCLE
-  setvar $MOVEPRODUCT~SEND ""
+:cycle
+  setvar $send ""
 
-  if ($MOVEPRODUCT~SOURCE = "P")
-    setvar $MOVEPRODUCT~SEND "pt"
+  if ($source = "P")
+    setvar $send "pt"
 
-    if ((($MOVEPRODUCT~PRODUCT = 2) or ($MOVEPRODUCT~PRODUCT = 3)) and (PORT.BUYFUEL[$MOVEPRODUCT~SOURCESECTOR] = 0))
-      setvar $MOVEPRODUCT~SEND $MOVEPRODUCT~SEND&"0*"
+    if ((($product = 2) or ($product = 3)) and (PORT.BUYFUEL[$sourcesector] = 0))
+      setvar $send $send&"0*"
     end
-    if (($MOVEPRODUCT~PRODUCT = 3) and (PORT.BUYORG[$MOVEPRODUCT~SOURCESECTOR] = 0))
-      setvar $MOVEPRODUCT~SEND $MOVEPRODUCT~SEND&"0*"
+    if (($product = 3) and (PORT.BUYORG[$sourcesector] = 0))
+      setvar $send $send&"0*"
     end
 
-    if (($MOVEPRODUCT~CYCLES = 1) and ($MOVEPRODUCT~REMAINDER > 0))
-      setvar $MOVEPRODUCT~SEND $MOVEPRODUCT~SEND&$MOVEPRODUCT~REMAINDER&"**"
+    if (($cycles = 1) and ($remainder > 0))
+      setvar $send $send&$remainder&"**"
     else
-      setvar $MOVEPRODUCT~SEND $MOVEPRODUCT~SEND&"**"
+      setvar $send $send&"**"
     end
 
-    if ((($MOVEPRODUCT~PRODUCT = 1) or ($MOVEPRODUCT~PRODUCT = 2)) and (PORT.BUYEQUIP[$MOVEPRODUCT~SOURCESECTOR] = 0))
-      setvar $MOVEPRODUCT~SEND $MOVEPRODUCT~SEND&"0*"
+    if ((($product = 1) or ($product = 2)) and (PORT.BUYEQUIP[$sourcesector] = 0))
+      setvar $send $send&"0*"
     end
-    if (($MOVEPRODUCT~PRODUCT = 1) and (PORT.BUYORG[$MOVEPRODUCT~SOURCESECTOR] = 0))
-      setvar $MOVEPRODUCT~SEND $MOVEPRODUCT~SEND&"0*"
+    if (($product = 1) and (PORT.BUYORG[$sourcesector] = 0))
+      setvar $send $send&"0*"
     end
   else
-    if ($MOVEPRODUCT~PSCAN or (SECTOR.PLANETCOUNT[$MOVEPRODUCT~SOURCESECTOR] > 1))
-      setvar $MOVEPRODUCT~SEND $MOVEPRODUCT~SEND&"l"&$MOVEPRODUCT~SOURCE&"*"
+    if ($pscan or (SECTOR.PLANETCOUNT[$sourcesector] > 1))
+      setvar $send $send&"l"&$source&"*"
     else
-      setvar $MOVEPRODUCT~SEND $MOVEPRODUCT~SEND&"l"
+      setvar $send $send&"l"
     end
 
-    if (($MOVEPRODUCT~CYCLES = 1) and ($MOVEPRODUCT~REMAINDER > 0))
-      setvar $MOVEPRODUCT~SEND $MOVEPRODUCT~SEND&$MOVEPRODUCT~PICKUPTEXT&$MOVEPRODUCT~REMAINDER&"*q"
+    if (($cycles = 1) and ($remainder > 0))
+      setvar $send $send&$pickuptext&$remainder&"*q"
     else
-      setvar $MOVEPRODUCT~SEND $MOVEPRODUCT~SEND&$MOVEPRODUCT~PICKUPTEXT&"*q"
+      setvar $send $send&$pickuptext&"*q"
     end
   end
 
-  setvar $MOVEPRODUCT~SEND $MOVEPRODUCT~SEND&"l"&$MOVEPRODUCT~DEST&"*"&$MOVEPRODUCT~DROPOFFTEXT&"*q"
+  setvar $send $send&"l"&$dest&"*"&$dropofftext&"*q"
 
-  send $MOVEPRODUCT~SEND
-  subtract $MOVEPRODUCT~CYCLES 1
+  send $send
+  subtract $cycles 1
 
-  if (($MOVEPRODUCT~CYCLES = 1) and ($MOVEPRODUCT~REMAINDER > 0))
-    add $MOVEPRODUCT~MOVED $MOVEPRODUCT~REMAINDER
+  if (($cycles = 1) and ($remainder > 0))
+    add $moved $remainder
   else
-    add $MOVEPRODUCT~MOVED $MOVEPRODUCT~HOLDS
+    add $moved $product_holds
   end
 
-  if ($MOVEPRODUCT~CYCLES <= 0)
-    while ($MOVEPRODUCT~CLOCK < 4)
-      waiton $MOVEPRODUCT~WAITTEXT
-      add $MOVEPRODUCT~CLOCK 1
+  if ($cycles <= 0)
+    while ($clock < 4)
+      waiton $waittext
+      add $clock 1
     end
 
     setvar $GAMEPREFS~BANK "MOVEPRODUCT"
     gosub :GAMEPREFS~SETGAMEPREFS
 
-    send "l" $MOVEPRODUCT~DEST "*"
+    send "l" $dest "*"
     waiton "Planet command (?=help)"
-    gosub :MOVEPRODUCT~RESTOREHAGGLE
+    gosub :restorehaggle
     return
   end
 
-  if ($MOVEPRODUCT~CLOCK > 0)
-    subtract $MOVEPRODUCT~CLOCK 1
+  if ($clock > 0)
+    subtract $clock 1
   else
-    if ($MOVEPRODUCT~SOURCE = "P")
-      settextlinetrigger GETCREDITS :MOVEPRODUCT~CYCLEGETCREDITS "Your offer ["
+    if ($source = "P")
+      settextlinetrigger GETCREDITS :cyclegetcredits "Your offer ["
       pause
 
-:MOVEPRODUCT~CYCLEGETCREDITS
-      getword CURRENTLINE $MOVEPRODUCT~OFFER 3
-      striptext $MOVEPRODUCT~OFFER ","
-      striptext $MOVEPRODUCT~OFFER "["
-      striptext $MOVEPRODUCT~OFFER "]"
-      subtract $MOVEPRODUCT~CREDITS $MOVEPRODUCT~OFFER
+:cyclegetcredits
+      getword CURRENTLINE $offer 3
+      striptext $offer ","
+      striptext $offer "["
+      striptext $offer "]"
+      subtract $credits $offer
 
-      if ($MOVEPRODUCT~CREDITS < 10000)
-        setvar $MOVEPRODUCT~CYCLES 0
+      if ($credits < 10000)
+        setvar $cycles 0
       end
     end
-    waiton $MOVEPRODUCT~WAITTEXT
+    waiton $waittext
   end
 
-  goto :MOVEPRODUCT~CYCLE
+  goto :cycle
 end
 
-:MOVEPRODUCT~WARPTO
-if ((SECTORS > 5000) or ($MOVEPRODUCT~WARPDEST < 600))
-  send $MOVEPRODUCT~WARPDEST "*"
+:warpto
+if ((SECTORS > 5000) or ($warpdest < 600))
+  send $warpdest "*"
 else
-  send $MOVEPRODUCT~WARPDEST
+  send $warpdest
 end
 
-settextlinetrigger MOVEPRODUCT_WARP_ARRIVED :MOVEPRODUCT~WARP_ARRIVED "You are already in that sector!"
-settextlinetrigger MOVEPRODUCT_WARP_BEGIN :MOVEPRODUCT~WARP_BEGIN "<Move>"
+settextlinetrigger MOVEPRODUCT_WARP_ARRIVED :warp_arrived "You are already in that sector!"
+settextlinetrigger MOVEPRODUCT_WARP_BEGIN :warp_begin "<Move>"
 pause
 
-:MOVEPRODUCT~WARP_BEGIN
+:warp_begin
 killtrigger MOVEPRODUCT_WARP_ARRIVED
-settexttrigger MOVEPRODUCT_WARP_START :MOVEPRODUCT~WARP_START "Engage the Autopilot?"
-settexttrigger MOVEPRODUCT_WARP_TWARP :MOVEPRODUCT~WARP_TWARP "Do you want to engage"
-settextlinetrigger MOVEPRODUCT_WARP_SINGLE :MOVEPRODUCT~WARP_SINGLE "Sector  :"
+settexttrigger MOVEPRODUCT_WARP_START :warp_start "Engage the Autopilot?"
+settexttrigger MOVEPRODUCT_WARP_TWARP :warp_twarp "Do you want to engage"
+settextlinetrigger MOVEPRODUCT_WARP_SINGLE :warp_single "Sector  :"
 pause
 
-:MOVEPRODUCT~WARP_TWARP
+:warp_twarp
 send "n"
 
-:MOVEPRODUCT~WARP_START
+:warp_start
 send "e"
 
-:MOVEPRODUCT~WARP_SINGLE
+:warp_single
 killtrigger MOVEPRODUCT_WARP_START
 killtrigger MOVEPRODUCT_WARP_TWARP
 killtrigger MOVEPRODUCT_WARP_SINGLE
 killtrigger MOVEPRODUCT_WARP_ABORT
 
-setvar $MOVEPRODUCT~WARP_STOPPROMPT 1
-setvar $MOVEPRODUCT~WARP_MINEPROMPT 1
+setvar $warp_stopprompt 1
+setvar $warp_mineprompt 1
 
-:MOVEPRODUCT~WARP_MID
+:warp_mid
 killtrigger MOVEPRODUCT_WARP_TOLLFIGS
 killtrigger MOVEPRODUCT_WARP_FIGS
 killtrigger MOVEPRODUCT_WARP_STOPPROMPT
@@ -951,46 +951,46 @@ killtrigger MOVEPRODUCT_WARP_MINES
 killtrigger MOVEPRODUCT_WARP_NEXTSECTOR
 killtrigger MOVEPRODUCT_WARP_DONE
 
-settextlinetrigger MOVEPRODUCT_WARP_NEXTSECTOR :MOVEPRODUCT~WARP_NEXTSECTOR "Sector  :"
-settextlinetrigger MOVEPRODUCT_WARP_TOLLFIGS :MOVEPRODUCT~WARP_TOLLFIGS "You have to destroy the fighters or pay"
-settextlinetrigger MOVEPRODUCT_WARP_FIGS :MOVEPRODUCT~WARP_FIGS "You have to destroy the fighters to remain"
-settexttrigger MOVEPRODUCT_WARP_STOPPROMPT :MOVEPRODUCT~WARP_STOPPROMPT "Stop in this sector"
-settexttrigger MOVEPRODUCT_WARP_MINES :MOVEPRODUCT~WARP_MINESPROMPT "Mined Sector:"
-settexttrigger MOVEPRODUCT_WARP_DONE :MOVEPRODUCT~WARP_ARRIVED "Command [TL="
+settextlinetrigger MOVEPRODUCT_WARP_NEXTSECTOR :warp_nextsector "Sector  :"
+settextlinetrigger MOVEPRODUCT_WARP_TOLLFIGS :warp_tollfigs "You have to destroy the fighters or pay"
+settextlinetrigger MOVEPRODUCT_WARP_FIGS :warp_figs "You have to destroy the fighters to remain"
+settexttrigger MOVEPRODUCT_WARP_STOPPROMPT :warp_stopprompt "Stop in this sector"
+settexttrigger MOVEPRODUCT_WARP_MINES :warp_minesprompt "Mined Sector:"
+settexttrigger MOVEPRODUCT_WARP_DONE :warp_arrived "Command [TL="
 pause
 
-:MOVEPRODUCT~WARP_NEXTSECTOR
-setvar $MOVEPRODUCT~WARP_STOPPROMPT 1
-setvar $MOVEPRODUCT~WARP_MINEPROMPT 1
-goto :MOVEPRODUCT~WARP_MID
+:warp_nextsector
+setvar $warp_stopprompt 1
+setvar $warp_mineprompt 1
+goto :warp_mid
 
-:MOVEPRODUCT~WARP_TOLLFIGS
+:warp_tollfigs
 if ($MOVE~ATTACK = 3)
   send "py"
 else
   send "a9999*"
 end
-goto :MOVEPRODUCT~WARP_MID
+goto :warp_mid
 
-:MOVEPRODUCT~WARP_FIGS
+:warp_figs
 send "a9999*"
-goto :MOVEPRODUCT~WARP_MID
+goto :warp_mid
 
-:MOVEPRODUCT~WARP_STOPPROMPT
-if ($MOVEPRODUCT~WARP_STOPPROMPT)
+:warp_stopprompt
+if ($warp_stopprompt)
   send "n"
-  setvar $MOVEPRODUCT~WARP_STOPPROMPT 0
+  setvar $warp_stopprompt 0
 end
-goto :MOVEPRODUCT~WARP_MID
+goto :warp_mid
 
-:MOVEPRODUCT~WARP_MINESPROMPT
-if ($MOVEPRODUCT~WARP_MINEPROMPT)
+:warp_minesprompt
+if ($warp_mineprompt)
   send "n"
-  setvar $MOVEPRODUCT~WARP_MINEPROMPT 0
+  setvar $warp_mineprompt 0
 end
-goto :MOVEPRODUCT~WARP_MID
+goto :warp_mid
 
-:MOVEPRODUCT~WARP_ARRIVED
+:warp_arrived
 killtrigger MOVEPRODUCT_WARP_ARRIVED
 killtrigger MOVEPRODUCT_WARP_NEXTSECTOR
 killtrigger MOVEPRODUCT_WARP_TOLLFIGS
@@ -1001,24 +1001,24 @@ killtrigger MOVEPRODUCT_WARP_BEGIN
 killtrigger MOVEPRODUCT_WARP_DONE
 return
 
-:MOVEPRODUCT~RESTOREHAGGLE
-if ($MOVEPRODUCT~RESTORE_HAGGLE = 1)
+:restorehaggle
+if ($restore_haggle = 1)
   autohaggle on
-  setvar $MOVEPRODUCT~RESTORE_HAGGLE 0
+  setvar $restore_haggle 0
 end
 return
 
-:MOVEPRODUCT~SUB_LANDDEST
-if ($MOVEPRODUCT~PSCAN or (SECTOR.PLANETCOUNT[$MOVEPRODUCT~DESTSECTOR] > 1))
-  send "l " $MOVEPRODUCT~DEST "*"
+:sub_landdest
+if ($pscan or (SECTOR.PLANETCOUNT[$destsector] > 1))
+  send "l " $dest "*"
 else
   send "l "
 end
 return
 
-:MOVEPRODUCT~SUB_LANDSOURCE
-if ($MOVEPRODUCT~PSCAN or (SECTOR.PLANETCOUNT[$MOVEPRODUCT~SOURCESECTOR] > 1))
-  send "l " $MOVEPRODUCT~SOURCE "*"
+:sub_landsource
+if ($pscan or (SECTOR.PLANETCOUNT[$sourcesector] > 1))
+  send "l " $source "*"
 else
   send "l"
 end
@@ -1060,8 +1060,7 @@ end
 return
 
 # includes:
+include "source\include\gameprefs"
 include "source\include\findproduct"
 include "source\include\haggle"
-include "source\include\moveproduct"
-include "source\include\seekproduct"
-include "source\include\bot"
+include "source\include\move"

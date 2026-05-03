@@ -1,19 +1,20 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1]   $BOT~tab&"- kazi [planet] {shields} {defender} {zdy}" 
-	setVar $BOT~help[2]   $BOT~tab&"    Automates planet invasion. " 
-	setVar $BOT~help[3]   $BOT~tab&"                           " 
-	setVar $BOT~help[4]   $BOT~tab&"    [planet]               "
-	setVar $BOT~help[5]   $BOT~tab&"       - Planet number to attack   " 
-	setVar $BOT~help[6]   $BOT~tab&"    [shields]                      " 
-	setVar $BOT~help[7]   $BOT~tab&"       - Will kill planetary shields. Stops when below 50. "  
-	setVar $BOT~help[8]   $BOT~tab&"    [defender]                                        " 
-	setVar $BOT~help[9]   $BOT~tab&"       - Will land defensively to take out military reaction." 
-	setVar $BOT~help[10]  $BOT~tab&"    [zdy]                         " 
-	setVar $BOT~help[11]  $BOT~tab&"       - Option to blow planet as soon as you land.   " 
+	setVar $HELP~HELP[1]   $HELP~TAB&"- kazi [planet] {shields} {defender} {zdy}"
+	setVar $HELP~HELP[2]   $HELP~TAB&"    Automates planet invasion. "
+	setVar $HELP~HELP[3]   $HELP~TAB&"                           "
+	setVar $HELP~HELP[4]   $HELP~TAB&"    [planet]               "
+	setVar $HELP~HELP[5]   $HELP~TAB&"       - Planet number to attack   "
+	setVar $HELP~HELP[6]   $HELP~TAB&"    [shields]                      "
+	setVar $HELP~HELP[7]   $HELP~TAB&"       - Will kill planetary shields. Stops when below 50. "
+	setVar $HELP~HELP[8]   $HELP~TAB&"    [defender]                                        "
+	setVar $HELP~HELP[9]   $HELP~TAB&"       - Will land defensively to take out military reaction."
+	setVar $HELP~HELP[10]  $HELP~TAB&"    [zdy]                         "
+	setVar $HELP~HELP[11]  $HELP~TAB&"       - Option to blow planet as soon as you land.   "
 
-	gosub :bot~helpfile
-	
+	gosub :HELP~HELPFILE
+
 # ======================     START KAMIKAZE (KAZI) SUBROUTINE    ==========================
 :kamikaze
 	gosub :player~quikstats
@@ -67,8 +68,8 @@
 	while ($player~FIGHTERS = $ship~SHIP_FIGHTERS_MAX)
 		setVar $attackString ""
 		send $targetString
-		setTextTrigger 		invadeShields 		:keepInvading 		"You have to destroy the fighters defending the planet to land." 
-		setTextTrigger 		invadeContinue 		:shieldInvade 		"You have to destroy the Planetary Shields defending the planet to land." 
+		setTextTrigger 		invadeShields 		:keepInvading 		"You have to destroy the fighters defending the planet to land."
+		setTextTrigger 		invadeContinue 		:shieldInvade 		"You have to destroy the Planetary Shields defending the planet to land."
 		setTextTrigger 		invadeDone     		:Invaded 		"<Destroy Planet>"
 		setTextTrigger  	blockedInvade		:blockedInvading 	"Do you want instructions (Y/N)"
 		setTextLineTrigger      noPlanet                :noPlanetToInvade       "Invalid registry number, landing aborted."
@@ -231,4 +232,8 @@ return
 # ======================     END KAMIKAZE (KAZI) SUBROUTINE    ==========================
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\ship"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

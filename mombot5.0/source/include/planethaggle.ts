@@ -1942,4 +1942,7 @@ killtrigger PLANETBUYSCREWUP9
 killtrigger PLANETBUYSCREWUP10
 return
 
+include "source\include\player"
+include "source\include\planet"
 include "source\include\port"
+include "source\include\switchboard"

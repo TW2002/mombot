@@ -1,2 +1,0 @@
-:PORTCHECK~NAMESPACE
-return

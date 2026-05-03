@@ -1,17 +1,18 @@
-		gosub :BOT~loadVars
+		gosub :LOADVARS~LOADVARS
+		gosub :HELP~INITIALIZE
 									
 
-	setVar $BOT~help[1] $BOT~tab&"Pgrids automatically until stopped. pgrid {fighterToDrop} "
-	setVar $BOT~help[2] $BOT~tab&"          "
-	setVar $BOT~help[3] $BOT~tab&"Requires corpie running saveme"
-	setVar $BOT~help[4] $BOT~tab&" "
-	setVar $BOT~help[5] $BOT~tab&"   Options:"
-	setVar $BOT~help[6] $BOT~tab&"          {fightersToDrop} - how many figs to drop in sector"
-	setVar $BOT~help[6] $BOT~tab&"                    {near} - moves using near fighter"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"Pgrids automatically until stopped. pgrid {fighterToDrop} "
+	setVar $HELP~HELP[2] $HELP~TAB&"          "
+	setVar $HELP~HELP[3] $HELP~TAB&"Requires corpie running saveme"
+	setVar $HELP~HELP[4] $HELP~TAB&" "
+	setVar $HELP~HELP[5] $HELP~TAB&"   Options:"
+	setVar $HELP~HELP[6] $HELP~TAB&"          {fightersToDrop} - how many figs to drop in sector"
+	setVar $HELP~HELP[6] $HELP~TAB&"                    {near} - moves using near fighter"
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Planet Gridder"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Planet Gridder starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 
 	if ($bot~parm1 > 0)
@@ -277,4 +278,7 @@
 
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

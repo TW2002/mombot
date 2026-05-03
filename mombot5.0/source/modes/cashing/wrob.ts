@@ -347,10 +347,10 @@ cuttext $PLAYER~ALIGNMENT $NEG_CK 1 1
 striptext $PLAYER~ALIGNMENT "-"
 if (($PLAYER~ALIGNMENT < 100) and ($NEG_CK = "-"))
   send "'{" $BOT_NAME "} - Need -100 Alignment Minimum*"
-  goto :WAIT_FOR_COMMAND
+  halt
 elseif ($NEG_CK <> "-")
   send "'{" $BOT_NAME "} - Need -100 Alignment Minimum*"
-  goto :WAIT_FOR_COMMAND
+  halt
 end
 send "q q pr * r"
 settextlinetrigger VALID :ROB_CONTINUE "<R> Rob this Port"

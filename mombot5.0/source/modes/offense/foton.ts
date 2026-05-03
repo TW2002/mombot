@@ -1,41 +1,42 @@
 	logging off
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	loadVar $game~MULTIPLE_PHOTONS
 
 
-	setVar $BOT~help[1]  $BOT~tab&"- foton [on|off|sec] {a|d|p|s|d|t} {towship} {sector} "
-	setVar $BOT~help[2]  $BOT~tab&"                     {return} {den40}"
-	setVar $BOT~help[3]  $BOT~tab&"  Multiple use photon script.  "
-	setVar $BOT~help[4]  $BOT~tab&"  "
-	setVar $BOT~help[5]  $BOT~tab&"  Options: "
-	setVar $BOT~help[6]  $BOT~tab&"    {a}djacent - photons adjacent sector when"
-	setVar $BOT~help[7]  $BOT~tab&"                 fig/limp/armid hit"
-	setVar $BOT~help[8]  $BOT~tab&"    {d}ensity  - constant density scan, photons"
-	setVar $BOT~help[9]  $BOT~tab&"                 on density change"
-	setVar $BOT~help[10] $BOT~tab&"    {p}lanet   - standard planet warp photon script"
-	setVar $BOT~help[11] $BOT~tab&"    {s}urround - attempts to foton retreat sector"
-	setVar $BOT~help[12] $BOT~tab&"    d{o}ck     - sits on dock and attempts to foton"
-	setVar $BOT~help[13] $BOT~tab&"                 on adjacent fig hit"
-	setVar $BOT~help[14] $BOT~tab&"    {t}ow      - twarp tow a photon in a second ship"
-	setVar $BOT~help[15] $BOT~tab&"       "
-	setVar $BOT~help[16] $BOT~tab&"    {towship}  - Ship in sector with photon you will tow"
-	setVar $BOT~help[17] $BOT~tab&"    {sector}   - Apply the mode from/to that sector"
-	setVar $BOT~help[18] $BOT~tab&"    {return}   - Returns Planet Home after Pwarp"
-	setVar $BOT~help[19] $BOT~tab&"     {den40}   - Only shoots on 40 to 499 Density Change"
-	setVar $BOT~help[20] $BOT~tab&"      {holo}   - does holo command after firing"
-	setVar $BOT~help[21] $BOT~tab&"   {dockexp}   - Will pop planet to get to 1k"
-	setVar $BOT~help[22] $BOT~tab&"                 for dock photon"
-	setVar $BOT~help[23] $BOT~tab&"      {self}   - Will pwarp out, photon your current "
-	setVar $BOT~help[24] $BOT~tab&"                 sector, and pwarp back in. "
-	setVar $BOT~help[25] $BOT~tab&"      {cont}   - Will continue shooting if in density mode."
-	setVar $BOT~help[26] $BOT~tab&" {delwalk:n}   - Delay walk will delay the shot for this many MS."
-	setVar $BOT~help[27] $BOT~tab&"                 Then add another 100ms to subsequent hit."
-	setVar $BOT~help[28] $BOT~tab&"      "
-	setVar $BOT~help[29] $BOT~tab&"       Authors: Mind Dagger and The Bounty Hunter "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"- foton [on|off|sec] {a|d|p|s|d|t} {towship} {sector} "
+	setVar $HELP~HELP[2]  $HELP~TAB&"                     {return} {den40}"
+	setVar $HELP~HELP[3]  $HELP~TAB&"  Multiple use photon script.  "
+	setVar $HELP~HELP[4]  $HELP~TAB&"  "
+	setVar $HELP~HELP[5]  $HELP~TAB&"  Options: "
+	setVar $HELP~HELP[6]  $HELP~TAB&"    {a}djacent - photons adjacent sector when"
+	setVar $HELP~HELP[7]  $HELP~TAB&"                 fig/limp/armid hit"
+	setVar $HELP~HELP[8]  $HELP~TAB&"    {d}ensity  - constant density scan, photons"
+	setVar $HELP~HELP[9]  $HELP~TAB&"                 on density change"
+	setVar $HELP~HELP[10] $HELP~TAB&"    {p}lanet   - standard planet warp photon script"
+	setVar $HELP~HELP[11] $HELP~TAB&"    {s}urround - attempts to foton retreat sector"
+	setVar $HELP~HELP[12] $HELP~TAB&"    d{o}ck     - sits on dock and attempts to foton"
+	setVar $HELP~HELP[13] $HELP~TAB&"                 on adjacent fig hit"
+	setVar $HELP~HELP[14] $HELP~TAB&"    {t}ow      - twarp tow a photon in a second ship"
+	setVar $HELP~HELP[15] $HELP~TAB&"       "
+	setVar $HELP~HELP[16] $HELP~TAB&"    {towship}  - Ship in sector with photon you will tow"
+	setVar $HELP~HELP[17] $HELP~TAB&"    {sector}   - Apply the mode from/to that sector"
+	setVar $HELP~HELP[18] $HELP~TAB&"    {return}   - Returns Planet Home after Pwarp"
+	setVar $HELP~HELP[19] $HELP~TAB&"     {den40}   - Only shoots on 40 to 499 Density Change"
+	setVar $HELP~HELP[20] $HELP~TAB&"      {holo}   - does holo command after firing"
+	setVar $HELP~HELP[21] $HELP~TAB&"   {dockexp}   - Will pop planet to get to 1k"
+	setVar $HELP~HELP[22] $HELP~TAB&"                 for dock photon"
+	setVar $HELP~HELP[23] $HELP~TAB&"      {self}   - Will pwarp out, photon your current "
+	setVar $HELP~HELP[24] $HELP~TAB&"                 sector, and pwarp back in. "
+	setVar $HELP~HELP[25] $HELP~TAB&"      {cont}   - Will continue shooting if in density mode."
+	setVar $HELP~HELP[26] $HELP~TAB&" {delwalk:n}   - Delay walk will delay the shot for this many MS."
+	setVar $HELP~HELP[27] $HELP~TAB&"                 Then add another 100ms to subsequent hit."
+	setVar $HELP~HELP[28] $HELP~TAB&"      "
+	setVar $HELP~HELP[29] $HELP~TAB&"       Authors: Mind Dagger and The Bounty Hunter "
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Fast Foton"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Fast Foton starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 
 	getSectorParameter SECTORS "FIGSEC" $isFigged
@@ -1956,4 +1957,8 @@ return
 
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

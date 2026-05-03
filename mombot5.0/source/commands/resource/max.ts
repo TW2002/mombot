@@ -1,13 +1,14 @@
 
 logging "OFF"
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 
-setvar $BOT~HELP[1] $BOT~TAB&"Upgrades a port product as much as possible.  "
-setvar $BOT~HELP[2] $BOT~TAB&"         "
-setvar $BOT~HELP[3] $BOT~TAB&"Options: "
-setvar $BOT~HELP[4] $BOT~TAB&"{noexp} - Upgrades port without experience increase."
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"Upgrades a port product as much as possible.  "
+setvar $HELP~HELP[2] $HELP~TAB&"         "
+setvar $HELP~HELP[3] $HELP~TAB&"Options: "
+setvar $HELP~HELP[4] $HELP~TAB&"{noexp} - Upgrades port without experience increase."
+gosub :HELP~HELPFILE
 :MAXPORT
 :MAX
 
@@ -19,7 +20,7 @@ gosub :PLAYER~QUIKSTATS
 setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 setvar $BOT~VALIDPROMPTS "Citadel Command Planet"
-gosub :BOT~CHECKSTARTINGPROMPT
+gosub :PLAYER~CHECKSTARTINGPROMPT
 if (($BOT~PARM1 <> "f") and (($BOT~PARM1 <> "o") and ($BOT~PARM1 <> "e")))
   send "'{" $SWITCHBOARD~BOT_NAME "} - maxport [f / o / e] noexp*"
   halt
@@ -166,4 +167,7 @@ setvar $WRONG TRUE
 goto :DONEMAXPORT
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

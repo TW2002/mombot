@@ -1,14 +1,15 @@
 logging "OFF"
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 loadvar $SHIP~CAP_FILE
 gosub :COMBAT~INIT
 
 
 
 setvar $BOT~COMMAND "kill"
-setvar $BOT~HELP[1] $BOT~TAB&"kill   "
-setvar $BOT~HELP[2] $BOT~TAB&"    Kills any enemy players.   "
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"kill   "
+setvar $HELP~HELP[2] $HELP~TAB&"    Kills any enemy players.   "
+gosub :HELP~HELPFILE
 :KILL
 :AUTOKILL
 
@@ -83,4 +84,5 @@ halt
 
 # includes:
 include "source\include\combat"
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

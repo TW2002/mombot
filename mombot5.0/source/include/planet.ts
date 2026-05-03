@@ -25,7 +25,7 @@ if ($PLANET~POS <= 0)
   getword $PLANET~LINE $PLANET~PLANETS[$PLANET~PLANETCOUNT] 1
 end
 settextlinetrigger GETLINE2 :PLANETLINE "   <"
-settextlinetrigger GETEND :DONE "Land on which planet "
+settextlinetrigger GETEND :COUNTDONE "Land on which planet "
 pause
 
 :PLANET~COUNTDONE

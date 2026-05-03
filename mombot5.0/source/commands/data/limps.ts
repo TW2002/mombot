@@ -1,13 +1,14 @@
 logging "OFF"
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 loadvar $BOT~LIMP_COUNT_FILE
 
-setvar $BOT~HELP[1] $BOT~TAB&"Refreshes Deployed Limpet List"
-setvar $BOT~HELP[2] $BOT~TAB&"  - Will show difference since last command was run."
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"Refreshes Deployed Limpet List"
+setvar $HELP~HELP[2] $HELP~TAB&"  - Will show difference since last command was run."
+gosub :HELP~HELPFILE
 
-setvar $BOT~SCRIPT_TITLE "Limpet Report"
-gosub :BOT~BANNER
+setvar $SWITCHBOARD~MESSAGE "Limpet Report starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
 
 loadvar $LIMP_COUNT_FILE
 loadvar $BOT~LIMP_FILE
@@ -161,8 +162,18 @@ delete $BOT~LIMP_FILE
 write $BOT~LIMP_FILE $OUTPUT
 delete $BOT~LIMP_COUNT_FILE
 write $BOT~LIMP_COUNT_FILE $COUNT
-
 return
 
+:unfreezebot
+echo "*Bot timed out, unfreezing..*"
+setDeafClients false
+setvar $switchboard~message "Bot frozen for over 100 seconds, resetting...*"
+gosub :switchboard~switchboard
+halt
+
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

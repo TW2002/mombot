@@ -1,8 +1,9 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1] $BOT~tab&"busts -"
-	setVar $BOT~help[2] $BOT~tab&"    displays all busted sectors on subspace"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"busts -"
+	setVar $HELP~HELP[2] $HELP~TAB&"    displays all busted sectors on subspace"
+	gosub :HELP~HELPFILE
 
 setvar $switchboard~message "Scanning BUSTED SectorParameter ...*"
 gosub :switchboard~switchboard
@@ -50,4 +51,5 @@ return
 
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

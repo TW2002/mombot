@@ -1,4 +1,5 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
 	goto :wait_for_command
@@ -49,7 +50,7 @@ goto :wait_for_command
 :bankProtections
 	gosub :PLAYER~quikstats
 	setVar $bot~validPrompts "Citadel"
-	gosub :bot~checkstartingprompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	if ($bot~parm1 = "ss")
 		setVar $bot~parm1 ""
 	end
@@ -62,14 +63,17 @@ goto :wait_for_command
 return
 
 :wait_for_command
-	setVar $BOT~help[1]  $BOT~tab&"with {cash to withdrawl} "
-	setVar $BOT~help[2]  $BOT~tab&"  Withdrawls cash from citadel treasury."
-	setVar $BOT~help[3]  $BOT~tab&"        default is max credits possible"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"with {cash to withdrawl} "
+	setVar $HELP~HELP[2]  $HELP~TAB&"  Withdrawls cash from citadel treasury."
+	setVar $HELP~HELP[3]  $HELP~TAB&"        default is max credits possible"
+	gosub :HELP~HELPFILE
 halt
 
 
 
 
 # includes:
-include "source\include\bot"
+include "source\include\map"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

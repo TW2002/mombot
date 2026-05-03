@@ -1,43 +1,44 @@
 	logging off
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	loadvar $bot~LIMP_COUNT_FILE
 	loadVar $bot~ARMID_COUNT_FILE
 	loadVar $bot~LIMP_FILE
 	loadVar $bot~ARMID_FILE
 
-	setVar $BOT~help[1]  $BOT~tab&" update {figs} {limps} {armids} {cim}"
-	setVar $BOT~help[2]  $BOT~tab&"   "
-	setVar $BOT~help[3]  $BOT~tab&"     Checks deployment lists and sets sector"
-	setVar $BOT~help[4]  $BOT~tab&"     parameters.  Shows differences since last"
-	setVar $BOT~help[5]  $BOT~tab&"     update"
-	setVar $BOT~help[6]  $BOT~tab&"     "
-	setVar $BOT~help[7]  $BOT~tab&"     {figs} - fighter refresh"
-	setVar $BOT~help[8]  $BOT~tab&"    {limps} - limpet refresh, including active"
-	setVar $BOT~help[9]  $BOT~tab&"   {armids} - armid refresh"
-	setVar $BOT~help[10] $BOT~tab&"      {cim} - will refresh port and warp info"
-	setVar $BOT~help[11] $BOT~tab&"             "
-	setVar $BOT~help[12] $BOT~tab&"    update {cim} {upgrade level} {warps}   "
-	setVar $BOT~help[13] $BOT~tab&"                             "
-	setVar $BOT~help[14] $BOT~tab&"     Options:"
-	setVar $BOT~help[15] $BOT~tab&"           {upgrade level} - Amount on port to  "
-	setVar $BOT~help[16] $BOT~tab&"                             be considered upgraded"
-	setVar $BOT~help[17] $BOT~tab&"                             (default 10,000)"
-	setVar $BOT~help[18] $BOT~tab&"                                            "
-	setVar $BOT~help[19] $BOT~tab&"                  {warps}  - Perform warp data  "
-	setVar $BOT~help[20] $BOT~tab&"                             instead of port CIM"
-	setVar $BOT~help[21] $BOT~tab&"                             "
-	setVar $BOT~help[22] $BOT~tab&"     Examples:            "
-	setVar $BOT~help[23] $BOT~tab&"            >update figs limps armids      "
-	setVar $BOT~help[24] $BOT~tab&"            >update                 "
-	setVar $BOT~help[25] $BOT~tab&"            >update cim warps     "
-	setVar $BOT~help[26] $BOT~tab&"            >figs             "
-	setVar $BOT~help[27] $BOT~tab&"            >limps            "
-	setVar $BOT~help[28] $BOT~tab&"            >cim 10000       "
+	setVar $HELP~HELP[1]  $HELP~TAB&" update {figs} {limps} {armids} {cim}"
+	setVar $HELP~HELP[2]  $HELP~TAB&"   "
+	setVar $HELP~HELP[3]  $HELP~TAB&"     Checks deployment lists and sets sector"
+	setVar $HELP~HELP[4]  $HELP~TAB&"     parameters.  Shows differences since last"
+	setVar $HELP~HELP[5]  $HELP~TAB&"     update"
+	setVar $HELP~HELP[6]  $HELP~TAB&"     "
+	setVar $HELP~HELP[7]  $HELP~TAB&"     {figs} - fighter refresh"
+	setVar $HELP~HELP[8]  $HELP~TAB&"    {limps} - limpet refresh, including active"
+	setVar $HELP~HELP[9]  $HELP~TAB&"   {armids} - armid refresh"
+	setVar $HELP~HELP[10] $HELP~TAB&"      {cim} - will refresh port and warp info"
+	setVar $HELP~HELP[11] $HELP~TAB&"             "
+	setVar $HELP~HELP[12] $HELP~TAB&"    update {cim} {upgrade level} {warps}   "
+	setVar $HELP~HELP[13] $HELP~TAB&"                             "
+	setVar $HELP~HELP[14] $HELP~TAB&"     Options:"
+	setVar $HELP~HELP[15] $HELP~TAB&"           {upgrade level} - Amount on port to  "
+	setVar $HELP~HELP[16] $HELP~TAB&"                             be considered upgraded"
+	setVar $HELP~HELP[17] $HELP~TAB&"                             (default 10,000)"
+	setVar $HELP~HELP[18] $HELP~TAB&"                                            "
+	setVar $HELP~HELP[19] $HELP~TAB&"                  {warps}  - Perform warp data  "
+	setVar $HELP~HELP[20] $HELP~TAB&"                             instead of port CIM"
+	setVar $HELP~HELP[21] $HELP~TAB&"                             "
+	setVar $HELP~HELP[22] $HELP~TAB&"     Examples:            "
+	setVar $HELP~HELP[23] $HELP~TAB&"            >update figs limps armids      "
+	setVar $HELP~HELP[24] $HELP~TAB&"            >update                 "
+	setVar $HELP~HELP[25] $HELP~TAB&"            >update cim warps     "
+	setVar $HELP~HELP[26] $HELP~TAB&"            >figs             "
+	setVar $HELP~HELP[27] $HELP~TAB&"            >limps            "
+	setVar $HELP~HELP[28] $HELP~TAB&"            >cim 10000       "
 
-	gosub :bot~helpfile
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Update"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Update starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 	
 # ============================== START REFRESH LIMPETS (LIMPS) ==============================
@@ -140,5 +141,8 @@ halt
 
 
 #INCLUDES:
+include "source\include\loadvars"
 include "source\include\mines"
 include "source\include\update"
+include "source\include\help"
+include "source\include\switchboard"

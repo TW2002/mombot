@@ -1,16 +1,17 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 	setvar $bot~command "switch"
-	setVar $BOT~help[1]  $BOT~tab&"switch {"&#34&"trader_name"&#34&"} "
-	setVar $BOT~help[2]  $BOT~tab&"     "
-	setVar $BOT~help[3]  $BOT~tab&"   Switch ships with trader in citadel"
-	setVar $BOT~help[4]  $BOT~tab&"     "
-	setVar $BOT~help[5]  $BOT~tab&"   {"&#34&"trader_name"&#34&"} - trader's name to trade ships with"
-	setVar $BOT~help[6]  $BOT~tab&"     "
-	setVar $BOT~help[7]  $BOT~tab&"     Examples:"
-	setVar $BOT~help[8]  $BOT~tab&"         >switch "&#34&"mind dagger"&#34&"  "
-	setVar $BOT~help[9]  $BOT~tab&"         >switch mind"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"switch {"&#34&"trader_name"&#34&"} "
+	setVar $HELP~HELP[2]  $HELP~TAB&"     "
+	setVar $HELP~HELP[3]  $HELP~TAB&"   Switch ships with trader in citadel"
+	setVar $HELP~HELP[4]  $HELP~TAB&"     "
+	setVar $HELP~HELP[5]  $HELP~TAB&"   {"&#34&"trader_name"&#34&"} - trader's name to trade ships with"
+	setVar $HELP~HELP[6]  $HELP~TAB&"     "
+	setVar $HELP~HELP[7]  $HELP~TAB&"     Examples:"
+	setVar $HELP~HELP[8]  $HELP~TAB&"         >switch "&#34&"mind dagger"&#34&"  "
+	setVar $HELP~HELP[9]  $HELP~TAB&"         >switch mind"
+	gosub :HELP~HELPFILE
 
 	getWordPos $bot~user_command_line $pos #34
 	if ($pos > 0)
@@ -67,4 +68,5 @@ gosub :BOT~loadVars
 return
 
 #includes
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

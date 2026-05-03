@@ -7,25 +7,26 @@ loadvar $player~unlimitedgame
 loadvar $bot~subspace
 loadvar $bot~bot_turn_limit
 
-gosub :bot~loadvars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 loadvar $bot~subspace
 
 loadvar $bot~bot_turn_limit
 loadvar $game~steal_factor
 
-setvar $bot~help[1] $bot~tab&" sst {resetlra} [ship1] [ship2] {jet} {resetlra}"
-setvar $bot~help[2] $bot~tab&"  - Do NOT need to start in Ship 1 or Ship 2."
-setvar $bot~help[3] $bot~tab&"  - First Steal will be from Ship 1."
-setvar $bot~help[4] $bot~tab&"  - Checks last rob and busts from Sec Params"
-setvar $bot~help[5] $bot~tab&"  - {jet} will mega jet product for extra experience "
-setvar $bot~help[6] $bot~tab&"          but will stop at mulitplier of 300 holds. "
-setvar $bot~help[7] $bot~tab&"  - {resetlra} will reset last rob sector and exit"
-setvar $bot~help[8] $bot~tab&"  - Will use EP Haggle if running in bot"
-setvar $bot~help[9] $bot~tab&"  - Created by Cherokee"
-gosub :bot~helpfile
+setvar $HELP~HELP[1] $HELP~TAB&" sst {resetlra} [ship1] [ship2] {jet} {resetlra}"
+setvar $HELP~HELP[2] $HELP~TAB&"  - Do NOT need to start in Ship 1 or Ship 2."
+setvar $HELP~HELP[3] $HELP~TAB&"  - First Steal will be from Ship 1."
+setvar $HELP~HELP[4] $HELP~TAB&"  - Checks last rob and busts from Sec Params"
+setvar $HELP~HELP[5] $HELP~TAB&"  - {jet} will mega jet product for extra experience "
+setvar $HELP~HELP[6] $HELP~TAB&"          but will stop at mulitplier of 300 holds. "
+setvar $HELP~HELP[7] $HELP~TAB&"  - {resetlra} will reset last rob sector and exit"
+setvar $HELP~HELP[8] $HELP~TAB&"  - Will use EP Haggle if running in bot"
+setvar $HELP~HELP[9] $HELP~TAB&"  - Created by Cherokee"
+gosub :HELP~HELPFILE
 
-setvar $bot~script_title "SST and JET"
-gosub :bot~banner
+setvar $SWITCHBOARD~MESSAGE "SST and JET starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
 
 if ($bot~parm1 = "resetlra")
   setsectorparameter 1 "LRA" 1
@@ -1414,3 +1415,6 @@ return
 
 # includes:
 include "include/bot.ts"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

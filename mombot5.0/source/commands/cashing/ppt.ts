@@ -1,4 +1,5 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
  #ppt explore
 
@@ -15,27 +16,27 @@ gosub :BOT~loadVars
 #swhen stuck, find nearest 5-6 warp?
 
 
-	setVar $BOT~help[1]  $BOT~tab&"       Scans and offers available PPT trades to adj sectors "
-	setVar $BOT~help[2]  $BOT~tab&"       Aimed at Day 1 use - the only time to use PPT!"
-	setVar $BOT~help[3]  $BOT~tab&"        "
-	setVar $BOT~help[4]  $BOT~tab&"       ppt [sector/?] {h/t/n) {p:x} {k:x} {ore:x}"
-	setVar $BOT~help[5]  $BOT~tab&"           {twarp}"
-	setVar $BOT~help[6]  $BOT~tab&" Options:"
-	setVar $BOT~help[7]  $BOT~tab&"    [sector/?]     Sector to trade or ? to scan and choose."
-	setVar $BOT~help[8]  $BOT~tab&"    {h/t/n}        h  - internal haggle; "
-	setVar $BOT~help[9]  $BOT~tab&"                   n  - no haggle, just accepts the price"
-	setVar $BOT~help[10] $BOT~tab&"                   t  - 3rd party haggle like EP - DEFAULT."
-	setVar $BOT~help[11] $BOT~tab&"    {p:x}         When either product hits this % it will stop "
-	setVar $BOT~help[12] $BOT~tab&"                   - Defaults to 30% (p:30)"
-	setVar $BOT~help[13] $BOT~tab&"    {k:x}         k:5 - Keep this many holds of equipment at end of run. "
-	setVar $BOT~help[14] $BOT~tab&"                   Used so we can test port MCICs as we travel."
-	setVar $BOT~help[15] $BOT~tab&"    ore:x          Keep this amount of ore to keep post trade."
-	setVar $BOT~help[16] $BOT~tab&"    twarp          Indicate we are PPTing between isolated ports."
+	setVar $HELP~HELP[1]  $HELP~TAB&"       Scans and offers available PPT trades to adj sectors "
+	setVar $HELP~HELP[2]  $HELP~TAB&"       Aimed at Day 1 use - the only time to use PPT!"
+	setVar $HELP~HELP[3]  $HELP~TAB&"        "
+	setVar $HELP~HELP[4]  $HELP~TAB&"       ppt [sector/?] {h/t/n) {p:x} {k:x} {ore:x}"
+	setVar $HELP~HELP[5]  $HELP~TAB&"           {twarp}"
+	setVar $HELP~HELP[6]  $HELP~TAB&" Options:"
+	setVar $HELP~HELP[7]  $HELP~TAB&"    [sector/?]     Sector to trade or ? to scan and choose."
+	setVar $HELP~HELP[8]  $HELP~TAB&"    {h/t/n}        h  - internal haggle; "
+	setVar $HELP~HELP[9]  $HELP~TAB&"                   n  - no haggle, just accepts the price"
+	setVar $HELP~HELP[10] $HELP~TAB&"                   t  - 3rd party haggle like EP - DEFAULT."
+	setVar $HELP~HELP[11] $HELP~TAB&"    {p:x}         When either product hits this % it will stop "
+	setVar $HELP~HELP[12] $HELP~TAB&"                   - Defaults to 30% (p:30)"
+	setVar $HELP~HELP[13] $HELP~TAB&"    {k:x}         k:5 - Keep this many holds of equipment at end of run. "
+	setVar $HELP~HELP[14] $HELP~TAB&"                   Used so we can test port MCICs as we travel."
+	setVar $HELP~HELP[15] $HELP~TAB&"    ore:x          Keep this amount of ore to keep post trade."
+	setVar $HELP~HELP[16] $HELP~TAB&"    twarp          Indicate we are PPTing between isolated ports."
 	
-	gosub :bot~helpfile
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Paired Port Trade"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Paired Port Trade starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 
 # We need min percentages
@@ -1226,5 +1227,9 @@ halt
 
 #INCLUDES:
 
-include "source\include\bot"
+include "source\include\move"
+include "source\include\player"
+include "source\include\loadvars"
 include "source\include\haggle"
+include "source\include\help"
+include "source\include\switchboard"

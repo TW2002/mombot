@@ -1,25 +1,26 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	loadvar $GAME~ptradesetting
 
 
-	setVar $BOT~help[1]  $BOT~tab&"           Planet Negotiate Trade Agrement          "
-	setVar $BOT~help[2]  $BOT~tab&"           "
-	setVar $BOT~help[3]  $BOT~tab&"    neg {f | o | e} {half}    "
-	setVar $BOT~help[4]  $BOT~tab&"                             "
-	setVar $BOT~help[5]  $BOT~tab&"Options:"
-	setVar $BOT~help[6]  $BOT~tab&"         {f}   sells as much fuel as possible"
-	setVar $BOT~help[7]  $BOT~tab&"         {o}   sells as much organics as possible"
-	setVar $BOT~help[8]  $BOT~tab&"         {e}   sells as much equipment as possible"
-	setVar $BOT~help[9]  $BOT~tab&"                                                    "
-	setVar $BOT~help[10] $BOT~tab&"      {half}   sell only half of port amount      "
-	setVar $BOT~help[11] $BOT~tab&"                                                    "
-	setVar $BOT~help[12] $BOT~tab&"          default is to sell all org and equip"
-	setVar $BOT~help[13] $BOT~tab&"          "
-	setVar $BOT~help[14] $BOT~tab&"           - Originally written by Cherokee"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"           Planet Negotiate Trade Agrement          "
+	setVar $HELP~HELP[2]  $HELP~TAB&"           "
+	setVar $HELP~HELP[3]  $HELP~TAB&"    neg {f | o | e} {half}    "
+	setVar $HELP~HELP[4]  $HELP~TAB&"                             "
+	setVar $HELP~HELP[5]  $HELP~TAB&"Options:"
+	setVar $HELP~HELP[6]  $HELP~TAB&"         {f}   sells as much fuel as possible"
+	setVar $HELP~HELP[7]  $HELP~TAB&"         {o}   sells as much organics as possible"
+	setVar $HELP~HELP[8]  $HELP~TAB&"         {e}   sells as much equipment as possible"
+	setVar $HELP~HELP[9]  $HELP~TAB&"                                                    "
+	setVar $HELP~HELP[10] $HELP~TAB&"      {half}   sell only half of port amount      "
+	setVar $HELP~HELP[11] $HELP~TAB&"                                                    "
+	setVar $HELP~HELP[12] $HELP~TAB&"          default is to sell all org and equip"
+	setVar $HELP~HELP[13] $HELP~TAB&"          "
+	setVar $HELP~HELP[14] $HELP~TAB&"           - Originally written by Cherokee"
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Planet Negotiate"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Planet Negotiate starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 	loadVar $game~port_max
 	loadVar $game~ptradesetting
@@ -38,7 +39,7 @@
 
 
 	setVar $BOT~validPrompts "Citadel Planet"
-	gosub :BOT~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	setVar $startingLocation $player~CURRENT_PROMPT
 	
 	if (($startingLocation = 0) or ($startingLocation = ""))
@@ -101,4 +102,8 @@
 #==================================   END PLANET NEGOTIATE (NEG) SUB  ========================================
 
 #INCLUDES:
+include "source\include\player"
+include "source\include\loadvars"
 include "source\include\planethaggle"
+include "source\include\help"
+include "source\include\switchboard"

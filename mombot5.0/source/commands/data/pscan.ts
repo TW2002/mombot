@@ -1,20 +1,21 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1]  $BOT~tab&"PSCAN - Sends Planet Data Over SubSpace. "
-	setVar $BOT~help[2]  $BOT~tab&"      "
-	setVar $BOT~help[3]  $BOT~tab&"   pscan {Planet #}" 
-	setVar $BOT~help[4]  $BOT~tab&"       "
-	setVar $BOT~help[5]  $BOT~tab&"   [Planet #] - Is optional. However if left out you must "
-	setVar $BOT~help[6]  $BOT~tab&"                start it from Citadel,  or Planet command "
-	setVar $BOT~help[7]  $BOT~tab&"                and current planet will be displayed.  If "
-	setVar $BOT~help[8]  $BOT~tab&"                a Planet Number is specified, that planet "
-	setVar $BOT~help[9]  $BOT~tab&"                will be  displayed assuming  it's in the  "
-	setVar $BOT~help[10] $BOT~tab&"                current sector.   "
-	setVar $BOT~help[11] $BOT~tab&"             "
-	setVar $BOT~help[12] $BOT~tab&"              - Written by Lonestar "
-	gosub :bot~helpfile
- 
-	
+	setVar $HELP~HELP[1]  $HELP~TAB&"PSCAN - Sends Planet Data Over SubSpace. "
+	setVar $HELP~HELP[2]  $HELP~TAB&"      "
+	setVar $HELP~HELP[3]  $HELP~TAB&"   pscan {Planet #}"
+	setVar $HELP~HELP[4]  $HELP~TAB&"       "
+	setVar $HELP~HELP[5]  $HELP~TAB&"   [Planet #] - Is optional. However if left out you must "
+	setVar $HELP~HELP[6]  $HELP~TAB&"                start it from Citadel,  or Planet command "
+	setVar $HELP~HELP[7]  $HELP~TAB&"                and current planet will be displayed.  If "
+	setVar $HELP~HELP[8]  $HELP~TAB&"                a Planet Number is specified, that planet "
+	setVar $HELP~HELP[9]  $HELP~TAB&"                will be  displayed assuming  it's in the  "
+	setVar $HELP~HELP[10] $HELP~TAB&"                current sector.   "
+	setVar $HELP~HELP[11] $HELP~TAB&"             "
+	setVar $HELP~HELP[12] $HELP~TAB&"              - Written by Lonestar "
+	gosub :HELP~HELPFILE
+
+
 	gosub :player~quikstats
 	setVar $Location $player~current_prompt
 	setVar $array_cnt 0
@@ -223,4 +224,7 @@ return
 
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

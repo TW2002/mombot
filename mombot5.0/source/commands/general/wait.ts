@@ -1,18 +1,19 @@
-	gosub :BOT~loadVars
-									
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1]  $BOT~tab&"  wait {ms:#}    " 
-	setVar $BOT~help[2]  $BOT~tab&"                                                            " 
-	setVar $BOT~help[3]  $BOT~tab&"    Waits for time specified.  This is a utility script  " 
-	setVar $BOT~help[4]  $BOT~tab&"    created mostly for the multicommand functionality.     " 
-	setVar $BOT~help[5]  $BOT~tab&"                                                             " 
-	setVar $BOT~help[6]  $BOT~tab&"         {ms:#} - How many milliseconds to wait            " 
-	setVar $BOT~help[7]  $BOT~tab&"                                                             " 
-	setVar $BOT~help[8]  $BOT~tab&"        Examples:                                           " 
-	setVar $BOT~help[9]  $BOT~tab&"              >wait 10000                             " 
-	setVar $BOT~help[10] $BOT~tab&"              >mow 1|wait 5000|mow 25                   " 
-	setVar $BOT~help[11] $BOT~tab&"              >wait     (waits default of 1 second)        " 
-	gosub :bot~helpfile
+
+	setVar $HELP~HELP[1]  $HELP~TAB&"  wait {ms:#}    "
+	setVar $HELP~HELP[2]  $HELP~TAB&"                                                            "
+	setVar $HELP~HELP[3]  $HELP~TAB&"    Waits for time specified.  This is a utility script  "
+	setVar $HELP~HELP[4]  $HELP~TAB&"    created mostly for the multicommand functionality.     "
+	setVar $HELP~HELP[5]  $HELP~TAB&"                                                             "
+	setVar $HELP~HELP[6]  $HELP~TAB&"         {ms:#} - How many milliseconds to wait            "
+	setVar $HELP~HELP[7]  $HELP~TAB&"                                                             "
+	setVar $HELP~HELP[8]  $HELP~TAB&"        Examples:                                           "
+	setVar $HELP~HELP[9]  $HELP~TAB&"              >wait 10000                             "
+	setVar $HELP~HELP[10] $HELP~TAB&"              >mow 1|wait 5000|mow 25                   "
+	setVar $HELP~HELP[11] $HELP~TAB&"              >wait     (waits default of 1 second)        "
+	gosub :HELP~HELPFILE
 
 	if ($bot~parm1 <> "")
         getWordPos $bot~user_command_line $pos "ms:"
@@ -21,7 +22,7 @@
             if ($milliseconds = false)
                 setVar $SWITCHBOARD~message "Invalid milliseconds entered.*"
                 gosub :SWITCHBOARD~switchboard
-                halt			
+                halt
             end
         else
             setvar $milliseconds $bot~parm1
@@ -41,4 +42,5 @@ halt
 
 
 #-=-=-=-=-includes-=-=-=-=-
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

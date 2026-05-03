@@ -1,7 +1,8 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1]  $BOT~tab&"pgrid - planet grid into sector "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"pgrid - planet grid into sector "
+	gosub :HELP~HELPFILE
 
 # ======================     START PLANET GRID (PGRID) SUBROUTINE    ==========================
 :pgrid
@@ -16,7 +17,7 @@
 	setVar $bot~startingLocation $PLAYER~CURRENT_PROMPT
 	setVar $startingLocation $PLAYER~CURRENT_PROMPT
 	setVar $bot~validPrompts "Command Citadel"
-	gosub :bot~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 
 	if ($startingLocation = "Citadel")
 		setVar $inCitadel "Q Q "
@@ -443,7 +444,11 @@ return
 # ======================     END PGRID (PGRID) SUBROUTINE     ==========================
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\ship"
+include "source\include\loadvars"
 
 # - Commented this out because it - checkstartingprompt already refers to this - we get duplicate label
 #include "source\include\player"
+include "source\include\help"

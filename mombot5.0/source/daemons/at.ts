@@ -1,17 +1,18 @@
 systemscript
-	gosub :BOT~loadVars
-	setVar $BOT~help[1]  $BOT~tab&"Does bot command at certain time "
-	setVar $BOT~help[2]  $BOT~tab&"      "
-	setVar $BOT~help[3]  $BOT~tab&"  at [time] [bot command]"
-	setVar $BOT~help[4]  $BOT~tab&"         "
-	setVar $BOT~help[5]  $BOT~tab&"  Options: "
-	setVar $BOT~help[6]  $BOT~tab&"            {time} - time to do command each day"
-	setVar $BOT~help[7]  $BOT~tab&"     {bot command} - bot command to run, parameters and all"
-	setVar $BOT~help[8]  $BOT~tab&"           {clear} - clears all commands"
-	setVar $BOT~help[9]  $BOT~tab&"               "
-	setVar $BOT~help[10]  $BOT~tab&"                     example: 5:30:00 PM"
-	setVar $BOT~help[11] $BOT~tab&"     The time is on your machine, not the game server"
-	gosub :bot~helpfile
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
+	setVar $HELP~HELP[1]  $HELP~TAB&"Does bot command at certain time "
+	setVar $HELP~HELP[2]  $HELP~TAB&"      "
+	setVar $HELP~HELP[3]  $HELP~TAB&"  at [time] [bot command]"
+	setVar $HELP~HELP[4]  $HELP~TAB&"         "
+	setVar $HELP~HELP[5]  $HELP~TAB&"  Options: "
+	setVar $HELP~HELP[6]  $HELP~TAB&"            {time} - time to do command each day"
+	setVar $HELP~HELP[7]  $HELP~TAB&"     {bot command} - bot command to run, parameters and all"
+	setVar $HELP~HELP[8]  $HELP~TAB&"           {clear} - clears all commands"
+	setVar $HELP~HELP[9]  $HELP~TAB&"               "
+	setVar $HELP~HELP[10]  $HELP~TAB&"                     example: 5:30:00 PM"
+	setVar $HELP~HELP[11] $HELP~TAB&"     The time is on your machine, not the game server"
+	gosub :HELP~HELPFILE
 
 	loadVar $bot~bot_name
 	loadVar $bot~parm1
@@ -27,7 +28,7 @@ systemscript
 
 	getLength $bot~parm1 $length
 	getWordPos $bot~user_command_line $pos $bot~parm1
-	
+
 	if (($bot~parm2 <> "pm") and ($bot~parm2 <> "am"))
 		send "'{"&$bot~bot_name&"} - Time must be entered in system format.*"
 		halt
@@ -44,10 +45,10 @@ systemscript
 				setvar $isfound true
 			end
 			add $i 1
-		end		
+		end
     end
     if ($isfound <> true)
-    	uppercase $bot~user_command_line
+	uppercase $bot~user_command_line
 		write $bot~timer_file $bot~user_command_line
 	end
 
@@ -59,7 +60,7 @@ systemscript
     if ($exists)
         readToArray $bot~timer_file $timer_array
         if ($timer_array > 0)
-        	setvar $saved_timers true
+	setvar $saved_timers true
         end
     end
 
@@ -89,7 +90,7 @@ systemscript
 	setvar $isfound false
 	while (($i <= $timer_array) and ($isfound <> true))
 		getwordpos $timer_array[$i] $pos $time_hit
-		
+
 		if ($pos > 0)
 			setvar $isfound true
 			gosub :strip_time_line
@@ -99,17 +100,18 @@ systemscript
 	end
 	goto :settimer
 
-halt 
+halt
 
 :strip_time_line
 	getword $timer_array[$i] $time 1
 	getword $timer_array[$i] $ampm 2
 	uppercase $ampm
 	getLength $time $length
-	getWordPos $timer_array[$i] $pos $time	
+	getWordPos $timer_array[$i] $pos $time
 	cutText $timer_array[$i] $bot_command ($pos + $length + 3) 9999
 	lowercase $bot_command
 return
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

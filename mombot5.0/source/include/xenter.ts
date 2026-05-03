@@ -6,7 +6,7 @@ loadvar $GAME~GAME_MENU_PROMPT
 
 setvar $XENTER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 setvar $BOT~VALIDPROMPTS "Command Citadel"
-gosub :BOT~CHECKSTARTINGPROMPT
+gosub :PLAYER~CHECKSTARTINGPROMPT
 if ($XENTER~STARTINGLOCATION = "Citadel")
   send "q m n t *"
   gosub :PLANET~GETPLANETINFO
@@ -38,8 +38,18 @@ killtrigger 3
 send $XENTER~EXIT_ENTER
 waiton #179
 
+:PICKGAME
+killtrigger 1
+killtrigger 2
+killtrigger 3
+send $BOT~letter&"  *  "
+waiton "[Pause]"
+send " * "
+goto :XENTER~ENTER_CHOICE_XENTER
+
 :XENTER~XENTERENDED
 return
 
+include "source\include\player"
+include "source\include\planet"
 include "source\include\game"
-include "source\include\bot"

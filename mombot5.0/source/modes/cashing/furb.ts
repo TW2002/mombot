@@ -673,26 +673,27 @@ gosub :_START_
 	loadVar $switchboard~bot_name
 	loadVar $bot~user_command_line
 	loadvar $player~unlimitedGame
-		gosub :BOT~loadVars
+		gosub :LOADVARS~LOADVARS
+		gosub :HELP~INITIALIZE
 									
 
-	setVar $BOT~help[1] $BOT~tab&"FURB - Buys and delivers a Ship to a Corpy to attack  "
-	setVar $BOT~help[2] $BOT~tab&"- furb [ship number] {swap} {bwarp} {extra holds} {ship letter} {topp}"
-	setVar $BOT~help[3] $BOT~tab&"- [ship number]   = ship number that needs the furb"
-	setVar $BOT~help[4] $BOT~tab&"- [extra holds]   = extra holds to buy      - default is 33"
-	setVar $BOT~help[5] $BOT~tab&"- [ship letter]   = ship letter to purchase - default is H"
-	setVar $BOT~help[6] $BOT~tab&"- [swap]          = swap furb (only use with twarp ships)"
-	setVar $BOT~help[7] $BOT~tab&"- [bwarp]         = bwarp from furb planet"
-	setVar $BOT~help[8] $BOT~tab&"- [planet:#]      = planet # of furb planet"
-	setVar $BOT~help[9] $BOT~tab&"- [topp]          = attempts to get ore from top planet in sector if port low"
-	setVar $BOT~help[10] $BOT~tab&"                "
-	setVar $BOT~help[11] $BOT~tab&" CK Furb Mode (Mimicks CK Furb)"
-	setVar $BOT~help[12] $BOT~tab&"- furb ck {[norm hold] [fake hold] [norm letter] [fake letter]}"
-	setVar $BOT~help[13] $BOT~tab&"- [normal holds]  = extra holds to buy - Normal    - default is 33"
-	setVar $BOT~help[14] $BOT~tab&"- [fake holds]    = extra holds to buy - Fake      - default is 97"
-	setVar $BOT~help[15] $BOT~tab&"- [normal letter] = ship letter to buy - Normal    - default is H"
-	setVar $BOT~help[16] $BOT~tab&"- [fake letter]   = ship letter to buy - Fake      - default is O"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"FURB - Buys and delivers a Ship to a Corpy to attack  "
+	setVar $HELP~HELP[2] $HELP~TAB&"- furb [ship number] {swap} {bwarp} {extra holds} {ship letter} {topp}"
+	setVar $HELP~HELP[3] $HELP~TAB&"- [ship number]   = ship number that needs the furb"
+	setVar $HELP~HELP[4] $HELP~TAB&"- [extra holds]   = extra holds to buy      - default is 33"
+	setVar $HELP~HELP[5] $HELP~TAB&"- [ship letter]   = ship letter to purchase - default is H"
+	setVar $HELP~HELP[6] $HELP~TAB&"- [swap]          = swap furb (only use with twarp ships)"
+	setVar $HELP~HELP[7] $HELP~TAB&"- [bwarp]         = bwarp from furb planet"
+	setVar $HELP~HELP[8] $HELP~TAB&"- [planet:#]      = planet # of furb planet"
+	setVar $HELP~HELP[9] $HELP~TAB&"- [topp]          = attempts to get ore from top planet in sector if port low"
+	setVar $HELP~HELP[10] $HELP~TAB&"                "
+	setVar $HELP~HELP[11] $HELP~TAB&" CK Furb Mode (Mimicks CK Furb)"
+	setVar $HELP~HELP[12] $HELP~TAB&"- furb ck {[norm hold] [fake hold] [norm letter] [fake letter]}"
+	setVar $HELP~HELP[13] $HELP~TAB&"- [normal holds]  = extra holds to buy - Normal    - default is 33"
+	setVar $HELP~HELP[14] $HELP~TAB&"- [fake holds]    = extra holds to buy - Fake      - default is 97"
+	setVar $HELP~HELP[15] $HELP~TAB&"- [normal letter] = ship letter to buy - Normal    - default is H"
+	setVar $HELP~HELP[16] $HELP~TAB&"- [fake letter]   = ship letter to buy - Fake      - default is O"
+	gosub :HELP~HELPFILE
 
 
 	getWordPos $bot~user_command_line $pos "planet:"
@@ -853,4 +854,7 @@ echo "*### $planet~CITADEL_furb " $planet~CITADEL_furb
 return
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

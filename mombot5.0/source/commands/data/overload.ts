@@ -1,13 +1,14 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1] $BOT~tab&"overload  {under} {bubble}"
-	setVar $BOT~help[2] $BOT~tab&"        "
-	setVar $BOT~help[3] $BOT~tab&"  Tells you when you have sectors overloaded "
-	setVar $BOT~help[4] $BOT~tab&"  with planets        "
-	setVar $BOT~help[5] $BOT~tab&"    "
-	setVar $BOT~help[6] $BOT~tab&"     under - tells you which sectors "
-	setvar $bot~help[7] $bot~tab&"             have less than max planets"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"overload  {under} {bubble}"
+	setVar $HELP~HELP[2] $HELP~TAB&"        "
+	setVar $HELP~HELP[3] $HELP~TAB&"  Tells you when you have sectors overloaded "
+	setVar $HELP~HELP[4] $HELP~TAB&"  with planets        "
+	setVar $HELP~HELP[5] $HELP~TAB&"    "
+	setVar $HELP~HELP[6] $HELP~TAB&"     under - tells you which sectors "
+	setvar $HELP~HELP[7] $HELP~TAB&"             have less than max planets"
+	gosub :HELP~HELPFILE
 
 		
 # =============================== START OVERLOAD =====================================
@@ -156,4 +157,7 @@ return
 
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

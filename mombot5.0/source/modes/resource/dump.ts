@@ -1,23 +1,24 @@
 # MD Planet Dumper
 	reqRecording
 	logging off
-		gosub :BOT~loadVars
+		gosub :LOADVARS~LOADVARS
+		gosub :HELP~INITIALIZE
 										setVar $BOT~command "dump"
 	loadVar $BOT~bot_turn_limit
 
-	setVar $BOT~help[1]  $BOT~tab&"Dump resources from planet quickly and jettisons them  "
-	setVar $BOT~help[2]  $BOT~tab&" "
-	setVar $BOT~help[3]  $BOT~tab&"Options:"
-	setVar $BOT~help[4]  $BOT~tab&"[planet# | all]   - Planet number or all to strip all planets in sector."
-	setVar $BOT~help[5]  $BOT~tab&"            {f}   - Strip fuel ore"
-	setVar $BOT~help[6]  $BOT~tab&"            {o}   - Strip organics"
-	setVar $BOT~help[7]  $BOT~tab&"            {e}   - Strip equipment"
-	setVar $BOT~help[8]  $BOT~tab&"           {fc}   - Strip fuel ore colonists"
-	setVar $BOT~help[9]  $BOT~tab&"           {oc}   - Strip organic colonists"
-	setVar $BOT~help[10] $BOT~tab&"           {ec}   - Strip equipment colonists"
-	setVar $BOT~help[11] $BOT~tab&"          {fig}   - Strip fighters"
-	setVar $BOT~help[12] $BOT~tab&"          {turbo} - Does in a macro burst"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"Dump resources from planet quickly and jettisons them  "
+	setVar $HELP~HELP[2]  $HELP~TAB&" "
+	setVar $HELP~HELP[3]  $HELP~TAB&"Options:"
+	setVar $HELP~HELP[4]  $HELP~TAB&"[planet# | all]   - Planet number or all to strip all planets in sector."
+	setVar $HELP~HELP[5]  $HELP~TAB&"            {f}   - Strip fuel ore"
+	setVar $HELP~HELP[6]  $HELP~TAB&"            {o}   - Strip organics"
+	setVar $HELP~HELP[7]  $HELP~TAB&"            {e}   - Strip equipment"
+	setVar $HELP~HELP[8]  $HELP~TAB&"           {fc}   - Strip fuel ore colonists"
+	setVar $HELP~HELP[9]  $HELP~TAB&"           {oc}   - Strip organic colonists"
+	setVar $HELP~HELP[10] $HELP~TAB&"           {ec}   - Strip equipment colonists"
+	setVar $HELP~HELP[11] $HELP~TAB&"          {fig}   - Strip fighters"
+	setVar $HELP~HELP[12] $HELP~TAB&"          {turbo} - Does in a macro burst"
+	gosub :HELP~HELPFILE
 
 
 	gosub :PLAYER~quikstats
@@ -358,4 +359,7 @@ return
 
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

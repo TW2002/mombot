@@ -500,9 +500,9 @@ if (($PLAYER~STARTINGLOCATION = "Command") or ($PLAYER~STARTINGLOCATION = "Citad
   :GAME~TRYAGAINSETTINGS
 
   killalltriggers
-  settextlinetrigger GAMECLOSED1 :CONNECTIVITY~GAMECLOSED "I'm sorry, but this is a closed game."
-  settextlinetrigger GAMECLOSED2 :CONNECTIVITY~GAMECLOSED "www.tradewars.com                                   Epic Interactive Strategy"
-  settextlinetrigger GAMECLOSED3 :CONNECTIVITY~GAMECLOSED " day(s) to get back in."
+  settextlinetrigger GAMECLOSED1 :GAMECLOSEDSETTINGS "I'm sorry, but this is a closed game."
+  settextlinetrigger GAMECLOSED2 :GAMECLOSEDSETTINGS "www.tradewars.com                                   Epic Interactive Strategy"
+  settextlinetrigger GAMECLOSED3 :GAMECLOSEDSETTINGS " day(s) to get back in."
   settexttrigger PHEW :BACK_TO_GAME "Command [TL"
   setdelaytrigger DELAY_CLOSE :GAMECLOSEDSETTINGS 5000
   loadvar $BOT~PASSWORD

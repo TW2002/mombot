@@ -1,12 +1,13 @@
 logging "OFF"
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
-setvar $BOT~HELP[1] $BOT~TAB&"Refreshes Deployed Fighter List"
-setvar $BOT~HELP[2] $BOT~TAB&"  - Will show difference since last command was run."
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"Refreshes Deployed Fighter List"
+setvar $HELP~HELP[2] $HELP~TAB&"  - Will show difference since last command was run."
+gosub :HELP~HELPFILE
 
-setvar $BOT~SCRIPT_TITLE "Fighter Report"
-gosub :BOT~BANNER
+setvar $SWITCHBOARD~MESSAGE "Fighter Report starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
 :FIGS
 
 
@@ -305,4 +306,8 @@ setsectorparameter 2 "FB_COUNT" $UPGRADEDFUELBUYCOUNT
 return
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

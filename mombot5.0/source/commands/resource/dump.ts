@@ -1,8 +1,9 @@
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
-setvar $BOT~HELP[1] $BOT~TAB&"- dump [type] - Jettisons colos off of planet"
-setvar $BOT~HELP[2] $BOT~TAB&"     [type] = use [f]uel, [o]rg, [e]quip, or [a]ll "
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"- dump [type] - Jettisons colos off of planet"
+setvar $HELP~HELP[2] $HELP~TAB&"     [type] = use [f]uel, [o]rg, [e]quip, or [a]ll "
+gosub :HELP~HELPFILE
 :COLO_DUMP
 
 
@@ -101,4 +102,7 @@ end
 goto :SUB_LAND
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

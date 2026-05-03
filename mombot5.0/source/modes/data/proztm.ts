@@ -46,12 +46,13 @@ setVar $ztmStart $ztmMin
 setVar $ztmSend "No"
 
 setVar $BOT~command "proztm"
-setVar $BOT~help[1]   $BOT~tab&"ProZTM by Promethius "
-setVar $BOT~help[2]   $BOT~tab&" - proztm {reset} {nowindow} "
-setVar $BOT~help[3]   $BOT~tab&"   Options: "
-setVar $BOT~help[4]   $BOT~tab&"     {reset}        - reset ztmStart/ztmMin/ztmMax for clean start  "
-setVar $BOT~help[5]   $BOT~tab&"     {nowindow}     - don't pop up a status window"
-gosub :bot~helpfile
+gosub :HELP~INITIALIZE
+setVar $HELP~HELP[1]   $HELP~TAB&"ProZTM by Promethius "
+setVar $HELP~HELP[2]   $HELP~TAB&" - proztm {reset} {nowindow} "
+setVar $HELP~HELP[3]   $HELP~TAB&"   Options: "
+setVar $HELP~HELP[4]   $HELP~TAB&"     {reset}        - reset ztmStart/ztmMin/ztmMax for clean start  "
+setVar $HELP~HELP[5]   $HELP~TAB&"     {nowindow}     - don't pop up a status window"
+gosub :HELP~HELPFILE
 
 getWordPos " "&$bot~user_command_line&" " $pos " reset"
 if ($pos > 0)
@@ -541,6 +542,27 @@ halt
 
 # goSubs
 
+:writeWarpSpec
+setVar $i 1
+delete gamename & "warpSpec.txt"
+while ($i <= sectors)
+   getLength $i $len
+   gosub :padLen
+   setVar $warpString $i & $padIt
+   setVar $warpCounter 1
+   if (sector.warpcount[$i] > 0)
+      while ($warpCounter <= sector.warpcount[$i])
+         getLength sector.warps[$i][$warpCounter] $len
+         gosub :padLen
+         setVar $warpString $warpString & sector.warps[$i][$warpCounter] & $padIt
+         add $warpCounter 1
+      end
+      write gamename & "warpSpec.txt" $warpString
+   end
+   add $i 1
+end
+return
+
 :windowSetup
 getTime $stTime "'Start time:  ' h:nn:ss"
 setVar $Window 1
@@ -567,6 +589,25 @@ return
   setVar $window $window & $windowMessagePass3 & $windowMessagePass4 & $windowMessagePass5
   setWindowContents ZTM $window
 return
+
+:connLost
+ killalltriggers
+  waitfor "Command [TL"
+      loadVar $ztmMin
+      loadVar $ztmMax
+      loadVar $ztmStart
+      loadVar $ztmEnd
+      loadVar $verifyStart
+      loadVar $verifyEnd
+      loadVar $firstPassVerified
+      loadVar $sPassZTMStart
+      loadVar $spassZTMEnd
+      echo ansi_12 "*" & $version & " resuming in " ansi_14 "10 " ANSI_12 "seconds."
+      setDelayTrigger relogDelay :begin 10000
+      setVar $reConn 1
+      pause
+  goto :begin
+  halt
 
 :totalWarps
 setVar $totalWarps 0
@@ -612,4 +653,4 @@ return
  killtrigger compClear2
 return
 
-include "source\include\bot"
+include "source\include\help"

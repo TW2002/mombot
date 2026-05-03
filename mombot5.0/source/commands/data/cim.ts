@@ -1,5 +1,6 @@
 logging "OFF"
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 loadvar $PLAYER~UNLIMITEDGAME
 loadvar $GAME~PTRADESETTING
 loadvar $BOT~BOT_TURN_LIMIT
@@ -8,20 +9,20 @@ loadvar $GAME~PTRADESETTING
 loadvar $BOT~MCIC_FILE
 
 
-setvar $BOT~HELP[1] $BOT~TAB&"     Computer Interrogation Mode: Port Report     "
-setvar $BOT~HELP[2] $BOT~TAB&"           "
-setvar $BOT~HELP[3] $BOT~TAB&"    cim {upgrade level} {warps}   "
-setvar $BOT~HELP[4] $BOT~TAB&"                             "
-setvar $BOT~HELP[5] $BOT~TAB&"Options:"
-setvar $BOT~HELP[6] $BOT~TAB&"    {upgrade level} - Amount on port to be considered "
-setvar $BOT~HELP[7] $BOT~TAB&"                      upgraded"
-setvar $BOT~HELP[8] $BOT~TAB&"                                            "
-setvar $BOT~HELP[9] $BOT~TAB&"    {warps}         - Perform warp data instead of "
-setvar $BOT~HELP[10] $BOT~TAB&"                      port CIM"
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"     Computer Interrogation Mode: Port Report     "
+setvar $HELP~HELP[2] $HELP~TAB&"           "
+setvar $HELP~HELP[3] $HELP~TAB&"    cim {upgrade level} {warps}   "
+setvar $HELP~HELP[4] $HELP~TAB&"                             "
+setvar $HELP~HELP[5] $HELP~TAB&"Options:"
+setvar $HELP~HELP[6] $HELP~TAB&"    {upgrade level} - Amount on port to be considered "
+setvar $HELP~HELP[7] $HELP~TAB&"                      upgraded"
+setvar $HELP~HELP[8] $HELP~TAB&"                                            "
+setvar $HELP~HELP[9] $HELP~TAB&"    {warps}         - Perform warp data instead of "
+setvar $HELP~HELP[10] $HELP~TAB&"                      port CIM"
+gosub :HELP~HELPFILE
 
-setvar $BOT~SCRIPT_TITLE "CIM"
-gosub :BOT~BANNER
+setvar $SWITCHBOARD~MESSAGE "CIM starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
 
 setvar $PLAYER~SAVE TRUE
 :CIM
@@ -239,4 +240,7 @@ setarray $MCIC 10
 halt
 
 # includes:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

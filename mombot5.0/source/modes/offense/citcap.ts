@@ -1,25 +1,26 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1]  $BOT~tab&" citcap {"&#34&"player name"&#34&" | corp#}"
-	setVar $BOT~help[2]  $BOT~tab&" Citadel Capper captures enemy ships from planet citadel"
-	setVar $BOT~help[3]  $BOT~tab&"  "
-	setVar $BOT~help[4]  $BOT~tab&" {"&#34&"player name"&#34&"} - Player to target, name must be"
-	setVar $BOT~help[5]  $BOT~tab&"                   surrounded by double quotes"
-	setVar $BOT~help[6]  $BOT~tab&"         {corp#} - Corporation number to target"
-	setVar $BOT~help[7]  $BOT~tab&"      {override} - Override to cap defender ships"
-	setVar $BOT~help[8]  $BOT~tab&"         {empty} - Empty ships only"
-	setVar $BOT~help[9]  $BOT~tab&"        {onetap} - Fire once only"
-	setVar $BOT~help[10] $BOT~tab&"        {slowmo} - Adds random pause between waves."
-	setVar $BOT~help[11] $BOT~tab&"      {unloader} - Waits for unloader to finish b4 next attack."
-	setVar $BOT~help[12]  $BOT~tab&"         "
-	setVar $BOT~help[13]  $BOT~tab&"         Examples:"
-	setVar $BOT~help[14] $BOT~tab&"              >citcap "
-	setVar $BOT~help[15] $BOT~tab&"              >citcap "&#34&"player name"&#34&" "
-	setVar $BOT~help[16] $BOT~tab&"              >citcap 3"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&" citcap {"&#34&"player name"&#34&" | corp#}"
+	setVar $HELP~HELP[2]  $HELP~TAB&" Citadel Capper captures enemy ships from planet citadel"
+	setVar $HELP~HELP[3]  $HELP~TAB&"  "
+	setVar $HELP~HELP[4]  $HELP~TAB&" {"&#34&"player name"&#34&"} - Player to target, name must be"
+	setVar $HELP~HELP[5]  $HELP~TAB&"                   surrounded by double quotes"
+	setVar $HELP~HELP[6]  $HELP~TAB&"         {corp#} - Corporation number to target"
+	setVar $HELP~HELP[7]  $HELP~TAB&"      {override} - Override to cap defender ships"
+	setVar $HELP~HELP[8]  $HELP~TAB&"         {empty} - Empty ships only"
+	setVar $HELP~HELP[9]  $HELP~TAB&"        {onetap} - Fire once only"
+	setVar $HELP~HELP[10] $HELP~TAB&"        {slowmo} - Adds random pause between waves."
+	setVar $HELP~HELP[11] $HELP~TAB&"      {unloader} - Waits for unloader to finish b4 next attack."
+	setVar $HELP~HELP[12]  $HELP~TAB&"         "
+	setVar $HELP~HELP[13]  $HELP~TAB&"         Examples:"
+	setVar $HELP~HELP[14] $HELP~TAB&"              >citcap "
+	setVar $HELP~HELP[15] $HELP~TAB&"              >citcap "&#34&"player name"&#34&" "
+	setVar $HELP~HELP[16] $HELP~TAB&"              >citcap 3"
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Citadel Capper"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Citadel Capper starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 	loadVar $GAME~LATENCY
 
@@ -229,5 +230,8 @@ return
 
 
 #INCLUDES:
+include "source\include\planet"
 include "source\include\combat"
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

@@ -1,23 +1,24 @@
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
-setvar $BOT~HELP[1] $BOT~TAB&"  port {build/create} {destroy/kill} {upgrade/max}                "
-setvar $BOT~HELP[2] $BOT~TAB&"  Options:"
-setvar $BOT~HELP[3] $BOT~TAB&"     port build {port name} "
-setvar $BOT~HELP[4] $BOT~TAB&"       - create sbb port in sector if possible"
-setvar $BOT~HELP[5] $BOT~TAB&"         {port name} - Name of port to create "
-setvar $BOT~HELP[6] $BOT~TAB&"                   default: Mind ()ver Matter "
-setvar $BOT~HELP[7] $BOT~TAB&"      "
-setvar $BOT~HELP[8] $BOT~TAB&"     port destroy "
-setvar $BOT~HELP[9] $BOT~TAB&"       - blow up port in sector if possible"
-setvar $BOT~HELP[10] $BOT~TAB&"      "
-setvar $BOT~HELP[11] $BOT~TAB&"     port upgrade {f} {o} {e} {noexp}"
-setvar $BOT~HELP[12] $BOT~TAB&"       - upgrade port if possible, using treasury if available"
-setvar $BOT~HELP[13] $BOT~TAB&"             {f} - upgrade fuel"
-setvar $BOT~HELP[14] $BOT~TAB&"             {o} - upgrade organics"
-setvar $BOT~HELP[15] $BOT~TAB&"             {e} - upgrade equipment"
-setvar $BOT~HELP[16] $BOT~TAB&"         {noexp} - upgrade without experience increase"
-setvar $BOT~HELP[16] $BOT~TAB&"                   default: s/b/b upgraded"
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"  port {build/create} {destroy/kill} {upgrade/max}                "
+setvar $HELP~HELP[2] $HELP~TAB&"  Options:"
+setvar $HELP~HELP[3] $HELP~TAB&"     port build {port name} "
+setvar $HELP~HELP[4] $HELP~TAB&"       - create sbb port in sector if possible"
+setvar $HELP~HELP[5] $HELP~TAB&"         {port name} - Name of port to create "
+setvar $HELP~HELP[6] $HELP~TAB&"                   default: Mind ()ver Matter "
+setvar $HELP~HELP[7] $HELP~TAB&"      "
+setvar $HELP~HELP[8] $HELP~TAB&"     port destroy "
+setvar $HELP~HELP[9] $HELP~TAB&"       - blow up port in sector if possible"
+setvar $HELP~HELP[10] $HELP~TAB&"      "
+setvar $HELP~HELP[11] $HELP~TAB&"     port upgrade {f} {o} {e} {noexp}"
+setvar $HELP~HELP[12] $HELP~TAB&"       - upgrade port if possible, using treasury if available"
+setvar $HELP~HELP[13] $HELP~TAB&"             {f} - upgrade fuel"
+setvar $HELP~HELP[14] $HELP~TAB&"             {o} - upgrade organics"
+setvar $HELP~HELP[15] $HELP~TAB&"             {e} - upgrade equipment"
+setvar $HELP~HELP[16] $HELP~TAB&"         {noexp} - upgrade without experience increase"
+setvar $HELP~HELP[16] $HELP~TAB&"                   default: s/b/b upgraded"
+gosub :HELP~HELPFILE
 
 
 setvar $BOT~BOT_NAME $SWITCHBOARD~BOT_NAME
@@ -62,4 +63,6 @@ end
 halt
 
 # includes:
+include "source\include\loadvars"
 include "source\include\port"
+include "source\include\help"

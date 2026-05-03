@@ -1,6 +1,7 @@
 	logging off
 
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	loadvar $MAP~STARDOCK
 	loadvar $map~home_sector
 	loadvar $SHIP~cap_file
@@ -12,11 +13,11 @@
 	loadvar $game~photon_cost
 	loadvar $game~DISRUPTOR_COST
 
-#	setVar $BOT~help[1] $BOT~tab&"Lister"
-#	gosub :bot~helpfile
+#	setVar $HELP~HELP[1] $HELP~TAB&"Lister"
+#	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Lister"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Lister starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 
 	setvar $line $bot~user_command_line
@@ -527,4 +528,6 @@ return
 
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

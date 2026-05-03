@@ -2,7 +2,7 @@
 	gosub  :player~currentPrompt
 	setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
 	setVar $BOT~validPrompts "Citadel Command"
-	gosub :BOT~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	if ($PLAYER~startingLocation = "Command")
 		send "t tLogin** q "
 	elseif ($PLAYER~startingLocation = "Citadel")
@@ -12,4 +12,6 @@
 halt
 
 #INCLUDES:
-include "source\include\bot"
+
+#INCLUDES:
+include "source\include\player"

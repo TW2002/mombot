@@ -1,4 +1,5 @@
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 setvar $BOT~COMMAND "surround"
 setvar $PLAYER~SAVE TRUE
 loadvar $PLAYER~SURROUNDOVERWRITE
@@ -11,12 +12,12 @@ loadvar $PLAYER~SURROUNDFIGS
 
 loadvar $SHIPPHOTONCHECK
 
-setvar $BOT~HELP[1] $BOT~TAB&"surround   "
-setvar $BOT~HELP[2] $BOT~TAB&"      Surrounds sector with fighters, armids, or limpets.  "
-setvar $BOT~HELP[3] $BOT~TAB&"      "
-setvar $BOT~HELP[4] $BOT~TAB&"    - Options for surround can be found in the"
-setvar $BOT~HELP[5] $BOT~TAB&"      preferences menu in bot"
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"surround   "
+setvar $HELP~HELP[2] $HELP~TAB&"      Surrounds sector with fighters, armids, or limpets.  "
+setvar $HELP~HELP[3] $HELP~TAB&"      "
+setvar $HELP~HELP[4] $HELP~TAB&"    - Options for surround can be found in the"
+setvar $HELP~HELP[5] $HELP~TAB&"      preferences menu in bot"
+gosub :HELP~HELPFILE
 
 gosub :PLAYER~QUIKSTATS
 if (($PLAYER~TURNS <= $BOT~BOT_TURN_LIMIT) and ($PLAYER~UNLIMITEDGAME <> TRUE))
@@ -61,4 +62,8 @@ echo "*"&ANSI_14&$PLAYER~SURROUNDOUTPUT&"*"&ANSI_7
 halt
 
 # includes:
-include "source\include\bot"
+include "source\include\grid"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

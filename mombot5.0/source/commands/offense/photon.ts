@@ -1,4 +1,5 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
 	goto :wait_for_command
@@ -19,7 +20,7 @@ end
 	end
 	gosub :PLAYER~quikstats
 	setVar $BOT~validPrompts "Citadel Command Computer"
-	gosub :BOT~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	if ($PLAYER~PHOTONS <= 0)
 		setVar $SWITCHBOARD~message "You don't have any photons! Halting.*"
 		gosub :SWITCHBOARD~switchboard
@@ -53,9 +54,11 @@ end
 
 
 :wait_for_command
-	setVar $BOT~help[1] $BOT~tab&"Fires photon into adjacent sector.  "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"Fires photon into adjacent sector.  "
+	gosub :HELP~HELPFILE
 halt
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

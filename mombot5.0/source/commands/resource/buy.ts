@@ -1,22 +1,23 @@
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 setvar $BUYDOWN_RESTORE_HAGGLE 0
 
-setvar $BOT~HELP[1] $BOT~TAB&"BUY - Buy Product from port in Sector or Fighters and/or"
-setvar $BOT~HELP[2] $BOT~TAB&"      shields from Rylos or Alpha"
-setvar $BOT~HELP[3] $BOT~TAB&"      "
-setvar $BOT~HELP[4] $BOT~TAB&"  - buy [product] {mode} {cycles}"
-setvar $BOT~HELP[5] $BOT~TAB&"  - [product] = [f]uel or [o]rg or [e]quip"
-setvar $BOT~HELP[6] $BOT~TAB&"  - [mode]    = [b]est or [s]peed or [w]orst - default is speed"
-setvar $BOT~HELP[7] $BOT~TAB&"  - [cycles]  = number of cycles             - default is max"
-setvar $BOT~HELP[8] $BOT~TAB&"  - [override] = allows product buydowns with less than 200 holds"
-setvar $BOT~HELP[9] $BOT~TAB&"     "
-setvar $BOT~HELP[10] $BOT~TAB&"  - buy [hardware] {amount}"
-setvar $BOT~HELP[11] $BOT~TAB&"  - [hardware]= [fig]hters or [sh]ields or [m]ines"
-setvar $BOT~HELP[12] $BOT~TAB&"  - [amount]  = number to purchase, default is maximum"
-setvar $BOT~HELP[13] $BOT~TAB&"      "
-setvar $BOT~HELP[14] $BOT~TAB&"  - Originally written by Cherokee.     "
-setvar $BOT~HELP[15] $BOT~TAB&"  - Now integrated with EP Haggle if it is running "
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"BUY - Buy Product from port in Sector or Fighters and/or"
+setvar $HELP~HELP[2] $HELP~TAB&"      shields from Rylos or Alpha"
+setvar $HELP~HELP[3] $HELP~TAB&"      "
+setvar $HELP~HELP[4] $HELP~TAB&"  - buy [product] {mode} {cycles}"
+setvar $HELP~HELP[5] $HELP~TAB&"  - [product] = [f]uel or [o]rg or [e]quip"
+setvar $HELP~HELP[6] $HELP~TAB&"  - [mode]    = [b]est or [s]peed or [w]orst - default is speed"
+setvar $HELP~HELP[7] $HELP~TAB&"  - [cycles]  = number of cycles             - default is max"
+setvar $HELP~HELP[8] $HELP~TAB&"  - [override] = allows product buydowns with less than 200 holds"
+setvar $HELP~HELP[9] $HELP~TAB&"     "
+setvar $HELP~HELP[10] $HELP~TAB&"  - buy [hardware] {amount}"
+setvar $HELP~HELP[11] $HELP~TAB&"  - [hardware]= [fig]hters or [sh]ields or [m]ines"
+setvar $HELP~HELP[12] $HELP~TAB&"  - [amount]  = number to purchase, default is maximum"
+setvar $HELP~HELP[13] $HELP~TAB&"      "
+setvar $HELP~HELP[14] $HELP~TAB&"  - Originally written by Cherokee.     "
+setvar $HELP~HELP[15] $HELP~TAB&"  - Now integrated with EP Haggle if it is running "
+gosub :HELP~HELPFILE
 
 loadvar $GAME~PORT_MAX
 setvar $OVERHAGGLEMULTIPLE 147
@@ -818,5 +819,7 @@ end
 halt
 
 # includes:
+include "source\include\loadvars"
 include "source\include\planethaggle"
 include "source\include\port"
+include "source\include\help"

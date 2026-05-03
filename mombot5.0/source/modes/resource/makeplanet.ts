@@ -1,23 +1,23 @@
 # Copyright (C) 2005  Remco Mulder
-# 
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-# 
+#
 # For source notes please refer to Notes.txt
 # For license terms please refer to GPL.txt.
-# 
-# These files should be stored in the root of the compression you 
+#
+# These files should be stored in the root of the compression you
 # received this source in.
 
 # SUB:       MakePlanet
@@ -39,31 +39,32 @@
 #                      "2" if failed to create planet
 
 
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1]    $BOT~tab&"makeplanet {ewarp} {create:} {"&#34&"custom planet name"&#34&"} "
-	setVar $BOT~help[2]    $BOT~tab&"       "
-	setVar $BOT~help[3]    $BOT~tab&"     {ewarp}  - Will refurb torps and atomics by ewarp "
-	setVar $BOT~help[4]    $BOT~tab&"                This is NOT safe."         
-	setVar $BOT~help[5]    $BOT~tab&"       "
-	setVar $BOT~help[6]    $BOT~tab&"   {create:}  - List of planet types to make.  First word"
-	setVar $BOT~help[7]    $BOT~tab&"                of planet types separated by commas and no spaces."
-	setVar $BOT~help[8]    $BOT~tab&"                Default will use keeper planets in preferences."
-	setVar $BOT~help[9]    $BOT~tab&"                "
-	setVar $BOT~help[10]   $BOT~tab&"{custom name} - Name the planet will be.  Otherwise it's a random   "
-	setVar $BOT~help[11]   $BOT~tab&"                name from a database              "
-	setVar $BOT~help[12]   $BOT~tab&"                              "
-	setVar $BOT~help[13]   $BOT~tab&"      Examples:                   "
-	setVar $BOT~help[14]   $BOT~tab&"            >makeplanet create:earth,volcanic,oceanic "
-	setVar $BOT~help[15]   $BOT~tab&"            >makeplanet ewarp create:earth         "
-	setVar $BOT~help[16]   $BOT~tab&"            >makeplanet "&#34&"death"&#34&" create:volcanic "
-	setVar $BOT~help[17]   $BOT~tab&"                              "
-	setVar $BOT~help[18]   $BOT~tab&"               - Originally written by Xide"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]    $HELP~TAB&"makeplanet {ewarp} {create:} {"&#34&"custom planet name"&#34&"} "
+	setVar $HELP~HELP[2]    $HELP~TAB&"       "
+	setVar $HELP~HELP[3]    $HELP~TAB&"     {ewarp}  - Will refurb torps and atomics by ewarp "
+	setVar $HELP~HELP[4]    $HELP~TAB&"                This is NOT safe."
+	setVar $HELP~HELP[5]    $HELP~TAB&"       "
+	setVar $HELP~HELP[6]    $HELP~TAB&"   {create:}  - List of planet types to make.  First word"
+	setVar $HELP~HELP[7]    $HELP~TAB&"                of planet types separated by commas and no spaces."
+	setVar $HELP~HELP[8]    $HELP~TAB&"                Default will use keeper planets in preferences."
+	setVar $HELP~HELP[9]    $HELP~TAB&"                "
+	setVar $HELP~HELP[10]   $HELP~TAB&"{custom name} - Name the planet will be.  Otherwise it's a random   "
+	setVar $HELP~HELP[11]   $HELP~TAB&"                name from a database              "
+	setVar $HELP~HELP[12]   $HELP~TAB&"                              "
+	setVar $HELP~HELP[13]   $HELP~TAB&"      Examples:                   "
+	setVar $HELP~HELP[14]   $HELP~TAB&"            >makeplanet create:earth,volcanic,oceanic "
+	setVar $HELP~HELP[15]   $HELP~TAB&"            >makeplanet ewarp create:earth         "
+	setVar $HELP~HELP[16]   $HELP~TAB&"            >makeplanet "&#34&"death"&#34&" create:volcanic "
+	setVar $HELP~HELP[17]   $HELP~TAB&"                              "
+	setVar $HELP~HELP[18]   $HELP~TAB&"               - Originally written by Xide"
+	gosub :HELP~HELPFILE
 
 	loadVar $GAME~GENESIS_COST
 	loadVar $GAME~ATOMIC_COST
-	loadVar $MAP~STARDOCK 
+	loadVar $MAP~STARDOCK
 	loadvar $bot~folder
 	loadvar $game~MAX_PLANETS_PER_SECTOR
 	loadvar $planet~planet_file
@@ -126,13 +127,13 @@ end
 
 setvar $custom_planet_name ""
 getWordPos $bot~user_command_line $pos #34
-if ($pos > 0)	
+if ($pos > 0)
 	setvar $bot~user_command_line $bot~user_command_line&" "
 	getText " "&$bot~user_command_line&" " $custom_planet_name " "&#34 #34&" "
 	if ($custom_planet_name <> "")
 		stripText $bot~user_command_line " "&#34&$custom_planet_name&#34&" "
-		cuttext $custom_planet_name $first_letter 1 1 
-		cuttext $custom_planet_name $rest_of_letters 2 9999 
+		cuttext $custom_planet_name $first_letter 1 1
+		cuttext $custom_planet_name $rest_of_letters 2 9999
 		uppercase $first_letter
 		setvar $custom_planet_name $first_letter&$rest_of_letters
 	end
@@ -149,7 +150,7 @@ halt
 
 :MakePlanet
   # sys_check
-  
+
 
 
   setVar $Failed 0
@@ -162,7 +163,7 @@ halt
   setVar $dets $PLAYER~ATOMIC
   setVar $figs $PLAYER~FIGHTERS
   setVar $shield $PLAYER~SHIELDS
-  
+
 
   # see if we really can twarp
   if ((SECTOR.FIGS.QUANTITY[$Sector] <= 0) or ((SECTOR.FIGS.OWNER[$Sector] <> "belong to your Corp") and (SECTOR.FIGS.OWNER[$Sector] = "yours")) or (($PLAYER~TWARP_TYPE = 0) or ($PLAYER~TWARP_TYPE = "No")) or ($PLAYER~ALIGNMENT < 1000)) and ($WarpType = "T")
@@ -171,15 +172,15 @@ halt
 	halt
   end
 
-  setVar $makeplanet~announce_message ""
-  
+  setVar $announce_message ""
+
   :bust
 
   if ($torps <= 0) or ($dets <= 1)
     # resupply
     gosub :sub_Resupply
   end
-  
+
   if ($Failed > 0)
     return
   end
@@ -193,7 +194,7 @@ halt
   getWord CURRENTLINE $Type 11
   stripText $Type ")"
   lowercase $type
-  
+
 if ($wantedplanets[1] = 0)
 	setvar $planet~planet_type $type
 	lowercase $planet~planet_type
@@ -227,7 +228,7 @@ else
   setVar $i 1
   while ($i <= $WantedPlanets)
     if ($WantedPlanets[$i] = $Type)
-		setVar $makeplanet~announce_message "Made "&$WantedPlanets[$i]&" planet!.*"
+		setVar $announce_message "Made "&$WantedPlanets[$i]&" planet!.*"
 		goto :Bust_Wanted
     else
 		#setVar $SWITCHBOARD~message "Looking for "&$WantedPlanets[$i]&", but found "&$Type&" instead.*"
@@ -282,7 +283,7 @@ else
 	setvar $name $custom_planet_name
 end
   send $Name "*cl"
-  
+
   # get its ID
   waitOn "Should this be a"
   setTextLineTrigger 1 :Bust_Landed2 "Landing sequence engaged..."
@@ -295,10 +296,10 @@ end
   getWord $line $PlanetID 1
   send "q*"
   killTrigger 1
-  if ($makeplanet~announce_message <> "")
-    setVar $SWITCHBOARD~message $makeplanet~announce_message
+  if ($announce_message <> "")
+    setVar $SWITCHBOARD~message $announce_message
     gosub :SWITCHBOARD~switchboard
-    setVar $makeplanet~announce_message ""
+    setVar $announce_message ""
   end
   return
 
@@ -309,11 +310,11 @@ end
   getWord CURRENTLINE $PlanetID 2
   stripText $PlanetID "#"
   killTrigger 2
-  send "q"  
-  if ($makeplanet~announce_message <> "")
-    setVar $SWITCHBOARD~message $makeplanet~announce_message
+  send "q"
+  if ($announce_message <> "")
+    setVar $SWITCHBOARD~message $announce_message
     gosub :SWITCHBOARD~switchboard
-    setVar $makeplanet~announce_message ""
+    setVar $announce_message ""
   end
   return
 
@@ -324,37 +325,37 @@ end
     setVar $Failed 1
     return
   end
-  
+
   gosub :PLAYER~QUIKSTATS
   setVar $buyFigs ($figs - $PLAYER~FIGHTERS)
   setVar $buyShield ($shield - $PLAYER~SHIELDS)
   setVar $Credits $PLAYER~CREDITS
-  
+
   loadvar $map~stardock
-	  
+
   if ($WarpType = "T")
     # TWarp to stardock
-    gosub :MAKEPLANET~CALCTWARPORE
-    if ($MAKEPLANET~ORE_SHORT > 0)
-      if ($MAKEPLANET~EMPTY_HOLDS <= 0)
+    gosub :calc_twarp_ore
+    if ($ore_short > 0)
+      if ($empty_holds <= 0)
         setVar $SWITCHBOARD~message "Need more ore for the round trip to StarDock, but the ship has no empty holds.*"
         gosub :SWITCHBOARD~switchboard
         setVar $Failed 1
         return
       end
 
-      if ($MAKEPLANET~EMPTY_HOLDS < $MAKEPLANET~ORE_SHORT)
-        setVar $SWITCHBOARD~message "Need "&$MAKEPLANET~ORE_SHORT&" holds of ore for the round trip to StarDock, but only "&$MAKEPLANET~EMPTY_HOLDS&" holds are free.*"
+      if ($empty_holds < $ore_short)
+        setVar $SWITCHBOARD~message "Need "&$ore_short&" holds of ore for the round trip to StarDock, but only "&$empty_holds&" holds are free.*"
         gosub :SWITCHBOARD~switchboard
         setVar $Failed 1
         return
       end
 
       setVar $SeekProduct~Product 1
-      setVar $SeekProduct~Holds $MAKEPLANET~ORE_SHORT
-      gosub :MAKEPLANET~SEEKPRODUCT
+      setVar $SeekProduct~Holds $ore_short
+      gosub :seekproduct
     end
-    
+
     if ($map~stardock < 600) or (SECTORS > 5000)
       send $map~stardock "*yy"
     else
@@ -363,7 +364,7 @@ end
   else
     setVar $Warp~Mode $WarpType
     setVar $Warp~Dest $map~stardock
-    gosub :MAKEPLANET~WARP
+    gosub :warp
   end
 
   send "ps  g yg qh t"
@@ -371,7 +372,7 @@ end
 
   setTextTrigger Resupply_GetTorps :Resupply_GetTorps ") [0] ?"
   pause
-  
+
   :Resupply_GetTorps
   getWord CURRENTLINE $Resupply_Torps 9
   stripText $Resupply_Torps ")"
@@ -383,32 +384,32 @@ end
     send (20 - $torps) "*a"
   end
   add $torps $Resupply_Torps
-  
+
   waitFor "We have the standard Nuerevy Atomic Detonator"
   setTextTrigger Resupply_GetDets :Resupply_GetDets ") [0] ?"
   pause
-  
+
   :Resupply_GetDets
   getWord CURRENTLINE $Resupply_Dets 9
   stripText $Resupply_Dets ")"
   send $Resupply_Dets "*"
   add $dets $Resupply_Dets
-  
+
   if ($buyFigs > 0) or ($buyShield > 0)
-    send "qs p "  
-  
+    send "qs p "
+
     if ($buyFigs > 0)
       send "b" $buyFigs "*"
     end
     if ($buyShield > 0)
       send "c" $buyShield "*"
     end
-    
+
     send "q"
   end
 
-  send "qq"  
-  
+  send "qq"
+
   if ($WarpType = "T")
     if ($Sector < 600) or (SECTORS > 5000)
       send $Sector "*yy"
@@ -418,81 +419,81 @@ end
   else
     setVar $Warp~Mode $WarpType
     setVar $Warp~Dest $Sector
-    gosub :MAKEPLANET~WARP
+    gosub :warp
   end
-  
+
   return
-  
-:MAKEPLANET~SEEKPRODUCT
-if ($SEEKPRODUCT~HOLDS = 0)
+
+:seekproduct
+if ($seek_holds = 0)
   gosub :PLAYER~QUIKSTATS
-  setvar $SEEKPRODUCT~HOLDS $PLAYER~TOTAL_HOLDS
+  setvar $seek_holds $PLAYER~TOTAL_HOLDS
 end
 
-:MAKEPLANET~SEEKPRODUCT_GOGATHER
-setvar $MOVE~CHECKSUB ":MAKEPLANET~SEEKPRODUCT_CHECKSECTOR"
+:seek_gogather
+setvar $MOVE~CHECKSUB ":seek_checksector"
 send "d"
 gosub :MOVE~MOVE
 
-if ($SEEKPRODUCT~FOUND = "P")
-:MAKEPLANET~SEEKPRODUCT_BUYPRODUCT
-  if ($SEEKPRODUCT~PRODUCT = 1)
+if ($seek_found = "P")
+:seek_buyproduct
+  if ($seek_product = 1)
     setvar $HAGGLE~BUYPROD "Fuel"
-  elseif ($SEEKPRODUCT~PRODUCT = 2)
+  elseif ($seek_product = 2)
     setvar $HAGGLE~BUYPROD "Organics"
   else
     setvar $HAGGLE~BUYPROD "Equipment"
   end
 
   setvar $HAGGLE~QUANTITY 0
-  setvar $HAGGLE~SECTOR $SEEKPRODUCT~SOURCESECTOR
+  setvar $HAGGLE~SECTOR $seek_source_sector
   send "pt"
   gosub :HAGGLE~HAGGLE
 
   if ($HAGGLE~ABORT)
-    goto :MAKEPLANET~SEEKPRODUCT_BUYPRODUCT
+    goto :seek_buyproduct
   end
 else
-  send "tnt"&$SEEKPRODUCT~PRODUCT "*q"
+  send "tnt"&$seek_product "*q"
 end
 return
 
-:MAKEPLANET~SEEKPRODUCT_CHECKSECTOR
-setvar $FINDPRODUCT~QUANTITY $SEEKPRODUCT~HOLDS
-setvar $FINDPRODUCT~PRODUCT $SEEKPRODUCT~PRODUCT
-setvar $FINDPRODUCT~IGNORELIST $SEEKPRODUCT~IGNORELIST
+:seek_checksector
+setvar $FINDPRODUCT~QUANTITY $seek_holds
+setvar $FINDPRODUCT~PRODUCT $seek_product
+setvar $FINDPRODUCT~IGNORELIST $seek_ignorelist
 setvar $FINDPRODUCT~STAYONPLANET 1
 setvar $FINDPRODUCT~SECTOR $MOVE~CURSECTOR
 
 gosub :FINDPRODUCT~FINDPRODUCT
 
-setvar $SEEKPRODUCT~IGNORELIST $FINDPRODUCT~IGNORELIST
+setvar $seek_ignorelist $FINDPRODUCT~IGNORELIST
 
 if ($FINDPRODUCT~LOCATION <> 0)
   setvar $MOVE~FOUND 1
-  setvar $SEEKPRODUCT~SOURCESECTOR $MOVE~CURSECTOR
-  setvar $SEEKPRODUCT~FOUND $FINDPRODUCT~LOCATION
+  setvar $seek_source_sector $MOVE~CURSECTOR
+  setvar $seek_found $FINDPRODUCT~LOCATION
 end
 
 return
 
-:MAKEPLANET~CALCTWARPORE
-setvar $MAKEPLANET~ORE_REQUIRED 0
-setvar $MAKEPLANET~ORE_SHORT 0
-setvar $MAKEPLANET~EMPTY_HOLDS ($PLAYER~TOTAL_HOLDS - ($PLAYER~ORE_HOLDS + $PLAYER~ORGANIC_HOLDS + $PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
+:calc_twarp_ore
+setvar $ore_required 0
+setvar $ore_short 0
+setvar $empty_holds ($PLAYER~TOTAL_HOLDS - ($PLAYER~ORE_HOLDS + $PLAYER~ORGANIC_HOLDS + $PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
 
-getdistance $MAKEPLANET~DIST1 $PLAYER~CURRENT_SECTOR $MAP~STARDOCK
-getdistance $MAKEPLANET~DIST2 $MAP~STARDOCK $PLAYER~CURRENT_SECTOR
+getdistance $dist1 $PLAYER~CURRENT_SECTOR $MAP~STARDOCK
+getdistance $dist2 $MAP~STARDOCK $PLAYER~CURRENT_SECTOR
 
 if ($PLAYER~CURRENT_SECTOR <> $MAP~STARDOCK)
-  if ($MAKEPLANET~DIST1 <= 0)
+  if ($dist1 <= 0)
     setVar $SWITCHBOARD~message "Insufficient warp data plotting course to StarDock for makeplanet.*"
     gosub :SWITCHBOARD~switchboard
     setVar $Failed 1
     return
   end
 
-  if ($MAKEPLANET~DIST2 <= 0)
+  if ($dist2 <= 0)
     setVar $SWITCHBOARD~message "Insufficient warp data plotting return course from StarDock for makeplanet.*"
     gosub :SWITCHBOARD~switchboard
     setVar $Failed 1
@@ -500,92 +501,92 @@ if ($PLAYER~CURRENT_SECTOR <> $MAP~STARDOCK)
   end
 end
 
-setvar $MAKEPLANET~ORE_REQUIRED (($MAKEPLANET~DIST1 + $MAKEPLANET~DIST2) * 3)
-if ($PLAYER~ORE_HOLDS < $MAKEPLANET~ORE_REQUIRED)
-  setvar $MAKEPLANET~ORE_SHORT ($MAKEPLANET~ORE_REQUIRED - $PLAYER~ORE_HOLDS)
+setvar $ore_required (($dist1 + $dist2) * 3)
+if ($PLAYER~ORE_HOLDS < $ore_required)
+  setvar $ore_short ($ore_required - $PLAYER~ORE_HOLDS)
 end
 
 return
 
-:MAKEPLANET~WARP
+:warp
 if (($SECTORS > 5000) or ($WARP~DEST < 600))
   send $WARP~DEST "*"
 else
   send $WARP~DEST
 end
 
-settextlinetrigger MAKEPLANET_WARP_ARRIVED :MAKEPLANET~WARP_ARRIVED "You are already in that sector!"
-settextlinetrigger MAKEPLANET_WARP_BEGIN :MAKEPLANET~WARP_BEGIN "<Move>"
+settextlinetrigger MAKEPLANET_WARP_ARRIVED :warp_arrived "You are already in that sector!"
+settextlinetrigger MAKEPLANET_WARP_BEGIN :warp_begin "<Move>"
 pause
 
-:MAKEPLANET~WARP_BEGIN
+:warp_begin
 killtrigger MAKEPLANET_WARP_ARRIVED
-settexttrigger MAKEPLANET_WARP_START :MAKEPLANET~WARP_START "Engage the Autopilot?"
-settexttrigger MAKEPLANET_WARP_TWARP :MAKEPLANET~WARP_TWARP "Do you want to engage"
-settextlinetrigger MAKEPLANET_WARP_SINGLE :MAKEPLANET~WARP_SINGLE "Sector  :"
+settexttrigger MAKEPLANET_WARP_START :warp_start "Engage the Autopilot?"
+settexttrigger MAKEPLANET_WARP_TWARP :warp_twarp "Do you want to engage"
+settextlinetrigger MAKEPLANET_WARP_SINGLE :warp_single "Sector  :"
 pause
 
-:MAKEPLANET~WARP_TWARP
+:warp_twarp
 send "n"
 
-:MAKEPLANET~WARP_START
+:warp_start
 send "e"
 
-:MAKEPLANET~WARP_SINGLE
+:warp_single
 killtrigger MAKEPLANET_WARP_START
 killtrigger MAKEPLANET_WARP_TWARP
 killtrigger MAKEPLANET_WARP_SINGLE
 
-setvar $WARP~STOPPROMPT 1
-setvar $WARP~MINEPROMPT 1
+setvar $warp_stopprompt 1
+setvar $warp_mineprompt 1
 
-:MAKEPLANET~WARP_MID
+:warp_mid
 killtrigger MAKEPLANET_WARP_TOLLFIGS
 killtrigger MAKEPLANET_WARP_FIGS
 killtrigger MAKEPLANET_WARP_STOPPROMPT
 killtrigger MAKEPLANET_WARP_MINESPROMPT
 killtrigger MAKEPLANET_WARP_NEXTSECTOR
 killtrigger MAKEPLANET_WARP_ARRIVED
-settextlinetrigger MAKEPLANET_WARP_NEXTSECTOR :MAKEPLANET~WARP_NEXTSECTOR "Sector  :"
-settextlinetrigger MAKEPLANET_WARP_TOLLFIGS :MAKEPLANET~WARP_TOLLFIGS "You have to destroy the fighters or pay"
-settextlinetrigger MAKEPLANET_WARP_FIGS :MAKEPLANET~WARP_FIGS "You have to destroy the fighters to remain"
-settexttrigger MAKEPLANET_WARP_STOPPROMPT :MAKEPLANET~WARP_STOPPROMPT "Stop in this sector"
-settexttrigger MAKEPLANET_WARP_MINESPROMPT :MAKEPLANET~WARP_MINESPROMPT "Mined Sector:"
-settexttrigger MAKEPLANET_WARP_ARRIVED :MAKEPLANET~WARP_ARRIVED "Command [TL="
+settextlinetrigger MAKEPLANET_WARP_NEXTSECTOR :warp_nextsector "Sector  :"
+settextlinetrigger MAKEPLANET_WARP_TOLLFIGS :warp_tollfigs "You have to destroy the fighters or pay"
+settextlinetrigger MAKEPLANET_WARP_FIGS :warp_figs "You have to destroy the fighters to remain"
+settexttrigger MAKEPLANET_WARP_STOPPROMPT :warp_stopprompt "Stop in this sector"
+settexttrigger MAKEPLANET_WARP_MINESPROMPT :warp_minesprompt "Mined Sector:"
+settexttrigger MAKEPLANET_WARP_ARRIVED :warp_arrived "Command [TL="
 pause
 
-:MAKEPLANET~WARP_NEXTSECTOR
-setvar $WARP~STOPPROMPT 1
-setvar $WARP~MINEPROMPT 1
-goto :MAKEPLANET~WARP_MID
+:warp_nextsector
+setvar $warp_stopprompt 1
+setvar $warp_mineprompt 1
+goto :warp_mid
 
-:MAKEPLANET~WARP_TOLLFIGS
+:warp_tollfigs
 if ($MOVE~ATTACK = 3)
   send "py"
 else
   send "a9999*"
 end
-goto :MAKEPLANET~WARP_MID
+goto :warp_mid
 
-:MAKEPLANET~WARP_FIGS
+:warp_figs
 send "a9999*"
-goto :MAKEPLANET~WARP_MID
+goto :warp_mid
 
-:MAKEPLANET~WARP_STOPPROMPT
-if ($WARP~STOPPROMPT)
+:warp_stopprompt
+if ($warp_stopprompt)
   send "n"
-  setvar $WARP~STOPPROMPT 0
+  setvar $warp_stopprompt 0
 end
-goto :MAKEPLANET~WARP_MID
+goto :warp_mid
 
-:MAKEPLANET~WARP_MINESPROMPT
-if ($WARP~MINEPROMPT)
+:warp_minesprompt
+if ($warp_mineprompt)
   send "n"
-  setvar $WARP~MINEPROMPT 0
+  setvar $warp_mineprompt 0
 end
-goto :MAKEPLANET~WARP_MID
+goto :warp_mid
 
-:MAKEPLANET~WARP_ARRIVED
+:warp_arrived
 killtrigger MAKEPLANET_WARP_BEGIN
 killtrigger MAKEPLANET_WARP_START
 killtrigger MAKEPLANET_WARP_TWARP
@@ -597,12 +598,13 @@ killtrigger MAKEPLANET_WARP_STOPPROMPT
 killtrigger MAKEPLANET_WARP_MINESPROMPT
 killtrigger MAKEPLANET_WARP_ARRIVED
 return
-  
+
 
 # includes:
 
-include "source\include\bot"
+include "source\include\move"
+include "source\include\loadvars"
 include "source\include\findproduct"
 include "source\include\haggle"
-include "source\include\makeplanet"
 include "source\include\planetnames"
+include "source\include\help"

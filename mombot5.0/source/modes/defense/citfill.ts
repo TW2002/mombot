@@ -1,19 +1,20 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
 
-	setVar $BOT~help[1]   $BOT~tab&"citfill {number of fighters to refill} {auto}"
-	setVar $BOT~help[2]   $BOT~tab&"              "
-	setVar $BOT~help[3]   $BOT~tab&"      Refills any corpie above a planet who "
-	setVar $BOT~help[4]   $BOT~tab&"      attacks/is attacked or deploys fighters."
-	setVar $BOT~help[5]   $BOT~tab&"         "
-	setVar $BOT~help[6]   $BOT~tab&"       Options:"
-	setVar $BOT~help[7]   $BOT~tab&"           {auto} - auto refill every five minutes"
-	setVar $BOT~help[8]   $BOT~tab&"         "
-	setVar $BOT~help[9]   $BOT~tab&"       Examples: "
-	setVar $BOT~help[10]  $BOT~tab&"           >citfill 25000 auto"
-	setVar $BOT~help[11]  $BOT~tab&"           >citfill"
-	setVar $BOT~help[12]  $BOT~tab&"           >citfill auto "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]   $HELP~TAB&"citfill {number of fighters to refill} {auto}"
+	setVar $HELP~HELP[2]   $HELP~TAB&"              "
+	setVar $HELP~HELP[3]   $HELP~TAB&"      Refills any corpie above a planet who "
+	setVar $HELP~HELP[4]   $HELP~TAB&"      attacks/is attacked or deploys fighters."
+	setVar $HELP~HELP[5]   $HELP~TAB&"         "
+	setVar $HELP~HELP[6]   $HELP~TAB&"       Options:"
+	setVar $HELP~HELP[7]   $HELP~TAB&"           {auto} - auto refill every five minutes"
+	setVar $HELP~HELP[8]   $HELP~TAB&"         "
+	setVar $HELP~HELP[9]   $HELP~TAB&"       Examples: "
+	setVar $HELP~HELP[10]  $HELP~TAB&"           >citfill 25000 auto"
+	setVar $HELP~HELP[11]  $HELP~TAB&"           >citfill"
+	setVar $HELP~HELP[12]  $HELP~TAB&"           >citfill auto "
+	gosub :HELP~HELPFILE
 
 
  
@@ -599,4 +600,8 @@ return
 return
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\ship"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

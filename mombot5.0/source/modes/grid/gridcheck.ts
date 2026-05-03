@@ -293,6 +293,9 @@ send "'Tow locked, get us out of here!*"
 goto :PAUSEGRIDDER
 :DEPLOYFIGS
 
+:PAUSEGRIDDER
+halt
+
 
 if ($FIGSTODEPLOY = 0)
   setvar $FIGSTODEPLOY 1
@@ -340,7 +343,10 @@ if ($POS > 0)
 end
 goto :CHK
 
+:CHK
+return
 
+:DONE_READ
 return
 :CLEARSCREEN
 echo #27&"[2J"

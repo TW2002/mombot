@@ -1,4 +1,5 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 	
 if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
 	goto :wait_for_command
@@ -86,16 +87,16 @@ end
 
 
 :wait_for_command
-	setVar $BOT~help[1]  $BOT~tab&"   PARAM - Displays sector parameters saved in game."
-	setVar $BOT~help[2]  $BOT~tab&"   "
-	setVar $BOT~help[3]  $BOT~tab&"   - param [sector]  "
-	setVar $BOT~help[4]  $BOT~tab&"        Displays all bot sector parameters "
-	setVar $BOT~help[5]  $BOT~tab&"          (FIGSEC, MINESEC, LIMPSEC, MSLSEC, BUSTED, PSECTOR)"
-	setVar $BOT~help[6]  $BOT~tab&"   "
-	setVar $BOT~help[7]  $BOT~tab&"   - param [param]"
-	setVar $BOT~help[8]  $BOT~tab&"        Displays all sectors where that param is non-zero/non-blank"
-	setVar $BOT~help[9]  $BOT~tab&"   "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"   PARAM - Displays sector parameters saved in game."
+	setVar $HELP~HELP[2]  $HELP~TAB&"   "
+	setVar $HELP~HELP[3]  $HELP~TAB&"   - param [sector]  "
+	setVar $HELP~HELP[4]  $HELP~TAB&"        Displays all bot sector parameters "
+	setVar $HELP~HELP[5]  $HELP~TAB&"          (FIGSEC, MINESEC, LIMPSEC, MSLSEC, BUSTED, PSECTOR)"
+	setVar $HELP~HELP[6]  $HELP~TAB&"   "
+	setVar $HELP~HELP[7]  $HELP~TAB&"   - param [param]"
+	setVar $HELP~HELP[8]  $HELP~TAB&"        Displays all sectors where that param is non-zero/non-blank"
+	setVar $HELP~HELP[9]  $HELP~TAB&"   "
+	gosub :HELP~HELPFILE
 halt
 
 :killthetriggers
@@ -104,4 +105,5 @@ return
 
 
 # includes:
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

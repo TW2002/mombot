@@ -1,4 +1,4 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
 
 	setVar $SWITCHBOARD~bot_name $bot~bot_name
 	setVar $SWITCHBOARD~self_command $self_command
@@ -9,7 +9,7 @@
 
 		setVar $bot~validPrompts "Citadel"
 		setVar $bot~startingLocation $startingLocation
-		gosub :bot~checkStartingPrompt
+		gosub :PLAYER~CHECKSTARTINGPROMPT
 
 		loadVar $psimac_corp_limpet_drop_amt
 		if ($psimac_corp_limpet_drop_amt < 1)
@@ -29,11 +29,12 @@
 		setTextLineTrigger getp :getp "Planet #"
 		send "q*c "
 		pause
-		:getp
-			getWord CURRENTLINE $planet~planet 2
-			stripText $planet~planet "#"
-			waitOn "Citadel command (?="
-		:print_the__planet_menu
+			:getp
+				getWord CURRENTLINE $planet~planet 2
+				stripText $planet~planet "#"
+				waitOn "Citadel command (?="
+			:planetMacMenu
+			:print_the__planet_menu
 		:planet_menu_without_clear
 			echo "**"
 			echo ANSI_15 "                       -=( " ANSI_14 "Psi Planet Macros" ANSI_15 " )=-  *"
@@ -635,7 +636,7 @@ elseif (($startingLocation = "Do") OR ($startingLocation = "How"))
 else 
 		setVar $bot~validPrompts "<StarDock> <Hardware <Libram <FedPolice> <Shipyards> <Tavern> Do How Citadel"
 		setVar $bot~startingLocation $startingLocation
-		gosub :bot~checkStartingPrompt
+		gosub :PLAYER~CHECKSTARTINGPROMPT
 
 		:print_the_menu
 		gosub :PLAYER~quikstats
@@ -1233,4 +1234,6 @@ else
 			echo #27 "[30D                        " #27 "[30D"
 			halt
 end
-include "source\include\bot"
+include "source\include\map"
+include "source\include\player"
+include "source\include\loadvars"

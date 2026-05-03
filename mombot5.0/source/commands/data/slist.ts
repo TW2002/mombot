@@ -1,10 +1,11 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
 
-	setVar $BOT~help[1]  $BOT~tab&"Ship list"
-	setVar $BOT~help[2]  $BOT~tab&"  Displays ship list on subspace"
-	setVar $BOT~help[3]  $BOT~tab&"    {fed} - display on fed space"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"Ship list"
+	setVar $HELP~HELP[2]  $HELP~TAB&"  Displays ship list on subspace"
+	setVar $HELP~HELP[3]  $HELP~TAB&"    {fed} - display on fed space"
+	gosub :HELP~HELPFILE
 
 
 #=============================== SS SCANNING =============================================
@@ -28,7 +29,7 @@
 		setVar $scan_macro " sd* "
 	end
 	setVar $bot~validPrompts "Citadel Command"
-	gosub :bot~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	if ($PLAYER~startingLocation = "Citadel")
 		if ($scan_macro = "d")
 			setVar $scan_macro "s"
@@ -283,4 +284,7 @@ return
 #================================ END SS SCANNER =======================================    
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

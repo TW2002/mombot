@@ -1,24 +1,25 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 
-	setVar $BOT~help[1]  $BOT~tab&"       Day 1 trader aimed at doing the best trade and testing MCIC "
-	setVar $BOT~help[2]  $BOT~tab&"       Keep equipment/empty holds so you always have ability to test ports."
-	setVar $BOT~help[3]  $BOT~tab&"       Script will attempt to haggle at any port for equip buy or sell."
-	setVar $BOT~help[4]  $BOT~tab&"       Best used with EP Haggle to get MCIC for buy/sell in megarob games."
-	setVar $BOT~help[5]  $BOT~tab&"        - Avoids trading small amounts of Fuel/Org to avoid experience."
-	setVar $BOT~help[6]  $BOT~tab&"       "
-	setVar $BOT~help[7]  $BOT~tab&"       trade {q} {mcic}"
-	setVar $BOT~help[8]  $BOT~tab&"       "
-	setVar $BOT~help[9]  $BOT~tab&" Options:"
-	setVar $BOT~help[10]  $BOT~tab&"    {q}       How much equipment to keep post trade. "
-	setVar $BOT~help[11]  $BOT~tab&"              - Default is 5"
-	setVar $BOT~help[12]  $BOT~tab&"    {mcic}    Will just test MCIC and keep fuel."
-	setVar $BOT~help[12]  $BOT~tab&"       EP haggle will be used if it is running in the bot. "
+	setVar $HELP~HELP[1]  $HELP~TAB&"       Day 1 trader aimed at doing the best trade and testing MCIC "
+	setVar $HELP~HELP[2]  $HELP~TAB&"       Keep equipment/empty holds so you always have ability to test ports."
+	setVar $HELP~HELP[3]  $HELP~TAB&"       Script will attempt to haggle at any port for equip buy or sell."
+	setVar $HELP~HELP[4]  $HELP~TAB&"       Best used with EP Haggle to get MCIC for buy/sell in megarob games."
+	setVar $HELP~HELP[5]  $HELP~TAB&"        - Avoids trading small amounts of Fuel/Org to avoid experience."
+	setVar $HELP~HELP[6]  $HELP~TAB&"       "
+	setVar $HELP~HELP[7]  $HELP~TAB&"       trade {q} {mcic}"
+	setVar $HELP~HELP[8]  $HELP~TAB&"       "
+	setVar $HELP~HELP[9]  $HELP~TAB&" Options:"
+	setVar $HELP~HELP[10]  $HELP~TAB&"    {q}       How much equipment to keep post trade. "
+	setVar $HELP~HELP[11]  $HELP~TAB&"              - Default is 5"
+	setVar $HELP~HELP[12]  $HELP~TAB&"    {mcic}    Will just test MCIC and keep fuel."
+	setVar $HELP~HELP[12]  $HELP~TAB&"       EP haggle will be used if it is running in the bot. "
 	
-	gosub :bot~helpfile
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Trade"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Trade starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 
 	
@@ -385,5 +386,8 @@ return
 halt
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
 include "source\include\haggle"
+include "source\include\help"
+include "source\include\switchboard"

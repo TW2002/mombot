@@ -1,24 +1,25 @@
 
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 
-	setVar $BOT~help[1]  $BOT~tab&"       Buys minimum Ore/Org/Equip and dumps to planet "
-	setVar $BOT~help[2]  $BOT~tab&"       of jets to gain experience from a SSS Port.  "
-	setVar $BOT~help[3]  $BOT~tab&"       "
-	setVar $BOT~help[4]  $BOT~tab&" bbb [expstop] {upport}"
-	setVar $BOT~help[5]  $BOT~tab&"       "
-	setVar $BOT~help[6]  $BOT~tab&" Options:"
-	setVar $BOT~help[7]  $BOT~tab&"    [expstop]     STOP when you get to this exp."
-	setVar $BOT~help[8]  $BOT~tab&"	   {upport}      When port empties upgrades the minimum "
-	setVar $BOT~help[9]  $BOT~tab&"                  to continue  "
-	setVar $BOT~help[9]  $BOT~tab&"     "
-	setVar $BOT~help[9]  $BOT~tab&"    Script uses internal Haggle. "
-	setVar $BOT~help[10] $BOT~tab&"    Start from planet to dump to planet. Start in sector"
-	setVar $BOT~help[10] $BOT~tab&"    and it will jettison."
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"       Buys minimum Ore/Org/Equip and dumps to planet "
+	setVar $HELP~HELP[2]  $HELP~TAB&"       of jets to gain experience from a SSS Port.  "
+	setVar $HELP~HELP[3]  $HELP~TAB&"       "
+	setVar $HELP~HELP[4]  $HELP~TAB&" bbb [expstop] {upport}"
+	setVar $HELP~HELP[5]  $HELP~TAB&"       "
+	setVar $HELP~HELP[6]  $HELP~TAB&" Options:"
+	setVar $HELP~HELP[7]  $HELP~TAB&"    [expstop]     STOP when you get to this exp."
+	setVar $HELP~HELP[8]  $HELP~TAB&"	   {upport}      When port empties upgrades the minimum "
+	setVar $HELP~HELP[9]  $HELP~TAB&"                  to continue  "
+	setVar $HELP~HELP[9]  $HELP~TAB&"     "
+	setVar $HELP~HELP[9]  $HELP~TAB&"    Script uses internal Haggle. "
+	setVar $HELP~HELP[10] $HELP~TAB&"    Start from planet to dump to planet. Start in sector"
+	setVar $HELP~HELP[10] $HELP~TAB&"    and it will jettison."
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Buy Buy Buy"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Buy Buy Buy starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 
 
@@ -417,5 +418,8 @@ return
 halt
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
 include "source\include\haggle"
+include "source\include\help"
+include "source\include\switchboard"

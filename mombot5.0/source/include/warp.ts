@@ -1,2 +1,0 @@
-:WARP~NAMESPACE
-return

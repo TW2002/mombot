@@ -7,7 +7,8 @@ reqRecording
 	loadvar $PLAYER~unlimitedGame
 	loadvar $bot~subspace
 
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	loadvar $bot~subspace
 	
 	loadVar $GAME~steal_factor
@@ -15,22 +16,22 @@ reqRecording
 	loadVar $game~ptradesetting
 
 					      
-	setVar $BOT~help[1]  $BOT~tab&" sdt {resetlra} [ship1] [ship2] [planet1] [planet2]*"
-	setVar $BOT~help[2]  $BOT~tab&"     {swap}*"
-	setVar $BOT~help[3]  $BOT~tab&"    "
-	setVar $BOT~help[4]  $BOT~tab&"    Do NOT need to start in Ship 1 or Ship 2."
-	setVar $BOT~help[5]  $BOT~tab&"    First Steal will be from Ship 1."
-	setVar $BOT~help[6]  $BOT~tab&"    Checks last rob and busts from Sec Params"
-	setVar $BOT~help[7]  $BOT~tab&"     "
-	setVar $BOT~help[8]  $BOT~tab&"    Options: "
-	setVar $BOT~help[9]  $BOT~tab&"     {resetlra} will reset last rob sector and exit"
-	setVar $BOT~help[10] $BOT~tab&"     "
-	setVar $BOT~help[11] $BOT~tab&"    Will use EP Haggle if running in bot"
-	setVar $BOT~help[12] $BOT~tab&"    Created by Cherokee"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&" sdt {resetlra} [ship1] [ship2] [planet1] [planet2]*"
+	setVar $HELP~HELP[2]  $HELP~TAB&"     {swap}*"
+	setVar $HELP~HELP[3]  $HELP~TAB&"    "
+	setVar $HELP~HELP[4]  $HELP~TAB&"    Do NOT need to start in Ship 1 or Ship 2."
+	setVar $HELP~HELP[5]  $HELP~TAB&"    First Steal will be from Ship 1."
+	setVar $HELP~HELP[6]  $HELP~TAB&"    Checks last rob and busts from Sec Params"
+	setVar $HELP~HELP[7]  $HELP~TAB&"     "
+	setVar $HELP~HELP[8]  $HELP~TAB&"    Options: "
+	setVar $HELP~HELP[9]  $HELP~TAB&"     {resetlra} will reset last rob sector and exit"
+	setVar $HELP~HELP[10] $HELP~TAB&"     "
+	setVar $HELP~HELP[11] $HELP~TAB&"    Will use EP Haggle if running in bot"
+	setVar $HELP~HELP[12] $HELP~TAB&"    Created by Cherokee"
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "SDT - Steal Dump Transport 2.1"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "SDT - Steal Dump Transport 2.1 starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 	
 	if ($BOT~parm1 = "resetlra")
@@ -1532,4 +1533,8 @@ setVar $debugdelay 0
     end
     return
     
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

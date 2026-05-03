@@ -347,7 +347,7 @@ if ($CONNECTIVITY~NEWGAME and (($BOT~ISCEO = FALSE) and (($BOT~CORPNAME <> "") a
   gosub :BOT~KILLTHETRIGGERS
   echo "[[ Waiting 3 seconds to check for corp again, press [Spacebar] to cancel. ]]*"
   setdelaytrigger 3 :CHECKFORCORP2 200
-  settextouttrigger 4 :ALREADYCORPED2 #32
+  settextouttrigger 4 :ALREADYCORPED #32
   pause
   :CONNECTIVITY~THEREISMYCORP2
   gosub :BOT~KILLTHETRIGGERS

@@ -1,22 +1,23 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
 
-	 setVar $BOT~help[1] $BOT~tab&"Set, clear, or display avoids"
-	 setVar $BOT~help[2] $BOT~tab&"Using the avoids command without a parameter will display"
-	 setVar $BOT~help[3] $BOT~tab&"current avoids over subspace. "
-	 setVar $BOT~help[4] $BOT~tab&"       "
-	 setVar $BOT~help[5] $BOT~tab&"Options:"
-	 setVar $BOT~help[6] $BOT~tab&"        {set} -  Will set an avoid "
-	 setVar $BOT~help[7] $BOT~tab&"                                        "
-	 setVar $BOT~help[8] $BOT~tab&"      {clear} -  Will clear an avoid if a sector number"
-	 setVar $BOT~help[9] $BOT~tab&"                 is provided, otherwise 'clear' by itself"
-	setVar $BOT~help[10] $BOT~tab&"                 will clear all avoids."
-	setVar $BOT~help[11] $BOT~tab&"       "
-	setVar $BOT~help[12] $BOT~tab&"Usage: "
-	setVar $BOT~help[13] $BOT~tab&"       >avoids set 45"
-	setVar $BOT~help[14] $BOT~tab&"       >avoids clear 45"
-	setVar $BOT~help[15] $BOT~tab&"       >avoids clear"
-	gosub :bot~helpfile
+	 setVar $HELP~HELP[1] $HELP~TAB&"Set, clear, or display avoids"
+	 setVar $HELP~HELP[2] $HELP~TAB&"Using the avoids command without a parameter will display"
+	 setVar $HELP~HELP[3] $HELP~TAB&"current avoids over subspace. "
+	 setVar $HELP~HELP[4] $HELP~TAB&"       "
+	 setVar $HELP~HELP[5] $HELP~TAB&"Options:"
+	 setVar $HELP~HELP[6] $HELP~TAB&"        {set} -  Will set an avoid "
+	 setVar $HELP~HELP[7] $HELP~TAB&"                                        "
+	 setVar $HELP~HELP[8] $HELP~TAB&"      {clear} -  Will clear an avoid if a sector number"
+	 setVar $HELP~HELP[9] $HELP~TAB&"                 is provided, otherwise 'clear' by itself"
+	setVar $HELP~HELP[10] $HELP~TAB&"                 will clear all avoids."
+	setVar $HELP~HELP[11] $HELP~TAB&"       "
+	setVar $HELP~HELP[12] $HELP~TAB&"Usage: "
+	setVar $HELP~HELP[13] $HELP~TAB&"       >avoids set 45"
+	setVar $HELP~HELP[14] $HELP~TAB&"       >avoids clear 45"
+	setVar $HELP~HELP[15] $HELP~TAB&"       >avoids clear"
+	gosub :HELP~HELPFILE
 
 
 	setVar $AVOIDS		" "
@@ -136,4 +137,6 @@
 		halt
 
 
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

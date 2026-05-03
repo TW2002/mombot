@@ -1,29 +1,23 @@
-	logging off
-	gosub :BOT~loadVars
-	loadVar $BOT~BUST_FILE
-	
-		
-	setVar $BOT~help[1] $BOT~tab&"clearbusts"
-	setVar $BOT~help[2] $BOT~tab&"  - Will clear all busts in database."
-	gosub :bot~helpfile
+logging off
+gosub :HELP~INITIALIZE
+setVar $HELP~HELP[1] $HELP~TAB&"clearbusts"
+setVar $HELP~HELP[2] $HELP~TAB&"  - Will clear all busts in database."
+gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Bust Clearer"
-	gosub :BOT~banner
+setvar $SWITCHBOARD~MESSAGE "Bust Clearer starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
 
-# ============================== CLEAR BUSTS ==================================
 :clearbusts
-	#delete $BOT~BUST_FILE
-	setVar $i 11
-	while ($i <= SECTORS)   
-		setSectorParameter $i "BUSTED" ""
-		setSectorParameter $i "FAKEBUST" ""
-		add $i 1
-	end
-	setVar $SWITCHBOARD~message "Bust file for this bot has been cleared.*"
-	gosub :SWITCHBOARD~switchboard
-	halt
-# ============================== END CLEAR BUSTS ==============================
-
+setVar $i 11
+while ($i <= SECTORS)
+	setSectorParameter $i "BUSTED" ""
+	setSectorParameter $i "FAKEBUST" ""
+	add $i 1
+end
+setVar $SWITCHBOARD~message "Bust data for this bot has been cleared.*"
+gosub :SWITCHBOARD~switchboard
+halt
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\help"
+include "source\include\switchboard"

@@ -1,13 +1,14 @@
 logging off
 
-gosub :BOT~loadVars
-setVar $BOT~help[1] $BOT~tab&"fillsector {fighters}"
-setVar $BOT~help[2] $BOT~tab&""
-setVar $BOT~help[3] $BOT~tab&"Buys fighters and adds them to the current sector."
-setVar $BOT~help[4] $BOT~tab&"Must be started from Citadel with a known planet number."
-setVar $BOT~help[5] $BOT~tab&"{fighters} - optional total fighters to buy"
-setVar $BOT~help[6] $BOT~tab&"If omitted, keeps buying until credits run low."
-gosub :BOT~helpfile
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
+setVar $HELP~HELP[1] $HELP~TAB&"fillsector {fighters}"
+setVar $HELP~HELP[2] $HELP~TAB&""
+setVar $HELP~HELP[3] $HELP~TAB&"Buys fighters and adds them to the current sector."
+setVar $HELP~HELP[4] $HELP~TAB&"Must be started from Citadel with a known planet number."
+setVar $HELP~HELP[5] $HELP~TAB&"{fighters} - optional total fighters to buy"
+setVar $HELP~HELP[6] $HELP~TAB&"If omitted, keeps buying until credits run low."
+gosub :HELP~HELPFILE
 loadVar $MAP~STARDOCK
 loadVar $planet~planet
 setVar $total 0
@@ -138,4 +139,6 @@ pause
 	halt
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

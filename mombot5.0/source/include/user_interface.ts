@@ -135,7 +135,7 @@ goto :BOT~WAIT_FOR_COMMAND
 
 
 
-gosub :BOT~BIGDELAY_KILLTHETRIGGERS
+gosub :BIGDELAY_KILLTHETRIGGERS
 gosub :SELFCOMMANDPROMPT
 setvar $BOT~COMMAND_CALLER "self"
 savevar $BOT~COMMAND_CALLER
@@ -1103,6 +1103,10 @@ getconsoleinput $USER_INTERFACE~TEMPCHARACTER SINGLEKEY
 :USER_INTERFACE~CHECKHOTKEY
 getcharcode $USER_INTERFACE~TEMPCHARACTER $USER_INTERFACE~CHARCODE
 gosub :BOT~KILLTHETRIGGERS
+if ($USER_INTERFACE~CHARCODE <= 0)
+  echo #27 "[10D          " #27 "[10D"
+  goto :BOT~WAIT_FOR_COMMAND
+end
 setvar $USER_INTERFACE~TEMP $BOT~HOTKEYS[$USER_INTERFACE~CHARCODE]
 if (($USER_INTERFACE~TEMP <> 0) and ($USER_INTERFACE~TEMP <> ""))
   setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] $BOT~CUSTOM_COMMANDS[$USER_INTERFACE~TEMP]
@@ -1199,5 +1203,16 @@ else
 end
 return
 
+:BIGDELAY_KILLTHETRIGGERS
+killalltriggers
+setdelaytrigger UNFREEZINGTRIGGERBIGDELAY :UNFREEZEBOT 1800000
+return
+:UNFREEZEBOT
+echo "*Bot timed out, unfreezing..*"
+setdeafclients FALSE
+send "'{" $BOT~BOT_NAME "} - Bot frozen for over 100 seconds, resetting...*"
+goto :BOT~WAIT_FOR_COMMAND
+
 include "source\include\internal_commands"
 include "source\include\move"
+include "source\include\bot"

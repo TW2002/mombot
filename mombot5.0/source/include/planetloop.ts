@@ -1,2 +1,0 @@
-:PLANETLOOP~NAMESPACE
-return

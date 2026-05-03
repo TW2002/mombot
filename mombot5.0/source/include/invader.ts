@@ -1,2 +1,0 @@
-:INVADER~NAMESPACE
-return

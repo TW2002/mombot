@@ -1,9 +1,10 @@
 	logging off
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 		
-	setVar $BOT~help[1] $BOT~tab&"htorp "
-	setVar $BOT~help[2] $BOT~tab&"  - Holoscans and then photons if enemy in adjacent sector."
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"htorp "
+	setVar $HELP~HELP[2] $HELP~TAB&"  - Holoscans and then photons if enemy in adjacent sector."
+	gosub :HELP~HELPFILE
 
 
 #===============================START HTORP (HTORP) =================================
@@ -88,4 +89,7 @@ halt
 
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

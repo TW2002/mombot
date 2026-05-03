@@ -1,9 +1,10 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 		
-	setVar $BOT~help[1] $BOT~tab&"Shows course path to sectors"
-	setVar $BOT~help[2] $BOT~tab&"   course {start sector} {end sector}"
-	setVar $BOT~help[3] $BOT~tab&"   course {end sector}"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"Shows course path to sectors"
+	setVar $HELP~HELP[2] $HELP~TAB&"   course {start sector} {end sector}"
+	setVar $HELP~HELP[3] $HELP~TAB&"   course {end sector}"
+	gosub :HELP~HELPFILE
 
 # =============================== START COURSE DISPLAY ===============================
 :course
@@ -69,4 +70,6 @@
 
 
 # includes:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

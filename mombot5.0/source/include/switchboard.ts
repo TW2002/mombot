@@ -8,19 +8,24 @@ setvar $SWITCHBOARD~DISCORD_IGNORE "-- "
 setvar $SWITCHBOARD~DISCORD_IGNORE_LENGTH 3
 
 getdeafclients $SWITCHBOARD~BOTISDEAF
-loadvar $mode
+loadvar $BOT~BOTISDEAF
+loadvar $BOT~MODE
+loadvar $BOT~COMMAND
+loadvar $BOT~USER_COMMAND_LINE
+loadvar $BOT~SILENT_RUNNING
+loadvar $BOT~ONLY_HELP
 loadvar $SWITCHBOARD~NODISCORD
 loadvar $SWITCHBOARD~FEDSPACE_OUTPUT
 
 if ($SWITCHBOARD~NODISCORD <> TRUE)
-  getwordpos " "&$user_command_line&" " $SWITCHBOARD~POS " nodiscord "
+  getwordpos " "&$BOT~USER_COMMAND_LINE&" " $SWITCHBOARD~POS " nodiscord "
   if ($SWITCHBOARD~POS > 0)
     setvar $SWITCHBOARD~NODISCORD TRUE
   end
 end
 
 if ($SWITCHBOARD~FEDSPACE_OUTPUT <> TRUE)
-  getwordpos " "&$user_command_line&" " $SWITCHBOARD~POS " fed "
+  getwordpos " "&$BOT~USER_COMMAND_LINE&" " $SWITCHBOARD~POS " fed "
   if ($SWITCHBOARD~POS > 0)
     setvar $SWITCHBOARD~FEDSPACE_OUTPUT TRUE
   end
@@ -38,11 +43,11 @@ if ($SWITCHBOARD~FEDSPACE_OUTPUT)
 else
   setvar $SWITCHBOARD~COMMUNICATION_STARTER "'"
   if ($SWITCHBOARD~NODISCORD)
-    setvar $SWITCHBOARD~MSG_HEADER_SS_1 $SWITCHBOARD~COMMUNICATION_STARTER&$SWITCHBOARD~DISCORD_IGNORE&"["&$mode&"] {"&$SWITCHBOARD~BOT_NAME&"} - "
-    setvar $SWITCHBOARD~MSG_HEADER_SS_2 $SWITCHBOARD~COMMUNICATION_STARTER&"*"&$SWITCHBOARD~DISCORD_IGNORE&"["&$mode&"] {"&$SWITCHBOARD~BOT_NAME&"} - * "
+    setvar $SWITCHBOARD~MSG_HEADER_SS_1 $SWITCHBOARD~COMMUNICATION_STARTER&$SWITCHBOARD~DISCORD_IGNORE&"["&$BOT~MODE&"] {"&$SWITCHBOARD~BOT_NAME&"} - "
+    setvar $SWITCHBOARD~MSG_HEADER_SS_2 $SWITCHBOARD~COMMUNICATION_STARTER&"*"&$SWITCHBOARD~DISCORD_IGNORE&"["&$BOT~MODE&"] {"&$SWITCHBOARD~BOT_NAME&"} - * "
   else
-    setvar $SWITCHBOARD~MSG_HEADER_SS_1 $SWITCHBOARD~COMMUNICATION_STARTER&"["&$mode&"] {"&$SWITCHBOARD~BOT_NAME&"} - "
-    setvar $SWITCHBOARD~MSG_HEADER_SS_2 $SWITCHBOARD~COMMUNICATION_STARTER&"*["&$mode&"] {"&$SWITCHBOARD~BOT_NAME&"} - * "
+    setvar $SWITCHBOARD~MSG_HEADER_SS_1 $SWITCHBOARD~COMMUNICATION_STARTER&"["&$BOT~MODE&"] {"&$SWITCHBOARD~BOT_NAME&"} - "
+    setvar $SWITCHBOARD~MSG_HEADER_SS_2 $SWITCHBOARD~COMMUNICATION_STARTER&"*["&$BOT~MODE&"] {"&$SWITCHBOARD~BOT_NAME&"} - * "
   end
 end
 setvar $SWITCHBOARD~MSG_HEADER_ECHO ANSI_9&"{"&ANSI_14&$SWITCHBOARD~BOT_NAME&ANSI_9&"} "&ANSI_15
@@ -55,13 +60,13 @@ if ($SWITCHBOARD~MESSAGE <> "")
   end
   setvar $SWITCHBOARD~I 1
   setvar $SWITCHBOARD~SPACING ""
-  getwordpos " "&$user_command_line&" " $SWITCHBOARD~ISBROADCAST " ss "
-  getwordpos " "&$user_command_line&" " $SWITCHBOARD~ISSILENT " silent "
+  getwordpos " "&$BOT~USER_COMMAND_LINE&" " $SWITCHBOARD~ISBROADCAST " ss "
+  getwordpos " "&$BOT~USER_COMMAND_LINE&" " $SWITCHBOARD~ISSILENT " silent "
 
   if ($SWITCHBOARD~SELF_COMMAND <> 0)
 
-    if (($command <> "help") and ($only_help <> TRUE))
-      if ($SWITCHBOARD~SELF_COMMAND > 1) or (($SWITCHBOARD~SELF_COMMAND = 1) and (($silent_running <> TRUE) and ($SWITCHBOARD~ISSILENT <= 0)))
+    if (($BOT~COMMAND <> "help") and ($BOT~ONLY_HELP <> TRUE))
+      if ($SWITCHBOARD~SELF_COMMAND > 1) or (($SWITCHBOARD~SELF_COMMAND = 1) and (($BOT~SILENT_RUNNING <> TRUE) and ($SWITCHBOARD~ISSILENT <= 0)))
         gosub :STRIPANSI
         if ($SWITCHBOARD~HELPLIST <> TRUE)
         end
@@ -96,8 +101,8 @@ if ($SWITCHBOARD~MESSAGE <> "")
   end
 
 
-  if ($SWITCHBOARD~ISSILENT > 0) or (($silent_running = TRUE) and ($SWITCHBOARD~SELF_COMMAND = TRUE)) or (((($SWITCHBOARD~SELF_COMMAND = TRUE) and (($command = "help") or ($only_help = TRUE)))) and ($SWITCHBOARD~ISBROADCAST <= 0))
-    if ($SWITCHBOARD~BOTISDEAF <> TRUE)
+  if ($SWITCHBOARD~ISSILENT > 0) or (($BOT~SILENT_RUNNING = TRUE) and ($SWITCHBOARD~SELF_COMMAND = TRUE)) or (((($SWITCHBOARD~SELF_COMMAND = TRUE) and (($BOT~COMMAND = "help") or ($BOT~ONLY_HELP = TRUE)))) and ($SWITCHBOARD~ISBROADCAST <= 0))
+    if ($BOT~BOTISDEAF <> TRUE)
       echo "*"&$SWITCHBOARD~MSG_HEADER_ECHO&$SWITCHBOARD~NEW_MESSAGE
       send #145
     else
@@ -151,8 +156,8 @@ if ($SWITCHBOARD~POS < $SWITCHBOARD~MESSAGE_LENGTH)
 else
   setvar $SWITCHBOARD~MULTIPLE_LINES FALSE
 end
-if (($command <> "help") and ($only_help <> TRUE))
-  if ($SWITCHBOARD~SELF_COMMAND = 0) or ($SWITCHBOARD~SELF_COMMAND > 1) or (($SWITCHBOARD~SELF_COMMAND = 1) and (($silent_running <> TRUE) and ($SWITCHBOARD~ISSILENT <= 0)))
+if (($BOT~COMMAND <> "help") and ($BOT~ONLY_HELP <> TRUE))
+  if ($SWITCHBOARD~SELF_COMMAND = 0) or ($SWITCHBOARD~SELF_COMMAND > 1) or (($SWITCHBOARD~SELF_COMMAND = 1) and (($BOT~SILENT_RUNNING <> TRUE) and ($SWITCHBOARD~ISSILENT <= 0)))
 
     setvar $SWITCHBOARD~NEXT_LENGTH 65
     setvar $SWITCHBOARD~I 1
@@ -201,4 +206,11 @@ striptext $SWITCHBOARD~MESSAGE ANSI_12
 striptext $SWITCHBOARD~MESSAGE ANSI_13
 striptext $SWITCHBOARD~MESSAGE ANSI_14
 striptext $SWITCHBOARD~MESSAGE ANSI_15
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:SWITCHBOARD~BANNER
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~SCRIPT_TITLE&" starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
 return

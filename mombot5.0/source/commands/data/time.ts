@@ -1,9 +1,10 @@
-	gosub :BOT~loadVars
-	setVar $BOT~help[1]  $BOT~tab&"Displays system's local time "
-	setVar $BOT~help[2]  $BOT~tab&"      "
-	setVar $BOT~help[3]  $BOT~tab&"  time "
-	setVar $BOT~help[4]  $BOT~tab&"         "
-	gosub :bot~helpfile
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
+	setVar $HELP~HELP[1]  $HELP~TAB&"Displays system's local time "
+	setVar $HELP~HELP[2]  $HELP~TAB&"      "
+	setVar $HELP~HELP[3]  $HELP~TAB&"  time "
+	setVar $HELP~HELP[4]  $HELP~TAB&"         "
+	gosub :HELP~HELPFILE
 
 
 	loadVar $bot~bot_name
@@ -20,4 +21,5 @@
 	halt
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

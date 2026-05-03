@@ -1,9 +1,10 @@
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
-setvar $BOT~HELP[1] $BOT~TAB&"  sellship   "
-setvar $BOT~HELP[2] $BOT~TAB&"  "
-setvar $BOT~HELP[3] $BOT~TAB&"     Sells all the ships at dock it can "
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"  sellship   "
+setvar $HELP~HELP[2] $HELP~TAB&"  "
+setvar $HELP~HELP[3] $HELP~TAB&"     Sells all the ships at dock it can "
+gosub :HELP~HELPFILE
 :SELLSHIP
 :SHIPSELL
 
@@ -13,4 +14,6 @@ gosub :PORT~SHIPSELL
 halt
 
 # includes:
+include "source\include\loadvars"
 include "source\include\port"
+include "source\include\help"

@@ -1,23 +1,24 @@
 loadVar $switchboard~bot_name
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 #HELP FILE
-		setVar $BOT~help[1]  $BOT~tab&"   Zero Turn Mapping"
-		setVar $BOT~help[2]  $BOT~tab&"  "
-		setVar $BOT~help[3]  $BOT~tab&"   ztm {p:n} {s:n} {one} {noreport}"
-		setVar $BOT~help[4]  $BOT~tab&"         "
-		setVar $BOT~help[5]  $BOT~tab&"   Will resume from PASS and FROMSECTOR if cancelled "
-		setVar $BOT~help[6]  $BOT~tab&"         "
-		setVar $BOT~help[7]  $BOT~tab&"   {p:n} - Start Pass - n from 0 to 6"
-		setVar $BOT~help[8]  $BOT~tab&"   {s:n} - Start Sector - n from 2 to MAXSECTORS"
-		setVar $BOT~help[9]  $BOT~tab&"   {one} - Plot to Terra instead of random"
-		setVar $BOT~help[10]  $BOT~tab&"   {noreport} - Will not report potenial Class 0s"
-		setVar $BOT~help[11] $BOT~tab&"   "
-		setVar $BOT~help[12] $BOT~tab&"   Examples:"
-		setVar $BOT~help[13] $BOT~tab&"   >ztm p:2 s:400   - Pass 2, sector 400"
-		setVar $BOT~help[14] $BOT~tab&"   >ztm one         - Plot to one"
-		setVar $BOT~help[15] $BOT~tab&"   >ztm p:0 s:2 one - Start Again, Plot to one"
-	   gosub :bot~helpfile
+		setVar $HELP~HELP[1]  $HELP~TAB&"   Zero Turn Mapping"
+		setVar $HELP~HELP[2]  $HELP~TAB&"  "
+		setVar $HELP~HELP[3]  $HELP~TAB&"   ztm {p:n} {s:n} {one} {noreport}"
+		setVar $HELP~HELP[4]  $HELP~TAB&"         "
+		setVar $HELP~HELP[5]  $HELP~TAB&"   Will resume from PASS and FROMSECTOR if cancelled "
+		setVar $HELP~HELP[6]  $HELP~TAB&"         "
+		setVar $HELP~HELP[7]  $HELP~TAB&"   {p:n} - Start Pass - n from 0 to 6"
+		setVar $HELP~HELP[8]  $HELP~TAB&"   {s:n} - Start Sector - n from 2 to MAXSECTORS"
+		setVar $HELP~HELP[9]  $HELP~TAB&"   {one} - Plot to Terra instead of random"
+		setVar $HELP~HELP[10]  $HELP~TAB&"   {noreport} - Will not report potenial Class 0s"
+		setVar $HELP~HELP[11] $HELP~TAB&"   "
+		setVar $HELP~HELP[12] $HELP~TAB&"   Examples:"
+		setVar $HELP~HELP[13] $HELP~TAB&"   >ztm p:2 s:400   - Pass 2, sector 400"
+		setVar $HELP~HELP[14] $HELP~TAB&"   >ztm one         - Plot to one"
+		setVar $HELP~HELP[15] $HELP~TAB&"   >ztm p:0 s:2 one - Start Again, Plot to one"
+	   gosub :HELP~HELPFILE
 
 
 
@@ -450,4 +451,6 @@ return
 	
 return
 	#INCLUDES:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

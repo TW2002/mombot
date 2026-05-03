@@ -1,16 +1,17 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
 
-	setVar $BOT~help[1]  $BOT~tab&"subspace [channel] "
-	setVar $BOT~help[2]  $BOT~tab&"  Changes subspace channel "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"subspace [channel] "
+	setVar $HELP~HELP[2]  $HELP~TAB&"  Changes subspace channel "
+	gosub :HELP~HELPFILE
 
 	
 
 :subspace
 
 setVar $BOT~validPrompts "Citadel Command"
-gosub :BOT~checkStartingPrompt
+gosub :PLAYER~CHECKSTARTINGPROMPT
 
 isNumber $isvalid $bot~parm1
 
@@ -45,4 +46,6 @@ halt
 
 
 # includes:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

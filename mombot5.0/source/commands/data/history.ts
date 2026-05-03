@@ -1,20 +1,21 @@
 	logging off
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1]  $BOT~tab&" history {limit:#} {filter:x}"
-	setVar $BOT~help[2]  $BOT~tab&"   "
-	setVar $BOT~help[3]  $BOT~tab&"     Displays the most recent self commands"
-	setVar $BOT~help[4]  $BOT~tab&"     this bot has given."
-	setVar $BOT~help[5]  $BOT~tab&"         "
-	setVar $BOT~help[6]  $BOT~tab&"      {limit:#} - display the last # of commands"
-	setVar $BOT~help[7]  $BOT~tab&"     {filter:x} - only show commands matching this"
-	setVar $BOT~help[8]  $BOT~tab&"                      "
-	setVar $BOT~help[9]  $BOT~tab&"     Example:                      "
-	setVar $BOT~help[10] $BOT~tab&"         >history 10                      "
-	setVar $BOT~help[11] $BOT~tab&"         >history pdrop                   "
-	setVar $BOT~help[12] $BOT~tab&"         >history 3 pdrop                   "
+	setVar $HELP~HELP[1]  $HELP~TAB&" history {limit:#} {filter:x}"
+	setVar $HELP~HELP[2]  $HELP~TAB&"   "
+	setVar $HELP~HELP[3]  $HELP~TAB&"     Displays the most recent self commands"
+	setVar $HELP~HELP[4]  $HELP~TAB&"     this bot has given."
+	setVar $HELP~HELP[5]  $HELP~TAB&"         "
+	setVar $HELP~HELP[6]  $HELP~TAB&"      {limit:#} - display the last # of commands"
+	setVar $HELP~HELP[7]  $HELP~TAB&"     {filter:x} - only show commands matching this"
+	setVar $HELP~HELP[8]  $HELP~TAB&"                      "
+	setVar $HELP~HELP[9]  $HELP~TAB&"     Example:                      "
+	setVar $HELP~HELP[10] $HELP~TAB&"         >history 10                      "
+	setVar $HELP~HELP[11] $HELP~TAB&"         >history pdrop                   "
+	setVar $HELP~HELP[12] $HELP~TAB&"         >history 3 pdrop                   "
 
-	gosub :bot~helpfile
+	gosub :HELP~HELPFILE
 
 	setVar $bot~historyMax      100
 
@@ -75,4 +76,5 @@
 halt
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

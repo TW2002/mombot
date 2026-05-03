@@ -1,17 +1,18 @@
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 setvar $BOT~COMMAND "scrub"
-setVar $BOT~help[1]  $BOT~tab&"scrub {seek} "
-setVar $BOT~help[2]  $BOT~tab&"     "
-setVar $BOT~help[3]  $BOT~tab&"   Gets rid of limpets off of your hull"
-setVar $BOT~help[4]  $BOT~tab&"     "
-setVar $BOT~help[5]  $BOT~tab&"   {seek} - twarp to class 9 or 0 port and back"
-gosub :BOT~HELPFILE
+setVar $HELP~HELP[1]  $HELP~TAB&"scrub {seek} "
+setVar $HELP~HELP[2]  $HELP~TAB&"     "
+setVar $HELP~HELP[3]  $HELP~TAB&"   Gets rid of limpets off of your hull"
+setVar $HELP~HELP[4]  $HELP~TAB&"     "
+setVar $HELP~HELP[5]  $HELP~TAB&"   {seek} - twarp to class 9 or 0 port and back"
+gosub :HELP~HELPFILE
 
 :SCRUB
 setVar $MESSAGE ""
 setVar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :BOT~CHECKSTARTINGPROMPT
+gosub :PLAYER~CHECKSTARTINGPROMPT
 setVar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 if ((CURRENTSECTOR = 1) OR (PORT.CLASS[CURRENTSECTOR] = 0) or (CURRENTSECTOR = $MAP~RYLOS) or (CURRENTSECTOR = $MAP~ALPHA_CENTAURI))
   if ($STARTINGLOCATION = "Citadel")
@@ -104,4 +105,7 @@ halt
 
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

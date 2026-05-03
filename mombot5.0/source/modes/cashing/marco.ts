@@ -3,7 +3,8 @@
 
 
 
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 loadvar $GAME~PORT_MAX
 loadvar $GAME~PTRADESETTING
@@ -18,23 +19,23 @@ loadvar $BOT~ARMID_FILE
 loadvar $BOT~BOT_TURN_LIMIT
 loadvar $BOT~BOT_NAME
 
-setvar $BOT~HELP[1] $BOT~TAB&"       Marco Polo - Trade Route for PPTing"
-setvar $BOT~HELP[2] $BOT~TAB&"       "
-setvar $BOT~HELP[3] $BOT~TAB&" macro [trade/report] {turns} {filename.txt} "
-setvar $BOT~HELP[4] $BOT~TAB&"                      "
-setvar $BOT~HELP[5] $BOT~TAB&" trade  - indicates bot will trade the route"
-setvar $BOT~HELP[6] $BOT~TAB&" report - indicates bot will write route to file"
-setvar $BOT~HELP[7] $BOT~TAB&" "
-setvar $BOT~HELP[8] $BOT~TAB&" {filename.txt} - can either be used as a source"
-setvar $BOT~HELP[9] $BOT~TAB&"                  route or for writing to share."
-setvar $BOT~HELP[10] $BOT~TAB&"  "
-setvar $BOT~HELP[11] $BOT~TAB&" {turns}       - Compulsary when trade option used "
-setvar $BOT~HELP[12] $BOT~TAB&"                 stops trading when reaching turns"
-setvar $BOT~HELP[13] $BOT~TAB&"  "
-setvar $BOT~HELP[14] $BOT~TAB&"  Marco requires pairs to have one ore seller."
-setvar $BOT~HELP[15] $BOT~TAB&"  Please update CIM Ports/Warps and Figs."
+setvar $HELP~HELP[1] $HELP~TAB&"       Marco Polo - Trade Route for PPTing"
+setvar $HELP~HELP[2] $HELP~TAB&"       "
+setvar $HELP~HELP[3] $HELP~TAB&" macro [trade/report] {turns} {filename.txt} "
+setvar $HELP~HELP[4] $HELP~TAB&"                      "
+setvar $HELP~HELP[5] $HELP~TAB&" trade  - indicates bot will trade the route"
+setvar $HELP~HELP[6] $HELP~TAB&" report - indicates bot will write route to file"
+setvar $HELP~HELP[7] $HELP~TAB&" "
+setvar $HELP~HELP[8] $HELP~TAB&" {filename.txt} - can either be used as a source"
+setvar $HELP~HELP[9] $HELP~TAB&"                  route or for writing to share."
+setvar $HELP~HELP[10] $HELP~TAB&"  "
+setvar $HELP~HELP[11] $HELP~TAB&" {turns}       - Compulsary when trade option used "
+setvar $HELP~HELP[12] $HELP~TAB&"                 stops trading when reaching turns"
+setvar $HELP~HELP[13] $HELP~TAB&"  "
+setvar $HELP~HELP[14] $HELP~TAB&"  Marco requires pairs to have one ore seller."
+setvar $HELP~HELP[15] $HELP~TAB&"  Please update CIM Ports/Warps and Figs."
 
-gosub :BOT~HELPFILE
+gosub :HELP~HELPFILE
 
 
 gosub :PLAYER~QUIKSTATS
@@ -519,7 +520,7 @@ pause
 killalltriggers
 send "yq"
 setvar $PLOT 0
-goto :TRYAGAINPLOT
+goto :TRYAGAINPLOT1
 :PATHGOOD1
 killalltriggers
 
@@ -534,7 +535,7 @@ pause
 killalltriggers
 send "yq"
 setvar $PLOT 0
-goto :TRYAGAINPLOT
+goto :TRYAGAINPLOT1
 :PATHGOOD2
 killalltriggers
 
@@ -739,4 +740,7 @@ echo "**"
 return
 
 # includes:
-include "source\include\bot"
+include "source\include\move"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

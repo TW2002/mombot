@@ -1,15 +1,16 @@
 logging off
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 									
 
-setVar $BOT~help[1] $BOT~tab&"Uses ecolo {all}"
-setVar $BOT~help[2] $BOT~tab&"Uses E-warp to colonize.  For red or non-twarp ships."
-setVar $BOT~help[3] $BOT~tab&"   Options:"
-setVar $BOT~help[4] $BOT~tab&"   Will attempt to fill all planets in sector owned by you."
-gosub :bot~helpfile
+setVar $HELP~HELP[1] $HELP~TAB&"Uses ecolo {all}"
+setVar $HELP~HELP[2] $HELP~TAB&"Uses E-warp to colonize.  For red or non-twarp ships."
+setVar $HELP~HELP[3] $HELP~TAB&"   Options:"
+setVar $HELP~HELP[4] $HELP~TAB&"   Will attempt to fill all planets in sector owned by you."
+gosub :HELP~HELPFILE
 
-setVar $BOT~script_title "E-Colonizer"
-gosub :BOT~banner
+setvar $SWITCHBOARD~MESSAGE "E-Colonizer starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
 
 
 # ======================     START COLO (COLO) SUBROUTINE    ==========================
@@ -128,4 +129,9 @@ halt
 	goto :colo_next
 
 	#INCLUDES:
-include "source\include\bot"
+include "source\include\ship"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

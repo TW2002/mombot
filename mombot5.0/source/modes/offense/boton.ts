@@ -1,26 +1,27 @@
 reqrecording
 logging "OFF"
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
-setvar $BOT~HELP[1] $BOT~TAB&"Bwarp Photon"
-setvar $BOT~HELP[2] $BOT~TAB&"Uses planet teleport-pad to arrive adjacent a fighter"
-setvar $BOT~HELP[3] $BOT~TAB&"hit; Launches a photon, returns, and lands"
-setvar $BOT~HELP[4] $BOT~TAB&"         "
-setvar $BOT~HELP[5] $BOT~TAB&"Options: "
-setvar $BOT~HELP[6] $BOT~TAB&"    {scrub sector} - use this if you want to scrub somewhere other"
-setvar $BOT~HELP[7] $BOT~TAB&"                     than your starting sector"
-setvar $BOT~HELP[8] $BOT~TAB&"            {holo) - holoscan after photon     "
-setvar $BOT~HELP[9] $BOT~TAB&"         {dens)ity - density scan after photon     "
-setvar $BOT~HELP[10] $BOT~TAB&"           {mine)s - trigger on mine hits too"
-setvar $BOT~HELP[11] $BOT~TAB&"           "
-setvar $BOT~HELP[12] $BOT~TAB&"  Usage:     "
-setvar $BOT~HELP[13] $BOT~TAB&"     >boton holo"
-setvar $BOT~HELP[14] $BOT~TAB&"     >boton 1234 dens"
-setvar $BOT~HELP[15] $BOT~TAB&"     >boton h mine "
-setvar $BOT~HELP[16] $BOT~TAB&"     >boton "
+setvar $HELP~HELP[1] $HELP~TAB&"Bwarp Photon"
+setvar $HELP~HELP[2] $HELP~TAB&"Uses planet teleport-pad to arrive adjacent a fighter"
+setvar $HELP~HELP[3] $HELP~TAB&"hit; Launches a photon, returns, and lands"
+setvar $HELP~HELP[4] $HELP~TAB&"         "
+setvar $HELP~HELP[5] $HELP~TAB&"Options: "
+setvar $HELP~HELP[6] $HELP~TAB&"    {scrub sector} - use this if you want to scrub somewhere other"
+setvar $HELP~HELP[7] $HELP~TAB&"                     than your starting sector"
+setvar $HELP~HELP[8] $HELP~TAB&"            {holo) - holoscan after photon     "
+setvar $HELP~HELP[9] $HELP~TAB&"         {dens)ity - density scan after photon     "
+setvar $HELP~HELP[10] $HELP~TAB&"           {mine)s - trigger on mine hits too"
+setvar $HELP~HELP[11] $HELP~TAB&"           "
+setvar $HELP~HELP[12] $HELP~TAB&"  Usage:     "
+setvar $HELP~HELP[13] $HELP~TAB&"     >boton holo"
+setvar $HELP~HELP[14] $HELP~TAB&"     >boton 1234 dens"
+setvar $HELP~HELP[15] $HELP~TAB&"     >boton h mine "
+setvar $HELP~HELP[16] $HELP~TAB&"     >boton "
 
 
-gosub :BOT~HELP_FILE
+gosub :HELP~HELPFILE
 
 setvar $TAGLINE "LoneStar's BWARP PHOTON"
 setvar $TAGLINEB "[LSBOTON]"
@@ -1048,4 +1049,7 @@ send "TF"&$LOOT&"*"
 return
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

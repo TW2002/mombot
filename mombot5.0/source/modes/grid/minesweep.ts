@@ -681,6 +681,7 @@ send " Q Q Q Z N L Z"&#8&$PLANET&"*  *  J  C  *  * "
 settexttrigger LANDED :LANDED "Citadel command (?"
 settextlinetrigger NOTLANDED :NOTLANDED "Are you sure you want to jettison all cargo"
 pause
+:NOTLANDED
 :NOLANDED
 killalltriggers
 send "'Unknown Problem Occured after StarBurst!*"
@@ -1021,6 +1022,8 @@ echo ANSI_6 "[" ANSI_14 "M()M Limpet Gridder paused..." ANSI_6 "]*" ANSI_7
 settextouttrigger PAUSEGRIDDER :RESTARTINGPAUSE "+"
 settextouttrigger PAUSEGRIDDER2 :START_MENU "-"
 pause
+:START_MENU
+goto :PAUSEGRIDDER
 :RESTARTINGPAUSE
 killalltriggers
 send "* "
@@ -1028,7 +1031,7 @@ waitfor "(?="
 getword CURRENTLINE $LOCATION 1
 if ($LOCATION = "Citadel")
   echo ANSI_6 "*[" ANSI_14 "M()M Unlimited Gridder restarted" ANSI_6 "]*" ANSI_7
-  goto :RESTART
+  goto :PAUSEGRIDDER
 else
   echo ANSI_6 "*[" ANSI_14 "M()M Unlimited Gridder not at citadel prompt, cannot restart" ANSI_6 "]*" ANSI_7
   goto :PAUSEGRIDDER

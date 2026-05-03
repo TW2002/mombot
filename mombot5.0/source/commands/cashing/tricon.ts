@@ -1,8 +1,9 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 		
-	setVar $BOT~help[1] $BOT~tab&"Plays tricon for you"
-	setVar $BOT~help[2] $BOT~tab&"  - Must be started at stardock"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"Plays tricon for you"
+	setVar $HELP~HELP[2] $HELP~TAB&"  - Must be started at stardock"
+	gosub :HELP~HELPFILE
 
 if ($bot~parm1 <> "")
 	setVar $games $bot~parm1
@@ -111,4 +112,6 @@ END
 		
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

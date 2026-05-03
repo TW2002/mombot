@@ -1,22 +1,23 @@
 	logging off
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1]  $BOT~tab&"reloader [on/off] [fig minimum] {ig} {topoff} {fig}"
-	setVar $BOT~help[2]  $BOT~tab&"  - Sector Reloader Mode"
-	setVar $BOT~help[3]  $BOT~tab&"    Sits above planet and lands/reloads fighters when hit."
-	setVar $BOT~help[4]  $BOT~tab&"  "
-	setVar $BOT~help[5]  $BOT~tab&"    Options: "
-	setVar $BOT~help[6]  $BOT~tab&"           [on/off]   Turns Reloader On or Off"
-	setVar $BOT~help[7]  $BOT~tab&"      [fig minimum]   Number of ship fighters to lose before "
-	setVar $BOT~help[8]  $BOT~tab&"                      landing and refilling"
-	setVar $BOT~help[9]  $BOT~tab&"               [ig]   Reset IG if photoned "
-	setVar $BOT~help[10] $BOT~tab&"           [topoff]   Uses fighters in sector first "
-	setVar $BOT~help[11] $BOT~tab&"              [fig]   Place fighter if sector figs attacked "
-	setVar $BOT~help[11] $BOT~tab&"           [noland]   Do not land - should be running citfill "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"reloader [on/off] [fig minimum] {ig} {topoff} {fig}"
+	setVar $HELP~HELP[2]  $HELP~TAB&"  - Sector Reloader Mode"
+	setVar $HELP~HELP[3]  $HELP~TAB&"    Sits above planet and lands/reloads fighters when hit."
+	setVar $HELP~HELP[4]  $HELP~TAB&"  "
+	setVar $HELP~HELP[5]  $HELP~TAB&"    Options: "
+	setVar $HELP~HELP[6]  $HELP~TAB&"           [on/off]   Turns Reloader On or Off"
+	setVar $HELP~HELP[7]  $HELP~TAB&"      [fig minimum]   Number of ship fighters to lose before "
+	setVar $HELP~HELP[8]  $HELP~TAB&"                      landing and refilling"
+	setVar $HELP~HELP[9]  $HELP~TAB&"               [ig]   Reset IG if photoned "
+	setVar $HELP~HELP[10] $HELP~TAB&"           [topoff]   Uses fighters in sector first "
+	setVar $HELP~HELP[11] $HELP~TAB&"              [fig]   Place fighter if sector figs attacked "
+	setVar $HELP~HELP[11] $HELP~TAB&"           [noland]   Do not land - should be running citfill "
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Reloader"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Reloader starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 
 	gosub :player~quikstats
@@ -237,6 +238,9 @@ goto :_START_
 
 halt
 
+:photon_ig_damage_trigger
+	halt
+
 :ig_turn_it_on
 		
 		getWord CURRENTLINE $test 1
@@ -339,4 +343,9 @@ return
 
 
 #INCLUDES:
-include "source\include\bot"
+include "source\include\ship"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

@@ -78,6 +78,21 @@ killtrigger NO_BWARPFUEL
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLAYER~CHECKSTARTINGPROMPT
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+loadvar $BOT~VALIDPROMPTS
+if ($PLAYER~CURRENT_PROMPT = 0)
+  gosub :PLAYER~CURRENTPROMPT
+end
+getwordpos " "&$BOT~VALIDPROMPTS&" " $POS $PLAYER~CURRENT_PROMPT
+if ($POS <= 0)
+  setvar $SWITCHBOARD~MESSAGE "Invalid starting prompt: ["&$PLAYER~CURRENT_PROMPT&"]. Valid prompt(s) for this command: ["&$BOT~VALIDPROMPTS&"]*"
+  gosub :SWITCHBOARD~SWITCHBOARD
+  halt
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :PLAYER~CHECKCORP
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -803,12 +818,14 @@ gosub :QUIKSTATS
 if ($PLAYER~CURRENT_PROMPT = "Command")
   send "'{"&$SWITCHBOARD~BOT_NAME&"} "&$PLAYER~TAGLINEB&" - Restarting!**"
   waitfor "Message sent on sub-space channel"
-  goto :INAC
+  # goto :inac
+  halt
 elseif ($PLAYER~CURRENT_PROMPT = "Citadel")
   send "'{"&$SWITCHBOARD~BOT_NAME&"} "&$PLAYER~TAGLINEB&" - Restarting!**"
   waitfor "Message sent on sub-space channel"
   send "qqqq**"
-  goto :INAC
+  # goto :inac
+  halt
 else
   send " p d 0* 0* 0* * *** * c q q q q q z 2 2 c q * z * *** * * '"&$PLAYER~TAGLINEB&"Attempting to Reach Correct Prompt...*"
   settextlinetrigger EMQ_COMPLETE :EMQ_DELAY "Attempting to Reach Correct Prompt..."

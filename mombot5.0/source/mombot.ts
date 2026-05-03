@@ -9,12 +9,199 @@ reqRecording
 setVar $bot~major_version   "5"
 setVar $bot~minor_version   "0beta"
 setvar $bot~default_bot_directory "mombot"
-
 savevar $bot~major_version
 savevar $bot~minor_version
 
-gosub :combat~init
-goto :BOT~load_bot
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:LOAD_BOT
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $BOT~DO_NOT_RESUSCITATE FALSE
+savevar $BOT~DO_NOT_RESUSCITATE
+
+loadvar $BOT~MAJOR_VERSION
+loadvar $BOT~MINOR_VERSION
+
+setvar $BOT~MOMBOT_FOLDER_CONFIG "scripts/mombot"&$BOT~MAJOR_VERSION&"_"&$BOT~MINOR_VERSION&".cfg"
+fileexists $BOT~FOLDER_CONFIG_EXISTS $BOT~MOMBOT_FOLDER_CONFIG
+if ($BOT~FOLDER_CONFIG_EXISTS)
+  read $BOT~MOMBOT_FOLDER_CONFIG $BOT~MOMBOT_DIRECTORY 1
+else
+  delete $BOT~MOMBOT_FOLDER_CONFIG
+  setvar $BOT~MOMBOT_DIRECTORY $BOT~DEFAULT_BOT_DIRECTORY
+  write $BOT~MOMBOT_FOLDER_CONFIG $BOT~MOMBOT_DIRECTORY
+end
+savevar $BOT~MOMBOT_DIRECTORY
+
+setvar $BOT~LEGACY_FOLDER "scripts/"&$BOT~MOMBOT_DIRECTORY&"/games/"&GAMENAME
+makedir "games"
+setvar $BOT~FOLDER "games/"&GAMENAME
+makedir $BOT~FOLDER
+gosub :BOT~MIGRATE_GAME_FOLDER
+setvar $BOT~MOMBOT_CONFIG_FILE "scripts/"&$BOT~MOMBOT_DIRECTORY&"/mombot.cfg"
+setvar $BOT~HOTKEYS_FILE $BOT~MOMBOT_CONFIG_FILE
+setvar $BOT~CUSTOM_KEYS_FILE $BOT~MOMBOT_CONFIG_FILE
+setvar $BOT~CUSTOM_COMMANDS_FILE $BOT~MOMBOT_CONFIG_FILE
+savevar $BOT~MOMBOT_CONFIG_FILE
+
+gosub :BOT~DOSPLASHSCREEN
+gosub :BOT~LOAD_HOTKEY_CONFIG
+gosub :COMBAT~INIT
+
+setvar $PLAYER~STARTINGLOCATION ""
+setarray $BOT~INTERNALCOMMANDLISTS 7
+setvar $BOT~INTERNALCOMMANDLISTS[1] " stopall stop listall reset emq bot relog tow refresh login logoff unlock lift with dep callin about cn extern twarp bwarp pwarp relog help switchbot "
+setvar $BOT~INTERNALCOMMANDLISTS[2] " "
+setvar $BOT~INTERNALCOMMANDLISTS[3] " hkill kill htorp "
+setvar $BOT~INTERNALCOMMANDLISTS[4] " refurb scrub "
+setvar $BOT~INTERNALCOMMANDLISTS[5] " surround exit xenter mow "
+setvar $BOT~INTERNALCOMMANDLISTS[6] " "
+setvar $BOT~INTERNALCOMMANDLISTS[7] " find pscan sector storeship setvar getvar "
+setvar $BOT~DOUBLEDCOMMANDLIST " parm params parms qss sec sect secto cn9 logout emx smow port shipstore finder xenter status pinfo holotorp"
+setvar $BOT~INTERNALCOMMANDLIST $BOT~INTERNALCOMMANDLISTS[1]&$BOT~INTERNALCOMMANDLISTS[2]&$BOT~INTERNALCOMMANDLISTS[3]&$BOT~INTERNALCOMMANDLISTS[4]&$BOT~INTERNALCOMMANDLISTS[5]&$BOT~INTERNALCOMMANDLISTS[6]&$BOT~INTERNALCOMMANDLISTS[7]
+setarray $BOT~TYPES 7
+setvar $BOT~TYPES[1] "General"
+setvar $BOT~TYPES[2] "Defense"
+setvar $BOT~TYPES[3] "Offense"
+setvar $BOT~TYPES[4] "Resource"
+setvar $BOT~TYPES[5] "Grid"
+setvar $BOT~TYPES[6] "Cashing"
+setvar $BOT~TYPES[7] "Data"
+setarray $BOT~CATAGORIES 3
+setvar $BOT~CATAGORIES[1] "Modes"
+setvar $BOT~CATAGORIES[2] "Commands"
+setvar $BOT~CATAGORIES[3] "Daemons"
+setvar $BOT~CORPYCOUNT 0
+setarray $BOT~CORPY 30 1
+setvar $BOT~GAMESTATS FALSE
+setvar $BOT~SCRIPT_NAME "Mind ()ver Matter Bot "
+setvar $BOT~MODE "General"
+setvar $SWITCHBOARD~SELF_COMMAND FALSE
+setvar $BOT~OKAYTOUSE TRUE
+setvar $PLAYER~TRADER_NAME ""
+setarray $BOT~PARMS 8
+setvar $BOT~PARMS 8
+setvar $BOT~MODULECATEGORY ""
+setvar $BOT~START_FIG_HIT "Deployed Fighters Report Sector "
+setvar $BOT~END_FIG_HIT ":"
+setvar $BOT~ALIEN_ANSI #27&"[1;36m"&#27&"["
+setvar $BOT~START_FIG_HIT_OWNER ":"
+setvar $BOT~END_FIG_HIT_OWNER "'s"
+setvar $BOT~GCONFIG_FILE $BOT~FOLDER&"/bot.cfg"
+setvar $BOT~CK_FIG_FILE $BOT~FOLDER&"/_ck_"&GAMENAME&".figs"
+setvar $BOT~FIG_FILE $BOT~FOLDER&"/fighters.cfg"
+setvar $BOT~FIG_COUNT_FILE $BOT~FOLDER&"/fighters.cnt"
+setvar $BOT~LIMP_FILE $BOT~FOLDER&"/limpets.cfg"
+setvar $BOT~LIMP_COUNT_FILE $BOT~FOLDER&"/limpets.cnt"
+setvar $BOT~ARMID_COUNT_FILE $BOT~FOLDER&"/armids.cnt"
+setvar $BOT~ARMID_FILE $BOT~FOLDER&"/armids.cfg"
+setvar $BOT~TIMER_FILE $BOT~FOLDER&"/timer.cfg"
+setvar $GAME~GAME_SETTINGS_FILE $BOT~FOLDER&"/game_settings.cfg"
+setvar $BOT~BOT_USER_FILE $BOT~FOLDER&"/bot_users.lst"
+setvar $SHIP~CAP_FILE $BOT~FOLDER&"/ships.cfg"
+setvar $PLANET~PLANET_FILE $BOT~FOLDER&"/planets.cfg"
+setvar $BOT~SCRIPT_FILE "scripts/"&$BOT~MOMBOT_DIRECTORY&"/hotkey_scripts.cfg"
+setvar $BOT~BUST_FILE $BOT~FOLDER&"/busts.cfg"
+setvar $BOT~MCIC_FILE $BOT~FOLDER&"/planet.nego"
+setvar $BOT~LAST_LOADED_MODULE ""
+savevar $BOT~LAST_LOADED_MODULE
+savevar $BOT~GCONFIG_FILE
+savevar $BOT~FOLDER
+savevar $BOT~CK_FIG_FILE
+savevar $BOT~FIG_FILE
+savevar $BOT~FIG_COUNT_FILE
+savevar $BOT~LIMP_FILE
+savevar $BOT~LIMP_COUNT_FILE
+savevar $BOT~ARMID_COUNT_FILE
+savevar $BOT~ARMID_FILE
+savevar $GAME~GAME_SETTINGS_FILE
+savevar $BOT~BOT_USER_FILE
+savevar $SHIP~CAP_FILE
+savevar $PLANET~PLANET_FILE
+savevar $BOT~SCRIPT_FILE
+savevar $BOT~BUST_FILE
+savevar $BOT~MCIC_FILE
+savevar $BOT~TIMER_FILE
+
+goto :AFTER_GAME_FOLDER_MIGRATION_HELPERS
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:MIGRATE_GAME_FOLDER
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+direxists $BOT~LEGACY_FOLDER_EXISTS $BOT~LEGACY_FOLDER
+if ($BOT~LEGACY_FOLDER_EXISTS = 0)
+  return
+end
+
+setvar $BOT~MIGRATE_FILE "bot.cfg"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "bot_users.lst"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "_ck_"&GAMENAME&".figs"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "ships.cfg"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "dbonus-ships.cfg"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "planets.cfg"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "fighters.cfg"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "fighters.cnt"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "limpets.cfg"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "limpets.cnt"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "armids.cfg"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "armids.cnt"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "game_settings.cfg"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "timer.cfg"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "busts.cfg"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "planet.nego"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "bubble.list"
+gosub :BOT~MIGRATE_GAME_FILE
+setvar $BOT~MIGRATE_FILE "No_Credits.list"
+gosub :BOT~MIGRATE_GAME_FILE
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:MIGRATE_GAME_FILE
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $BOT~MIGRATE_SOURCE $BOT~LEGACY_FOLDER&"/"&$BOT~MIGRATE_FILE
+setvar $BOT~MIGRATE_DEST $BOT~FOLDER&"/"&$BOT~MIGRATE_FILE
+fileexists $BOT~MIGRATE_SOURCE_EXISTS $BOT~MIGRATE_SOURCE
+if ($BOT~MIGRATE_SOURCE_EXISTS)
+  fileexists $BOT~MIGRATE_DEST_EXISTS $BOT~MIGRATE_DEST
+  if ($BOT~MIGRATE_DEST_EXISTS = 0)
+    rename $BOT~MIGRATE_SOURCE $BOT~MIGRATE_DEST
+  end
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:AFTER_GAME_FOLDER_MIGRATION_HELPERS
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setarray $BOT~HISTORY 100
+setvar $BOT~PROMPTOUTPUT ""
+setvar $BOT~CHARCOUNT 0
+setvar $BOT~HISTORYINDEX 0
+setvar $BOT~CURRENTPROMPTTEXT ""
+setvar $BOT~HISTORYMAX 100
+setvar $BOT~HISTORYCOUNT 0
+setvar $BOT~CHARPOS 0
+setvar $BOT~PLAYER_CASH_MAX 999999999
+setvar $PLANET~CITADEL_CASH_MAX "999999999999999"
+setvar $PLAYER~CURRENT_PROMPT "Undefined"
+setvar $PLAYER~PSYCHIC_PROBE "No"
+setvar $PLAYER~PLANET_SCANNER "No"
+setvar $PLAYER~SCAN_TYPE "None"
+goto :BOT~GETINITIAL_SETTINGS
 
 :module_vars
 	saveVar $bot~command
@@ -36,9 +223,6 @@ goto :BOT~load_bot
 	savevar $bot~letter
 	gosub :backwards_compatible
 return
-
-
-
 
 :backwards_compatible
 	setVar  $safe_ship $bot~safe_ship
@@ -203,10 +387,10 @@ return
     savevar $MAX_PLANETS_PER_SECTOR 
 return
 
-
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :NATIVE~ENTER_NEW_GAME
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	gosub :BOT~LOAD_THE_VARIABLES
-
 	loadvar $BOT~USERNAME
 	loadvar $BOT~SERVERNAME
 	loadvar $BOT~PASSWORD

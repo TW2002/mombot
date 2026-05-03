@@ -1,7 +1,8 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 		
-	setVar $BOT~help[1] $BOT~tab&"Attempts a mega rob on port"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"Attempts a mega rob on port"
+	gosub :HELP~HELPFILE
 
 
 :mega
@@ -9,7 +10,7 @@
 :rob
 	gosub :PLAYER~quikstats
 	setVar $BOT~validPrompts "Citadel Command"
-	gosub :BOT~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	setVar $startingLocation $player~CURRENT_PROMPT
 
 	if (($PLAYER~TURNS = 0) and ($PLAYER~unlimitedGame = FALSE))
@@ -142,4 +143,7 @@
 
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

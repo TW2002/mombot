@@ -2,7 +2,8 @@ reqRecording
 # Mind Over Matter Planet Drop
 # Author: Mind Dagger
 
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	setVar $BOT~command "drop"
 	loadVar $BOT~bot_turn_limit
 	loadVar $MAP~stardock
@@ -10,31 +11,31 @@ reqRecording
 	loadvar $switchboard~self_command
 	loadvar $ship~ship_max_attack
 
-	setVar $BOT~help[1]   $BOT~tab&"drop [on | off]{delay}{drop type}{trigger}{return}{kill} "
-	setVar $BOT~help[2]   $BOT~tab&"       "
-	setVar $BOT~help[3]   $BOT~tab&"     If started from command prompt, will be a ship dropper. "
-	setVar $BOT~help[4]   $BOT~tab&"       "
-	setVar $BOT~help[5]   $BOT~tab&"     - [delay]     = delay before dropping in milliseconds   "
-	setVar $BOT~help[6]   $BOT~tab&"     - [drop type] = [d]irect, [a]djacent, [s]urround, "
-	setvar $BOT~help[7]   $BOT~tab&"                     or [da] direct, then adjacent"
-	setVar $BOT~help[8]   $BOT~tab&"     - [delay]     = delay before dropping in milliseconds "
-	setVar $BOT~help[9]   $BOT~tab&"     - [trigger]   = [f]igs, [fm] figs or mines,  "
-	setVar $BOT~help[10]  $BOT~tab&"                     [m]ines, [uf] No-Fig Mines"
-	setVar $BOT~help[11]  $BOT~tab&"     - [return]    = return planet/ship home after 10 seconds"
-	setVar $BOT~help[12]  $BOT~tab&"     - [kill]      = checks for enemy, and kills if possible"
-	setVar $BOT~help[13]  $BOT~tab&"     - [fastkill]  = does kill mac without checking"
-	setVar $BOT~help[14]  $BOT~tab&"     - [holotorp]  = does holotorp command after drop"
-	setVar $BOT~help[15]  $BOT~tab&"     - [holokill]  = does holokill after drop"
-	setVar $BOT~help[16]  $BOT~tab&"         "
-	setVar $BOT~help[17]  $BOT~tab&"     All of these options can be run at the same time."
-	setVar $BOT~help[18]  $BOT~tab&"     - Order of operations are:"
-	setVar $BOT~help[19]  $BOT~tab&"             delay, drop, fastkill, kill,"
-	setVar $BOT~help[20]  $BOT~tab&"             holotorp, holokill, return"
+	setVar $HELP~HELP[1]   $HELP~TAB&"drop [on | off]{delay}{drop type}{trigger}{return}{kill} "
+	setVar $HELP~HELP[2]   $HELP~TAB&"       "
+	setVar $HELP~HELP[3]   $HELP~TAB&"     If started from command prompt, will be a ship dropper. "
+	setVar $HELP~HELP[4]   $HELP~TAB&"       "
+	setVar $HELP~HELP[5]   $HELP~TAB&"     - [delay]     = delay before dropping in milliseconds   "
+	setVar $HELP~HELP[6]   $HELP~TAB&"     - [drop type] = [d]irect, [a]djacent, [s]urround, "
+	setvar $HELP~HELP[7]   $HELP~TAB&"                     or [da] direct, then adjacent"
+	setVar $HELP~HELP[8]   $HELP~TAB&"     - [delay]     = delay before dropping in milliseconds "
+	setVar $HELP~HELP[9]   $HELP~TAB&"     - [trigger]   = [f]igs, [fm] figs or mines,  "
+	setVar $HELP~HELP[10]  $HELP~TAB&"                     [m]ines, [uf] No-Fig Mines"
+	setVar $HELP~HELP[11]  $HELP~TAB&"     - [return]    = return planet/ship home after 10 seconds"
+	setVar $HELP~HELP[12]  $HELP~TAB&"     - [kill]      = checks for enemy, and kills if possible"
+	setVar $HELP~HELP[13]  $HELP~TAB&"     - [fastkill]  = does kill mac without checking"
+	setVar $HELP~HELP[14]  $HELP~TAB&"     - [holotorp]  = does holotorp command after drop"
+	setVar $HELP~HELP[15]  $HELP~TAB&"     - [holokill]  = does holokill after drop"
+	setVar $HELP~HELP[16]  $HELP~TAB&"         "
+	setVar $HELP~HELP[17]  $HELP~TAB&"     All of these options can be run at the same time."
+	setVar $HELP~HELP[18]  $HELP~TAB&"     - Order of operations are:"
+	setVar $HELP~HELP[19]  $HELP~TAB&"             delay, drop, fastkill, kill,"
+	setVar $HELP~HELP[20]  $HELP~TAB&"             holotorp, holokill, return"
 
-	gosub :bot~helpfile
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Dropper"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Dropper starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 	setVar $PLAYER~save TRUE
 	gosub :combat~init 
@@ -792,7 +793,7 @@ return
 
 	stripText $planet~planet "#"
 	SetVar $isManual FALSE
-	gosub :getstats
+	gosub :player~quikstats
 return
 
 :authenticate
@@ -987,4 +988,6 @@ return
 
 #INCLUDES:
 include "source\include\combat"
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

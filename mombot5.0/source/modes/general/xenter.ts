@@ -1,5 +1,5 @@
 logging "OFF"
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
 :XENTER~RUN
 
 
@@ -49,4 +49,5 @@ gosub :SWITCHBOARD~SWITCHBOARD
 halt
 
 # includes:
+include "source\include\loadvars"
 include "source\include\xenter"

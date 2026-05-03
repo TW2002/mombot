@@ -1,33 +1,34 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	gosub :combat~init 
 
 
-	setVar $BOT~help[1]   $BOT~tab&" density {kill} {escape:#} {photon} {pel} "
-	setVar $BOT~help[2]   $BOT~tab&"         {call} {holo} {attack:#}"
-	setVar $BOT~help[3]   $BOT~tab&"   - Density scans until it sees ship or planet and "
-	setVar $BOT~help[4]   $BOT~tab&"     then performs an action  "
-	setVar $BOT~help[5]   $BOT~tab&"             "
-	setVar $BOT~help[6]   $BOT~tab&"          {kill} - will kill/holokill "
-	setVar $BOT~help[7]   $BOT~tab&"        {escape} - will escape to home sector "
-	setVar $BOT~help[8]   $BOT~tab&"      {escape:#} - will escape to sector provided"
-	setVar $BOT~help[9]   $BOT~tab&"      {attack:#} - will only photon sector provided"
-	setVar $BOT~help[10]  $BOT~tab&"        {photon} - photon sector"
-	setVar $BOT~help[11]  $BOT~tab&"          {holo} - holoscan sector and broadcast"
-	setVar $BOT~help[12]  $BOT~tab&"         {pgrid} - pgrid in to sector"
-	setVar $BOT~help[13]  $BOT~tab&"          {call} - calls saveme"
-	setVar $BOT~help[14]  $BOT~tab&"           {pel} - photon, enter, land"
-	setVar $BOT~help[15]  $BOT~tab&"         {pel:#} - pel with planet number"
-	setVar $BOT~help[16]  $BOT~tab&" {density:value} - only react to density changes of this "
-	setVar $BOT~help[17]  $BOT~tab&"                   value or higher. Default is 40."
-	setVar $BOT~help[18]  $BOT~tab&"      {killport} - Blows port with macro"
-	setVar $BOT~help[19]  $BOT~tab&"                  "
-	setVar $BOT~help[20]  $BOT~tab&"      Examples:   "
-	setVar $BOT~help[21]  $BOT~tab&"             >density kill call escape:1922"
-	setVar $BOT~help[22]  $BOT~tab&"             >density pel density:500"
-	setVar $BOT~help[23]  $BOT~tab&"             >density pel:10 "
-	setVar $BOT~help[24]  $BOT~tab&"             >density photon holo"
-	setVar $BOT~help[25]  $BOT~tab&"             >density pgrid killport kill escape:123"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]   $HELP~TAB&" density {kill} {escape:#} {photon} {pel} "
+	setVar $HELP~HELP[2]   $HELP~TAB&"         {call} {holo} {attack:#}"
+	setVar $HELP~HELP[3]   $HELP~TAB&"   - Density scans until it sees ship or planet and "
+	setVar $HELP~HELP[4]   $HELP~TAB&"     then performs an action  "
+	setVar $HELP~HELP[5]   $HELP~TAB&"             "
+	setVar $HELP~HELP[6]   $HELP~TAB&"          {kill} - will kill/holokill "
+	setVar $HELP~HELP[7]   $HELP~TAB&"        {escape} - will escape to home sector "
+	setVar $HELP~HELP[8]   $HELP~TAB&"      {escape:#} - will escape to sector provided"
+	setVar $HELP~HELP[9]   $HELP~TAB&"      {attack:#} - will only photon sector provided"
+	setVar $HELP~HELP[10]  $HELP~TAB&"        {photon} - photon sector"
+	setVar $HELP~HELP[11]  $HELP~TAB&"          {holo} - holoscan sector and broadcast"
+	setVar $HELP~HELP[12]  $HELP~TAB&"         {pgrid} - pgrid in to sector"
+	setVar $HELP~HELP[13]  $HELP~TAB&"          {call} - calls saveme"
+	setVar $HELP~HELP[14]  $HELP~TAB&"           {pel} - photon, enter, land"
+	setVar $HELP~HELP[15]  $HELP~TAB&"         {pel:#} - pel with planet number"
+	setVar $HELP~HELP[16]  $HELP~TAB&" {density:value} - only react to density changes of this "
+	setVar $HELP~HELP[17]  $HELP~TAB&"                   value or higher. Default is 40."
+	setVar $HELP~HELP[18]  $HELP~TAB&"      {killport} - Blows port with macro"
+	setVar $HELP~HELP[19]  $HELP~TAB&"                  "
+	setVar $HELP~HELP[20]  $HELP~TAB&"      Examples:   "
+	setVar $HELP~HELP[21]  $HELP~TAB&"             >density kill call escape:1922"
+	setVar $HELP~HELP[22]  $HELP~TAB&"             >density pel density:500"
+	setVar $HELP~HELP[23]  $HELP~TAB&"             >density pel:10 "
+	setVar $HELP~HELP[24]  $HELP~TAB&"             >density photon holo"
+	setVar $HELP~HELP[25]  $HELP~TAB&"             >density pgrid killport kill escape:123"
+	gosub :HELP~HELPFILE
 
 #check mines * on portkill
 #check plist 
@@ -582,5 +583,7 @@ return
 return
 		
 	#INCLUDES:
+include "source\include\planet"
 	include "source\include\combat"
-	include "source\include\bot"
+	include "source\include\loadvars"
+include "source\include\help"

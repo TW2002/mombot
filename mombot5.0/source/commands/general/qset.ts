@@ -18,7 +18,7 @@ gosub :DOQSETPROTECTIONS
 gosub :PLAYER~CURRENTPROMPT
 setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 setvar $BOT~VALIDPROMPTS "Planet Citadel"
-gosub :BOT~CHECKSTARTINGPROMPT
+gosub :PLAYER~CHECKSTARTINGPROMPT
 setvar $TOTALDAMAGE 0
 setvar $CANNONTYPE $PARM1
 setvar $CANNONDAMAGE $PARM2
@@ -97,4 +97,7 @@ killalltriggers
 return
 
 # includes:
-include "source\include\bot"
+
+#INCLUDES:
+include "source\include\planet"
+include "source\include\player"

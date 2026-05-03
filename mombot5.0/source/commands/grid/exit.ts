@@ -1,8 +1,9 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
-	setVar $BOT~help[1]  $BOT~tab&"xenter - exit/enter to clear sector of enemy mines/fighters "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"xenter - exit/enter to clear sector of enemy mines/fighters "
+	gosub :HELP~HELPFILE
     halt
 end
 
@@ -52,4 +53,6 @@ gosub :SWITCHBOARD~SWITCHBOARD
 halt
 
 #INCLUDES:
+include "source\include\loadvars"
 include "source\include\xenter"
+include "source\include\help"

@@ -1,2 +1,0 @@
-:GATHER~NAMESPACE
-return

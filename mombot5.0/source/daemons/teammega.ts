@@ -1,5 +1,6 @@
 	logging off
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	loadvar $game~port_max
 	loadvar $game~mbbs
 
@@ -15,18 +16,18 @@
 	setArray $ORIGINAL_SHIP $MAX_BOTS
 
  
-	setVar $BOT~help[1]  $BOT~tab&" teammega {minproduct:#} {stopturns:#} {half}"
-	setVar $BOT~help[2]  $BOT~tab&"   "
-	setVar $BOT~help[3]  $BOT~tab&" Buydown and mega with multiple bots"
-	setVar $BOT~help[4]  $BOT~tab&"   "
-	setVar $BOT~help[5]  $BOT~tab&" {minproduct:#} - Port Min Prod Req (def:30,000)"
-	setVar $BOT~help[6]  $BOT~tab&"  {stopturns:#} - Turns to stop at (def: 100)"
-	setVar $BOT~help[7]  $BOT~tab&"         {half} - Sells only half to port."
-	setVar $BOT~help[8]  $BOT~tab&"         "
-	setVar $BOT~help[9]  $BOT~tab&"     Bots: callin mega1, mega2, etc."
-	setVar $BOT~help[10] $BOT~tab&"           script will find potential robbers"
+	setVar $HELP~HELP[1]  $HELP~TAB&" teammega {minproduct:#} {stopturns:#} {half}"
+	setVar $HELP~HELP[2]  $HELP~TAB&"   "
+	setVar $HELP~HELP[3]  $HELP~TAB&" Buydown and mega with multiple bots"
+	setVar $HELP~HELP[4]  $HELP~TAB&"   "
+	setVar $HELP~HELP[5]  $HELP~TAB&" {minproduct:#} - Port Min Prod Req (def:30,000)"
+	setVar $HELP~HELP[6]  $HELP~TAB&"  {stopturns:#} - Turns to stop at (def: 100)"
+	setVar $HELP~HELP[7]  $HELP~TAB&"         {half} - Sells only half to port."
+	setVar $HELP~HELP[8]  $HELP~TAB&"         "
+	setVar $HELP~HELP[9]  $HELP~TAB&"     Bots: callin mega1, mega2, etc."
+	setVar $HELP~HELP[10] $HELP~TAB&"           script will find potential robbers"
 	
-		gosub :bot~helpfile
+		gosub :HELP~HELPFILE
 
 	# for trader names #
 	gosub :combat~init
@@ -41,8 +42,8 @@
 		halt
 	end
 
-	setVar $BOT~script_title "Team Mega"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Team Mega starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 	getWordPos $bot~user_command_line $pos "minproduct:"
 	if ($pos > 0)
@@ -416,6 +417,7 @@ return
 		send "'" & $nextbot & " buy e w *"
 	:startDock1
 	:startDock2
+	:bdagain1
 		gosub :killthetriggers
 
 
@@ -662,5 +664,8 @@ end
 return
 
 #INCLUDES:
+include "source\include\planet"
 include "source\include\combat"
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

@@ -1,4 +1,5 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 
 if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
@@ -12,7 +13,7 @@ end
 :tow
 	gosub :PLAYER~quikstats
 	setVar $bot~validPrompts "Command"
-	gosub :bot~checkstartingprompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	isNumber $test $bot~parm1
 	if ($test = FALSE)
 		setVar $SWITCHBOARD~message "Ship to tow must be entered as a number*"
@@ -69,13 +70,13 @@ end
 
 :wait_for_command
 
-	setVar $BOT~help[1]  $BOT~tab&"tow [ship number | list]"
-	setVar $BOT~help[2]  $BOT~tab&"      "
-	setVar $BOT~help[3]  $BOT~tab&"  Tow ships and display tow list"
-	setVar $BOT~help[4]  $BOT~tab&"      "
-	setVar $BOT~help[5]  $BOT~tab&"    {ship number}  ship number to tow"
-	setVar $BOT~help[6]  $BOT~tab&"           {list}  list all tow ships in sector"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"tow [ship number | list]"
+	setVar $HELP~HELP[2]  $HELP~TAB&"      "
+	setVar $HELP~HELP[3]  $HELP~TAB&"  Tow ships and display tow list"
+	setVar $HELP~HELP[4]  $HELP~TAB&"      "
+	setVar $HELP~HELP[5]  $HELP~TAB&"    {ship number}  ship number to tow"
+	setVar $HELP~HELP[6]  $HELP~TAB&"           {list}  list all tow ships in sector"
+	gosub :HELP~HELPFILE
 
 	halt
 
@@ -88,7 +89,7 @@ end
 	setArray $scan_array 1000
 	setVar $player~startingLocation $PLAYER~CURRENT_PROMPT
 	setVar $bot~validPrompts "Citadel Command"
-	gosub :bot~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	if ($PLAYER~startingLocation = "Citadel")
 		send " q "
 		gosub :PLANET~getPlanetInfo
@@ -153,4 +154,7 @@ end
 return
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

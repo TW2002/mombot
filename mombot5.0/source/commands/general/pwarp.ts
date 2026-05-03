@@ -1,21 +1,22 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1]  $BOT~tab&"pwarp {sector:#} {"&#34&"trader_name"&#34&"} "
-	setVar $BOT~help[2]  $BOT~tab&"      "
-	setVar $BOT~help[3]  $BOT~tab&"        planet warps to sector "
-	setVar $BOT~help[4]  $BOT~tab&"      "
-	setVar $BOT~help[5]  $BOT~tab&"    Options: "
-	setVar $BOT~help[6]  $BOT~tab&"           {sector:#} - sector to pwarp to "
-	setVar $BOT~help[7]  $BOT~tab&"      {"&#34&"trader_name"&#34&"} - trader to pwarp to"
-	setVar $BOT~help[8]  $BOT~tab&"         "
-	setVar $BOT~help[9]  $BOT~tab&"    Examples:"
-	setVar $BOT~help[10] $BOT~tab&"               >p 233 - normal pwarp"
-	setVar $BOT~help[11] $BOT~tab&"         >p planet 12 - pwarp to last known "
-	setVar $BOT~help[12] $BOT~tab&"                        location of planet 12 "
-	setVar $BOT~help[13] $BOT~tab&"              >p mind - pwarp to a corp member with mind"
-	setVar $BOT~help[14] $BOT~tab&"                        in their name"
-	setVar $BOT~help[15] $BOT~tab&"     >p "&#34&"mind dagger"&#34&" - pwarp to corp member"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"pwarp {sector:#} {"&#34&"trader_name"&#34&"} "
+	setVar $HELP~HELP[2]  $HELP~TAB&"      "
+	setVar $HELP~HELP[3]  $HELP~TAB&"        planet warps to sector "
+	setVar $HELP~HELP[4]  $HELP~TAB&"      "
+	setVar $HELP~HELP[5]  $HELP~TAB&"    Options: "
+	setVar $HELP~HELP[6]  $HELP~TAB&"           {sector:#} - sector to pwarp to "
+	setVar $HELP~HELP[7]  $HELP~TAB&"      {"&#34&"trader_name"&#34&"} - trader to pwarp to"
+	setVar $HELP~HELP[8]  $HELP~TAB&"         "
+	setVar $HELP~HELP[9]  $HELP~TAB&"    Examples:"
+	setVar $HELP~HELP[10] $HELP~TAB&"               >p 233 - normal pwarp"
+	setVar $HELP~HELP[11] $HELP~TAB&"         >p planet 12 - pwarp to last known "
+	setVar $HELP~HELP[12] $HELP~TAB&"                        location of planet 12 "
+	setVar $HELP~HELP[13] $HELP~TAB&"              >p mind - pwarp to a corp member with mind"
+	setVar $HELP~HELP[14] $HELP~TAB&"                        in their name"
+	setVar $HELP~HELP[15] $HELP~TAB&"     >p "&#34&"mind dagger"&#34&" - pwarp to corp member"
+	gosub :HELP~HELPFILE
 
 	killalltriggers
 	setvar $player~save true
@@ -26,7 +27,7 @@
 	end
 	setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
 	setVar $bot~validPrompts "Citadel"
-	gosub :bot~checkstartingprompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 
 	gosub :player~checkfortravelname
 
@@ -34,18 +35,18 @@
 	if (($test = FALSE) OR ($bot~parm1 = ""))
 		setVar $SWITCHBOARD~message "Sector must be entered as a number between 11-"&SECTORS&"*"
 		gosub :SWITCHBOARD~switchboard
-		goto :wait_for_command
+		halt
 	else    
 		if (($bot~parm1 > SECTORS) OR ($bot~parm1 < 11))    
 			setVar $SWITCHBOARD~message "Sector must be entered as a number between 11-"&SECTORS&"*"  
 			gosub :SWITCHBOARD~switchboard
-			goto :wait_for_command
+			halt
 		else
 			setVar $PLANET~warpto $bot~parm1
 			if ($PLAYER~CURRENT_SECTOR = $PLANET~warpto)
 				setVar $SWITCHBOARD~message "Already in that sector!*"
 				gosub :SWITCHBOARD~switchboard
-				goto :wait_for_command
+				halt
 			end
 		end
 	end
@@ -61,4 +62,7 @@
 	halt
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

@@ -1,4 +1,5 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
 	if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
 		goto :wait_for_command
@@ -9,7 +10,7 @@
 	gosub :PLAYER~quikstats
 	setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
 	setVar $bot~validPrompts "Command Citadel Planet"
-	gosub :bot~checkstartingprompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	loadVar $planet~planet
 	if ($planet~planet <> "0")
 		setvar $last_planet_landed $planet~planet
@@ -64,13 +65,16 @@
 
 
 :wait_for_command
-	setVar $BOT~help[1]  $BOT~tab&"   Lands on a planet.          "
-	setVar $BOT~help[2]  $BOT~tab&"               "
-	setVar $BOT~help[3]  $BOT~tab&"    land {planet#}  "
-	setVar $BOT~help[4]  $BOT~tab&"        "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"   Lands on a planet.          "
+	setVar $HELP~HELP[2]  $HELP~TAB&"               "
+	setVar $HELP~HELP[3]  $HELP~TAB&"    land {planet#}  "
+	setVar $HELP~HELP[4]  $HELP~TAB&"        "
+	gosub :HELP~HELPFILE
 halt
 
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

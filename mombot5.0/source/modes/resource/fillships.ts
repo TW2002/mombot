@@ -1,8 +1,9 @@
 logging off
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1]  $BOT~tab&"    Fills all empty ships with fighters from sector.        " 
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"    Fills all empty ships with fighters from sector.        "
+	gosub :HELP~HELPFILE
 
 :emptyships
 	killalltriggers
@@ -71,7 +72,7 @@ gosub :BOT~loadVars
 			gosub :planet~landingSub
 		end
 		send "'{" $switchboard~bot_name "} - Done filling empty ships.*"
-		
+
 halt
 # ============================== END Move Ship (moveship) Sub ==============================
 
@@ -93,4 +94,7 @@ halt
 		pause
 	:topoff_success
 return
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

@@ -1,11 +1,12 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	loadVar $BOT~ARMID_COUNT_FILE
 
-	setVar $BOT~help[1] $BOT~tab&"CALL - Call SaveMe Command"
-	setVar $BOT~help[2] $BOT~tab&"       Used to trigger a SaveMe Script"
-	setVar $BOT~help[3] $BOT~tab&"     "
-	setVar $BOT~help[4] $BOT~tab&"       - Originally written by Cherokee"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"CALL - Call SaveMe Command"
+	setVar $HELP~HELP[2] $HELP~TAB&"       Used to trigger a SaveMe Script"
+	setVar $HELP~HELP[3] $HELP~TAB&"     "
+	setVar $HELP~HELP[4] $HELP~TAB&"       - Originally written by Cherokee"
+	gosub :HELP~HELPFILE
 
 
 	getwordpos " "&$bot~user_command_line&" " $pos " kill "
@@ -110,5 +111,7 @@ return
 
 
 #INCLUDES:
+include "source\include\loadvars"
 include "source\include\xenter"
 
+include "source\include\help"

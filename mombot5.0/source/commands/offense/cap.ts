@@ -1,5 +1,6 @@
 logging "OFF"
-gosub :BOT~LOADVARS
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 loadvar $SHIP~CAP_FILE
 loadvar $PLAYER~ONLYALIENS
 loadvar $PLAYER~CAPPINGALIENS
@@ -8,9 +9,9 @@ loadvar $PLAYER~DEFENDERCAPPING
 
 
 
-setvar $BOT~HELP[1] $BOT~TAB&"cap   "
-setvar $BOT~HELP[2] $BOT~TAB&"    Captures enemy ships and attempts to not destroy them.   "
-gosub :BOT~HELPFILE
+setvar $HELP~HELP[1] $HELP~TAB&"cap   "
+setvar $HELP~HELP[2] $HELP~TAB&"    Captures enemy ships and attempts to not destroy them.   "
+gosub :HELP~HELPFILE
 
 gosub :COMBAT~INIT
 
@@ -78,4 +79,5 @@ halt
 
 # includes:
 include "source\include\combat"
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"

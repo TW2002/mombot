@@ -1,30 +1,31 @@
 	reqRecording
 	logging off
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 	setVar $BOT~command "wander"
 	loadVar $BOT~bot_turn_limit
 	loadVar $MAP~stardock
 	loadvar $bot~subspace
 
-	setVar $BOT~help[1]   $BOT~tab&"wander {file | sector param | auto} {share}"
-	setVar $BOT~help[2]   $BOT~tab&"     Warps around the universe, attempting to be turn efficient."
-	setVar $BOT~help[3]   $BOT~tab&"     Turn efficiency goes away when it's an unlimited turn game."
-	setVar $BOT~help[4]   $BOT~tab&"     Requires twarp.                "
-	setVar $BOT~help[5]   $BOT~tab&"                     "
-	setVar $BOT~help[6]   $BOT~tab&"             file - path to target file"
-	setVar $BOT~help[7]   $BOT~tab&"     sector param - Will target sector marked with sector param."
-	setVar $BOT~help[8]   $BOT~tab&"                     "
-	setVar $BOT~help[9]   $BOT~tab&"                    Using UNFIGGED as param will target all"
-	setVar $BOT~help[10]  $BOT~tab&"                    sectors where FIGSEC is not true. "
-	setVar $BOT~help[11]  $BOT~tab&"          {share} - reports figged sectors over subspace"
-	setVar $BOT~help[12]  $BOT~tab&"        {nearest} - does nearest fig calc when possible"
-	setVar $BOT~help[13]  $BOT~tab&"          "
-	setVar $BOT~help[14]  $BOT~tab&"          Planet avoid options can be set in the bot menu"
+	setVar $HELP~HELP[1]   $HELP~TAB&"wander {file | sector param | auto} {share}"
+	setVar $HELP~HELP[2]   $HELP~TAB&"     Warps around the universe, attempting to be turn efficient."
+	setVar $HELP~HELP[3]   $HELP~TAB&"     Turn efficiency goes away when it's an unlimited turn game."
+	setVar $HELP~HELP[4]   $HELP~TAB&"     Requires twarp.                "
+	setVar $HELP~HELP[5]   $HELP~TAB&"                     "
+	setVar $HELP~HELP[6]   $HELP~TAB&"             file - path to target file"
+	setVar $HELP~HELP[7]   $HELP~TAB&"     sector param - Will target sector marked with sector param."
+	setVar $HELP~HELP[8]   $HELP~TAB&"                     "
+	setVar $HELP~HELP[9]   $HELP~TAB&"                    Using UNFIGGED as param will target all"
+	setVar $HELP~HELP[10]  $HELP~TAB&"                    sectors where FIGSEC is not true. "
+	setVar $HELP~HELP[11]  $HELP~TAB&"          {share} - reports figged sectors over subspace"
+	setVar $HELP~HELP[12]  $HELP~TAB&"        {nearest} - does nearest fig calc when possible"
+	setVar $HELP~HELP[13]  $HELP~TAB&"          "
+	setVar $HELP~HELP[14]  $HELP~TAB&"          Planet avoid options can be set in the bot menu"
 	
-	gosub :bot~helpfile
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Wanderer"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Wanderer starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 	setVar $PLAYER~save TRUE
 
@@ -824,5 +825,7 @@ return
 
 #INCLUDES:
 include "source\include\combat"
-include "source\include\bot"
+include "source\include\loadvars"
 include "source\include\haggle"
+include "source\include\help"
+include "source\include\switchboard"

@@ -1,14 +1,15 @@
-   gosub :BOT~loadVars
+   gosub :LOADVARS~LOADVARS
+   gosub :HELP~INITIALIZE
 
-    setVar $BOT~help[1]  $BOT~tab&"unlock - unlock ship in citadel to it can be traded"
-    gosub :bot~helpfile
+    setVar $HELP~HELP[1]  $HELP~TAB&"unlock - unlock ship in citadel to it can be traded"
+    gosub :HELP~HELPFILE
 
 # ============================== START UNLOCK (unlock) Sub ==============================
 :unlock
     setVar $unlock_attempt 0
     gosub  :player~currentPrompt
     setVar $bot~validPrompts "Citadel"
-    gosub :bot~checkstartingprompt
+    gosub :PLAYER~CHECKSTARTINGPROMPT
     setvar $switchboard~message "Unlock ship initiated*"
     gosub :switchboard~switchboard
     send "ryy"
@@ -50,4 +51,6 @@ halt
 
 
 # includes:
-include "source\include\bot"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

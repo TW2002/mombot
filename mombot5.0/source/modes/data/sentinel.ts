@@ -30,21 +30,22 @@
 
 	reqRecording
 	logging off
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 				
 	
 	
-	setVar $BOT~help[1] $BOT~tab&" sentinel {cim} {clv} {cycletime}"
-	setVar $BOT~help[2] $BOT~tab&" Sentinel - Originally written by Xide"
-	setVar $BOT~help[3] $BOT~tab&" Options:"
-	setVar $BOT~help[4] $BOT~tab&"    - {cim}    - does cim hunting - Default off"
-	setVar $BOT~help[5] $BOT~tab&"    - {clv}    - checks clv for changes - Default off"
-	setVar $BOT~help[6] $BOT~tab&"    - {cycletime}    - How long between cycles; def 30secs"
+	setVar $HELP~HELP[1] $HELP~TAB&" sentinel {cim} {clv} {cycletime}"
+	setVar $HELP~HELP[2] $HELP~TAB&" Sentinel - Originally written by Xide"
+	setVar $HELP~HELP[3] $HELP~TAB&" Options:"
+	setVar $HELP~HELP[4] $HELP~TAB&"    - {cim}    - does cim hunting - Default off"
+	setVar $HELP~HELP[5] $HELP~TAB&"    - {clv}    - checks clv for changes - Default off"
+	setVar $HELP~HELP[6] $HELP~TAB&"    - {cycletime}    - How long between cycles; def 30secs"
 	
-	gosub :bot~helpfile
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Sentinel"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Sentinel starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 # get defaults
 #loadVar $SentinelSaved
@@ -1024,4 +1025,6 @@ pause
   return
 
 # includes:
-include "source\include\bot"
+include "source\include\loadvars"
+include "source\include\help"
+include "source\include\switchboard"

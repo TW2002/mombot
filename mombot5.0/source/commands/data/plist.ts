@@ -1,7 +1,8 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
-	setVar $BOT~help[1] $BOT~tab&"PLIST - Displays Sector planet scan on subspace "
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1] $HELP~TAB&"PLIST - Displays Sector planet scan on subspace "
+	gosub :HELP~HELPFILE
 
 
 # ============================== START PLANET LIST (PLIST)  ==============================
@@ -13,7 +14,7 @@ gosub :BOT~loadVars
 	setVar $startingLocation $PLAYER~CURRENT_PROMPT
 	setVar $bot~startingLocation $PLAYER~CURRENT_PROMPT
 	setVar $bot~validPrompts "Citadel Command"
-	gosub :bot~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 
 :Planet_Listing_Start
 	if ($startingLocation = "Citadel")
@@ -91,4 +92,7 @@ gosub :BOT~loadVars
 
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

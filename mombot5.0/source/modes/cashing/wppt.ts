@@ -1,26 +1,27 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
-setVar $BOT~help[1]   $BOT~tab&"- wppt {holoscan} {evade} {pay}"
-setVar $BOT~help[2]   $BOT~tab&"  World PPT using the legacy worldtrade engine                     "
-setVar $BOT~help[3]   $BOT~tab&"                                                                  "
-setVar $BOT~help[4]   $BOT~tab&"     {holoscan}      0 - doesn't holoscan                         "
-setVar $BOT~help[5]   $BOT~tab&"                     1 - holoscans on odd densities               "
-setVar $BOT~help[6]   $BOT~tab&"                     2 - always holoscans (default)               "
-setVar $BOT~help[7]   $BOT~tab&"                                                                  "
-setVar $BOT~help[8]   $BOT~tab&"     {evade}         0 - normal (default)                         "
-setVar $BOT~help[9]   $BOT~tab&"                     1 - paranoid                                 "
-setVar $BOT~help[10]  $BOT~tab&"                     2 - avoids nothing                           "
-setVar $BOT~help[11]  $BOT~tab&"                                                                  "
-setVar $BOT~help[12]  $BOT~tab&"     {pay}             - pays tolls                               "
-setVar $BOT~help[13]  $BOT~tab&"                                                                  "
-setVar $BOT~help[14]  $BOT~tab&"     {fast}            - go fast, turn left :)                    "
-setVar $BOT~help[15]  $BOT~tab&"                                                                  "
-setVar $BOT~help[16]  $BOT~tab&"     Fig type/count come from your Mombot tab-~ preferences      "
+setVar $HELP~HELP[1]   $HELP~TAB&"- wppt {holoscan} {evade} {pay}"
+setVar $HELP~HELP[2]   $HELP~TAB&"  World PPT using the legacy worldtrade engine                     "
+setVar $HELP~HELP[3]   $HELP~TAB&"                                                                  "
+setVar $HELP~HELP[4]   $HELP~TAB&"     {holoscan}      0 - doesn't holoscan                         "
+setVar $HELP~HELP[5]   $HELP~TAB&"                     1 - holoscans on odd densities               "
+setVar $HELP~HELP[6]   $HELP~TAB&"                     2 - always holoscans (default)               "
+setVar $HELP~HELP[7]   $HELP~TAB&"                                                                  "
+setVar $HELP~HELP[8]   $HELP~TAB&"     {evade}         0 - normal (default)                         "
+setVar $HELP~HELP[9]   $HELP~TAB&"                     1 - paranoid                                 "
+setVar $HELP~HELP[10]  $HELP~TAB&"                     2 - avoids nothing                           "
+setVar $HELP~HELP[11]  $HELP~TAB&"                                                                  "
+setVar $HELP~HELP[12]  $HELP~TAB&"     {pay}             - pays tolls                               "
+setVar $HELP~HELP[13]  $HELP~TAB&"                                                                  "
+setVar $HELP~HELP[14]  $HELP~TAB&"     {fast}            - go fast, turn left :)                    "
+setVar $HELP~HELP[15]  $HELP~TAB&"                                                                  "
+setVar $HELP~HELP[16]  $HELP~TAB&"     Fig type/count come from your Mombot tab-~ preferences      "
 
-gosub :BOT~helpfile
+gosub :HELP~HELPFILE
 
-setVar $BOT~script_title "World PPT"
-gosub :BOT~banner
+setvar $SWITCHBOARD~MESSAGE "World PPT starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
 
 setTextLineTrigger prompt :allPrompts #145 & #8
 send #145&"/"
@@ -105,7 +106,7 @@ setVar $PortCheck~PortType 1
 :Menu_Go
 setVar $WorldTrade~Quota 0
 setEventTrigger disconnect :disconnected "Connection lost"
-gosub :WorldTrade~WorldTrade
+gosub :worldtrade
 goto :shutdown
 
 :disconnected
@@ -116,7 +117,7 @@ goto :Menu_Go
 :shutdown
 halt
 
-:ppt~ppt
+:ppt
 gosub :PLAYER~QUIKSTATS
 
 setvar $ppt~ore $PLAYER~ORE_HOLDS
@@ -140,59 +141,59 @@ setvar $ppt~oneway 0
 
 send "cr*r" $ppt~sectorb "*q"
 
-settextlinetrigger PPTREPORTA :PPT~REPORTA "Commerce report for"
-settextlinetrigger PPTNOPORTA :PPT~NOPORT "I have no information about a port in that sector."
+settextlinetrigger PPTREPORTA :ppt_reporta "Commerce report for"
+settextlinetrigger PPTNOPORTA :ppt_noport "I have no information about a port in that sector."
 pause
-:ppt~reporta
+:ppt_reporta
 killalltriggers
-settextlinetrigger GETSELLPRODUCTA :PPT~GETSELLPRODUCTA $ppt~proda
-settextlinetrigger GETBUYPRODUCTA :PPT~GETBUYPRODUCTA $ppt~prodb
-settexttrigger GOTPRODUCTA :PPT~GOTPRODUCTA "Computer command"
+settextlinetrigger GETSELLPRODUCTA :ppt_getsellproducta $ppt~proda
+settextlinetrigger GETBUYPRODUCTA :ppt_getbuyproducta $ppt~prodb
+settexttrigger GOTPRODUCTA :ppt_gotproducta "Computer command"
 pause
-:ppt~getsellproducta
+:ppt_getsellproducta
 setvar $ppt~line CURRENTLINE
 striptext $ppt~line "Ore"
 getword $ppt~line $ppt~sellamounta 3
 pause
-:ppt~getbuyproducta
+:ppt_getbuyproducta
 setvar $ppt~line CURRENTLINE
 striptext $ppt~line "Ore"
 getword $ppt~line $ppt~buyamounta 3
 pause
-:ppt~gotproducta
+:ppt_gotproducta
 killalltriggers
 
-settextlinetrigger PPTREPORTB :PPT~REPORTB "Commerce report for"
-settextlinetrigger PPTNOPORTB :PPT~NOPORT "I have no information about a port in that sector."
+settextlinetrigger PPTREPORTB :ppt_reportb "Commerce report for"
+settextlinetrigger PPTNOPORTB :ppt_noport "I have no information about a port in that sector."
 pause
-:ppt~reportb
+:ppt_reportb
 killalltriggers
-settextlinetrigger GETSELLPRODUCTB :PPT~GETSELLPRODUCTB $ppt~prodb
-settextlinetrigger GETBUYPRODUCTB :PPT~GETBUYPRODUCTB $ppt~proda
-settexttrigger GOTPRODUCTB :PPT~GOTPRODUCTB "Computer command"
+settextlinetrigger GETSELLPRODUCTB :ppt_getsellproductb $ppt~prodb
+settextlinetrigger GETBUYPRODUCTB :ppt_getbuyproductb $ppt~proda
+settexttrigger GOTPRODUCTB :ppt_gotproductb "Computer command"
 pause
-:ppt~getsellproductb
+:ppt_getsellproductb
 setvar $ppt~line CURRENTLINE
 striptext $ppt~line "Ore"
 getword $ppt~line $ppt~sellamountb 3
 pause
-:ppt~getbuyproductb
+:ppt_getbuyproductb
 setvar $ppt~line CURRENTLINE
 striptext $ppt~line "Ore"
 getword $ppt~line $ppt~buyamountb 3
 pause
-:ppt~gotproductb
+:ppt_gotproductb
 killalltriggers
-goto :PPT~AFTERREPORTS
+goto :ppt_afterreports
 
-:ppt~noport
+:ppt_noport
 killalltriggers
 setvar $ppt~sector $ppt~sectora
 setvar $ppt~aborted 1
 waiton "Command [TL="
 return
 
-:ppt~afterreports
+:ppt_afterreports
 setvar $ppt~trade 100
 setvar $ppt~x 100
 multiply $ppt~x $ppt~holds
@@ -228,7 +229,7 @@ end
 
 setvar $ppt~firstrun 1
 
-:ppt~porta
+:ppt_porta
 send "pt"
 if ($batch)
   if ($ppt~onhand <> "None")
@@ -282,7 +283,7 @@ else
   gosub :haggle~haggle
   setvar $ppt~credits $haggle~credits
   if ($haggle~abort = 1)
-    goto :ppt~porta
+    goto :ppt_porta
   end
 end
 subtract $ppt~buyamounta 1
@@ -319,7 +320,7 @@ if ($ppt~firstrun = 1)
 
   getdistance $ppt~distance $ppt~sectorb $ppt~sectora
   if ($ppt~distance = 1)
-    goto :ppt~portb
+    goto :ppt_portb
   else
     if (($batch) and $ppt~displayoff)
       send "cn 9 qq"
@@ -335,7 +336,7 @@ if ($ppt~firstrun = 1)
   end
 end
 
-:ppt~portb
+:ppt_portb
 send "pt"
 
 if ($batch)
@@ -388,7 +389,7 @@ else
   gosub :haggle~haggle
   setvar $ppt~credits $haggle~credits
   if ($haggle~abort = 1)
-    goto :ppt~portb
+    goto :ppt_portb
   end
 end
 
@@ -410,10 +411,9 @@ else
   send $ppt~sectora
 end
 
-goto :ppt~porta
+goto :ppt_porta
 
-:worldtrade~worldtrade
-setvar $move~checksub ":WORLDTRADE~SUB_MOVECHECK"
+:worldtrade
 setvar $worldtrade~credits 0
 setvar $worldtrade~checked 0
 
@@ -423,7 +423,7 @@ setvar $gameprefs~abortdisplayall[$gameprefs~bank] "OFF"
 setvar $gameprefs~screenpauses[$gameprefs~bank] "OFF"
 gosub :gameprefs~setgameprefs
 
-:worldtrade~start
+:worldtrade_start
 if (($worldtrade~credits >= $worldtrade~quota) and ($worldtrade~quota > 0))
   return
 end
@@ -437,17 +437,256 @@ if (($BOT~BOT_TURN_LIMIT > 0) and ($PLAYER~UNLIMITEDGAME <> TRUE))
 end
 
 send "d"
-gosub :move~move
+gosub :move
+goto :worldtrade_start
 
-goto :WORLDTRADE~START
-:worldtrade~sub_movecheck
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:MOVE
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+settextlinetrigger 1 :GETSECTOR "Sector  : "
+pause
+
+:getsector
+getword CURRENTLINE $move~cursector 3
+
+setvar $move~history[9] $move~history[8]
+setvar $move~history[8] $move~history[7]
+setvar $move~history[7] $move~history[6]
+setvar $move~history[6] $move~history[5]
+setvar $move~history[5] $move~history[4]
+setvar $move~history[4] $move~history[3]
+setvar $move~history[3] $move~history[2]
+setvar $move~history[2] $move~history[1]
+setvar $move~history[1] $move~cursector
+
+if ($move~extrasendall = "")
+  setvar $move~extrasendall 0
+end
+
+if ($move~confirmsector = 1)
+
+  settextlinetrigger TOLLFIGS :TOLLFIGS "You have to destroy the fighters or pay"
+  settextlinetrigger FIGS :FIGS "You have to destroy the fighters to remain"
+  settexttrigger MINES :MINEPROMPT "Mined Sector:"
+  settexttrigger ARRIVED :ARRIVED "Command [TL="
+  pause
+
+  :tollfigs
+  setvar $move~paidtoll FALSE
+  if ($move~attack = 3)
+
+    send "py"
+    setvar $move~paidtoll TRUE
+  else
+
+    send "a9999*"
+  end
+  pause
+
+  :figs
+  send "a9999*"
+  pause
+
+  :mineprompt
+  send "*"
+  pause
+
+  :arrived
+  killtrigger TOLLFIGS
+  killtrigger FIGS
+  killtrigger MINES
+else
+  waiton "Command [TL="
+end
+
+getsector $move~cursector $move~cursector
+setvar $move~confirmsector 0
+setvar $move~found 0
+setvar $move~noscan 0
+
+gosub :movecheck
+
+if ($move~found = 1)
+  return
+end
+
+if (($move~scanholo = 2) and ($move~noscan < 2))
+  setvar $move~scannedholo 1
+  send "shsd"
+  waiton "Relative Density Scan"
+  waiton "Command [TL="
+elseif ($move~noscan = 0)
+  setvar $move~scannedholo 0
+  send "sd"
+  waiton "Relative Density Scan"
+  waiton "Command [TL="
+end
+
+getsector $move~cursector $move~cursector
+
+:assess
+setvar $move~i 1
+setvar $move~bestscore 1000
+setvar $move~bestwarp 0
+setvar $move~bestattack 0
+setvar $move~willholo 0
+
+:testwarp
+if ($move~cursector.warp[$move~i] > 0)
+  setvar $move~score 0
+  setvar $move~safe 1
+
+  getsector $move~cursector.warp[$move~i] $move~thissector
+
+  if ($move~evasion <> 2)
+    if ($move~scannedholo = 0)
+
+
+      if (($move~thissector.density <> 0) and ($move~thissector.density <> 100))
+        if (($move~thissector.density = 5) or ($move~thissector.density = 105))
+          setvar $move~safe 2
+        else
+          setvar $move~safe 0
+        end
+      end
+    end
+    if ($move~scannedholo = 1)
+
+
+      if ($move~thissector.anomoly = "YES")
+
+        setvar $move~safe 0
+      end
+      if (($move~thissector.figs.owner <> "belong to your Corp") and (($move~thissector.figs.owner <> "yours") and ($move~thissector.figs.quantity > 0)))
+        if ($move~evasion = 1)
+          setvar $move~safe 0
+        else
+
+
+          setvar $move~safe 2
+
+          if ($move~thissector.figs.quantity > 20)
+            setvar $move~safe 0
+          end
+        end
+      end
+      if ($move~thissector.density > 0)
+        setvar $move~density $move~thissector.density
+
+        if ($move~thissector.figs.quantity > 0)
+          setvar $move~x $move~thissector.figs.quantity
+          multiply $move~x 5
+          subtract $move~density $move~x
+        end
+
+        if ((($move~density <> 100) or ($move~thissector.port.exists = 0)) and ($move~density > 0))
+          setvar $move~safe 0
+        end
+      end
+    end
+  end
+
+
+  if (($move~safe = 2) and ($move~evasion = 1))
+    add $move~score 500
+  end
+
+  if ($move~safe = 0)
+    add $move~score 500
+    setvar $move~willholo 1
+  end
+
+  setvar $move~x 1
+
+  :checkhistory
+  if ($move~x <= 10)
+    if ($move~history[$move~x] = $move~cursector.warp[$move~i])
+      setvar $move~m 10
+      subtract $move~m $move~x
+      multiply $move~m 10
+      add $move~score $move~m
+    end
+    add $move~x 1
+    goto :checkhistory
+  end
+
+  if ($move~portpriority = 1)
+
+    if (($move~scannedholo = 1) and ($move~thissector.port.exists = 1)) or (($move~scannedholo = 0) and ($move~thissector.density = 100))
+      subtract $move~score 3
+    end
+  end
+
+  if ($move~dedpriority = 1)
+
+    if ($move~thissector.warps = 1)
+      subtract $move~score 3
+    end
+  end
+
+  getrnd $move~random 1 5
+  add $move~score $move~random
+
+  if ($move~score < $move~bestscore)
+    setvar $move~bestscore $move~score
+    setvar $move~bestwarp $move~cursector.warp[$move~i]
+    setvar $move~bestsafe $move~safe
+  end
+
+  add $move~i 1
+  goto :testwarp
+end
+
+if ($move~bestscore > 400)
+  setvar $move~willholo 1
+end
+
+if (($move~willholo = 1) and (($move~scannedholo = 0) and ($move~scanholo = 1)))
+  send "sh"
+  waitfor "Sector  : "
+  waitfor "Command [TL="
+  setvar $move~scannedholo 1
+  goto :assess
+end
+
+if (($move~bestscore > 400) and ($move~evasion = 1))
+  clientmessage "No safe options!"
+  halt
+end
+
+setvar $move~figcount SECTOR.FIGS.QUANTITY[$move~cursector]
+
+if (($move~paidtoll <> TRUE) and ($move~extrasend <> ""))
+  if (($move~extrasendall = 1) and (($move~cursector > 10) and ($move~cursector <> STARDOCK)))
+    send $move~extrasend
+  elseif (($move~figcount <= 0) and (($move~cursector > 10) and (PORT.CLASS[$move~cursector] < 9)))
+    send $move~extrasend
+  end
+end
+
+if ((SECTORS > 5000) or ($move~bestwarp < 600))
+  setvar $move~warpsuffix "*"
+else
+  setvar $move~warpsuffix "."
+end
+
+if (($move~bestsafe = 2) and ($move~attack = 1)) or ($move~attack = 2)
+  send $move~bestwarp $move~warpsuffix "*na9999**"
+else
+  send $move~bestwarp $move~warpsuffix
+  setvar $move~confirmsector 1
+end
+
+goto :MOVE
+
+:movecheck
 if ($worldtrade~checked)
   setvar $worldtrade~checked 0
 elseif ((SECTOR.FIGS.OWNER[$move~cursector] = "yours") or (SECTOR.FIGS.OWNER[$move~cursector] = "belong to your Corp") or (SECTOR.FIGS.QUANTITY[$move~cursector] = 0))
   setvar $portcheck~sector $move~cursector
   setvar $portcheck~scanned 0
   setvar $portcheck~porttype 1
-  gosub :WORLDTRADE~PORTCHECK
+  gosub :portcheck
   setvar $move~noscan $portcheck~scanned
 
   if ($portcheck~pair > 0)
@@ -455,7 +694,7 @@ elseif ((SECTOR.FIGS.OWNER[$move~cursector] = "yours") or (SECTOR.FIGS.OWNER[$mo
     setvar $ppt~sectorb $portcheck~pair
     setvar $ppt~proda $portcheck~tradeproda
     setvar $ppt~prodb $portcheck~tradeprodb
-    gosub :ppt~ppt
+    gosub :ppt
 
     if ($ppt~aborted = 0)
       if ($batch)
@@ -471,10 +710,9 @@ elseif ((SECTOR.FIGS.OWNER[$move~cursector] = "yours") or (SECTOR.FIGS.OWNER[$mo
     setvar $worldtrade~checked 1
   end
 end
-
 return
 
-:WORLDTRADE~PORTCHECK
+:portcheck
 setvar $portcheck~pair 0
 setvar $portcheck~figged 0
 
@@ -531,7 +769,7 @@ if ($portcheck~scanned = 2)
 
     if (($portcheck~pairclass > 0) and ((($portcheck~pairclass < 9) and ((((SECTOR.FIGS.QUANTITY[$portcheck~sect] = 0) or (SECTOR.FIGS.OWNER[$portcheck~sect] = "yours") or (SECTOR.FIGS.OWNER[$portcheck~sect] = "belong to your Corp") or ((($portcheck~danger = 1) and (SECTOR.FIGS.OWNER[$portcheck~sect] <> "Rogue Mercenaries")) and (SECTOR.FIGS.QUANTITY[$portcheck~sect] <= 20)) or ($portcheck~danger = 2)) and ((((SECTOR.MINES.QUANTITY[$portcheck~sect] = 0) or (SECTOR.MINES.OWNER[$portcheck~sect] = "yours") or (SECTOR.MINES.OWNER[$portcheck~sect] = "belong to your Corp") or (($portcheck~danger = 1) and (SECTOR.MINES.QUANTITY[$portcheck~sect] <= 5)) or ($portcheck~danger = 2)) and ((((SECTOR.NAVHAZ[$portcheck~sect] = 0) or ((SECTOR.NAVHAZ[$portcheck~sect] <= 3) and ($portcheck~danger = 1)) or ($portcheck~danger = 2)) and ((((SECTOR.PLANETCOUNT[$portcheck~sect] = 0) or ($portcheck~danger = 2)) and ((SECTOR.TRADERCOUNT[$portcheck~sect] = 0) or ($portcheck~danger = 2)))))))))))))
       if ($portcheck~porttype = 1)
-        gosub :WORLDTRADE~SUB_PPTCHECK
+        gosub :pptcheck
       else
         if (PORT.BUYEQUIP[$portcheck~sect])
           setvar $portcheck~tradeproda "Equipment"
@@ -557,7 +795,7 @@ end
 setvar $portcheck~ignore 0
 return
 
-:WORLDTRADE~SUB_PPTCHECK
+:pptcheck
 if (($portcheck~class = 1) and ($portcheck~pairclass = 2))
   setvar $portcheck~tradeproda "Equipment"
   setvar $portcheck~tradeprodb "Organics"
@@ -633,7 +871,10 @@ end
 return
 
 # includes:
-include "source\include\bot"
+include "source\include\move"
+include "source\include\gameprefs"
+include "source\include\player"
+include "source\include\loadvars"
 include "source\include\haggle"
-include "source\include\ppt"
-include "source\include\worldtrade"
+include "source\include\help"
+include "source\include\switchboard"

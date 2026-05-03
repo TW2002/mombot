@@ -1,24 +1,25 @@
-	gosub :BOT~loadVars
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 
 
-	setVar $BOT~help[1]  $BOT~tab&"Moves empty ships from one sector to another."
-	setVar $BOT~help[2]  $BOT~tab&"                "
-	setVar $BOT~help[3]  $BOT~tab&"  moveship [sector] {back} {sell} {dep} {"&#34&"ship filter"&#34&"}"
-	setVar $BOT~help[4]  $BOT~tab&"                  "
-	setVar $BOT~help[5]  $BOT~tab&"   Options:            "
-	setVar $BOT~help[6]  $BOT~tab&"        [sector] - target sector"
-	setVar $BOT~help[7]  $BOT~tab&"          [back] - will grab ships from target sector and bring"
-	setVar $BOT~help[8]  $BOT~tab&"                   them back to current sector   "
-	setVar $BOT~help[9]  $BOT~tab&"          [sell] - if moving to stardock, attempt to sell ships"
-	setVar $BOT~help[10] $BOT~tab&" ["&#34&"ship filter"&#34&"] - move ships only matching this filter"
-	setVar $BOT~help[11] $BOT~tab&"                   "
-	setVar $BOT~help[12] $BOT~tab&"             -  Ship filter list can be comma delimited.    "
-	setVar $BOT~help[13] $BOT~tab&"             -  Can use either planet or SXX port in        "
-	setVar $BOT~help[14] $BOT~tab&"                starting sector for fuel."
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"Moves empty ships from one sector to another."
+	setVar $HELP~HELP[2]  $HELP~TAB&"                "
+	setVar $HELP~HELP[3]  $HELP~TAB&"  moveship [sector] {back} {sell} {dep} {"&#34&"ship filter"&#34&"}"
+	setVar $HELP~HELP[4]  $HELP~TAB&"                  "
+	setVar $HELP~HELP[5]  $HELP~TAB&"   Options:            "
+	setVar $HELP~HELP[6]  $HELP~TAB&"        [sector] - target sector"
+	setVar $HELP~HELP[7]  $HELP~TAB&"          [back] - will grab ships from target sector and bring"
+	setVar $HELP~HELP[8]  $HELP~TAB&"                   them back to current sector   "
+	setVar $HELP~HELP[9]  $HELP~TAB&"          [sell] - if moving to stardock, attempt to sell ships"
+	setVar $HELP~HELP[10] $HELP~TAB&" ["&#34&"ship filter"&#34&"] - move ships only matching this filter"
+	setVar $HELP~HELP[11] $HELP~TAB&"                   "
+	setVar $HELP~HELP[12] $HELP~TAB&"             -  Ship filter list can be comma delimited.    "
+	setVar $HELP~HELP[13] $HELP~TAB&"             -  Can use either planet or SXX port in        "
+	setVar $HELP~HELP[14] $HELP~TAB&"                starting sector for fuel."
+	gosub :HELP~HELPFILE
 
-	setVar $BOT~script_title "Ship Mover"
-	gosub :BOT~banner
+	setvar $SWITCHBOARD~MESSAGE "Ship Mover starting up!*"
+	gosub :SWITCHBOARD~SWITCHBOARD
 
 
 # ============================== START Move Ship (moveship) Sub ==============================
@@ -401,4 +402,7 @@ halt
 
 
 #INCLUDES:
+include "source\include\loadvars"
 include "source\include\port"
+include "source\include\help"
+include "source\include\switchboard"

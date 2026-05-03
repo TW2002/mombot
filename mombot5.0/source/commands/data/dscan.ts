@@ -1,9 +1,10 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 
 
-	setVar $BOT~help[1]  $BOT~tab&"dscan "
-	setVar $BOT~help[2]  $BOT~tab&"  Sends density scan to subspace"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"dscan "
+	setVar $HELP~HELP[2]  $HELP~TAB&"  Sends density scan to subspace"
+	gosub :HELP~HELPFILE
 
 
 #=============================== SS SCANNING =============================================
@@ -27,7 +28,7 @@ gosub :BOT~loadVars
 		setVar $scan_macro " sd* "
 	end
 	setVar $bot~validPrompts "Citadel Command"
-	gosub :bot~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	if ($PLAYER~startingLocation = "Citadel")
 		if ($scan_macro = "d")
 			setVar $scan_macro "s"
@@ -196,4 +197,7 @@ return
 #================================ END SS SCANNER =======================================    
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"

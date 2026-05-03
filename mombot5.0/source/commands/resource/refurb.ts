@@ -1,19 +1,20 @@
-gosub :BOT~loadVars
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
 	setvar $bot~command "refurb"
 
-	setVar $BOT~help[1]  $BOT~tab&"refurb {holds} {fighters} {shields} {seek} "
-	setVar $BOT~help[2]  $BOT~tab&"     "
-	setVar $BOT~help[3]  $BOT~tab&"   Auto buys fighters and shields"
-	setVar $BOT~help[4]  $BOT~tab&"     "
-	setVar $BOT~help[5]  $BOT~tab&"       {seek} - twarp to class 9 or 0 port and back"
-	setVar $BOT~help[6]  $BOT~tab&"      {holds} - buy holds"
-	setVar $BOT~help[7]  $BOT~tab&"   {fighters} - buy fighters"
-	setVar $BOT~help[8]  $BOT~tab&"    {shields} - buy shields"
-	gosub :bot~helpfile
+	setVar $HELP~HELP[1]  $HELP~TAB&"refurb {holds} {fighters} {shields} {seek} "
+	setVar $HELP~HELP[2]  $HELP~TAB&"     "
+	setVar $HELP~HELP[3]  $HELP~TAB&"   Auto buys fighters and shields"
+	setVar $HELP~HELP[4]  $HELP~TAB&"     "
+	setVar $HELP~HELP[5]  $HELP~TAB&"       {seek} - twarp to class 9 or 0 port and back"
+	setVar $HELP~HELP[6]  $HELP~TAB&"      {holds} - buy holds"
+	setVar $HELP~HELP[7]  $HELP~TAB&"   {fighters} - buy fighters"
+	setVar $HELP~HELP[8]  $HELP~TAB&"    {shields} - buy shields"
+	gosub :HELP~HELPFILE
 
 	setVar $message ""
 	setVar $BOT~validPrompts "Citadel Command"
-	gosub :BOT~checkStartingPrompt
+	gosub :PLAYER~CHECKSTARTINGPROMPT
 	setVar $startingLocation $PLAYER~CURRENT_PROMPT
 
 
@@ -169,4 +170,7 @@ halt
 
 
 # includes:
-include "source\include\bot"
+include "source\include\planet"
+include "source\include\player"
+include "source\include\loadvars"
+include "source\include\help"
