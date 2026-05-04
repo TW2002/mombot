@@ -794,6 +794,37 @@ setsectorparameter $PLAYER~TARGET "FIGSEC" FALSE
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLAYER~ENTER_MENU_DEAF
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($BOT~MENU_DEAF_DEPTH <= 0)
+  getdeafclients $BOT~MENU_DEAF_RESTORE
+end
+add $BOT~MENU_DEAF_DEPTH 1
+setdeafclients TRUE
+setvar $BOT~BOTISDEAF TRUE
+savevar $BOT~BOTISDEAF
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLAYER~EXIT_MENU_DEAF
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($BOT~MENU_DEAF_DEPTH > 0)
+  subtract $BOT~MENU_DEAF_DEPTH 1
+end
+
+if ($BOT~MENU_DEAF_DEPTH <= 0)
+  if ($BOT~MENU_DEAF_RESTORE = TRUE)
+    setdeafclients TRUE
+    setvar $BOT~BOTISDEAF TRUE
+  else
+    setdeafclients FALSE
+    setvar $BOT~BOTISDEAF FALSE
+  end
+  savevar $BOT~BOTISDEAF
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :PLAYER~DISCOD
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $PLAYER~TAGLINE "["&$command&"]"

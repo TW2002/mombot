@@ -10,13 +10,14 @@ setvar $HELP~HELP[1] $HELP~TAB&"           Visits all ports in grid and sells or
 setvar $HELP~HELP[2] $HELP~TAB&"           and/or equipment.       "
 setvar $HELP~HELP[3] $HELP~TAB&"       "
 setvar $HELP~HELP[4] $HELP~TAB&" merch {sector param} {min port product} [o | e] {args}  "
-setvar $HELP~HELP[6] $HELP~TAB&"       "
-setvar $HELP~HELP[7] $HELP~TAB&"Arguments:"
-setvar $HELP~HELP[8] $HELP~TAB&"    {neg/hold}   Determines planet negotiate or hold "
-setvar $HELP~HELP[9] $HELP~TAB&"                 selling approach"
-setvar $HELP~HELP[10] $HELP~TAB&"     {skipcim}   Uses current cim data and skips searching"
-setvar $HELP~HELP[11] $HELP~TAB&"       {docim}   Does cim check before starting and skips searching"
-setvar $HELP~HELP[12] $HELP~TAB&"     {buyfuel}   Buys all the fuel in fuel selling ports on route"
+setvar $HELP~HELP[5] $HELP~TAB&"       "
+setvar $HELP~HELP[6] $HELP~TAB&"Arguments:"
+setvar $HELP~HELP[7] $HELP~TAB&"    {neg/hold}   Determines planet negotiate or hold "
+setvar $HELP~HELP[8] $HELP~TAB&"                 selling approach"
+setvar $HELP~HELP[9] $HELP~TAB&"     {skipcim}   Uses current cim data and skips searching"
+setvar $HELP~HELP[10] $HELP~TAB&"       {docim}   Does cim check before starting and skips searching"
+setvar $HELP~HELP[11] $HELP~TAB&"     {buyfuel}   Buys all the fuel in fuel selling ports on route"
+setvar $HELP~HELP[12] $HELP~TAB&"      {upfuel}   upgrade fuel ore ports (usually with buyfuel)"
 setvar $HELP~HELP[13] $HELP~TAB&"        {half}   sell half of port (neg only for now) "
 setvar $HELP~HELP[14] $HELP~TAB&"       {upequ}   upgrade good equipment ports"
 setvar $HELP~HELP[15] $HELP~TAB&"       {uporg}   upgrade good organics ports"
@@ -105,9 +106,15 @@ else
   setvar $SKIPCIM FALSE
 end
 
+getwordpos $bot~user_command_line $POS "upfuel"
+if ($POS > 0)
+  setvar $UPFUEL TRUE
+else
+  setvar $UPFUEL FALSE
+end
+
 getwordpos $bot~user_command_line $POS "upequ"
 if ($POS > 0)
-
   setvar $UPEQU TRUE
 else
   setvar $UPEQU FALSE
@@ -367,21 +374,6 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
           send "l "&$planet~planet&"* c "
           goto :DONEMERCHANT
         end
-        if ((PORT.BUYFUEL[$NEARFIG] = FALSE) and ($BUYFUEL = TRUE))
-          send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
-          gosub :player~quikstats
-          while (($player~turnssellingproduct > 0) and ($player~turnstoemptyfuel > 1))
-            send "l " $planet~planet "*   t  *  l 1* t  *  * 2*  q P * *"
-            send "*"
-            send " 0 *  /"
-            if ($NI <> TRUE)
-              subtract $player~turnssellingproduct 1
-            end
-            subtract $player~turnstoemptyfuel 1
-            add $TOTALORGANICHOLDS $player~total_holds
-            waiton "Turns"
-          end
-        end
         send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
         gosub :player~quikstats
         while ($player~turnssellingproduct > 0)
@@ -425,6 +417,47 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
           waiton "Turns"
         end
       end
+      if ($UPFUEL = TRUE)
+        if ($player~credits < 5000000)
+          gosub :player~quikstats
+          if ($player~current_prompt <> "Citadel")
+            gosub :planet~landonplanetentercitadel
+          end
+          send "tf"
+          waiton "and the Treasury has"
+         getword CURRENTLINE $CREDITS 3
+         striptext $CREDITS ","
+         if ($CREDITS > 5000000)
+           send "5000000*"
+			     waitfor "Citadel command (?=help)"
+         else
+           send "0*"
+			     waitfor "Citadel command (?=help)"
+           goto :ENDUPFUEL
+        end
+      end
+      send "q q q z a 999* * * * "
+      setvar $port~product 1
+      gosub :port~domaxport
+      gosub :planet~landonplanetentercitadel
+      end
+      :ENDUPFUEL
+
+      if ((PORT.BUYFUEL[$NEARFIG] = FALSE) and ($BUYFUEL = TRUE))
+        send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
+        gosub :player~quikstats
+        while (($player~turnssellingproduct > 0) and ($player~turnstoemptyfuel > 1))
+          send "l " $planet~planet "*   t  *  l 1* t  *  * 2*  q P * *"
+          send "*"
+          send " 0 *  /"
+          if ($NI <> TRUE)
+            subtract $player~turnssellingproduct 1
+          end
+          subtract $player~turnstoemptyfuel 1
+        #add $TOTALORGANICHOLDS $player~total_holds
+          waiton "Turns"
+        end
+      end
     end
 
     if ($UPORG = TRUE)
@@ -441,10 +474,10 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
           striptext $CREDITS ","
           if ($CREDITS > 5000000)
             send "5000000*"
-			waitfor "Citadel command (?=help)"
+			      waitfor "Citadel command (?=help)"
           else
             send "0*"
-			waitfor "Citadel command (?=help)"
+			      waitfor "Citadel command (?=help)"
             goto :ENDUPORG
           end
         end

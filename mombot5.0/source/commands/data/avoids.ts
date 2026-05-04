@@ -1,7 +1,6 @@
 	gosub :LOADVARS~LOADVARS
 	gosub :HELP~INITIALIZE
 
-
 	 setVar $HELP~HELP[1] $HELP~TAB&"Set, clear, or display avoids"
 	 setVar $HELP~HELP[2] $HELP~TAB&"Using the avoids command without a parameter will display"
 	 setVar $HELP~HELP[3] $HELP~TAB&"current avoids over subspace. "
@@ -9,20 +8,22 @@
 	 setVar $HELP~HELP[5] $HELP~TAB&"Options:"
 	 setVar $HELP~HELP[6] $HELP~TAB&"        {set} -  Will set an avoid "
 	 setVar $HELP~HELP[7] $HELP~TAB&"                                        "
-	 setVar $HELP~HELP[8] $HELP~TAB&"      {clear} -  Will clear an avoid if a sector number"
-	 setVar $HELP~HELP[9] $HELP~TAB&"                 is provided, otherwise 'clear' by itself"
-	setVar $HELP~HELP[10] $HELP~TAB&"                 will clear all avoids."
-	setVar $HELP~HELP[11] $HELP~TAB&"       "
-	setVar $HELP~HELP[12] $HELP~TAB&"Usage: "
-	setVar $HELP~HELP[13] $HELP~TAB&"       >avoids set 45"
-	setVar $HELP~HELP[14] $HELP~TAB&"       >avoids clear 45"
-	setVar $HELP~HELP[15] $HELP~TAB&"       >avoids clear"
+	 setVar $HELP~HELP[8] $HELP~TAB&"       {save} - Save current avoids to avoids.txt "
+	 setVar $HELP~HELP[9] $HELP~TAB&"                                        "
+	 setVar $HELP~HELP[10] $HELP~TAB&"      {clear} -  Will clear an avoid if a sector number"
+	 setVar $HELP~HELP[11] $HELP~TAB&"                 is provided, otherwise 'clear' by itself"
+	setVar $HELP~HELP[12] $HELP~TAB&"                 will clear all avoids."
+	setVar $HELP~HELP[13] $HELP~TAB&"       "
+	setVar $HELP~HELP[14] $HELP~TAB&"Usage: "
+	setVar $HELP~HELP[15] $HELP~TAB&"       >avoids set 45"
+	setVar $HELP~HELP[16] $HELP~TAB&"       >avoids clear 45"
+	setVar $HELP~HELP[17] $HELP~TAB&"       >avoids clear"
 	gosub :HELP~HELPFILE
-
 
 	setVar $AVOIDS		" "
 	setVar $Temp		""
 	setVar $Void_CNT	0
+	setvar $avoidsfile "avoids.txt"
 	gosub :PLAYER~quikstats
 
 	if ($PLAYER~CURRENT_PROMPT = "Command") OR ($PLAYER~CURRENT_PROMPT = "Citadel")
@@ -92,6 +93,30 @@
 				gosub :SWITCHBOARD~switchboard
 				halt
 			end
+		elseif ($bot~parm1 = "save")
+			delete $avoidsfile
+			send "cxq"
+			waitfor "<List Avoided Sectors>"
+			setTextLineTrigger		NoAvoid	:NoAvoid	"No Sectors are currently being avoided."
+			setTextLineTrigger		Done	:SaveDone	"Computer command"
+			setTextLineTrigger		Line	:SaveLine
+			pause
+			:SaveLine
+    		if ((CURRENTLINE <> "") AND (CURRENTLINE <> "0"))
+				splittext CURRENTLINE $line "  "
+				setvar $i 1
+				while ($i <= $line)
+					write $avoidsfile $line[$i]
+					add $i 1
+				end
+			end
+			setTextLineTrigger		Line	:SaveLine
+			pause
+			:SaveDone
+			killAllTriggers
+			setVar $SWITCHBOARD~message "Avoids Saved*"
+			gosub :SWITCHBOARD~switchboard
+			halt
 		end
 		send "cxq"
 	else
@@ -135,7 +160,6 @@
 		setVar $SWITCHBOARD~message $Void_CNT & " Avoids Found:*  *"&$AVOIDS & "*"
 		gosub :SWITCHBOARD~switchboard
 		halt
-
 
 include "source\include\player"
 include "source\include\loadvars"
