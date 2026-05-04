@@ -1252,13 +1252,8 @@ return
 
 
 #INCLUDES:
-include "source\include\player"
-include "source\include\planet"
-include "source\include\ship"
-include "source\include\grid"
 include "source\include\combat"
 include "source\include\loadvars"
 include "source\include\planethaggle"
 include "source\include\haggle"
 include "source\include\help"
-include "source\include\switchboard"

@@ -336,9 +336,9 @@
 		#	gosub :go_to_drop_sector
 		#end
 		setvar $switchboard~message "* Waiting for something to hunt..*"
-		gosub :bot~echo 
+		gosub :ECHO
 
-		:bot~restart
+		:restart
 		gosub :validateFighterHit
 		gosub :attackandmoveship
 		if ($targetsFound = TRUE)
@@ -513,7 +513,7 @@ return
 	end
 	if ($targetCount <= 0)
 		setvar $switchboard~message " No Targets..*"
-		gosub :bot~echo 
+		gosub :echo 
 		setVar $targetSectors[1] $dropSector
 	end
 
@@ -599,7 +599,7 @@ return
 	gosub :SWITCHBOARD~switchboard
 	send "l "&$planet~planet&"* m*** c "
 	setvar $switchboard~message "* " & ANSI_14 & $PLAYER~surroundOutput & "*" & ANSI_7
-	gosub :bot~echo
+	gosub :ECHO
 
 return
 
@@ -1047,11 +1047,25 @@ return
 :ALIENHUNT_BUYSHIELD_ENDED
 return
 
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:ECHO
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+loadvar $BOT~BOTISDEAF
+getdeafclients $BOT~BOTISDEAF
+if ($BOT~BOTISDEAF)
+  setvar $BOT~SILENT_RUNNING TRUE
+  setvar $silent_running TRUE
+  savevar $silent_running
+  savevar $bot~silent_running
+  gosub :SWITCHBOARD~SWITCHBOARD
+else
+  echo $SWITCHBOARD~MESSAGE
+end
+
 #INCLUDES:
-include "source\include\bot"
-include "source\include\combat"
-include "source\include\loadvars"
 include "source\include\fighters"
 include "source\include\xenter"
+include "source\include\combat"
+include "source\include\loadvars"
 include "source\include\help"
 include "source\include\switchboard"

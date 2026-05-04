@@ -1235,5 +1235,4 @@ else
 			halt
 end
 include "source\include\map"
-include "source\include\player"
 include "source\include\loadvars"

@@ -225,5 +225,4 @@ halt
 return
 
 #-=-=-=-=-includes-=-=-=-=-
-include "source\include\loadvars"
 include "source\include\user_interface"

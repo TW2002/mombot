@@ -7,6 +7,7 @@ RELEASE_TREE="$RELEASE_ROOT/mombot"
 LIVE_ROOT="${MOMBOT_LIVE_ROOT:-/Users/mosleym/twx/scripts/mombot}"
 LIVE_HELP="$LIVE_ROOT/help"
 RELEASE_HELP="$RELEASE_TREE/help"
+SOURCE_ALIASES="$ROOT/source/aliases.cfg"
 ZIP_PATH="$RELEASE_ROOT/mombot.zip"
 
 if [[ ! -d "$RELEASE_TREE" ]]; then
@@ -16,6 +17,11 @@ fi
 
 if [[ ! -d "$LIVE_HELP" ]]; then
   echo "Live help directory not found: $LIVE_HELP" >&2
+  exit 1
+fi
+
+if [[ ! -f "$SOURCE_ALIASES" ]]; then
+  echo "Source aliases file not found: $SOURCE_ALIASES" >&2
   exit 1
 fi
 
@@ -30,6 +36,9 @@ if ! command -v zip >/dev/null 2>&1; then
 fi
 
 mkdir -p "$RELEASE_HELP"
+cp "$SOURCE_ALIASES" "$RELEASE_TREE/aliases.cfg"
+echo "Copied $SOURCE_ALIASES to $RELEASE_TREE/aliases.cfg"
+
 rsync -a --delete "$LIVE_HELP/" "$RELEASE_HELP/"
 
 help_count="$(find "$RELEASE_HELP" -type f | wc -l | tr -d ' ')"

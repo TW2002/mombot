@@ -1060,5 +1060,5 @@ return
 
 #INCLUDES:
 include "source\include\loadvars"
-include "source\include\bot"
+include "source\include\map"
 include "source\include\help"

@@ -167,6 +167,5 @@ loadVar $map~home_sector
 # ======================     END PLANET MOVER (EVAC) SUBROUTINE    ==========================
 #INCLUDES:
 include "source\include\planet"
-include "source\include\player"
 include "source\include\loadvars"
 include "source\include\help"

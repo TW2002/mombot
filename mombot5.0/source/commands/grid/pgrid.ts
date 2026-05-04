@@ -445,7 +445,6 @@ return
 
 # includes:
 include "source\include\planet"
-include "source\include\player"
 include "source\include\ship"
 include "source\include\loadvars"
 

@@ -978,6 +978,5 @@ return
 #============================================= END DOCK SHOPPER MENU  ==================================================
 
 #INCLUDES:
-include "source\include\player"
 include "source\include\game"
 include "source\include\loadvars"

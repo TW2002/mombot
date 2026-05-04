@@ -871,10 +871,8 @@ end
 return
 
 # includes:
-include "source\include\move"
 include "source\include\gameprefs"
 include "source\include\player"
 include "source\include\loadvars"
 include "source\include\haggle"
 include "source\include\help"
-include "source\include\switchboard"

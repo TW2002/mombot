@@ -12,7 +12,7 @@ setvar $HELP~HELP[7] $HELP~TAB&"  - [cycles]  = number of cycles             - d
 setvar $HELP~HELP[8] $HELP~TAB&"  - [override] = allows product buydowns with less than 200 holds"
 setvar $HELP~HELP[9] $HELP~TAB&"     "
 setvar $HELP~HELP[10] $HELP~TAB&"  - buy [hardware] {amount}"
-setvar $HELP~HELP[11] $HELP~TAB&"  - [hardware]= [fig]hters or [sh]ields or [m]ines"
+setvar $HELP~HELP[11] $HELP~TAB&"  - [hardware]= [fig]hters or [sh]ields"
 setvar $HELP~HELP[12] $HELP~TAB&"  - [amount]  = number to purchase, default is maximum"
 setvar $HELP~HELP[13] $HELP~TAB&"      "
 setvar $HELP~HELP[14] $HELP~TAB&"  - Originally written by Cherokee.     "
@@ -821,5 +821,4 @@ halt
 # includes:
 include "source\include\loadvars"
 include "source\include\planethaggle"
-include "source\include\port"
 include "source\include\help"

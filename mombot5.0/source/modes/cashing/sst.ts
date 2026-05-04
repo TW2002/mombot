@@ -1414,7 +1414,6 @@ end
 return
 
 # includes:
-include "include/bot.ts"
 include "source\include\loadvars"
 include "source\include\help"
-include "source\include\switchboard"
+include "source\include\player"

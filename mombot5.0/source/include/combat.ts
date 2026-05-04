@@ -1021,10 +1021,10 @@ if ($SWITCHBOARD~MESSAGE <> "No targets found adjacent.*")
   gosub :SWITCHBOARD~SWITCHBOARD
 end
 return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :COMBAT~INIT
-
-
-
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $PLAYER~REALTRADERCOUNT 0
 setvar $PLAYER~FAKETRADERCOUNT 0
 setvar $PLAYER~CORPIECOUNT 0
@@ -1034,19 +1034,16 @@ setarray $PLAYER~TRADERS 200
 setarray $PLAYER~FAKETRADERS 100
 setarray $PLAYER~EMPTYSHIPS 100
 gosub :PLAYER~INITRANKS
-
-
 return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :COMBAT~PASSIVEHOLOCAP
-
-
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $COMBAT~HOLOCAPTURE TRUE
 :COMBAT~PASSIVEHOLOKILL
-
 if ($SHIP~SHIP_MAX_ATTACK <= 0)
   gosub :SHIP~GETSHIPSTATS
 end
-
 
 setvar $COMBAT~TOO_MANY_FIGHTERS ($SHIP~SHIP_OFFENSIVE_ODDS * $SHIP~SHIP_MAX_ATTACK)
 divide $COMBAT~TOO_MANY_FIGHTERS 12

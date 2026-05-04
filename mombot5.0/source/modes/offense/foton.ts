@@ -3,7 +3,6 @@
 	gosub :HELP~INITIALIZE
 	loadVar $game~MULTIPLE_PHOTONS
 
-
 	setVar $HELP~HELP[1]  $HELP~TAB&"- foton [on|off|sec] {a|d|p|s|d|t} {towship} {sector} "
 	setVar $HELP~HELP[2]  $HELP~TAB&"                     {return} {den40}"
 	setVar $HELP~HELP[3]  $HELP~TAB&"  Multiple use photon script.  "
@@ -31,6 +30,11 @@
 	setVar $HELP~HELP[25] $HELP~TAB&"      {cont}   - Will continue shooting if in density mode."
 	setVar $HELP~HELP[26] $HELP~TAB&" {delwalk:n}   - Delay walk will delay the shot for this many MS."
 	setVar $HELP~HELP[27] $HELP~TAB&"                 Then add another 100ms to subsequent hit."
+	setVar $HELP~HELP[28] $HELP~TAB&"      "
+	setVar $HELP~HELP[28] $HELP~TAB&"      Examples:   "
+	setVar $HELP~HELP[28] $HELP~TAB&"           >foton 1922 "
+	setVar $HELP~HELP[28] $HELP~TAB&"           >foton on d "
+	setVar $HELP~HELP[28] $HELP~TAB&"           >foton p holo return"
 	setVar $HELP~HELP[28] $HELP~TAB&"      "
 	setVar $HELP~HELP[29] $HELP~TAB&"       Authors: Mind Dagger and The Bounty Hunter "
 	gosub :HELP~HELPFILE
@@ -1958,7 +1962,5 @@ return
 
 #INCLUDES:
 include "source\include\planet"
-include "source\include\player"
 include "source\include\loadvars"
 include "source\include\help"
-include "source\include\switchboard"

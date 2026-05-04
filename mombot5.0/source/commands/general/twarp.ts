@@ -116,6 +116,5 @@ halt
 
 # includes:
 include "source\include\planet"
-include "source\include\player"
 include "source\include\loadvars"
 include "source\include\help"

@@ -376,6 +376,5 @@ return
 
 
 # includes:
-include "source\include\loadvars"
 include "source\include\menus"
 include "source\include\help"

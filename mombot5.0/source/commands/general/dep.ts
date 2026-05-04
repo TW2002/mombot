@@ -69,6 +69,5 @@ halt
 
 # includes:
 include "source\include\map"
-include "source\include\player"
 include "source\include\loadvars"
 include "source\include\help"

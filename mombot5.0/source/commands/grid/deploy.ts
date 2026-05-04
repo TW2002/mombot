@@ -287,7 +287,6 @@ return
 halt
 
 #INCLUDES:
-include "source\include\player"
 include "source\include\loadvars"
 include "source\include\mines"
 include "source\include\fighters"

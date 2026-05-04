@@ -38,7 +38,5 @@ gosub :SWITCHBOARD~SWITCHBOARD
 halt
 
 # includes:
-include "source\include\game"
-include "source\include\loadvars"
 include "source\include\bot"
 include "source\include\help"
