@@ -250,7 +250,7 @@
 							setVar $index $j
 							#if ($j = $courseLength)
 								setVar $PLAYER~warpto $closestFiggedSector
-								gosub :player~twarp
+								gosub :move~twarp
 								gosub  :player~currentPrompt
 								if ($PLAYER~twarpSuccess = TRUE)
 									setVar $j $index
@@ -267,7 +267,7 @@
 							end
 							if ($closestFiggedSector > 0)
 								setVar $PLAYER~warpto $closestFiggedSector
-								gosub :player~twarp
+								gosub :move~twarp
 								gosub  :player~currentPrompt
 								if ($PLAYER~twarpSuccess = TRUE)
 									setVar $j ($index + 1)
@@ -296,7 +296,7 @@
 							setVar $index $j
 							if ($j = $courseLength)
 								setVar $PLAYER~warpto $closestFiggedSector
-								gosub :player~twarp
+								gosub :move~twarp
 								gosub  :player~currentPrompt
 								if ($PLAYER~twarpSuccess = TRUE)
 									setVar $j $index
@@ -313,7 +313,7 @@
 							end
 							if ($closestFiggedSector > 0)
 								setVar $PLAYER~warpto $closestFiggedSector
-								gosub :player~twarp
+								gosub :move~twarp
 								gosub  :player~currentPrompt
 								if ($PLAYER~twarpSuccess = TRUE)
 									setVar $j ($index + 1)
@@ -482,7 +482,7 @@
 						gosub :combat~holokill
 						if (($sector~holotargetfound = true) and ($player~current_sector <> $before_holo_kill_sector))
 							setVar $PLAYER~WARPTO $before_holo_kill_sector
-							gosub :PLAYER~twarp
+							gosub :MOVE~twarp
 							if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
 								setvar $switchboard~message "Could not make it back to starting sector after holokill. - ["&$player~msg&"]*"
 							end
@@ -828,3 +828,4 @@ include "source\include\combat"
 include "source\include\loadvars"
 include "source\include\haggle"
 include "source\include\help"
+include "source\include\switchboard.ts"

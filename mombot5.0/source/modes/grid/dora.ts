@@ -512,7 +512,7 @@ while ($iSaySo)
 		# means we got something from previous options
 
 		setVar $player~warpto $gridSector
-		gosub :player~twarp
+		gosub :move~twarp
 		add $stat_moves 1
 
 		setVar $gridSectorPostTwarp 0
@@ -674,7 +674,7 @@ return
 			if (($moveTwarp = 1) and ($isAdj = 0))
 				:jumpagain
 				setVar $player~warpto $safeOptionsBackDirect
-				gosub :player~twarp
+				gosub :move~twarp
 				gosub :player~quikstats
 				if ($player~twarpSuccess = TRUE)
 					add $stat_moves 1
@@ -1871,3 +1871,4 @@ include "source\include\move"
 include "source\include\player"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

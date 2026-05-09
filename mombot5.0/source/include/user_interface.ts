@@ -101,7 +101,8 @@ if ($USER_INTERFACE~POS > 0)
   add $BOT~CORPYCOUNT 1
   setvar $BOT~CORPY[$BOT~CORPYCOUNT] $USER_INTERFACE~USER_NAME
   setvar $USER_INTERFACE~LOGGEDIN[$USER_INTERFACE~USER_NAME] 1
-  send "'{" $SWITCHBOARD~BOT_NAME "} - User Verified - " $USER_INTERFACE~USER_NAME "*"
+  setvar $switchboard~message "User Verified - " $USER_INTERFACE~USER_NAME "*"
+  gosub :switchboard~switchboard
 else
   gosub :VERIFY_USER_STATUS
   if ($USER_INTERFACE~AUTHORIZATION = 0)
@@ -892,7 +893,8 @@ while ($USER_INTERFACE~B <= $BOT~COMMAND_LINES)
       stop $BOT~LAST_LOADED_MODULE
       setvar $BOT~MODE "General"
       savevar $BOT~MODE
-      send "'{" $SWITCHBOARD~BOT_NAME "} - "&$USER_INTERFACE~FORMATTED_COMMAND&" mode is now off.*"
+      setvar $switchboard~message ""&$USER_INTERFACE~FORMATTED_COMMAND&" mode is now off.*"
+      gosub :switchboard~switchboard
       goto :BOT~WAIT_FOR_COMMAND
     end
   end
@@ -1210,7 +1212,8 @@ return
 :UNFREEZEBOT
 echo "*Bot timed out, unfreezing..*"
 setdeafclients FALSE
-send "'{" $BOT~BOT_NAME "} - Bot frozen for over 100 seconds, resetting...*"
+setvar $switchboard~message "Bot frozen for over 100 seconds, resetting...*"
+gosub :switchboard~switchboard
 goto :BOT~WAIT_FOR_COMMAND
 
 include "source\include\internal_commands"

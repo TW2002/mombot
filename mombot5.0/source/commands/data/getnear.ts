@@ -50,8 +50,8 @@ if (($PORT_MAX = 0) and (($PLAYER~CURRENT_PROMPT = "Command") or ($PLAYER~CURREN
 end
 
 if ($PORT_MAX = 0)
-  send "'{"&$BOT_NAME&"} Unable To Determine Port Max From CFG File*"
-  waitfor "Message sent on sub-space channel"
+  setvar $switchboard~message "Unable To Determine Port Max From CFG File*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -67,8 +67,8 @@ else
   end
 end
 
-send "'{"&$BOT_NAME&"} GETNEAR "&$VERSION&" - Searching For Ports BUYERS & SELLERS ...*"
-waitfor "Message sent on sub-space channel"
+setvar $switchboard~message "GETNEAR "&$VERSION&" - Searching For Ports BUYERS & SELLERS ...*"
+gosub :switchboard~switchboard
 
 getnearestwarps $LOOKUP $PLAYER~CURRENT_SECTOR
 setvar $IDX 1
@@ -211,6 +211,7 @@ return
 
 # includes:
 include "source\include\game"
+include "source\include\switchboard.ts"
 :PAD
 
 

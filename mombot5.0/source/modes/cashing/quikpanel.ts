@@ -1426,7 +1426,8 @@ return
 :donewithport
         killalltriggers
         getText CURRENTLINE $sec "]:[" "] ("
-        send "'{" $bot_name "} - CAP Trade, sold units at " & $sec & ":*"
+        setvar $switchboard~message "CAP Trade, sold units at " & $sec & ":*"
+        gosub :switchboard~switchboard
         IF ($ore = 1)
 	       send "   Ore : " $oreamount " units for " $oreprice ", (" $credperoreunit "ppu) (mcic: " $fuelMCIC ")*"
 	       write GAMENAME & "_MCIC.txt" $sec & " - Ore - " & $fuelMCIC
@@ -2191,7 +2192,8 @@ return
 	setVAr $upg_prod 3
 	gosub :upgradePort
 	IF ($upg_amnt = "-1")
-	       send "'{" $bot_name "} - SSM - Could not upgrade port, it's either maxed or I don't have enough money*"
+	       setvar $switchboard~message "SSM - Could not upgrade port, it's either maxed or I don't have enough money*"
+	       gosub :switchboard~switchboard
 	       goto :wait
 	END
 	goto :sport
@@ -2635,3 +2637,4 @@ return
 	END
 	send "qq"
 return
+include "source\include\switchboard.ts"

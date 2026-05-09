@@ -95,7 +95,7 @@ loadvar $BOT_TEAM_NAME
 loadvar $SUBSPACE
 loadvar $COMMAND
 goto :WROB_START
-include "source\include\planet"
+include "source\include\planethaggle"
 :WROB_START
 
 fileexists $DOESHELPFILEEXIST "scripts\MOMBot\Help\"&$COMMAND&".txt"
@@ -111,25 +111,29 @@ if ($DOESHELPFILEEXIST <> TRUE)
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "       - Will skip running CIM port report before running   "
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    [CLEAR_EMPTY]                                           "
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "       - Will delete the empty port file                    "
-  send "'{" $BOT_NAME "} - Writing help file for this command in Help directory.*"
+  setvar $switchboard~message "Writing help file for this command in Help directory.*"
+  gosub :switchboard~switchboard
 end
 :MERCHANT
 
 gosub :PLAYER~QUIKSTATS
 setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 if ($STARTINGLOCATION <> "Citadel")
-  send "'{" $BOT_NAME "} - You must run World Rob command from a Citadel prompt.*"
+  setvar $switchboard~message "You must run World Rob command from a Citadel prompt.*"
+  gosub :switchboard~switchboard
   halt
 end
 
 setvar $MINIMUMPORT $PARM1
 isnumber $NUMBER $MINIMUMPORT
 if ($NUMBER <> 1)
-  send "'{" $BOT_NAME "} - Minimum rob amount entered is not a number!*"
+  setvar $switchboard~message "Minimum rob amount entered is not a number!*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($MINIMUMPORT <= 0)
-  send "'{" $BOT_NAME "} - Minimum rob amount must be greater than 0.*"
+  setvar $switchboard~message "Minimum rob amount must be greater than 0.*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -157,7 +161,8 @@ waiton "Planet command (?"
 gosub :GETPLANETINFO
 send "c"
 if ($CITADEL < 4)
-  send "'{" $BOT_NAME "} - You must run World Rob from at least a level 4 planet.*"
+  setvar $switchboard~message "You must run World Rob from at least a level 4 planet.*"
+  gosub :switchboard~switchboard
   halt
 end
 gosub :PLAYER~QUIKSTATS
@@ -167,21 +172,25 @@ setvar $SPENTCREDITS 0
 setvar $STARTINGSECTOR $PLAYER~CURRENT_SECTOR
 
 if ($SKIPCIM = FALSE)
-  send "'{" $BOT_NAME "} - World Rob Downloading Current Port CIM Data - Comms Off*"
+  setvar $switchboard~message "World Rob Downloading Current Port CIM Data - Comms Off*"
+  gosub :switchboard~switchboard
   send "^rq"
   waitfor ": ENDINTERROG"
-  send "'{" $BOT_NAME "} - World Rob CIM Port Data Complete - Comms Back On*"
+  setvar $switchboard~message "World Rob CIM Port Data Complete - Comms Back On*"
+  gosub :switchboard~switchboard
 end
 lowercase $PARM1
 if ($PARM1 = "clear_empty")
   delete $NO_CREDITS_FILE
-  send "'{" $BOT_NAME "} - 'No Money' file for this bot has been cleared.*"
+  setvar $switchboard~message "'No Money' file for this bot has been cleared.*"
+  gosub :switchboard~switchboard
   halt
 end
 setarray $EMPTY_GRID SECTORS
 fileexists $EXISTS $NO_CREDITS_FILE
 if ($EXISTS)
-  send "'{" $BOT_NAME "} Reading 'No Money' Ports from file..*"
+  setvar $switchboard~message "Reading 'No Money' Ports from file..*"
+  gosub :switchboard~switchboard
   setvar $READ_COUNT 1
   read $NO_CREDITS_FILE $TEMP $READ_COUNT
   while ($TEMP <> "EOF")
@@ -191,13 +200,15 @@ if ($EXISTS)
     read $NO_CREDITS_FILE $TEMP $READ_COUNT
   end
 else
-  send "'{" $BOT_NAME "} No 'No Money' file, starting clean..*"
+  setvar $switchboard~message "No 'No Money' file, starting clean..*"
+  gosub :switchboard~switchboard
 end
 
 setvar $INFINITY 1000
 while (1 < $INFINITY)
   if (($UNLIMITEDGAME = FALSE) and ($PLAYER~TURNS <= $BOT_TURN_LIMIT))
-    send "'{" $BOT_NAME "} - Turns too low to continue.*"
+    setvar $switchboard~message "Turns too low to continue.*"
+    gosub :switchboard~switchboard
     goto :DONEWORLDROB
   end
   setvar $ISFIGGED FALSE
@@ -215,7 +226,8 @@ end
 :DONEWORLDROB
 
 send "p"&$STARTINGSECTOR&"*y"
-send "'{" $BOT_NAME "} - World Rob completed.*"
+setvar $switchboard~message "World Rob completed.*"
+gosub :switchboard~switchboard
 halt
 :CHECKPORT
 
@@ -332,7 +344,8 @@ while ($BOTTOM <= $TOP)
 
   add $BOTTOM 1
 end
-send "'{" $BOT_NAME "} Can't find a route to any other ports.*"
+setvar $switchboard~message "Can't find a route to any other ports.*"
+gosub :switchboard~switchboard
 halt
 return
 :ROB
@@ -346,10 +359,12 @@ cuttext $PLAYER~ALIGNMENT $NEG_CK 1 1
 
 striptext $PLAYER~ALIGNMENT "-"
 if (($PLAYER~ALIGNMENT < 100) and ($NEG_CK = "-"))
-  send "'{" $BOT_NAME "} - Need -100 Alignment Minimum*"
+  setvar $switchboard~message "Need -100 Alignment Minimum*"
+  gosub :switchboard~switchboard
   halt
 elseif ($NEG_CK <> "-")
-  send "'{" $BOT_NAME "} - Need -100 Alignment Minimum*"
+  setvar $switchboard~message "Need -100 Alignment Minimum*"
+  gosub :switchboard~switchboard
   halt
 end
 send "q q pr * r"
@@ -368,7 +383,8 @@ if ($STARTINGLOCATION = "Citadel")
   gosub :LANDINGSUB
 end
 setsectorparameter $PLAYER~CURRENT_SECTOR "BUSTED" TRUE
-send "'{" $BOT_NAME "} - Fake Busted*"
+setvar $switchboard~message "Fake Busted*"
+gosub :switchboard~switchboard
 return
 :ROB_OK
 
@@ -443,7 +459,8 @@ if ($ROB > $ORIGINAL_PORT_CASH)
 end
 if ($ROB > 0)
   setvar $LASTSTEAL $PLAYER~CURRENT_SECTOR
-  send "'{" $BOT_NAME "} - Success! - " $ROB " credits robbed*"
+  setvar $switchboard~message "Success! - " $ROB " credits robbed*"
+  gosub :switchboard~switchboard
 end
 return
 :LANDINGSUB
@@ -463,14 +480,16 @@ pause
 killtrigger NO_LAND
 killtrigger PLANET
 killtrigger WRONGONE
-send "'{" $BOT_NAME "} - No Planet in Sector!*"
+setvar $switchboard~message "No Planet in Sector!*"
+gosub :switchboard~switchboard
 return
 :NO_LAND
 
 killtrigger NOPLANET
 killtrigger PLANET
 killtrigger WRONGONE
-send "'{" $BOT_NAME "} - This ship cannot land!*"
+setvar $switchboard~message "This ship cannot land!*"
+gosub :switchboard~switchboard
 return
 :PLANET
 
@@ -540,61 +559,6 @@ setvar $CITADEL $PLANET~CITADEL
 setvar $CITADELCREDITS $PLANET~CITADEL_CREDITS
 setvar $ACANNON $PLANET~ATMOSPHERE_CANNON
 setvar $SCANNON $PLANET~SECTOR_CANNON
-return
-:CHECKAVOIDEDSECTORS
-
-
-setvar $AVOIDEDSECTORS ""
-:READAVOIDEDLIST
-settextlinetrigger GETLINE1 :GETAVOIDS
-send "cxq"
-pause
-:KEEPCOUNTINGAVOIDS
-killalltriggers
-settextlinetrigger GETLINE :GETAVOIDS
-pause
-:GETAVOIDS
-killalltriggers
-setvar $WORKINGTEXT CURRENTLINE
-getwordpos $WORKINGTEXT $POS "<Computer deactivated>"
-if ($POS > 0)
-  goto :DONEAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "Computer"
-if ($POS > 0)
-  goto :KEEPCOUNTINGAVOIDS
-end
-if (CURRENTLINE = "")
-  goto :KEEPCOUNTINGAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "<List Avoided Sectors>"
-if ($POS > 0)
-  goto :KEEPCOUNTINGAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "No Sectors are currently being avoided."
-if ($POS > 0)
-  goto :DONEAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "Citadel"
-if ($POS > 0)
-  goto :KEEPCOUNTINGAVOIDS
-end
-setvar $WORKINGTEXT $WORKINGTEXT&" +++"
-getword $WORKINGTEXT $AVOID 1
-getwordpos $WORKINGTEXT $POS $AVOID
-
-while ($AVOID <> "+++")
-  setvar $AVOIDEDSECTORS $AVOIDEDSECTORS&" "&$AVOID&" "
-  getlength $AVOID $LENGTH
-  getlength $WORKINGTEXT $CHECKLENGTH
-  cuttext $WORKINGTEXT $WORKINGTEXT ($POS + $LENGTH) 9999
-  getword $WORKINGTEXT $AVOID 1
-  getwordpos $WORKINGTEXT $POS $AVOID
-end
-
-goto :KEEPCOUNTINGAVOIDS
-:DONEAVOIDS
-
 return
 :PLANETNEG
 
@@ -821,42 +785,7 @@ setvar $THISEQUFAILED 0
 send "PN"&$PLANET&"*"
 subtract $PLAYER~TURNS 1
 :GETPERCTS
-settextlinetrigger OREPCT :OREPCT "Fuel Ore   Buying"
-settextlinetrigger ORGPCT :ORGPCT "Organics   Buying"
-settextlinetrigger EQUPCT :EQUPCT "Equipment  Buying"
-settextlinetrigger GOTPERCTS :GOTPERCTS "Registry# and Planet Name"
-pause
-:OREPCT
-
-killalltriggers
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORETRADING 4
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.OREPERCENT 5
-striptext $PLAYER~CURRENT_SECTOR.OREPERCENT "%"
-if ($PLAYER~CURRENT_SECTOR.OREPERCENT < 100)
-  add $PLAYER~CURRENT_SECTOR.OREPERCENT 1
-end
-goto :GETPERCTS
-:ORGPCT
-
-killalltriggers
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGTRADING 3
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGPERCENT 4
-striptext $PLAYER~CURRENT_SECTOR.ORGPERCENT "%"
-if ($PLAYER~CURRENT_SECTOR.ORGPERCENT < 100)
-  add $PLAYER~CURRENT_SECTOR.ORGPERCENT 1
-end
-goto :GETPERCTS
-:EQUPCT
-
-killalltriggers
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUTRADING 3
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUPERCENT 4
-striptext $PLAYER~CURRENT_SECTOR.EQUPERCENT "%"
-if ($PLAYER~CURRENT_SECTOR.EQUPERCENT < 100)
-  add $PLAYER~CURRENT_SECTOR.EQUPERCENT 1
-end
-goto :GETPERCTS
-:GOTPERCTS
+gosub :PLANETHAGGLE~GETPERCTS
 :SELLPRODUCT
 
 
@@ -1961,3 +1890,4 @@ return
 send "l " $PLANET "*   c t f"&$TOTAL_CREDS_NEEDED&"*qq"
 gosub :PLAYER~QUIKSTATS
 return
+include "source\include\switchboard.ts"

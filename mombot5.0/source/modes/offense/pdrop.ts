@@ -78,7 +78,8 @@ reqRecording
 	getWord $bot~user_command_line $bot~parm8 8
 	getSectorParameter SECTORS "FIGSEC" $isFigged
 	if ($isFigged = "")
-		send "'{" $bot~bot_name "} - It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+		setvar $switchboard~message "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+		gosub :switchboard~switchboard
 		halt
 	end
 
@@ -86,7 +87,8 @@ reqRecording
 	setVar $startingLocation $player~current_prompt
 	setVar $script_ver "Mind Over Matter Bot P-drop"
 	if ($startingLocation <> "Citadel")
-		send "'{" $bot~bot_name "} - This script must be run from the Citadel Prompt*"
+		setvar $switchboard~message "This script must be run from the Citadel Prompt*"
+		gosub :switchboard~switchboard
 		setVar $mode "General"
 	        halt
 	end
@@ -1816,3 +1818,4 @@ include "source\include\planet"
 include "source\include\combat"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

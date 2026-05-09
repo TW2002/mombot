@@ -444,7 +444,7 @@
 			gosub :combat~holokill
 			if ($player~current_sector <> $before_holo_kill_sector)
 				setVar $PLAYER~WARPTO $before_holo_kill_sector
-				gosub :PLAYER~twarp
+				gosub :MOVE~twarp
 				if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
 					setvar $switchboard~message "Could not make it back to starting sector before holokill. - ["&$player~msg&"]*"
 					gosub :switchboard~switchboard
@@ -508,7 +508,7 @@
 				end
 			else
 				:twarp
-					gosub :PLAYER~twarp
+					gosub :MOVE~twarp
 					if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
 						setvar $switchboard~message "Could not escape. - ["&$player~msg&"]*"
 						gosub :switchboard~switchboard
@@ -587,3 +587,4 @@ include "source\include\planet"
 	include "source\include\combat"
 	include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

@@ -27,9 +27,8 @@ gosub :HELP~HELPFILE
 
 setvar $SWITCHBOARD~MESSAGE "Planet Merchant starting up!*"
 gosub :SWITCHBOARD~SWITCHBOARD
+
 :MERCHANT
-
-
 gosub :player~quikstats
 setvar $STARTINGLOCATION $player~current_prompt
 if ($STARTINGLOCATION <> "Citadel")
@@ -164,9 +163,8 @@ if ($POS > 0)
     halt
   end
 end
+
 :MERCHANT
-
-
 killalltriggers
 setarray $CHECKEDPORTS SECTORS
 setarray $QUE SECTORS
@@ -441,8 +439,8 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
       gosub :port~domaxport
       gosub :planet~landonplanetentercitadel
       end
+      
       :ENDUPFUEL
-
       if ((PORT.BUYFUEL[$NEARFIG] = FALSE) and ($BUYFUEL = TRUE))
         send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
         gosub :player~quikstats
@@ -528,17 +526,19 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
     gosub :player~quikstats
   end
 end
-:DONENOFUEL2
-setvar $switchboard~message "Not enough fuel to continue.*"
-gosub :switchboard~switchboard
-goto :DONEMERCHANT
+
 :DONEMERCHANT
 send "p"&$STARTINGSECTOR&"*y"
 setvar $switchboard~message "Planet Merchant completed.*"
 gosub :switchboard~switchboard
 halt
-:NOFIGATLOCATION
 
+:DONENOFUEL2
+setvar $switchboard~message "Not enough fuel to continue.*"
+gosub :switchboard~switchboard
+goto :DONEMERCHANT
+
+:NOFIGATLOCATION
 setsectorparameter $NEARFIG "FIGSEC" FALSE
 goto :TRYAGAIN2
 
@@ -546,3 +546,4 @@ goto :TRYAGAIN2
 include "source\include\loadvars"
 include "source\include\planethaggle"
 include "source\include\help"
+include "source\include\switchboard.ts"

@@ -31,27 +31,32 @@ if ($DOESHELPFILEEXIST <> TRUE)
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [delay]        = Random delay for each bust"
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [bank]         = Corpie will pass credits through bank"
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [red]          = Will Attempt negative align"
-  send "'{" $BOT_NAME "} - Writing help file for this command in Help directory.*"
+  setvar $switchboard~message "Writing help file for this command in Help directory.*"
+  gosub :switchboard~switchboard
 end
 if ($PLAYER~TOTAL_HOLDS < 10)
-  send "'{" $BOT_NAME "} - You need at least 10 Holds to create a planet.*"
+  setvar $switchboard~message "You need at least 10 Holds to create a planet.*"
+  gosub :switchboard~switchboard
   halt
 end
 isnumber $TEST $PARM1
 if ($TEST)
   if ($PARM1 < 1)
-    send "'{" $BOT_NAME "} - Must enter Experience to Achiece*"
+    setvar $switchboard~message "Must enter Experience to Achiece*"
+    gosub :switchboard~switchboard
     halt
   end
 else
-  send "'{" $BOT_NAME "} - Invalid Experience amount entered. *"
+  setvar $switchboard~message "Invalid Experience amount entered. *"
+  gosub :switchboard~switchboard
   halt
 end
 if ($PLAYER~CURRENT_PROMPT = "Command")
   send "p ss ys *q"
 end
 if (($PLAYER~CURRENT_PROMPT <> "<StarDock>") and ($PLAYER~CURRENT_PROMPT <> "Command"))
-  send "'{" $BOT_NAME "} - Must start from StarDock or Command Prompt*"
+  setvar $switchboard~message "Must start from StarDock or Command Prompt*"
+  gosub :switchboard~switchboard
   halt
 end
 getwordpos $USER_COMMAND_LINE $POS "safe"
@@ -83,7 +88,8 @@ if ($POS > 0)
   setvar $MAKERED "true"
 end
 if ($PARM1 < $PLAYER~EXPERIENCE)
-  send "'{" $BOT_NAME "} - Already at or Above Desired Experience*"
+  setvar $switchboard~message "Already at or Above Desired Experience*"
+  gosub :switchboard~switchboard
   halt
 end
 setvar $NEEDEDCYCLES ($PARM1 / 75)
@@ -93,7 +99,8 @@ if ($PLAYER~CORP > 0)
   gosub :SILENCEMESSAGES
   goto :CHECKAUTOFLEE
 else
-  send "'{" $BOT_NAME "} - Must be on a Corp to Continue*"
+  setvar $switchboard~message "Must be on a Corp to Continue*"
+  gosub :switchboard~switchboard
   halt
 end
 :CHECKAUTOFLEE
@@ -208,14 +215,16 @@ end
 if ($UNLIMITEDGAME = 1)
   goto :FIXCN9
 elseif (($PLAYER~TURNS = 0) and ($UNLIMITEDGAME <> 1))
-  send "'{" $BOT_NAME "} - Turns to low to Run TBust! *"
+  setvar $switchboard~message "Turns to low to Run TBust! *"
+  gosub :switchboard~switchboard
   gosub :HEARMESSAGES
   halt
 elseif (($PLAYER~TURNS < 50) and ($OVERRIDE = TRUE))
   goto :FIXCN9
 elseif ($PLAYER~TURNS < 50)
   gosub :HEARMESSAGES
-  send "'{" $BOT_NAME "} - Turns to low to Run TBust!*"
+  setvar $switchboard~message "Turns to low to Run TBust!*"
+  gosub :switchboard~switchboard
   halt
 end
 :FIXCN9
@@ -238,7 +247,8 @@ end
 setvar $TOTALINITIALCREDS ($PLAYER~CREDITS + $BANKCREDS)
 setvar $TOTALCYCLES (((($PLAYER~CREDITS + $BANKCREDS) / ($GTORPCOST + $DETCOST)) - 1) + $PLAYER~ATOMIC)
 if ($PLAYER~CREDITS < ($GTORPCOST + $DETCOST))
-  send "'{" $BOT_NAME "} - Need more Credits to bust.*"
+  setvar $switchboard~message "Need more Credits to bust.*"
+  gosub :switchboard~switchboard
   halt
 else
   setvar $TOTALCYCLES ((($PLAYER~CREDITS / ($GTORPCOST + $DETCOST)) - 1) + $PLAYER~ATOMIC)
@@ -260,7 +270,8 @@ gosub :CHECKSTATUS
 if ($PLAYER~TURNS < (($NEEDEDCYCLES / $MAXPERCYCLE) + 2))
   if ($UNLIMITEDGAME <> 1)
     gosub :HEARMESSAGES
-    send "'{" $BOT_NAME "} - Not Enough Turns*"
+    setvar $switchboard~message "Not Enough Turns*"
+    gosub :switchboard~switchboard
     halt
   end
 end
@@ -423,17 +434,20 @@ goto :BUSTOK
 if ($PLAYER~CURRENT_PROMPT <> "<StarDock>")
   gosub :HEARMESSAGES
   send "p  s  t"
-  send "'{" $BOT_NAME "} - Houston, we have a problem...*"
+  setvar $switchboard~message "Houston, we have a problem...*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($PLAYER~EXPERIENCE >= $PARM1)
   gosub :HEARMESSAGES
-  send "'{" $BOT_NAME "} - Target Exp Reached!*"
+  setvar $switchboard~message "Target Exp Reached!*"
+  gosub :switchboard~switchboard
   halt
 end
 if (($PLAYER~TURNS < 10) and ($UNLIMITEDGAME <> 1))
   gosub :HEARMESSAGES
-  send "'{" $BOT_NAME "} - Not Enough Turns to Continue!*"
+  setvar $switchboard~message "Not Enough Turns to Continue!*"
+  gosub :switchboard~switchboard
   halt
 end
 :RESUME
@@ -453,7 +467,8 @@ if ($PLAYER~CREDITS < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
     if (($PLAYER~CREDITS + $BANKCREDS) < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
       if ($CORPIEBANKER = TRUE)
         gosub :HEARMESSAGES
-        send "'{" $BOT_NAME "} - Need Creds in bank to continue. Waiting on Transfer*"
+        setvar $switchboard~message "Need Creds in bank to continue. Waiting on Transfer*"
+        gosub :switchboard~switchboard
         settextlinetrigger WAITFORCREDS :WAITFORCREDS "credits to your Galactic bank account."
         pause
         :WAITFORCREDS
@@ -470,7 +485,8 @@ if ($PLAYER~CREDITS < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
         send "q"
         waitfor "<StarDock> Where to?"
         if (($PLAYER~CREDITS + $BANKCREDS) < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
-          send "'{" $BOT_NAME "} - Not enough Creds in bank*"
+          setvar $switchboard~message "Not enough Creds in bank*"
+          gosub :switchboard~switchboard
           settextlinetrigger WAITFORCREDS :WAITFORCREDS "your Galactic bank account."
           pause
         else
@@ -548,7 +564,8 @@ if (($PLAYER~ALIGNMENT > 0) and ($PLAYER~ALIGNMENT < 200))
   goto :GETMAFIAPW
 
 elseif ($YOURALIGN > 199)
-  send "'{" $BOT_NAME "} - Cant Get a Negative Alignement.  Continuing for Experience*"
+  setvar $switchboard~message "Cant Get a Negative Alignement.  Continuing for Experience*"
+  gosub :switchboard~switchboard
   goto :FIXALIGNRETURN
 end
 :GETMAFIAPW
@@ -577,7 +594,8 @@ pause
 
 killtrigger PWWORKS
 killtrigger PWFAILS
-send "'{" $BOT_NAME "} - Underground PW failed. You will have to fix manually.  Halting Script*"
+setvar $switchboard~message "Underground PW failed. You will have to fix manually.  Halting Script*"
+gosub :switchboard~switchboard
 halt
 :PWWORKS
 
@@ -598,7 +616,8 @@ if ($COUNT <= 26)
   pause
 else
   gosub :HEARMESSAGES
-  send "'{" $BOT_NAME "} - Problems placing a Bounty. - HALTING*"
+  setvar $switchboard~message "Problems placing a Bounty. - HALTING*"
+  gosub :switchboard~switchboard
   halt
 end
 :UNKNOWNTRADER
@@ -620,3 +639,4 @@ gosub :PLAYER~QUIKSTATS
 
 return
 include "source\include\player"
+include "source\include\switchboard.ts"

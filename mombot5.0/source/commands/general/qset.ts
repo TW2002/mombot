@@ -27,7 +27,8 @@ if ($STARTINGLOCATION = "Citadel")
 end
 gosub :PLANET~GETPLANETINFO
 if ($PLANET~CITADEL < 3)
-  send "'{" $SWITCHBOARD~BOT_NAME "} - Planet number " $PLANET~PLANET " does not have a quasar cannon.*"
+  setvar $switchboard~message "Planet number " $PLANET~PLANET " does not have a quasar cannon.*"
+  gosub :switchboard~switchboard
   if (($PLANET~CITADEL > 0) and ($STARTINGLOCATION = "Citadel"))
     send "c "
   end
@@ -100,3 +101,4 @@ return
 
 #INCLUDES:
 include "source\include\planet"
+include "source\include\switchboard.ts"

@@ -64,84 +64,13 @@ gosub :SWITCHBOARD~SWITCHBOARD
 
 halt
 :REFRESHARMIDS
-
-
-
-setarray $PMINES SECTORS
-:READARMIDLIST
-setvar $COUNT 0
-setvar $PERSONALCOUNT 0
-send "k1"
-setvar $I 1
-setvar $LIMPETOUTPUT ""
-setvar $PERSONALOUTPUT " "
-setvar $OUTPUT " "
-:KEEPCOUNTINGARMIDS
-killtrigger CORPORATE
-killtrigger PERSONAL
-killtrigger DONECOUNTINGFIGS
-killtrigger DONENOFIGS
-settextlinetrigger CORPORATE :CORPCOUNTARMIDS " Corp"
-settextlinetrigger PERSONAL :PERSONALCOUNTARMIDS "Personal "
-settextlinetrigger DONECOUNTINGFIGS :DONECOUNTINGARMIDS "Total"
-settextlinetrigger DONENOFIGS :DONECOUNTINGARMIDS "No mines deployed"
-pause
-:PERSONALCOUNTARMIDS
-add $COUNT 1
-add $PERSONALCOUNT 1
-getword CURRENTLINE $SECTOR 1
-getword CURRENTLINE $NUMMINES 2
-setvar $PERSONALOUTPUT $PERSONALOUTPUT&$SECTOR&"  "
-setvar $PMINES[$SECTOR] $NUMMINES
-settextlinetrigger PERSONAL :PERSONALCOUNTARMIDS "Personal "
-pause
-:CORPCOUNTARMIDS
-add $COUNT 1
-add $PLAYER~CORPCOUNT 1
-getword CURRENTLINE $SECTOR 1
-getword CURRENTLINE $NUMMINES 2
-while ($I <= $SECTOR)
-  getwordpos $PERSONALOUTPUT $POS " "&$I&" "
-  if (($SECTOR = $I) or ($POS > 0))
-    if ($POS > 0)
-      setvar $OUTPUT $OUTPUT&$PMINES[$I]&"*"
-    else
-      setvar $OUTPUT $OUTPUT&$NUMMINES&"*"
-    end
-    setsectorparameter $I "MINESEC" TRUE
-  else
-    setvar $OUTPUT $OUTPUT&"0*"
-    setsectorparameter $I "MINESEC" FALSE
-  end
-  add $I 1
-end
-settextlinetrigger CORPORATE :CORPCOUNTARMIDS " Corp"
-pause
-:DONECOUNTINGARMIDS
-
-killtrigger CORPORATE
-killtrigger PERSONAL
-killtrigger DONECOUNTINGFIGS
-killtrigger DONENOFIGS
-
-while ($I <= SECTORS)
-  getwordpos $PERSONALOUTPUT $POS " "&$I&" "
-  if ($POS > 0)
-    setvar $OUTPUT $OUTPUT&$NUMMINES&"*"
-    setsectorparameter $I "MINESEC" TRUE
-  else
-    setvar $OUTPUT $OUTPUT&"0*"
-    setsectorparameter $I "MINESEC" FALSE
-  end
-  add $I 1
-end
-delete $BOT~ARMID_FILE
-write $BOT~ARMID_FILE $OUTPUT
-delete $BOT~ARMID_COUNT_FILE
-write $BOT~ARMID_COUNT_FILE $COUNT
+gosub :MINES~READARMIDLIST
+setvar $COUNT $MINES~COUNT
+setvar $PERSONALCOUNT $MINES~PERSONALCOUNT
 return
 
 # includes:
-include "source\include\planet"
+include "source\include\mines"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

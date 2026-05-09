@@ -24,7 +24,8 @@ if ($DOESHELPFILEEXIST <> TRUE)
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "                                                            "
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "     - From Citadel prompt grabs fighters from planet       "
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "     - From Command prompt grabs fighters from the sector   "
-  send "'{" $BOT_NAME "} - Writing help file for this command in Help directory.*"
+  setvar $switchboard~message "Writing help file for this command in Help directory.*"
+  gosub :switchboard~switchboard
 end
 :ADJFIG
 
@@ -33,25 +34,30 @@ end
 gosub :PLAYER~QUIKSTATS
 setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 if (($STARTINGLOCATION <> "Citadel") and ($STARTINGLOCATION <> "Command"))
-  send "'{" $BOT_NAME "} - Must start at Citadel or Command Prompt.*"
+  setvar $switchboard~message "Must start at Citadel or Command Prompt.*"
+  gosub :switchboard~switchboard
   halt
 end
 setvar $PGRIDSECTOR $PARM1
 isnumber $TEST $PGRIDSECTOR
 if ($TEST = 0)
-  send "'{" $BOT_NAME "} - Invalid FIGCLEAR number.*"
+  setvar $switchboard~message "Invalid FIGCLEAR number.*"
+  gosub :switchboard~switchboard
   halt
 end
 
 if ($PGRIDSECTOR = 0)
-  send "'{" $BOT_NAME "} - Invalid FIGCLEAR number.*"
+  setvar $switchboard~message "Invalid FIGCLEAR number.*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($PGRIDSECTOR < 11)
-  send "'{" $BOT_NAME "} - Cannot FIGCLEAR into FedSpace!*"
+  setvar $switchboard~message "Cannot FIGCLEAR into FedSpace!*"
+  gosub :switchboard~switchboard
   halt
 elseif ($PGRIDSECTOR = $STARDOCK)
-  send "'{" $BOT_NAME "} - Cannot FIGCLEAR into STARDOCK!*"
+  setvar $switchboard~message "Cannot FIGCLEAR into STARDOCK!*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($STARTINGLOCATION = "Citadel")
@@ -79,7 +85,8 @@ while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$I] > 0)
   add $I 1
 end
 if ($ISFOUND = FALSE)
-  send "'{" $BOT_NAME "} - Cannot FIGCLEAR.  Sector not Adjacent, aborting..*"
+  setvar $switchboard~message "Cannot FIGCLEAR.  Sector not Adjacent, aborting..*"
+  gosub :switchboard~switchboard
   halt
 end
 send "'{" $BOT_NAME "} - Fig Clearing sector "&$PGRIDSECTOR&"* c v* y* "&$PGRIDSECTOR&"* q "
@@ -98,7 +105,8 @@ setvar $MAC $MAC&"j r * f  z  1  * z  c  d  * "
 
 gosub :PLAYER~QUIKSTATS
 if ($PLAYER~FIGHTERS < $SHIP~SHIP_FIGHTERS_MAX)
-  send "'{" $BOT_NAME "} - Unable to proceed, not enough fighters.*"
+  setvar $switchboard~message "Unable to proceed, not enough fighters.*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($STARTINGLOCATION = "Citadel")
@@ -116,7 +124,8 @@ if ($PLAYER~CURRENT_SECTOR = $PGRIDSECTOR)
       send "l j"&#8&$PLANET~PLANET&"*  *  "
     end
   end
-  send "'{" $BOT_NAME "} - Successfully Fig Cleared sector "&$PGRIDSECTOR&"*"
+  setvar $switchboard~message "Successfully Fig Cleared sector "&$PGRIDSECTOR&"*"
+  gosub :switchboard~switchboard
 else
   if ($STARTINGLOCATION = "Citadel")
     send "l j"&#8&$PLANET~PLANET&"*  *  "
@@ -124,7 +133,8 @@ else
     if ($CURRENT_PROMPT = "Planet")
       send "m* * *"
     else
-      send "'{" $BOT_NAME "} - Had to stop, planet appears to be gone.*"
+      setvar $switchboard~message "Had to stop, planet appears to be gone.*"
+      gosub :switchboard~switchboard
       halt
     end
   else
@@ -160,3 +170,4 @@ return
 # includes:
 include "source\include\planet"
 include "source\include\ship"
+include "source\include\switchboard.ts"

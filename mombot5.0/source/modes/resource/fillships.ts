@@ -14,7 +14,8 @@ gosub :HELP~INITIALIZE
 	send "** "
 	setVar $fuelInSector FALSE
 	if (($startingLocation <> "Citadel") AND ($startingSector <> "Planet") AND ($startingLocation <> "Command"))
-		send "'{" $switchboard~bot_name "} - Must be in Command, Citadel or Planet prompt to run*"
+		setvar $switchboard~message "Must be in Command, Citadel or Planet prompt to run*"
+		gosub :switchboard~switchboard
 		halt
 	end
 
@@ -26,7 +27,8 @@ gosub :HELP~INITIALIZE
 		gosub :planet~getplanetinfo
 		send "q "
 	end
-	send "'{" $switchboard~bot_name "} - Ship Filler starting up!  Starting ship scan..*"
+	setvar $switchboard~message "Ship Filler starting up!  Starting ship scan..*"
+	gosub :switchboard~switchboard
 	:tryshipscan
 		send "wnq*@"
 		setTextLineTrigger statlinetrig :shipline "-----------------------------------------------------------------------------"
@@ -57,7 +59,8 @@ gosub :HELP~INITIALIZE
 
 
 	:gotShips
-		send "'{" $switchboard~bot_name "} - Found "&$shipCount&" empty ships to strip.*"
+		setvar $switchboard~message "Found "&$shipCount&" empty ships to strip.*"
+		gosub :switchboard~switchboard
 		setVar $i 1
 		while ($i <= $shipCount)
 			if ($theShips[$i] > 0)
@@ -71,7 +74,8 @@ gosub :HELP~INITIALIZE
 		if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
 			gosub :planet~landingSub
 		end
-		send "'{" $switchboard~bot_name "} - Done filling empty ships.*"
+		setvar $switchboard~message "Done filling empty ships.*"
+		gosub :switchboard~switchboard
 
 halt
 # ============================== END Move Ship (moveship) Sub ==============================
@@ -97,3 +101,4 @@ return
 include "source\include\planet"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

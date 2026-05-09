@@ -75,3 +75,4 @@ halt
 include "source\include\loadvars"
 include "source\include\port"
 include "source\include\help"
+include "source\include\switchboard.ts"

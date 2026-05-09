@@ -323,14 +323,19 @@ gosub :HELP~INITIALIZE
                     add $built_macros 1
                     add $total_targets $newgrid
                     add $total_hops $result_Distance[$count1]
-	               else
+		               else
                     getCourse $route $previous_sector $focus_sector
+                    if ($route <= 0)
+                         setVar $hit_turn_limit TRUE
+                         return
+                    end
+                    setVar $result_distance[$count1] $route
                     setArray $gridded_sectors $route
 			          setVar $step_Count 2
 			          setVar $last_step FALSE
-			          while ($step_Count <= ($result_distance[$count1] + 1))
+			          while ($step_Count <= ($route + 1))
 				          setVar $next_Sector $route[$step_Count]
-                         if ($step_Count = ($result_distance[$count1] + 1))
+                         if ($step_Count = ($route + 1))
                               setVar $last_step TRUE
 				          end
 			          goSub :Build_Move_Macro_Routine
@@ -340,7 +345,7 @@ gosub :HELP~INITIALIZE
                     setVar $previous_sector $focus_sector
                     add $built_macros 1
                     add $total_targets 1
-                    add $total_hops $result_Distance[$count1]
+                    add $total_hops $route
                end
           else
                 setVar $hit_turn_limit TRUE
@@ -737,3 +742,4 @@ gosub :HELP~INITIALIZE
 include "source\include\player"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

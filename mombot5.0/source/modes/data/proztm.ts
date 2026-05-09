@@ -654,3 +654,4 @@ return
 return
 
 include "source\include\help"
+include "source\include\switchboard.ts"

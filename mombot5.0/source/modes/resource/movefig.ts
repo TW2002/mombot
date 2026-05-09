@@ -35,7 +35,8 @@ if (($PARM2 = "p") or ($PARM2 = "s"))
       setvar $MOVE $PARM1
     end
   else
-    send "'{" $BOT_NAME "} - Please use movefig [p/s] [fighter amount]*"
+    setvar $switchboard~message "Please use movefig [p/s] [fighter amount]*"
+    gosub :switchboard~switchboard
     halt
   end
 elseif (($PARM1 = "p") or ($PARM1 = "s"))
@@ -46,11 +47,13 @@ elseif (($PARM1 = "p") or ($PARM1 = "s"))
       setvar $MOVE $PARM2
     end
   else
-    send "'{" $BOT_NAME "} - Please use movefig [p/s] [fighter amount]*"
+    setvar $switchboard~message "Please use movefig [p/s] [fighter amount]*"
+    gosub :switchboard~switchboard
     halt
   end
 else
-  send "'{" $BOT_NAME "} - Please use movefig [p/s] [fighter amount]*"
+  setvar $switchboard~message "Please use movefig [p/s] [fighter amount]*"
+  gosub :switchboard~switchboard
   halt
 end
 getwordpos $USER_COMMAND_LINE $POS " all"
@@ -61,7 +64,8 @@ end
 if ($STARTINGLOCATION = "Citadel")
   send "q"
 elseif ($STARTINGLOCATION <> "Planet")
-  send "'{" $BOT_NAME "} - You must start this script from a planet!* "
+  setvar $switchboard~message "You must start this script from a planet!* "
+  gosub :switchboard~switchboard
   halt
 end
 send "mnl*"
@@ -93,7 +97,8 @@ if (($FIGQUANT <> 0) and (($FIGOWNER <> "belong to your Corp") and ($FIGOWNER <>
     send "c"
     waiton "Citadel command"
   end
-  send "'{" $BOT_NAME "} - Friendly Fighters Not Present!*"
+  setvar $switchboard~message "Friendly Fighters Not Present!*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -123,7 +128,8 @@ while ($I <= $PLANETCOUNT)
     setvar $END_FIGS $SECTOR_FIGS
     add $END_FIGS $MOVE
     if ($MOVE > $PLANET~PLANET_FIGHTERS)
-      send "'{" $BOT_NAME "} - Not Enough Figs on Planet*"
+      setvar $switchboard~message "Not Enough Figs on Planet*"
+      gosub :switchboard~switchboard
       if ($STARTINGLOCATION = "Citadel")
         send "c "
       end
@@ -171,7 +177,8 @@ end
 setvar $PLANET $STARTING_PLANET
 gosub :LANDINGSUB
 
-send "'{" $BOT_NAME "} - fighters moved*"
+setvar $switchboard~message "fighters moved*"
+gosub :switchboard~switchboard
 halt
 :LANDINGSUB
 
@@ -190,14 +197,16 @@ pause
 killtrigger NO_LAND
 killtrigger PLANET
 killtrigger WRONGONE
-send "'{" $BOT_NAME "} - No Planet in Sector!*"
+setvar $switchboard~message "No Planet in Sector!*"
+gosub :switchboard~switchboard
 return
 :NO_LAND
 
 killtrigger NOPLANET
 killtrigger PLANET
 killtrigger WRONGONE
-send "'{" $BOT_NAME "} - This ship cannot land!*"
+setvar $switchboard~message "This ship cannot land!*"
+gosub :switchboard~switchboard
 return
 :PLANET
 
@@ -284,3 +293,4 @@ setvar $SHIP_FIGHTERS_MAX $SHIP~SHIP_FIGHTERS_MAX
 setvar $SHIP_MINES_MAX $SHIP~SHIP_MINES_MAX
 setvar $SHIP_MAX_ATTACK $SHIP~SHIP_MAX_ATTACK
 return
+include "source\include\switchboard.ts"

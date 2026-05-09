@@ -19,7 +19,7 @@ loadvar $ARMID_COST
 loadvar $LIMPET_REMOVAL_COST
 loadvar $PASSWORD
 goto :MINESWEEP_START
-include "source\include\planet"
+include "source\include\mines"
 :MINESWEEP_START
 setvar $GRID_LIMPETS 1
 setvar $GRID_ARMIDS 4
@@ -30,30 +30,36 @@ getsectorparameter SECTORS "FIGSEC" $ISFIGGED
 getsectorparameter SECTORS "MINESEC" $ISARMIDED
 getsectorparameter SECTORS "LIMPSEC" $ISLIMPED
 if (($STARDOCK = 0) or ($STARDOCK = ""))
-  send "'{"&$BOT_NAME&"} - Stardock is not defined.  Please define stardock variable in the bot.*"
+  setvar $switchboard~message "Stardock is not defined.  Please define stardock variable in the bot.*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($ISFIGGED = "")
-  send "'{"&$BOT_NAME&"} - It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+  setvar $switchboard~message "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($ISARMIDED = "")
-  send "'{"&$BOT_NAME&"} - It appears no armid data is available.  Run an armid grid checker that uses the sector parameter MINESEC. (Try armids command)*"
+  setvar $switchboard~message "It appears no armid data is available.  Run an armid grid checker that uses the sector parameter MINESEC. (Try armids command)*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($ISLIMPED = "")
-  send "'{"&$BOT_NAME&"} - It appears no limpet data is available.  Run a limpet grid checker that uses the sector parameter LIMPSEC. (Try limps command)*"
+  setvar $switchboard~message "It appears no limpet data is available.  Run a limpet grid checker that uses the sector parameter LIMPSEC. (Try limps command)*"
+  gosub :switchboard~switchboard
   halt
 end
 
 gosub :PLAYER~QUIKSTATS
 if ($PLAYER~CURRENT_PROMPT <> "Citadel")
-  send "'{"&$BOT_NAME&"} - Must must start mine sweeper from citadel prompt.*"
+  setvar $switchboard~message "Must must start mine sweeper from citadel prompt.*"
+  gosub :switchboard~switchboard
   halt
 end
 
 if ($PLAYER~PHOTONS <> 0)
-  send "'{"&$BOT_NAME&"} - Cannot Have Fotons!*"
+  setvar $switchboard~message "Cannot Have Fotons!*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -142,7 +148,8 @@ send "q"
 gosub :GETPLANETINFO
 
 if (($GRID_LIMPETS = 0) and ($GRID_ARMIDS = 0))
-  send "'{" $BOT_NAME "} - Nothing To Do!*"
+  setvar $switchboard~message "Nothing To Do!*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -161,7 +168,8 @@ if (($PLAYER~ORGANIC_HOLDS + ($PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
     send $MAC&" t  n  t  1*  m  n t *  c"
     gosub :PLAYER~QUIKSTATS
     if (($PLAYER~ORGANIC_HOLDS + ($PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS)) <> 0)
-      send "'{"&$BOT_NAME&"} - Holds Not Empty*"
+      setvar $switchboard~message "Holds Not Empty*"
+      gosub :switchboard~switchboard
       halt
     end
   end
@@ -208,7 +216,8 @@ while (TRUE)
     if ($REFURB)
       gosub :ATTEMPTREFURB
     else
-      send "'{"&$BOT_NAME&"} -  Need to buy more mines before this script can continue.*"
+      setvar $switchboard~message " Need to buy more mines before this script can continue.*"
+      gosub :switchboard~switchboard
       halt
     end
   end
@@ -218,7 +227,8 @@ while (TRUE)
   setvar $HAZ_BEFORE SECTOR.NAVHAZ[$PLAYER~CURRENT_SECTOR]
   setvar $PLANETS_BEFORE SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR]
   if (SECTOR.TRADERCOUNT[$PLAYER~CURRENT_SECTOR] <> 0)
-    send "'{"&$BOT_NAME&"} -  Trader Is In Sector. Halting!*"
+    setvar $switchboard~message " Trader Is In Sector. Halting!*"
+    gosub :switchboard~switchboard
     waiton "Message sent on sub-space channel"
     send "'"&$BOT_NAME&" pwarp "&$HOMESECTOR&"*"
     waiton "Message sent on sub-space channel"
@@ -233,14 +243,16 @@ while (TRUE)
   setvar $HAZ_AFTER SECTOR.NAVHAZ[$PLAYER~CURRENT_SECTOR]
   setvar $PLANETS_AFTER SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR]
   if (SECTOR.TRADERCOUNT[$PLAYER~CURRENT_SECTOR] <> 0)
-    send "'{"&$BOT_NAME&"} -  Trader Is In Sector. Halting!*"
+    setvar $switchboard~message " Trader Is In Sector. Halting!*"
+    gosub :switchboard~switchboard
     waiton "Message sent on sub-space channel"
     send "'"&$BOT_NAME&" pwarp "&$HOMESECTOR&"*"
     waiton "Message sent on sub-space channel"
     halt
   end
   if ($HAZ_BEFORE <> $HAZ_AFTER)
-    send "'{"&$BOT_NAME&"} -  NavHAZ Changed. Halting!*"
+    setvar $switchboard~message " NavHAZ Changed. Halting!*"
+    gosub :switchboard~switchboard
     waiton "Message sent on sub-space channel"
     send "'"&$BOT_NAME&" holo*"
     waiton "Sub-space comm-link terminated"
@@ -249,7 +261,8 @@ while (TRUE)
     halt
   end
   if ($PLANETS_AFTER <> $PLANETS_BEFORE)
-    send "'{"&$BOT_NAME&"} -  New Planet in Sector. Halting!*"
+    setvar $switchboard~message " New Planet in Sector. Halting!*"
+    gosub :switchboard~switchboard
     waiton "Message sent on sub-space channel"
     send "'"&$BOT_NAME&" pwarp "&$HOMESECTOR&"*"
     waiton "Message sent on sub-space channel"
@@ -287,7 +300,8 @@ if ($CASHNEEDED > $PLAYER~CREDITS)
   getword CURRENTLINE $CITADELCASH 4
   striptext $CITADELCASH ","
   if ($CITADELCASH < $CASHNEEDED)
-    send "'{"&$BOT_NAME&"} - Not enough cash for mine refurbs in treasury or on hand.*"
+    setvar $switchboard~message "Not enough cash for mine refurbs in treasury or on hand.*"
+    gosub :switchboard~switchboard
     halt
   end
   send "t f "&($CASHNEEDED - $PLAYER~CREDITS)&"* "
@@ -308,10 +322,12 @@ if (($PLAYER~ALIGNMENT < 1000) and ($WEAREADJDOCK = FALSE))
   setvar $RED_ADJ 0
   gosub :FINDJUMPSECTOR
   if ($RED_ADJ <> 0)
-    send "'{"&$BOT_NAME&"} - Jump Sector Found - Using Sector "&$RED_ADJ&"**"
+    setvar $switchboard~message "Jump Sector Found - Using Sector "&$RED_ADJ&"**"
+    gosub :switchboard~switchboard
   else
     waitfor "Command [TL="
-    send "'{"&$BOT_NAME&"} - Cannot Find Jump Sector Adjacent Dock**"
+    setvar $switchboard~message "Cannot Find Jump Sector Adjacent Dock**"
+    gosub :switchboard~switchboard
     halt
   end
 end
@@ -335,7 +351,8 @@ pause
 :NOJOY
 
 killalltriggers
-send "'{" $BOT_NAME "} - Cannot Find Path to StarDock!**"
+setvar $switchboard~message "Cannot Find Path to StarDock!**"
+gosub :switchboard~switchboard
 halt
 :CONT
 killalltriggers
@@ -352,37 +369,43 @@ else
 end
 
 if ($DIST1 <= 0)
-  send "'{" $BOT_NAME "} "&$TAGLINEB&" - Insufficient Warp Data Plotting Course to Dock**"
+  setvar $switchboard~message $TAGLINEB&" - Insufficient Warp Data Plotting Course to Dock**"
+  gosub :switchboard~switchboard
   halt
 end
 
 getdistance $DIST2 $STARDOCK $START_SECTOR
 if ($DIST2 <= 0)
-  send "'{" $BOT_NAME "} "&$TAGLINEB&" - Insufficient Warp Data Plotting Return Course From Dock**"
+  setvar $switchboard~message $TAGLINEB&" - Insufficient Warp Data Plotting Return Course From Dock**"
+  gosub :switchboard~switchboard
   halt
 end
 
 setvar $ORE_REQ (($DIST1 + $DIST2) * 3)
 
 if ($PLAYER~ORE_HOLDS < $ORE_REQ)
-  send "'{"&$BOT_NAME&"} - Not Enough ORE In Holds To Make Round Trip**"
+  setvar $switchboard~message "Not Enough ORE In Holds To Make Round Trip**"
+  gosub :switchboard~switchboard
   halt
 end
 
 if ($PLAYER~TWARP_TYPE = "No")
-  send "'{"&$BOT_NAME&"} - Must Have Twarp 1 or 2**"
+  setvar $switchboard~message "Must Have Twarp 1 or 2**"
+  gosub :switchboard~switchboard
   halt
 end
 
 if ($UNLIMITEDGAME = 0)
   gosub :TURNSREQUIRED
   if ($TURNSREQUIRED > $PLAYER~TURNS)
-    send "'{"&$BOT_NAME&"} - Not Enough Turns. "&ANSI_12&$TURNSREQUIRED&ANSI_15&", Required**"
+    setvar $switchboard~message "Not Enough Turns. "&ANSI_12&$TURNSREQUIRED&ANSI_15&", Required**"
+    gosub :switchboard~switchboard
     halt
   elseif ($TURNSREQUIRED <= $PLAYER~TURNS)
     setvar $TMP ($PLAYER~TURNS - $TURNSREQUIRED)
     if ($TMP <= $BOT_TURN_LIMIT)
-      send "'{" $BOT_NAME "} - Proceeding Will Leave Fewer Than "&$BOT_TURN_LIMIT&" Turns!**"
+      setvar $switchboard~message "Proceeding Will Leave Fewer Than "&$BOT_TURN_LIMIT&" Turns!**"
+      gosub :switchboard~switchboard
       halt
     end
   end
@@ -394,7 +417,8 @@ settextlinetrigger NOSOUPFORME :NOSOUPFORME "I have no information about a port 
 pause
 :NOSOUPFORME
 killalltriggers
-send "'{" $BOT_NAME "} "&$TAGLINEB&" - StarDock appears to have been Blown Up!**"
+setvar $switchboard~message $TAGLINEB&" - StarDock appears to have been Blown Up!**"
+gosub :switchboard~switchboard
 halt
 :ITSALIVE
 killalltriggers
@@ -412,7 +436,8 @@ end
 if ($MSG = "")
   waitfor "You leave the Galactic Bank."
 else
-  send "'{" $BOT_NAME "} - Unknown Problem Detected. Check TA!**"
+  setvar $switchboard~message "Unknown Problem Detected. Check TA!**"
+  gosub :switchboard~switchboard
   halt
 end
 gosub :PLAYER~QUIKSTATS
@@ -423,7 +448,8 @@ gosub :DOPURCHASES
 send "Q Q Q Q Z N M "&$START_SECTOR&"* Y  Y  Y  * L Z"&#8&$PLANET&"* p  s  s * * c *"
 gosub :PLAYER~QUIKSTATS
 if ($PLAYER~CURRENT_SECTOR = $STARDOCK)
-  send "'{" $BOT_NAME "} - Twarp Error, Should be Hiding on Dock!**"
+  setvar $switchboard~message "Twarp Error, Should be Hiding on Dock!**"
+  gosub :switchboard~switchboard
   halt
 end
 send "q tnt1* c "
@@ -433,55 +459,12 @@ return
 :CHECKAVOIDEDSECTORS
 
 setvar $AVOIDEDSECTORS ""
-:READAVOIDEDLIST
-settextlinetrigger GETLINE1 :GETAVOIDS
-send "cxq"
-pause
-:KEEPCOUNTINGAVOIDS
-killalltriggers
-settextlinetrigger GETLINE :GETAVOIDS
-pause
-:GETAVOIDS
-killalltriggers
-setvar $WORKINGTEXT CURRENTLINE
-getwordpos $WORKINGTEXT $POS "<Computer deactivated>"
-if ($POS > 0)
-  goto :DONEAVOIDS
+gosub :SECTOR~GETAVOIDS
+setvar $AVOID_I 0
+while ($AVOID_I < $SECTOR~AVOIDCOUNT)
+  add $AVOID_I 1
+  setvar $AVOIDEDSECTORS $AVOIDEDSECTORS&" "&$SECTOR~AVOIDS[$AVOID_I]&" "
 end
-getwordpos $WORKINGTEXT $POS "Computer"
-if ($POS > 0)
-  goto :KEEPCOUNTINGAVOIDS
-end
-if (CURRENTLINE = "")
-  goto :KEEPCOUNTINGAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "<List Avoided Sectors>"
-if ($POS > 0)
-  goto :KEEPCOUNTINGAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "No Sectors are currently being avoided."
-if ($POS > 0)
-  goto :DONEAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "Citadel"
-if ($POS > 0)
-  goto :KEEPCOUNTINGAVOIDS
-end
-setvar $WORKINGTEXT $WORKINGTEXT&" +++"
-getword $WORKINGTEXT $AVOID 1
-getwordpos $WORKINGTEXT $POS $AVOID
-
-while ($AVOID <> "+++")
-  setvar $AVOIDEDSECTORS $AVOIDEDSECTORS&" "&$AVOID&" "
-  getlength $AVOID $LENGTH
-  getlength $WORKINGTEXT $CHECKLENGTH
-  cuttext $WORKINGTEXT $WORKINGTEXT ($POS + $LENGTH) 9999
-  getword $WORKINGTEXT $AVOID 1
-  getwordpos $WORKINGTEXT $POS $AVOID
-end
-
-goto :KEEPCOUNTINGAVOIDS
-:DONEAVOIDS
 
 return
 :DELAYTRIGGER
@@ -603,6 +586,7 @@ halt
 :SCAN_COMPLETE
 killalltriggers
 setarray $ADJ2HIT 6 1
+setarray $MINES~ADJ2HIT 6 1
 setvar $IDX 1
 
 while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$IDX] > 0)
@@ -618,65 +602,16 @@ while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$IDX] > 0)
   add $IDX 1
 end
 
-setvar $DISRUPTORS $PLAYER~MINE_DISRUPTORS
-send " C "
-:LETS_GO_AGAIN
 setvar $IDX 1
-setvar $ADJ_HITS 0
 while ($IDX <= 6)
-  if ($ADJ2HIT[$IDX][1] <> 0)
-    settextlinetrigger NOMINES :NOMINES "There were no mines in sector "&$ADJ2HIT[$IDX]
-    settextlinetrigger MINESGONE :MINESGONE "of the mines in sector "&$ADJ2HIT[$IDX]&"!"
-    settextlinetrigger NOTADJ :NOTADJ "That is not an adjacent sector"
-    send " W Y "&$ADJ2HIT[$IDX]&"*"
-    pause
-    :NOMINES
-    killalltriggers
-    setvar $DISRUPTORS ($DISRUPTORS - 1)
-    setvar $ADJ2HIT[$IDX][1] 0
-    goto :LOOP_D_LOU
-    :NOTADJ
-    killalltriggers
-    send " Q"
-    setvar $ADJ2HIT[$IDX][1] 0
-    goto :LOOP_D_LOU
-    :MINESGONE
-    killalltriggers
-    setvar $TEMP CURRENTLINE
-    getwordpos $TEMP $POS "remain)"
-    setvar $DISRUPTORS ($DISRUPTORS - 1)
-    if ($POS = 0)
-      getword $TEMP $TEMP 4
-      isnumber $TST $TEMP
-      if ($TST)
-        setvar $TOTAL_MINES_POOFED ($TOTAL_MINES_POOFED + $TEMP)
-      end
-      setvar $ADJ2HIT[$IDX][1] 0
-    else
-      getword $TEMP $TEMP2 3
-      isnumber $TST $TEMP2
-      if ($TST)
-        setvar $TOTAL_MINES_POOFED ($TOTAL_MINES_POOFED + $TEMP2)
-      end
-      gettext $TEMP $TEMP $ADJ2HIT[$IDX]&"! (" " remain)"
-      isnumber $TST $TEMP
-      if ($TST = 0)
-        setvar $TEMP 0
-      end
-      setvar $ADJ2HIT[$IDX][1] $TEMP
-      setvar $ADJ_HITS ($ADJ_HITS + 1)
-    end
-    :LOOP_D_LOU
-    if ($DISRUPTORS < 1)
-      setvar $IDX 6
-    end
-  end
+  setvar $MINES~ADJ2HIT[$IDX] $ADJ2HIT[$IDX]
+  setvar $MINES~ADJ2HIT[$IDX][1] $ADJ2HIT[$IDX][1]
   add $IDX 1
 end
-if (($ADJ_HITS <> 0) and (($DISRUPTORS > 0) and ($BURSTING = 0)))
-  goto :LETS_GO_AGAIN
-end
-send " Q "
+setvar $MINES~BURSTING $BURSTING
+setvar $MINES~TOTAL_MINES_POOFED $TOTAL_MINES_POOFED
+gosub :MINES~STAR_BURST
+setvar $TOTAL_MINES_POOFED $MINES~TOTAL_MINES_POOFED
 send " Q Q Q Z N L Z"&#8&$PLANET&"*  *  J  C  *  * "
 settexttrigger LANDED :LANDED "Citadel command (?"
 settextlinetrigger NOTLANDED :NOTLANDED "Are you sure you want to jettison all cargo"
@@ -754,7 +689,8 @@ while ($I <= $NEAREST)
       getdistance $DISTANCEBACK $FOCUS $PLAYER~CURRENT_SECTOR
     end
     if (($DISTANCETHERE > 30) and ($LONGJUMPLIMIT <> 0))
-      send "'{" $BOT_NAME "} - Next fighter is over 30 hops away, stopping mine sweeper.*"
+      setvar $switchboard~message "Next fighter is over 30 hops away, stopping mine sweeper.*"
+      gosub :switchboard~switchboard
       gosub :GOHOME
       halt
     else
@@ -769,7 +705,8 @@ while ($I <= $NEAREST)
     pause
     :PWARPNOFUEL1
     killalltriggers
-    send "'{" $BOT_NAME "} - Not enough fuel on planet "&$PLANET&". Stopping mine sweeper.*"
+    setvar $switchboard~message "Not enough fuel on planet "&$PLANET&". Stopping mine sweeper.*"
+    gosub :switchboard~switchboard
     halt
     :PWARPYESSHIP1
     killalltriggers
@@ -782,7 +719,8 @@ while ($I <= $NEAREST)
   :NEXT_POSS_TARG
   add $I 1
 end
-send "'{" $BOT_NAME "} - All sectors possible swept. Halting mine sweeper.*"
+setvar $switchboard~message "All sectors possible swept. Halting mine sweeper.*"
+gosub :switchboard~switchboard
 gosub :GOHOME
 return
 :GOHOME
@@ -797,23 +735,28 @@ if ($PLAYER~CURRENT_PROMPT = "Citadel")
   pause
   :NO_PWARP_LOCK
   killalltriggers
-  send "'{" $BOT_NAME "} - No fighter down at that location!*"
+  setvar $switchboard~message "No fighter down at that location!*"
+  gosub :switchboard~switchboard
   return
   :NO_ORE
   killalltriggers
-  send "'{" $BOT_NAME "} - Not enough fuel for that pwarp.*"
+  setvar $switchboard~message "Not enough fuel for that pwarp.*"
+  gosub :switchboard~switchboard
   return
   :PWARP_LOCK
   killalltriggers
   waiton "Planet is now in sector"
-  send "'{" $BOT_NAME "} - Planet returned Home*"
+  setvar $switchboard~message "Planet returned Home*"
+  gosub :switchboard~switchboard
   return
   :ALREADY
   killalltriggers
-  send "'{" $BOT_NAME "} - Planet already in that sector!.*"
+  setvar $switchboard~message "Planet already in that sector!.*"
+  gosub :switchboard~switchboard
   return
 else
-  send "'{" $BOT_NAME "} - Cannot Pwarp Home. Wrong Prompt!*"
+  setvar $switchboard~message "Cannot Pwarp Home. Wrong Prompt!*"
+  gosub :switchboard~switchboard
   halt
 end
 return
@@ -991,7 +934,8 @@ if ($TWARPTO > 0)
   end
   :TWARPDONE
   if ($MSG <> "")
-    send "'{" $BOT_NAME "} Twarp Error - "&$MSG&"**"
+    setvar $switchboard~message "Twarp Error - "&$MSG&"**"
+    gosub :switchboard~switchboard
   end
 end
 return
@@ -1170,3 +1114,5 @@ gettext CURRENTLINE $BUY "(Max" ")"
 send $BUY&"* "
 waitfor "<Hardware Emporium>"
 return
+include "source\include\switchboard.ts"
+include "source\include\sector"

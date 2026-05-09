@@ -27,7 +27,8 @@ if ($DOESHELPFILEEXIST <> TRUE)
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    Strips fighters from all empty ships and deploys them   "
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    into the sector.                                        "
 
-  send "'{" $BOT_NAME "} - Writing help file for this command in Help directory.*"
+  setvar $switchboard~message "Writing help file for this command in Help directory.*"
+  gosub :switchboard~switchboard
 end
 :EMPTYSHIPS
 
@@ -39,7 +40,8 @@ setvar $TOTAL_FIGS 0
 send "** "
 setvar $FUELINSECTOR FALSE
 if (($STARTINGLOCATION <> "Citadel") and (($STARTINGSECTOR <> "Planet") and ($STARTINGLOCATION <> "Command")))
-  send "'{" $BOT_NAME "} - Must be in Command, Citadel or Planet prompt to run*"
+  setvar $switchboard~message "Must be in Command, Citadel or Planet prompt to run*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -51,7 +53,8 @@ if (($STARTINGLOCATION = "Planet") or ($STARTINGLOCATION = "Citadel"))
   gosub :GETPLANETINFO
   send "q "
 end
-send "'{" $BOT_NAME "} - Ship Stripper starting up!  Starting ship scan..*"
+setvar $switchboard~message "Ship Stripper starting up!  Starting ship scan..*"
+gosub :switchboard~switchboard
 :TRYSHIPSCAN
 send "wnq*@"
 settextlinetrigger STATLINETRIG :SHIPLINE "-----------------------------------------------------------------------------"
@@ -82,7 +85,8 @@ end
 :GOTSHIPS
 
 
-send "'{" $BOT_NAME "} - Found "&$SHIPCOUNT&" empty ships to strip.*"
+setvar $switchboard~message "Found "&$SHIPCOUNT&" empty ships to strip.*"
+gosub :switchboard~switchboard
 setvar $I 1
 while ($I <= $SHIPCOUNT)
   if ($THESHIPS[$I] > 0)
@@ -104,7 +108,8 @@ send "x "&$STARTSHIP&"*  *   "
 if (($STARTINGLOCATION = "Planet") or ($STARTINGLOCATION = "Citadel"))
   gosub :LANDINGSUB
 end
-send "'{" $BOT_NAME "} - Done stripping empty ships.*"
+setvar $switchboard~message "Done stripping empty ships.*"
+gosub :switchboard~switchboard
 
 halt
 :LANDINGSUB
@@ -124,14 +129,16 @@ pause
 killtrigger NO_LAND
 killtrigger PLANET
 killtrigger WRONGONE
-send "'{" $BOT_NAME "} - No Planet in Sector!*"
+setvar $switchboard~message "No Planet in Sector!*"
+gosub :switchboard~switchboard
 return
 :NO_LAND
 
 killtrigger NOPLANET
 killtrigger PLANET
 killtrigger WRONGONE
-send "'{" $BOT_NAME "} - This ship cannot land!*"
+setvar $switchboard~message "This ship cannot land!*"
+gosub :switchboard~switchboard
 return
 :PLANET
 
@@ -376,3 +383,4 @@ if (($TWARPSUCCESS = TRUE) and (($WARPTO = $BACKDOOR) and ($ORIGINAL = $STARDOCK
 end
 
 return
+include "source\include\switchboard.ts"

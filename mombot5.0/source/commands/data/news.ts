@@ -105,7 +105,8 @@ gosub :PLAYER~QUIKSTATS
 setvar $STARTINGLOCAL $PLAYER~CURRENT_PROMPT
 
 if (($STARTINGLOCAL <> "Citadel") and ($STARTINGLOCAL <> "Command"))
-  send "'{"&$BOT_NAME&"} - Must start at citadel or command prompt*"
+  setvar $switchboard~message "Must start at citadel or command prompt*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -1417,10 +1418,12 @@ readtoarray $NEWS_FILE $NEWS_ARRAY
 setvar $LINES $NEWS_ARRAY
 
 if (($FILE_HEADER = "EOF") or ($LINES <= 0))
-  send "'{"&$BOT_NAME&"} - Problem Reading File. Try A Refresh. Halting*"
+  setvar $switchboard~message "Problem Reading File. Try A Refresh. Halting*"
+  gosub :switchboard~switchboard
   halt
 else
-  send "'{"&$BOT_NAME&"} - Loading NEWS::AS OF "&$FILE_HEADER&"*"
+  setvar $switchboard~message "Loading NEWS::AS OF "&$FILE_HEADER&"*"
+  gosub :switchboard~switchboard
   waitfor "(?="
 end
 return
@@ -1617,3 +1620,4 @@ setvar $NEWS_READ TRUE
 waiton "<Computer deactivated>"
 return
 include "source\include\player"
+include "source\include\switchboard.ts"

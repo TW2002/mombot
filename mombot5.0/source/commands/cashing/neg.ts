@@ -54,7 +54,7 @@
 		setvar $half false
 	end
 
-	if ($bot~parm1 = 0)
+	if ($bot~parm1 = "")
 		setVar $planethaggle~_ck_pnego_fueltosell "-1"
 		setVar $planethaggle~_ck_pnego_orgtosell "max"
 		setVar $planethaggle~_ck_pnego_equiptosell "max"
@@ -105,3 +105,4 @@
 include "source\include\loadvars"
 include "source\include\planethaggle"
 include "source\include\help"
+include "source\include\switchboard.ts"

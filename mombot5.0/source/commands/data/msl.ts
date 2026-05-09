@@ -39,7 +39,8 @@ end
 
 isnumber $TEST $PARM1
 if (($TEST = FALSE) and ($PARM1 <> "all"))
-  send "'{" $BOT_NAME "} - Invalid Sector. Please enter a Sector number or 'all'.*"
+  setvar $switchboard~message "Invalid Sector. Please enter a Sector number or 'all'.*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -204,3 +205,4 @@ end
 
 send "'MSL Search Complete Sector Parameters Set*"
 return
+include "source\include\switchboard.ts"

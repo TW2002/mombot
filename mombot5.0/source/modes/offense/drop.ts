@@ -368,7 +368,7 @@ reqRecording
 			else
 				killalltriggers
 				setVar $PLAYER~WARPTO $homeSector
-				gosub :PLAYER~twarp
+				gosub :MOVE~twarp
 				if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
 					setvar $switchboard~message "Could not make it back home with twarp. - ["&$player~msg&"]*"
 					gosub :switchboard~switchboard
@@ -421,7 +421,7 @@ reqRecording
 					else
 						killalltriggers
 						setVar $PLAYER~WARPTO $dropSector
-						gosub :PLAYER~twarp
+						gosub :MOVE~twarp
 						if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
 							setvar $switchboard~message "Could not make it to attack sector - ["&$player~msg&"]*"
 							gosub :switchboard~switchboard
@@ -455,7 +455,7 @@ reqRecording
 						send "p " $dropSector "* y "
 					else
 						setVar $PLAYER~WARPTO $dropSector
-						gosub :PLAYER~twarp
+						gosub :MOVE~twarp
 						if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
 							goto :pwarpNo				
 						else
@@ -475,7 +475,7 @@ reqRecording
 					else
 						setvar $gotosector $dropsector
 						setVar $PLAYER~WARPTO $dropSector
-						gosub :PLAYER~twarp
+						gosub :MOVE~twarp
 						if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
 							goto :pwarpNo				
 						else
@@ -603,7 +603,7 @@ return
 		else
 			killalltriggers
 			setVar $PLAYER~WARPTO $gotoSector
-			gosub :PLAYER~twarp
+			gosub :MOVE~twarp
 			if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
 				goto :pwarpNo				
 			end
@@ -766,7 +766,7 @@ return
 		gosub :combat~holokill
 		if ($player~current_sector <> $before_holo_kill_sector)
 			setVar $PLAYER~WARPTO $before_holo_kill_sector
-			gosub :PLAYER~twarp
+			gosub :MOVE~twarp
 			if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
 				setvar $switchboard~message "Could not make it back to starting sector before holokill. - ["&$player~msg&"]*"
 				gosub :switchboard~switchboard
@@ -990,3 +990,4 @@ return
 include "source\include\combat"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

@@ -12,32 +12,37 @@ setvar $NAME[5] ".  n"
 setvar $COUNT 0
 setvar $BLOW_PLANET "No"
 if (($PARM1 = "?") or ($PARM1 = "help"))
-  send "'{" $BOT_NAME "} - bust [Experience Desired]*"
+  setvar $switchboard~message "bust [Experience Desired]*"
+  gosub :switchboard~switchboard
   halt
 end
 isnumber $TEST $PARM1
 if ($TEST)
 
 else
-  send "'{" $BOT_NAME "} - Experience Must Be a Number.*"
+  setvar $switchboard~message "Experience Must Be a Number.*"
+  gosub :switchboard~switchboard
   halt
 end
 :START
 gosub :PLAYER~QUIKSTATS
 setvar $START_PROMPT $PLAYER~CURRENT_PROMPT
 if ($PLAYER~CREDITS < 1000000)
-  send "'{" $BOT_NAME "} - Not Enough Cash on Hand*"
+  setvar $switchboard~message "Not Enough Cash on Hand*"
+  gosub :switchboard~switchboard
   halt
 end
 isnumber $TEST $PARM1
 if ($TEST)
   setvar $EXPERIENCEAMOUNT $PARM1
 else
-  send "'{" $BOT_NAME "} - Invalid Experience Amount.*"
+  setvar $switchboard~message "Invalid Experience Amount.*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($PLAYER~EXPERIENCE > $EXPERIENCEAMOUNT)
-  send "'{" $BOT_NAME "} - Desired Experience Reached.*"
+  setvar $switchboard~message "Desired Experience Reached.*"
+  gosub :switchboard~switchboard
   if ($START_PROMPT = "<StarDock>")
     send "p  s"
   end
@@ -45,7 +50,8 @@ if ($PLAYER~EXPERIENCE > $EXPERIENCEAMOUNT)
 end
 
 if (($PLAYER~CURRENT_PROMPT <> "Command") and ($PLAYER~CURRENT_PROMPT <> "<StarDock>"))
-  send "'{" $BOT_NAME "} - Script must be run from Command or StarDock.*"
+  setvar $switchboard~message "Script must be run from Command or StarDock.*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($PLAYER~CORP > 1)
@@ -58,7 +64,8 @@ setvar $SCANNER $PLAYER~PLANET_SCANNER
 
 killalltriggers
 if ($PLAYER~EXPERIENCE > $EXPERIENCEAMOUNT)
-  send "'{" $BOT_NAME "} - Desired Experience Reached.*"
+  setvar $switchboard~message "Desired Experience Reached.*"
+  gosub :switchboard~switchboard
   if ($START_PROMPT = "<StarDock>")
     send "p  s"
   end
@@ -121,3 +128,4 @@ gettext CURRENTLINE $PLAYER~GENESIS "(Max " ")"
 send $PLAYER~GENESIS "* q q "
 goto :RUN
 include "source\include\player"
+include "source\include\switchboard.ts"

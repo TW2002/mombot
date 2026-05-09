@@ -1,25 +1,27 @@
-loadvar $BOT_NAME
-loadvar $PARM1
-loadvar $USER_COMMAND_LINE
-loadvar $BOT_TURN_LIMIT
-loadvar $PARM2
-loadvar $PARM3
-loadvar $PARM4
-loadvar $PARM5
-goto :MOVER
-include "source\include\planet"
-include "source\include\validation"
-:MOVER
+
+logging off
+gosub :LOADVARS~LOADVARS
+
+gosub :HELP~INITIALIZE
+setVar $HELP~HELP[1]  $HELP~TAB&"MOVE - Product Mover"
+setVar $HELP~HELP[2]  $HELP~TAB&" "
+setVar $HELP~HELP[3]  $HELP~TAB&"    move [type] [planet] [rounds]"
+setVar $HELP~HELP[4]  $HELP~TAB&" "
+setVar $HELP~HELP[5]  $HELP~TAB&"    [type] - use [f]uel, [o]rg, [e]quip"
+setVar $HELP~HELP[6]  $HELP~TAB&"    [type] - use [fc] fuel colo, [oc] org colo, [ec] equip colo"
+setVar $HELP~HELP[7]  $HELP~TAB&"    [planet] planet to move to"
+setVar $HELP~HELP[8]  $HELP~TAB&"    [rounds] number of rounds to move product / colonists"
+gosub :HELP~HELPFILE
 
 killalltriggers
 setvar $STUFFMOVED ""
 setvar $ROUNDS 0
 setvar $moveextra 0
 gosub :PLAYER~QUIKSTATS
-echo "total_holds: " $PLAYER~TOTAL_HOLDS "*"
 setvar $STARTLOCATION $PLAYER~CURRENT_PROMPT
 if (($STARTLOCATION <> "Citadel") and ($STARTLOCATION <> "Planet"))
-  send "'{" $BOT_NAME "} - Mover must be run from Citadel or Planet prompt.*"
+  setvar $switchboard~message "Mover must be run from Citadel or Planet prompt.*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($PARM1 = "f")
@@ -35,12 +37,14 @@ elseif ($PARM1 = "oc")
 elseif ($PARM1 = "ec")
   setvar $STUFFMOVED "Equipment Colonists"
 else
-  send "'{" $BOT_NAME "} - Please use move [f/o/e/fc/oc/ec/] [planet] {[rounds]|[amount]} format*"
+  setvar $switchboard~message "Please use move [f/o/e/fc/oc/ec/] [planet] {[rounds]|[amount]} format*"
+  gosub :switchboard~switchboard
   halt
 end
 isnumber $TEST $PARM2
 if ($TEST = FALSE)
-  send "'{" $BOT_NAME "} - Mover Planet Parameter in-valid*"
+  setvar $switchboard~message "Mover Planet Parameter in-valid*"
+  gosub :switchboard~switchboard
   halt
 end
 setvar $moveall FALSE
@@ -49,16 +53,19 @@ if ($TEST = FALSE)
   if ($PARM3 = "")
     setvar $moveall TRUE
   else
-    send "'{" $BOT_NAME "} - Mover Rounds Parameter in-valid*"
+    setvar $switchboard~message "Mover Rounds Parameter in-valid*"
+    gosub :switchboard~switchboard
     halt
   end
 elseif ($PARM3 <= 0)
-  send "'{" $BOT_NAME "} - Must choose more than 0 rounds to move*"
+  setvar $switchboard~message "Must choose more than 0 rounds to move*"
+  gosub :switchboard~switchboard
   halt
 elseif ($PARM3 > 1000)
   gosub :PLAYER~QUIKSTATS
   if ($PLAYER~TOTAL_HOLDS <= 0)
-    send "'{" $BOT_NAME "} - Unable to determine ship holds from stats.*"
+    setvar $switchboard~message "Unable to determine ship holds from stats.*"
+    gosub :switchboard~switchboard
     halt
   end
   setvar $MOVEHOLDS ($PARM3 / $PLAYER~TOTAL_HOLDS)
@@ -67,7 +74,8 @@ elseif ($PARM3 > 1000)
   if ($moveextra > 0)
     add $movetrips 1
   end
-  send "'{" $BOT_NAME "} - Moving " & $movetrips & " holds (" & $PARM3 & " total).*"
+  setvar $switchboard~message "Moving " & $movetrips & " holds (" & $PARM3 & " total).*"
+  gosub :switchboard~switchboard
 else
    setvar $MOVEHOLDS $PARM3
    setvar $moveextra 0
@@ -77,7 +85,6 @@ if ($STARTLOCATION = "Citadel")
 end
 
 :STARTMOVER
-
 gosub :GETPLANETINFO
 if (($moveall = TRUE) and (($STUFFMOVED = "Fuel Colonists") or ($STUFFMOVED = "Organic Colonists") or ($STUFFMOVED = "Equipment Colonists")))
   gosub :GETPLANETCOLONISTINFO
@@ -118,7 +125,7 @@ elseif (($STUFFMOVED = "Equipment") or ($STUFFMOVED = "Equipment Colonists"))
     end
   end
 end
-getwordpos $USER_COMMAND_LINE $POS "c"
+getwordpos $BOT~USER_COMMAND_LINE $POS "c"
 if ($POS > 0)
   send "q  j  y l "&$PLANET&" *  "
   goto :MOVECOLONISTS
@@ -166,19 +173,23 @@ if ($ROUNDS <= $PARM3)
 elseif ($ROUNDS < 1)
   goto :MOVEDONE
 end
-:MOVEDONE
 
+:MOVEDONE
 if ($STARTLOCATION = "Citadel")
   send "c"
 end
 if ($moveall = TRUE)
-  send "'{" $BOT_NAME "} - Moved all "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
+  setvar $switchboard~message "Moved all "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
+  gosub :switchboard~switchboard
 elseif ($PARM3 > 1000)
-  send "'{" $BOT_NAME "} - Moved "&$PARM3&" total "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
+  setvar $switchboard~message "Moved "&$PARM3&" total "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
+  gosub :switchboard~switchboard
 else
-  send "'{" $BOT_NAME "} - Moved "&$PARM3&" loads of "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
+  setvar $switchboard~message "Moved "&$PARM3&" loads of "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
+  gosub :switchboard~switchboard
 end
 halt
+
 :GETINFO
 gosub :PLAYER~GETINFO
 setvar $TRADER_NAME $PLAYER~TRADER_NAME
@@ -188,9 +199,8 @@ setvar $TURNS_PER_WARP $PLAYER~TURNS_PER_WARP
 setvar $TWARP_1_RANGE $PLAYER~TWARP_1_RANGE
 setvar $TWARP_2_RANGE $PLAYER~TWARP_2_RANGE
 setvar $EMPTY_HOLDS $PLAYER~EMPTY_HOLDS
-gosub :VALIDATION~VALIDATION
-
 return
+
 :GETPLANETINFO
 gosub :PLANET~GETPLANETINFO
 setvar $PLANET $PLANET~PLANET
@@ -208,33 +218,23 @@ setvar $CITADEL_CREDITS $PLANET~CITADEL_CREDITS
 setvar $ATMOSPHERE_CANNON $PLANET~ATMOSPHERE_CANNON
 setvar $SECTOR_CANNON $PLANET~SECTOR_CANNON
 return
+
 :GETPLANETCOLONISTINFO
 gosub :PLANET~GETPLANETINFO
 setvar $PLANET_FUEL_COLONISTS $PLANET~PLANET_FUEL_COLONISTS
 setvar $PLANET_ORGANICS_COLONISTS $PLANET~PLANET_ORGANICS_COLONISTS
 setvar $PLANET_EQUIPMENT_COLONISTS $PLANET~PLANET_EQUIPMENT_COLONISTS
 return
-killtrigger CITADELSTART
-killtrigger CANNON
 
-return
 :SETPLANETNUMBER
-
-
-
-
 getwordpos RAWPACKET $POS "Planet "&#27&"[1;33m#"&#27&"[36m"
 if ($POS > 0)
   gettext RAWPACKET $PLANET "Planet "&#27&"[1;33m#"&#27&"[36m" #27&"[0;32m in sector "
 end
 settextlinetrigger GETPLANETNUMBER :SETPLANETNUMBER " in sector "
 pause
+
 :SETSHIPOFFENSIVEODDS
-
-
-
-
-
 getwordpos CURRENTANSILINE $POS "[0;31m:[1;36m1"
 if ($POS > 0)
   gettext CURRENTANSILINE $SHIP_OFFENSIVE_ODDS "Offensive Odds[1;33m:[36m " "[0;31m:[1;36m1"
@@ -246,9 +246,8 @@ if ($POS > 0)
 end
 settextlinetrigger GETSHIPSTATS :SETSHIPOFFENSIVEODDS "Offensive Odds: "
 pause
+
 :SETSHIPMAXFIGATTACK
-
-
 getwordpos CURRENTANSILINE $POS "[0m[32m Max Figs Per Attack[1;33m:[36m"
 if ($POS > 0)
   gettext CURRENTANSILINE $SHIP_MAX_ATTACK "[0m[32m Max Figs Per Attack[1;33m:[36m" "[0;32mTransWarp"
@@ -256,3 +255,8 @@ if ($POS > 0)
 end
 settextlinetrigger GETSHIPMAXFIGHTERS :SETSHIPMAXFIGATTACK " TransWarp Drive:   "
 pause
+
+include "source\include\planet"
+include "source\include\loadvars.ts"
+include "source\include\help.ts"
+include "source\include\switchboard.ts"

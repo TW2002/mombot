@@ -779,6 +779,248 @@ if ($MINES~STARTINGLOCATION = "Citadel")
 end
 return
 
+:MINES~DISR
+:MINES~DISRUPT
+
+# $SCANIT = TRUE or FALSE
+# $BURSTING = TRUE or FALSE
+# $TARGET = TARGET SECTOR
+
+setarray $ADJ2HIT 6 1
+
+if (($TARGET = 0) and ($SCANIT = 0))
+  setvar $IDX 1
+  while (SECTOR.WARPS[CURRENTSECTOR][$IDX] > 0)
+    setvar $ADJ SECTOR.WARPS[CURRENTSECTOR][$IDX]
+    setvar $ADJ2HIT[$IDX] $ADJ
+    setvar $ADJ2HIT[$IDX][1] 1
+    add $IDX 1
+  end
+elseif ($TARGET > 0)
+  setvar $ADJ2HIT[1] $TARGET
+  setvar $ADJ2HIT[1][1] 1
+  setvar $SCANIT FALSE
+end
+
+gosub :PLAYER~QUIKSTATS
+
+if ($PLAYER~MINE_DISRUPTORS = 0)
+  setvar $switchboard~message "No Disruptors On Board!"
+  gosub :switchboard~switchboard
+  return
+end
+
+setvar $PLANET~PLANET 0
+if ($PLAYER~CURRENT_PROMPT = "Planet")
+  setvar $PLANET~NOHEADER 1
+  gosub :PLANET~PLANETINFO
+  if ($PLANET~PLANET = 0)
+    setvar $switchboard~message "Unable To Obtain Planet Number!"
+    gosub :switchboard~switchboard
+    return
+  end
+  send "  Q  "
+elseif ($PLAYER~CURRENT_PROMPT = "Citadel")
+  send "  Q  "
+  setvar $PLANET~NOHEADER 1
+  gosub :PLANET~PLANETINFO
+  if ($PLANET~PLANET = 0)
+    setvar $switchboard~message "Unable To Obtain Planet Number!"
+    gosub :switchboard~switchboard
+    return
+  end
+elseif ($PLAYER~CURRENT_PROMPT = "Command")
+
+elseif ($PLAYER~CURRENT_PROMPT = "Computer")
+  send "  Q  "
+  gosub :PLAYER~CURRENTPROMPT
+elseif (($PLAYER~CURRENT_PROMPT = "StarDock") or ($PLAYER~CURRENT_PROMPT = "Stardock"))
+  send "Q  "
+  gosub :PLAYER~CURRENTPROMPT
+elseif ($PLAYER~CURRENT_PROMPT = "Port")
+  send " 0*  0*  0*  0*  "
+  gosub :PLAYER~CURRENTPROMPT
+else
+  setvar $switchboard~message "Unknown Prompt!"
+  gosub :switchboard~switchboard
+  return
+end
+setvar $START_PROMPT $PLAYER~CURRENT_PROMPT
+
+if ($SCANIT)
+  gosub :DO_SCAN
+  setvar $IDX 1
+
+  while (SECTOR.WARPS[CURRENTSECTOR][$IDX] > 0)
+    setvar $ADJ SECTOR.WARPS[CURRENTSECTOR][$IDX]
+    if (SECTOR.MINES.QUANTITY[$ADJ] <> 0)
+      if ((SECTOR.MINES.OWNER[$ADJ] <> "belong to your Corp") and (SECTOR.MINES.OWNER[$ADJ] <> "yours"))
+        setvar $ADJ2HIT[$IDX] $ADJ
+        setvar $ADJ2HIT[$IDX][1] SECTOR.MINES.QUANTITY[$ADJ]
+      else
+        setvar $ADJ2HIT[$IDX][1] 0
+      end
+    end
+    add $IDX 1
+  end
+end
+
+gosub :STAR_BURST
+
+if ($PLANET~PLANET <> 0)
+  if ($START_PROMPT = "Citadel")
+    send " Q Q Q Z N L Z"&#8&$PLANET~PLANET&"*  *  J  C  *  * "
+  else
+    send " Q Q Q Z N L Z"&#8&$PLANET~PLANET&"*  *  "
+  end
+elseif (($START_PROMPT = "StarDock") or ($START_PROMPT = "Stardock"))
+  settextlinetrigger LIMPET_FOUND :LIMPET_FOUND "A port official runs up to you as you dock and informs you that"
+  settexttrigger ON_DOCK :ON_DOCK "<StarDock> Where to?"
+  send " P  S"
+  pause
+  :LIMPET_FOUND
+  send " Y "
+  pause
+  :ON_DOCK
+  killalltriggers
+elseif ($START_PROMPT = "Port")
+  send " P  T  "
+end
+setvar $IDX 1
+setvar $STR ""
+while ($IDX <= 6)
+  if ($ADJ2HIT[$IDX][1] <> 0)
+    setvar $STR $STR&"        Sector "&$ADJ2HIT[$IDX]&", "&$ADJ2HIT[$IDX][1]&" Mines Remain*"
+  end
+  add $IDX 1
+end
+
+if ($STR = "")
+  setvar $MINES~RESULT "Disr - Disrupted "&$TOTAL_MINES_POOFED&" Mines!"
+  return
+else
+  setvar $MINES~RESULT "Disr - Status Report:**"
+  setvar $MINES~RESULT $MINES~RESULT&$STR
+  setvar $MINES~RESULT $MINES~RESULT&"        Disrupted: "&$TOTAL_MINES_POOFED&"**"
+  return
+end
+halt
+
+:DO_SCAN
+setdelaytrigger WHOA_WUZUP :WHOA_WUZUP 4000
+settextlinetrigger SCAN_COMPLETE :SCAN_COMPLETE "Warps to Sector(s)"
+if ($START_PROMPT = "Citadel")
+  send " S  H"
+elseif ($START_PROMPT = "Planet")
+  send " S  H"
+elseif (($START_PROMPT = "StarDock") or ($START_PROMPT = "Stardock"))
+  send "  S  H"
+elseif ($START_PROMPT = "Command")
+  send "  S  H"
+elseif ($START_PROMPT = "Port")
+  send " S   H"
+else
+  gosub :PLAYER~QUIKSTATS
+  setvar $switchboard~message "Disr - Unknown Problem Occured, at '"&$PLAYER~CURRENT_PROMPT&"' Prompt!*"
+  gosub :switchboard~switchboard
+  halt
+end
+pause
+:WHOA_WUZUP
+killalltriggers
+setvar $switchboard~message "Disr - Unknown Problem Occurred, Attempting to reach Command Prompt!"
+gosub :switchboard~switchboard
+send "*  P D 0* 0* 0* * *** * C  Q  Q  Q  Q  Q  Z  2  2  C  Q  *  Z  *  ***  *  *  ^Q"
+waitfor ": ENDINTERROG"
+gosub :PLAYER~QUIKSTATS
+setvar $switchboard~message "Disr - Unknown Problem Occurred, at '"&$PLAYER~CURRENT_PROMPT&"' Prompt!*"
+gosub :switchboard~switchboard
+return
+:SCAN_COMPLETE
+killalltriggers
+return
+:PLANET_INFO
+settextlinetrigger PLANET :PLANET "Planet #"
+send "D"
+pause
+:PLANET
+killtrigger PLANET
+getword CURRENTLINE $PLANET 2
+striptext $PLANET "#"
+isnumber $TST $PLANET
+if ($TST = 0)
+  setvar $PLANET 0
+end
+return
+gosub :PLAYER~QUIKSTATS
+setvar $SCAN_TYPE $PLAYER~SCAN_TYPE
+setvar $MINE_DISRUPTORS $PLAYER~MINE_DISRUPTORS
+striptext $PLAYER~CURRENT_PROMPT "<"
+striptext $PLAYER~CURRENT_PROMPT ">"
+return
+
+:STAR_BURST
+setvar $DISRUPTORS $PLAYER~MINE_DISRUPTORS
+send " C "
+:LETS_GO_AGAIN
+setvar $IDX 1
+setvar $ADJ_HITS 0
+while ($IDX <= 6)
+  if ($ADJ2HIT[$IDX][1] <> 0)
+    settextlinetrigger NOMINES :NOMINES "There were no mines in sector "&$ADJ2HIT[$IDX]
+    settextlinetrigger MINESGONE :MINESGONE "of the mines in sector "&$ADJ2HIT[$IDX]&"!"
+    settextlinetrigger NOTADJ :NOTADJ "That is not an adjacent sector"
+    send " W Y "&$ADJ2HIT[$IDX]&"*"
+    pause
+    :NOMINES
+    killalltriggers
+    setvar $DISRUPTORS ($DISRUPTORS - 1)
+    setvar $ADJ2HIT[$IDX][1] 0
+    goto :LOOP_D_LOU
+    :NOTADJ
+    killalltriggers
+    send " Q"
+    setvar $ADJ2HIT[$IDX][1] 0
+    goto :LOOP_D_LOU
+    :MINESGONE
+    killalltriggers
+    setvar $TEMP CURRENTLINE
+    getwordpos $TEMP $POS "remain)"
+    setvar $DISRUPTORS ($DISRUPTORS - 1)
+    if ($POS = 0)
+      getword $TEMP $TEMP 4
+      isnumber $TST $TEMP
+      if ($TST)
+        setvar $TOTAL_MINES_POOFED ($TOTAL_MINES_POOFED + $TEMP)
+      end
+      setvar $ADJ2HIT[$IDX][1] 0
+    else
+      getword $TEMP $TEMP2 3
+      isnumber $TST $TEMP2
+      if ($TST)
+        setvar $TOTAL_MINES_POOFED ($TOTAL_MINES_POOFED + $TEMP2)
+      end
+      gettext $TEMP $TEMP $ADJ2HIT[$IDX]&"! (" " remain)"
+      isnumber $TST $TEMP
+      if ($TST = 0)
+        setvar $TEMP 0
+      end
+      setvar $ADJ2HIT[$IDX][1] $TEMP
+      setvar $ADJ_HITS ($ADJ_HITS + 1)
+    end
+    :LOOP_D_LOU
+    if ($DISRUPTORS < 1)
+      setvar $IDX 6
+    end
+  end
+  add $IDX 1
+end
+if (($ADJ_HITS <> 0) and (($DISRUPTORS > 0) and ($BURSTING = 0)))
+  goto :LETS_GO_AGAIN
+end
+send " Q "
+return
+
 include "source\include\player"
 include "source\include\xenter"
 include "source\include\planet"

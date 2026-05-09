@@ -16,7 +16,8 @@ if ($PLAYER~CURRENT_PROMPT = "<StarDock>")
   pause
   :NOSHIP
   killalltriggers
-  send "'{" $BOT_NAME "} - No Empty Ships Found. Nothing To Scrub!*"
+  setvar $switchboard~message "No Empty Ships Found. Nothing To Scrub!*"
+  gosub :switchboard~switchboard
   halt
   :LINE
   setvar $TEMP CURRENTLINE
@@ -38,13 +39,15 @@ if ($PLAYER~CURRENT_PROMPT = "<StarDock>")
   send "qq"
   waiton "You leave the shipyards."
 else
-  send "'{"&$BOT_NAME&"} - Must Start From StarDock Prompt!*"
+  setvar $switchboard~message "Must Start From StarDock Prompt!*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($IDX <> 0)
   setvar $REQ (($IDX * 2) + 2)
   if (($UNLIMITEDGAME = 0) and ($PLAYER~TURNS < $REQ))
-    send "'{"&$BOT_NAME&"} - Not Enough Turns to Scrub ("&$REQ&" Turns Required)*"
+    setvar $switchboard~message "Not Enough Turns to Scrub ("&$REQ&" Turns Required)*"
+    gosub :switchboard~switchboard
     halt
   end
   setvar $STR ""
@@ -122,3 +125,4 @@ elseif ($CASHAMOUNT <= 999999999)
   setvar $CASHAMOUNT $TMP
 end
 return
+include "source\include\switchboard.ts"

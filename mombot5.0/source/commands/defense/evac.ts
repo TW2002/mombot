@@ -169,3 +169,4 @@ loadVar $map~home_sector
 include "source\include\planet"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

@@ -68,7 +68,7 @@ gosub :HELP~INITIALIZE
 			gosub :PLAYER~quikstats
 			setVar $back $PLAYER~CURRENT_SECTOR
 			setVar $PLAYER~warpto 1
-			gosub :player~twarp
+			gosub :move~twarp
 			gosub  :player~currentPrompt
 			if ($PLAYER~twarpSuccess = TRUE)
 				send "p ty"
@@ -86,7 +86,7 @@ gosub :HELP~INITIALIZE
 					killtrigger 2
 				send "q "
 				setVar $PLAYER~warpto $map~stardock
-				gosub :player~twarp
+				gosub :move~twarp
 				gosub  :player~currentPrompt
 				if ($PLAYER~twarpSuccess = TRUE)
 					send "P  S G YG Q s p"
@@ -137,7 +137,7 @@ gosub :HELP~INITIALIZE
 		if ($seek = true)
 			gosub :PLAYER~quikstats
 			setVar $PLAYER~warpto $back
-			gosub :player~twarp
+			gosub :move~twarp
 			if ($PLAYER~twarpSuccess <> TRUE)
 				setVar $SWITCHBOARD~message $PLAYER~msg&"*"
 				gosub :SWITCHBOARD~switchboard
@@ -171,5 +171,7 @@ halt
 
 # includes:
 include "source\include\planet"
+include "source\include\move"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

@@ -1,13 +1,6 @@
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :SHIP~GETSHIPCAPSTATS
-
-
-
-
-
-
-
-
-
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "cn"
 waiton "(2) Animation display"
 getword CURRENTLINE $SHIP~ANSI_ONOFF 5
@@ -41,10 +34,11 @@ setvar $SHIP~FIRSTSHIPNAME ""
 setvar $SHIP~NEXTPAGE 1
 send "CC@?"
 waiton "Average Interval Lag"
-:SHIP~SHP_LOOP
 
+:SHIP~SHP_LOOP
 settextlinetrigger GRAB_SHIP :SHIP~SHP_SHIPNAMES "> "
 pause
+
 :SHIP~SHP_SHIPNAMES
 if (CURRENTLINE = "")
   goto :SHIP~SHP_LOOP
@@ -72,6 +66,7 @@ if ($SHIP~TOTALSHIPS = 1)
   striptext $SHIP~FIRSTSHIPNAME "<A> "
 end
 goto :SHIP~SHP_LOOP
+
 :SHIP~SHP_GETSHIPSTATS
 setvar $SHIP~SHIPSTATLOOP 0
 :SHIP~SHP_SHIPSTATS
@@ -146,10 +141,9 @@ end
 send "qq"
 return
 
-include "source\include\switchboard"
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :SHIP~GETSHIPSTATS
-
-
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "c;"
 settextlinetrigger GETSHIPOFFENSE :SHIP~SHIPOFFENSEODDS "Offensive Odds: "
 settextlinetrigger GETSHIPFIGHTERS :SHIP~SHIPMAXFIGSPERATTACK " TransWarp Drive:   "
@@ -158,14 +152,15 @@ settextlinetrigger GETSHIPGENESIS :SHIP~SHIPMAXGENESIS " Genesis Max:  "
 settextlinetrigger GETSHIPSHIELDS :SHIP~SHIPMAXSHIELDS "Maximum Shields:"
 settextlinetrigger GETSHIPRANGE :SHIP~SHIPTRANSPORTRANGE "Transport Range:"
 pause
-:SHIP~SHIPMAXSHIELDS
 
+:SHIP~SHIPMAXSHIELDS
 setvar $SHIP~SHIELD_LINE CURRENTLINE
 replacetext $SHIP~SHIELD_LINE ":" "  "
 replacetext $SHIP~SHIELD_LINE "," ""
 getword $SHIP~SHIELD_LINE $SHIP~SHIP_SHIELD_MAX 10
 savevar $SHIP~SHIP_SHIELD_MAX
 pause
+
 :SHIP~SHIPOFFENSEODDS
 getwordpos CURRENTANSILINE $SHIP~POS "[0;31m:[1;36m1"
 if ($SHIP~POS > 0)
@@ -179,19 +174,20 @@ if ($SHIP~POS > 0)
   savevar $SHIP~SHIP_OFFENSIVE_ODDS
 end
 pause
+
 :SHIP~SHIPMAXMINES
 gettext CURRENTLINE $SHIP~SHIP_MINES_MAX "Mine Max:" "Beacon Max:"
 striptext $SHIP~SHIP_MINES_MAX " "
 savevar $SHIP~SHIP_MINES_MAX
 pause
-:SHIP~SHIPMAXGENESIS
 
+:SHIP~SHIPMAXGENESIS
 gettext CURRENTLINE $SHIP~SHIP_GENESIS_MAX "Genesis Max:" "Long Range Scan:"
 striptext $SHIP~SHIP_GENESIS_MAX " "
 savevar $SHIP~SHIP_GENESIS_MAX
 pause
-:SHIP~SHIPMAXFIGSPERATTACK
 
+:SHIP~SHIPMAXFIGSPERATTACK
 getwordpos CURRENTANSILINE $SHIP~POS "[0m[32m Max Figs Per Attack[1;33m:[36m"
 if ($SHIP~POS > 0)
   gettext CURRENTANSILINE $SHIP~SHIP_MAX_ATTACK "[0m[32m Max Figs Per Attack[1;33m:[36m" "[0;32mTransWarp"
@@ -199,6 +195,7 @@ if ($SHIP~POS > 0)
 end
 savevar $SHIP~SHIP_MAX_ATTACK
 pause
+
 :SHIP~SHIPTRANSPORTRANGE
 gettext CURRENTLINE $SHIP~SHIP_MAX_HOLDS "Maximum Holds:" "Transport Range:"
 striptext $SHIP~SHIP_MAX_HOLDS " "
@@ -212,9 +209,10 @@ striptext $SHIP~SHIP_MAX_HOLDS " "
 	:SHIP~GETSHIPSTATS_RETURNPROMPT
 	killalltriggers
 	return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :SHIP~LOADSHIPINFO
-
-
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $SHIP~SHIPCOUNTER 1
 :SHIP~COUNT_THE_SHIPS
 loadvar $SHIP~CAP_FILE
@@ -248,8 +246,10 @@ if ($SHIP~EXISTS)
   setvar $SHIP~SHIPSTATS TRUE
 end
 return
-:SHIP~PROCESS_SHIP_LINE
 
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:SHIP~PROCESS_SHIP_LINE
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 getword $SHIP~SHIPINF $SHIP~SHIELDS 1
 getlength $SHIP~SHIELDS $SHIP~SHIELDLEN
 getword $SHIP~SHIPINF $SHIP~DEFODD 2
@@ -271,10 +271,10 @@ getlength $SHIP~ISDEFENDER $SHIP~FILLER7LEN
 setvar $SHIP~STARTLEN ($SHIP~SHIELDLEN + ($SHIP~DEFODDLEN + ($SHIP~FILLER1LEN + ($SHIP~FILLER2LEN + ($SHIP~FILLER3LEN + ($SHIP~FILLER4LEN + ($SHIP~FILLER5LEN + ($SHIP~FILLER6LEN + ($SHIP~FILLER7LEN + 10)))))))))
 cuttext $SHIP~SHIPINF $SHIP~SHIPNAME $SHIP~STARTLEN 999
 return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :SHIP~SAVETHESHIP
-
-
-
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $SHIP~SHIPCOUNTER 1
 :SHIP~SAVETHESHIP_READSHIPLIST
 loadvar $SHIP~CAP_FILE
@@ -367,10 +367,10 @@ gosub :SWITCHBOARD~SWITCHBOARD
 send "q"
 gosub :SHIP~LOADSHIPINFO
 return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :SHIP~SAVE_THE_SHIP
-
-
-
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $SHIP~SHIPCOUNTER 1
 :SHIP~SAVE_THE_SHIP_READSHIPLIST
 loadvar $SHIP~CAP_FILE
@@ -399,7 +399,8 @@ else
   setvar $SHIP~SHIP_NAME $SHIP~FRONTLETTER&$SHIP~SHIP_NAME
   getwordpos $SHIP~DATABASE $SHIP~POS "^^^^^^"&$SHIP~SHIP_NAME&"^^^^^^"
   if ($SHIP~POS > 0)
-    send "'{" $SWITCHBOARD~BOT_NAME "} - This ship is already stored in bot file.*"
+    setvar $switchboard~message "This ship is already stored in bot file.*"
+    gosub :switchboard~switchboard
     return
   end
 end
@@ -456,7 +457,10 @@ striptext $SHIP~LINE "Maximum Holds:"
 getword $SHIP~LINE $SHIP~MAX_HOLDS 1
 setvar $SHIP~ISDEFENDER FALSE
 write $SHIP~CAP_FILE $SHIP~MAX_SHIELDS&" "&$SHIP~DEF_ODDS&" "&$SHIP~OFF_ODDS&" "&$SHIP~COST&" "&$SHIP~MAX_HOLDS&" "&$SHIP~MAX_FIGS&" "&$SHIP~INIT_HOLDS&" "&$SHIP~TPW&" "&$SHIP~ISDEFENDER&" "&$SHIP~SHIP_NAME
-send "'{" $SWITCHBOARD~BOT_NAME "} - "&$SHIP~SHIP_NAME&" added to bot's ship file.*"
+setvar $switchboard~message ""&$SHIP~SHIP_NAME&" added to bot's ship file.*"
+gosub :switchboard~switchboard
 send "q"
 gosub :SHIP~LOADSHIPINFO
 return
+
+include "source\include\switchboard"

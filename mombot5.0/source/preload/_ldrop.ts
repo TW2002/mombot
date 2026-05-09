@@ -30,7 +30,8 @@ end
 gosub :PLAYER~QUIKSTATS
 setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 if ($STARTINGLOCATION <> "Citadel")
-  send "'{" $BOT_NAME "} - Must start from Citadel*"
+  setvar $switchboard~message "Must start from Citadel*"
+  gosub :switchboard~switchboard
   halt
 end
 send "q"
@@ -124,7 +125,8 @@ pause
 :LDROP_NO_FIG
 
 killtrigger IN_SECTOR
-send "'{" $BOT_NAME "} - No Adjacent fig in drop sector*"
+setvar $switchboard~message "No Adjacent fig in drop sector*"
+gosub :switchboard~switchboard
 goto :LDROP_SCAN
 :LDROP_IN_SECTOR
 
@@ -170,3 +172,4 @@ return
 # includes:
 include "source\include\combat"
 include "source\include\planet"
+include "source\include\switchboard.ts"

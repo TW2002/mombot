@@ -18,8 +18,9 @@
 	setVar $HELP~HELP[10] $HELP~TAB&"           {ec}   - Strip equipment colonists"
 	setVar $HELP~HELP[11] $HELP~TAB&"          {fig}   - Strip fighters"
 	setVar $HELP~HELP[12] $HELP~TAB&"          {turbo} - Does in a macro burst"
+	setVar $HELP~HELP[13] $HELP~TAB&"     "
+	setVar $HELP~HELP[14] $HELP~TAB&"          Originally written by Mind Dagger"
 	gosub :HELP~HELPFILE
-
 
 	gosub :PLAYER~quikstats
 	setVar $startingLocation $PLAYER~CURRENT_PROMPT
@@ -287,34 +288,23 @@
 			goto :done
 		end
 		setVar $macro "l j"&#8&$planet~planets[$i]&"* j"&$type&"* jt"&$category&$get&"* x q l j"&#8&$planet~planetToFill&"* j"&$type&"* jl"&$category&"* x q "
-
-		
-
-		if (($turbo = FALSE) OR (($turbo = TRUE) AND ($loop >= 20)))
-			if ($turbo)
-				send "/"
-				waitOn " Sect "
-			end
-			send $macro
-			setVar $loop 0
-			setTextTrigger success       :again    "You load the "				
-			setTextTrigger empty         :done     "There aren't that many "
-			setTextTrigger full          :empty    "They don't have room for that many "
-			setTextTrigger success_colos :again    "The Colonists disembark to "
-			setTextTrigger empty_colos   :switch    "There isn't room on the planet"
-			pause
-			:switch
-			add $category 1
-			if ($category >= 4)
-				goto :again
-			end			
+		send $macro
+		setVar $loop 0
+		setTextTrigger success       :again    "You load the "				
+		setTextTrigger empty         :done     "There aren't that many "
+		setTextTrigger full          :empty    "They don't have room for that many "
+		setTextTrigger success_colos :again    "The Colonists disembark to "
+		setTextTrigger empty_colos   :switch    "There isn't room on the planet"
+		pause
+		:switch
+		add $category 1
+		if ($category >= 4)
+			goto :again			
 		else
 			send $macro
 		end
-		if ($turbo)
-			add $loop 1
-			goto :again
-		end
+		add $loop 1
+		goto :again
 	:empty
 		send "jy "
 	:done
@@ -426,3 +416,4 @@ return
 include "source\include\planet"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

@@ -28,7 +28,8 @@ if ($DOESHELPFILEEXIST <> TRUE)
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "       - clear deletes the farm file                        "
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    [list]                                                  "
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "       - show lists of all sectors in the farm file in order"
-  send "'{" $BOT_NAME "} - Writing help file for this command in Help directory.*"
+  setvar $switchboard~message "Writing help file for this command in Help directory.*"
+  gosub :switchboard~switchboard
 end
 setvar $FARMER_FILE "_"&GAMENAME&"_FARMER.list"
 
@@ -41,7 +42,8 @@ end
 getwordpos $PARM1 $POS "clear"
 if ($POS > 0)
   delete $FARMER_FILE
-  send "'{" $BOT_NAME "} - Bot Farming File has been deleted.*"
+  setvar $switchboard~message "Bot Farming File has been deleted.*"
+  gosub :switchboard~switchboard
   halt
 end
 getwordpos $PARM1 $POS "list"
@@ -58,7 +60,8 @@ if ($POS > 0)
     setvar $LIST_OUTPUT $LIST_OUTPUT&$SECTOR[$I]
     send "'*{" $BOT_NAME "} - Farming List (In traveling order) *"&$LIST_OUTPUT&"**"
   else
-    send "'{" $BOT_NAME "} - No Farming File to list from.*"
+    setvar $switchboard~message "No Farming File to list from.*"
+    gosub :switchboard~switchboard
   end
   halt
 end
@@ -76,32 +79,38 @@ if ($POS > 0)
     add $I 1
     getword $USER_COMMAND_LINE $CHECK $I "%%%"
   end
-  send "'{" $BOT_NAME "} - "&($I - 2)&" Sectors added to Bot Farming File.*"
+  setvar $switchboard~message ""&($I - 2)&" Sectors added to Bot Farming File.*"
+  gosub :switchboard~switchboard
   halt
 end
 setvar $I 1
 setarray $PLANETS 3000
 quikstats
 if (CURRENTPLANETSCANNER = "No")
-  send "'{" $BOT_NAME "} - Planet Farmer must be run with a planet scanner.*"
+  setvar $switchboard~message "Planet Farmer must be run with a planet scanner.*"
+  gosub :switchboard~switchboard
   halt
 end
 if (CURRENTPROMPT <> "Citadel")
-  send "'{" $BOT_NAME "} - Planet Farmer must be run from the Citadel Prompt.*"
+  setvar $switchboard~message "Planet Farmer must be run from the Citadel Prompt.*"
+  gosub :switchboard~switchboard
   halt
 end
 fileexists $TEST $FARMER_FILE
 if ($TEST)
-  send "'{" $BOT_NAME "} - Loading Planet List From Farming File...*"
+  setvar $switchboard~message "Loading Planet List From Farming File...*"
+  gosub :switchboard~switchboard
   readtoarray $FARMER_FILE $SECTOR
 else
   setvar $SECTOR SECTORS
   setarray $SECTOR SECTORS
-  send "'{" $BOT_NAME "} - No Farming File, Loading Planet List...*"
+  setvar $switchboard~message "No Farming File, Loading Planet List...*"
+  gosub :switchboard~switchboard
   gosub :GET_TL_LIST
 end
 
-send "'{" $BOT_NAME "} - Planet List Loaded, starting the farming!*"
+setvar $switchboard~message "Planet List Loaded, starting the farming!*"
+gosub :switchboard~switchboard
 quikstats
 setvar $HOME CURRENTSECTOR
 gosub :PLANET_INFO
@@ -172,7 +181,8 @@ while ($I <= $SECTOR)
   gosub :COUNT_PLANETS
   gosub :STRIPALLPLANETS
   if ($SILENT <> TRUE)
-    send "'{" $BOT_NAME "} - Done farming sector " $SECTOR[$I] ".*"
+    setvar $switchboard~message "Done farming sector " $SECTOR[$I] ".*"
+    gosub :switchboard~switchboard
   end
   send "q"
   gosub :GETPLANETINFO
@@ -345,13 +355,16 @@ return
 killalltriggers
 send "p "&$HOME&"  *ys* "
 if ($PLANETISFULL)
-  send "'{" $BOT_NAME "} - Farming Planet is full.  Ready to sell off the product!*"
+  setvar $switchboard~message "Farming Planet is full.  Ready to sell off the product!*"
+  gosub :switchboard~switchboard
 else
-  send "'{" $BOT_NAME "} - Farming run is complete.*"
+  setvar $switchboard~message "Farming run is complete.*"
+  gosub :switchboard~switchboard
 end
 quikstats
 if (CURRENTSECTOR <> $HOME)
-  send "'{" $BOT_NAME "} - Could not make it back to starting sector!*"
+  setvar $switchboard~message "Could not make it back to starting sector!*"
+  gosub :switchboard~switchboard
 end
 halt
 :BUY
@@ -1074,21 +1087,26 @@ if (CURRENTPROMPT = "Command")
   if (CONNECTED = FALSE)
     goto :DISCO_TEST
   else
-    send "'{"&$BOT_NAME&"} - "&$TAGLINEB&" Problem Detected Unable to Land!*"
+    setvar $switchboard~message ""&$TAGLINEB&" Problem Detected Unable to Land!*"
+    gosub :switchboard~switchboard
     halt
   end
   :NOTLANDED
   killalltriggers
-  send "'{"&$BOT_NAME&"} - Boton Unable To Land, Check my TA.*"
-  send "'{"&$BOT_NAME&"} "&$TAGLINEB&" - Unable To Land After Reconnect,Check My TA!**"
+  setvar $switchboard~message "Boton Unable To Land, Check my TA.*"
+  gosub :switchboard~switchboard
+  setvar $switchboard~message $TAGLINEB&" - Unable To Land After Reconnect,Check My TA!**"
+  gosub :switchboard~switchboard
   halt
   :LANDED
   killalltriggers
-  send "'{"&$BOT_NAME&"} "&$TAGLINEB&" - Restarting!**"
+  setvar $switchboard~message $TAGLINEB&" - Restarting!**"
+  gosub :switchboard~switchboard
   waitfor "Message sent on sub-space channel"
   goto :INAC
 elseif (CURRENTPROMPT = "Citadel")
-  send "'{"&$BOT_NAME&"} "&$TAGLINEB&" - Restarting!**"
+  setvar $switchboard~message $TAGLINEB&" - Restarting!**"
+  gosub :switchboard~switchboard
   waitfor "Message sent on sub-space channel"
   goto :INAC
 else
@@ -1110,3 +1128,4 @@ seteventtrigger DISCOD2 :DISCOD "Connections have been temporarily disabled."
 return
 
 include "source\include\port"
+include "source\include\switchboard.ts"

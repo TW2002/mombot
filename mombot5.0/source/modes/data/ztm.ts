@@ -55,7 +55,8 @@ setVar $startlocation "x"
 			setVar $startlocation "comp"
 		end
 	else
-		send "'{" $switchboard~bot_name "} - ZTM must be started from Command, Computer, or Citadel prompt.*"
+		setvar $switchboard~message "ZTM must be started from Command, Computer, or Citadel prompt.*"
+		gosub :switchboard~switchboard
 	end
 
 if ($location = "Command")
@@ -454,3 +455,4 @@ return
 include "source\include\player"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

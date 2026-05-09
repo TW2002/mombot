@@ -1,3 +1,13 @@
+# MOVE.TS -- Movement related functions and subroutines.
+#
+# Exposed routines:
+#
+# :move~move - Automated adjacent movement.
+# :move~moveintosector - Build and send a direct move/deploy macro.
+# :move~twarp - Warp to a sector, with checking for range, fighter lock, and fuel.
+# :move~findjumpsector - Find a legal adjacent jump sector for red Stardock/fedspace movement.
+# :move~test_red_sector - Probe whether a red-adjacent sector can be t-warped to.
+#
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :MOVE~MOVE
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -234,7 +244,6 @@ else
   send $move~bestwarp $move~warpsuffix
   setvar $move~confirmsector 1
 end
-
 goto :MOVE~MOVE
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -267,3 +276,372 @@ end
 send $MOVE~RESULT
 setvar $PLAYER~CURRENT_SECTOR $MOVE~MOVEINTOSECTOR
 return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:MOVE~MOW
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+loadvar $PLAYER~FIGHTER_DEPLOY_TYPE
+loadvar $PLAYER~SURROUNDFIGS
+loadvar $PLAYER~SURROUNDLIMP
+loadvar $PLAYER~SURROUNDMINE
+setvar $MOVE~SUCCESS FALSE
+
+gosub :PLAYER~QUIKSTATS
+gosub :ship~getshipstats
+setVar $player~startinglocation $PLAYER~CURRENT_PROMPT
+
+# uses $bot~startinglocation in mow.ts command
+
+if ($player~startinglocation = "Citadel")
+	send "q q "
+elseif ($player~startinglocation = "Planet")
+	send "q "
+elseif ($player~startinglocation = "<StarDock>")
+	send "q "
+elseif ($player~startinglocation <> "Command")
+	setvar $switchboard~message "Bad starting prompt, cannot mow!*"
+	gosub :switchboard~switchboard
+	return
+end
+
+# uses $player~startingsector as starting sector
+# uses $player~destination as destination sector
+# $figsToDrop
+# $doholo
+# $backdoormow
+
+if ($SHIP~SHIP_MAX_ATTACK <= 0)
+	setVar $SHIP~SHIP_MAX_ATTACK 99991111
+end
+
+isNumber $number $MOVE~TARGET
+if ($number <> 1)
+	setvar $switchboard~message "Sector entered is not a number, cannot mow!*"
+	gosub :switchboard~switchboard
+	return
+elseif (($MOVE~TARGET <= 0) OR ($MOVE~TARGET > SECTORS))
+	setvar $switchboard~message "Sector entered is not valid, cannot mow!*"
+	gosub :switchboard~switchboard
+	return
+end
+
+if ($SHIP~SHIP_MAX_ATTACK > $PLAYER~FIGHTERS)
+	setVar $SHIP~SHIP_MAX_ATTACK 9999
+end
+
+gosub :player~getcourse
+gosub :player~quikstats
+setvar $player~starting_point $player~current_sector
+setvar $player~destination $move~target
+gosub :player~getcourse
+setVar $j 2
+setVar $macro "q q q * "
+
+while ($j <= $player~courseLength)
+	subtract $player~turns $TPW
+	setVar $macro $macro&"m  "&$player~course[$j]&"*   "
+	if (($player~course[$j] > 10) AND ($player~course[$j] <> $MAP~STARDOCK))
+		setVar $macro $macro&"za  "&$SHIP~SHIP_MAX_ATTACK&"* *  "
+	end
+	if (($player~course[$j] > 10) AND ($player~course[$j] <> $MAP~STARDOCK) AND ($j > 2))
+		if ($PLAYER~SURROUNDFIGS > 0) and ($PLAYER~FIGHTERS > 50)
+      setVar $macro $macro&"f "&$PLAYER~SURROUNDFIGS&" * c d "
+		  setVar $player~target $player~course[$j]
+		  gosub :player~addFigToData
+    end
+    if ($PLAYER~SURROUNDMINE > 0) and ($PLAYER~ARMIDS > 0)
+      setVar $macro $macro&"  H  1  Z  "&$PLAYER~SURROUNDMINE&"*  Z C  *  "
+      setVar $player~target $player~course[$j]
+      #gosub :player~addArmidToData
+    end
+    if ($PLAYER~SURROUNDLIMP > 0) and ($PLAYER~LIMPETS > 0)
+      setVar $macro $macro&"  H  2  Z  "&$PLAYER~SURROUNDLIMP&"*  Z C  *  "
+      setVar $player~target $player~course[$j]
+      #gosub :player~addLimpetToData
+    end
+  end
+	if (($called = FALSE) AND ($move~saveme = TRUE) AND ($j >= ($player~courseLength-2)))
+		setVar $macro $macro&"'"&$msec&"=saveme*  "
+		setVar $move~called TRUE
+	end
+	add $j 1
+end
+
+send $macro
+
+killalltriggers
+gosub :PLAYER~QUIKSTATS
+
+if ($PLAYER~CURRENT_PROMPT = "Planet")
+	send "m * * * c s* "
+end
+
+if (($PLAYER~CURRENT_PROMPT = "<StarDock>") OR ($PLAYER~CURRENT_PROMPT = "<Hardware"))
+	setvar $switchboard~message "Safely on Stardock*"
+	gosub :switchboard~switchboard
+	setvar $MOVE~SUCCESS TRUE
+end
+
+if ($PLAYER~CURRENT_SECTOR <> $move~target)
+	setvar $switchboard~message "Mow did not reach destination!*"
+	gosub :switchboard~switchboard
+	return
+else
+	setvar $switchboard~message "Mow completed.*"
+	gosub :switchboard~switchboard
+	setvar $MOVE~SUCCESS TRUE
+end
+
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:MOVE~TWARP
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $PLAYER~TWARPSUCCESS FALSE
+setvar $PLAYER~ORIGINAL 9999999
+setvar $PLAYER~TARGET 0
+
+if ($PLAYER~CURRENT_SECTOR = $PLAYER~WARPTO)
+  setvar $PLAYER~MSG "Already in that sector!"
+  goto :MOVE~TWARPDONE
+elseif (($PLAYER~WARPTO <= 0) or ($PLAYER~WARPTO > SECTORS))
+  setvar $PLAYER~MSG "Destination sector is out of range!"
+  goto :MOVE~TWARPDONE
+end
+if ($PLAYER~TWARP_TYPE = "No")
+  setvar $PLAYER~MSG "No T-warp drive on this ship!"
+  goto :MOVE~TWARPDONE
+end
+if (($PLAYER~PHOTONS > 0) and ($PLAYER~OVERRIDE <> TRUE))
+  setvar $SWITCHBOARD~MESSAGE "You can't twarp with photons without override!*"
+  gosub :SWITCHBOARD~SWITCHBOARD
+  setvar $PLAYER~MSG "You can't twarp with photons without override!"
+  goto :MOVE~TWARPDONE
+end
+loadvar $SHIP~SHIP_MAX_ATTACK
+if ($SHIP~SHIP_MAX_ATTACK = 0)
+  setvar $SHIP~SHIP_MAX_ATTACK 9999
+end
+if (($PLAYER~FIGHTERS > 0) and ($PLAYER~FIGHTERS < $SHIP~SHIP_MAX_ATTACK))
+  setvar $SHIP~SHIP_MAX_ATTACK $PLAYER~FIGHTERS
+end
+
+setvar $PLAYER~WEAREADJDOCK FALSE
+if (($PLAYER~WARPTO = $MAP~STARDOCK) or ($PLAYER~WARPTO <= 10))
+  setvar $PLAYER~TARGET $PLAYER~WARPTO
+  setvar $PLAYER~A 1
+  setvar $PLAYER~START_SECTOR $PLAYER~CURRENT_SECTOR
+  while ($PLAYER~A <= SECTOR.WARPCOUNT[$PLAYER~START_SECTOR])
+    setvar $PLAYER~ADJ_START SECTOR.WARPS[$PLAYER~START_SECTOR][$PLAYER~A]
+    if ($PLAYER~ADJ_START = $PLAYER~TARGET)
+      setvar $PLAYER~WEAREADJDOCK TRUE
+    end
+    add $PLAYER~A 1
+  end
+end
+setvar $PLAYER~RED_ADJ 0
+if (($PLAYER~ALIGNMENT < 1000) and ((($PLAYER~WEAREADJDOCK = FALSE) and (($PLAYER~WARPTO = $MAP~STARDOCK) or ($PLAYER~WARPTO <= 10)))))
+  setvar $PLAYER~TARGET $PLAYER~WARPTO
+  gosub :MOVE~FINDJUMPSECTOR
+  if ($PLAYER~RED_ADJ <> 0)
+    setvar $PLAYER~ORIGINAL $PLAYER~WARPTO
+    setvar $PLAYER~WARPTO $PLAYER~RED_ADJ
+  else
+    waitfor "Command [TL="
+    setvar $PLAYER~MSG "Cannot Find Jump Sector Adjacent Sector "&$PLAYER~TARGET&"."
+    goto :MOVE~TWARPDONE
+  end
+end
+if ($PLAYER~RED_ADJ <> 0)
+  send "* mz" $PLAYER~WARPTO "*"
+else
+  if ($PLAYER~ONDOCK = 1)
+    send "q q * c u y q mz" $PLAYER~WARPTO "*"
+    setvar $PLAYER~ONDOCK 0
+  elseif ($PLAYER~STARTINGLOCATION = "Citadel")
+    send "q t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
+  elseif ($PLAYER~STARTINGLOCATION = "Planet")
+    send "t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
+  else
+    if ($PLAYER~FASTTWARP)
+      send "mz" $PLAYER~WARPTO "*"
+    else
+      send "q q q n n 0 * c u y q mz" $PLAYER~WARPTO "*"
+    end
+  end
+end
+
+settexttrigger THERE :MOVE~ADJ_WARP "You are already in that sector!"
+settextlinetrigger ADJ_WARP :MOVE~ADJ_WARP "Sector  : "&$PLAYER~WARPTO&" "
+settexttrigger LOCKING :MOVE~LOCKING "Do you want to engage the TransWarp drive?"
+settexttrigger IGD :MOVE~TWARPIGD "An Interdictor Generator in this sector holds you fast!"
+settexttrigger NOTURNS :MOVE~TWARPPHOTONED "Your ship was hit by a Photon and has been disabled"
+settexttrigger NOROUTE :MOVE~TWARPNOROUTE "Do you really want to warp there? (Y/N)"
+settextlinetrigger NO_FUEL :MOVE~TWARPNOFUEL "You do not have enough Fuel Ore"
+pause
+
+:MOVE~ADJ_WARP
+gosub :MOVE~KILLTWARPTRIGGERS
+send "z*"
+goto :MOVE~TWARP_ADJ
+
+:MOVE~LOCKING
+gosub :MOVE~KILLTWARPTRIGGERS
+send "y"
+settextlinetrigger TWARP_LOCK :MOVE~TWARP_LOCK "TransWarp Locked"
+settextlinetrigger NO_TWRP_LOCK :MOVE~NO_TWARP_LOCK "No locating beam found"
+settextlinetrigger TWARP_ADJ :MOVE~TWARP_ADJ "<Set NavPoint>"
+settextlinetrigger NO_FUEL :MOVE~TWARPNOFUEL "You do not have enough Fuel Ore"
+pause
+
+:MOVE~TWARPNOFUEL
+gosub :MOVE~KILLTWARPTRIGGERS
+setvar $PLAYER~MSG "Not enough fuel for T-warp."
+goto :MOVE~TWARPDONE
+
+:MOVE~TWARP_ADJ
+gosub :MOVE~KILLTWARPTRIGGERS
+send "za  "&$SHIP~SHIP_MAX_ATTACK&"* * r * "
+setvar $PLAYER~MSG "That sector is next door, just plain warping."
+setvar $PLAYER~TWARPSUCCESS TRUE
+goto :MOVE~TWARPDONE
+
+:MOVE~TWARPNOROUTE
+gosub :MOVE~KILLTWARPTRIGGERS
+send "n* z* "
+setvar $PLAYER~MSG "No route available to that sector!"
+goto :MOVE~TWARPDONE
+
+:MOVE~NO_TWARP_LOCK
+gosub :MOVE~KILLTWARPTRIGGERS
+send "n* z* "
+setvar $PLAYER~TARGET $PLAYER~WARPTO
+setsectorparameter $PLAYER~TARGET "FIGSEC" FALSE
+setvar $PLAYER~MSG "No fighters at T-warp point!"
+goto :MOVE~TWARPDONE
+
+:MOVE~TWARPIGD
+gosub :MOVE~KILLTWARPTRIGGERS
+setvar $PLAYER~MSG "My ship is being held by Interdictor!"
+goto :MOVE~TWARPDONE
+
+:MOVE~TWARPPHOTONED
+gosub :MOVE~KILLTWARPTRIGGERS
+setvar $PLAYER~MSG "I have been photoned and can not T-warp!"
+goto :MOVE~TWARPDONE
+
+:MOVE~TWARP_LOCK
+gosub :MOVE~KILLTWARPTRIGGERS
+setvar $PLAYER~TARGET $PLAYER~WARPTO
+setsectorparameter $PLAYER~TARGET "FIGSEC" TRUE
+send "y   *     "
+setvar $PLAYER~MSG "T-warp completed."
+setvar $PLAYER~TWARPSUCCESS TRUE
+
+:MOVE~TWARPDONE
+if (($PLAYER~TWARPSUCCESS = TRUE) and (($PLAYER~ORIGINAL = $MAP~STARDOCK) or ($PLAYER~ORIGINAL <= 10)))
+  send "* m "&$PLAYER~ORIGINAL&"*  za"&$SHIP~SHIP_MAX_ATTACK&"* * "
+end
+if ($PLAYER~TWARPSUCCESS = TRUE)
+  setvar $PLAYER~CURRENT_SECTOR $PLAYER~WARPTO
+end
+return
+
+:MOVE~KILLTWARPTRIGGERS
+killtrigger THERE
+killtrigger ADJ_WARP
+killtrigger LOCKING
+killtrigger IGD
+killtrigger NOTURNS
+killtrigger NOROUTE
+killtrigger TWARP_LOCK
+killtrigger NO_TWRP_LOCK
+killtrigger TWARP_ADJ
+killtrigger NO_FUEL
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:MOVE~FINDJUMPSECTOR
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $PLAYER~RED_ADJ 0
+if ($PLAYER~STARTINGLOCATION = "Citadel")
+  send "qt*t1*q* "
+else
+  send "qq* "
+end
+
+setvar $PLAYER~K 1
+while (SECTOR.BACKDOORS[$PLAYER~TARGET][$PLAYER~K] > 0)
+  setvar $PLAYER~RED_ADJ SECTOR.BACKDOORS[$PLAYER~TARGET][$PLAYER~K]
+  gosub :MOVE~TEST_RED_SECTOR
+  if ($PLAYER~FOUNDSECTOR = TRUE)
+    goto :MOVE~SECTORLOCKED
+  end
+  add $PLAYER~K 1
+end
+
+setvar $PLAYER~I 1
+while (SECTOR.WARPSIN[$PLAYER~TARGET][$PLAYER~I] > 0)
+  setvar $PLAYER~RED_ADJ SECTOR.WARPSIN[$PLAYER~TARGET][$PLAYER~I]
+  gosub :MOVE~TEST_RED_SECTOR
+  if ($PLAYER~FOUNDSECTOR = TRUE)
+    goto :MOVE~SECTORLOCKED
+  end
+  add $PLAYER~I 1
+end
+
+:MOVE~NOADJSFOUND
+setvar $PLAYER~RED_ADJ 0
+return
+
+:MOVE~SECTORLOCKED
+if ($PLAYER~TARGET = $MAP~STARDOCK)
+  setvar $MAP~BACKDOOR $PLAYER~RED_ADJ
+  savevar $MAP~BACKDOOR
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:MOVE~TEST_RED_SECTOR
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+setvar $PLAYER~FOUNDSECTOR FALSE
+send "m "&$PLAYER~RED_ADJ&"* y"
+settexttrigger TWARPBLIND :MOVE~TWARPBLIND "Do you want to make this jump blind? "
+settexttrigger TWARPLOCKED :MOVE~TWARPLOCKED "All Systems Ready, shall we engage? "
+settextlinetrigger TWARPVOIDED :MOVE~TWARPVOIDED "Danger Warning Overridden"
+settextlinetrigger TWARPADJ :MOVE~TWARPADJ "<Set NavPoint>"
+pause
+
+:MOVE~TWARPADJ
+gosub :MOVE~KILLFINDJUMPSECTORS
+send " * "
+return
+
+:MOVE~TWARPVOIDED
+gosub :MOVE~KILLFINDJUMPSECTORS
+send " N N "
+return
+
+:MOVE~TWARPLOCKED
+gosub :MOVE~KILLFINDJUMPSECTORS
+send " * "
+setvar $PLAYER~FOUNDSECTOR TRUE
+return
+
+:MOVE~TWARPBLIND
+gosub :MOVE~KILLFINDJUMPSECTORS
+send " N "
+return
+
+:MOVE~KILLFINDJUMPSECTORS
+killtrigger TWARPBLIND
+killtrigger TWARPLOCKED
+killtrigger TWARPVOIDED
+killtrigger TWARPADJ
+return
+
+include "source\include\switchboard"
+include "source\include\player"
+include "source\include\ship"

@@ -43,9 +43,9 @@ goto :Start_Up_Routines
 	    setVar $j 2
 	    setVar $result ""
 	    while ($j <= $PLAYER~courseLength)
-	        if ($PLAYER~mowCourse[$j] <> $PLAYER~CURRENT_SECTOR)
-	            setVar $result $result&"m    "&$PLAYER~mowCourse[$j]&"*               "
-	            if (($PLAYER~mowCourse[$j] > 10) AND ($PLAYER~mowCourse[$j] <> $MAP~stardock))
+	        if ($PLAYER~course[$j] <> $PLAYER~CURRENT_SECTOR)
+	            setVar $result $result&"m    "&$PLAYER~course[$j]&"*               "
+	            if (($PLAYER~course[$j] > 10) AND ($PLAYER~course[$j] <> $MAP~stardock))
 	                setVar $result $result&"za  "&$SHIP~SHIP_MAX_ATTACK&"* *             "
 	            end
 	        end
@@ -848,7 +848,8 @@ halt
 		if ($test)
 			setVar $camoHolds TRUE
 		else
-			send "'{" $SWITCHBOARD~bot_name "} - Invalid camo holds entered*"
+			setvar $switchboard~message "Invalid camo holds entered*"
+			gosub :switchboard~switchboard
 		end
 
 	else
@@ -919,3 +920,4 @@ halt
 include "source\include\planet"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

@@ -274,7 +274,7 @@ while ($LOOPI <= $PORTPAIRSI)
     killalltriggers
 
     setvar $PLAYER~WARPTO $PAIRSEC
-    gosub :PLAYER~TWARP
+    gosub :MOVE~TWARP
     if ($PLAYER~TWARPSUCCESS = FALSE)
       setvar $SWITCHBOARD~MESSAGE "Sector missing fig, moving onto next.*"
       gosub :SWITCHBOARD~SWITCHBOARD
@@ -305,7 +305,7 @@ while ($LOOPI <= $PORTPAIRSI)
       gosub :MOVE~MOVEINTOSECTOR
     else
       setvar $PLAYER~WARPTO $SEC
-      gosub :PLAYER~TWARP
+      gosub :MOVE~TWARP
       if ($PLAYER~TWARPSUCCESS = FALSE)
         setvar $SWITCHBOARD~MESSAGE "Sector missing fig, moving onto next.*"
         gosub :SWITCHBOARD~SWITCHBOARD
@@ -744,3 +744,4 @@ include "source\include\move"
 include "source\include\player"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

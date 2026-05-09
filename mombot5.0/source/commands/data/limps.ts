@@ -64,114 +64,14 @@ gosub :SWITCHBOARD~SWITCHBOARD
 
 halt
 :REFRESHLIMPS
-
-
-
-setarray $PLIMPS SECTORS
-:READLIMPLIST
-
-setvar $COUNT 0
-setvar $PERSONALCOUNT 0
-send "k2"
-setvar $I 1
-setvar $LIMPETOUTPUT ""
-setvar $PERSONALOUTPUT " "
-setvar $OUTPUT " "
-:KEEPCOUNTINGLIMPS
-killtrigger CORPORATE
-killtrigger PERSONAL
-killtrigger DONECOUNTINGFIGS
-killtrigger DONENOFIGS
-settextlinetrigger CORPORATE :CORPCOUNTLIMPS " Corp"
-settextlinetrigger PERSONAL :PERSONALCOUNTLIMPS "Personal "
-settextlinetrigger DONECOUNTINGFIGS :DONECOUNTINGLIMPS "Total"
-settextlinetrigger DONENOFIGS :DONECOUNTINGLIMPS "No Limpet mines deployed"
-pause
-:PERSONALCOUNTLIMPS
-add $COUNT 1
-add $PERSONALCOUNT 1
-getword CURRENTLINE $SECTOR 1
-getword CURRENTLINE $NUMMINES 2
-setvar $PERSONALOUTPUT $PERSONALOUTPUT&$SECTOR&"  "
-setvar $PLIMPS[$SECTOR] $NUMMINES
-settextlinetrigger PERSONAL :PERSONALCOUNTLIMPS "Personal "
-pause
-:CORPCOUNTLIMPS
-add $COUNT 1
-add $PLAYER~CORPCOUNT 1
-getword CURRENTLINE $SECTOR 1
-getword CURRENTLINE $NUMMINES 2
-while ($I <= $SECTOR)
-  getwordpos $PERSONALOUTPUT $POS " "&$I&" "
-  if (($SECTOR = $I) or ($POS > 0))
-    if ($POS > 0)
-      setvar $OUTPUT $OUTPUT&$PLIMPS[$I]&"*"
-    else
-      setvar $OUTPUT $OUTPUT&$NUMMINES&"*"
-    end
-    setsectorparameter $I "LIMPSEC" TRUE
-  else
-    setvar $OUTPUT $OUTPUT&"0*"
-    setsectorparameter $I "LIMPSEC" FALSE
-  end
-  add $I 1
-end
-settextlinetrigger CORPORATE :CORPCOUNTLIMPS " Corp"
-pause
-:DONECOUNTINGLIMPS
-
-killtrigger CORPORATE
-killtrigger PERSONAL
-killtrigger DONECOUNTINGFIGS
-killtrigger DONENOFIGS
-settexttrigger CHECKLIMPS :CHECKMARKEDLIMPS "Activated  Limpet  Scan"
-pause
-:CHECKMARKEDLIMPS
-settextlinetrigger DONECHECKING :DONECHECKINGLIMPS "Total"
-settextlinetrigger DONECHECKINGTOO :DONECHECKINGLIMPS "No Active Limpet mines detected"
-settextlinetrigger CORPORATE :MARKLIMPET " Corp"
-settextlinetrigger PERSONAL :MARKLIMPET "Personal "
-pause
-:MARKLIMPET
-
-killtrigger CORPORATE
-killtrigger PERSONAL
-setvar $TEMP CURRENTLINE
-striptext $TEMP #42
-setvar $LIMPETOUTPUT $LIMPETOUTPUT&"             "&$TEMP&"*"
-killtrigger UNFREEZINGTRIGGER
-setdelaytrigger UNFREEZINGTRIGGER :UNFREEZEBOT 10000
-settextlinetrigger CORPORATE :MARKLIMPET " Corp"
-settextlinetrigger PERSONAL :MARKLIMPET "Personal "
-pause
-:DONECHECKINGLIMPS
-killtrigger DONECHECKING
-killtrigger DONECHECKINGTOO
-while ($I <= SECTORS)
-  getwordpos $PERSONALOUTPUT $POS " "&$I&" "
-  if ($POS > 0)
-    setvar $OUTPUT $OUTPUT&$NUMMINES&"*"
-    setsectorparameter $I "LIMPSEC" TRUE
-  else
-    setvar $OUTPUT $OUTPUT&"0*"
-    setsectorparameter $I "LIMPSEC" FALSE
-  end
-  add $I 1
-end
-delete $BOT~LIMP_FILE
-write $BOT~LIMP_FILE $OUTPUT
-delete $BOT~LIMP_COUNT_FILE
-write $BOT~LIMP_COUNT_FILE $COUNT
+gosub :MINES~READLIMPLIST
+setvar $COUNT $MINES~COUNT
+setvar $PERSONALCOUNT $MINES~PERSONALCOUNT
+setvar $LIMPETOUTPUT $MINES~LIMPETOUTPUT
 return
 
-:unfreezebot
-echo "*Bot timed out, unfreezing..*"
-setDeafClients false
-setvar $switchboard~message "Bot frozen for over 100 seconds, resetting...*"
-gosub :switchboard~switchboard
-halt
-
 # includes:
-include "source\include\planet"
+include "source\include\mines"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

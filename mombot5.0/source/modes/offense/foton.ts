@@ -45,7 +45,8 @@
 
 	getSectorParameter SECTORS "FIGSEC" $isFigged
 	if ($isFigged = "")
-		send "'{" $bot~bot_name "} - It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+		setvar $switchboard~message "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+		gosub :switchboard~switchboard
 		halt
 	end
 
@@ -138,11 +139,13 @@ end
 			gosub :player~quikstats
 			goto :photonSector
 		elseif (($bot~parm1 < 10) or ($bot~parm1 >= SECTORS) or ($bot~parm1 = STARDOCK))
-			send "'{" $bot~bot_name "} - Not a Valid FOTON Sector*"
+			setvar $switchboard~message "Not a Valid FOTON Sector*"
+			gosub :switchboard~switchboard
 			halt
 		end
 	else
-		send "'{" $bot~bot_name "} - Please use foton [on/off/sector] {a/d/p/s} {return} format*"
+		setvar $switchboard~message "Please use foton [on/off/sector] {a/d/p/s} {return} format*"
+		gosub :switchboard~switchboard
 		halt
 	end
 # ============================== END FOTON CHECK SUB ==============================
@@ -212,23 +215,27 @@ end
 	setVar $startingLocation $player~current_prompt
 	
 	if ($startingLocation <> "<StarDock>") and ($startingLocation <> "Command") and ($startingLocation <> "<Hardware")
-		send "'{" $bot~bot_name "} - Must start at Command, Stardock or Hardware*"
+		setvar $switchboard~message "Must start at Command, Stardock or Hardware*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	if ($bot~parm1 <> "on") and ($bot~parm1 <> "off") and ($bot~parm1 <> "reset")
-		send "'{" $bot~bot_name "} - Please use - foton [on/off/reset] format*"
+		setvar $switchboard~message "Please use - foton [on/off/reset] format*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	if ($bot~parm1 = "on")
 		setVar $cooloff ($GAME~PHOTON_DURATION * 1000)
 		
 		if ($player~photons = 0)
-			send "'{" $bot~bot_name "} - Out of Fotons - Dock Foton Deactivated*"
+			setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
+			gosub :switchboard~switchboard
 			setVar $mode "General"
 			halt
 		end
 		if ($player~TURNS < 3)
-			send "'{" $bot~bot_name "} - Need a couple of turns..*"
+			setvar $switchboard~message "Need a couple of turns..*"
+			gosub :switchboard~switchboard
 			setVar $mode "General"
 			halt
 			
@@ -237,14 +244,16 @@ end
 
 			if (($player~experience < 976) and ($player~alignment >= 0))
 				if ($player~fedspacePhotons <> TRUE)
-					send "'{" $bot~bot_name "} - Need 976 exp + for this mode.*"
+					setvar $switchboard~message "Need 976 exp + for this mode.*"
+					gosub :switchboard~switchboard
 					setVar $mode "General"
 					halt
 				end
 			end
 
 			if ($player~GENESIS < 1)
-				send "'{" $bot~bot_name "} - Please buy one genesis torp*"
+				setvar $switchboard~message "Please buy one genesis torp*"
+				gosub :switchboard~switchboard
 				setVar $mode "General"
 				halt
 			end
@@ -252,14 +261,16 @@ end
 		else
 			if (($player~experience < 1000) and ($player~alignment >= 0))
 				if ($player~fedspacePhotons <> TRUE)
-					send "'{" $bot~bot_name "} - Fed safe people can't shoot photons from fed..*"
+					setvar $switchboard~message "Fed safe people can't shoot photons from fed..*"
+					gosub :switchboard~switchboard
 					setVar $mode "General"
 					halt
 				end
 			end
 			setVar $makeMacro ""
 		end
-		send "'{" $bot~bot_name "} - Dock Foton Running - Shooting from the dock at adjacent sectors!*"
+		setvar $switchboard~message "Dock Foton Running - Shooting from the dock at adjacent sectors!*"
+		gosub :switchboard~switchboard
 		setVar $psec $player~current_sector
 		if ($startingLocation = "Command")
 			send "psh"
@@ -269,7 +280,8 @@ end
 		setVar $pwarps SECTOR.WARPCOUNT[$psec]
 		goto :setDockTriggers
 	else
-		send "'{" $bot~bot_name "} - Please use - foton [on/off/reset] {a/d/s/p/o} format*"
+		setvar $switchboard~message "Please use - foton [on/off/reset] {a/d/s/p/o} format*"
+		gosub :switchboard~switchboard
 		halt
 	end
 
@@ -294,11 +306,13 @@ end
 	if ($spoof <> "Photon")
 		goto :setDockTriggers
 	end
-	send "'{" $bot~bot_name "} - Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][1] "*"
+	setvar $switchboard~message "Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][1] "*"
+	gosub :switchboard~switchboard
 	
 	subtract $player~photons 1
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Dock Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
+		gosub :switchboard~switchboard
 		setVar $mode "General"
 		halt
 	end
@@ -325,11 +339,13 @@ end
 	if ($spoof <> "Photon")
 		goto :setDockTriggers
 	end
-	send "'{" $bot~bot_name "} - Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][2] "*"
+	setvar $switchboard~message "Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][2] "*"
+	gosub :switchboard~switchboard
 	
 	subtract $player~photons 1
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Dock Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
+		gosub :switchboard~switchboard
 		setVar $mode "General"
 		halt
 	end
@@ -357,11 +373,13 @@ end
 	if ($spoof <> "Photon")
 		goto :setDockTriggers
 	end
-	send "'{" $bot~bot_name "} - Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][3] "*"
+	setvar $switchboard~message "Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][3] "*"
+	gosub :switchboard~switchboard
 	
 	subtract $player~photons 1
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Dock Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
+		gosub :switchboard~switchboard
 		setVar $mode "General"
 		halt
 	end
@@ -388,11 +406,13 @@ end
 	if ($spoof <> "Photon")
 		goto :setDockTriggers
 	end
-	send "'{" $bot~bot_name "} - Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][4] "*"
+	setvar $switchboard~message "Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][4] "*"
+	gosub :switchboard~switchboard
 	
 	subtract $player~photons 1
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Dock Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
+		gosub :switchboard~switchboard
 		setVar $mode "General"
 		halt
 	end
@@ -418,11 +438,13 @@ end
 	if ($spoof <> "Photon")
 		goto :setDockTriggers
 	end
-	send "'{" $bot~bot_name "} - Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][5] "*"
+	setvar $switchboard~message "Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][5] "*"
+	gosub :switchboard~switchboard
 	
 	subtract $player~photons 1
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Dock Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
+		gosub :switchboard~switchboard
 		setVar $mode "General"
 		halt
 	end
@@ -449,11 +471,13 @@ end
 	if ($spoof <> "Photon")
 		goto :setDockTriggers
 	end
-	send "'{" $bot~bot_name "} - Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][6] "*"
+	setvar $switchboard~message "Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][6] "*"
+	gosub :switchboard~switchboard
 	
 	subtract $player~photons 1
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Dock Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
+		gosub :switchboard~switchboard
 		setVar $mode "General"
 		halt
 	end
@@ -467,20 +491,24 @@ end
 	gosub :player~quikstats
 	setVar $startingLocation $player~current_prompt
 	if ($startingLocation <> "Citadel") and ($startingLocation <> "Command")
-		send "'{" $bot~bot_name "} - Must start at Citadel or Command prompt*"
+		setvar $switchboard~message "Must start at Citadel or Command prompt*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	if ($bot~parm1 <> "on") and ($bot~parm1 <> "off") and ($bot~parm1 <> "reset")
-		send "'{" $bot~bot_name "} - Please use - foton [on/off/reset] format*"
+		setvar $switchboard~message "Please use - foton [on/off/reset] format*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	if ($bot~parm1 = "on")
 		goto :load_photon
 	elseif ($bot~parm1 = "reset")
-		send "'{" $bot~bot_name "} - Adjacent Foton - Resetting Sector*"
+		setvar $switchboard~message "Adjacent Foton - Resetting Sector*"
+		gosub :switchboard~switchboard
 		goto :load_photon
 	else
-		send "'{" $bot~bot_name "} - Please use - foton [on/off/reset] {a/d/s/p} format*"
+		setvar $switchboard~message "Please use - foton [on/off/reset] {a/d/s/p} format*"
+		gosub :switchboard~switchboard
 		halt
 	end
 
@@ -488,7 +516,8 @@ end
 
 :load_photon
 	if ($startingLocation <> "Citadel") and ($startingLocation <> "Command")
-		send "'{" $bot~bot_name "} - Must start at Citadel or Command prompt*"
+		setvar $switchboard~message "Must start at Citadel or Command prompt*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	if ($startingLocation = "Citadel")
@@ -502,16 +531,19 @@ end
 	end
 	gosub :player~quikstats
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Adjacent Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Adjacent Foton Deactivated*"
+		gosub :switchboard~switchboard
 		setVar $mode "General"
 		halt
 	end
 	if ($player~current_sector <> $psec) and ($psec <> 0)
-		send "'{" $bot~bot_name "} - Resetting Adjacent Photon to Sector " $player~current_sector "*"
+		setvar $switchboard~message "Resetting Adjacent Photon to Sector " $player~current_sector "*"
+		gosub :switchboard~switchboard
 		setVar $psec $player~current_sector
 	end
 	setVar $psec $player~current_sector
-		send "'{" $bot~bot_name "} - Adjacent Foton Running in Sector " $psec " - " $player~photons " Photon(s) Aboard!*"
+		setvar $switchboard~message "Adjacent Foton Running in Sector " $psec " - " $player~photons " Photon(s) Aboard!*"
+		gosub :switchboard~switchboard
 	setVar $pwarps SECTOR.WARPCOUNT[$psec]
 	goto :setAdjacentTriggers
 
@@ -533,13 +565,15 @@ end
 	if ($spoof <> "Deployed") and ($spoof <> "Limpet")
 		goto :setAdjacentTriggers
 	end
-	send "'{" $bot~bot_name "} - Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][1] "*"
+	setvar $switchboard~message "Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][1] "*"
+	gosub :switchboard~switchboard
 	if ($holo)
 		gosub :doholo
 	end
 	subtract $player~photons 1
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Adjacent Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Adjacent Foton Deactivated*"
+		gosub :switchboard~switchboard
 		setVar $mode "General"
 		halt
 	end
@@ -565,13 +599,15 @@ end
 
 :shot2
 	killtrigger missed
-	send "'{" $bot~bot_name "} - Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][2] "*"
+	setvar $switchboard~message "Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][2] "*"
+	gosub :switchboard~switchboard
 	subtract $player~photons 1
 	if ($holo)
 		gosub :doholo
 	end
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Adjacent Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Adjacent Foton Deactivated*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	goto :setAdjacentTriggers
@@ -594,13 +630,15 @@ end
 
 :shot3
 	killtrigger missed
-        send "'{" $bot~bot_name "} - Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][3] "*"
+        setvar $switchboard~message "Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][3] "*"
+        gosub :switchboard~switchboard
 	subtract $player~photons 1
 	if ($holo)
 		gosub :doholo
 	end
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Adjacent Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Adjacent Foton Deactivated*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	goto :setAdjacentTriggers
@@ -623,13 +661,15 @@ end
 
 :shot4
 	killtrigger missed
-	send "'{" $bot~bot_name "} - Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][4] "*"
+	setvar $switchboard~message "Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][4] "*"
+	gosub :switchboard~switchboard
 	subtract $player~photons 1
 	if ($holo)
 		gosub :doholo
 	end
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Adjacent Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Adjacent Foton Deactivated*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	goto :setAdjacentTriggers
@@ -652,13 +692,15 @@ end
 
 :shot5
 	killtrigger missed
-	send "'{" $bot~bot_name "} - Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][5] "*"
+	setvar $switchboard~message "Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][5] "*"
+	gosub :switchboard~switchboard
 	subtract $player~photons 1
 	if ($holo)
 		gosub :doholo
 	end
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Adjacent Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Adjacent Foton Deactivated*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	goto :setAdjacentTriggers
@@ -681,13 +723,15 @@ end
 
 :shot6
 	killtrigger missed
-	send "'{" $bot~bot_name "} - Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][6] "*"
+	setvar $switchboard~message "Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][6] "*"
+	gosub :switchboard~switchboard
 	subtract $player~photons 1
 	if ($holo)
 		gosub :doholo
 	end
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Adjacent Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Adjacent Foton Deactivated*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	goto :setAdjacentTriggers
@@ -717,7 +761,8 @@ end
 		send "q"
 		goto :checkndtorps
 	else
-		send "'{" $bot~bot_name "} - Must be run from Command, Planet, Citadel, or Stardock Prompt.*"
+		setvar $switchboard~message "Must be run from Command, Planet, Citadel, or Stardock Prompt.*"
+		gosub :switchboard~switchboard
 		halt
 	end
 
@@ -736,11 +781,13 @@ end
 	goto :check_dens
 
 :feds
-	send "'{" $bot~bot_name "} - Can't launch from fedspace*"
+	setvar $switchboard~message "Can't launch from fedspace*"
+	gosub :switchboard~switchboard
 	halt
 
 :hmmtorps
-	send "'{" $bot~bot_name "} - No Fotons*"
+	setvar $switchboard~message "No Fotons*"
+	gosub :switchboard~switchboard
 	halt
 
 :check_dens
@@ -782,10 +829,12 @@ end
 			setVar $diff ($density[$w] - $dens[$w])
 			if (($diff > 39) and ($diff < 495))
 				send "c p y " $adj[$w] "*  Q  "
-				send "'{" $bot~bot_name "} - Foton Missle Fired into sector => " $adj[$w] "*"
+				setvar $switchboard~message "Foton Missle Fired into sector => " $adj[$w] "*"
+				gosub :switchboard~switchboard
 				subtract $player~PHOTONS 1
 				if ($dencontinue = 1) and ($player~PHOTONS > 0)
-					send "'{" $bot~bot_name "} - " $player~PHOTONS " left continuing scanning..*"
+					setvar $switchboard~message "" $player~PHOTONS " left continuing scanning..*"
+					gosub :switchboard~switchboard
 					setVar $dens[$w] $density[$w]
 					goto :sublooky
 				else
@@ -798,10 +847,12 @@ end
 
 		else
 			send "c p y " $adj[$w] "*  Q  "
-			send "'{" $bot~bot_name "} - Foton Missle Fired into sector => " $adj[$w] "*"
+			setvar $switchboard~message "Foton Missle Fired into sector => " $adj[$w] "*"
+			gosub :switchboard~switchboard
 			subtract $player~PHOTONS 1
 			if ($dencontinue = 1) and ($player~PHOTONS > 0)
-				send "'{" $bot~bot_name "} - " $player~PHOTONS " left continuing scanning..*"
+				setvar $switchboard~message "" $player~PHOTONS " left continuing scanning..*"
+				gosub :switchboard~switchboard
 				setVar $dens[$w] $density[$w]
 				goto :sublooky
 			else
@@ -816,7 +867,8 @@ end
 :firechk
 	add $mm 1
 	if ($mm = 150)
-		send "'{" $bot~bot_name "} - WARNING  Density Foton Running at My TA!!!*"
+		setvar $switchboard~message "WARNING  Density Foton Running at My TA!!!*"
+		gosub :switchboard~switchboard
 		setVar $mm 0
 	end
 	setVar $y 0
@@ -857,7 +909,8 @@ end
 	killtrigger dtop_dtorp
 	killtrigger getSec
 	killtrigger allDone
-	send "'{" $bot~bot_name "} - Density Foton Stoped . . *"
+	setvar $switchboard~message "Density Foton Stoped . . *"
+	gosub :switchboard~switchboard
 	gosub :player~turnonansi
 
 :dtorp_end
@@ -876,7 +929,8 @@ end
 	if ($startingLocation = "Citadel")
 		goto :foton_start
 	else
-		send "'{" $bot~bot_name "} - Must Start at Citadel.*"
+		setvar $switchboard~message "Must Start at Citadel.*"
+		gosub :switchboard~switchboard
 		halt
 	end
 
@@ -897,9 +951,11 @@ end
 
 :foton_go
 	if ($auto_return)
-		send "'{" $bot~bot_name "} - Foton Running From Planet " & $planet~planet & " w/ Return Home enabled. " & $player~photons &" Photons armed and ready.*"
+		setvar $switchboard~message "Foton Running From Planet " & $planet~planet & " w/ Return Home enabled. " & $player~photons &" Photons armed and ready.*"
+		gosub :switchboard~switchboard
 	else
-		send "'{" $bot~bot_name "} - Foton Running From Planet " & $planet~planet & ", " & $player~photons &" Photons armed and ready.*"
+		setvar $switchboard~message "Foton Running From Planet " & $planet~planet & ", " & $player~photons &" Photons armed and ready.*"
+		gosub :switchboard~switchboard
 	end
 	goto :planetPhotonTriggers
 
@@ -934,7 +990,8 @@ end
 
 :foton_wrong2
 	killtrigger gotem
-	send "'{" $bot~bot_name "} - Foton Missed! Resetting!*"
+	setvar $switchboard~message "Foton Missed! Resetting!*"
+	gosub :switchboard~switchboard
 	if ($auto_return)
 		gosub :foton_go_home
 	end
@@ -942,7 +999,8 @@ end
 
 :foton_wrong
 	killtrigger gotem
-	send "'{" $bot~bot_name "} - Foton Missed! Resetting!*"
+	setvar $switchboard~message "Foton Missed! Resetting!*"
+	gosub :switchboard~switchboard
 	setSectorParameter $adjsec "FIGSEC" FALSE
 	if ($auto_return)
 		gosub :foton_go_home
@@ -951,7 +1009,8 @@ end
 
 :foton_gotem
 	killtrigger wrong
-	send "'{" $bot~bot_name "} - Foton Fired - Sector => " $sector "!*"
+	setvar $switchboard~message "Foton Fired - Sector => " $sector "!*"
+	gosub :switchboard~switchboard
 	if ($holo)
 		gosub :doholo
 	end
@@ -980,7 +1039,8 @@ end
 		killtrigger homelock
 		killtrigger nohomelock
 		killtrigger home_now
-		send "'{" $bot~bot_name "} - PWarp Lock To Home Failed.*"
+		setvar $switchboard~message "PWarp Lock To Home Failed.*"
+		gosub :switchboard~switchboard
 
         :foton_home_lock
 		killtrigger homelock
@@ -1077,7 +1137,8 @@ end
 #return
 
 :foton_out_of_fotons
-	send "'{" $bot~bot_name "} - No photon missles, Foton mode shutting down.*"
+	setvar $switchboard~message "No photon missles, Foton mode shutting down.*"
+	gosub :switchboard~switchboard
 	halt
 
 :surround_foton
@@ -1086,7 +1147,8 @@ end
 	if ($startingLocation = "Citadel")
 		goto :surround_foton_start
 	else
-		send "'{" $bot~bot_name "} - Must Start at Citadel.*"
+		setvar $switchboard~message "Must Start at Citadel.*"
+		gosub :switchboard~switchboard
 		halt
 	end
 
@@ -1107,9 +1169,11 @@ end
 
 :surround_foton_go
 	if ($auto_return)
-		send "'{" $bot~bot_name "} - Surround Foton Running From Planet " & $planet~planet & " w/ Return Home enabled. " & $player~photons &" Photons armed and ready.*"
+		setvar $switchboard~message "Surround Foton Running From Planet " & $planet~planet & " w/ Return Home enabled. " & $player~photons &" Photons armed and ready.*"
+		gosub :switchboard~switchboard
 	else
-		send "'{" $bot~bot_name "} - Surround Foton Running From Planet " & $planet~planet & ", " & $player~photons &" Photons armed and ready.*"
+		setvar $switchboard~message "Surround Foton Running From Planet " & $planet~planet & ", " & $player~photons &" Photons armed and ready.*"
+		gosub :switchboard~switchboard
 	end
 	goto :surroundPhotonTriggers
 
@@ -1201,7 +1265,8 @@ goto :surroundPhotonTriggers
 	if ($targetCount > 0)
 		goto :trySurroundFotonAgain
 	end
-	send "'{" $bot~bot_name "} - Foton Missed! Resetting!*"
+	setvar $switchboard~message "Foton Missed! Resetting!*"
+	gosub :switchboard~switchboard
 	setSectorParameter $gotoSector "FIGSEC" FALSE
 	if ($auto_return)
 		gosub :foton_go_home
@@ -1214,7 +1279,8 @@ goto :surroundPhotonTriggers
 	if ($targetCount > 0)
 		goto :trySurroundFotonAgain
 	end
-	send "'{" $bot~bot_name "} - Foton Missed! Resetting!*"
+	setvar $switchboard~message "Foton Missed! Resetting!*"
+	gosub :switchboard~switchboard
 	if ($auto_return)
 		gosub :foton_go_home
 	end
@@ -1223,7 +1289,8 @@ goto :surroundPhotonTriggers
 :surround_foton_gotem
 	killtrigger s_wrong
 	killtrigger s_fed
-	send "'{" $bot~bot_name "} - Foton Fired - Sector => " $retreatSector "!*"
+	setvar $switchboard~message "Foton Fired - Sector => " $retreatSector "!*"
+	gosub :switchboard~switchboard
 	if ($holo)
 		gosub :doholo
 	end
@@ -1248,7 +1315,8 @@ goto :surroundPhotonTriggers
 	if ($startingLocation = "Citadel")
 		goto :trap_foton_start
 	else
-		send "'{" $bot~bot_name "} - Must Start at Citadel.*"
+		setvar $switchboard~message "Must Start at Citadel.*"
+		gosub :switchboard~switchboard
 		halt
 	end
 
@@ -1269,9 +1337,11 @@ goto :surroundPhotonTriggers
 
 :trap_foton_go
 	if ($auto_return)
-		send "'{" $bot~bot_name "} - Trap Foton Running From Planet " & $planet~planet & " w/ Return Home enabled. " & $player~photons &" Photons armed and ready.*"
+		setvar $switchboard~message "Trap Foton Running From Planet " & $planet~planet & " w/ Return Home enabled. " & $player~photons &" Photons armed and ready.*"
+		gosub :switchboard~switchboard
 	else
-		send "'{" $bot~bot_name "} - Trap Foton Running From Planet " & $planet~planet & ", " & $player~photons &" Photons armed and ready.*"
+		setvar $switchboard~message "Trap Foton Running From Planet " & $planet~planet & ", " & $player~photons &" Photons armed and ready.*"
+		gosub :switchboard~switchboard
 	end
 	goto :trapPhotonTriggers
 
@@ -1373,7 +1443,8 @@ goto :trapPhotonTriggers
 	killtrigger s_gotem
 	killtrigger s_wrong
 	
-	send "'{" $bot~bot_name "} - Foton Missed! Resetting!*"
+	setvar $switchboard~message "Foton Missed! Resetting!*"
+	gosub :switchboard~switchboard
 	setSectorParameter $gotoSector "FIGSEC" FALSE
 	if ($auto_return)
 		gosub :foton_go_home
@@ -1384,7 +1455,8 @@ goto :trapPhotonTriggers
 	killtrigger s_gotem
 	killtrigger s_fed
 	
-	send "'{" $bot~bot_name "} - Foton Missed! Resetting!*"
+	setvar $switchboard~message "Foton Missed! Resetting!*"
+	gosub :switchboard~switchboard
 	if ($auto_return)
 		gosub :foton_go_home
 	end
@@ -1393,7 +1465,8 @@ goto :trapPhotonTriggers
 :trap_foton_gotem
 	killtrigger s_wrong
 	killtrigger s_fed
-	send "'{" $bot~bot_name "} - Foton Fired - Sector => " $trapSecFireTo[$whichTrap] "!*"
+	setvar $switchboard~message "Foton Fired - Sector => " $trapSecFireTo[$whichTrap] "!*"
+	gosub :switchboard~switchboard
 	if ($holo)
 		gosub :doholo
 	end
@@ -1422,12 +1495,14 @@ goto :trapPhotonTriggers
 
 :foton_launch_wrong
 	killtrigger launch_gotem
-	send "'{" $bot~bot_name "} - That is not an adjacent sector!*"
+	setvar $switchboard~message "That is not an adjacent sector!*"
+	gosub :switchboard~switchboard
         HALT
 
 :foton_launch_gotem
 	killtrigger wrong
-	send "'{" $bot~bot_name "} - Foton Fired - Sector => " $bot~parm2 "!*"
+	setvar $switchboard~message "Foton Fired - Sector => " $bot~parm2 "!*"
+	gosub :switchboard~switchboard
     if ($holo)
     	gosub :doholo
     end
@@ -1453,12 +1528,14 @@ return
 	setVar $startingLocation $player~current_prompt
 	
 	if ($startingLocation <> "Planet") and ($startingLocation <> "Command") and ($startingLocation <> "Citadel")
-		send "'{" $bot~bot_name "} - Must start at Command, Planet or Citadel*"
+		setvar $switchboard~message "Must start at Command, Planet or Citadel*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	
 	if ($player~photons = 0)
-		send "'{" $bot~bot_name "} - Out of Fotons - Dock Foton Deactivated*"
+		setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
+		gosub :switchboard~switchboard
 		setVar $mode "General"
 		halt
 	end
@@ -1595,9 +1672,11 @@ halt
 	setVar $ourship $player~ship_number
 
 	if ($auto_return)
-		send "'{" $bot~bot_name "} - TWarp Tow Foton Running, Towing " & $towShip & " w/ Return Home enabled. Firing one shot.*"
+		setvar $switchboard~message "TWarp Tow Foton Running, Towing " & $towShip & " w/ Return Home enabled. Firing one shot.*"
+		gosub :switchboard~switchboard
 	else
-		send "'{" $bot~bot_name "} - TWarp Tow Foton Running, Towing " & $towShip & ", Firing one shot.*"
+		setvar $switchboard~message "TWarp Tow Foton Running, Towing " & $towShip & ", Firing one shot.*"
+		gosub :switchboard~switchboard
 	end
 	goto :towPhotonTriggers
 
@@ -1637,7 +1716,8 @@ halt
 
 	:tow_wrong2
 		killtrigger gotem
-		send "'{" $bot~bot_name "} - Foton Missed! Resetting!*"
+		setvar $switchboard~message "Foton Missed! Resetting!*"
+		gosub :switchboard~switchboard
 		if ($auto_return and ($adjsec <> $PLAYER~CURRENT_SECTOR))
 			gosub :tow_go_home
 		end
@@ -1645,7 +1725,8 @@ halt
 
 	:tow_wrong
 		killtrigger gotem
-		send "'{" $bot~bot_name "} - Foton Missed! Resetting!*"
+		setvar $switchboard~message "Foton Missed! Resetting!*"
+		gosub :switchboard~switchboard
 		setSectorParameter $adjsec "FIGSEC" FALSE
 		if ($auto_return and ($adjsec <> $PLAYER~CURRENT_SECTOR))
 			gosub :tow_go_home
@@ -1654,7 +1735,8 @@ halt
 
 	:tow_gotem
 		killtrigger wrong
-		send "'{" $bot~bot_name "} - Foton Fired - Sector => " $sector "!*"
+		setvar $switchboard~message "Foton Fired - Sector => " $sector "!*"
+		gosub :switchboard~switchboard
 		if ($holo)
 			gosub :doholo
 		end
@@ -1671,7 +1753,8 @@ halt
 		setVar $warpto $home_sector2
 		gosub :fotontwarp
 		if ($twarpSuccess = FALSE)
-			send "'{" $bot~bot_name "} - Failed to twarp back with tow, attemping without!*"
+			setvar $switchboard~message "Failed to twarp back with tow, attemping without!*"
+			gosub :switchboard~switchboard
 			gosub :fotontwarp
 			if ($twarpSuccess = FALSE)
 				setVar $SWITCHBOARD~message "Failed to make twarp back without ship. Exiting and then Panicking.*"
@@ -1964,3 +2047,4 @@ return
 include "source\include\planet"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

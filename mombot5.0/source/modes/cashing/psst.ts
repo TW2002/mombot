@@ -41,7 +41,8 @@ if ($SHIP1NEEDSPORT)
         settextlinetrigger PWARPNOFUEL1 :PWARPNOFUEL1 "You do not have enough Fuel Ore on this planet to make the jump."
         pause
         :PWARPNOFUEL1
-        send "'{" $BOT_NAME "} Not enough fuel on planet "&$PSST_PLANET1&". Halting Script.*"
+        setvar $switchboard~message "Not enough fuel on planet "&$PSST_PLANET1&". Halting Script.*"
+        gosub :switchboard~switchboard
         goto :ENDSST
         :PWARPYESSHIP1
         killalltriggers
@@ -103,7 +104,8 @@ if ($SHIP2NEEDSPORT)
       end
       if ($DISTANCETHERE > $TRANSPORTRANGE)
         setvar $NEARFIG 0
-        send "'{" $BOT_NAME "} No Ports Within Transport Range*"
+        setvar $switchboard~message "No Ports Within Transport Range*"
+        gosub :switchboard~switchboard
         goto :ENDSST
       elseif ($DISTANCEBACK > $TRANSPORTRANGE)
         goto :CANTTRANSPORT
@@ -115,7 +117,8 @@ if ($SHIP2NEEDSPORT)
         settextlinetrigger PWARPNOFUEL2 :PWARPNOFUEL2 "You do not have enough Fuel Ore on this planet to make the jump."
         pause
         :PWARPNOFUEL2
-        send "'{" $BOT_NAME "} Not enough fuel on planet "&$PSST_PLANET2&". Halting Script.*"
+        setvar $switchboard~message "Not enough fuel on planet "&$PSST_PLANET2&". Halting Script.*"
+        gosub :switchboard~switchboard
         goto :ENDSST
         :PWARPYESSHIP2
         killalltriggers
@@ -312,7 +315,8 @@ isnumber $ISPARAMTWONUMBER $PARM2
 isnumber $ISPARAMTHREENUMBER $PARM3
 
 if ($STARTINGLOCATION <> "Command")
-  send "'{" $BOT_NAME "} - Planet SST must be run from command prompt*"
+  setvar $switchboard~message "Planet SST must be run from command prompt*"
+  gosub :switchboard~switchboard
   halt
 end
 lowercase $PARM1
@@ -323,14 +327,16 @@ if ($PARM1 = "clear_busts")
     setsectorparameter $I "BUSTED" FALSE
     add $I 1
   end
-  send "'{" $BOT_NAME "} - Bust file for this bot has been cleared.*"
+  setvar $switchboard~message "Bust file for this bot has been cleared.*"
+  gosub :switchboard~switchboard
   halt
 elseif (($ISPARAMONENUMBER = TRUE) and (($ISPARAMTWONUMBER = TRUE) and ($ISPARAMTHREENUMBER = TRUE)))
   setvar $PSST_SHIP2 $PARM1
   setvar $PSST_PLANET1 $PARM2
   setvar $PSST_PLANET2 $PARM3
 else
-  send "'{" $BOT_NAME "} - Please use psst [ship2#] [planet1#] [planet2#] format.*"
+  setvar $switchboard~message "Please use psst [ship2#] [planet1#] [planet2#] format.*"
+  gosub :switchboard~switchboard
   halt
 
 end
@@ -358,19 +364,22 @@ if ($RYLOS > 10)
 elseif ($ALPHA_CENTAURI > 10)
   setvar $REFURBPORT $ALPHA_CENTAURI
 else
-  send "'{" $BOT_NAME "} - This bot has no locations of Class 0 ports in its database.  Cannot continue with Planet SST.*"
+  setvar $switchboard~message "This bot has no locations of Class 0 ports in its database.  Cannot continue with Planet SST.*"
+  gosub :switchboard~switchboard
   setvar $MODE "General"
   savevar $MODE
   halt
 end
 if (SECTOR.PLANETCOUNT[$STARTINGSECTOR] <= 1)
-  send "'{" $BOT_NAME "} - Planet SST must be run with at least two movable planets in the sector*"
+  setvar $switchboard~message "Planet SST must be run with at least two movable planets in the sector*"
+  gosub :switchboard~switchboard
   setvar $MODE "General"
   savevar $MODE
   halt
 end
 if (SECTOR.SHIPCOUNT[$STARTINGSECTOR] < 1)
-  send "'{" $BOT_NAME "} - Planet SST must be run with at least one empty ship in the sector*"
+  setvar $switchboard~message "Planet SST must be run with at least one empty ship in the sector*"
+  gosub :switchboard~switchboard
   setvar $MODE "General"
   savevar $MODE
   halt
@@ -378,24 +387,28 @@ end
 gosub :CHECKSSTPLANETS
 gosub :CHECKSSTSHIPS
 if ($FOUNDPLANET1 <> TRUE)
-  send "'{" $BOT_NAME "} - Planet #1 entered for Planet SST was not valid for this sector.*"
+  setvar $switchboard~message "Planet #1 entered for Planet SST was not valid for this sector.*"
+  gosub :switchboard~switchboard
   setvar $MODE "General"
   savevar $MODE
   halt
 end
 if ($FOUNDPLANET2 <> TRUE)
-  send "'{" $BOT_NAME "} - Planet #2 entered for Planet SST was not valid for this sector.*"
+  setvar $switchboard~message "Planet #2 entered for Planet SST was not valid for this sector.*"
+  gosub :switchboard~switchboard
   setvar $MODE "General"
   savevar $MODE
   halt
 end
 if ($FOUNDSHIP2 <> TRUE)
-  send "'{" $BOT_NAME "} - Ship #2 entered for Planet SST was not valid for this sector.*"
+  setvar $switchboard~message "Ship #2 entered for Planet SST was not valid for this sector.*"
+  gosub :switchboard~switchboard
   setvar $MODE "General"
   savevar $MODE
   halt
 end
-send "'{" $BOT_NAME "} Planet SST Powering Up!*"
+setvar $switchboard~message "Planet SST Powering Up!*"
+gosub :switchboard~switchboard
 send "c;q"
 waiton "Transport Range:"
 getword CURRENTLINE $TRANSPORTRANGE1 6
@@ -416,7 +429,8 @@ if ($MAXHOLDS1 >= $MAXHOLDS2)
 else
   setvar $MINREFURB (($MAXHOLDS2 * 75) / 100)
 end
-send "'{" $BOT_NAME "} Minimum transport range of these two ships is "&$TRANSPORTRANGE&".*"
+setvar $switchboard~message "Minimum transport range of these two ships is "&$TRANSPORTRANGE&".*"
+gosub :switchboard~switchboard
 
 setvar $SHIP1SECTOR $PLAYER~CURRENT_SECTOR
 setvar $SHIP2SECTOR $PLAYER~CURRENT_SECTOR
@@ -561,14 +575,16 @@ settextlinetrigger PWARPNOREFURBFUEL :PWARPNOREFURB "You do not have enough Fuel
 pause
 :PWARPNOREFURB
 killalltriggers
-send "'{" $BOT_NAME "} Not enough fuel on planet. Halting Script.*"
+setvar $switchboard~message "Not enough fuel on planet. Halting Script.*"
+gosub :switchboard~switchboard
 setvar $MODE "General"
 savevar $MODE
 halt
 :PWARPNOREFURBFIG
 
 killalltriggers
-send "'{" $BOT_NAME "} No fighter down at refurb port in sector "&$REFURBPORT&".*"
+setvar $switchboard~message "No fighter down at refurb port in sector "&$REFURBPORT&".*"
+gosub :switchboard~switchboard
 if ($REFURBPORT = $RYLOS)
   if ($ALPHA_CENTAURI > 10)
     setvar $REFURBPORT $ALPHA_CENTAURI
@@ -610,14 +626,16 @@ settextlinetrigger PWARPNOREFURBFUEL :PWARPBACKNOREFURBFUEL "You do not have eno
 pause
 :PWARPBACKNOREFURBFUEL
 killalltriggers
-send "'{" $BOT_NAME "} Not enough fuel on planet. Can't make it back home. Resuming bot control.*"
+setvar $switchboard~message "Not enough fuel on planet. Can't make it back home. Resuming bot control.*"
+gosub :switchboard~switchboard
 setvar $MODE "General"
 savevar $MODE
 halt
 :PWARPBACKNOREFURBFIG
 
 killalltriggers
-send "'{" $BOT_NAME "} No fighter down coming back from refurb port, halting.*"
+setvar $switchboard~message "No fighter down coming back from refurb port, halting.*"
+gosub :switchboard~switchboard
 goto :ENDSST
 :PWARPYESBACK
 
@@ -673,17 +691,21 @@ settextlinetrigger RANGE :OUTOFRANGE "only has a transport range of"
 pause
 :NONEAVAILABLE
 if ($INSHIP1)
-  send "'{" $BOT_NAME "} Ship #" $PSST_SHIP2 " is in use or not owned by you.*"
+  setvar $switchboard~message "Ship #"&$PSST_SHIP2&" is in use or not owned by you.*"
+  gosub :switchboard~switchboard
 else
-  send "'{" $BOT_NAME "} Ship #" $PSST_SHIP1 " is in use or not owned by you.*"
+  setvar $switchboard~message "Ship #"&$PSST_SHIP1&" is in use or not owned by you.*"
+  gosub :switchboard~switchboard
 end
 goto :ENDSST
 halt
 :OUTOFRANGE
 if ($INSHIP1)
-  send "'{" $BOT_NAME "} Ship #" $PSST_SHIP2 " is out of transporter range.*"
+  setvar $switchboard~message "Ship #"&$PSST_SHIP2&" is out of transporter range.*"
+  gosub :switchboard~switchboard
 else
-  send "'{" $BOT_NAME "} Ship #" $PSST_SHIP1 " is out of transporter range.*"
+  setvar $switchboard~message "Ship #"&$PSST_SHIP1&" is out of transporter range.*"
+  gosub :switchboard~switchboard
 end
 goto :ENDSST
 halt
@@ -714,13 +736,19 @@ else
 end
 
 if (($PLANET1FUEL[1] < 100000) and (($PLANET1FUEL[2] < 100000) and ($PLANET1FUEL[3] < 100000)))
-  send "'{" $BOT_NAME "} - Planet(s) low on fuel, stopping script.  Put total of "&$FORMATTEDDEPOSITEDCREDITS&" credits in treasury.*"
+  setvar $switchboard~message "Planet(s) low on fuel, stopping script.  Put total of "&$FORMATTEDDEPOSITEDCREDITS&" credits in treasury.*"
+  gosub :switchboard~switchboard
 elseif (($PLANET2FUEL[1] < 100000) and (($PLANET2FUEL[2] < 100000) and ($PLANET2FUEL[3] < 100000)))
-  send "'{" $BOT_NAME "} - Planet(s) low on fuel, stopping script.  Put total of "&$FORMATTEDDEPOSITEDCREDITS&" credits in treasury.*"
+  setvar $switchboard~message "Planet(s) low on fuel, stopping script.  Put total of "&$FORMATTEDDEPOSITEDCREDITS&" credits in treasury.*"
+  gosub :switchboard~switchboard
 elseif (($UNLIMITEDGAME = FALSE) and ($PLAYER~TURNS <= $BOT_TURN_LIMIT))
-  send "'{" $BOT_NAME "} - Too low turns to continue Planet SST.*"
+  setvar $switchboard~message "Too low turns to continue Planet SST.*"
+  gosub :switchboard~switchboard
 else
-  send "'{" $BOT_NAME "} - All known xxB ports in the grid are used up.  Put total of "&$FORMATTEDDEPOSITEDCREDITS&" credits in treasury.*"
+  setvar $switchboard~message "All known xxB ports in the grid are used up.  Put total of "&$FORMATTEDDEPOSITEDCREDITS&" credits in treasury.*"
+  gosub :switchboard~switchboard
 end
-send "'{" $BOT_NAME "} - Check to make sure both planets and ships made it back to safe sector.*"
+setvar $switchboard~message "Check to make sure both planets and ships made it back to safe sector.*"
+gosub :switchboard~switchboard
 halt
+include "source\include\switchboard.ts"

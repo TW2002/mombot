@@ -547,17 +547,21 @@ return
 				if (CONNECTED = false)
 					goto :Disco_Test
 				else
-					send ("'{" &$switchboard~bot_name& "} - " & $TagLineB & " Problem Detected Unable to Land!*")
+					setvar $switchboard~message "" & $TagLineB & " Problem Detected Unable to Land!*"
+					gosub :switchboard~switchboard
 					halt
 				end
 			:NotLanded
 				killalltriggers
-				send ("'{" &$switchboard~bot_name& "} - Boton Unable To Land, Check my TA.*")
-				send ("'{" & $switchboard~bot_name & "} "&$TagLineB&" - Unable To Land After Reconnect,Check My TA!**")
+				setvar $switchboard~message "Boton Unable To Land, Check my TA.*"
+				gosub :switchboard~switchboard
+				setvar $switchboard~message $TagLineB&" - Unable To Land After Reconnect,Check My TA!**"
+				gosub :switchboard~switchboard
 				halt
 			:Landed
 				killalltriggers
-				send ("'{" & $switchboard~bot_name & "} "&$TagLineB&" - Restarting!**")
+				setvar $switchboard~message $TagLineB&" - Restarting!**"
+				gosub :switchboard~switchboard
 				waitfor "Message sent on sub-space channel"
 				goto :inac
 		elseif ($player~current_prompt = "Planet")
@@ -566,7 +570,8 @@ return
 			setDelayTrigger 	EMQ_DELAY		:EMQ_DELAY 3000
 			pause
 		elseif ($player~current_prompt = "Citadel")
-			send ("'{" & $switchboard~bot_name & "} "&$TagLineB&" - Restarting!**")
+			setvar $switchboard~message $TagLineB&" - Restarting!**"
+			gosub :switchboard~switchboard
 			waitfor "Message sent on sub-space channel"
 				goto :inac
 			else
@@ -583,3 +588,4 @@ return
 include "source\include\planet"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

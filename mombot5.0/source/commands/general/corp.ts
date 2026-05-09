@@ -124,3 +124,4 @@
 include "source\include\player"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

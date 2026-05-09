@@ -1038,11 +1038,8 @@ elseif ($MENUS~SELECTION = "+")
 else
   gosub :DONEPREFER
 end
+
 :MENUS~ECHOHOTKEYS
-
-
-
-
 setarray $MENUS~H 34
 setarray $MENUS~QSS 34
 setvar $MENUS~H[1] "Auto Kill            "
@@ -1114,11 +1111,8 @@ echo ANSI_10&#27&"[35m<"&#27&"[32mE"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[15]&ANSI
 echo ANSI_10&#27&"[35m<"&#27&"[32mF"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[16]&ANSI_10&#27&"[35m<"&#27&"[32mX"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[33]&"*"
 echo ANSI_10&#27&"[35m<"&#27&"[32mG"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[17]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[34]&"*"
 return
+
 :MENUS~ADD_GAME
-
-
-
-
 setvar $MENUS~NEW_BOT_NAME ""
 getinput $MENUS~NEW_BOT_NAME ANSI_13&"What is the 'in game' name of the bot? (one word, no spaces)"&ANSI_7
 striptext $MENUS~NEW_BOT_NAME "^"
@@ -1590,18 +1584,18 @@ elseif ($MENUS~CHOSEN_OPTION = "Z")
       setvar $MENUS~MOWDESTINATION $MENUS~TEMP
     end
   end
-  setvar $INTERNAL_COMMANDS~TIMETOLOGBACKIN ($BOT~STARTGAMEDELAY * 60)
-  if ($INTERNAL_COMMANDS~TIMETOLOGBACKIN > 0)
+  setvar $TIMETOLOGBACKIN ($BOT~STARTGAMEDELAY * 60)
+  if ($TIMETOLOGBACKIN > 0)
     killalltriggers
   end
   settextouttrigger LOGEARLY :ENDDELAYSTARTGAME #32
-  while ($INTERNAL_COMMANDS~TIMETOLOGBACKIN > 0)
-    gosub :INTERNAL_COMMANDS~CALCTIME
-    echo ANSI_10 #27&"[1A"&#27&"[K"&$INTERNAL_COMMANDS~HOURS ":" $INTERNAL_COMMANDS~MINUTES ":" $INTERNAL_COMMANDS~SECONDS " left before entering game " GAME " (" GAMENAME ") "&ANSI_15&" ["&ANSI_14&"Spacebar to relog"&ANSI_15&"]*"
+  while ($TIMETOLOGBACKIN > 0)
+    gosub :CALCTIME
+    echo ANSI_10 #27&"[1A"&#27&"[K"&$HOURS ":" $MINUTES ":" $SECONDS " left before entering game " GAME " (" GAMENAME ") "&ANSI_15&" ["&ANSI_14&"Spacebar to relog"&ANSI_15&"]*"
     setdelaytrigger TIMEBEFORERELOG :STARTGAMETIMER 1000
     pause
     :MENUS~STARTGAMETIMER
-    setvar $INTERNAL_COMMANDS~TIMETOLOGBACKIN ($INTERNAL_COMMANDS~TIMETOLOGBACKIN - 1)
+    setvar $TIMETOLOGBACKIN ($TIMETOLOGBACKIN - 1)
   end
   :MENUS~ENDDELAYSTARTGAME
   killalltriggers
@@ -2331,6 +2325,33 @@ if ($output <> $old_output)
 end
 return
 
+:CALCTIME
+setvar $HOURS 0
+setvar $MINUTES 0
+setvar $SECONDS 0
+setvar $TESTTIME $TIMETOLOGBACKIN
+if ($TESTTIME >= 3600)
+  setvar $HOURS ($TESTTIME / 3600)
+  setvar $TESTTIME ($TESTTIME - ($HOURS * 3600))
+end
+if ($TESTTIME >= 60)
+  setvar $MINUTES ($TESTTIME / 60)
+  setvar $TESTTIME ($TESTTIME - ($MINUTES * 60))
+end
+if ($TESTTIME >= 1)
+  setvar $SECONDS $TESTTIME
+end
+if ($HOURS < 10)
+  setvar $HOURS 0&$HOURS
+end
+if ($MINUTES < 10)
+  setvar $MINUTES 0&$MINUTES
+end
+if ($SECONDS < 10)
+  setvar $SECONDS 0&$SECONDS
+end
+return
+
 :checksilent
         :msgs_on_again
         killtrigger onMSGS_ON
@@ -2383,4 +2404,4 @@ killtrigger ignore
 killtrigger ignore2
 return
 
-include "source\include\internal_commands"
+#include "source\include\internal_commands"

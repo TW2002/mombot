@@ -1236,3 +1236,4 @@ else
 end
 include "source\include\map"
 include "source\include\loadvars"
+include "source\include\switchboard.ts"

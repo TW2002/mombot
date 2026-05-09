@@ -11,7 +11,8 @@ loadvar $PARM8
 loadvar $BOT_NAME
 
 if (($PLAYER~CURRENT_PROMPT <> "Command") and ($PLAYER~CURRENT_PROMPT <> "Citadel"))
-  send "'{" $BOT_NAME "} - MSGS Must be run from Command or Citadel Prompts*"
+  setvar $switchboard~message "MSGS Must be run from Command or Citadel Prompts*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -57,3 +58,4 @@ else
 end
 halt
 include "source\include\player"
+include "source\include\switchboard.ts"

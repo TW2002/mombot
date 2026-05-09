@@ -168,7 +168,7 @@
 										setvar $player~startinglocation "Citadel"
 										setVar $PLAYER~warpto $player~current_sector
 										gosub :player~quikstats
-										gosub :player~twarp
+										gosub :move~twarp
 										gosub  :player~currentPrompt
 										if ($PLAYER~twarpSuccess <> TRUE)
 											setvar $switchboard~message "Twarp failed during planet balancing. "&$player~msg&" Halting!*"
@@ -301,7 +301,7 @@ return
 		setvar $player~startinglocation "Citadel"
 		setVar $PLAYER~warpto $id[$i]
 		gosub :player~quikstats
-		gosub :player~twarp
+		gosub :move~twarp
 		gosub  :player~currentPrompt
 		if ($PLAYER~twarpSuccess <> TRUE)
 			setvar $switchboard~message "Twarp failed during planet balancing. "&$player~msg&" Halting!*"
@@ -317,7 +317,7 @@ return
 			setvar $player~startingLocation "Command"
 			setVar $PLAYER~warpto $starting_sector
 			gosub :player~quikstats
-			gosub :player~twarp
+			gosub :move~twarp
 			gosub  :player~currentPrompt
 			if ($PLAYER~twarpSuccess <> TRUE)
 				setvar $switchboard~message "Twarp failed during planet balancing. "&$player~msg&" Halting!*"
@@ -361,5 +361,7 @@ return
 #INCLUDES:
 include "source\include\ship"
 include "source\include\planet"
+include "source\include\move"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

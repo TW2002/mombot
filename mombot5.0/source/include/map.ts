@@ -1,42 +1,36 @@
-:MAP~GETBACKDOOR
-loadvar $MAP~STARDOCK
-if ($MAP~STARDOCK > 0) and (SECTOR.WARPCOUNT[$MAP~STARDOCK] = 6)
-  setdeafclients TRUE
-  send "^"
-  setvar $i 1
-  while ($i <= 6)
-    send "S" & SECTOR.WARPS[$MAP~STARDOCK][$i] & "*"
-    add $i 1
-  end
-  #getcourse $course 1 $MAP~STARDOCK
-  settextlinetrigger route :route "1 >"
-  send "^F1*" & $MAP~STARDOCK & "*"
-  pause
-  :route
-  splittext CURRENTLINE $sects " > "
-  setvar $i 1
-  while ($i <= 6)
-    send "C" & SECTOR.WARPS[$MAP~STARDOCK][$i] & "*"
-    add $i 1
-  end
-  settexttrigger endi :endi "ENDINTERROG"
-  send "Q"
-  pause
-  :endi
-  setdeafclients FALSE
-  setvar $num $sects
-  if ($num > 0)
-    setvar $bd $sects[($num - 1)]
-    striptext $bd " "
-    if ($bd > 0)
-      setvar $MAP~BACKDOOR $bd
-      savevar $MAP~BACKDOOR
+
+# GETSTARDOCK routine by Shadow
+:MAP~GETSTARDOCK
+killalltriggers
+if (STARDOCK > 11)
+  setvar $MAP~STARDOCK STARDOCK
+  savevar $MAP~STARDOCK
+  return
+else
+  gosub :player~currentprompt
+  if ($PLAYER~CURRENT_PROMPT = "Command")
+    setvar $gsd_sec 0
+    send "nq"
+    :gsd_loop
+    settextlinetrigger gsd_sector :gsd_sector "Sector  :"
+    settextlinetrigger gsd_dock :gsd_dock "Stargate Alpha I, Class 9"
+    settextlinetrigger gsd_end :gsd_end "Choose NavPoint"
+    pause
+    :gsd_sector
+    killalltriggers
+    getword CURRENTLINE $gsd_sec 4
+    goto :gsd_loop
+    :gsd_dock
+    killalltriggers
+    if ($gsd_sec > 11)
+      setvar $MAP~STARDOCK $gsd_sec
+      savevar $MAP~STARDOCK
     end
   end
 end
+:gsd_end
+killalltriggers
 return
-
-include "source\include\player"
 
 :MAP~COMMAS
 
@@ -784,3 +778,5 @@ else
   end
 end
 return
+
+include "source\include\player"

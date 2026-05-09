@@ -14,7 +14,8 @@ loadvar $BOT_NAME
 gosub :PLAYER~QUIKSTATS
 setvar $LOCATION $PLAYER~CURRENT_PROMPT
 if (($LOCATION <> "Command") and ($LOCATION <> "Citadel"))
-  send "'{" $BOT_NAME "} - T-warp Saveme must be run from the Command or Citadel Prompt*"
+  setvar $switchboard~message "T-warp Saveme must be run from the Command or Citadel Prompt*"
+  gosub :switchboard~switchboard
   halt
 end
 :TYPE
@@ -42,7 +43,8 @@ else
   setvar $SCRUB $TSAVEME_SCRUB
 end
 
-send "'{" $BOT_NAME "} - " $TYPE " Saveme Active - Awaiting Distress Call. Returns to: "&$SCRUB&"*"
+setvar $switchboard~message "" $TYPE " Saveme Active - Awaiting Distress Call. Returns to: "&$SCRUB&"*"
+gosub :switchboard~switchboard
 :MAIN
 
 settextlinetrigger TRIGGER :TRIGGER "=saveme"
@@ -209,7 +211,8 @@ end
 
 killalltriggers
 send "n*"
-send "'{" $BOT_NAME "} - " $TYPE " Saveme - Can't Get Lock! - Fig and Call Save!*"
+setvar $switchboard~message "" $TYPE " Saveme - Can't Get Lock! - Fig and Call Save!*"
+gosub :switchboard~switchboard
 goto :MAIN
 :GO2
 
@@ -222,24 +225,32 @@ if ($TYPE = "BWarp")
   waitfor "Landing sequence engaged..."
   send " t n l 1* t n l 2* t n l 3* s n l 1* s n l 2* s n l 3* t n t 1* c s* "
   if ($PLAYER~CURRENT_SECTOR = $SECTOR)
-    send "'{" $BOT_NAME "} - " $TYPE " Saveme - Arrived at Return Sector. Ready for another save.*"
+    setvar $switchboard~message "" $TYPE " Saveme - Arrived at Return Sector. Ready for another save.*"
+    gosub :switchboard~switchboard
   end
   goto :MAIN
 else
   if ($TSAVEME_SCRUB = $PLAYER~CURRENT_SECTOR)
-    send "'{" $BOT_NAME "} - " $TYPE " Saveme - Arrived at Scrub Sector.*"
-    send "'{" $BOT_NAME "} - " $TYPE " Saveme - Please Exit/Enter to Remove Limpet.*"
+    setvar $switchboard~message "" $TYPE " Saveme - Arrived at Scrub Sector.*"
+    gosub :switchboard~switchboard
+    setvar $switchboard~message "" $TYPE " Saveme - Please Exit/Enter to Remove Limpet.*"
+    gosub :switchboard~switchboard
   end
-  send "'{" $BOT_NAME "} - " $TYPE " Saveme - Powering Down...*"
+  setvar $switchboard~message "" $TYPE " Saveme - Powering Down...*"
+  gosub :switchboard~switchboard
   send "**"
   halt
 end
 halt
 :EXIT_COMPLETELY
 
-send "'{" $BOT_NAME "} - " $TYPE " Saveme - Arrived at Scrub Sector.*"
-send "'{" $BOT_NAME "} - " $TYPE " Saveme - Please Exit/Enter to Remove Limpet.*"
-send "'{" $BOT_NAME "} - Saveme - Powering Down...*"
+setvar $switchboard~message "" $TYPE " Saveme - Arrived at Scrub Sector.*"
+gosub :switchboard~switchboard
+setvar $switchboard~message "" $TYPE " Saveme - Please Exit/Enter to Remove Limpet.*"
+gosub :switchboard~switchboard
+setvar $switchboard~message "Saveme - Powering Down...*"
+gosub :switchboard~switchboard
 send "**"
 halt
 include "source\include\player"
+include "source\include\switchboard.ts"

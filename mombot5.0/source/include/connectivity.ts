@@ -459,7 +459,8 @@ if ($CONNECTIVITY~ISNUMBER and ($BOT~MOWTODOCK or $MENUS~MOWTORYLOS or $MENUS~MO
       waiton "-=-=-=-  Current "
     end
     if (((STARDOCK = 0) or (STARDOCK = "")) and ($MAP~STARDOCK = 0))
-      send "'{" $SWITCHBOARD~BOT_NAME "} - Stardock appears to be hidden in this game. Aborting mow.*"
+      setvar $switchboard~message "Stardock appears to be hidden in this game. Aborting mow.*"
+      gosub :switchboard~switchboard
     else
       if ((STARDOCK <> 0) and (STARDOCK <> ""))
         setvar $MAP~STARDOCK STARDOCK
@@ -510,11 +511,13 @@ else
       pause
       :CONNECTIVITY~LANDING_TIMEOUT
       killtrigger 2
-      send "'{" $SWITCHBOARD~BOT_NAME "} - Could not land on Terra!  Probably not in sector 1.*"
+      setvar $switchboard~message "Could not land on Terra!  Probably not in sector 1.*"
+      gosub :switchboard~switchboard
       goto :DONE_LANDING_TERRA
       :CONNECTIVITY~LANDED_ON_TERRA
       killtrigger 1
-      send "'{" $SWITCHBOARD~BOT_NAME "} - Safely on Terra.*"
+      setvar $switchboard~message "Safely on Terra.*"
+      gosub :switchboard~switchboard
       :CONNECTIVITY~DONE_LANDING_TERRA
     elseif ($MENUS~LANDONSTARDOCK = TRUE)
       settexttrigger 1 :LANDED_ON_STARDOCK "<Shipyards> Your option (?)"
@@ -523,11 +526,13 @@ else
       pause
       :CONNECTIVITY~LANDING_TIMEOUT
       killtrigger 2
-      send "'{" $SWITCHBOARD~BOT_NAME "} - Could not land on Stardock!  Probably not in sector.*"
+      setvar $switchboard~message "Could not land on Stardock!  Probably not in sector.*"
+      gosub :switchboard~switchboard
       goto :DONE_LANDING_STARDOCK
       :CONNECTIVITY~LANDED_ON_STARDOCK
       killtrigger 1
-      send "'{" $SWITCHBOARD~BOT_NAME "} - Safely on Stardock.*"
+      setvar $switchboard~message "Safely on Stardock.*"
+      gosub :switchboard~switchboard
       :CONNECTIVITY~DONE_LANDING_STARDOCK
     end
   end

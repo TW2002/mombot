@@ -64,25 +64,29 @@ reqRecording
     isNumber $test $BOT~parm1
     IF ($test)
     ELSE
-       send "'{" $switchboard~bot_name "} - Ship 1 Must Be a Number.*"
+       setvar $switchboard~message "Ship 1 Must Be a Number.*"
+       gosub :switchboard~switchboard
        HALT
     END
     isNumber $test $BOT~parm2
     IF ($test)
     ELSE
-       send "'{" $switchboard~bot_name "} - Ship 2 Must Be a Number.*"
+       setvar $switchboard~message "Ship 2 Must Be a Number.*"
+       gosub :switchboard~switchboard
        HALT
     END
     isNumber $test $BOT~parm3
     IF ($test)
     ELSE
-       send "'{" $switchboard~bot_name "} - Planet 1 Must Be a Number.*"
+       setvar $switchboard~message "Planet 1 Must Be a Number.*"
+       gosub :switchboard~switchboard
        HALT
     END
     isNumber $test $BOT~parm4
     IF ($test)
     ELSE
-       send "'{" $switchboard~bot_name "} - Planet 2 Must Be a Number.*"
+       setvar $switchboard~message "Planet 2 Must Be a Number.*"
+       gosub :switchboard~switchboard
        HALT
     END
 
@@ -93,7 +97,8 @@ reqRecording
     end
     if ($GAME~steal_factor = 0)
 	setVar $GAME~steal_factor 21
-	send "'{" $switchboard~bot_name "}No Steal factor!! assuming 21, you need to ensure bot has refreshed!*"
+	setvar $switchboard~message "No Steal factor!! assuming 21, you need to ensure bot has refreshed!*"
+	gosub :switchboard~switchboard
     end
 
 # ----- make sure we are at a good prompt -----
@@ -109,7 +114,8 @@ logging off
 gosub :startCNsettings
 
     getSectorParameter 1 "LRA" $last_rob_attempt
-    send "'{" $switchboard~bot_name "} - last rob attempt: "&$last_rob_attempt&"*"
+    setvar $switchboard~message "last rob attempt: "&$last_rob_attempt&"*"
+    gosub :switchboard~switchboard
     send "czq"
     waitOn "-----------------------------------------------------------------------------"
     settextlinetrigger     shipnumber     :getshipnumber "Corp"
@@ -172,7 +178,8 @@ setVar $debugdelay 0
 	# CHECK BUSTED SECTOR
 	getSectorParameter $player~current_sector "BUSTED" $bustthissec
 	if ($bustthissec = TRUE)
-		send "'{" $switchboard~bot_name "} - According to my data i've busted here - ending*"
+		setvar $switchboard~message "According to my data i've busted here - ending*"
+		gosub :switchboard~switchboard
 		if (($shipVoidsSet[$current_ship] = TRUE) and ($noavoid <> TRUE))
 			gosub :PLAYER~CLEARVOIDADJACENT
 			setVar $shipVoidsSet[$current_ship] FALSE
@@ -186,8 +193,10 @@ setVar $debugdelay 0
         setVar $init_exp $exp
         setVar $init_turns $player~turns
         setVar $player~turns_used 0
-        send "'{" $switchboard~bot_name "} - running ships " & $ship_1 & " / " & $ship_2 "*"
-        send "'{" $switchboard~bot_name "} - Starting with Credits: " & $init_credits & " Exp: " & $init_exp & " Turns: " & $init_turns & ".*"
+        setvar $switchboard~message "running ships " & $ship_1 & " / " & $ship_2 "*"
+        gosub :switchboard~switchboard
+        setvar $switchboard~message "Starting with Credits: " & $init_credits & " Exp: " & $init_exp & " Turns: " & $init_turns & ".*"
+        gosub :switchboard~switchboard
         send "*"
         waitFor "(?=Help)?"
         if ($noavoid <> TRUE)
@@ -207,7 +216,8 @@ setVar $debugdelay 0
         setVar $sector[$current_ship] $player~current_sector
 	getSectorParameter $player~current_sector "BUSTED" $bustthissec
 	if ($bustthissec = TRUE)
-		send "'{" $switchboard~bot_name "} - According to my data i've busted here - ending*"
+		setvar $switchboard~message "According to my data i've busted here - ending*"
+		gosub :switchboard~switchboard
 		if (($shipVoidsSet[$current_ship] = TRUE) and ($noavoid <> TRUE))
 			gosub :PLAYER~CLEARVOIDADJACENT
 			setVar $shipVoidsSet[$current_ship] FALSE
@@ -239,7 +249,8 @@ setVar $debugdelay 0
                gosub :xport
                goto :sdtLoop
         else
-               send "'{" $switchboard~bot_name "} - Low Turns, Halting Script*"
+               setvar $switchboard~message "Low Turns, Halting Script*"
+               gosub :switchboard~switchboard
                setVar $low_turns "YES"
                goto :finish
         end
@@ -437,13 +448,15 @@ setVar $debugdelay 0
                 multiply $upgrade_amount 10
                 add $port[$current_ship].equ_on_port $upgrade_amount
                 if ($ckSDTquiet = "OFF")
-                    send "'{" $switchboard~bot_name "} - Ship " & $current_ship & " - port upgraded " & $upgrade_amount & " units.*"
+                    setvar $switchboard~message "Ship " & $current_ship & " - port upgraded " & $upgrade_amount & " units.*"
+                    gosub :switchboard~switchboard
                 end
                 setVar $upgrade_amount 0
                 subtract $player~credits $cash_needed
             else
                 if ($planet~planet[$current_ship].equ >= $steal_holds)
-                    send "'{" $switchboard~bot_name "} - Not enough credits to upgrade, selling early.*"
+                    setvar $switchboard~message "Not enough credits to upgrade, selling early.*"
+                    gosub :switchboard~switchboard
                     gosub :sell
                 else
                     gosub :endCNsettings
@@ -522,7 +535,8 @@ setVar $debugdelay 0
                         divide $perunit $nativeSellAmount
                     end
                     if ($ckSDTquiet = "OFF")
-                        send "'{" $switchboard~bot_name "} - Ship " & $current_ship & " - " & $nativeSellAmount & " EQU haggled for " & $nativeRevenueMade & " credits (" & $perunit & " per unit).*"
+                        setvar $switchboard~message "Ship " & $current_ship & " - " & $nativeSellAmount & " EQU haggled for " & $nativeRevenueMade & " credits (" & $perunit & " per unit).*"
+                        gosub :switchboard~switchboard
                     end
                     return
                 end
@@ -890,7 +904,8 @@ setVar $debugdelay 0
         # echo "*haggle failed - " & $sell_failures & "**"
         # send "' Failed Haggle (" & $perunitinitoffer & " init offer).*"
         if ($sell_failures >= $maxbadsells)
-            send "'{" $switchboard~bot_name "} - I'm having problems selling my equipment to the port (" & $perunitinitoffer & "). Script Halting*"
+            setvar $switchboard~message "I'm having problems selling my equipment to the port (" & $perunitinitoffer & "). Script Halting*"
+            gosub :switchboard~switchboard
             goto :finish
         end
         goto :sell
@@ -904,12 +919,14 @@ setVar $debugdelay 0
         setVar $perunit $counter
         divide $perunit $portbuying
         if ($ckSDTquiet = "OFF")
-            send "'{" $switchboard~bot_name "} - Ship " & $current_ship & " - " & $portbuying & " EQU haggled for " & $counter & " credits (" & $perunit & " per unit).*"
+            setvar $switchboard~message "Ship " & $current_ship & " - " & $portbuying & " EQU haggled for " & $counter & " credits (" & $perunit & " per unit).*"
+            gosub :switchboard~switchboard
         end
     else
     	:noequ
     	killalltriggers
-        send "'{" $switchboard~bot_name "} - There is no equ to sell at this port*"
+        setvar $switchboard~message "There is no equ to sell at this port*"
+        gosub :switchboard~switchboard
     end
     
     
@@ -1100,7 +1117,8 @@ setVar $debugdelay 0
 
 :exit
     if ($exit_message <> 0)
-        send "'{" $switchboard~bot_name "} - " & $exit_message & "*"
+        setvar $switchboard~message "" & $exit_message & "*"
+        gosub :switchboard~switchboard
     end
     halt
 
@@ -1536,3 +1554,4 @@ setVar $debugdelay 0
 include "source\include\planet"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

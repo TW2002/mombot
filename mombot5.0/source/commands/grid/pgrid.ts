@@ -451,3 +451,4 @@ include "source\include\loadvars"
 # - Commented this out because it - checkstartingprompt already refers to this - we get duplicate label
 #include "source\include\player"
 include "source\include\help"
+include "source\include\switchboard.ts"

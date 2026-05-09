@@ -1,10 +1,16 @@
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~ADDFIGTODATA
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if (($PLAYER~TARGET > 0) and ($PLAYER~TARGET <= SECTORS))
-  setsectorparameter $PLAYER~TARGET "FIGSEC" TRUE
-end
-return
+#
+# PLAYER.TS -- Routines related to the player, such as getting player info
+#
+# Routines:
+#
+# :player~quikstats - Gets the player's current stats by parsing the '/' command output.
+# :player~currentprompt - Gets the player's current prompt and saves it to $PLAYER~CURRENT_PROMPT
+# :player~checkstartingprompt - Checks if the player's current prompt is valid for the command they are trying to use.
+# :player~getinfo - Gets various pieces of player info by parsing the output of the 'I' command.
+# :player~bwarp - B-warp to a sector, with checking for range, fighter lock, and fuel.
+# :player~getcourse - Find a course from a sector to a sector and save the result in $PLAYER~COURSE
+# :player~turnonansi / :player~turnoffansi - Turns on or off the player's ANSI setting
+# :player~voidadjacent / :player~clearadjacent - Voids or clears voids on all adjacent sectors to the player's current sector.
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :PLAYER~BWARP
@@ -76,6 +82,21 @@ killtrigger NO_BWRP_LOCK
 killtrigger BWARP_READY
 killtrigger NO_BWARPFUEL
 return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLAYER~ECHO
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+loadvar $BOT~BOTISDEAF
+getdeafclients $BOT~BOTISDEAF
+if ($BOT~BOTISDEAF)
+  setvar $BOT~SILENT_RUNNING TRUE
+  setvar $silent_running TRUE
+  savevar $silent_running
+  savevar $bot~silent_running
+  gosub :SWITCHBOARD~SWITCHBOARD
+else
+  echo $SWITCHBOARD~MESSAGE
+end
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :PLAYER~CHECKSTARTINGPROMPT
@@ -271,86 +292,6 @@ return
 
 killalltriggers
 disconnect
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~FINDJUMPSECTOR
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLAYER~RED_ADJ 0
-if ($PLAYER~STARTINGLOCATION = "Citadel")
-  send "qt*t1*q* "
-else
-  send "qq* "
-end
-
-setvar $PLAYER~K 1
-while (SECTOR.BACKDOORS[$PLAYER~TARGET][$PLAYER~K] > 0)
-  setvar $PLAYER~RED_ADJ SECTOR.BACKDOORS[$PLAYER~TARGET][$PLAYER~K]
-  gosub :TEST_RED_SECTOR
-  if ($PLAYER~FOUNDSECTOR = TRUE)
-    goto :SECTORLOCKED
-  end
-  add $PLAYER~K 1
-end
-
-setvar $PLAYER~I 1
-while (SECTOR.WARPSIN[$PLAYER~TARGET][$PLAYER~I] > 0)
-  setvar $PLAYER~RED_ADJ SECTOR.WARPSIN[$PLAYER~TARGET][$PLAYER~I]
-  gosub :TEST_RED_SECTOR
-  if ($PLAYER~FOUNDSECTOR = TRUE)
-    goto :SECTORLOCKED
-  end
-  add $PLAYER~I 1
-end
-:PLAYER~NOADJSFOUND
-
-setvar $PLAYER~RED_ADJ 0
-return
-:PLAYER~SECTORLOCKED
-
-if ($PLAYER~TARGET = $MAP~STARDOCK)
-  setvar $MAP~BACKDOOR $PLAYER~RED_ADJ
-  savevar $MAP~BACKDOOR
-end
-return
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~TEST_RED_SECTOR
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-setvar $PLAYER~FOUNDSECTOR FALSE
-send "m "&$PLAYER~RED_ADJ&"* y"
-settexttrigger TWARPBLIND :TWARPBLIND "Do you want to make this jump blind? "
-settexttrigger TWARPLOCKED :TWARPLOCKED "All Systems Ready, shall we engage? "
-settextlinetrigger TWARPVOIDED :TWARPVOIDED "Danger Warning Overridden"
-settextlinetrigger TWARPADJ :TWARPADJ "<Set NavPoint>"
-pause
-:PLAYER~TWARPADJ
-gosub :KILLFINDJUMPSECTORS
-send " * "
-return
-
-:PLAYER~TWARPVOIDED
-gosub :KILLFINDJUMPSECTORS
-send " N N "
-return
-:PLAYER~TWARPLOCKED
-
-gosub :KILLFINDJUMPSECTORS
-send " * "
-setvar $PLAYER~FOUNDSECTOR TRUE
-return
-:PLAYER~TWARPBLIND
-
-gosub :KILLFINDJUMPSECTORS
-send " N "
-return
-:PLAYER~KILLFINDJUMPSECTORS
-
-killtrigger TWARPBLIND
-killtrigger TWARPLOCKED
-killtrigger TWARPVOIDED
-killtrigger TWARPADJ
-return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :PLAYER~FORMATNUMBERFORSPACES
@@ -783,29 +724,6 @@ end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~REMOVEFIGFROMDATA
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-getsectorparameter $PLAYER~TARGET "FIGSEC" $PLAYER~CHECK
-if ($PLAYER~CHECK = TRUE)
-  getsectorparameter 2 "FIG_COUNT" $PLAYER~FIGCOUNT
-  setsectorparameter 2 "FIG_COUNT" ($PLAYER~FIGCOUNT - 1)
-end
-setsectorparameter $PLAYER~TARGET "FIGSEC" FALSE
-return
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~ENTER_MENU_DEAF
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if ($BOT~MENU_DEAF_DEPTH <= 0)
-  getdeafclients $BOT~MENU_DEAF_RESTORE
-end
-add $BOT~MENU_DEAF_DEPTH 1
-setdeafclients TRUE
-setvar $BOT~BOTISDEAF TRUE
-savevar $BOT~BOTISDEAF
-return
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :PLAYER~EXIT_MENU_DEAF
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 if ($BOT~MENU_DEAF_DEPTH > 0)
@@ -831,6 +749,7 @@ setvar $PLAYER~TAGLINE "["&$command&"]"
 setvar $PLAYER~TAGLINEB "["&$command&"]"
 killalltriggers
 echo "**"&ANSI_14&$PLAYER~TAGLINEB&ANSI_15&" Disconnected **"
+
 :PLAYER~DISCO_TEST
 if (CONNECTED <> TRUE)
   setdelaytrigger EMANCIPATE_CPU :EMANCIPATE_CPU 3000
@@ -843,16 +762,19 @@ waitfor "(?="
 setdelaytrigger WAITINGABIT :WAITINGABIT 3000
 echo "**"&ANSI_14&$PLAYER~TAGLINEB&ANSI_15&" Connected - Waiting For Command Prompt!**"
 pause
+
 :PLAYER~WAITINGABIT
 killalltriggers
 gosub :QUIKSTATS
 if ($PLAYER~CURRENT_PROMPT = "Command")
-  send "'{"&$SWITCHBOARD~BOT_NAME&"} "&$PLAYER~TAGLINEB&" - Restarting!**"
+  setvar $switchboard~message $PLAYER~TAGLINEB&" - Restarting!**"
+  gosub :switchboard~switchboard
   waitfor "Message sent on sub-space channel"
   # goto :inac
   halt
 elseif ($PLAYER~CURRENT_PROMPT = "Citadel")
-  send "'{"&$SWITCHBOARD~BOT_NAME&"} "&$PLAYER~TAGLINEB&" - Restarting!**"
+  setvar $switchboard~message $PLAYER~TAGLINEB&" - Restarting!**"
+  gosub :switchboard~switchboard
   waitfor "Message sent on sub-space channel"
   send "qqqq**"
   # goto :inac
@@ -866,8 +788,8 @@ else
   killalltriggers
   goto :DISCO_TEST
 end
-:PLAYER~SETCONNECTIONTRIGGERS
 
+:PLAYER~SETCONNECTIONTRIGGERS
 killtrigger DISCOD1
 killtrigger DISCOD2
 seteventtrigger DISCOD1 :DISCOD "CONNECTION LOST"
@@ -1008,165 +930,22 @@ waiton "<Computer deactivated>"
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~TWARP
+:PLAYER~STRIPANSI
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLAYER~TWARPSUCCESS FALSE
-setvar $PLAYER~ORIGINAL 9999999
-setvar $PLAYER~TARGET 0
-if ($PLAYER~CURRENT_SECTOR = $PLAYER~WARPTO)
-  setvar $PLAYER~MSG "Already in that sector!"
-  goto :TWARPDONE
-elseif (($PLAYER~WARPTO <= 0) or ($PLAYER~WARPTO > SECTORS))
-  setvar $PLAYER~MSG "Destination sector is out of range!"
-  goto :TWARPDONE
+# [1;33m[0m[1;31mRoyal [5;37mFlush[0;32m
+if ($PLAYER~INPUT = 0) or ($PLAYER~INPUT = "")
+  return
 end
-if ($PLAYER~TWARP_TYPE = "No")
-  setvar $PLAYER~MSG "No T-warp drive on this ship!"
-  goto :TWARPDONE
-end
-if (($PLAYER~PHOTONS > 0) and ($PLAYER~OVERRIDE <> TRUE))
-  setvar $SWITCHBOARD~MESSAGE "You can't twarp with photons without override!*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  setvar $PLAYER~MSG "You can't twarp with photons without override!"
-  goto :TWARPDONE
-end
-loadvar $SHIP~SHIP_MAX_ATTACK
-if ($SHIP~SHIP_MAX_ATTACK = 0)
-  setvar $SHIP~SHIP_MAX_ATTACK 9999
-end
-if (($PLAYER~FIGHTERS > 0) and ($PLAYER~FIGHTERS < $SHIP~SHIP_MAX_ATTACK))
-  setvar $SHIP~SHIP_MAX_ATTACK $PLAYER~FIGHTERS
-end
-
-setvar $PLAYER~WEAREADJDOCK FALSE
-if (($PLAYER~WARPTO = $MAP~STARDOCK) or ($PLAYER~WARPTO <= 10))
-  setvar $PLAYER~TARGET $PLAYER~WARPTO
-  setvar $PLAYER~A 1
-  setvar $PLAYER~START_SECTOR $PLAYER~CURRENT_SECTOR
-  while ($PLAYER~A <= SECTOR.WARPCOUNT[$PLAYER~START_SECTOR])
-    setvar $PLAYER~ADJ_START SECTOR.WARPS[$PLAYER~START_SECTOR][$PLAYER~A]
-    if ($PLAYER~ADJ_START = $PLAYER~TARGET)
-      setvar $PLAYER~WEAREADJDOCK TRUE
-    end
-    add $PLAYER~A 1
-  end
-end
-setvar $PLAYER~RED_ADJ 0
-if (($PLAYER~ALIGNMENT < 1000) and ((($PLAYER~WEAREADJDOCK = FALSE) and (($PLAYER~WARPTO = $MAP~STARDOCK) or ($PLAYER~WARPTO <= 10)))))
-  setvar $PLAYER~TARGET $PLAYER~WARPTO
-  gosub :FINDJUMPSECTOR
-  if ($PLAYER~RED_ADJ <> 0)
-    setvar $PLAYER~ORIGINAL $PLAYER~WARPTO
-    setvar $PLAYER~WARPTO $PLAYER~RED_ADJ
-  else
-    waitfor "Command [TL="
-    setvar $PLAYER~MSG "Cannot Find Jump Sector Adjacent Sector "&$PLAYER~TARGET&"."
-    goto :TWARPDONE
-  end
-end
-if ($PLAYER~RED_ADJ <> 0)
-  send "* mz" $PLAYER~WARPTO "*"
+getwordpos $PLAYER~INPUT $pos "["
+if ($pos < 1)
+  return
+elseif ($pos = 1)
+  setvar $pre ""
 else
-  if ($PLAYER~STARTINGLOCATION = "Citadel")
-    send "q t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
-  elseif ($PLAYER~STARTINGLOCATION = "Planet")
-    send "t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
-  else
-    if ($PLAYER~FASTTWARP)
-      send "mz" $PLAYER~WARPTO "*"
-    else
-      send "q q q n n 0 * c u y q mz" $PLAYER~WARPTO "*"
-    end
-  end
+  cuttext $PLAYER~INPUT $pre 1 ($pos - 1)
 end
-
-settexttrigger THERE :ADJ_WARP "You are already in that sector!"
-settextlinetrigger ADJ_WARP :ADJ_WARP "Sector  : "&$PLAYER~WARPTO&" "
-settexttrigger LOCKING :LOCKING "Do you want to engage the TransWarp drive?"
-settexttrigger IGD :TWARPIGD "An Interdictor Generator in this sector holds you fast!"
-settexttrigger NOTURNS :TWARPPHOTONED "Your ship was hit by a Photon and has been disabled"
-settexttrigger NOROUTE :TWARPNOROUTE "Do you really want to warp there? (Y/N)"
-settextlinetrigger NO_FUEL :TWARPNOFUEL "You do not have enough Fuel Ore"
-pause
-
-:PLAYER~ADJ_WARP
-gosub :KILLTWARPTRIGGERS
-send "z*"
-goto :TWARP_ADJ
-
-:PLAYER~LOCKING
-gosub :KILLTWARPTRIGGERS
-send "y"
-settextlinetrigger TWARP_LOCK :TWARP_LOCK "TransWarp Locked"
-settextlinetrigger NO_TWRP_LOCK :NO_TWARP_LOCK "No locating beam found"
-settextlinetrigger TWARP_ADJ :TWARP_ADJ "<Set NavPoint>"
-settextlinetrigger NO_FUEL :TWARPNOFUEL "You do not have enough Fuel Ore"
-pause
-
-:PLAYER~TWARPNOFUEL
-gosub :KILLTWARPTRIGGERS
-setvar $PLAYER~MSG "Not enough fuel for T-warp."
-goto :TWARPDONE
-
-:PLAYER~TWARP_ADJ
-gosub :KILLTWARPTRIGGERS
-send "za  "&$SHIP~SHIP_MAX_ATTACK&"* * r * "
-setvar $PLAYER~MSG "That sector is next door, just plain warping."
-setvar $PLAYER~TWARPSUCCESS TRUE
-goto :TWARPDONE
-
-:PLAYER~TWARPNOROUTE
-gosub :KILLTWARPTRIGGERS
-send "n* z* "
-setvar $PLAYER~MSG "No route available to that sector!"
-goto :TWARPDONE
-
-:PLAYER~NO_TWARP_LOCK
-gosub :KILLTWARPTRIGGERS
-send "n* z* "
-setvar $PLAYER~TARGET $PLAYER~WARPTO
-setsectorparameter $PLAYER~TARGET "FIGSEC" FALSE
-setvar $PLAYER~MSG "No fighters at T-warp point!"
-goto :TWARPDONE
-
-:PLAYER~TWARPIGD
-gosub :KILLTWARPTRIGGERS
-setvar $PLAYER~MSG "My ship is being held by Interdictor!"
-goto :TWARPDONE
-
-:PLAYER~TWARPPHOTONED
-gosub :KILLTWARPTRIGGERS
-setvar $PLAYER~MSG "I have been photoned and can not T-warp!"
-goto :TWARPDONE
-
-:PLAYER~TWARP_LOCK
-gosub :KILLTWARPTRIGGERS
-setvar $PLAYER~TARGET $PLAYER~WARPTO
-setsectorparameter $PLAYER~TARGET "FIGSEC" TRUE
-send "y   *     "
-setvar $PLAYER~MSG "T-warp completed."
-setvar $PLAYER~TWARPSUCCESS TRUE
-
-:PLAYER~TWARPDONE
-if (($PLAYER~TWARPSUCCESS = TRUE) and (($PLAYER~ORIGINAL = $MAP~STARDOCK) or ($PLAYER~ORIGINAL <= 10)))
-  send "* m "&$PLAYER~ORIGINAL&"*  za"&$SHIP~SHIP_MAX_ATTACK&"* * "
-end
-if ($PLAYER~TWARPSUCCESS = TRUE)
-  setvar $PLAYER~CURRENT_SECTOR $PLAYER~WARPTO
-end
-return
-
-:PLAYER~KILLTWARPTRIGGERS
-killtrigger THERE
-killtrigger ADJ_WARP
-killtrigger LOCKING
-killtrigger IGD
-killtrigger NOTURNS
-killtrigger NOROUTE
-killtrigger TWARP_LOCK
-killtrigger NO_TWRP_LOCK
-killtrigger TWARP_ADJ
-killtrigger NO_FUEL
+cuttext $PLAYER~INPUT $post ($pos + 6) 999
+setvar $PLAYER~INPUT ($pre & $post)
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -1286,14 +1065,14 @@ if (($PLAYER~STARTING_POINT <= 0) or ($PLAYER~STARTING_POINT = ""))
 end
 
 # try getcourse system function first, if we have grid data
-getcourse $PLAYER~MOWCOURSE $PLAYER~STARTING_POINT $PLAYER~DESTINATION
-if ($PLAYER~MOWCOURSE > 0)
-  setvar $PLAYER~COURSELENGTH ($PLAYER~MOWCOURSE + 1)
+getcourse $PLAYER~COURSE $PLAYER~STARTING_POINT $PLAYER~DESTINATION
+if ($PLAYER~COURSE > 0)
+  setvar $PLAYER~COURSELENGTH ($PLAYER~COURSE + 1)
   return
 end
 
 setvar $PLAYER~SECTORS ""
-setarray $PLAYER~MOWCOURSE 80
+setarray $PLAYER~COURSE 80
 settextlinetrigger SECTORLINETRIG :SECTORSLINE " > "
 send "^f"&$PLAYER~STARTING_POINT&"*"&$PLAYER~DESTINATION&"*"
 pause
@@ -1305,11 +1084,11 @@ setvar $PLAYER~INDEX 1
 goto :PLAYER~KEEPGOING
 
 :PLAYER~KEEPGOING
-getword $PLAYER~SECTORS $PLAYER~MOWCOURSE[$PLAYER~INDEX] $PLAYER~INDEX
-while ($PLAYER~MOWCOURSE[$PLAYER~INDEX] <> ":::")
+getword $PLAYER~SECTORS $PLAYER~COURSE[$PLAYER~INDEX] $PLAYER~INDEX
+while ($PLAYER~COURSE[$PLAYER~INDEX] <> ":::")
   add $PLAYER~COURSELENGTH 1
   add $PLAYER~INDEX 1
-  getword $PLAYER~SECTORS $PLAYER~MOWCOURSE[$PLAYER~INDEX] $PLAYER~INDEX
+  getword $PLAYER~SECTORS $PLAYER~COURSE[$PLAYER~INDEX] $PLAYER~INDEX
 end
 return
 
@@ -1362,11 +1141,61 @@ pause
 
 :PLAYER~NOPATH
 send "q '{" $SWITCHBOARD~BOT_NAME "} - No path to that sector, cannot mow!*"
-setvar $PLAYER~MOWCOURSE 0
+setvar $PLAYER~COURSE 0
 setvar $PLAYER~COURSELENGTH 0
 return
 
 :PLAYER~STOPPINGPOINT
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLAYER~ADDFIGTODATA
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if (($PLAYER~TARGET > 0) and ($PLAYER~TARGET <= SECTORS))
+  setsectorparameter $PLAYER~TARGET "FIGSEC" TRUE
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLAYER~REMOVEFIGFROMDATA
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+getsectorparameter $PLAYER~TARGET "FIGSEC" $PLAYER~CHECK
+if ($PLAYER~CHECK = TRUE)
+  getsectorparameter 2 "FIG_COUNT" $PLAYER~FIGCOUNT
+  setsectorparameter 2 "FIG_COUNT" ($PLAYER~FIGCOUNT - 1)
+end
+setsectorparameter $PLAYER~TARGET "FIGSEC" FALSE
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLAYER~ENTER_MENU_DEAF
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($BOT~MENU_DEAF_DEPTH <= 0)
+  getdeafclients $BOT~MENU_DEAF_RESTORE
+end
+add $BOT~MENU_DEAF_DEPTH 1
+setdeafclients TRUE
+setvar $BOT~BOTISDEAF TRUE
+savevar $BOT~BOTISDEAF
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLAYER~ANSICOLORS
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+  setVar $player~cls #27 & "[2J"
+  setVar $player~black #27 & "[1;30m"
+  setVar $player~red #27 & "[1;31m"
+  setVar $player~green #27 & "[1;32m"
+  setVar $player~yellow #27 & "[1;33m"
+  setVar $player~blue #27 & "[1;34m"
+  setVar $player~magenta #27 & "[1;35m"
+  setVar $player~cyan #27 & "[1;36m"
+  setVar $player~white #27 & "[1;37m"
+  setVar $player~blackWhite #27 & "[0;30;47m"
+  setVar $player~whiteRed #27 & "[1;37;41m"
+  setVar $player~redWhite #27 & "[1;31;47m"
+  setVar $player~yellowRed #27 & "[1;33;41m"
+  setVar $player~resetBlack #27 & "[1;37;40m"
 return
 
 include "source\include\switchboard"

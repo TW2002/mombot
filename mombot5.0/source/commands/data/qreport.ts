@@ -12,7 +12,8 @@ loadvar $PARM8
 loadvar $MBBS
 
 if ($PARM1 = "help")
-  send "'{" $BOT_NAME "} - qreport [planet1] [planet2] ... [planet x]  - gives first 5 shots of sector quasar of all planets entered*"
+  setvar $switchboard~message "qreport [planet1] [planet2] ... [planet x]  - gives first 5 shots of sector quasar of all planets entered*"
+  gosub :switchboard~switchboard
   halt
 end
 :CANNONCALCULATOR
@@ -20,7 +21,8 @@ end
 gosub :PLAYER~QUIKSTATS
 setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 if ($STARTINGLOCATION <> "Command")
-  send "'{" $BOT_NAME "} - Cannon Calculator must be run from command prompt*"
+  setvar $switchboard~message "Cannon Calculator must be run from command prompt*"
+  gosub :switchboard~switchboard
   halt
 end
 setarray $CANNONPLANET 100
@@ -34,7 +36,8 @@ while ($TEMP <> 0)
   getword $USER_COMMAND_LINE $TEMP ($CANNONPLANETCOUNT + 1)
 end
 if ($CANNONPLANETCOUNT <= 0)
-  send "'{" $BOT_NAME "} - No planet numbers entered*"
+  setvar $switchboard~message "No planet numbers entered*"
+  gosub :switchboard~switchboard
   halt
 end
 setvar $PLANETMEMORY " "
@@ -51,7 +54,8 @@ while ($I <= $CANNONPLANETCOUNT)
     settextlinetrigger GOODPLANET :GOODPLANET "Claimed by:"
     pause
     :BADPLANET
-    send "'{" $BOT_NAME "} - Planet number " $CANNONPLANET[$I] " entered not valid. *"
+    setvar $switchboard~message "Planet number " $CANNONPLANET[$I] " entered not valid. *"
+    gosub :switchboard~switchboard
     halt
     :GOODPLANET
     killtrigger WRONGPLANET
@@ -116,3 +120,4 @@ halt
 
 # includes:
 include "source\include\planet"
+include "source\include\switchboard.ts"

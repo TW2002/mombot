@@ -21,9 +21,9 @@ goto :Start_Up_Routines
     setVar $j 2
     setVar $result "q * "
     while ($j <= $PLAYER~courseLength)
-        if ($PLAYER~mowCourse[$j] <> $PLAYER~CURRENT_SECTOR)
-            setVar $result $result&"m    "&$PLAYER~mowCourse[$j]&"*               "
-            if (($PLAYER~mowCourse[$j] > 10) AND ($PLAYER~mowCourse[$j] <> $MAP~stardock))
+        if ($PLAYER~course[$j] <> $PLAYER~CURRENT_SECTOR)
+            setVar $result $result&"m    "&$PLAYER~course[$j]&"*               "
+            if (($PLAYER~course[$j] > 10) AND ($PLAYER~course[$j] <> $MAP~stardock))
                 setVar $result $result&"za  "&$SHIP~SHIP_MAX_ATTACK&"* *             "
             end
         end
@@ -37,9 +37,9 @@ goto :Start_Up_Routines
     setVar $j 2
     setVar $result ""
     while ($j <= $PLAYER~courseLength)
-        if ($PLAYER~mowCourse[$j] <> $PLAYER~starting_point)
-            setVar $result $result&"m    "&$PLAYER~mowCourse[$j]&"*             "
-            if (($PLAYER~mowCourse[$j] > 10) AND ($PLAYER~mowCourse[$j] <> $MAP~stardock))
+        if ($PLAYER~course[$j] <> $PLAYER~starting_point)
+            setVar $result $result&"m    "&$PLAYER~course[$j]&"*             "
+            if (($PLAYER~course[$j] > 10) AND ($PLAYER~course[$j] <> $MAP~stardock))
                 setVar $result $result&"za  "&$SHIP~SHIP_MAX_ATTACK&"* *           "
             end
         end
@@ -66,7 +66,8 @@ goto :Start_Up_Routines
 			:donespeed
 				killtrigger 33
 				killtrigger 34
-				send "'{" $switchboard~bot_name "} - Terra is empty. Colonizer shutting down.*"
+				setvar $switchboard~message "Terra is empty. Colonizer shutting down.*"
+				gosub :switchboard~switchboard
 				if ($startingLocation = "Citadel")
 					send "c "
 				end
@@ -77,7 +78,8 @@ goto :Start_Up_Routines
 				#CHANGE ITEM TO NEXT
 				add $colo_prod 1
 				if ($colo_prod >= 4)
-					send "'{" $switchboard~bot_name "} - Planet "&$planet~planet&" is full of colonists, no more can be added.*"
+					setvar $switchboard~message "Planet "&$planet~planet&" is full of colonists, no more can be added.*"
+					gosub :switchboard~switchboard
 				end
 			:morespeed
 				killtrigger 33
@@ -109,7 +111,8 @@ halt
 	gosub :PLAYER~quikstats
 	setVar $startingLocation $PLAYER~CURRENT_PROMPT
 	if (($startingLocation <> "Citadel") AND ($startingLocation <> "Planet"))
-		send "'{" $switchboard~bot_name "} - Colo must be run from Planet or Citadel prompt*"
+		setvar $switchboard~message "Colo must be run from Planet or Citadel prompt*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	if ($startingLocation = "Citadel")
@@ -133,3 +136,4 @@ include "source\include\ship"
 include "source\include\planet"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

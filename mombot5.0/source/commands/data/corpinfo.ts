@@ -733,3 +733,4 @@ halt
 # includes:
 include "source\include\planet"
 include "source\include\loadvars"
+include "source\include\switchboard.ts"

@@ -22,7 +22,8 @@ setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
 setvar $BOT~VALIDPROMPTS "Citadel Command Planet"
 gosub :PLAYER~CHECKSTARTINGPROMPT
 if (($BOT~PARM1 <> "f") and (($BOT~PARM1 <> "o") and ($BOT~PARM1 <> "e")))
-  send "'{" $SWITCHBOARD~BOT_NAME "} - maxport [f / o / e] noexp*"
+  setvar $switchboard~message "maxport [f / o / e] noexp*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -98,7 +99,8 @@ if (($STARTINGLOCATION = "Planet") or ($STARTINGLOCATION = "Citadel"))
           send "T T "&$PLAYER~CREDITS&"* "
           send "T F "&$TOTAL_CREDS_NEEDED&"* "
           setvar $PLAYER~CREDITS $TOTAL_CREDS_NEEDED
-          send "'{" $SWITCHBOARD~BOT_NAME "} - Withdrew funds from the Treasury to complete the port max*"
+          setvar $switchboard~message "Withdrew funds from the Treasury to complete the port max*"
+          gosub :switchboard~switchboard
         end
       end
     end
@@ -127,9 +129,11 @@ if (($STARTINGLOCATION = "Citadel") or ($STARTINGLOCATION = "Planet"))
   gosub :PLANET~LANDINGSUB
 end
 if ($WRONG)
-  send "'{" $SWITCHBOARD~BOT_NAME "} - No valid port here.*"
+  setvar $switchboard~message "No valid port here.*"
+  gosub :switchboard~switchboard
 end
-send "'{" $SWITCHBOARD~BOT_NAME "} - Port upgrade complete.*"
+setvar $switchboard~message "Port upgrade complete.*"
+gosub :switchboard~switchboard
 halt
 :DOMAXPORT
 
@@ -170,3 +174,4 @@ goto :DONEMAXPORT
 include "source\include\planet"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

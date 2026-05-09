@@ -80,19 +80,23 @@
 	end 
 
 	if ($bot~parm1 = "off")
-		send "'{" $SWITCHBOARD~bot_name "} - Shutting down dockkill..*"
+		setvar $switchboard~message "Shutting down dockkill..*"
+		gosub :switchboard~switchboard
 		if ($player~current_sector = STARDOCK)
 			send "p ss ys *p"
-			send "'{" $SWITCHBOARD~bot_name "} - Should be on dock.*"
+			setvar $switchboard~message "Should be on dock.*"
+			gosub :switchboard~switchboard
 		end
 		if ($player~current_sector = "1")
 			send "p ty"
-			send "'{" $SWITCHBOARD~bot_name "} - Should be on port.*"
+			setvar $switchboard~message "Should be on port.*"
+			gosub :switchboard~switchboard
 		end
 		halt
 	else
 		if ($startingLocation <> "Command") AND ($startingLocation <> "<StarDock>")
-			send "'{" $SWITCHBOARD~bot_name "} - Stardock Killer must be run from the Command or StarDock Prompt*"
+			setvar $switchboard~message "Stardock Killer must be run from the Command or StarDock Prompt*"
+			gosub :switchboard~switchboard
 			halt
 		end
 		isNumber $test $bot~parm2
@@ -249,11 +253,13 @@
 		killAllTriggers
 		gosub :player~quikstats
 		if ($player~current_prompt = "Command")
-			send ("'{" & $switchboard~bot_name & "} "&$TagLineB&" - Restarting!**")
+			setvar $switchboard~message $TagLineB&" - Restarting!**"
+			gosub :switchboard~switchboard
 		    	waitfor "Message sent on sub-space channel"
 			goto :inac
 		elseif ($player~current_prompt = "Citadel")
-			send ("'{" & $switchboard~bot_name & "} "&$TagLineB&" - Restarting!**")
+			setvar $switchboard~message $TagLineB&" - Restarting!**"
+			gosub :switchboard~switchboard
 			waitfor "Message sent on sub-space channel"
 	   		send "qqqq**"
 	   		goto :inac
@@ -281,3 +287,4 @@ include "source\include\combat"
 include "source\include\loadvars"
 
 include "source\include\help"
+include "source\include\switchboard.ts"

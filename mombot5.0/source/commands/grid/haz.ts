@@ -3,26 +3,31 @@ loadvar $BOT_NAME
 gosub :PLAYER~QUIKSTATS
 
 if ($PLAYER~CURRENT_PROMPT <> "Command")
-  send "'{" $BOT_NAME "} Start From Command Prompt!*"
+  setvar $switchboard~message "Start From Command Prompt!*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($PLAYER~GENESIS < 10)
-  send "'{" $BOT_NAME "} Not Enough Gen Torps!*"
+  setvar $switchboard~message "Not Enough Gen Torps!*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($PLAYER~ATOMIC < 10)
-  send "'{" $BOT_NAME "} Not Enough Atomic Dets!*"
+  setvar $switchboard~message "Not Enough Atomic Dets!*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($PLAYER~CURRENT_SECTOR = 1)
-  send "'{" $BOT_NAME "} The intense traffic in sector 1 prohibits planetary construction.*"
+  setvar $switchboard~message "The intense traffic in sector 1 prohibits planetary construction.*"
+  gosub :switchboard~switchboard
   halt
 end
 
 if ($PLAYER~CURRENT_SECTOR <> STARDOCK)
   setvar $BUFFER ($PLAYER~SHIELDS + $PLAYER~FIGHTERS)
   if ($BUFFER < 5500)
-    send "'{" $BOT_NAME "} Not Enough Shields/Fighters***"
+    setvar $switchboard~message "Not Enough Shields/Fighters***"
+    gosub :switchboard~switchboard
     halt
   end
 end
@@ -99,6 +104,8 @@ send $STR&"  **  "
 
 gosub :PLAYER~QUIKSTATS
 
-send "'{" $BOT_NAME "} "&SECTOR.NAVHAZ[$PLAYER~CURRENT_SECTOR]&"% Haz Created (Lost "&($START_FIGS - $PLAYER~FIGHTERS)&" Figs, "&($START_SHIELDS - $PLAYER~SHIELDS)&" Shields)*"
+setvar $switchboard~message SECTOR.NAVHAZ[$PLAYER~CURRENT_SECTOR]&"% Haz Created (Lost "&($START_FIGS - $PLAYER~FIGHTERS)&" Figs, "&($START_SHIELDS - $PLAYER~SHIELDS)&" Shields)*"
+gosub :switchboard~switchboard
 halt
 include "source\include\player"
+include "source\include\switchboard.ts"

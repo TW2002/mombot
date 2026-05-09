@@ -1,7 +1,8 @@
 :START
 loadvar $BOT_NAME
 
-send "'{" $BOT_NAME "} - OZ Fed Monitor On Line!*"
+setvar $switchboard~message "OZ Fed Monitor On Line!*"
+gosub :switchboard~switchboard
 :MAIN
 killalltriggers
 setdelaytrigger NOTICE :WARNING 300000
@@ -35,10 +36,13 @@ if ($SS = "'")
   goto :MAIN
 end
 setvar $LINE CURRENTLINE
-send "'{" $BOT_NAME "} " $LINE "*"
+setvar $switchboard~message $LINE&"*"
+gosub :switchboard~switchboard
 goto :MAIN
 :WARNING
 
 killalltriggers
-send "'{" $BOT_NAME "} - OZ Fed Monitor On Line!*"
+setvar $switchboard~message "OZ Fed Monitor On Line!*"
+gosub :switchboard~switchboard
 goto :MAIN
+include "source\include\switchboard.ts"

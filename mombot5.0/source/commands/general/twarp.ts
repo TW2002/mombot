@@ -39,7 +39,7 @@ gosub :HELP~INITIALIZE
 		goto :wait_for_command
 	end
 	gosub :travelProtections
-	gosub :player~twarp
+	gosub :move~twarp
 	if ($PLAYER~twarpSuccess = FALSE)
 		if (($PLAYER~startingLocation = "Citadel") OR ($PLAYER~startingLocation = "Planet"))
 			if ($planet~planet <> 0)
@@ -116,5 +116,7 @@ halt
 
 # includes:
 include "source\include\planet"
+include "source\include\move"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

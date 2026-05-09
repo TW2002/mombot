@@ -33,7 +33,7 @@ else
     gosub :PLAYER~QUIKSTATS
     setVar $BACK $PLAYER~CURRENT_SECTOR
     setVar $PLAYER~WARPTO 1
-    gosub :PLAYER~TWARP
+    gosub :MOVE~TWARP
     gosub :PLAYER~CURRENTPROMPT
     if ($PLAYER~TWARPSUCCESS = TRUE)
       send "p ty"
@@ -51,7 +51,7 @@ else
       killtrigger 2
       send "q "
       setVar $PLAYER~WARPTO $MAP~STARDOCK
-      gosub :PLAYER~TWARP
+      gosub :MOVE~TWARP
       gosub :PLAYER~CURRENTPROMPT
       if ($PLAYER~TWARPSUCCESS = TRUE)
         send "P  S G YG Q s p"
@@ -84,7 +84,7 @@ send "b 0* c 0* q q q * "
 if ($BOT~PARM1 = "seek")
   gosub :PLAYER~QUIKSTATS
   setVar $PLAYER~WARPTO $BACK
-  gosub :PLAYER~TWARP
+  gosub :MOVE~TWARP
   if ($PLAYER~TWARPSUCCESS <> TRUE)
     setVar $SWITCHBOARD~MESSAGE $PLAYER~MSG&"*"
     gosub :SWITCHBOARD~SWITCHBOARD
@@ -106,5 +106,7 @@ halt
 
 # includes:
 include "source\include\planet"
+include "source\include\move"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

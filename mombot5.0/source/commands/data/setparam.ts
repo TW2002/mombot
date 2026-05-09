@@ -46,3 +46,4 @@ gosub :switchboard~switchboard
 halt
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

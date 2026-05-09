@@ -320,17 +320,21 @@ if ($INTERNAL_COMMANDS~QUITTINGWITHNOTIMER)
 end
 if (($INTERNAL_COMMANDS~CLOAKINGOUT = TRUE) and ($PLAYER~CLOAKS > 0))
   if ($INTERNAL_COMMANDS~QUITTINGWITHNOTIMER)
-    send "'{" $SWITCHBOARD~BOT_NAME "} - Logging and cloaking out until I am at keys to login again.*"
+    setvar $switchboard~message "Logging and cloaking out until I am at keys to login again.*"
+    gosub :switchboard~switchboard
   else
-    send "'{" $SWITCHBOARD~BOT_NAME "} - Logging and cloaking out for "&$INTERNAL_COMMANDS~HOURS&" hours, "&$INTERNAL_COMMANDS~MINUTES&" minutes, and "&$INTERNAL_COMMANDS~SECONDS&" seconds.*"
+    setvar $switchboard~message "Logging and cloaking out for "&$INTERNAL_COMMANDS~HOURS&" hours, "&$INTERNAL_COMMANDS~MINUTES&" minutes, and "&$INTERNAL_COMMANDS~SECONDS&" seconds.*"
+    gosub :switchboard~switchboard
   end
   send "q q q q  * * * * q q q q y y x *"
   waiton "==-- Trade Wars 2002 --=="
 else
   if ($INTERNAL_COMMANDS~QUITTINGWITHNOTIMER)
-    send "'{" $SWITCHBOARD~BOT_NAME "} - Logging out until I am at keys to login again.*"
+    setvar $switchboard~message "Logging out until I am at keys to login again.*"
+    gosub :switchboard~switchboard
   else
-    send "'{" $SWITCHBOARD~BOT_NAME "} - Logging out for "&$INTERNAL_COMMANDS~HOURS&" hours, "&$INTERNAL_COMMANDS~MINUTES&" minutes, and "&$INTERNAL_COMMANDS~SECONDS&" seconds.*"
+    setvar $switchboard~message "Logging out for "&$INTERNAL_COMMANDS~HOURS&" hours, "&$INTERNAL_COMMANDS~MINUTES&" minutes, and "&$INTERNAL_COMMANDS~SECONDS&" seconds.*"
+    gosub :switchboard~switchboard
   end
   if ($INTERNAL_COMMANDS~STARTINGLOCATION = "Citadel")
     send "ryy* x *##"

@@ -21,13 +21,15 @@ if ($DOESHELPFILEEXIST <> TRUE)
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "- "&$COMMAND&"                                              "
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    Mows to unfigged upgraded fuel ports in grid.           "
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    Does not do so safely.                                  "
-  send "'{" $BOT_NAME "} - Writing help file for this command in Help directory.*"
+  setvar $switchboard~message "Writing help file for this command in Help directory.*"
+  gosub :switchboard~switchboard
 end
 window "MOWWINDOW" 250 80 "Sectors Gridded" "ONTOP"
 setarray $COURSE 80
 gosub :PLAYER~QUIKSTATS
 if ($PLAYER~CURRENT_PROMPT <> "Citadel")
-  send "'{" $BOT_NAME "} - You must run this script from the Citadel prompt.*"
+  setvar $switchboard~message "You must run this script from the Citadel prompt.*"
+  gosub :switchboard~switchboard
   halt
 end
 setvar $LOCATION $PLAYER~CURRENT_PROMPT
@@ -50,7 +52,8 @@ gosub :GETTARGETS
 getrnd $RANDOM 1 $DATABASECOUNT
 getword $RANDOMSECTORS $DESTINATION $RANDOM
 if ($DESTINATION = 0)
-  send "'{" $BOT_NAME "} -  Database Cleared - Refresh Figs and Restart.*"
+  setvar $switchboard~message " Database Cleared - Refresh Figs and Restart.*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($DESTINATION <> $HOMESECTOR)
@@ -332,3 +335,4 @@ send "q q"
 waiton "Blasting off from"
 waiton "Command [TL"
 return
+include "source\include\switchboard.ts"

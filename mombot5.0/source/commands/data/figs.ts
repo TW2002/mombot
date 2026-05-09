@@ -142,170 +142,29 @@ send "'*{"&$SWITCHBOARD~BOT_NAME&"}*          - Fighter Grid Report -*          
 halt
 :REFRESHFIGHTERS
 :READFIGHTERLIST
-
-
-
-
-
-setvar $COUNT 0
-setvar $PERSONALCOUNT 0
-setvar $1SCOUNT 0
-setvar $2SCOUNT 0
-setvar $3SCOUNT 0
-setvar $4SCOUNT 0
-setvar $5SCOUNT 0
-setvar $6SCOUNT 0
-setvar $?SCOUNT 0
-setvar $TOLLCOUNT 0
-setvar $OFFCOUNT 0
-setvar $DEFCOUNT 0
-setvar $FUELCOUNT 0
-setvar $ORGCOUNT 0
-setvar $EQUIPCOUNT 0
-setvar $EQUIPSELLCOUNT 0
-setvar $UPGRADEDEQUIPCOUNT 0
-setvar $UPGRADEDEQUIPSELLCOUNT 0
-setvar $UPGRADEDFUELBUYCOUNT 0
-setvar $UPGRADEDORGCOUNT 0
-setvar $UPGRADEDFUELCOUNT 0
-
-send "g"
-setvar $I 1
-setvar $PERSONALOUTPUT " "
-setvar $OUTPUT " "
-setvar $CKOUTPUT " "
-:KEEPCOUNTING
-settextlinetrigger CORPORATE :CORPCOUNT " Corp"
-settextlinetrigger PERSONAL :PERSONALCOUNT "Personal "
-settextlinetrigger DONECOUNTINGFIGS :DONECOUNTING "Total"
-settextlinetrigger DONENOFIGS :DONECOUNTING "No fighters deployed"
-pause
-:PERSONALCOUNT
-add $COUNT 1
-add $PERSONALCOUNT 1
-getword CURRENTLINE $SECTOR 1
-getword CURRENTLINE $TYPE 4
-setvar $PERSONALOUTPUT $PERSONALOUTPUT&" "&$SECTOR&"  "
-settextlinetrigger PERSONAL :PERSONALCOUNT "Personal "
-pause
-:CORPCOUNT
-
-add $COUNT 1
-add $PLAYER~CORPCOUNT 1
-getword CURRENTLINE $SECTOR 1
-getword CURRENTLINE $TYPE 4
-if ($TYPE = "Toll")
-  add $TOLLCOUNT 1
-elseif ($TYPE = "Offensive")
-  add $OFFCOUNT 1
-elseif ($TYPE = "Defensive")
-  add $DEFCOUNT 1
-end
-while ($I <= $SECTOR)
-  getwordpos $PERSONALOUTPUT $POS " "&$I&" "
-  if (($SECTOR = $I) or ($POS > 0))
-    setvar $OUTPUT $OUTPUT&$I&"*"
-    setvar $CKOUTPUT $CKOUTPUT&$I&"  "
-    setsectorparameter $I "FIGSEC" TRUE
-    if (PORT.EXISTS[$I] = TRUE)
-      setvar $CURRENTEQUIP (PORT.EQUIP[$I] * 100)
-      if (PORT.PERCENTEQUIP[$I] <> 0)
-        divide $CURRENTEQUIP PORT.PERCENTEQUIP[$I]
-      end
-      if (PORT.BUYEQUIP[$I] = FALSE)
-        if ($CURRENTEQUIP > 10000)
-          add $UPGRADEDEQUIPSELLCOUNT 1
-        end
-      else
-        if ($CURRENTEQUIP > 10000)
-          add $UPGRADEDEQUIPCOUNT 1
-        end
-      end
-      if (PORT.BUYORG[$I] = TRUE)
-        setvar $CURRENTORG (PORT.ORG[$I] * 100)
-        if (PORT.PERCENTORG[$I] <> 0)
-          divide $CURRENTORG PORT.PERCENTORG[$I]
-        end
-        if ($CURRENTORG > 10000)
-          add $UPGRADEDORGCOUNT 1
-        end
-      end
-      if (PORT.BUYFUEL[$I] = FALSE)
-        setvar $CURRENTFUEL (PORT.FUEL[$I] * 100)
-        if (PORT.PERCENTFUEL[$I] <> 0)
-          divide $CURRENTFUEL PORT.PERCENTFUEL[$I]
-        end
-        if ($CURRENTFUEL > 10000)
-          add $UPGRADEDFUELCOUNT 1
-        end
-      else
-        setvar $CURRENTFUEL (PORT.FUEL[$I] * 100)
-        if (PORT.PERCENTFUEL[$I] <> 0)
-          divide $CURRENTFUEL PORT.PERCENTFUEL[$I]
-        end
-        if ($CURRENTFUEL > 10000)
-          add $UPGRADEDFUELBUYCOUNT 1
-        end
-      end
-    end
-
-    setvar $TEMPWARPCOUNT SECTOR.WARPINCOUNT[$I]
-    setvar $TEMPWARPCOUNTOUT SECTOR.WARPCOUNT[$I]
-    if (($TEMPWARPCOUNT > 0) and ($TEMPWARPCOUNTOUT > 0))
-      if ($TEMPWARPCOUNT = 1)
-        add $1SCOUNT 1
-      elseif ($TEMPWARPCOUNT = 2)
-        add $2SCOUNT 1
-      elseif ($TEMPWARPCOUNT = 3)
-        add $3SCOUNT 1
-      elseif ($TEMPWARPCOUNT = 4)
-        add $4SCOUNT 1
-      elseif ($TEMPWARPCOUNT = 5)
-        add $5SCOUNT 1
-      elseif ($TEMPWARPCOUNT = 6)
-        add $6SCOUNT 1
-      end
-    else
-      add $?SCOUNT 1
-
-    end
-  else
-    setvar $OUTPUT $OUTPUT&"0*"
-    setvar $CKOUTPUT $CKOUTPUT&"0  "
-    setsectorparameter $I "FIGSEC" FALSE
-  end
-  add $I 1
-end
-settextlinetrigger CORPORATE :CORPCOUNT " Corp"
-pause
-:DONECOUNTING
-
-killalltriggers
-while ($I <= SECTORS)
-  getwordpos $PERSONALOUTPUT $POS " "&$I&" "
-  if ($POS > 0)
-    setvar $CKOUTPUT $CKOUTPUT&$I&"  "
-    setvar $OUTPUT $OUTPUT&$I&"*"
-    setsectorparameter $I "FIGSEC" TRUE
-  else
-    setvar $CKOUTPUT $CKOUTPUT&"0  "
-    setvar $OUTPUT $OUTPUT&"0*"
-    setsectorparameter $I "FIGSEC" FALSE
-  end
-  add $I 1
-end
-
-setsectorparameter 2 "FIG_COUNT" $COUNT
-setsectorparameter 2 "FIG_COUNTR" $COUNT
-setsectorparameter 2 "FUEL_COUNT" $UPGRADEDFUELCOUNT
-setsectorparameter 2 "ORG_COUNT" $UPGRADEDORGCOUNT
-setsectorparameter 2 "EQU_COUNT" $UPGRADEDEQUIPCOUNT
-setsectorparameter 2 "EQS_COUNT" $UPGRADEDEQUIPSELLCOUNT
-setsectorparameter 2 "FB_COUNT" $UPGRADEDFUELBUYCOUNT
-
+gosub :UPDATE~READFIGHTERLIST
+setvar $COUNT $UPDATE~COUNT
+setvar $PERSONALCOUNT $UPDATE~PERSONALCOUNT
+setvar $1SCOUNT $UPDATE~1SCOUNT
+setvar $2SCOUNT $UPDATE~2SCOUNT
+setvar $3SCOUNT $UPDATE~3SCOUNT
+setvar $4SCOUNT $UPDATE~4SCOUNT
+setvar $5SCOUNT $UPDATE~5SCOUNT
+setvar $6SCOUNT $UPDATE~6SCOUNT
+setvar $?SCOUNT $UPDATE~?SCOUNT
+setvar $TOLLCOUNT $UPDATE~TOLLCOUNT
+setvar $OFFCOUNT $UPDATE~OFFCOUNT
+setvar $DEFCOUNT $UPDATE~DEFCOUNT
+setvar $UPGRADEDEQUIPCOUNT $UPDATE~UPGRADEDEQUIPCOUNT
+setvar $UPGRADEDEQUIPSELLCOUNT $UPDATE~UPGRADEDEQUIPSELLCOUNT
+setvar $UPGRADEDFUELBUYCOUNT $UPDATE~UPGRADEDFUELBUYCOUNT
+setvar $UPGRADEDORGCOUNT $UPDATE~UPGRADEDORGCOUNT
+setvar $UPGRADEDFUELCOUNT $UPDATE~UPGRADEDFUELCOUNT
 return
 
 # includes:
 include "source\include\planet"
+include "source\include\update"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

@@ -30,7 +30,8 @@ systemscript
 	getWordPos $bot~user_command_line $pos $bot~parm1
 
 	if (($bot~parm2 <> "pm") and ($bot~parm2 <> "am"))
-		send "'{"&$bot~bot_name&"} - Time must be entered in system format.*"
+		setvar $switchboard~message "Time must be entered in system format.*"
+		gosub :switchboard~switchboard
 		halt
 		#goto :just_loaded_timers
 	end
@@ -115,3 +116,4 @@ return
 #INCLUDES:
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\switchboard.ts"

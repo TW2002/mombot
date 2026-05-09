@@ -1,5 +1,5 @@
 	gosub :LOADVARS~LOADVARS
-		gosub :HELP~INITIALIZE
+	gosub :HELP~INITIALIZE
 	
 	setArray $TYPES 7
 	setVar $TYPES[1] "General"
@@ -10,11 +10,10 @@
 	setVar $TYPES[6] "Cashing"
 	setVar $TYPES[7] "Data"
 
-
-	
 	setVar $HELP~HELP[1] $HELP~TAB&"help - displays help files for commands "
-		setVar $HELP~HELP[2] $HELP~TAB&"   "
+	setVar $HELP~HELP[2] $HELP~TAB&"   "
 	gosub :HELP~HELPFILE
+	
 	setVar $helpTargetText $BOT~USER_COMMAND_LINE
 	stripText $helpTargetText " "
 
@@ -89,7 +88,7 @@
 		gosub :PLAYER~quikstats
 		setVar $SWITCHBOARD~message "  --------------Mind ()ver Matter Bot Help Categories------------*"
 		setVar $SWITCHBOARD~message $SWITCHBOARD~message&"                          Version: "&$BOT~major_version&"_"&$BOT~minor_version&"*"
-				setVar $SWITCHBOARD~message $SWITCHBOARD~message&" *"
+		setVar $SWITCHBOARD~message $SWITCHBOARD~message&" *"
 		setVar $SWITCHBOARD~message $SWITCHBOARD~message&"                [OFFENSE]|[DEFENSE]|[DATA]|[CASHING]*"
 		setVar $SWITCHBOARD~message $SWITCHBOARD~message&"                     [RESOURCE]|[GRID]|[GENERAL]*"
 		setVar $SWITCHBOARD~message $SWITCHBOARD~message&" *"
@@ -280,6 +279,7 @@ halt
 		getWord $currentList $test $i "[<><>NONE<><>]"
 	end
 return
+
 :echo_help
 	loadvar $bot~major_version
 	loadvar $bot~minor_version
@@ -353,7 +353,6 @@ return
 # ============================== END HELP FOR COMMANDS SUB ==============================
 
 :get_hint_tips
-
 	setArray $hints 12
 	setvar $hints 12
 	setvar $hints[1] "You can run most commands silently by adding a 'silent' parameter*  to any command line.*  There is also a silent option in the bot preference menu to*  keep things quiet on the ss channel."
@@ -376,5 +375,9 @@ return
 
 
 # includes:
+include "source\include\loadvars"
+include "source\include\switchboard"
+include "source\include\player"
+include "source\include\bot"
 include "source\include\menus"
 include "source\include\help"

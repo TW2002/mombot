@@ -9,15 +9,18 @@
 	gosub :player~quikstats
 	setVar $startingLocation $player~CURRENT_PROMPT
 	if ($startingLocation <> "Command")
-		send "'{" $switchboard~bot_name "} - Must start at Citadel, Planet or Command prompt*"
+		setvar $switchboard~message "Must start at Citadel, Planet or Command prompt*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	setVar $ig_mode 0
 	if ($bot~parm1 <> "on") AND ($bot~parm1 <> "off")
-		send "'{" $switchboard~bot_name "} - Please use - IG [on/off]*"
+		setvar $switchboard~message "Please use - IG [on/off]*"
+		gosub :switchboard~switchboard
 		halt
 	end
-	send "'{" $switchboard~bot_name "} - Auto IG reset mode is now ON.*"
+	setvar $switchboard~message "Auto IG reset mode is now ON.*"
+	gosub :switchboard~switchboard
 	setVar $planet~planet 0
 	saveVar $planet~planet
 	goto :ig_turn_it_on
@@ -48,7 +51,8 @@
 		killtrigger no_ig_cby
 		killtrigger ig_was_on
 		killtrigger do_ig_thing
-		send "'{" $switchboard~bot_name "} - No IG available on this ship.*"
+		setvar $switchboard~message "No IG available on this ship.*"
+		gosub :switchboard~switchboard
 		halt
 
 	:no_ig_beam
@@ -88,10 +92,12 @@
 		killtrigger do_ig_thing
 		if ($ig_mode = 0)
 			send "Y"
-			send "'{" $switchboard~bot_name "} - IG on!*"
+			setvar $switchboard~message "IG on!*"
+			gosub :switchboard~switchboard
 		else
 			send "N"
-			send "'{" $switchboard~bot_name "} - IG was already on.*"
+			setvar $switchboard~message "IG was already on.*"
+			gosub :switchboard~switchboard
 		end
 			goto :ig_triggers
 
@@ -109,3 +115,4 @@ return
 
 
 include "source\include\player"
+include "source\include\switchboard.ts"

@@ -3,7 +3,8 @@ loadvar $BOT_NAME
 
 gosub :PLAYER~QUIKSTATS
 if (($PLAYER~CURRENT_PROMPT <> "Citadel") and ($PLAYER~CURRENT_PROMPT <> "Command"))
-  send "'{" $BOT_NAME "} - Must start MXEX From Citadel or Command Prompts!*"
+  setvar $switchboard~message "Must start MXEX From Citadel or Command Prompts!*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -17,7 +18,8 @@ if ($STARTPROMPT = "Citadel")
   striptext $PLANET "#"
   isnumber $TST $PLANET
   if ($TST = 0)
-    send "'{" $BOT_NAME "} - Unable To Obtain Planet Number*"
+    setvar $switchboard~message "Unable To Obtain Planet Number*"
+    gosub :switchboard~switchboard
     halt
   end
   waiton "Citadel command"
@@ -51,11 +53,13 @@ if ($TST = 0)
 end
 
 if ($NOJOY)
-  send "'{" $BOT_NAME "} - Command Parameters Missing or Incorrect*"
+  setvar $switchboard~message "Command Parameters Missing or Incorrect*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($PARM2 = $PARM3)
-  send "'{" $BOT_NAME "} - Moth-Ship Number Cannot Be Same As Tow-Ship*"
+  setvar $switchboard~message "Moth-Ship Number Cannot Be Same As Tow-Ship*"
+  gosub :switchboard~switchboard
   halt
 end
 setvar $IDX 1
@@ -65,7 +69,8 @@ while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$IDX] <> 0)
   end
   add $IDX 1
 end
-send "'{" $BOT_NAME "} - Not Adjacent To Target Sector*"
+setvar $switchboard~message "Not Adjacent To Target Sector*"
+gosub :switchboard~switchboard
 halt
 :ADJ_FOUND
 
@@ -89,7 +94,8 @@ settextlinetrigger DONE :DONE "Choose which ship to tow (Q=Quit)"
 pause
 :NADDA
 killalltriggers
-send "'{" $BOT_NAME "} - No empty ships in Current Sector*"
+setvar $switchboard~message "No empty ships in Current Sector*"
+gosub :switchboard~switchboard
 halt
 :MOTH
 
@@ -107,11 +113,13 @@ else
   waiton "Command [TL="
 end
 if ($MOTH_GOOD = FALSE)
-  send "'{" $BOT_NAME "} - Moth ship doesn't appear to be in sector*"
+  setvar $switchboard~message "Moth ship doesn't appear to be in sector*"
+  gosub :switchboard~switchboard
   halt
 end
 if (($PARM3 >= 1) and ($TOW_GOOD = FALSE))
-  send "'{" $BOT_NAME "} - Tow Ship doesn't appears to be in sector*"
+  setvar $switchboard~message "Tow Ship doesn't appears to be in sector*"
+  gosub :switchboard~switchboard
   halt
 end
 gosub :STATUS
@@ -142,7 +150,8 @@ setdelaytrigger ABORT :ABORT 300000
 pause
 :ABORT
 killalltriggers
-send "'{" $BOT_NAME "} - 5mins Expired. Halting MXEX!*"
+setvar $switchboard~message "5mins Expired. Halting MXEX!*"
+gosub :switchboard~switchboard
 halt
 :SCRIPT
 killalltriggers
@@ -210,3 +219,4 @@ elseif ($LEN = 4)
   setvar $PAD " "
 end
 return
+include "source\include\switchboard.ts"

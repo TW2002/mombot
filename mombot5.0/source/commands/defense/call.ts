@@ -113,5 +113,7 @@ return
 #INCLUDES:
 include "source\include\loadvars"
 include "source\include\xenter"
+include "source\include\player"
+include "source\include\planet"
 
 include "source\include\help"

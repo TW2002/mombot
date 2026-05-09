@@ -569,9 +569,64 @@ while ($PLANET~PLANETSTATLOOP < $PLANET~TOTALPLANETS)
   getwordpos $PLANET~LINE $PLANET~POS "Class"
 
   cuttext $PLANET~LINE $PLANET~PLANET_NAME $PLANET~POS 999
-  write $PLANET~PLANET_FILE "50000 50000 50000 50000 50000 50000 0  "&$PLANET~PLANET_NAME
+  setvar $PLANET~PLANET_FUEL_COLONISTS_MIN 50000
+  setvar $PLANET~PLANET_FUEL_COLONISTS_MAX 50000
+  setvar $PLANET~PLANET_ORG_COLONISTS_MIN 50000
+  setvar $PLANET~PLANET_ORG_COLONISTS_MAX 50000
+  setvar $PLANET~PLANET_EQUIP_COLONISTS_MIN 50000
+  setvar $PLANET~PLANET_EQUIP_COLONISTS_MAX 50000
+  gosub :PLANET~READPLANETTYPESTATS
+  write $PLANET~PLANET_FILE $PLANET~PLANET_FUEL_COLONISTS_MIN&" "&$PLANET~PLANET_FUEL_COLONISTS_MAX&" "&$PLANET~PLANET_ORG_COLONISTS_MIN&" "&$PLANET~PLANET_ORG_COLONISTS_MAX&" "&$PLANET~PLANET_EQUIP_COLONISTS_MIN&" "&$PLANET~PLANET_EQUIP_COLONISTS_MAX&" 0  "&$PLANET~PLANET_NAME
 end
 send "qq"
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLANET~READPLANETTYPESTATS
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLANET~READPLANETTYPESTATS_WAIT
+settextlinetrigger PLANETSTAT_COLS :PLANET~READPLANETTYPESTATS_COLS "Cols -"
+settexttrigger PLANETSTAT_DONE :PLANET~READPLANETTYPESTATS_DONE "Which planet type are you interested in (?=List)"
+pause
+
+:PLANET~READPLANETTYPESTATS_COLS
+killalltriggers
+setvar $PLANET~STAT_LINE CURRENTLINE
+gosub :PLANET~GETPLANETTYPECOLS
+if ($PLANET~PARSED_COLS > 0)
+  getwordpos $PLANET~STAT_LINE $PLANET~POS "Ore"
+  if ($PLANET~POS > 0)
+    setvar $PLANET~PLANET_FUEL_COLONISTS_MIN $PLANET~PARSED_COLS
+    setvar $PLANET~PLANET_FUEL_COLONISTS_MAX $PLANET~PARSED_COLS
+  end
+  getwordpos $PLANET~STAT_LINE $PLANET~POS "Org"
+  if ($PLANET~POS > 0)
+    setvar $PLANET~PLANET_ORG_COLONISTS_MIN $PLANET~PARSED_COLS
+    setvar $PLANET~PLANET_ORG_COLONISTS_MAX $PLANET~PARSED_COLS
+  end
+  getwordpos $PLANET~STAT_LINE $PLANET~POS "Eq"
+  if ($PLANET~POS > 0)
+    setvar $PLANET~PLANET_EQUIP_COLONISTS_MIN $PLANET~PARSED_COLS
+    setvar $PLANET~PLANET_EQUIP_COLONISTS_MAX $PLANET~PARSED_COLS
+  end
+end
+goto :PLANET~READPLANETTYPESTATS_WAIT
+
+:PLANET~READPLANETTYPESTATS_DONE
+killalltriggers
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLANET~GETPLANETTYPECOLS
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $PLANET~PARSED_COLS 0
+gettext $PLANET~STAT_LINE $PLANET~PARSED_COLS "Cols -" "/"
+striptext $PLANET~PARSED_COLS " "
+striptext $PLANET~PARSED_COLS ","
+isnumber $PLANET~ISNUMBER $PLANET~PARSED_COLS
+if ($PLANET~ISNUMBER <> TRUE)
+  setvar $PLANET~PARSED_COLS 0
+end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -815,6 +870,44 @@ if ($PLANET~EXISTS)
   setvar $PLANET~PLANETSTATS TRUE
 else
   echo "*No Planet File Found!*"
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLANET~LOADPLANETPRODS
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $PLANET~PLANETCOUNTER 0
+setvar $PLANET~PLANETSTATS FALSE
+loadvar $PLANET~PLANET_PRODS_FILE
+fileexists $EXISTS $PLANET~PLANET_PRODS_FILE
+if ($EXISTS)
+  setvar $I 1
+  setvar $PLANET~PLANETCOUNTER 1
+  readtoarray $PLANET~PLANET_PRODS_FILE $PLANET~PLANET_PRODS_ARRAY
+  setarray $PLANET~PLANETPRODS $PLANET~PLANET_PRODS_ARRAY 3
+  while ($I <= $PLANET~PLANET_PRODS_ARRAY)
+    setvar $planetinf $PLANET~PLANET_PRODS_ARRAY[$I]
+    getword $planetinf $planet_starting_ore 1
+    getlength $planet_starting_ore $len1
+    getword $planetinf $planet_starting_org 2
+    getlength $planet_starting_org $len2
+    getword $planetinf $planet_starting_equ 3
+    getlength $planet_starting_equ $len3
+    setvar $len ($len1 + $len2 + $len3 + 3)
+    getlength $planetinf $pname_len
+    if ($len < $pname_len)
+      cuttext $planetinf $pname $len 999
+    else
+      echo "*"&$planetinf&" error during processing planets.*"
+    end
+    setvar $PLANET~PLANETPRODS[$PLANET~I] $PLANET~PLANETNAME
+    setvar $PLANET~PLANETPRODS[$PLANET~I][1] $PLANET~PLANET_FUEL_COLONISTS_MIN
+    setvar $PLANET~PLANETPRODS[$PLANET~I][2] $PLANET~PLANET_FUEL_COLONISTS_MAX
+    setvar $PLANET~PLANETPRODS[$PLANET~I][3] $PLANET~PLANET_ORG_COLONISTS_MIN
+    add $I 1
+  end
+  setvar $PLANET~PLANETCOUNTER $PLANET~PLANET_PRODS_ARRAY
+  setvar $PLANET~PLANETSTATS TRUE
 end
 return
 

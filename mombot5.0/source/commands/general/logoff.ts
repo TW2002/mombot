@@ -50,17 +50,21 @@
 	end
 	if (($cloakingOut = TRUE) AND ($PLAYER~CLOAKS > 0))
 		if ($quittingWithNoTimer)
-			send "'{" $SWITCHBOARD~bot_name "} - Logging and cloaking out until I am at keys to login again.*"
+			setvar $switchboard~message "Logging and cloaking out until I am at keys to login again.*"
+			gosub :switchboard~switchboard
 		else
-			send "'{" $SWITCHBOARD~bot_name "} - Logging and cloaking out for "&$hours&" hours, "&$minutes&" minutes, and "&$seconds&" seconds.*"
+			setvar $switchboard~message "Logging and cloaking out for "&$hours&" hours, "&$minutes&" minutes, and "&$seconds&" seconds.*"
+			gosub :switchboard~switchboard
 		end
 		send "q q q q  * * * * q q q q y y x *"
 		waitOn "==-- Trade Wars 2002 --=="
 	else
 		if ($quittingWithNoTimer)
-			send "'{" $SWITCHBOARD~bot_name "} - Logging out until I am at keys to login again.*"
+			setvar $switchboard~message "Logging out until I am at keys to login again.*"
+			gosub :switchboard~switchboard
 		else
-			send "'{" $SWITCHBOARD~bot_name "} - Logging out for "&$hours&" hours, "&$minutes&" minutes, and "&$seconds&" seconds.*"
+			setvar $switchboard~message "Logging out for "&$hours&" hours, "&$minutes&" minutes, and "&$seconds&" seconds.*"
+			gosub :switchboard~switchboard
 		end
 		if ($startingLocation = "Citadel")
 			send "ryy* x *##"
@@ -128,3 +132,4 @@ return
 include "source\include\loadvars"
 include "source\include\help"
 include "source\include\planet"
+include "source\include\switchboard.ts"

@@ -191,9 +191,6 @@
 					halt
 				end
 			end
-			if ($MAP~STARDOCK > 0) and ($MAP~BACKDOOR = 0)
-				gosub :MAP~GETBACKDOOR
-			end
 			loadvar $relog_message
 			if (($relog_message <> "") and ($relog_message <> "0"))
 				setvar $switchboard~message $relog_message
@@ -305,3 +302,4 @@ include "source\include\loadvars"
 include "source\include\help"
 include "source\include\planet"
 include "source\include\map"
+include "source\include\switchboard.ts"

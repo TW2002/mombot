@@ -77,7 +77,8 @@ gosub :player~quikstats
 
 setvar $LOCATION $player~current_prompt
 if ($LOCATION <> "Command")
-  send "'{" $switchboard~bot_name "} - Must start at Command Prompt for SST*"
+  setvar $switchboard~message "Must start at Command Prompt for SST*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -112,7 +113,8 @@ if ($player~ship_number <> $SHIP_1)
 end
 gosub :player~quikstats
 if ($player~ship_number <> $SHIP_1)
-  send "'{" $switchboard~bot_name "} - Cannot Xport to Ship 1.  Check Xport Range.  Halting.*"
+  setvar $switchboard~message "Cannot Xport to Ship 1.  Check Xport Range.  Halting.*"
+  gosub :switchboard~switchboard
   halt
 end
 logging "OFF"
@@ -147,7 +149,8 @@ gosub :GETINFO
 setvar $INIT_CREDITS $player~credits
 setvar $INIT_EXP $EXP
 setvar $INIT_TURNS $player~turns
-send "'{" $switchboard~bot_name "} - Starting SST"
+setvar $switchboard~message "Starting SST"
+gosub :switchboard~switchboard
 
 
 
@@ -159,9 +162,11 @@ gosub :player~quikstats
 
 
 
-send "'{" $switchboard~bot_name "} - last rob attempt: "&$LAST_ROB_ATTEMPT&"*"
+setvar $switchboard~message "last rob attempt: "&$LAST_ROB_ATTEMPT&"*"
+gosub :switchboard~switchboard
 if ($LAST_ROB_ATTEMPT = $player~current_sector)
-  send "'{" $switchboard~bot_name "} - last rob attempt is this sector! HAlting*"
+  setvar $switchboard~message "last rob attempt is this sector! HAlting*"
+  gosub :switchboard~switchboard
   gosub :ENDCNSETTINGS
   gosub :CLEARADJACENT
   halt
@@ -170,7 +175,8 @@ gosub :VOIDADJACENT
 
 getsectorparameter $player~current_sector "BUSTED" $BUSTTHISSEC
 if ($BUSTTHISSEC = TRUE)
-  send "'{" $switchboard~bot_name "} - According to my data i've busted here - ending*"
+  setvar $switchboard~message "According to my data i've busted here - ending*"
+  gosub :switchboard~switchboard
   gosub :CLEARADJACENT
   gosub :ENDCNSETTINGS
   halt
@@ -187,7 +193,8 @@ gosub :VOIDADJACENT
 setvar $SEC2VOID 1
 getsectorparameter $player~current_sector "BUSTED" $BUSTTHISSEC
 if ($BUSTTHISSEC = TRUE)
-  send "'{" $switchboard~bot_name "} - According to my data i've busted here - ending*"
+  setvar $switchboard~message "According to my data i've busted here - ending*"
+  gosub :switchboard~switchboard
   gosub :ENDCNSETTINGS
   gosub :CLEARADJACENT
   halt
@@ -208,7 +215,8 @@ gosub :XPORT
 if (($player~unlimitedgame) or ($player~turns > $bot~bot_turn_limit))
   goto :SSTLOOP
 else
-  send "'{" $switchboard~bot_name "} - Low Turns, Halting Script*"
+  setvar $switchboard~message "Low Turns, Halting Script*"
+  gosub :switchboard~switchboard
   setvar $LOW_TURNS "YES"
   goto :FINISH
 end
@@ -343,7 +351,8 @@ killalltriggers
 gettext CURRENTLINE $PORT[$CURRENT_SHIP] ", Class " " ("
 if (($PORT[$CURRENT_SHIP] <> 2) and (($PORT[$CURRENT_SHIP] <> 3) and (($PORT[$CURRENT_SHIP] <> 4) and ($PORT[$CURRENT_SHIP] <> 8))))
   setvar $BAD_PORT_NAME PORT.NAME[$player~current_sector]
-  send "'{" $switchboard~bot_name "} - Ship " $CURRENT_SHIP " is in sector " $player~current_sector " at " $BAD_PORT_NAME ", class " $PORT[$CURRENT_SHIP] ". SST needs an equipment-buying port (class 2, 3, 4, or 8). Halting.*"
+  setvar $switchboard~message "Ship " $CURRENT_SHIP " is in sector " $player~current_sector " at " $BAD_PORT_NAME ", class " $PORT[$CURRENT_SHIP] ". SST needs an equipment-buying port (class 2, 3, 4, or 8). Halting.*"
+  gosub :switchboard~switchboard
   gosub :ENDCNSETTINGS
   gosub :CLEARADJACENT
   halt
@@ -397,12 +406,14 @@ else
   setvar $STEAL_HOLDS $EXP
   divide $STEAL_HOLDS $STEAL_DIVISOR
   if ($STEAL_HOLDS < 10)
-    send "'{" $switchboard~bot_name "} - You need more experience to SST!!!*"
+    setvar $switchboard~message "You need more experience to SST!!!*"
+    gosub :switchboard~switchboard
     gosub :ENDCNSETTINGS
     gosub :CLEARADJACENT
     halt
   elseif ($HOLDS[$CURRENT_SHIP] < 10)
-    send "'{" $switchboard~bot_name "} - You need more cargo holds to SST!!!*"
+    setvar $switchboard~message "You need more cargo holds to SST!!!*"
+    gosub :switchboard~switchboard
     gosub :ENDCNSETTINGS
     gosub :CLEARADJACENT
     halt
@@ -424,7 +435,8 @@ else
     if ($player~credits >= $CASH_NEEDED)
       send "o  3"&$UPGRADE_AMOUNT&"**"
     else
-      send "'{" $switchboard~bot_name "} - Not enough credits on hand to upgrade the port.*"
+      setvar $switchboard~message "Not enough credits on hand to upgrade the port.*"
+      gosub :switchboard~switchboard
       gosub :ENDCNSETTINGS
       gosub :CLEARADJACENT
       halt
@@ -436,7 +448,8 @@ else
 end
 :NOPORT
 killalltriggers
-send "'{" $switchboard~bot_name "} - There is no port, you can't SST here!*"
+setvar $switchboard~message "There is no port, you can't SST here!*"
+gosub :switchboard~switchboard
 gosub :ENDCNSETTINGS
 gosub :CLEARADJACENT
 halt
@@ -459,7 +472,8 @@ if ($PORT[$CURRENT_SHIP] = 2)
       gosub :NATIVEPORTTRADE
       gosub :GETINFO
       if (($ORE[$CURRENT_SHIP] <> 0) or ($EQU[$CURRENT_SHIP] <> 0))
-        send "'{" $switchboard~bot_name "} - I couldn't clean the ship cargo with native haggle on. Script Halting*"
+        setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
+        gosub :switchboard~switchboard
         gosub :ENDCNSETTINGS
         gosub :CLEARADJACENT
         halt
@@ -492,7 +506,8 @@ elseif ($PORT[$CURRENT_SHIP] = 3)
       gosub :NATIVEPORTTRADE
       gosub :GETINFO
       if (($ORG[$CURRENT_SHIP] <> 0) or ($EQU[$CURRENT_SHIP] <> 0))
-        send "'{" $switchboard~bot_name "} - I couldn't clean the ship cargo with native haggle on. Script Halting*"
+        setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
+        gosub :switchboard~switchboard
         gosub :ENDCNSETTINGS
         gosub :CLEARADJACENT
         halt
@@ -523,7 +538,8 @@ elseif ($PORT[$CURRENT_SHIP] = 4)
       gosub :NATIVEPORTTRADE
       gosub :GETINFO
       if ($EQU[$CURRENT_SHIP] <> 0)
-        send "'{" $switchboard~bot_name "} - I couldn't clean the ship cargo with native haggle on. Script Halting*"
+        setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
+        gosub :switchboard~switchboard
         gosub :ENDCNSETTINGS
         gosub :CLEARADJACENT
         halt
@@ -551,7 +567,8 @@ elseif ($PORT[$CURRENT_SHIP] = 8)
       gosub :NATIVEPORTTRADE
       gosub :GETINFO
       if (($ORE[$CURRENT_SHIP] <> 0) or ($ORG[$CURRENT_SHIP] <> 0) or ($EQU[$CURRENT_SHIP] <> 0))
-        send "'{" $switchboard~bot_name "} - I couldn't clean the ship cargo with native haggle on. Script Halting*"
+        setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
+        gosub :switchboard~switchboard
         gosub :ENDCNSETTINGS
         gosub :CLEARADJACENT
         halt
@@ -605,7 +622,8 @@ if ($EQU[$CURRENT_SHIP] > 0)
     gosub :NATIVEPORTTRADE
     gosub :GETINFO
     if ($EQU[$CURRENT_SHIP] > 0)
-      send "'{" $switchboard~bot_name "} - I'm having problems selling my equipment to the port with native haggle. Script Halting*"
+      setvar $switchboard~message "I'm having problems selling my equipment to the port with native haggle. Script Halting*"
+      gosub :switchboard~switchboard
       gosub :ENDCNSETTINGS
       gosub :CLEARADJACENT
       halt
@@ -718,7 +736,8 @@ if ($EQU[$CURRENT_SHIP] > 0)
 
 
   if ($SELL_FAILURES[$CURRENT_SHIP] > 5)
-    send "'{" $switchboard~bot_name "} - I'm having problems selling my equipment to the port. Script Halting*"
+    setvar $switchboard~message "I'm having problems selling my equipment to the port. Script Halting*"
+    gosub :switchboard~switchboard
     gosub :ENDCNSETTINGS
     gosub :CLEARADJACENT
     halt
@@ -748,12 +767,14 @@ if ($EQU[$CURRENT_SHIP] > 0)
           send "0*"
         end
       elseif ($PORT.ORE_SELLING[$CURRENT_SHIP] > 0)
-        send "'{" $switchboard~bot_name "} - This port is selling little ore, I will upgrade a small amount.*"
+        setvar $switchboard~message "This port is selling little ore, I will upgrade a small amount.*"
+        gosub :switchboard~switchboard
         add $PORT.ORE_SELLING[$CURRENT_SHIP] 500
         setvar $DOOREUPGRADE 1
         send "0*"
       else
-        send "'{" $switchboard~bot_name "} - This port is selling 0 ore, I will upgrade a small amount.*"
+        setvar $switchboard~message "This port is selling 0 ore, I will upgrade a small amount.*"
+        gosub :switchboard~switchboard
         add $PORT.ORE_SELLING[$CURRENT_SHIP] 500
         setvar $DOOREUPGRADE 1
       end
@@ -771,12 +792,14 @@ if ($EQU[$CURRENT_SHIP] > 0)
           send "0*"
         end
       elseif ($PORT.ORG_SELLING[$CURRENT_SHIP] > 0)
-        send "'{" $switchboard~bot_name "} - This port is selling little org, I will upgrade a small amount.*"
+        setvar $switchboard~message "This port is selling little org, I will upgrade a small amount.*"
+        gosub :switchboard~switchboard
         add $PORT.ORG_SELLING[$CURRENT_SHIP] 500
         setvar $DOORGUPGRADE 1
         send "0*"
       else
-        send "'{" $switchboard~bot_name "} - This port is selling 0 org, I will upgrade a small amount.*"
+        setvar $switchboard~message "This port is selling 0 org, I will upgrade a small amount.*"
+        gosub :switchboard~switchboard
         add $PORT.ORG_SELLING[$CURRENT_SHIP] 500
         setvar $DOORGUPGRADE 1
       end
@@ -801,7 +824,8 @@ if ($EQU[$CURRENT_SHIP] > 0)
       if ($PORT.ORE_SELLING[$CURRENT_SHIP] > 0)
         send "0*"
       else
-        send "'{" $switchboard~bot_name "} - This port is selling 0 ore, I will upgrade a small amount.*"
+        setvar $switchboard~message "This port is selling 0 ore, I will upgrade a small amount.*"
+        gosub :switchboard~switchboard
         setvar $DOOREUPGRADE 1
         add $PORT.ORE_SELLING[$CURRENT_SHIP] 10
       end
@@ -810,7 +834,8 @@ if ($EQU[$CURRENT_SHIP] > 0)
       if ($PORT.ORG_SELLING[$CURRENT_SHIP] > 0)
         send "0*"
       else
-        send "'{" $switchboard~bot_name "} - This port is selling 0 org, I will upgrade a small amount.*"
+        setvar $switchboard~message "This port is selling 0 org, I will upgrade a small amount.*"
+        gosub :switchboard~switchboard
         setvar $DOORGUPGRADE 1
         add $PORT.ORG_SELLING[$CURRENT_SHIP] 10
       end
@@ -832,7 +857,8 @@ if ($EQU[$CURRENT_SHIP] > 0)
   end
   return
 else
-  send "'{" $switchboard~bot_name "} - There is no equ to sell, something is wrong*"
+  setvar $switchboard~message "There is no equ to sell, something is wrong*"
+  gosub :switchboard~switchboard
   gosub :ENDCNSETTINGS
   gosub :CLEARADJACENT
   halt
@@ -1039,18 +1065,21 @@ return
 setvar $STEAL_HOLDS $EXP
 divide $STEAL_HOLDS $STEAL_DIVISOR
 if ($STEAL_HOLDS < 10)
-  send "'{" $switchboard~bot_name "} - You need more experience to SST!!!*"
+  setvar $switchboard~message "You need more experience to SST!!!*"
+  gosub :switchboard~switchboard
   gosub :ENDCNSETTINGS
   gosub :CLEARADJACENT
   halt
 elseif ($HOLDS[$CURRENT_SHIP] < 10)
-  send "'{" $switchboard~bot_name "} - You need more cargo holds to SST!!!*"
+  setvar $switchboard~message "You need more cargo holds to SST!!!*"
+  gosub :switchboard~switchboard
   gosub :ENDCNSETTINGS
   gosub :CLEARADJACENT
   halt
 end
 if (($STEAL_HOLDS > 300) and ($JET = "y"))
-  send "'{" $switchboard~bot_name "} - We are at " $STEAL_HOLDS " holds of experience, stopping JET*"
+  setvar $switchboard~message "We are at " $STEAL_HOLDS " holds of experience, stopping JET*"
+  gosub :switchboard~switchboard
   setvar $JET ""
 end
 if ($STEAL_HOLDS > $EMP[$CURRENT_SHIP])
@@ -1121,7 +1150,8 @@ gosub :player~quikstats
 setsectorparameter $player~current_sector "FAKEBUST" TRUE
 send "  "
 send "N  N  *  *"
-send "'{" $switchboard~bot_name "} - FAKE Busted in Ship "&$CURRENT_SHIP&", need a super furb*"
+setvar $switchboard~message "FAKE Busted in Ship "&$CURRENT_SHIP&", need a super furb*"
+gosub :switchboard~switchboard
 gosub :ENDCNSETTINGS
 gosub :CLEARADJACENT
 halt
@@ -1171,19 +1201,22 @@ else
   pause
   :NOXPORTSHIP
   killalltriggers
-  send "'{" $switchboard~bot_name "} - That is not an available ship, Script Halting.*"
+  setvar $switchboard~message "That is not an available ship, Script Halting.*"
+  gosub :switchboard~switchboard
   gosub :ENDCNSETTINGS
   gosub :CLEARADJACENT
   halt
   :NOXPORTRANGE
   killalltriggers
-  send "'{" $switchboard~bot_name "} - Not enough transport range, Script Halting.*"
+  setvar $switchboard~message "Not enough transport range, Script Halting.*"
+  gosub :switchboard~switchboard
   gosub :ENDCNSETTINGS
   gosub :CLEARADJACENT
   halt
   :NOXPORTPASSWORD
   killalltriggers
-  send "'{" $switchboard~bot_name "} - Transport ship requires a password, Script Halting.*"
+  setvar $switchboard~message "Transport ship requires a password, Script Halting.*"
+  gosub :switchboard~switchboard
   gosub :ENDCNSETTINGS
   gosub :CLEARADJACENT
   halt
@@ -1353,7 +1386,8 @@ else
   setvar $SEC2VOID $player~current_sector
 end
 if (SECTOR.WARPS[$player~current_sector][1] = 0)
-  send "'{" $switchboard~bot_name "} - This sector has no warps, maybe you need to scan it first*"
+  setvar $switchboard~message "This sector has no warps, maybe you need to scan it first*"
+  gosub :switchboard~switchboard
   gosub :ENDCNSETTINGS
   gosub :CLEARADJACENT
   halt
@@ -1368,7 +1402,8 @@ else
     goto :VOIDS
   end
 
-  send "'{" $switchboard~bot_name "} - Avoids set on all adjacent sectors*"
+  setvar $switchboard~message "Avoids set on all adjacent sectors*"
+  gosub :switchboard~switchboard
   send "/"
   waitfor " Sect "
   return
@@ -1391,7 +1426,8 @@ if ($SEC1VOID > 0)
   end
 end
 
-send "'{" $switchboard~bot_name "} - Avoids cleared on all adjacent sectors*"
+setvar $switchboard~message "Avoids cleared on all adjacent sectors*"
+gosub :switchboard~switchboard
 send "/"
 waitfor " Sect "
 
@@ -1406,7 +1442,8 @@ if ($SEC2VOID > 0)
     goto :CLEARVOIDS2
   end
 
-  send "'{" $switchboard~bot_name "} - Avoids cleared on all adjacent sectors*"
+  setvar $switchboard~message "Avoids cleared on all adjacent sectors*"
+  gosub :switchboard~switchboard
   send "/"
   waitfor " Sect "
 end
@@ -1417,3 +1454,4 @@ return
 include "source\include\loadvars"
 include "source\include\help"
 include "source\include\player"
+include "source\include\switchboard.ts"

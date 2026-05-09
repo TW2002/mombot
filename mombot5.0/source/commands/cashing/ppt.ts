@@ -200,6 +200,9 @@ gosub :HELP~INITIALIZE
 		waitfor "<Computer deactivated>"
 		goSub :displayPortReport
 		setVar $tradingSector2 CURRENTSECTOR
+		setVar $portTest1 $tradingSector1
+		setVar $portTest2 $tradingSector2
+		goSub :isTradingPort
 	else
 		setVar $tradingSector1 $parm1
 		setVar $tradingSector2 CURRENTSECTOR
@@ -254,12 +257,11 @@ gosub :HELP~INITIALIZE
 			waitfor "<Computer deactivated>"
 
 		end
-		setVar $port1 PORT.CLASS[$tradingSector1]
-		setVar $port2 PORT.CLASS[$tradingSector2]
-		
+		setVar $portTest1 $tradingSector1
+		setVar $portTest2 $tradingSector2
 		goSub :isTradingPort
 		if ($portCanTrade = 0)
-			setVar $SWITCHBOARD~message "Nothing to trade with that port.*"
+			goSub :buildNoTradeMessage
 			gosub :SWITCHBOARD~switchboard
 			halt
 		end
@@ -339,96 +341,67 @@ gosub :HELP~INITIALIZE
 	getSector $tradingSector1 $sec2
 	getSector $tradingSector2 $sec1
 	
-	setVar $sec1_maxprod1 0
-	setVar $sec1_maxprod2 0
-	setVar $sec2_maxprod1 0
-	setVar $sec2_maxprod2 0
+	setVar $sec1_maxfuel 0
+	setVar $sec1_maxorg 0
+	setVar $sec1_maxequip 0
+	setVar $sec2_maxfuel 0
+	setVar $sec2_maxorg 0
+	setVar $sec2_maxequip 0
 	
 	setVar $skip_first 0
+	setPrecision 2
+	if ($tradeFuel = 1)
+		setVar $sec1_maxfuel (PORT.FUEL[$sec1.index] * (100/PORT.PERCENTFUEL[$sec1.index]))
+		setVar $sec2_maxfuel (PORT.FUEL[$sec2.index] * (100/PORT.PERCENTFUEL[$sec2.index]))
+	end
+	if ($tradeOrg = 1)
+		setVar $sec1_maxorg ($sec1.PORT.ORG * (100/PORT.PERCENTORG[$sec1.index]))
+		setVar $sec2_maxorg ($sec2.PORT.ORG * (100/PORT.PERCENTORG[$sec2.index]))
+	end
+	if ($tradeEquip = 1)
+		setVar $sec1_maxequip ($sec1.PORT.EQUIP * (100/PORT.PERCENTEQUIP[$sec1.index]))
+		setVar $sec2_maxequip ($sec2.PORT.EQUIP * (100/PORT.PERCENTEQUIP[$sec2.index]))
+	end
+	setPrecision 0
 
+	if (($tradeFuel = 0) and ($player~ORE_HOLDS > 0) and (PORT.BUYFUEL[$sec1.index] = 0))
+		send "jy"
+		waitfor "ettison Cargo"
+		waitfor "Command ["
+		gosub :player~quikstats
+		setVar $empty_holds ($PLAYER~TOTAL_HOLDS - ($player~ORE_HOLDS + $player~ORGANIC_HOLDS + $player~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
+	end
+	if (($tradeOrg = 0) and ($PLAYER~ORGANIC_HOLDS > 0) and ($sec1.PORT.BUY_ORG = "NO"))
+		send "jy"
+		waitfor "ettison Cargo"
+		waitfor "Command ["
+		gosub :player~quikstats
+		setVar $empty_holds ($PLAYER~TOTAL_HOLDS - ($player~ORE_HOLDS + $player~ORGANIC_HOLDS + $player~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
+	end
+	if (($tradeEquip = 0) and ($PLAYER~EQUIPMENT_HOLDS > 0) and ($sec1.PORT.BUY_EQUIP = "NO"))
+		send "jy"
+		waitfor "ettison Cargo"
+		waitfor "Command ["
+		gosub :player~quikstats
+		setVar $empty_holds ($PLAYER~TOTAL_HOLDS - ($player~ORE_HOLDS + $player~ORGANIC_HOLDS + $player~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
+	end
 
-
-	if ($tradingType = 1)
-		setPrecision 2
-		setVar $sec1_maxprod1 ($sec1.PORT.ORG * (100/PORT.PERCENTORG[$sec1.index]))
-		setVar $sec2_maxprod1 ($sec2.PORT.ORG * (100/PORT.PERCENTORG[$sec2.index]))
-		setVar $sec1_maxprod2 ($sec1.PORT.EQUIP * (100/PORT.PERCENTEQUIP[$sec1.index]))
-		setVar $sec2_maxprod2 ($sec2.PORT.EQUIP * (100/PORT.PERCENTEQUIP[$sec2.index]))
-		setPrecision 0
-		
-		
-		if (($player~ORE_HOLDS > 0) and (PORT.BUYFUEL[$sec1.index] = 0))
-			send "jy"
-			waitfor "ettison Cargo"
-			waitfor "Command ["
-			gosub :player~quikstats
-			setVar $empty_holds ($PLAYER~TOTAL_HOLDS - ($player~ORE_HOLDS + $player~ORGANIC_HOLDS + $player~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
+	setVar $sellableActiveHolds 0
+	if (($tradeFuel = 1) and (PORT.BUYFUEL[$sec1.index] = 1))
+		add $sellableActiveHolds $player~ORE_HOLDS
+	end
+	if (($tradeOrg = 1) and ($sec1.PORT.BUY_ORG = "YES"))
+		add $sellableActiveHolds $player~ORGANIC_HOLDS
+	end
+	if (($tradeEquip = 1) and ($sec1.PORT.BUY_EQUIP = "YES"))
+		if ($player~EQUIPMENT_HOLDS > $keepEquip)
+			setVar $equipSellable ($player~EQUIPMENT_HOLDS - $keepEquip)
+			add $sellableActiveHolds $equipSellable
 		end
-		if ($sec1.PORT.BUY_ORG = "YES")
-			#BS  - we only have fuel if the port buys it
-			if  (($player~ORGANIC_HOLDS = 0) and ($empty_holds = 0) and ($player~ORE_HOLDS = 0))
-				setVar $skip_first 1
-			end
-		else
-	
-			#SB - Means we have orgs in the holds and min equip
-			if (($player~EQUIPMENT_HOLDS <= $keepEquip) and ($empty_holds = 0) and ($player~ORE_HOLDS = 0))
-				setVar $skip_first 1
-			end
-			
-		end
-	elseif ($tradingType = 2)
-		setPrecision 2
-		setVar $sec1_maxprod1 (PORT.FUEL[$sec1.index] * (100/PORT.PERCENTFUEL[$sec1.index]))
-		setVar $sec2_maxprod1 (PORT.FUEL[$sec1.index] * (100/PORT.PERCENTFUEL[$sec2.index]))
-		setVar $sec1_maxprod2 ($sec1.PORT.EQUIP * (100/PORT.PERCENTEQUIP[$sec1.index]))
-		setVar $sec2_maxprod2 ($sec2.PORT.EQUIP * (100/PORT.PERCENTEQUIP[$sec2.index]))
-		
-		setPrecision 0
+	end
 
-		if (($PLAYER~ORGANIC_HOLDS > 0) and ($sec1.PORT.BUY_ORG = "NO"))
-			send "jy"
-			waitfor "ettison Cargo"
-			waitfor "Command ["
-			gosub :player~quikstats
-			setVar $empty_holds ($PLAYER~TOTAL_HOLDS - ($player~ORE_HOLDS + $player~ORGANIC_HOLDS + $player~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
-		end
-
-		if (PORT.BUYFUEL[$sec1.index] = 1)
-			if  (($player~ORE_HOLDS = 0) and ($empty_holds = 0) and ($player~ORGANIC_HOLDS = 0))
-				setVar $skip_first 1
-			end
-		else
-			if (($player~EQUIPMENT_HOLDS <= $keepEquip) and ($empty_holds = 0) and ($PLAYER~ORGANIC_HOLDS = 0))
-				setVar $skip_first 1
-			end
-		end
-
-	else
-		setPrecision 2
-		setVar $sec1_maxprod1 (PORT.FUEL[$sec1.index] * (100/PORT.PERCENTFUEL[$sec1.index]))
-		setVar $sec2_maxprod1 (PORT.FUEL[$sec2.index] * (100/PORT.PERCENTFUEL[$sec2.index]))
-		setVar $sec1_maxprod2 ($sec1.PORT.ORG * (100/PORT.PERCENTORG[$sec1.index]))
-		setVar $sec2_maxprod2 ($sec2.PORT.ORG * (100/PORT.PERCENTORG[$sec2.index]))
-		setPrecision 0
-
-		if (($PLAYER~EQUIPMENT_HOLDS > 0) and ($sec1.PORT.BUY_EQUIP = "NO"))
-			send "jy"
-			waitfor "ettison Cargo"
-			waitfor "Command ["
-			gosub :player~quikstats
-			setVar $empty_holds ($PLAYER~TOTAL_HOLDS - ($player~ORE_HOLDS + $player~ORGANIC_HOLDS + $player~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
-		end
-
-		if (PORT.BUYFUEL[$sec1.index] = 1)
-			if (($player~ORE_HOLDS = 0) and ($empty_holds = 0) and ($player~EQUIPMENT_HOLDS = 0))
-				setVar $skip_first 1
-			end
-		else
-			if (($PLAYER~ORGANIC_HOLDS = 0) and ($empty_holds = 0) and ($PLAYER~EQUIPMENT_HOLDS = 0))
-				setVar $skip_first 1
-			end
-		end
+	if (($sellableActiveHolds = 0) and ($empty_holds = 0))
+		setVar $skip_first 1
 	end
 
 
@@ -548,9 +521,9 @@ gosub :HELP~INITIALIZE
 
 		#Safety/Testing check
 		add $c 1
-		if ($c > 20)
-			setVar $test 0
-		end
+		#if ($c > 20)
+		#	setVar $test 0
+		#end
 
 	end
 	
@@ -562,7 +535,7 @@ halt
 :moveToSector
 	if ($twarp = 1)
 		setVar $PLAYER~warpto $moveTo
-		gosub :PLAYER~twarp	
+		gosub :MOVE~twarp	
 		if ($PLAYER~twarpSuccess = FALSE)
 			setVar $SWITCHBOARD~message "Failed to TWARP to: " & $PLAYER~warpto &  " - POTENIAL ISSUE!.*"
 			gosub :SWITCHBOARD~switchboard
@@ -632,7 +605,7 @@ halt
 		setVar $tradeGood 4
 		# $skipore = 1 - means we traded it previously and we are retrading and need to skip
 		if ($skipore = 0)
-			if (($tradingType = 2) or ($tradingType = 3) or ($twarp = 1) or ($buyore > 0))
+			if (($tradeFuel = 1) or ($twarp = 1) or ($buyore > 0))
 
 				gosub :doTrade
 			else
@@ -649,7 +622,7 @@ halt
 
 		if ($skiprest = 1)
 			gosub :noTrade
-		elseif (($tradingType = 1) or ($tradingType = 3))
+		elseif ($tradeOrg = 1)
 			gosub :doTrade
 		else
 			gosub :noTrade
@@ -661,10 +634,10 @@ halt
 		setVar $tradeGood 6
 		if ($skiprest = 1)
 			gosub :noTrade
-		elseif ($tradingType = 3)
-			gosub :noTrade
-		else
+		elseif ($tradeEquip = 1)
 			gosub :doTrade
+		else
+			gosub :noTrade
 		end
 
 	:tradeloopdone
@@ -672,8 +645,9 @@ halt
 return
 
 :getCommerceReport
-	setVar $cQuant1 0
-	setVar $cQuant2 0
+	setVar $cFuel 0
+	setVar $cOrg 0
+	setVar $cEquip 0
 	
 
 //get it
@@ -685,41 +659,77 @@ return
 	pause
 	:cr1
 		killalltriggers
-		if (($tradingType = 2) or ($tradingType = 3))
-			getWord CURRENTLINE $cQuant1 4
+		if ($tradeFuel = 1)
+			getWord CURRENTLINE $cFuel 4
 		end
 		goto :dockinglog
 	:cr2
 		killalltriggers
-		if (($tradingType = 1) or ($tradingType = 3))
-			getWord CURRENTLINE $cQuant1 3
-		end
-		if ($tradingType = 3)
-			getWord CURRENTLINE $cQuant2 3
+		if ($tradeOrg = 1)
+			getWord CURRENTLINE $cOrg 3
 		end
 		goto :dockinglog
 	:cr3
 		killalltriggers
-		if ($tradingType <> 3)
-			getWord CURRENTLINE $cQuant2 3
+		if ($tradeEquip = 1)
+			getWord CURRENTLINE $cEquip 3
 		end
 
-
-	setVar $cQuant1 ($cQuant1 - $PLAYER~TOTAL_HOLDS)
-	setVar $cQuant2 ($cQuant2 - $PLAYER~TOTAL_HOLDS)
+	if ($tradeFuel = 1)
+		setVar $cFuel ($cFuel - $PLAYER~TOTAL_HOLDS)
+	end
+	if ($tradeOrg = 1)
+		setVar $cOrg ($cOrg - $PLAYER~TOTAL_HOLDS)
+	end
+	if ($tradeEquip = 1)
+		setVar $cEquip ($cEquip - $PLAYER~TOTAL_HOLDS)
+	end
 	
 	setPrecision 2
 	if (CURRENTSECTOR = $sec1.INDEX)
-		
-		setVar $cPerc1 (($cQuant1/$sec1_maxprod1) * 100)
-		setVar $cPerc2 (($cQuant2/$sec1_maxprod2) * 100)
-		if ($cPerc1 < $tradingMinPer) or ($cPerc2 < $tradingMinPer)
+		setVar $portGoodOk 1
+		if ($tradeFuel = 1)
+			setVar $cPercFuel (($cFuel/$sec1_maxfuel) * 100)
+			if ($cPercFuel < $tradingMinPer)
+				setVar $portGoodOk 0
+			end
+		end
+		if ($tradeOrg = 1)
+			setVar $cPercOrg (($cOrg/$sec1_maxorg) * 100)
+			if ($cPercOrg < $tradingMinPer)
+				setVar $portGoodOk 0
+			end
+		end
+		if ($tradeEquip = 1)
+			setVar $cPercEquip (($cEquip/$sec1_maxequip) * 100)
+			if ($cPercEquip < $tradingMinPer)
+				setVar $portGoodOk 0
+			end
+		end
+		if ($portGoodOk = 0)
 			setVar $port1Ok 0
 		end
 	else
-		setVar $cPerc1 (($cQuant1/$sec2_maxprod1) * 100)
-		setVar $cPerc2 (($cQuant2/$sec2_maxprod2) * 100)
-		if ($cPerc1 < $tradingMinPer) or ($cPerc2 < $tradingMinPer)
+		setVar $portGoodOk 1
+		if ($tradeFuel = 1)
+			setVar $cPercFuel (($cFuel/$sec2_maxfuel) * 100)
+			if ($cPercFuel < $tradingMinPer)
+				setVar $portGoodOk 0
+			end
+		end
+		if ($tradeOrg = 1)
+			setVar $cPercOrg (($cOrg/$sec2_maxorg) * 100)
+			if ($cPercOrg < $tradingMinPer)
+				setVar $portGoodOk 0
+			end
+		end
+		if ($tradeEquip = 1)
+			setVar $cPercEquip (($cEquip/$sec2_maxequip) * 100)
+			if ($cPercEquip < $tradingMinPer)
+				setVar $portGoodOk 0
+			end
+		end
+		if ($portGoodOk = 0)
 			setVar $port2Ok 0
 		end
 	end
@@ -744,7 +754,7 @@ return
 				send $buyore "*"
 				setVar $skiprest 1
 			elseif (($currentLocation = 2) and ($buyfuel2 > 0))
-				if (($tradingType = 2) or ($tradingType = 3))
+				if ($tradeFuel = 1)
 					# Trade is SXB to BXS - buy all ore
 					send "*"	
 				else
@@ -754,7 +764,7 @@ return
 				goSub :noTrade
 				return
 			elseif (($currentLocation = 1) and ($buyfuel1 > 0))
-				if (($tradingType = 2) or ($tradingType = 3))
+				if ($tradeFuel = 1)
 					# Trade is SXB to BXS - buy all ore
 					send "*"	
 				else
@@ -766,7 +776,7 @@ return
 			end
 		else
 			// Port is Buying Ore
-			if ($tradingType = 1)
+			if ($tradeFuel = 0)
 				# port wants to buy ore - we are in a Equip-Org cycle
 				# this must be for driving home
 				goSub :noTrade
@@ -860,47 +870,38 @@ return
 
 
 :isTradingPort
-	# port1
-	# port2
+	# $portTest1 / $portTest2
 	# $portCanTrade  - result
 
+	setVar $port1 PORT.CLASS[$portTest1]
+	setVar $port2 PORT.CLASS[$portTest2]
+	setVar $tradeFuel 0
+	setVar $tradeOrg 0
+	setVar $tradeEquip 0
 	setVar $portCanTrade 0
+	setVar $tradingType 0
 
-	if (($port1 = 1) or ($port1 = 5))
-		if (($port2 = 2) or ($port2 = 4))
-			setVar $portCanTrade 1
-			setVar $tradingType 1
-		end
-	elseif (($port1 = 2) or ($port1 = 4))
-		if (($port2 = 1) or ($port2 = 5))
-			setVar $portCanTrade 1
-			setVar $tradingType 1
-		end
-	elseif (($port1 = 3) or ($port1 = 4))
-		if (($port2 = 1) or ($port2 = 6))
-			setVar $portCanTrade 1
-			setVar $tradingType 2
-		end
-	elseif (($port1 = 1) or ($port1 = 6))
-		if (($port2 = 3) or ($port2 = 4))
-			setVar $portCanTrade 1
-			setVar $tradingType 2
-		end
+	if (PORT.BUYFUEL[$portTest1] <> PORT.BUYFUEL[$portTest2])
+		setVar $tradeFuel 1
+		add $portCanTrade 1
+	end
+	if (PORT.BUYORG[$portTest1] <> PORT.BUYORG[$portTest2])
+		setVar $tradeOrg 1
+		add $portCanTrade 1
+	end
+	if (PORT.BUYEQUIP[$portTest1] <> PORT.BUYEQUIP[$portTest2])
+		setVar $tradeEquip 1
+		add $portCanTrade 1
 	end
 
-	if ($portCanTrade = 0)
-		if (($port1 = 3) or ($port1 = 5))
-			if (($port2 = 2) or ($port2 = 6))
-				setVar $portCanTrade 1
-				setVar $tradingType 3
-			end
-		elseif (($port1 = 2) or ($port1 = 6))
-			if (($port2 = 3) or ($port2 = 5))
-				setVar $portCanTrade 1
-				setVar $tradingType 3
-			end
-		end
+	if (($tradeOrg = 1) and ($tradeEquip = 1) and ($tradeFuel = 0))
+		setVar $tradingType 1
+	elseif (($tradeFuel = 1) and ($tradeEquip = 1) and ($tradeOrg = 0))
+		setVar $tradingType 2
+	elseif (($tradeFuel = 1) and ($tradeOrg = 1) and ($tradeEquip = 0))
+		setVar $tradingType 3
 	end
+	goSub :setTradeSummary
 
 return
 
@@ -915,16 +916,10 @@ return
 	# 6 - BSS
 	# 7 - SSS
 	# 8 - BBB
-	# 1/5 pair with 2/4 for org/equip
-	# 1/6 pair with 3/4 for fuel/equip
-	# 3/5 pair with 2/6 for fuel/org
-
 	# $tradingPorts - sectors you can trade with
 	# $tradingPortsDetails - details for the port report
 	# $tpi - number of prts you can trade with
-	setVar $cport PORT.CLASS[CURRENTSECTOR]
 	setVar $tradingPorts 0
-	setVar $tradingPortsType 0
 	setVar $tradingPortsDetails 0
 	setVar $tpi 0
 
@@ -936,7 +931,6 @@ return
 		# check it has warps back
 		setVar $w 1
 		setVar $warpBack 0
-		setVar $matchedPair 0
 
 		while ($w <= SECTOR.WARPCOUNT[SECTOR.WARPS[CURRENTSECTOR][$i]])
 			if (CURRENTSECTOR = SECTOR.WARPS[SECTOR.WARPS[CURRENTSECTOR][$i]][$w])
@@ -946,86 +940,16 @@ return
 		end
 		
 		if ($warpBack = 1)
-			if (($cport = 5) or ($cport = 1))
-				if ((PORT.CLASS[SECTOR.WARPS[CURRENTSECTOR][$i]] = 2) or (PORT.CLASS[SECTOR.WARPS[CURRENTSECTOR][$i]] = 4))
-					add $tpi 1
-					setVar $tradingPorts[$tpi] SECTOR.WARPS[CURRENTSECTOR][$i]
-					setVar $matchedPair 1
-					
-					setVar $portPairType 1
-					setVar $portReport $tradingPorts[$tpi]
-					setVar $portReportLine ""
-					goSub :portReportLine
-					setVar $tradingPortsDetails[$tpi] $portReportLine
-					setVar $tradingPortsType[$tpi] $portPairType
-				end
-			elseif (($cport = 2) or ($cport = 4))
-				if ((PORT.CLASS[SECTOR.WARPS[CURRENTSECTOR][$i]] = 1) or (PORT.CLASS[SECTOR.WARPS[CURRENTSECTOR][$i]] = 5))
-					add $tpi 1
-					setVar $tradingPorts[$tpi] SECTOR.WARPS[CURRENTSECTOR][$i]
-					setVar $matchedPair 1
-					
-					setVar $portPairType 1
-					setVar $portReport $tradingPorts[$tpi]
-					setVar $portReportLine ""
-					goSub :portReportLine
-					setVar $tradingPortsDetails[$tpi] $portReportLine
-					setVar $tradingPortsType[$tpi] $portPairType
-				end
-			end
-			if (($cport = 1) or ($cport = 6))
-				if ((PORT.CLASS[SECTOR.WARPS[CURRENTSECTOR][$i]] = 3) or (PORT.CLASS[SECTOR.WARPS[CURRENTSECTOR][$i]] = 4))
-					add $tpi 1
-					setVar $tradingPorts[$tpi] SECTOR.WARPS[CURRENTSECTOR][$i]
-					setVar $matchedPair 1
-					
-					setVar $portPairType 2
-					setVar $portReport $tradingPorts[$tpi]
-					setVar $portReportLine ""
-					goSub :portReportLine
-					setVar $tradingPortsDetails[$tpi] $portReportLine
-					setVar $tradingPortsType[$tpi] $portPairType
-				end
-			elseif (($cport = 3) or ($cport = 4))
-				if ((PORT.CLASS[SECTOR.WARPS[CURRENTSECTOR][$i]] = 1) or (PORT.CLASS[SECTOR.WARPS[CURRENTSECTOR][$i]] = 6))
-					add $tpi 1
-					setVar $tradingPorts[$tpi] SECTOR.WARPS[CURRENTSECTOR][$i]
-					setVar $matchedPair 1
-					
-					setVar $portPairType 2
-					setVar $portReport $tradingPorts[$tpi]
-					setVar $portReportLine ""
-					goSub :portReportLine
-					setVar $tradingPortsDetails[$tpi] $portReportLine
-					setVar $tradingPortsType[$tpi] $portPairType
-				end
-			end
-			if ($matchedPair = 0)
-				if (($cport = 3) or ($cport = 5))
-					if ((PORT.CLASS[SECTOR.WARPS[CURRENTSECTOR][$i]] = 2) or (PORT.CLASS[SECTOR.WARPS[CURRENTSECTOR][$i]] = 6))
-						add $tpi 1
-						setVar $tradingPorts[$tpi] SECTOR.WARPS[CURRENTSECTOR][$i]
-						
-						setVar $portPairType 3
-						setVar $portReport $tradingPorts[$tpi]
-						setVar $portReportLine ""
-						goSub :portReportLine
-						setVar $tradingPortsDetails[$tpi] $portReportLine
-						setVar $tradingPortsType[$tpi] $portPairType
-					end
-				elseif (($cport = 2) or ($cport = 6))
-					if ((PORT.CLASS[SECTOR.WARPS[CURRENTSECTOR][$i]] = 3) or (PORT.CLASS[SECTOR.WARPS[CURRENTSECTOR][$i]] = 5))
-						add $tpi 1
-						setVar $tradingPorts[$tpi] SECTOR.WARPS[CURRENTSECTOR][$i]
-						
-						setVar $portPairType 3
-						setVar $portReport $tradingPorts[$tpi]
-						setVar $portReportLine ""
-						goSub :portReportLine
-						setVar $tradingPortsDetails[$tpi] $portReportLine
-						setVar $tradingPortsType[$tpi] $portPairType
-					end
-				end
+			setVar $portTest1 SECTOR.WARPS[CURRENTSECTOR][$i]
+			setVar $portTest2 CURRENTSECTOR
+			gosub :isTradingPort
+			if ($portCanTrade > 0)
+				add $tpi 1
+				setVar $tradingPorts[$tpi] SECTOR.WARPS[CURRENTSECTOR][$i]
+				setVar $portReport $tradingPorts[$tpi]
+				setVar $portReportLine ""
+				gosub :portReportLine
+				setVar $tradingPortsDetails[$tpi] $portReportLine
 			end
 		else
 			echo "*############*# Sector " SECTOR.WARPS[CURRENTSECTOR][$i]  " does not warp back "
@@ -1035,7 +959,7 @@ return
 
 	:GetPort
 	if ($tpi = 0)
-		setVar $SWITCHBOARD~message "Nothing to trade here...*"
+		setVar $SWITCHBOARD~message "No adjacent two-way ports have any PPT lanes from here.*"
 		gosub :SWITCHBOARD~switchboard
 		halt
 
@@ -1069,71 +993,105 @@ return
 	end
 	
 	setVar $tradingSector1 $tradingPorts[$portOption]
-	setVar $tradingType $tradingPortsType[$portOption]
 
 	return
 
 :portReportLine
 	
-	setVar $portReportLine ""
-
-	if ($portPairType = 1)
-		setVar $outputLen 8
-		setVar $outputText PORT.ORG[$portReport]
-		gosub :padOutputLen
-		setVar $portReportLine $portReportLine & ANSI_10 & " ORG/EQU" & $outputText
-
-		setVar $outputLen 3
-		setVar $outputText PORT.PERCENTORG[$portReport]
-		gosub :padOutputLen
-		setVar $portReportLine $portReportLine & ANSI_11 & "(" & $outputText & "%) / "
-	elseif ($portPairType = 2)
-		setVar $outputLen 8
-		setVar $outputText PORT.FUEL[$portReport]
-		gosub :padOutputLen
-		setVar $portReportLine $portReportLine & ANSI_10 & " FUEL/EQU" &$outputText
-
-		setVar $outputLen 3
-		setVar $outputText PORT.PERCENTFUEL[$portReport]
-		gosub :padOutputLen
-		setVar $portReportLine $portReportLine & ANSI_11 & "(" & $outputText & "%) / "
-
-
-		setVar $outputLen 6
-		setVar $outputText PORT.EQUIP[$portReport]
-		gosub :padOutputLen
-		setVar $portReportLine $portReportLine & ANSI_10 & $outputText
-
-		setVar $outputLen 3
-		setVar $outputText PORT.PERCENTEQUIP[$portReport]
-		gosub :padOutputLen
-		setVar $portReportLine $portReportLine & ANSI_11 & "(" & $outputText & "%)"
-	else
-		setVar $outputLen 8
-		setVar $outputText PORT.FUEL[$portReport]
-		gosub :padOutputLen
-		setVar $portReportLine $portReportLine & ANSI_10 & " FUEL/ORG" &$outputText
-
-		setVar $outputLen 3
-		setVar $outputText PORT.PERCENTFUEL[$portReport]
-		gosub :padOutputLen
-		setVar $portReportLine $portReportLine & ANSI_11 & "(" & $outputText & "%) / "
-
-		setVar $outputLen 6
-		setVar $outputText PORT.ORG[$portReport]
-		gosub :padOutputLen
-		setVar $portReportLine $portReportLine & ANSI_10 & $outputText
-
-		setVar $outputLen 3
-		setVar $outputText PORT.PERCENTORG[$portReport]
-		gosub :padOutputLen
-		setVar $portReportLine $portReportLine & ANSI_11 & "(" & $outputText & "%)"
-	end
-	
 	setVar $outputLen 6
 	setVar $outputText $portReport
 	gosub :padOutputLen
-	setVar $portReportLine "*" & ANSI_11 & "      Pair(" & $tpi & "): " & ANSI_11 & $outputText & $portReportLine
+	setVar $portReportLine "*" & ANSI_11 & "      Pair(" & $tpi & "): " & ANSI_11 & $outputText & ANSI_10 & " " & $tradeSummary
+	if ($tradeFuel = 1)
+		setVar $reportGoodLabel "F"
+		setVar $reportGoodQty PORT.FUEL[$portReport]
+		setVar $reportGoodPct PORT.PERCENTFUEL[$portReport]
+		gosub :appendPortReportGood
+	end
+	if ($tradeOrg = 1)
+		setVar $reportGoodLabel "O"
+		setVar $reportGoodQty PORT.ORG[$portReport]
+		setVar $reportGoodPct PORT.PERCENTORG[$portReport]
+		gosub :appendPortReportGood
+	end
+	if ($tradeEquip = 1)
+		setVar $reportGoodLabel "E"
+		setVar $reportGoodQty PORT.EQUIP[$portReport]
+		setVar $reportGoodPct PORT.PERCENTEQUIP[$portReport]
+		gosub :appendPortReportGood
+	end
+
+return
+
+:appendPortReportGood
+
+	setVar $portReportLine $portReportLine & ANSI_11 & "  " & $reportGoodLabel & ":"
+	setVar $outputLen 8
+	setVar $outputText $reportGoodQty
+	gosub :padOutputLen
+	setVar $portReportLine $portReportLine & ANSI_10 & $outputText
+
+	setVar $outputLen 3
+	setVar $outputText $reportGoodPct
+	gosub :padOutputLen
+	setVar $portReportLine $portReportLine & ANSI_11 & "(" & $outputText & "%)"
+
+return
+
+:setTradeSummary
+
+	setVar $tradeSummary ""
+	if ($tradeFuel = 1)
+		setVar $tradeSummary "FUEL"
+	end
+	if ($tradeOrg = 1)
+		if ($tradeSummary <> "")
+			setVar $tradeSummary $tradeSummary & "/"
+		end
+		setVar $tradeSummary $tradeSummary & "ORG"
+	end
+	if ($tradeEquip = 1)
+		if ($tradeSummary <> "")
+			setVar $tradeSummary $tradeSummary & "/"
+		end
+		setVar $tradeSummary $tradeSummary & "EQU"
+	end
+
+return
+
+:buildNoTradeMessage
+
+	setVar $portClassValue PORT.CLASS[$tradingSector2]
+	gosub :portClassCode
+	setVar $portClassName1 $portClassCode
+	setVar $portClassValue PORT.CLASS[$tradingSector1]
+	gosub :portClassCode
+	setVar $portClassName2 $portClassCode
+
+	setVar $SWITCHBOARD~message "No PPT lanes between sector " & $tradingSector2 & " Class " & PORT.CLASS[$tradingSector2] & " (" & $portClassName1 & ") and sector " & $tradingSector1 & " Class " & PORT.CLASS[$tradingSector1] & " (" & $portClassName2 & ").*"
+
+return
+
+:portClassCode
+
+	setVar $portClassCode "ZZZ"
+	if ($portClassValue = 1)
+		setVar $portClassCode "BBS"
+	elseif ($portClassValue = 2)
+		setVar $portClassCode "BSB"
+	elseif ($portClassValue = 3)
+		setVar $portClassCode "SBB"
+	elseif ($portClassValue = 4)
+		setVar $portClassCode "SSB"
+	elseif ($portClassValue = 5)
+		setVar $portClassCode "SBS"
+	elseif ($portClassValue = 6)
+		setVar $portClassCode "BSS"
+	elseif ($portClassValue = 7)
+		setVar $portClassCode "SSS"
+	elseif ($portClassValue = 8)
+		setVar $portClassCode "BBB"
+	end
 
 return
 
@@ -1193,7 +1151,8 @@ return
             goto :voids
         end
 
-        send "'{" $bot_name "} - Avoids set on adjacent sectors!*"
+        setvar $switchboard~message "Avoids set on adjacent sectors!*"
+        gosub :switchboard~switchboard
         send "/"
         waitfor " Sect "    
     end
@@ -1202,7 +1161,8 @@ return
 :clearadjacentPPT
     getSector $voidSector $sectorInfo
     if ($sectorInfo.warp[1] = 0)
-        send "'{" $bot_name "} -This sector has no warps, try to scan it first!*"
+        setvar $switchboard~message "This sector has no warps, try to scan it first!*"
+        gosub :switchboard~switchboard
         halt
     else
         setVar $voidsect 0
@@ -1217,7 +1177,8 @@ return
             goto :clearvoids
         end
 
-        send "'{" $bot_name "} - Avoids cleared on adjacent sectors!*"
+        setvar $switchboard~message "Avoids cleared on adjacent sectors!*"
+        gosub :switchboard~switchboard
         send "/"
         waitfor " Sect "
     end
@@ -1232,3 +1193,4 @@ include "source\include\player"
 include "source\include\loadvars"
 include "source\include\haggle"
 include "source\include\help"
+include "source\include\switchboard.ts"

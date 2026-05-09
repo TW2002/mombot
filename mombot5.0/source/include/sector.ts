@@ -1,26 +1,264 @@
-:SECTOR~GETAUTOSECTORDATA
+# SECTOR.TS -- Gets data about the current sector and adjacent sectors, including traders, fake traders, empty ships, and beacons.
+#
+# External routines:
+# :sector~getsectordata
+# :sector~getautosectordata
+# :sector~getavoids
 
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:SECTOR~GETAVOIDS
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $SECTOR~AVOIDCOUNT 0
+setarray $SECTOR~AVOIDS SECTORS
+send "cx"
+waiton "<List Avoided Sectors>"
+:avoidloop
+settexttrigger endavoid :endavoid "Computer command"
+settextlinetrigger endavoid2 :endavoid "No Sectors are currently"
+settextlinetrigger gotavoids :gotavoids " "
+pause
+:gotavoids
+killalltriggers
+setvar $aline CURRENTLINE
+:avoidloop2
+getwordpos $aline $pos " "
+#echo "aline: " $aline "*"
+if ($pos < 1)
+	goto :avoidlast
+end
+if ($pos = 1)
+	cuttext $aline $aline2 2 999
+	setvar $aline $aline2
+	goto :avoidloop2
+end
+#echo "aline: " $aline "*"
+getword $aline $sect 1
+#echo "gotsect: " $sect "*"
+add $SECTOR~AVOIDCOUNT 1
+setvar $SECTOR~AVOIDS[$SECTOR~AVOIDCOUNT] $sect
+getwordpos $aline $pos " "
+if ($pos < 1)
+	goto :avoidlast
+end
+cuttext $aline $aline2 $pos 999
+setvar $aline $aline2
+goto :avoidloop2
+:avoidlast
+add $SECTOR~AVOIDCOUNT 1
+setvar $SECTOR~AVOIDS[$SECTOR~AVOIDCOUNT] $aline
+goto :avoidloop
+:endavoid
+killalltriggers
+send "q"
+settexttrigger sector_avoids_command :SECTOR~AVOIDS_PROMPT "Command [TL"
+settexttrigger sector_avoids_citadel :SECTOR~AVOIDS_PROMPT "Citadel command"
+pause
+:SECTOR~AVOIDS_PROMPT
+killalltriggers
+return
 
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:SECTOR~SETAVOIDS
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($SECTOR~AVOIDCOUNT = 0)
+  return
+end
+send "cv0*yyq"
+waiton "Avoided sectors Cleared."
+send "^"
+waiton ": "
+setvar $i 0
+while ($i < $SECTOR~AVOIDCOUNT)
+  add $i 1
+  send "S" & $SECTOR~AVOIDS[$i] & "*"
+end
+send "Q"
+setvar $SECTOR~AVOIDS 0
+setvar $SECTOR~AVOIDCOUNT 0
+waiton ": ENDINTERROG"
+return
 
+##################################################################################################################################
+# GETBACKDOOR routine by Shadow
+:SECTOR~GETBACKDOOR
+##################################################################################################################################
 
+loadvar $MAP~STARDOCK
+setvar $ISDOCK FALSE
+if ($SECTOR~DESTINATION = $MAP~STARDOCK)
+  if ($MAP~STARDOCK > 10) and (SECTOR.WARPCOUNT[$MAP~STARDOCK] = 6)
+    setvar $ISDOCK TRUE
+  else
+    setvar $SWITCHBOARD~MESSAGE "Unable to determine backdoor because stardock is not set correctly.*"
+    gosub :SWITCHBOARD~SWITCHBOARD
+    return
+  end
+end
 
+#setVar $validPrompts "Command Citadel"
+#gosub :player~getcurrentprompt
+#getWordPos " "&$validPrompts&" " $bot~pos $PLAYER~CURRENT_PROMPT
+#if ($bot~pos <= 0)
+#  setVar $SWITCHBOARD~message "Invalid starting prompt: ["&$PLAYER~CURRENT_PROMPT&"]. Valid prompt(s) for this command: ["&$validPrompts&"]*"
+#  gosub :SWITCHBOARD~switchboard
+#  return
+#end
 
+if ($SECTOR~DESTINATION = 0)
+  setvar $switchboard~message "Unable to determine backdoor because destination is not set.*"
+  gosub :switchboard~switchboard
+  return
+else
+  isnumber $tst $SECTOR~DESTINATION
+  if ($tst = FALSE)
+    setvar $switchboard~message "Unable to determine backdoor because destination is not a number.*"
+    gosub :switchboard~switchboard
+    return
+  end
+end
 
+#setdeafclients TRUE
 
+if (SECTOR.WARPCOUNT[$SECTOR~DESTINATION] = 0)
+  send "^I"
+  waiton ": "
+  send "Q"
+  waiton ": ENDINTERROG"
+end
 
+gosub :sector~getavoids
+
+send "^"
+setvar $i 1
+while ($i <= SECTOR.WARPCOUNT[$SECTOR~DESTINATION])
+  send "S" & SECTOR.WARPS[$SECTOR~DESTINATION][$i] & "*"
+  add $i 1
+end
+send "Q"
+waiton " ENDINTERROG"
+setVar $SECTOR~BACKDOOR 0
+if ($SECTOR~DESTINATION < 10)
+  send "cf11*" & $SECTOR~destination & "*"
+else
+  send "cf1*" & $SECTOR~destination & "*"
+end
+setTextLineTrigger void1 :void1 "The shortest path" 
+setTextLineTrigger nopath :nopath "Error - No route within "
+pause
+
+:nopath
+killAllTriggers
+send "y"
+goto :ENDGETBACKDOOR
+
+:void1
+killAllTriggers
+setTextTrigger voiddone :voiddone "Computer command [TL"
+setTextLineTrigger void2 :void2 ">" 
+pause
+:void2
+setvar $lastline CURRENTLINE
+setTextLineTrigger void2 :void2 " > "
+pause
+:voiddone
+killalltriggers
+#echo "*lastline: [" $lastline "]*"
+splittext $lastline $sects " > "
+setvar $i ($sects - 1)
+setvar $SECTOR~BACKDOOR $sects[$i]
+striptext $SECTOR~BACKDOOR " "
+striptext $SECTOR~BACKDOOR "("
+striptext $SECTOR~BACKDOOR ")"
+if ($ISDOCK = TRUE)
+  setvar $MAP~BACKDOOR $SECTOR~BACKDOOR
+  savevar $MAP~BACKDOOR
+end
+:ENDGETBACKDOOR
+send "q"
+if ($SECTOR~AVOIDCOUNT > 0)
+  gosub :sector~setavoids
+else
+  send "cv0*yyq"
+  waiton "Avoided sectors Cleared."
+end
+#setdeafclients FALSE
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:SECTOR~GETSECTORDATA
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $SECTOR~ENDLINE "_ENDLINE_"
 setvar $SECTOR~STARTLINE "_STARTLINE_"
+killalltriggers
 
+if ($SECTOR~PASSIVE = FALSE)
+  if ($PLAYER~STARTINGLOCATION = "Citadel")
+    send "s"
+  else
+    send "*"
+  end
+end
+
+setvar $SECTOR~SECTORDATA ""
+:SECTORSLINE_CIT_KILL
+setvar $SECTOR~LINE CURRENTANSILINE
+setvar $SECTOR~LINE $SECTOR~STARTLINE&$SECTOR~LINE&$SECTOR~ENDLINE
+setvar $SECTOR~SECTORDATA $SECTOR~SECTORDATA&$SECTOR~LINE
+getwordpos $SECTOR~LINE $SECTOR~POS "Sector  [33m: "
+if ($SECTOR~POS > 0)
+  gettext $SECTOR~LINE $SECTOR~TEMPSECTOR "Sector  [33m: [36m" " [0;32min"
+  setvar $PLAYER~CURRENT_SECTOR $SECTOR~TEMPSECTOR
+end
+getwordpos $SECTOR~LINE $SECTOR~POS "Warps to Sector(s) "
+getword CURRENTLINE $SECTOR~CHECK 1
+if (($SECTOR~POS > 0) and ($SECTOR~CHECK = "Warps"))
+  goto :GOTSECTORDATA
+else
+  settextlinetrigger GETLINE :SECTORSLINE_CIT_KILL
+end
+pause
+
+:GOTSECTORDATA
+killtrigger GETLINE
+settexttrigger NOMINES :NOMINES "Citadel command (?=help)"
+settexttrigger NOMINES2 :NOMINES "Command ["
+settexttrigger MINES :MINES "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
+pause
+
+:MINES
+send "* "
+:NOMINES
+killtrigger NOMINES
+killtrigger NOMINES2
+killtrigger MINES
+
+getwordpos $SECTOR~SECTORDATA $SECTOR~BEACONPOS "[0m[35mBeacon  [1;33m:"
+if ($SECTOR~BEACONPOS > 0)
+  setvar $SECTOR~CONTAINSBEACON TRUE
+else
+  setvar $SECTOR~CONTAINSBEACON FALSE
+end
+setvar $PLAYER~CURRENT_SECTOR CURRENTSECTOR
+gosub :GETTRADERS
+gosub :GETEMPTYSHIPS
+gosub :GETFAKETRADERS
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:SECTOR~GETAUTOSECTORDATA
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $SECTOR~ENDLINE "_ENDLINE_"
+setvar $SECTOR~STARTLINE "_STARTLINE_"
 setarray $SECTOR~ADJACENT 7
 setarray $SECTOR~ADJACENT_SECTOR 7
 setvar $SECTOR~ADJCOUNT 1
-
-
 killalltriggers
-:SECTOR~STARTOVER
+
+:STARTOVER
 setvar $SECTOR~SECTORDATA ""
 setvar $SECTOR~FIRST TRUE
-:SECTOR~AUTO_SECTORSLINE_CIT_KILL
+
+:AUTO_SECTORSLINE_CIT_KILL
 setvar $SECTOR~LINE CURRENTANSILINE
 setvar $SECTOR~LINE $SECTOR~STARTLINE&$SECTOR~LINE&$SECTOR~ENDLINE
 setvar $SECTOR~SECTORDATA $SECTOR~SECTORDATA&$SECTOR~LINE
@@ -47,19 +285,19 @@ else
   settextlinetrigger GETLINE :AUTO_SECTORSLINE_CIT_KILL
 end
 pause
-:SECTOR~GOTAUTOSECTORDATA
+
+:GOTAUTOSECTORDATA
 settexttrigger NOMINES :NOMINESAUTO "Citadel command (?=help)"
 settexttrigger NOMINES2 :NOMINESAUTO "Command ["
 settexttrigger MINES :MINESAUTO "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
 pause
-:SECTOR~MINESAUTO
 
+:MINESAUTO
 send "* "
-:SECTOR~NOMINESAUTO
+:NOMINESAUTO
 killtrigger NOMINES
 killtrigger NOMINES2
 killtrigger MINES
-
 setvar $SECTOR~SINDEX $SECTOR~ADJCOUNT
 while ($SECTOR~SINDEX > 0)
   setvar $SECTOR~HOLOTARGETFOUND FALSE
@@ -122,12 +360,11 @@ while ($SECTOR~SINDEX > 0)
   end
   subtract $SECTOR~SINDEX 1
 end
-:SECTOR~DONE_SCANNING
 
+:DONE_SCANNING
 return
-:SECTOR~GETEMPTYSHIPS
 
-
+:GETEMPTYSHIPS
 getwordpos $SECTOR~SECTORDATA $SECTOR~POSSHIPS "[0m[33mShips   [1m:"
 if ($SECTOR~POSSHIPS > 0)
   gettext $SECTOR~SECTORDATA $SECTOR~SHIPDATA "[0m[33mShips   [1m:" "[0m[1;32mWarps to Sector(s) [33m:"
@@ -167,9 +404,8 @@ else
   setvar $SECTOR~MYSHIPCOUNT 0
 end
 return
-:SECTOR~GETFAKETRADERS
 
-
+:GETFAKETRADERS
 setvar $SECTOR~FEDERALSINSECTOR FALSE
 setvar $SECTOR~FEDERALCOUNT 0
 getwordpos $SECTOR~SECTORDATA $SECTOR~POSSHIPS "[0m[33mShips   [1m:"
@@ -189,8 +425,8 @@ else
   gosub :GRABFAKEDATA
 end
 return
-:SECTOR~GRABFAKEDATA
 
+:GRABFAKEDATA
 setvar $SECTOR~FAKEDATA $SECTOR~STARTLINE&$SECTOR~FAKEDATA
 gettext $SECTOR~FAKEDATA $SECTOR~TEMP $SECTOR~STARTLINE $SECTOR~ENDLINE
 setvar $SECTOR~FAKETRADERCOUNT 0
@@ -233,69 +469,8 @@ while ($SECTOR~TEMP <> "")
   gettext $SECTOR~FAKEDATA $SECTOR~TEMP $SECTOR~STARTLINE $SECTOR~ENDLINE
 end
 return
-:SECTOR~GETSECTORDATA
 
-
-setvar $SECTOR~ENDLINE "_ENDLINE_"
-setvar $SECTOR~STARTLINE "_STARTLINE_"
-
-killalltriggers
-
-if ($SECTOR~PASSIVE)
-
-else
-  if ($PLAYER~STARTINGLOCATION = "Citadel")
-    send "s"
-  else
-    send "*"
-  end
-end
-setvar $SECTOR~SECTORDATA ""
-:SECTOR~SECTORSLINE_CIT_KILL
-setvar $SECTOR~LINE CURRENTANSILINE
-setvar $SECTOR~LINE $SECTOR~STARTLINE&$SECTOR~LINE&$SECTOR~ENDLINE
-setvar $SECTOR~SECTORDATA $SECTOR~SECTORDATA&$SECTOR~LINE
-getwordpos $SECTOR~LINE $SECTOR~POS "Sector  [33m: "
-if ($SECTOR~POS > 0)
-  gettext $SECTOR~LINE $SECTOR~TEMPSECTOR "Sector  [33m: [36m" " [0;32min"
-  setvar $PLAYER~CURRENT_SECTOR $SECTOR~TEMPSECTOR
-end
-getwordpos $SECTOR~LINE $SECTOR~POS "Warps to Sector(s) "
-getword CURRENTLINE $SECTOR~CHECK 1
-if (($SECTOR~POS > 0) and ($SECTOR~CHECK = "Warps"))
-  goto :GOTSECTORDATA
-else
-  settextlinetrigger GETLINE :SECTORSLINE_CIT_KILL
-end
-pause
-:SECTOR~GOTSECTORDATA
-killtrigger GETLINE
-settexttrigger NOMINES :NOMINES "Citadel command (?=help)"
-settexttrigger NOMINES2 :NOMINES "Command ["
-settexttrigger MINES :MINES "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
-pause
-:SECTOR~MINES
-
-send "* "
-:SECTOR~NOMINES
-killtrigger NOMINES
-killtrigger NOMINES2
-killtrigger MINES
-
-getwordpos $SECTOR~SECTORDATA $SECTOR~BEACONPOS "[0m[35mBeacon  [1;33m:"
-if ($SECTOR~BEACONPOS > 0)
-  setvar $SECTOR~CONTAINSBEACON TRUE
-else
-  setvar $SECTOR~CONTAINSBEACON FALSE
-end
-setvar $PLAYER~CURRENT_SECTOR CURRENTSECTOR
-gosub :GETTRADERS
-gosub :GETEMPTYSHIPS
-gosub :GETFAKETRADERS
-return
-:SECTOR~GETTRADERS
-
-
+:GETTRADERS
 getwordpos $SECTOR~SECTORDATA $SECTOR~POSTRADER "[0m[33mTraders [1m:"
 if ($SECTOR~POSTRADER > 0)
   gettext $SECTOR~SECTORDATA $SECTOR~TRADERDATA "[0m[33mTraders [1m:" "[0m[1;32mWarps to Sector(s) "
@@ -444,3 +619,4 @@ end
 return
 
 include "source\include\ship"
+include "source\include\player"

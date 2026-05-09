@@ -34,7 +34,8 @@
 	gosub :quikstats
 	setVar $startingLocation $CURRENT_PROMPT
 	if (($startingLocation <> "Citadel") AND ($startingLocation <> "Planet"))
-		send "'{" $bot_name "} - Planet Stripper must be started from Citadel or Planet prompt*"
+		setvar $switchboard~message "Planet Stripper must be started from Citadel or Planet prompt*"
+		gosub :switchboard~switchboard
 		halt
 	end
 	
@@ -115,7 +116,8 @@
 	#If planet number is not a number or the keyword 'all' then quit#
 	isNumber $test $parm1
 	if (($test = FALSE) AND ($parm1 <> "all"))
-		send "'{" $bot_name "} - Invalid planet. Please enter a planet number or 'all'.*"
+		setvar $switchboard~message "Invalid planet. Please enter a planet number or 'all'.*"
+		gosub :switchboard~switchboard
 		halt
 	end
 
@@ -200,7 +202,8 @@
         gosub :quikstats
 
 	if (SECTOR.PLANETCOUNT[$CURRENT_SECTOR] <= 1)
-		send "'{" $bot_name "} - This script must be run with at least two planets in the sector*"
+		setvar $switchboard~message "This script must be run with at least two planets in the sector*"
+		gosub :switchboard~switchboard
 		send "l "&$planet&"* "
 		if ($startingLocation = "Citadel")
 			send "c "
@@ -215,7 +218,8 @@
 		setVar $planetCount 1
 		setVar $planets[1] $parm1
 	end
-	send "'{" $bot_name "} - Planet Stripper Powering Up!  Filling Planet "&$planetToFill&"*"
+	setvar $switchboard~message "Planet Stripper Powering Up!  Filling Planet "&$planetToFill&"*"
+	gosub :switchboard~switchboard
 	
 :startFilling
 	setVar $i 1
@@ -234,7 +238,8 @@
 	:badPlanet
 		killAllTriggers
 		send "q*"
-		send "'{" $bot_name "} - Planet #"&$planetToFill&" is not valid for this sector*"
+		setvar $switchboard~message "Planet #"&$planetToFill&" is not valid for this sector*"
+		gosub :switchboard~switchboard
 		halt	
 	:goodPlanet
 		killAllTriggers
@@ -358,7 +363,8 @@
 	:badPlanet2
 		killAllTriggers
 		send "q*"
-		send "'{" $bot_name "} - Planet #"&$planetToFill&" is not valid for this sector*"
+		setvar $switchboard~message "Planet #"&$planetToFill&" is not valid for this sector*"
+		gosub :switchboard~switchboard
 		halt	
 	:goodPlanet2
 		killAllTriggers
@@ -382,7 +388,8 @@
 	gosub :endReport
 	send "/"
 	waitOn #179
-	send "'{" $bot_name "} - Planet Stripper Shutting Down*"
+	setvar $switchboard~message "Planet Stripper Shutting Down*"
+	gosub :switchboard~switchboard
 	halt
 
 :clearScreen
@@ -612,7 +619,7 @@ return
 	killAllTriggers
 	add $coloType 1
 	if ($coloType >= 4)
-		goto :halt
+		halt
 	end
 return
 
@@ -711,3 +718,4 @@ return
 	
 return
 # ==============================  END PLANET INFO SUBROUTINE  =================
+include "source\include\switchboard.ts"

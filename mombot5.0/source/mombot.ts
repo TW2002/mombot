@@ -99,6 +99,7 @@ setvar $GAME~GAME_SETTINGS_FILE $BOT~FOLDER&"/game_settings.cfg"
 setvar $BOT~BOT_USER_FILE $BOT~FOLDER&"/bot_users.lst"
 setvar $SHIP~CAP_FILE $BOT~FOLDER&"/ships.cfg"
 setvar $PLANET~PLANET_FILE $BOT~FOLDER&"/planets.cfg"
+setvar $PLANET~PLANET_PRODS_FILE $BOT~FOLDER&"/planetprods.cfg"
 setvar $BOT~SCRIPT_FILE "scripts/"&$BOT~MOMBOT_DIRECTORY&"/hotkey_scripts.cfg"
 setvar $BOT~BUST_FILE $BOT~FOLDER&"/busts.cfg"
 setvar $BOT~MCIC_FILE $BOT~FOLDER&"/planet.nego"
@@ -117,72 +118,11 @@ savevar $GAME~GAME_SETTINGS_FILE
 savevar $BOT~BOT_USER_FILE
 savevar $SHIP~CAP_FILE
 savevar $PLANET~PLANET_FILE
+savevar $PLANET~PLANET_PRODS_FILE
 savevar $BOT~SCRIPT_FILE
 savevar $BOT~BUST_FILE
 savevar $BOT~MCIC_FILE
 savevar $BOT~TIMER_FILE
-
-goto :AFTER_GAME_FOLDER_MIGRATION_HELPERS
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:MIGRATE_GAME_FOLDER
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-direxists $BOT~LEGACY_FOLDER_EXISTS $BOT~LEGACY_FOLDER
-if ($BOT~LEGACY_FOLDER_EXISTS = 0)
-  return
-end
-
-setvar $BOT~MIGRATE_FILE "bot.cfg"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "bot_users.lst"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "_ck_"&GAMENAME&".figs"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "ships.cfg"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "dbonus-ships.cfg"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "planets.cfg"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "fighters.cfg"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "fighters.cnt"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "limpets.cfg"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "limpets.cnt"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "armids.cfg"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "armids.cnt"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "game_settings.cfg"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "timer.cfg"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "busts.cfg"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "planet.nego"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "bubble.list"
-gosub :BOT~MIGRATE_GAME_FILE
-setvar $BOT~MIGRATE_FILE "No_Credits.list"
-gosub :BOT~MIGRATE_GAME_FILE
-return
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:MIGRATE_GAME_FILE
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $BOT~MIGRATE_SOURCE $BOT~LEGACY_FOLDER&"/"&$BOT~MIGRATE_FILE
-setvar $BOT~MIGRATE_DEST $BOT~FOLDER&"/"&$BOT~MIGRATE_FILE
-fileexists $BOT~MIGRATE_SOURCE_EXISTS $BOT~MIGRATE_SOURCE
-if ($BOT~MIGRATE_SOURCE_EXISTS)
-  fileexists $BOT~MIGRATE_DEST_EXISTS $BOT~MIGRATE_DEST
-  if ($BOT~MIGRATE_DEST_EXISTS = 0)
-    rename $BOT~MIGRATE_SOURCE $BOT~MIGRATE_DEST
-  end
-end
-return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :AFTER_GAME_FOLDER_MIGRATION_HELPERS

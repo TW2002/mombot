@@ -76,7 +76,8 @@ if ($DOESHELPFILEEXIST <> TRUE)
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [aggressive]  = Won't avoid big fighter groups               "
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [passive]     = Avoids hitting player fighters or mines.     "
   write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [clear]       = Clears internal list of avoided sectors.     "
-  send "'{" $BOT_NAME "} - Writing help file for this command in Help directory.*"
+  setvar $switchboard~message "Writing help file for this command in Help directory.*"
+  gosub :switchboard~switchboard
 end
 
 getword $USER_COMMAND_LINE $PARM1 1 "EMPTY"
@@ -87,7 +88,8 @@ else
   setvar $TARGETFILE $PARM1
   fileexists $TEST $TARGETFILE
   if ($TEST = FALSE)
-    send "'{" $BOT_NAME "} - Grid target file: [" $TARGETFILE "] does not exist, shutting down..*"
+    setvar $switchboard~message "Grid target file: [" $TARGETFILE "] does not exist, shutting down..*"
+    gosub :switchboard~switchboard
     halt
   else
     readtoarray $TARGETFILE $TARGETSECTORS
@@ -182,19 +184,23 @@ end
 
 
 if (($STARDOCK = 0) or ($STARDOCK = ""))
-  send "'{" $BOT_NAME "} - Stardock is not defined.  Please define stardock variable in the bot.*"
+  setvar $switchboard~message "Stardock is not defined.  Please define stardock variable in the bot.*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($ISFIGGED = "")
-  send "'{" $BOT_NAME "} - It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+  setvar $switchboard~message "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($ISARMIDED = "")
-  send "'{" $BOT_NAME "} - It appears no armid data is available.  Run an armid grid checker that uses the sector parameter MINESEC. (Try armids command)*"
+  setvar $switchboard~message "It appears no armid data is available.  Run an armid grid checker that uses the sector parameter MINESEC. (Try armids command)*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($ISLIMPED = "")
-  send "'{" $BOT_NAME "} - It appears no limpet data is available.  Run a limpet grid checker that uses the sector parameter LIMPSEC. (Try limps command)*"
+  setvar $switchboard~message "It appears no limpet data is available.  Run a limpet grid checker that uses the sector parameter LIMPSEC. (Try limps command)*"
+  gosub :switchboard~switchboard
   halt
 end
 if ($PLAYER~PHOTONS > 0)
@@ -204,7 +210,8 @@ end
 
 gosub :PLAYER~QUIKSTATS
 if ($PLAYER~CURRENT_PROMPT <> "Citadel")
-  send "'{" $BOT_NAME "} - Must start gridder from citadel prompt.*"
+  setvar $switchboard~message "Must start gridder from citadel prompt.*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -215,7 +222,8 @@ gosub :CHECKAVOIDEDSECTORS
 send "q"
 gosub :GETPLANETINFO
 send "tnl1*tnl2*tnl3*snl1*snl2*snl3*tnt1*mnt*q"
-send "'{" $BOT_NAME "} - Clearing messages for possible exit/enter later*"
+setvar $switchboard~message "Clearing messages for possible exit/enter later*"
+gosub :switchboard~switchboard
 gosub :XENTER
 gosub :XENTER
 gosub :XENTER
@@ -225,7 +233,8 @@ setvar $LIMPETAFTER $LIMPETBEFORE
 setvar $ARMIDBEFORE $PLAYER~ARMIDS
 setvar $ARMIDAFTER $ARMIDBEFORE
 
-send "'{" $BOT_NAME "} - M()M Unlimited Gridder Powering Up!*"
+setvar $switchboard~message "M()M Unlimited Gridder Powering Up!*"
+gosub :switchboard~switchboard
 waitfor "(?="
 
 setvar $HOMESEC $PLAYER~CURRENT_SECTOR
@@ -303,7 +312,8 @@ end
 getrnd $RANDOM 1 $DATABASECOUNT
 getword $DATABASE $WARPTO $RANDOM
 if ($WARPTO = 0)
-  send "'{" $BOT_NAME "} - Database Cleared - Recalculating and Restarting...*"
+  setvar $switchboard~message "Database Cleared - Recalculating and Restarting...*"
+  gosub :switchboard~switchboard
   waiton "Message sent on sub-space"
   goto :RESTART
 else
@@ -415,7 +425,8 @@ if (((($AVOIDSHIELDEDONLY = TRUE) and ($CONTAINSSHIELDEDPLANET = FALSE)) or (SEC
     send $LAND_MAC
     setvar $AVOIDEDSECTORSUGRID $AVOIDEDSECTORSUGRID&" "&$BOOMSEC&" "
     savevar $AVOIDEDSECTORSUGRID
-    send "'{" $BOT_NAME "} - Probable Enemy Limpet Detected - Sector " $BOOMSEC ".*"
+    setvar $switchboard~message "Probable Enemy Limpet Detected - Sector " $BOOMSEC ".*"
+    gosub :switchboard~switchboard
     goto :SELECT_BOOMSEC
   end
   if ((SECTOR.ANOMOLY[$BOOMSEC] = TRUE) and ($ISLIMPED = FALSE))
@@ -691,15 +702,18 @@ else
 
   end
 end
-send "'{" $BOT_NAME "} - "&$DATABASECOUNT&" target sectors found.*"
+setvar $switchboard~message ""&$DATABASECOUNT&" target sectors found.*"
+gosub :switchboard~switchboard
 if ($DATABASECOUNT <= 0)
-  send "'{" $BOT_NAME "} - Visited every sector possible. Refresh fighters and update warp data to verify..*"
+  setvar $switchboard~message "Visited every sector possible. Refresh fighters and update warp data to verify..*"
+  gosub :switchboard~switchboard
   if ($REFURB)
     gosub :ATTEMPT_REFURB
     gosub :PLAYER~QUIKSTATS
     send "p "&$HOME_SECTOR&"* y "
     gosub :PLAYER~QUIKSTATS
-    send "'{" $BOT_NAME "} - Scrubbed at dock and pwarped home..*"
+    setvar $switchboard~message "Scrubbed at dock and pwarped home..*"
+    gosub :switchboard~switchboard
   end
 
   halt
@@ -770,57 +784,12 @@ waiton "Blasting off from"
 waiton "Command [TL"
 return
 :CHECKAVOIDEDSECTORS
-:READAVOIDEDLIST
-
-settextlinetrigger GETLINE1 :GETAVOIDS
-send "cxq"
-pause
-:KEEPCOUNTINGAVOIDS
-killalltriggers
-settextlinetrigger GETLINE :GETAVOIDS
-pause
-:GETAVOIDS
-killalltriggers
-setvar $WORKINGTEXT CURRENTLINE
-getwordpos $WORKINGTEXT $POS "<Computer deactivated>"
-if ($POS > 0)
-  goto :DONEAVOIDS
+gosub :SECTOR~GETAVOIDS
+setvar $AVOID_I 0
+while ($AVOID_I < $SECTOR~AVOIDCOUNT)
+  add $AVOID_I 1
+  setvar $AVOIDEDSECTORSUGRID $AVOIDEDSECTORSUGRID&" "&$SECTOR~AVOIDS[$AVOID_I]&" "
 end
-getwordpos $WORKINGTEXT $POS "Computer"
-if ($POS > 0)
-  goto :KEEPCOUNTINGAVOIDS
-end
-if (CURRENTLINE = "")
-  goto :KEEPCOUNTINGAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "<List Avoided Sectors>"
-if ($POS > 0)
-  goto :KEEPCOUNTINGAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "No Sectors are currently being avoided."
-if ($POS > 0)
-  goto :DONEAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "Citadel"
-if ($POS > 0)
-  goto :KEEPCOUNTINGAVOIDS
-end
-setvar $WORKINGTEXT $WORKINGTEXT&" +++"
-getword $WORKINGTEXT $AVOID 1
-getwordpos $WORKINGTEXT $POS $AVOID
-
-while ($AVOID <> "+++")
-  setvar $AVOIDEDSECTORSUGRID $AVOIDEDSECTORSUGRID&" "&$AVOID&" "
-  getlength $AVOID $LENGTH
-  getlength $WORKINGTEXT $CHECKLENGTH
-  cuttext $WORKINGTEXT $WORKINGTEXT ($POS + $LENGTH) 9999
-  getword $WORKINGTEXT $AVOID 1
-  getwordpos $WORKINGTEXT $POS $AVOID
-end
-
-goto :KEEPCOUNTINGAVOIDS
-savevar $AVOIDEDSECTORSUGRID
-:DONEAVOIDS
 return
 :DELAYTRIGGER
 
@@ -844,9 +813,9 @@ gosub :PLAYER~GETCOURSE
 setvar $COURSELENGTH $PLAYER~COURSELENGTH
 setvar $INDEX 1
 while ($INDEX <= $COURSELENGTH)
-  if (($FIGHTER_GRID[$PLAYER~MOWCOURSE[$INDEX]] <= 0) and ($PLAYER~MOWCOURSE[$INDEX] <> $ORIGINALDESTINATION))
-    setvar $DESTINATION $PLAYER~MOWCOURSE[$INDEX]
-  elseif ($PLAYER~MOWCOURSE[$INDEX] <> $ORIGINALDESTINATION)
+  if (($FIGHTER_GRID[$PLAYER~COURSE[$INDEX]] <= 0) and ($PLAYER~COURSE[$INDEX] <> $ORIGINALDESTINATION))
+    setvar $DESTINATION $PLAYER~COURSE[$INDEX]
+  elseif ($PLAYER~COURSE[$INDEX] <> $ORIGINALDESTINATION)
     setvar $DESTINATION $ORIGINALDESTINATION
   end
   add $INDEX 1
@@ -893,7 +862,8 @@ if ($CASHNEEDED > $PLAYER~CREDITS)
   getword CURRENTLINE $CITADELCASH 4
   striptext $CITADELCASH ","
   if ($CITADELCASH < $CASHNEEDED)
-    send "'{"&$BOT_NAME&"} - Not enough cash for mine refurbs in treasury or on hand.*"
+    setvar $switchboard~message "Not enough cash for mine refurbs in treasury or on hand.*"
+    gosub :switchboard~switchboard
     halt
   end
   send "t f "&($CASHNEEDED - $PLAYER~CREDITS)&"* "
@@ -914,10 +884,12 @@ if (($PLAYER~ALIGNMENT < 1000) and ($WEAREADJDOCK = FALSE))
   setvar $RED_ADJ 0
   gosub :FINDJUMPSECTOR
   if ($RED_ADJ <> 0)
-    send "'{"&$BOT_NAME&"} - Jump Sector Found - Using Sector "&$RED_ADJ&"**"
+    setvar $switchboard~message "Jump Sector Found - Using Sector "&$RED_ADJ&"**"
+    gosub :switchboard~switchboard
   else
     waitfor "Command [TL="
-    send "'{"&$BOT_NAME&"} - Cannot Find Jump Sector Adjacent Dock**"
+    setvar $switchboard~message "Cannot Find Jump Sector Adjacent Dock**"
+    gosub :switchboard~switchboard
     halt
   end
 end
@@ -941,7 +913,8 @@ pause
 :NOJOY
 
 killalltriggers
-send "'{" $BOT_NAME "} - Cannot Find Path to StarDock!**"
+setvar $switchboard~message "Cannot Find Path to StarDock!**"
+gosub :switchboard~switchboard
 halt
 :CONT
 killalltriggers
@@ -958,37 +931,43 @@ else
 end
 
 if ($DIST1 <= 0)
-  send "'{" $BOT_NAME "} "&$TAGLINEB&" - Insufficient Warp Data Plotting Course to Dock**"
+  setvar $switchboard~message $TAGLINEB&" - Insufficient Warp Data Plotting Course to Dock**"
+  gosub :switchboard~switchboard
   halt
 end
 
 getdistance $DIST2 $STARDOCK $START_SECTOR
 if ($DIST2 <= 0)
-  send "'{" $BOT_NAME "} "&$TAGLINEB&" - Insufficient Warp Data Plotting Return Course From Dock**"
+  setvar $switchboard~message $TAGLINEB&" - Insufficient Warp Data Plotting Return Course From Dock**"
+  gosub :switchboard~switchboard
   halt
 end
 
 setvar $ORE_REQ (($DIST1 + $DIST2) * 3)
 
 if ($PLAYER~ORE_HOLDS < $ORE_REQ)
-  send "'{" $BOT_NAME "} - Not Enough ORE In Holds To Make Round Trip**"
+  setvar $switchboard~message "Not Enough ORE In Holds To Make Round Trip**"
+  gosub :switchboard~switchboard
   halt
 end
 
 if ($PLAYER~TWARP_TYPE = "No")
-  send "'{" $BOT_NAME "} - Must Have Twarp 1 or 2**"
+  setvar $switchboard~message "Must Have Twarp 1 or 2**"
+  gosub :switchboard~switchboard
   halt
 end
 
 if ($UNLIMITEDGAME = 0)
   gosub :TURNSREQUIRED
   if ($TURNSREQUIRED > $PLAYER~TURNS)
-    send "'{" $BOT_NAME "} - Not Enough Turns. "&ANSI_12&$TURNSREQUIRED&ANSI_15&", Required**"
+    setvar $switchboard~message "Not Enough Turns. "&ANSI_12&$TURNSREQUIRED&ANSI_15&", Required**"
+    gosub :switchboard~switchboard
     halt
   elseif ($TURNSREQUIRED <= $PLAYER~TURNS)
     setvar $TMP ($PLAYER~TURNS - $TURNSREQUIRED)
     if ($TMP <= $BOT_TURN_LIMIT)
-      send "'{" $BOT_NAME "} - Proceeding Will Leave Fewer Than "&$BOT_TURN_LIMIT&" Turns!**"
+      setvar $switchboard~message "Proceeding Will Leave Fewer Than "&$BOT_TURN_LIMIT&" Turns!**"
+      gosub :switchboard~switchboard
       halt
     end
   end
@@ -1000,7 +979,8 @@ settextlinetrigger NOSOUPFORME :NOSOUPFORME "I have no information about a port 
 pause
 :NOSOUPFORME
 killalltriggers
-send "'{" $BOT_NAME "} "&$TAGLINEB&" - StarDock appears to have been Blown Up!**"
+setvar $switchboard~message $TAGLINEB&" - StarDock appears to have been Blown Up!**"
+gosub :switchboard~switchboard
 halt
 :ITSALIVE
 killalltriggers
@@ -1018,7 +998,8 @@ end
 if ($MSG = "")
   waitfor "You leave the Galactic Bank."
 else
-  send "'{" $BOT_NAME "} - Unknown Problem Detected. Check TA!**"
+  setvar $switchboard~message "Unknown Problem Detected. Check TA!**"
+  gosub :switchboard~switchboard
   halt
 end
 gosub :PLAYER~QUIKSTATS
@@ -1029,7 +1010,8 @@ gosub :DOPURCHASES
 send "Q Q Q Q Z N M "&$START_SECTOR&"* Y  Y  Y  * L Z"&#8&$PLANET&"* p  s  s * * c *"
 gosub :PLAYER~QUIKSTATS
 if ($PLAYER~CURRENT_SECTOR = $STARDOCK)
-  send "'{" $BOT_NAME "} - Twarp Error, Should be Hiding on Dock!**"
+  setvar $switchboard~message "Twarp Error, Should be Hiding on Dock!**"
+  gosub :switchboard~switchboard
   halt
 end
 send "q tnt1* c "
@@ -1115,7 +1097,8 @@ if ($WARPTO > 0)
   end
   :TWARPDONE
   if ($MSG <> "")
-    send "'{" $BOT_NAME "} Twarp Error - "&$MSG&"**"
+    setvar $switchboard~message "Twarp Error - "&$MSG&"**"
+    gosub :switchboard~switchboard
   end
 end
 return
@@ -1249,3 +1232,5 @@ if ($_MINES <> "")
   waitfor "<Hardware Emporium>"
 end
 return
+include "source\include\switchboard.ts"
+include "source\include\sector"

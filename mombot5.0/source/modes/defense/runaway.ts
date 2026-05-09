@@ -23,19 +23,23 @@ loadVar $bot~parm8
 	gosub :player~quikstats
 	setVar $startingLocation $player~CURRENT_PROMPT
 	if ($bot~parm1 <> "on") and ($bot~parm1 <> "off")
-		send "'{" $switchboard~bot_name "} - Please use - Runaway [on/off] format*"
+		setvar $switchboard~message "Please use - Runaway [on/off] format*"
+		gosub :switchboard~switchboard
 		halt
 	end
 
 	if ($bot~parm1 = "on")
 		if ($startingLocation <> "Citadel")
-			send "'{" $switchboard~bot_name "} - Runaway must start at Citadel prompt*"
+			setvar $switchboard~message "Runaway must start at Citadel prompt*"
+			gosub :switchboard~switchboard
 			halt
 		end
-		send "'{" $switchboard~bot_name "} - Activating Runaway*"
+		setvar $switchboard~message "Activating Runaway*"
+		gosub :switchboard~switchboard
 		goto :load_runaway
 	else
-		send "'{" $switchboard~bot_name "} - Please use - Runaway [on/off] format**"
+		setvar $switchboard~message "Please use - Runaway [on/off] format**"
+		gosub :switchboard~switchboard
 		halt
 	end
 
@@ -60,7 +64,8 @@ loadVar $bot~parm8
 
 
 :set_flee_data
-	send "'{" $switchboard~bot_name "} - Runaway initiated - Mapping...*"
+	setvar $switchboard~message "Runaway initiated - Mapping...*"
+	gosub :switchboard~switchboard
 	setVar $run_count 1
 	setVar $run_database_count 0
 	setVar $sectiona SECTORS
@@ -115,7 +120,8 @@ loadVar $bot~parm8
 		add $run_count 1
 	end
 	if ($run_database_count < 20)
-		send "'{" $switchboard~bot_name "} - Runaway list too short - ReMapping...*"
+		setvar $switchboard~message "Runaway list too short - ReMapping...*"
+		gosub :switchboard~switchboard
 		waitFor "Message sent on"
 	else
 		goto :end_map
@@ -189,9 +195,11 @@ loadVar $bot~parm8
 	end
 :end_map
 	if ($doEvacuate)
-		send "'{" $switchboard~bot_name "} - Runaway/Evacuate Multiple Planets Mode - " $run_database_count " flee sectors plotted.*"
+		setvar $switchboard~message "Runaway/Evacuate Multiple Planets Mode - " $run_database_count " flee sectors plotted.*"
+		gosub :switchboard~switchboard
 	else
-		send "'{" $switchboard~bot_name "} - Runaway - " $run_database_count " flee sectors plotted.*"
+		setvar $switchboard~message "Runaway - " $run_database_count " flee sectors plotted.*"
+		gosub :switchboard~switchboard
 	end
 	goto :getsettings
 
@@ -251,7 +259,8 @@ return
 		gosub :player~quikstats
 		setVar $startingLocation $player~CURRENT_PROMPT
 		if (($startingLocation <> "Citadel") AND ($startingLocation <> "Command"))
-			send "'{" $switchboard~bot_name "} - Must start from Citadel or Command Prompt*"
+			setvar $switchboard~message "Must start from Citadel or Command Prompt*"
+			gosub :switchboard~switchboard
 			halt
 		end
 		if (($bot~parm1 = "s") and ($stardock <> 0))
@@ -268,7 +277,8 @@ return
 		end
 		setvar $target_sector $bot~parm1
 	:evac_run	
-		send "'{" $switchboard~bot_name "} - Starting Planet Evacuation to sector: "&$target_sector&".*"
+		setvar $switchboard~message "Starting Planet Evacuation to sector: "&$target_sector&".*"
+		gosub :switchboard~switchboard
 		setvar $evac_home $player~CURRENT_SECTOR
 		if ($startingLocation = "Citadel")
 			send "qq"
@@ -326,7 +336,8 @@ return
 		send "y*"
 		if ($planet~planetCount = $evac_total)
 			subtract $planet~planetCount $planet~planetSkip
-			send "'{" $switchboard~bot_name "} - Evac Complete. Moved: "&$planet~planetCount&" Skipped: "&$planet~planetSkip&". *"
+			setvar $switchboard~message "Evac Complete. Moved: "&$planet~planetCount&" Skipped: "&$planet~planetSkip&". *"
+			gosub :switchboard~switchboard
 			goto :evac_end
 		end
 		send "qq  z  n  *  m" $evac_home "*y"
@@ -342,7 +353,8 @@ return
 
 	:evac_no_warp_back
 		killtrigger warp
-		send "'{" $switchboard~bot_name "} - No Fighter at Home Sector.  Shutting down Evac.*"
+		setvar $switchboard~message "No Fighter at Home Sector.  Shutting down Evac.*"
+		gosub :switchboard~switchboard
 		goto :evac_end
 
 	:evac_no_fig
@@ -353,7 +365,8 @@ return
 			setVar $target_sector $planet~warpto
 			goto :evac_move
 		end
-		send "'{" $switchboard~bot_name "} - No Fighter at Target Sector.  Shutting down Evac.*"
+		setvar $switchboard~message "No Fighter at Target Sector.  Shutting down Evac.*"
+		gosub :switchboard~switchboard
 
 	:evac_end
 		goto :getsettings
@@ -383,3 +396,4 @@ return
 return
 
 include "source\include\planet"
+include "source\include\switchboard.ts"

@@ -715,7 +715,8 @@ return
 		getWord CURRENTLINE $planet~CITADELCash 4
 		stripText $planet~CITADELCash ","
 		if ($planet~CITADELCash < $cashNeeded)
-			send "'{" & $bot~bot_name & "} - Not enough cash for mine refurbs in treasury or on hand.*"
+			setvar $switchboard~message "Not enough cash for mine refurbs in treasury or on hand.*"
+			gosub :switchboard~switchboard
 			goto :haltSalesman
 		end
 		send "t f "&($cashNeeded-$player~credits)&"* "
@@ -735,10 +736,11 @@ return
 	if (($player~alignment < 1000) AND ($WeAreAdjDock = FALSE))
 		setVar $player~RED_adj 0
 		setvar $player~target $map~stardock
-		gosub :player~findjumpsector
+		gosub :move~findjumpsector
 		if ($player~RED_adj = 0)
 			waitfor "Command [TL="
-			send "'{" & $bot~bot_name & "} - Cannot Find Jump Sector Adjacent Dock**"
+			setvar $switchboard~message "Cannot Find Jump Sector Adjacent Dock**"
+			gosub :switchboard~switchboard
 			goto :haltSalesman
 		end
 	end
@@ -762,7 +764,8 @@ return
 
 	:noJoy
 		killAllTriggers
-		send "'{" $bot~bot_name "} - Cannot Find Path to StarDock!**"
+		setvar $switchboard~message "Cannot Find Path to StarDock!**"
+		gosub :switchboard~switchboard
 		goto :haltSalesman
 	:cont
 		killAllTriggers
@@ -779,37 +782,43 @@ return
 		end
 
 		if ($dist1 <= 0)
-			send "'{" $bot~bot_name "} " & $TagLineB & " - Insufficient Warp Data Plotting Course to Dock**"
+			setvar $switchboard~message $TagLineB & " - Insufficient Warp Data Plotting Course to Dock**"
+			gosub :switchboard~switchboard
 			goto :haltSalesman
 		end
 
 		getdistance $dist2 $map~stardock $START_SECTOR
 		if ($dist2 <= 0)
-			send "'{" $bot~bot_name "} " & $TagLineB & " - Insufficient Warp Data Plotting Return Course From Dock**"
+			setvar $switchboard~message $TagLineB & " - Insufficient Warp Data Plotting Return Course From Dock**"
+			gosub :switchboard~switchboard
 			goto :haltSalesman
 		end
 
 		setVar $ore_req (($dist1 + $dist2) * 3)
 
 		if ($player~ore_holds < $ore_req)
-			send "'{" $bot~bot_name "} - Not Enough ORE In Holds To Make Round Trip**"
+			setvar $switchboard~message "Not Enough ORE In Holds To Make Round Trip**"
+			gosub :switchboard~switchboard
 			goto :haltSalesman
 		end
 
 		if ($player~twarp_type = "No")
-			send "'{" $bot~bot_name "} - Must Have Twarp 1 or 2**"
+			setvar $switchboard~message "Must Have Twarp 1 or 2**"
+			gosub :switchboard~switchboard
 			goto :haltSalesman
 		end
 
 		if ($player~unlimitedGame = 0)
 			gosub :TurnsRequired
 			if ($player~turnsRequired > $player~turns)
-				send "'{" $bot~bot_name "} - Not Enough Turns. " & ANSI_12 & $player~turnsRequired & ANSI_15 & ", Required**"
+				setvar $switchboard~message "Not Enough Turns. " & ANSI_12 & $player~turnsRequired & ANSI_15 & ", Required**"
+				gosub :switchboard~switchboard
 				goto :haltSalesman
 			elseif ($player~turnsRequired <= $player~turns)
 				setVar $tmp ($player~turns - $player~turnsRequired)
 				if ($tmp <= $bot~bot_turn_limit)
-					send "'{" $bot~bot_name "} - Proceeding Will Leave Fewer Than " & $bot~bot_turn_limit & " Turns!**"
+					setvar $switchboard~message "Proceeding Will Leave Fewer Than " & $bot~bot_turn_limit & " Turns!**"
+					gosub :switchboard~switchboard
 					goto :haltSalesman
 				end
 			end
@@ -821,7 +830,8 @@ return
 	pause
 	:nosoupforme
 		killAllTriggers
-		send "'{" $bot~bot_name "} " & $TagLineB & " - StarDock appears to have been Blown Up!**"
+		setvar $switchboard~message $TagLineB & " - StarDock appears to have been Blown Up!**"
+		gosub :switchboard~switchboard
 		goto :haltSalesman
 	:itsalive
 		killAllTriggers
@@ -839,7 +849,8 @@ return
 		if ($msg = "")
 			waitfor "You leave the Galactic Bank."
 		else
-			send "'{" $bot~bot_name "} - Unknown Problem Detected. Check TA!**"
+			setvar $switchboard~message "Unknown Problem Detected. Check TA!**"
+			gosub :switchboard~switchboard
 			goto :haltSalesman
 		end
 		gosub :player~quikstats
@@ -850,7 +861,8 @@ return
 		send "Q Q Q Q Z N M " & $START_SECTOR & "* Y  Y  Y  * L Z" & #8 & $planet~planet & "* p  s  s * * c *"
 		gosub :player~quikstats
 		if ($player~current_sector = $map~stardock)
-			send "'{" $bot~bot_name "} - Twarp Error, Should be Hiding on Dock!**"
+			setvar $switchboard~message "Twarp Error, Should be Hiding on Dock!**"
+			gosub :switchboard~switchboard
 			goto :haltSalesman
 		end
 		send "q tnt1* c "
@@ -946,7 +958,8 @@ return
 			end
 		:twarpDone
 			if ($msg <> "")
-				send "'{" $bot~bot_name "} Twarp Error - " & $msg & "**"
+				setvar $switchboard~message "Twarp Error - " & $msg & "**"
+				gosub :switchboard~switchboard
 				setvar $paused true
 			end
 	end
@@ -1241,7 +1254,8 @@ return
 		add $i 1
 	end
 	if ($foundBoomSec = FALSE)
-		send "'{" & $bot~bot_name & "} - No FIGs found in database!**"
+		setvar $switchboard~message "No FIGs found in database!**"
+		gosub :switchboard~switchboard
 		goto :haltSalesman
 	end
 
@@ -1257,3 +1271,4 @@ include "source\include\loadvars"
 include "source\include\planethaggle"
 include "source\include\haggle"
 include "source\include\help"
+include "source\include\switchboard.ts"

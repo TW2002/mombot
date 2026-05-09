@@ -2,13 +2,15 @@ loadvar $BOT_NAME
 loadvar $PARM1
 
 if ($PARM1 = "help")
-  send "'{" $BOT_NAME "} - page - Pages bot owner*"
+  setvar $switchboard~message "page - Pages bot owner*"
+  gosub :switchboard~switchboard
   halt
 end
 :PAGE
 
 
-send "'{" $BOT_NAME "} - Paging Bot Owner...*"
+setvar $switchboard~message "Paging Bot Owner...*"
+gosub :switchboard~switchboard
 waiton "{"&$BOT_NAME&"} - Paging Bot Owner..."
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
 echo ANSI_7 ANSI_15 "-YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-*" ANSI_7
@@ -50,5 +52,7 @@ echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [
 echo ANSI_12 "-YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-  " ANSI_12 "  -YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-*" ANSI_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
 echo ANSI_14 "-YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-*" ANSI_7
-send "'{" $BOT_NAME "} - Bot Owner Paged*"
+setvar $switchboard~message "Bot Owner Paged*"
+gosub :switchboard~switchboard
 halt
+include "source\include\switchboard.ts"

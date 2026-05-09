@@ -17,7 +17,8 @@ include "source\include\planet"
 
 getsectorparameter SECTORS "FIGSEC" $ISFIGGED
 if ($ISFIGGED = "")
-  send "'{" $BOT_NAME "} - It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+  setvar $switchboard~message "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+  gosub :switchboard~switchboard
   halt
 end
 
@@ -32,7 +33,8 @@ end
 
 gosub :PLAYER~QUIKSTATS
 if ($PLAYER~CURRENT_PROMPT <> "Citadel")
-  send "'{" $BOT_NAME "} - Must must start grid check from citadel prompt.*"
+  setvar $switchboard~message "Must must start grid check from citadel prompt.*"
+  gosub :switchboard~switchboard
   halt
 end
 setvar $HOMESEC $PLAYER~CURRENT_SECTOR
@@ -60,7 +62,8 @@ if ($PLAYER~TOTAL_HOLDS > $PLAYER~ORE_HOLDS)
   goto :NO_ORE
 end
 if ($PLAYER~TWARP_TYPE = "No")
-  send "'{" $BOT_NAME "} - Must have T-warp to run this script.*"
+  setvar $switchboard~message "Must have T-warp to run this script.*"
+  gosub :switchboard~switchboard
   halt
 end
 :GETSECTOR
@@ -69,7 +72,8 @@ getrnd $RANDOM 1 $DATABASE_COUNT
 getword $DATABASE $WARPTO $RANDOM
 if ($WARPTO = 0)
 
-  send "'{" $BOT_NAME "} - Entire Grid Checked.*"
+  setvar $switchboard~message "Entire Grid Checked.*"
+  gosub :switchboard~switchboard
   halt
 end
 :CLEARIT
@@ -126,7 +130,8 @@ pause
 
 
 killalltriggers
-send "'{" $BOT_NAME "} - Planet is out of fuel.  Please refill before running again.*"
+setvar $switchboard~message "Planet is out of fuel.  Please refill before running again.*"
+gosub :switchboard~switchboard
 halt
 :TWARP_ADJ
 
@@ -190,7 +195,8 @@ setvar $DATABASE_COUNT 0
 setvar $DATABASE ""
 :RND_LOOP
 
-send "'{" $BOT_NAME "} - Calculating unexplored sectors..*"
+setvar $switchboard~message "Calculating unexplored sectors..*"
+gosub :switchboard~switchboard
 setvar $PERCFIGS 0
 while ($RND_COUNT < SECTORS)
   add $RND_COUNT 1
@@ -207,7 +213,8 @@ while ($RND_COUNT < SECTORS)
     echo ANSI_15 "" ANSI_9 " " $PERCFIGS "%" #27&"[1A   "
   end
 end
-send "'{" $BOT_NAME "} - " $DATABASE_COUNT " sectors in current grid need exploring.  Starting now.*"
+setvar $switchboard~message "" $DATABASE_COUNT " sectors in current grid need exploring.  Starting now.*"
+gosub :switchboard~switchboard
 
 return
 :ASSEMBLE_MAC
@@ -270,7 +277,8 @@ pause
 :TIMEOUT
 
 killalltriggers
-send "'{" $BOT_NAME "} - 30 seconds after save call, script halted.*"
+setvar $switchboard~message "30 seconds after save call, script halted.*"
+gosub :switchboard~switchboard
 goto :PAUSEGRIDDER
 :FRIENDLYTWARP
 
@@ -311,7 +319,8 @@ pause
 :NOCONTROL
 
 killalltriggers
-send "'{" $BOT_NAME "} - We don't control the figs in this sector!*"
+setvar $switchboard~message "We don't control the figs in this sector!*"
+gosub :switchboard~switchboard
 return
 :ABLETODEPLOY
 
@@ -398,59 +407,6 @@ return
 
 echo #27&"[2J"
 return
-:CHECKAVOIDEDSECTORS
-:READAVOIDEDLIST
-
-setarray $AVOIDEDSECTORS SECTORS
-send "cxq"
-:KEEPCOUNTINGAVOIDS
-killalltriggers
-settextlinetrigger GETLINE :GETAVOIDS
-pause
-:GETAVOIDS
-killalltriggers
-setvar $WORKINGTEXT CURRENTLINE
-getwordpos $WORKINGTEXT $POS "<Computer deactivated>"
-if ($POS > 0)
-  goto :DONEAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "Computer"
-if ($POS > 0)
-  goto :KEEPCOUNTINGAVOIDS
-end
-if (CURRENTLINE = "")
-  goto :KEEPCOUNTINGAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "<List Avoided Sectors>"
-if ($POS > 0)
-  goto :KEEPCOUNTINGAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "No Sectors are currently being avoided."
-if ($POS > 0)
-  goto :DONEAVOIDS
-end
-getwordpos $WORKINGTEXT $POS "Citadel"
-if ($POS > 0)
-  goto :DONEAVOIDS
-end
-setvar $WORKINGTEXT $WORKINGTEXT&" +++"
-getword $WORKINGTEXT $AVOID 1
-getwordpos $WORKINGTEXT $POS $AVOID
-
-
-while ($AVOID <> "+++")
-  setvar $AVOIDEDSECTORS[$AVOID] TRUE
-  getlength $AVOID $LENGTH
-  getlength $WORKINGTEXT $CHECKLENGTH
-  cuttext $WORKINGTEXT $WORKINGTEXT ($POS + $LENGTH) 9999
-  getword $WORKINGTEXT $AVOID 1
-  getwordpos $WORKINGTEXT $POS $AVOID
-end
-
-goto :KEEPCOUNTINGAVOIDS
-:DONEAVOIDS
-
-return
 :GETPLANETINFO
 gosub :PLANET~GETPLANETINFO
 setvar $PLANET $PLANET~PLANET
@@ -472,3 +428,4 @@ killtrigger CITADELSTART
 killtrigger CANNON
 
 return
+include "source\include\switchboard.ts"

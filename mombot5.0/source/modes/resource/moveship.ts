@@ -173,7 +173,7 @@
 		end
 		setVar $PLAYER~CURRENT_SECTOR $startSector
 		setVar $PLAYER~WARPTO $moveSector
-		gosub :player~twarp
+		gosub :move~twarp
 		if ($PLAYER~twarpSuccess = FALSE)
 			setVar $SWITCHBOARD~message "Can not make it to move sector, shutting down*"
 			gosub :SWITCHBOARD~switchboard
@@ -269,7 +269,7 @@
 		if ($back = TRUE)
 			gosub :PLAYER~quikstats
 			setVar $PLAYER~WARPTO $startSector
-			gosub :player~twarp
+			gosub :move~twarp
 			if ($PLAYER~twarpSuccess = FALSE)
 				setVar $SWITCHBOARD~message "Can not make it back home, shutting down*"
 				gosub :SWITCHBOARD~switchboard
@@ -301,7 +301,7 @@
 					send "w n "&$theShips[$i]&"* "
 					setVar $PLAYER~CURRENT_SECTOR $startSector
 					setVar $PLAYER~WARPTO $moveSector
-					gosub :player~twarp
+					gosub :move~twarp
 					if ($PLAYER~twarpSuccess = FALSE)
 						setVar $SWITCHBOARD~message "Can not make it to move sector, shutting down*"
 						gosub :SWITCHBOARD~switchboard
@@ -320,7 +320,7 @@
 					end
 					setVar $PLAYER~CURRENT_SECTOR $moveSector
 					setVar $PLAYER~WARPTO $startSector
-					gosub :player~twarp
+					gosub :move~twarp
 					if ($PLAYER~twarpSuccess = FALSE)
 						setVar $SWITCHBOARD~message "Can not make it back home, shutting down*"
 						gosub :SWITCHBOARD~switchboard
@@ -337,7 +337,7 @@
 				else
 					setVar $PLAYER~CURRENT_SECTOR $startSector
 					setVar $PLAYER~WARPTO $moveSector
-					gosub :player~twarp
+					gosub :move~twarp
 					if ($PLAYER~twarpSuccess = FALSE)
 						setVar $SWITCHBOARD~message "Can not make it to move sector, shutting down*"
 						gosub :SWITCHBOARD~switchboard
@@ -351,7 +351,7 @@
 					send "w n "&$theShips[$i]&"* "
 					setVar $PLAYER~CURRENT_SECTOR $moveSector
 					setVar $PLAYER~WARPTO $startSector
-					gosub :player~twarp
+					gosub :move~twarp
 					if ($PLAYER~twarpSuccess = FALSE)
 						setVar $SWITCHBOARD~message "Can not make it back home, shutting down*"
 						gosub :SWITCHBOARD~switchboard
@@ -404,4 +404,6 @@ halt
 #INCLUDES:
 include "source\include\loadvars"
 include "source\include\port"
+include "source\include\move"
 include "source\include\help"
+include "source\include\switchboard.ts"

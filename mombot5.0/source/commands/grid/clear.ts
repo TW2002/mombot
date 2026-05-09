@@ -20,3 +20,4 @@
 include "source\include\loadvars"
 include "source\include\mines"
 include "source\include\help"
+include "source\include\switchboard.ts"
