@@ -9,7 +9,7 @@
 	gosub :player~quikstats
 	setVar $startingLocation $player~CURRENT_PROMPT
 	if ($startingLocation <> "Command")
-		setvar $switchboard~message "Must start at Citadel, Planet or Command prompt*"
+		setvar $switchboard~message "Must start at Command prompt*"
 		gosub :switchboard~switchboard
 		halt
 	end

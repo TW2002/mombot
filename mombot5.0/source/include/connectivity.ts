@@ -314,6 +314,7 @@ send ".*  Q  "
 pause
 :CONNECTIVITY~BACK_IN_GAME
 killalltriggers
+gosub :CONNECTIVITY~CLEARRETURNSTATE
 
 if ($CONNECTIVITY~NEWGAME)
   gosub :CONNECTIVITY~PROMOTENEWGAMESTATE
@@ -430,6 +431,18 @@ if ($MENUS~MOWDESTINATION = "")
 end
 
 
+return
+:CONNECTIVITY~CLEARRETURNSTATE
+setvar $BOT~DO_NOT_RESUSCITATE FALSE
+savevar $BOT~DO_NOT_RESUSCITATE
+setvar $bot~do_not_resuscitate FALSE
+savevar $bot~do_not_resuscitate
+setvar $do_not_resuscitate FALSE
+savevar $do_not_resuscitate
+setvar $BOT~ISSHIPDESTROYED FALSE
+savevar $BOT~ISSHIPDESTROYED
+setvar $bot~isShipDestroyed FALSE
+savevar $bot~isShipDestroyed
 return
 :CONNECTIVITY~PROMOTENEWGAMESTATE
 if ($BOT~NEWGAMEDAY1 = TRUE)

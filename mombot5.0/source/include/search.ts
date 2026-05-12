@@ -2,6 +2,9 @@
 :SEARCH~FIND
 :SEARCH~NEAR
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+loadvar $BOT~PARM1
+loadvar $BOT~PARM2
+
 setvar $SEARCH~NEAR $BOT~PARM1
 setvar $SEARCH~SOURCE $BOT~PARM2
 

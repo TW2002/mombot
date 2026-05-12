@@ -66,7 +66,11 @@ setTextLineTrigger underattack2 :underattack "is powering up weapons systems!"
 pause
 
 :underattack
-setvar $BOT~REDALERT TRUE
+getword CURRENTLINE $BOT~WATCHER_FIRST_WORD 1
+getwordpos CURRENTLINE $BOT~WATCHER_LOG_HEADER_POS "Received from Shipboard Computers"
+if (($BOT~WATCHER_FIRST_WORD <> ">") and ($BOT~WATCHER_LOG_HEADER_POS <= 0))
+	setvar $BOT~REDALERT TRUE
+end
 killtrigger underattack1
 killtrigger underattack2
 setTextLineTrigger underattack1 :underattack "Shipboard Computers"
@@ -583,6 +587,18 @@ return
 		stripText $SHIP~SHIP_FIGHTERS_MAX ","
 		stripText $SHIP~SHIP_FIGHTERS_MAX " "
 		saveVar $SHIP~SHIP_FIGHTERS_MAX
+	else
+		getWordPos CURRENTLINE $pos "Offensive Odds:"
+		if ($pos > 0)
+			getText CURRENTLINE $SHIP~SHIP_OFFENSIVE_ODDS "Offensive Odds:" ":1"
+			stripText $SHIP~SHIP_OFFENSIVE_ODDS "."
+			stripText $SHIP~SHIP_OFFENSIVE_ODDS " "
+			saveVar $SHIP~SHIP_OFFENSIVE_ODDS
+			getText CURRENTLINE $SHIP~SHIP_FIGHTERS_MAX "Max Fighters:" "Offensive Odds:"
+			stripText $SHIP~SHIP_FIGHTERS_MAX ","
+			stripText $SHIP~SHIP_FIGHTERS_MAX " "
+			saveVar $SHIP~SHIP_FIGHTERS_MAX
+		end
 	end
 	setTextLineTrigger  getshipstats    :setShipOffensiveOdds   "Offensive Odds: "
 	pause
@@ -592,6 +608,13 @@ return
 		getText CURRENTANSILINE $SHIP~SHIP_MAX_ATTACK "[0m[32m Max Figs Per Attack[1;33m:[36m" "[0;32mTransWarp"
 		striptext $SHIP~SHIP_MAX_ATTACK " "
 		saveVar $SHIP~SHIP_MAX_ATTACK
+	else
+		getWordPos CURRENTLINE $pos "Max Figs Per Attack:"
+		if ($pos > 0)
+			getText CURRENTLINE $SHIP~SHIP_MAX_ATTACK "Max Figs Per Attack:" "TransWarp Drive:"
+			striptext $SHIP~SHIP_MAX_ATTACK " "
+			saveVar $SHIP~SHIP_MAX_ATTACK
+		end
 	end
 	setTextLineTrigger  getshipmaxfighters  :setShipMaxFigAttack    " TransWarp Drive:   "
 	pause

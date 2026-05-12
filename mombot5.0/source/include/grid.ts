@@ -1,9 +1,5 @@
 :GRID~SURROUND
 :GRID~STARTSURROUND
-
-
-
-
 if ($PLAYER~SURROUNDPASSIVE)
   send "szd"
   settextlinetrigger SURROUNDSCANDEN :DONESURROUNDSCANDEN "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] D"

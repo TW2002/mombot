@@ -172,6 +172,18 @@ if ($SHIP~POS > 0)
   striptext $SHIP~SHIP_FIGHTERS_MAX " "
   savevar $SHIP~SHIP_FIGHTERS_MAX
   savevar $SHIP~SHIP_OFFENSIVE_ODDS
+else
+  getwordpos CURRENTLINE $SHIP~POS "Offensive Odds:"
+  if ($SHIP~POS > 0)
+    gettext CURRENTLINE $SHIP~SHIP_OFFENSIVE_ODDS "Offensive Odds:" ":1"
+    striptext $SHIP~SHIP_OFFENSIVE_ODDS "."
+    striptext $SHIP~SHIP_OFFENSIVE_ODDS " "
+    gettext CURRENTLINE $SHIP~SHIP_FIGHTERS_MAX "Max Fighters:" "Offensive Odds:"
+    striptext $SHIP~SHIP_FIGHTERS_MAX ","
+    striptext $SHIP~SHIP_FIGHTERS_MAX " "
+    savevar $SHIP~SHIP_FIGHTERS_MAX
+    savevar $SHIP~SHIP_OFFENSIVE_ODDS
+  end
 end
 pause
 
@@ -192,6 +204,12 @@ getwordpos CURRENTANSILINE $SHIP~POS "[0m[32m Max Figs Per Attack[1;33m:[36m
 if ($SHIP~POS > 0)
   gettext CURRENTANSILINE $SHIP~SHIP_MAX_ATTACK "[0m[32m Max Figs Per Attack[1;33m:[36m" "[0;32mTransWarp"
   striptext $SHIP~SHIP_MAX_ATTACK " "
+else
+  getwordpos CURRENTLINE $SHIP~POS "Max Figs Per Attack:"
+  if ($SHIP~POS > 0)
+    gettext CURRENTLINE $SHIP~SHIP_MAX_ATTACK "Max Figs Per Attack:" "TransWarp Drive:"
+    striptext $SHIP~SHIP_MAX_ATTACK " "
+  end
 end
 savevar $SHIP~SHIP_MAX_ATTACK
 pause

@@ -17,7 +17,6 @@
 	setVar $HELP~HELP[9]  $HELP~TAB&"           {oc}   - Strip organic colonists"
 	setVar $HELP~HELP[10] $HELP~TAB&"           {ec}   - Strip equipment colonists"
 	setVar $HELP~HELP[11] $HELP~TAB&"          {fig}   - Strip fighters"
-	setVar $HELP~HELP[12] $HELP~TAB&"          {turbo} - Does in a macro burst"
 	setVar $HELP~HELP[13] $HELP~TAB&"     "
 	setVar $HELP~HELP[14] $HELP~TAB&"          Originally written by Mind Dagger"
 	gosub :HELP~HELPFILE
@@ -78,14 +77,15 @@
 	if ($pos > 0)
 		setVar $emptyEquipmentColonists TRUE
 	end
-	getWordPos " "&$bot~user_command_line&" " $pos " turbo "
-	if ($pos > 0)
-		setVar $turbo TRUE
-	else
-		setVar $turbo FALSE
-	end
 
 	getWordPos " "&$bot~user_command_line&" " $pos " fig "
+	if ($pos > 0)
+		setVar $emptyFighters TRUE
+	else
+		setVar $emptyFighters FALSE
+	end
+
+	getWordPos " "&$bot~user_command_line&" " $pos " figs "
 	if ($pos > 0)
 		setVar $emptyFighters TRUE
 	else

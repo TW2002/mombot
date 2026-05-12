@@ -10,14 +10,13 @@
 	setVar $HELP~HELP[2]  $HELP~TAB&" "
 	setVar $HELP~HELP[3]  $HELP~TAB&"Options:"
 	setVar $HELP~HELP[4]  $HELP~TAB&"[planet# | all]   - Planet number or all to strip all planets in sector."
-	setVar $HELP~HELP[5]  $HELP~TAB&"            {f}   - Strip fuel ore"
-	setVar $HELP~HELP[6]  $HELP~TAB&"            {o}   - Strip organics"
-	setVar $HELP~HELP[7]  $HELP~TAB&"            {e}   - Strip equipment"
-	setVar $HELP~HELP[8]  $HELP~TAB&"           {fc}   - Strip fuel ore colonists"
-	setVar $HELP~HELP[9]  $HELP~TAB&"           {oc}   - Strip organic colonists"
-	setVar $HELP~HELP[10] $HELP~TAB&"           {ec}   - Strip equipment colonists"
-	setVar $HELP~HELP[11] $HELP~TAB&"          {fig}   - Strip fighters"
-	setVar $HELP~HELP[12] $HELP~TAB&"          {turbo} - Does in a macro burst"
+	setVar $HELP~HELP[5]  $HELP~TAB&"            {f}   - Dump fuel ore"
+	setVar $HELP~HELP[6]  $HELP~TAB&"            {o}   - Dump organics"
+	setVar $HELP~HELP[7]  $HELP~TAB&"            {e}   - Dump equipment"
+	setVar $HELP~HELP[8]  $HELP~TAB&"           {fc}   - Dump fuel ore colonists"
+	setVar $HELP~HELP[9]  $HELP~TAB&"           {oc}   - Dump organic colonists"
+	setVar $HELP~HELP[10] $HELP~TAB&"           {ec}   - Dump equipment colonists"
+	setVar $HELP~HELP[11] $HELP~TAB&"          {fig}   - Dump fighters"
 	gosub :HELP~HELPFILE
 
 
@@ -85,12 +84,6 @@
 	getWordPos " "&$bot~user_command_line&" " $pos " ec "
 	if ($pos > 0)
 		setVar $emptyEquipmentColonists TRUE
-	end
-	getWordPos " "&$bot~user_command_line&" " $pos " turbo "
-	if ($pos > 0)
-		setVar $turbo TRUE
-	else
-		setVar $turbo FALSE
 	end
 
 	getWordPos " "&$bot~user_command_line&" " $pos " silent "
@@ -230,27 +223,12 @@
 		if ($get <= 0)
 			goto :done
 		end
-		setVar $macro "l j"&#8&$planet~planets[$i]&"* j"&$type&"* jt"&$category&$get&"* x q jy"
+		setVar $macro "l j"&#8&$planet~planets[$i]&"* j"&$type&"* jt"&$category&$get&"* x q jy"		
+		setTextTrigger empty         :done     "There aren't that many "
+		send $macro
+		add $loop 1
+		goto :again
 
-		
-
-		if (($turbo = FALSE) OR (($turbo = TRUE) AND ($loop >= 20)))
-			if ($turbo)
-				send "/"
-				waitOn " Sect "
-			end
-			send $macro
-			setVar $loop 0
-			setTextTrigger success       :again    "Are you sure you want to jettison all cargo? (Y/N)"				
-			setTextTrigger empty         :done     "There aren't that many "
-			pause
-		else
-			send $macro
-		end
-		if ($turbo)
-			add $loop 1
-			goto :again
-		end
 	:empty
 		send "jy "
 	:done
