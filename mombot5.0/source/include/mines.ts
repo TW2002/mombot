@@ -805,8 +805,8 @@ end
 gosub :PLAYER~QUIKSTATS
 
 if ($PLAYER~MINE_DISRUPTORS = 0)
-  setvar $switchboard~message "No Disruptors On Board!"
-  gosub :switchboard~switchboard
+  setvar $MINES~RESULT "No Disruptors On Board!"
+  #gosub :switchboard~switchboard
   return
 end
 
@@ -815,8 +815,8 @@ if ($PLAYER~CURRENT_PROMPT = "Planet")
   setvar $PLANET~NOHEADER 1
   gosub :PLANET~PLANETINFO
   if ($PLANET~PLANET = 0)
-    setvar $switchboard~message "Unable To Obtain Planet Number!"
-    gosub :switchboard~switchboard
+    setvar $MINES~RESULT "Unable To Obtain Planet Number!"
+    #gosub :switchboard~switchboard
     return
   end
   send "  Q  "
@@ -825,8 +825,8 @@ elseif ($PLAYER~CURRENT_PROMPT = "Citadel")
   setvar $PLANET~NOHEADER 1
   gosub :PLANET~PLANETINFO
   if ($PLANET~PLANET = 0)
-    setvar $switchboard~message "Unable To Obtain Planet Number!"
-    gosub :switchboard~switchboard
+    setvar $MINES~RESULT "Unable To Obtain Planet Number!"
+    #gosub :switchboard~switchboard
     return
   end
 elseif ($PLAYER~CURRENT_PROMPT = "Command")
@@ -841,7 +841,7 @@ elseif ($PLAYER~CURRENT_PROMPT = "Port")
   send " 0*  0*  0*  0*  "
   gosub :PLAYER~CURRENTPROMPT
 else
-  setvar $switchboard~message "Unknown Prompt!"
+  setvar $switchboard~message "Unknown Prompt!*"
   gosub :switchboard~switchboard
   return
 end
@@ -928,7 +928,7 @@ end
 pause
 :WHOA_WUZUP
 killalltriggers
-setvar $switchboard~message "Disr - Unknown Problem Occurred, Attempting to reach Command Prompt!"
+setvar $switchboard~message "Disr - Unknown Problem Occurred, Attempting to reach Command Prompt!*"
 gosub :switchboard~switchboard
 send "*  P D 0* 0* 0* * *** * C  Q  Q  Q  Q  Q  Z  2  2  C  Q  *  Z  *  ***  *  *  ^Q"
 waitfor ": ENDINTERROG"

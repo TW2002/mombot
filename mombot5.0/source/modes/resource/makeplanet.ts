@@ -509,11 +509,7 @@ end
 return
 
 :warp
-if (($SECTORS > 5000) or ($WARP~DEST < 600))
-  send $WARP~DEST "*"
-else
-  send $WARP~DEST
-end
+send $WARP~DEST "*"
 
 settextlinetrigger MAKEPLANET_WARP_ARRIVED :warp_arrived "You are already in that sector!"
 settextlinetrigger MAKEPLANET_WARP_BEGIN :warp_begin "<Move>"

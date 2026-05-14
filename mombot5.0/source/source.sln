@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeBot", "MakeBot\MakeBot.csproj", "{16589E34-3A54-8638-7518-1C2641A1A6F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeMSI", "MakeMSI\MakeMSI.csproj", "{93ED0F2D-7C9F-8C50-52A6-5E3FC0C950D9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{16589E34-3A54-8638-7518-1C2641A1A6F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16589E34-3A54-8638-7518-1C2641A1A6F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16589E34-3A54-8638-7518-1C2641A1A6F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16589E34-3A54-8638-7518-1C2641A1A6F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93ED0F2D-7C9F-8C50-52A6-5E3FC0C950D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93ED0F2D-7C9F-8C50-52A6-5E3FC0C950D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93ED0F2D-7C9F-8C50-52A6-5E3FC0C950D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93ED0F2D-7C9F-8C50-52A6-5E3FC0C950D9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5E933E71-58B5-4379-9F6A-AC630E68048B}
+	EndGlobalSection
+EndGlobal

@@ -38,8 +38,6 @@
 
 	setVar $PLAYER~save TRUE
 
-
-
 :merchant
 	gosub :PLAYER~quikstats
 	setVar $startingLocation $PLAYER~CURRENT_PROMPT
@@ -1189,7 +1187,7 @@ return
 			setVar $salesmanTradeBuyFuel $salesmanBuyCount
 		end
 
-		send "q "
+		send "q q "
 		gosub :nativePortTrade
 		gosub :PLAYER~quikstats
 		if (($salesmanBuyProduct = "e") and ($PLAYER~equipment_holds <= 0))
@@ -1263,7 +1261,6 @@ return
 	setVar $SWITCHBOARD~message "No FIGs found in database!*"
 	gosub :SWITCHBOARD~switchboard
 	halt
-
 
 #INCLUDES:
 include "source\include\combat"

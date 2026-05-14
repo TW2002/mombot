@@ -457,12 +457,15 @@ if ($PLAYER~RED_ADJ <> 0)
   send "* mz" $PLAYER~WARPTO "*"
 else
   if ($PLAYER~ONDOCK = 1)
-    send "q q * c u y q mz" $PLAYER~WARPTO "*"
+#    send "q q * c u y q mz" $PLAYER~WARPTO "*"
+    send "q q * mz" $PLAYER~WARPTO "*"
     setvar $PLAYER~ONDOCK 0
   elseif ($PLAYER~STARTINGLOCATION = "Citadel")
-    send "q t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
+#    send "q t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
+    send "q t*t1* q q * mz" $PLAYER~WARPTO "*"
   elseif ($PLAYER~STARTINGLOCATION = "Planet")
-    send "t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
+#    send "t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
+     send "t*t1* q q * mz" $PLAYER~WARPTO "*"
   else
     if ($PLAYER~FASTTWARP)
       send "mz" $PLAYER~WARPTO "*"
@@ -472,6 +475,11 @@ else
   end
 end
 
+# Added by Shadow 5/13/24
+settextlinetrigger TWARPSTART :TWARPSTART "That Warp Lane is not adjacent."
+pause
+
+:TWARPSTART
 settexttrigger THERE :MOVE~ADJ_WARP "You are already in that sector!"
 settextlinetrigger ADJ_WARP :MOVE~ADJ_WARP "Sector  : "&$PLAYER~WARPTO&" "
 settexttrigger LOCKING :MOVE~LOCKING "Do you want to engage the TransWarp drive?"

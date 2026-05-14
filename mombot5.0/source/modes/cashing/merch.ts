@@ -195,7 +195,7 @@ end
 loadvar $game~port_max
 setvar $HALF_PORT_MAX $game~port_max
 divide $HALF_PORT_MAX 2
-while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and ($planet~planet_equipment >= 500))
+while ($SELLINGORG and ($planet~planet_organics >= $MINIMUMFUEL)) or ($SELLINGEQUIP and ($planet~planet_equipment >= $MINIMUMFUEL))
   :INAC
   if (($player~unlimitedgame = FALSE) and ($player~turns <= $BOT_TURN_LIMIT))
     setvar $switchboard~message "Turns too low to continue.*"
@@ -223,7 +223,7 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
       goto :NOTIT
     end
     if (($DOCIM = FALSE) and ($SKIPCIM = FALSE))
-      if (($CHECKEDPORTS[$FOCUS] <> TRUE) and (((PORT.EXISTS[$FOCUS] = TRUE) and (((PORT.CLASS[$FOCUS] > 0) and (((SECTOR.EXPLORED[$FOCUS] = "YES") and ((($SELLINGORG = TRUE) and (($planet~planet_organics > 500) and PORT.BUYORG[$FOCUS])) or (($SELLINGEQUIP = TRUE) and (($planet~planet_equipment > 500) and PORT.BUYEQUIP[$FOCUS]))))))))))
+      if (($CHECKEDPORTS[$FOCUS] <> TRUE) and (((PORT.EXISTS[$FOCUS] = TRUE) and (((PORT.CLASS[$FOCUS] > 0) and (((SECTOR.EXPLORED[$FOCUS] = "YES") and ((($SELLINGORG = TRUE) and (($planet~planet_organics >= $MINIMUMFUEL) and PORT.BUYORG[$FOCUS])) or (($SELLINGEQUIP = TRUE) and (($planet~planet_equipment >= $MINIMUMFUEL) and PORT.BUYEQUIP[$FOCUS]))))))))))
         send "cr"&$FOCUS&"*q"
       end
     end
@@ -245,7 +245,7 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
 
 
     getsectorparameter $FOCUS "BUSTED" $ISBUSTED
-    if (($ISBUSTED <> TRUE) and ((($CHECKEDPORTS[$FOCUS] <> TRUE) and (((PORT.EXISTS[$FOCUS] = TRUE) and (($SELLINGORG and ((($planet~planet_organics > 500) and ((PORT.BUYORG[$FOCUS] and (((((PORT.PERCENTORG[$FOCUS] > 50) and ((PORT.ORG[$FOCUS] > $HALF_PORT_MAX) and ($SELLHALF = TRUE))) or ($SELLHALF <> TRUE)) and (PORT.ORG[$FOCUS] >= $MINIMUMFUEL)))))))) or ($SELLINGEQUIP and ((($planet~planet_equipment > 500) and ((PORT.BUYEQUIP[$FOCUS] and (((((PORT.PERCENTEQUIP[$FOCUS] > 50) and (($SELLHALF = TRUE) and (PORT.EQUIP[$FOCUS] > $HALF_PORT_MAX))) or ($SELLHALF <> TRUE)) and (PORT.EQUIP[$FOCUS] >= $MINIMUMFUEL))))))))))))))
+    if (($ISBUSTED <> TRUE) and ((($CHECKEDPORTS[$FOCUS] <> TRUE) and (((PORT.EXISTS[$FOCUS] = TRUE) and (($SELLINGORG and ((($planet~planet_organics >= $MINIMUMFUEL) and ((PORT.BUYORG[$FOCUS] and (((((PORT.PERCENTORG[$FOCUS] > 50) and ((PORT.ORG[$FOCUS] > $HALF_PORT_MAX) and ($SELLHALF = TRUE))) or ($SELLHALF <> TRUE)) and (PORT.ORG[$FOCUS] >= $MINIMUMFUEL)))))))) or ($SELLINGEQUIP and ((($planet~planet_equipment >= $MINIMUMFUEL) and ((PORT.BUYEQUIP[$FOCUS] and (((((PORT.PERCENTEQUIP[$FOCUS] > 50) and (($SELLHALF = TRUE) and (PORT.EQUIP[$FOCUS] > $HALF_PORT_MAX))) or ($SELLHALF <> TRUE)) and (PORT.EQUIP[$FOCUS] >= $MINIMUMFUEL))))))))))))))
 
       setvar $NEARFIG $FOCUS
       setvar $CHECKEDPORTS[$NEARFIG] TRUE
@@ -291,10 +291,18 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
     if (PORT.EXISTS[$NEARFIG] <> TRUE)
       goto :TRYAGAIN2
     end
+    setvar $CANSELLORGHERE FALSE
+    if ($SELLINGORG and PORT.BUYORG[$NEARFIG] and (PORT.ORG[$NEARFIG] >= $MINIMUMFUEL) and ($planet~planet_organics >= $MINIMUMFUEL))
+      setvar $CANSELLORGHERE TRUE
+    end
+    setvar $CANSELLEQUIPHERE FALSE
+    if ($SELLINGEQUIP and PORT.BUYEQUIP[$NEARFIG] and (PORT.EQUIP[$NEARFIG] >= $MINIMUMFUEL) and ($planet~planet_equipment >= $MINIMUMFUEL))
+      setvar $CANSELLEQUIPHERE TRUE
+    end
     if ($planet~planetnegotiate = TRUE)
       killalltriggers
       setvar $planethaggle~_ck_pnego_fueltosell "-1"
-      if ($SELLINGORG)
+      if ($CANSELLORGHERE)
         if ($SELLHALF)
           setvar $ORG_TO_SELL (PORT.ORG[$NEARFIG] - $HALF_PORT_MAX)
           if ($ORG_TO_SELL <= 0)
@@ -308,7 +316,7 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
       else
         setvar $planethaggle~_ck_pnego_orgtosell "-1"
       end
-      if ($SELLINGEQUIP)
+      if ($CANSELLEQUIPHERE)
         if ($SELLHALF)
           setvar $EQUIP_TO_SELL (PORT.EQUIP[$NEARFIG] - $HALF_PORT_MAX)
           if ($EQUIP_TO_SELL <= 0)
@@ -325,10 +333,10 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
       gosub :planethaggle~planetneg
       send "cr*q"
       gosub :player~quikstats
-      if ($SELLINGEQUIP and (PORT.EQUIP[$NEARFIG] > $MINIMUMFUEL))
+      if ($CANSELLEQUIPHERE and (PORT.EQUIP[$NEARFIG] >= $MINIMUMFUEL))
         setvar $CHECKEDPORTS[$NEARFIG] FALSE
       end
-      if ($SELLINGORG and (PORT.ORG[$NEARFIG] > $MINIMUMFUEL))
+      if ($CANSELLORGHERE and (PORT.ORG[$NEARFIG] >= $MINIMUMFUEL))
         setvar $CHECKEDPORTS[$NEARFIG] FALSE
       end
       if (($BUYFUEL = TRUE) and (PORT.BUYFUEL[$NEARFIG] = FALSE))
@@ -360,7 +368,7 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
       else
         setvar $player~turnstoemptyfuel (($TOTALPORTFUEL / $player~total_holds) - 1)
       end
-      if ((PORT.BUYORG[$NEARFIG] = TRUE) and $SELLINGORG)
+      if ($CANSELLORGHERE)
         if ($planet~planet_organics < $TOTALPORTORGANICS)
           setvar $player~turnssellingproduct (($planet~planet_organics / $player~total_holds) - 1)
         else
@@ -384,7 +392,7 @@ while ($SELLINGORG and ($planet~planet_organics >= 500)) or ($SELLINGEQUIP and (
           add $TOTALORGANICHOLDS $player~total_holds
         end
       end
-      if ((PORT.BUYEQUIP[$NEARFIG] = TRUE) and $SELLINGEQUIP)
+      if ($CANSELLEQUIPHERE)
         if ($planet~planet_equipment < $TOTALPORTEQUIPMENT)
           setvar $player~turnssellingproduct (($planet~planet_equipment / $player~total_holds) - 1)
         else

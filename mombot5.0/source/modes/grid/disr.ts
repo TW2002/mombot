@@ -13,25 +13,6 @@ setVar $HELP~HELP[6]  $HELP~TAB&"        {burst} - Sends only 1 Disruptor into e
 setVar $HELP~HELP[7]  $HELP~TAB&"        {nscan} - Do Not Perform Holo Scan"
 gosub :HELP~HELPFILE
 
-if ($PARM1 = "help")
-  send "'*"&$TAGLINE&" {Sector} {NScan} {Burst}*"
-  send "   *"
-  send "      {Sector}  Disrupt Mines in Adj Sector*"
-  send "      {Burst}   Sends only 1 Disruptor into each Sector*"
-  send "      {NScan}   Do Not Perform Holo Scan --otherwise it*"
-  send "                Auto Detect enemy Armids*"
-  send "   *"
-  send "         Start Prompts:*"
-  send "                         Command Prompt*"
-  send "                         Planet/Citadel Prompt(S)*"
-  send "                         Computer Prompt*"
-  send "                         StarDock Prompt*"
-  send "                         Port Prompt*"
-  send "   *"
-  send "      Default Action: Disrupt All Adjs, With Holo Scan.**"
-  halt
-end
-
 isnumber $TST $PARM1
 if ($TST = 0)
   setvar $TARGET 0
@@ -59,6 +40,14 @@ if (($TARGET < 11) and ($TARGET <> 0)) or (($MAP~STARDOCK > 11) and ($TARGET = $
    halt
   setvar $TARGET $PARM1
 end
+
+gosub :PLAYER~QUIKSTATS
+
+#if ($PLAYER~MINE_DISRUPTORS = 0)
+#  setvar $switchboard~message "No Disruptors On Board!*"
+#  gosub :switchboard~switchboard
+#  return
+#end
 
 gosub :MINES~DISRUPT
 if ($MINES~RESULT <> "")

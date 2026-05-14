@@ -163,12 +163,16 @@
 		end
 		send " q "
 
+	gosub :PLAYER~ENTER_MENU_DEAF
+
 	while ($i <= $planet~planetCount)
+		echo "*Stripping Planet " &$planet~planets[$i]&"...*"
+
 		if ($planet~planetToFill <> $planet~planets[$i])
 			gosub :PLAYER~quikstats
 			send "l "&$planet~planets[$i]&"*   "
 			gosub :PLANET~getPlanetInfo
-			send " q "
+			send " q j y "
 
 			if ($emptyFuel)
 				setVar $amount_to_strip $planet~planet_FUEL
@@ -230,6 +234,7 @@
 		end
 		add $i 1
 	end
+	gosub :PLAYER~EXIT_MENU_DEAF
 	:lookUpPlanetStats2
 		gosub :PLAYER~quikstats
 		send "l "&$planet~planetToFill&"*jm ** * "
@@ -262,13 +267,16 @@
 :stripCategory
 	setVar $PLAYER~TURNS ($PLAYER~TURNS-1)
 	setVar $count 0 
-	setVar $loop 0
+	gosub :player~quikstats
+
 	:again
+		setVar $loop 0
 		killtrigger success
 		killtrigger empty
 		killtrigger full
 		killtrigger success_colos
 		killtrigger empty_colos
+		setdeafclients 1
 
 		if ($PLAYER~TURNS <= $BOT~bot_turn_limit)
 			goto :lookUpPlanetStats2
@@ -287,33 +295,53 @@
 		if ($get <= 0)
 			goto :done
 		end
+
+		setvar $rounds ($amount_to_strip / $player~total_holds)
+		if ($rounds < 1)
+			setVar $rounds 1
+		end
+		setvar $extra ($amount_to_strip - ($player~total_holds * $rounds))
+
 		setVar $macro "l j"&#8&$planet~planets[$i]&"* j"&$type&"* jt"&$category&$get&"* x q l j"&#8&$planet~planetToFill&"* j"&$type&"* jl"&$category&"* x q "
-		send $macro
+		#send $macro
 		setVar $loop 0
-		setTextTrigger success       :again    "You load the "				
 		setTextTrigger empty         :done     "There aren't that many "
 		setTextTrigger full          :empty    "They don't have room for that many "
-		setTextTrigger success_colos :again    "The Colonists disembark to "
 		setTextTrigger empty_colos   :switch    "There isn't room on the planet"
-		pause
+
+		setvar $loop 0
+		:strip_loop
+		if ($loop >= $rounds)
+			goto :move_extra
+		end	
+		send $macro
+		add $loop 1
+		goto :strip_loop
+
+		:move_extra
+		if ($extra > 0)
+			send $macro "l j"&#8&$planet~planets[$i]&"* j"&$type&"* jt"&$category&$extra&"* x q l j"&#8&$planet~planetToFill&"* j"&$type&"* jl"&$category&"* x q "
+		end
+		goto :done
+
 		:switch
+		killalltriggers
 		add $category 1
 		if ($category >= 4)
 			goto :again			
 		else
 			send $macro
 		end
-		add $loop 1
 		goto :again
+
 	:empty
-		send "jy "
+		setdeafclients false
+		killalltriggers
+		send "q q * * j y "
 	:done
-		killtrigger success
-		killtrigger empty
-		killtrigger full
-		killtrigger success_colos
-		killtrigger empty_colos
-return
+		setdeafclients 0
+		killalltriggers
+	return
 
 
 :countPlanets
@@ -417,3 +445,4 @@ include "source\include\planet"
 include "source\include\loadvars"
 include "source\include\help"
 include "source\include\switchboard.ts"
+include "source\include\player.ts"
