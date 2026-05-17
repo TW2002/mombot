@@ -88,8 +88,6 @@
 	getWordPos " "&$bot~user_command_line&" " $pos " figs "
 	if ($pos > 0)
 		setVar $emptyFighters TRUE
-	else
-		setVar $emptyFighters FALSE
 	end
 
 	getWordPos " "&$bot~user_command_line&" " $pos " sh"
@@ -166,10 +164,9 @@
 	gosub :PLAYER~ENTER_MENU_DEAF
 
 	while ($i <= $planet~planetCount)
-		echo "*Stripping Planet " &$planet~planets[$i]&"...*"
-
 		if ($planet~planetToFill <> $planet~planets[$i])
-			gosub :PLAYER~quikstats
+			echo "*Stripping Planet " &$planet~planets[$i]&"...*"
+			#gosub :PLAYER~quikstats
 			send "l "&$planet~planets[$i]&"*   "
 			gosub :PLANET~getPlanetInfo
 			send " q j y "
@@ -234,7 +231,7 @@
 		end
 		add $i 1
 	end
-	gosub :PLAYER~EXIT_MENU_DEAF
+
 	:lookUpPlanetStats2
 		gosub :PLAYER~quikstats
 		send "l "&$planet~planetToFill&"*jm ** * "
@@ -253,6 +250,7 @@
 		killAllTriggers
 		send "q "
 		send "l "&$planet~planetToFill&"*m* * * c * "
+		gosub :PLAYER~EXIT_MENU_DEAF
 		gosub :endReport
 		send "/"
 		waitOn #179
@@ -276,7 +274,6 @@
 		killtrigger full
 		killtrigger success_colos
 		killtrigger empty_colos
-		setdeafclients 1
 
 		if ($PLAYER~TURNS <= $BOT~bot_turn_limit)
 			goto :lookUpPlanetStats2
@@ -335,11 +332,9 @@
 		goto :again
 
 	:empty
-		setdeafclients false
 		killalltriggers
 		send "q q * * j y "
 	:done
-		setdeafclients 0
 		killalltriggers
 	return
 

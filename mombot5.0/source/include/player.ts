@@ -334,9 +334,14 @@ setvar $PLAYER~TWARP_TYPE 0
 setvar $PLAYER~CORPSTRING "[0]"
 setvar $PLAYER~IGSTAT 0
 
+gosub :PLAYER~CURRENTPROMPT
+if ($PLAYER~CURRENT_PROMPT <> "Command") and ($PLAYER~CURRENT_PROMPT <> "Citadel")
+  setvar $SWITCHBOARD~MESSAGE "getinfo must be run at the Command or Citadel prompt.*"
+  gosub :SWITCHBOARD~SWITCHBOARD
+  return
+end
+
 :PLAYER~WAITONINFO
-send "?"
-waiton "<!>"
 settextlinetrigger GETINFO_CN9_CHECK_1 :GETINFO_CN9_CHECK "<N> Interdictor Control"
 settextlinetrigger GETINFO_CN9_CHECK_2 :GETINFO_CN9_CHECK "<N> Move to NavPoint"
 settextlinetrigger GETTRADERNAME :GETTRADERNAME "Trader Name    :"
@@ -946,52 +951,6 @@ else
 end
 cuttext $PLAYER~INPUT $post ($pos + 6) 999
 setvar $PLAYER~INPUT ($pre & $post)
-return
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~VOIDADJACENT
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-getsector $PLAYER~CURRENT_SECTOR $PLAYER~SECTORINFO
-if ($PLAYER~SECTORINFO.WARP[1] = 0)
-  send "'This sector has no warps, maybe you need to scan it first*"
-  halt
-else
-  setvar $PLAYER~VOIDSECT 0
-  :PLAYER~VOIDS
-  add $PLAYER~VOIDSECT 1
-  if ($PLAYER~VOIDSECT < 7)
-    if ($PLAYER~SECTORINFO.WARP[$PLAYER~VOIDSECT] <> 0)
-      send "CV"&$PLAYER~SECTORINFO.WARP[$PLAYER~VOIDSECT]&"*Q"
-    end
-    goto :VOIDS
-  end
-
-  send "/"
-  waiton " Sect "
-end
-return
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~CLEARVOIDADJACENT
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-getsector $PLAYER~CURRENT_SECTOR $PLAYER~SECTORINFO
-if ($PLAYER~SECTORINFO.WARP[1] = 0)
-  send "'This sector has no warps, maybe you need to scan it first*"
-  halt
-else
-  setvar $PLAYER~VOIDSECT 0
-  :PLAYER~CLEARVOIDS
-  add $PLAYER~VOIDSECT 1
-  if ($PLAYER~VOIDSECT < 7)
-    if ($PLAYER~SECTORINFO.WARP[$PLAYER~VOIDSECT] <> 0)
-      send "CV0*YN"&$PLAYER~SECTORINFO.WARP[$PLAYER~VOIDSECT]&"*Q"
-    end
-    goto :CLEARVOIDS
-  end
-
-  send "/"
-  waiton " Sect "
-end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

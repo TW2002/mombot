@@ -15,11 +15,11 @@
 	loadVar $game~LIMPET_REMOVAL_COST
 
 
-	setVar $HELP~HELP[1]  $HELP~TAB&"Visits all ports in grid and buys fuel"
-	setVar $HELP~HELP[2]  $HELP~TAB&"and sells/buys organics and equipment."
+	setVar $HELP~HELP[1]  $HELP~TAB&"Visits all ports in grid and trades product."
+	setVar $HELP~HELP[2]  $HELP~TAB&"Buys/sells organics and equipment; fuel is optional."
 	setVar $HELP~HELP[3]  $HELP~TAB&" "
 	setVar $HELP~HELP[4]  $HELP~TAB&"salesman [min port product] ({neg}otiate OR {hold}byhold)"
-	setVar $HELP~HELP[5]  $HELP~TAB&"{docim} {upgradefuel}"
+	setVar $HELP~HELP[5]  $HELP~TAB&"{docim} {skipcim} {upgradefuel} {buyfuel}"
 	setVar $HELP~HELP[6]  $HELP~TAB&"         "
 	setVar $HELP~HELP[7]  $HELP~TAB&"Options: "
 	setVar $HELP~HELP[8]  $HELP~TAB&"   {neg/hold}    Determines planet negotiate or hold selling"
@@ -27,10 +27,12 @@
 	setVar $HELP~HELP[10] $HELP~TAB&"   {upgradefuel} Upgrades fuel ports selling fuel"
 	setVar $HELP~HELP[11] $HELP~TAB&"     {haggle}    Uses native haggle for trading"
 	setVar $HELP~HELP[12] $HELP~TAB&"   {nohaggle}    Doesn't haggle when buying product"
-	setVar $HELP~HELP[13] $HELP~TAB&"   {sellfuel}    Sells fuel during travels"
-	setVar $HELP~HELP[14] $HELP~TAB&"       {grid}    Surround grid as you go"
-	setVar $HELP~HELP[15] $HELP~TAB&"        {rob}    Rob ports after buying down"
-	setVar $HELP~HELP[16] $HELP~TAB&"    {upgrade}    Slowly upgrade each port as it goes"
+	setVar $HELP~HELP[13] $HELP~TAB&"    {buyfuel}    Buys fuel during travels"
+	setVar $HELP~HELP[14] $HELP~TAB&"   {sellfuel}    Sells fuel during travels"
+	setVar $HELP~HELP[15] $HELP~TAB&"       {grid}    Surround grid as you go"
+	setVar $HELP~HELP[16] $HELP~TAB&"        {rob}    Rob ports after buying down"
+	setVar $HELP~HELP[17] $HELP~TAB&"    {upgrade}    Slowly upgrade each port as it goes"
+	setVar $HELP~HELP[18] $HELP~TAB&"    {skipcim}    Trusts database port data; skips remote port checks"
 	gosub :HELP~HELPFILE
 
 	setvar $SWITCHBOARD~MESSAGE "Traveling Salesman starting up!*"
@@ -47,13 +49,19 @@
  		halt
 	end
 
-	setVar $buyFuel TRUE
+	setVar $buyFuel FALSE
 
 	getWordPos $bot~user_command_line $pos "docim"
 	if ($pos > 0)
 		setVar $docim TRUE
 	else
 		setVar $docim FALSE
+	end
+	getWordPos $bot~user_command_line $pos "skipcim"
+	if ($pos > 0)
+		setVar $skipcim TRUE
+	else
+		setVar $skipcim FALSE
 	end
 	getWordPos $bot~user_command_line $pos "grid"
 	if ($pos > 0)
@@ -92,6 +100,13 @@
 		setVar $upgrade_fuel TRUE
 	else
 		setVar $upgrade_fuel FALSE
+	end
+
+	getWordPos " "&$bot~user_command_line&" " $pos " buyfuel "
+	if ($pos > 0)
+		setVar $buyFuel TRUE
+	else
+		setVar $buyFuel FALSE
 	end
 
 	getWordPos $bot~user_command_line $pos "sellfuel"
@@ -188,21 +203,40 @@
 		setArray $checked SECTORS
 		setVar $que[1] $PLAYER~CURRENT_SECTOR
 		setVar $checked[$PLAYER~CURRENT_SECTOR] 1
+
+		setVar $bestMcicSector 0
+		setVar $bestMcicScore 49
+		setVar $focus 1
+		while ($focus <= SECTORS)
+			gosub :checkSalesmanPort
+			if (($salesmanGoodPort = TRUE) and ($salesmanMcicScore > $bestMcicScore))
+				setVar $bestMcicScore $salesmanMcicScore
+				setVar $bestMcicSector $focus
+			end
+			add $focus 1
+		end
+		if ($bestMcicSector > 0)
+			setVar $NearFig $bestMcicSector
+			setVar $checkedPorts[$NearFig] TRUE
+			goto :continueOn2
+		end
+
 		:tryAgain2
 		while ($bottom <= $top)
 			# Now, pull out the next sector in the que, and make it our focus
 			setVar $focus $que[$bottom]
-			if ($docim = FALSE)
-				if (($checkedPorts[$focus] <> TRUE) AND (PORT.EXISTS[$focus] = TRUE) AND (PORT.CLASS[$focus] > 0) AND (SECTOR.EXPLORED[$focus] = "YES"))
-					send "cr"&$focus&"*"
-					waiton "Computer command ["
-					send "q "
-					gosub :PLAYER~quikstats
-				end
-			end
+			#if (($docim = FALSE) and ($skipcim = FALSE))
+			#	if (($checkedPorts[$focus] <> TRUE) AND (PORT.EXISTS[$focus] = TRUE) AND (PORT.CLASS[$focus] > 0) AND (SECTOR.EXPLORED[$focus] = "YES"))
+			#		send "cr"&$focus&"*"
+			#		waiton "Computer command ["
+			#		send "q "
+			#		gosub :PLAYER~quikstats
+			#	end
+			#end
 			getSectorParameter $focus "BUSTED" $isBusted
 			# If this sector is our xxB, we're done!
-			if (($checkedPorts[$focus] <> TRUE) AND (PORT.EXISTS[$focus] = TRUE) AND (PORT.CLASS[$focus] > 0) AND ((PORT.FUEL[$focus] >= $minimumFuel) OR (PORT.ORG[$focus] >= $minimumFuel) OR (PORT.EQUIP[$focus] >= $minimumFuel)) AND ($isBusted <> TRUE))
+			gosub :checkSalesmanPort
+			if ($salesmanGoodPort = TRUE)
 				# fig found 0 hops
 				setVar $NearFig $focus
 				setVar $checkedPorts[$NearFig] TRUE
@@ -250,22 +284,26 @@
 				waitOn "Planet command (?"
 				gosub :PLANET~getPlanetInfo
 				send "c"
-				if (((PORT.BUYFUEL[$player~current_sector] = FALSE)) and ($planet~planetfuel < ($planet~planetfuelmax/2)))
-					setVar $total_creds_needed (300*100+50000)
+					if (($upgrade_fuel = TRUE) and (PORT.BUYFUEL[$player~current_sector] = FALSE) and ($planet~planetfuel < ($planet~planetfuelmax / 2)) and (PORT.FUEL[$player~current_sector] < $game~port_max))
+							setVar $total_creds_needed (300*100+50000)
 
-					if (($total_creds_needed > $PLAYER~CREDITS) and (($player~credits+$planet~CITADEL_CREDITS) > $total_creds_needed))
-						setVar $cashonhand $planet~CITADEL_CREDITS
-						add $cashonhand $PLAYER~CREDITS
-						if ($cashonhand > $total_creds_needed)
-						        send "T T " & $PLAYER~CREDITS & "* "
-				        		send "T F " & $total_creds_needed & "* "
-				        		setVar $PLAYER~CREDITS $total_creds_needed
-		    				end
+							if (($total_creds_needed > $PLAYER~CREDITS) and (($player~credits+$planet~CITADEL_CREDITS) > $total_creds_needed))
+								setVar $cashonhand $planet~CITADEL_CREDITS
+								add $cashonhand $PLAYER~CREDITS
+								if ($cashonhand > $total_creds_needed)
+									send "T T " & $PLAYER~CREDITS & "* "
+									send "T F " & $total_creds_needed & "* "
+									setVar $PLAYER~CREDITS $total_creds_needed
+								end
+							end
+						setVar $salesmanFuelUpgradeAmount ($game~port_max - PORT.FUEL[$player~current_sector])
+						if ($salesmanFuelUpgradeAmount > 100)
+							setVar $salesmanFuelUpgradeAmount 100
+						end
+						send "q q *O 1 " & $salesmanFuelUpgradeAmount & "* *CR*Q"
+						gosub :PLAYER~quikstats
+						gosub :PLANET~landOnPlanetEnterCitadel
 					end
-					send "q q *Oz15*z15*z15*z15*z15*z15*z15*z15*z15*z15*z15*z15*z15*z15*z15*z15*z15*z15*z15*z15*z*  z*CR*Q"
-					gosub :PLAYER~quikstats
-					gosub :PLANET~landOnPlanetEnterCitadel
-				end
 				if (($upgrade = true) and (port.exists[$player~current_sector] = true))
 					send "q"
 					waitOn "Planet command (?"
@@ -288,30 +326,45 @@
 					gosub :PLAYER~quikstats
 					gosub :PLANET~landOnPlanetEnterCitadel
 					gosub :PLAYER~quikstats
-				end
+					end
 
-				if ($planet~planetNegotiate = TRUE)
-					killAllTriggers
-					setVar $planethaggle~_ck_pnego_fueltosell "-1"
-					if (($planet~planetfuel >= 100000) and ($sellfuel = true))
-						setVar $planethaggle~_ck_pnego_fueltosell "max"
-					else
+					if ($planet~planetNegotiate = TRUE)
+						killAllTriggers
+						setVar $salesmanAttemptedSell FALSE
 						setVar $planethaggle~_ck_pnego_fueltosell "-1"
-					end
-					if ($planet~planetorg >= 500)
-						setVar $planethaggle~_ck_pnego_orgtosell "max"
+						if (($planet~planetfuel >= 100000) and ($sellfuel = true))
+							setVar $planethaggle~_ck_pnego_fueltosell "max"
+							if ((PORT.BUYFUEL[$NearFig] = TRUE) and (PORT.FUEL[$NearFig] >= $minimumFuel))
+								setVar $salesmanAttemptedSell TRUE
+							end
+						else
+							setVar $planethaggle~_ck_pnego_fueltosell "-1"
+						end
+						if ($planet~planetorg >= 500)
+							setVar $planethaggle~_ck_pnego_orgtosell "max"
+							if ((PORT.BUYORG[$NearFig] = TRUE) and (PORT.ORG[$NearFig] >= $minimumFuel))
+								setVar $salesmanAttemptedSell TRUE
+							end
+						else
+							setVar $planethaggle~_ck_pnego_orgtosell "-1"
+						end
+						if ($planet~planetequip >= 500)
+							setVar  $planethaggle~_ck_pnego_equiptosell "max"
+							if ((PORT.BUYEQUIP[$NearFig] = TRUE) and (PORT.EQUIP[$NearFig] >= $minimumFuel))
+								setVar $salesmanAttemptedSell TRUE
+							end
+						else
+							setVar  $planethaggle~_ck_pnego_equiptosell "-1"
+						end
+						gosub :PLANETHAGGLE~planetNeg
+						if (($salesmanAttemptedSell = TRUE) and ($PLANETHAGGLE~SELLHAGGLESUCCEEDED <> TRUE))
+							setVar $SWITCHBOARD~message "Planet negotiate failed at this port, skipping buy-down here.*"
+							gosub :SWITCHBOARD~switchboard
+							goto :salesmanPostPort
+						end
 					else
-						setVar $planethaggle~_ck_pnego_orgtosell "-1"
-					end
-					if ($planet~planetequip >= 500)
-						setVar  $planethaggle~_ck_pnego_equiptosell "max"
-					else
-						setVar  $planethaggle~_ck_pnego_equiptosell "-1"
-					end
-					gosub :PLANETHAGGLE~planetNeg
-				else
-					killAllTriggers
-					gosub :PLAYER~quikstats
+						killAllTriggers
+						gosub :PLAYER~quikstats
 					send "q"
 					waitOn "Planet command (?"
 					gosub :PLANET~getPlanetInfo
@@ -370,7 +423,8 @@
 							end
 						end
 					end
-					if ((PORT.BUYORG[$NearFig] = TRUE) AND ($sellingOrg))
+					getSectorParameter $nearfig "BUSTED" $isBusted
+					if ((PORT.BUYORG[$NearFig] = TRUE) AND ($sellingOrg) AND ($isBusted <> TRUE))
 						if ($planet~planetOrg < $totalPortOrganics)
 							setVar $player~turnsSellingProduct (($planet~planetOrg/$player~total_holds)-1)
 						else
@@ -414,7 +468,8 @@
 							end
 						end
 					end
-					if ((PORT.BUYEQUIP[$NearFig] = TRUE) AND ($sellingEquip))
+					getSectorParameter $nearfig "BUSTED" $isBusted
+					if ((PORT.BUYEQUIP[$NearFig] = TRUE) AND ($sellingEquip) AND ($isBusted <> TRUE))
 						if ($planet~planetEquip < $totalPortEquipment)
 							setVar $player~turnsSellingProduct (($planet~planetEquip/$player~total_holds)-1)
 						else
@@ -454,12 +509,13 @@
 					if ($planet~planetNegotiate <> TRUE)
 						gosub :PLANET~landOnPlanetEnterCitadel
 					end
-					gosub :PLAYER~quikstats
-				end
-					if (PORT.BUYEQUIP[$NearFig] = FALSE)
-						if ($nativeHaggleMode)
-							setVar $salesmanBuyProduct "e"
-							gosub :nativeBuyProduct
+						gosub :PLAYER~quikstats
+					end
+						setVar $salesmanPlanetRoom ($planet~planetEquipMax - $planet~planetEquip)
+						if ((PORT.BUYEQUIP[$NearFig] = FALSE) and (PORT.EQUIP[$NearFig] >= $minimumFuel) and ($salesmanPlanetRoom >= $minimumFuel))
+							if ($nativeHaggleMode)
+								setVar $salesmanBuyProduct "e"
+								gosub :nativeBuyProduct
 						else
 						setVar $PLAYER~buyobject "e"
 						if ($nohaggle)
@@ -468,13 +524,14 @@
 							setVar $PLAYER~buytype "b"
 						end
 						gosub :planethaggle~buy
-						gosub :PLAYER~quikstats
+							gosub :PLAYER~quikstats
+							end
 						end
-					end
-					if (PORT.BUYORG[$NearFig] = FALSE)
-						if ($nativeHaggleMode)
-							setVar $salesmanBuyProduct "o"
-							gosub :nativeBuyProduct
+						setVar $salesmanPlanetRoom ($planet~planetOrgMax - $planet~planetOrg)
+						if ((PORT.BUYORG[$NearFig] = FALSE) and (PORT.ORG[$NearFig] >= $minimumFuel) and ($salesmanPlanetRoom >= $minimumFuel))
+							if ($nativeHaggleMode)
+								setVar $salesmanBuyProduct "o"
+								gosub :nativeBuyProduct
 						else
 						setVar $PLAYER~buyobject "o"
 						if ($nohaggle)
@@ -483,21 +540,23 @@
 							setVar $PLAYER~buytype "b"
 						end
 						gosub :planethaggle~buy
-						gosub :PLAYER~quikstats
+							gosub :PLAYER~quikstats
+							end
 						end
-					end
-					if (PORT.BUYFUEL[$NearFig] = FALSE)
-						if ($nativeHaggleMode)
-							setVar $salesmanBuyProduct "f"
-							gosub :nativeBuyProduct
+						setVar $salesmanPlanetRoom ($planet~planetFuelMax - $planet~planetFuel)
+						if ((PORT.BUYFUEL[$NearFig] = FALSE) and ($buyFuel = TRUE) and (PORT.FUEL[$NearFig] >= $minimumFuel) and ($salesmanPlanetRoom >= $minimumFuel))
+							if ($nativeHaggleMode)
+								setVar $salesmanBuyProduct "f"
+								gosub :nativeBuyProduct
 						else
 						setVar $PLAYER~buyobject "f"
 						setVar $PLAYER~buytype "s"
 						gosub :planethaggle~buy
 						gosub :PLAYER~quikstats
+							end
 						end
-					end
 
+				:salesmanPostPort
 				send "#"
 				waitOn "                            Who's Playing"
 				send "cr*"
@@ -548,6 +607,85 @@
 		gosub :SWITCHBOARD~switchboard
 		goto :doneMerchant
 
+:checkSalesmanPort
+	setVar $salesmanGoodPort FALSE
+	setVar $salesmanMcicScore 0
+	setVar $salesmanScore 0
+	setVar $salesmanSellMcicCutoff "-50"
+
+	getSectorParameter $focus "BUSTED" $isBusted
+	if (($checkedPorts[$focus] = TRUE) or ($isBusted = TRUE) or (PORT.EXISTS[$focus] <> TRUE) or (PORT.CLASS[$focus] <= 0))
+		return
+	end
+
+	if ((PORT.BUYEQUIP[$focus] = TRUE) and ($planet~planetEquip >= 500) and (PORT.EQUIP[$focus] >= $minimumFuel))
+		setVar $salesmanGoodPort TRUE
+		getSectorParameter $focus "EQUMCIC" $tmp
+		isNumber $salesmanIsNumber $tmp
+		if (($salesmanIsNumber = TRUE) and ($tmp <= $salesmanSellMcicCutoff))
+			setVar $salesmanScore (0 - $tmp)
+			if ($salesmanScore > $salesmanMcicScore)
+				setVar $salesmanMcicScore $salesmanScore
+			end
+		end
+	end
+	if ((PORT.BUYORG[$focus] = TRUE) and ($sellingOrg = TRUE) and ($planet~planetOrg >= 500) and (PORT.ORG[$focus] >= $minimumFuel))
+		setVar $salesmanGoodPort TRUE
+		getSectorParameter $focus "ORGMCIC" $tmp
+		isNumber $salesmanIsNumber $tmp
+		if (($salesmanIsNumber = TRUE) and ($tmp <= $salesmanSellMcicCutoff))
+			setVar $salesmanScore (0 - $tmp)
+			if ($salesmanScore > $salesmanMcicScore)
+				setVar $salesmanMcicScore $salesmanScore
+			end
+		end
+	end
+	if ((PORT.BUYFUEL[$focus] = TRUE) and ($sellfuel = TRUE) and ($planet~planetFuel >= 100000) and (PORT.FUEL[$focus] >= $minimumFuel))
+		setVar $salesmanGoodPort TRUE
+		getSectorParameter $focus "OREMCIC" $tmp
+		isNumber $salesmanIsNumber $tmp
+		if (($salesmanIsNumber = TRUE) and ($tmp <= $salesmanSellMcicCutoff))
+			setVar $salesmanScore (0 - $tmp)
+			if ($salesmanScore > $salesmanMcicScore)
+				setVar $salesmanMcicScore $salesmanScore
+			end
+		end
+	end
+
+	setVar $salesmanPlanetRoom ($planet~planetEquipMax - $planet~planetEquip)
+	if ((PORT.BUYEQUIP[$focus] = FALSE) and ($salesmanPlanetRoom >= $minimumFuel) and (PORT.EQUIP[$focus] >= $minimumFuel))
+		setVar $salesmanGoodPort TRUE
+		getSectorParameter $focus "EQUMCIC" $tmp
+		isNumber $salesmanIsNumber $tmp
+		if (($salesmanIsNumber = TRUE) and ($tmp >= 50))
+			if ($tmp > $salesmanMcicScore)
+				setVar $salesmanMcicScore $tmp
+			end
+		end
+	end
+	setVar $salesmanPlanetRoom ($planet~planetOrgMax - $planet~planetOrg)
+	if ((PORT.BUYORG[$focus] = FALSE) and ($salesmanPlanetRoom >= $minimumFuel) and (PORT.ORG[$focus] >= $minimumFuel))
+		setVar $salesmanGoodPort TRUE
+		getSectorParameter $focus "ORGMCIC" $tmp
+		isNumber $salesmanIsNumber $tmp
+		if (($salesmanIsNumber = TRUE) and ($tmp >= 50))
+			if ($tmp > $salesmanMcicScore)
+				setVar $salesmanMcicScore $tmp
+			end
+		end
+	end
+	setVar $salesmanPlanetRoom ($planet~planetFuelMax - $planet~planetFuel)
+	if ((PORT.BUYFUEL[$focus] = FALSE) and ($buyFuel = TRUE) and ($salesmanPlanetRoom >= $minimumFuel) and (PORT.FUEL[$focus] >= $minimumFuel))
+		setVar $salesmanGoodPort TRUE
+		getSectorParameter $focus "OREMCIC" $tmp
+		isNumber $salesmanIsNumber $tmp
+		if (($salesmanIsNumber = TRUE) and ($tmp >= 50))
+			if ($tmp > $salesmanMcicScore)
+				setVar $salesmanMcicScore $tmp
+			end
+		end
+	end
+	return
 
 	:rob
 
@@ -1266,6 +1404,7 @@ return
 include "source\include\combat"
 include "source\include\loadvars"
 include "source\include\planethaggle"
+include "source\include\sector"
 include "source\include\haggle"
 include "source\include\help"
 include "source\include\switchboard.ts"

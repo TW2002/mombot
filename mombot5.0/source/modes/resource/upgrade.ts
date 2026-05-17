@@ -1,11 +1,12 @@
-loadvar $PARM1
-loadvar $PARM2
-loadvar $PARM3
-loadvar $PARM4
-loadvar $PARM5
-loadvar $PARM6
-loadvar $PARM7
-loadvar $PARM8
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
+setVar $HELP~HELP[1]  $HELP~TAB&"Upgrades ports using products and colonists in sector."
+setVar $HELP~HELP[2]  $HELP~TAB&" "
+setVar $HELP~HELP[3]  $HELP~TAB&"upgrade {off/help} {planets to ignore}"
+setVar $HELP~HELP[4]  $HELP~TAB&" "
+setVar $HELP~HELP[5]  $HELP~TAB&"(ex) upgrade on 11 14 15"
+setVar $HELP~HELP[6]  $HELP~TAB&"Products and Colos must be in sector"
+gosub :HELP~HELPFILE
 
 :SCRIPTCHECK
 listactivescripts $SCRIPTS
@@ -27,16 +28,6 @@ while ($A <= $SCRIPTS)
   add $A 1
 end
 
-if ($PARM1 = "help")
-  :HELP
-  send "'*"
-  send "  - upgrade {off/help} {planets to ignores} syntax*"
-  send "                                              *"
-  send "  - (ex) upgrade on 11 14 15*"
-  send "  - Products and Colos must be in sector**"
-  waitfor "Sub-space comm-link terminated"
-  halt
-end
 :OFF
 
 if ($PARM1 = "off")
@@ -1063,5 +1054,7 @@ return
 include "source\include\gameprefs"
 include "source\include\findproduct"
 include "source\include\haggle"
+include "source\include\loadvars"
 include "source\include\move"
+include "source\include\help"
 include "source\include\switchboard.ts"

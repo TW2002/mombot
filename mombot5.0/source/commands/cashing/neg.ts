@@ -104,5 +104,6 @@
 #INCLUDES:
 include "source\include\loadvars"
 include "source\include\planethaggle"
+include "source\include\sector"
 include "source\include\help"
 include "source\include\switchboard.ts"

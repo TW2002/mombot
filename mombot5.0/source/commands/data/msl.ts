@@ -1,7 +1,14 @@
-
-
-
-
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
+setVar $HELP~HELP[1]  $HELP~TAB&"Checks whether a sector is an MSL or lists all MSL sectors."
+setVar $HELP~HELP[2]  $HELP~TAB&" "
+setVar $HELP~HELP[3]  $HELP~TAB&"msl [sector|all]"
+setVar $HELP~HELP[4]  $HELP~TAB&" "
+setVar $HELP~HELP[5]  $HELP~TAB&"Options:"
+setVar $HELP~HELP[6]  $HELP~TAB&"   {sector}    Checks one sector"
+setVar $HELP~HELP[7]  $HELP~TAB&"      {all}    Outputs all MSL sectors to subspace"
+setVar $HELP~HELP[8]  $HELP~TAB&"Rylos and Alpha Centauri must be known."
+gosub :HELP~HELPFILE
 
 loadvar $BOT_NAME
 
@@ -24,18 +31,6 @@ end
 
 
 
-
-if ($PARM1 = "help")
-  send "'*{" $BOT_NAME "} - msl (all) or (sector)*"
-  send "------- Will Check Sector to see if it's a MSL -------*"
-  send "-- If all, will output all MSL sectors to Subspace. --*"
-  send "--- Location of Rylos and Alpha Cen Must be Known. ---*"
-  send "------------------------------------------------------*"
-  send "----------------- Written By Zarkahn -----------------*"
-  send "------------------------------------------------------*"
-  send "*"
-  halt
-end
 
 isnumber $TEST $PARM1
 if (($TEST = FALSE) and ($PARM1 <> "all"))
@@ -205,4 +200,6 @@ end
 
 send "'MSL Search Complete Sector Parameters Set*"
 return
+include "source\include\loadvars"
+include "source\include\help"
 include "source\include\switchboard.ts"

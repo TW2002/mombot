@@ -181,7 +181,7 @@ setVar $debugdelay 0
 		setvar $switchboard~message "According to my data i've busted here - ending*"
 		gosub :switchboard~switchboard
 		if (($shipVoidsSet[$current_ship] = TRUE) and ($noavoid <> TRUE))
-			gosub :PLAYER~CLEARVOIDADJACENT
+			gosub :SECTOR~CLEARVOIDADJACENT
 			setVar $shipVoidsSet[$current_ship] FALSE
 		end
 		 gosub :endCNsettings
@@ -200,7 +200,7 @@ setVar $debugdelay 0
         send "*"
         waitFor "(?=Help)?"
         if ($noavoid <> TRUE)
-	        gosub :PLAYER~VOIDADJACENT
+	        gosub :SECTOR~VOIDADJACENT
 	        setVar $shipVoidsSet[$current_ship] TRUE
 	    end
         gosub :checkPlanet
@@ -219,7 +219,7 @@ setVar $debugdelay 0
 		setvar $switchboard~message "According to my data i've busted here - ending*"
 		gosub :switchboard~switchboard
 		if (($shipVoidsSet[$current_ship] = TRUE) and ($noavoid <> TRUE))
-			gosub :PLAYER~CLEARVOIDADJACENT
+			gosub :SECTOR~CLEARVOIDADJACENT
 			setVar $shipVoidsSet[$current_ship] FALSE
 		end
 		 gosub :endCNsettings
@@ -229,7 +229,7 @@ setVar $debugdelay 0
         send "*"
         waitFor "(?=Help)?"
         if ($noavoid <> TRUE)
-	        gosub :PLAYER~VOIDADJACENT
+	        gosub :SECTOR~VOIDADJACENT
 	        setVar $shipVoidsSet[$current_ship] TRUE
 	    end
         gosub :checkPlanet
@@ -258,7 +258,7 @@ setVar $debugdelay 0
 # ----- FINISH
 :finish
 		if (($shipVoidsSet[$current_ship] = TRUE) and ($noavoid <> TRUE))
-	        gosub :PLAYER~CLEARVOIDADJACENT
+	        gosub :SECTOR~CLEARVOIDADJACENT
 	        setVar $shipVoidsSet[$current_ship] FALSE
 		end
         if ($current_ship = $ship_1)
@@ -269,7 +269,7 @@ setVar $debugdelay 0
                setVar $player~current_sector $sector[$ship_1]
         end
 		if (($shipVoidsSet[$other_ship] = TRUE) and ($player~current_sector <> 0) and ($noavoid <> TRUE))
-			gosub :PLAYER~CLEARVOIDADJACENT
+			gosub :SECTOR~CLEARVOIDADJACENT
 			setVar $shipVoidsSet[$other_ship] FALSE
 		end
         gosub :endCNsettings
@@ -1552,6 +1552,8 @@ setVar $debugdelay 0
     return
     
 include "source\include\planet"
+include "source\include\player"
+include "source\include\sector"
 include "source\include\loadvars"
 include "source\include\help"
 include "source\include\switchboard.ts"

@@ -4,10 +4,18 @@
 # :sector~getsectordata
 # :sector~getautosectordata
 # :sector~getavoids
+# :sector~setavoids
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :SECTOR~GETAVOIDS
+# Written by Shadow
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :player~quikstats
+if ($PLAYER~CURRENT_PROMPT <> "Command") and ($PLAYER~CURRENT_PROMPT <> "Citadel")
+  setvar $switchboard~message "You must be at the Citadel or Command prompt to get avoids.*"
+  gosub :switchboard~switchboard
+  halt
+end
 setvar $SECTOR~AVOIDCOUNT 0
 setarray $SECTOR~AVOIDS SECTORS
 send "cx"
@@ -59,12 +67,16 @@ return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :SECTOR~SETAVOIDS
+# Written by Shadow
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 if ($SECTOR~AVOIDCOUNT = 0)
   return
 end
-send "cv0*yyq"
-waiton "Avoided sectors Cleared."
+if ($PLAYER~CURRENT_PROMPT <> "Command") and ($PLAYER~CURRENT_PROMPT <> "Citadel")
+  setvar $switchboard~message "You must be at the Citadel or Command prompt to set avoids.*"
+  gosub :switchboard~switchboard
+  halt
+end
 send "^"
 waiton ": "
 setvar $i 0
@@ -76,6 +88,68 @@ send "Q"
 setvar $SECTOR~AVOIDS 0
 setvar $SECTOR~AVOIDCOUNT 0
 waiton ": ENDINTERROG"
+return
+
+# Moved from :player and reworked by Shadow to be more user friendly and efficient
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:SECTOR~VOIDADJACENT
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :SECTOR~GETAVOIDS
+getsector $PLAYER~CURRENT_SECTOR $SECTORINFO
+if ($SECTORINFO.WARP[1] = 0)
+  setvar $switchboard~message "This sector has no warps, maybe you need to scan it first.*"
+  gosub :switchboard~switchboard
+  halt
+else
+  setvar $VOIDSECT 0
+  send "^"
+  waiton ": "
+  :VOIDS
+  add $VOIDSECT 1
+  if ($VOIDSECT < 7)
+    if ($SECTORINFO.WARP[$VOIDSECT] <> 0)
+      send "S"&$SECTORINFO.WARP[$VOIDSECT]&"*"
+    end
+    goto :VOIDS
+  end
+  send "Q"
+  waiton ": ENDINTERROG"
+end
+return
+
+# Moved from :player and reworked by Shadow to be more user friendly and efficient
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:SECTOR~CLEARVOIDADJACENT
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :player~quikstats
+if ($PLAYER~CURRENT_PROMPT <> "Command") and ($PLAYER~CURRENT_PROMPT <> "Citadel")
+	setvar $switchboard~message "You must be at the Citadel or Command prompt to clear avoids.*"
+	gosub :switchboard~switchboard
+	return
+end
+if ($SECTOR~AVOIDCOUNT > 0)
+	send "cv0*yyq"
+	waiton "<Computer deactivated>"
+	gosub :SECTOR~SETAVOIDS
+else
+	getsector $PLAYER~CURRENT_SECTOR $SECTORINFO
+	if ($SECTORINFO.WARP[1] = 0)
+		setvar $switchboard~message "This sector has no warps, maybe you need to scan it first.*"
+		gosub :switchboard~switchboard
+		return
+	end
+	setvar $VOIDSECT 0
+	send "^"
+	waiton ": "
+	while ($VOIDSECT < 7)
+		add $VOIDSECT 1
+		if ($SECTORINFO.WARP[$VOIDSECT] <> 0)
+			send "C"&$SECTORINFO.WARP[$VOIDSECT]&"*"
+		end
+	end
+	send "Q"
+	waiton ": ENDINTERROG"
+end
 return
 
 ##################################################################################################################################

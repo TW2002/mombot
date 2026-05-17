@@ -448,6 +448,74 @@ savevar $PLANET~MAXED_LEVEL
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:PLANET~GETPLANETPRODS
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :PLAYER~CURRENTPROMPT
+if ($PLAYER~CURRENT_PROMPT <> "Command") and ($PLAYER~CURRENT_PROMPT <> "Citadel")
+  setvar $switchboard~message "Must be at planet or citadel prompt*"
+  gosub :switchboard~switchboard
+  return
+end
+
+send "|CR*"
+
+settextlinetrigger FOUNDPORT :FOUNDPORT "Items     Status  Trading % of max OnBoard"
+settextlinetrigger NOPORT :NOPORT "I have no information about a port in that sector."
+settextlinetrigger NOPORT2 :NOPORT "You have never visted sector"
+settextlinetrigger NOPORT3 :NOPORT "credits / next hold"
+pause
+
+:NOPORT
+send "Q|"
+killtrigger FOUNDPORT
+killtrigger NOPORT
+killtrigger NOPORT2
+killtrigger NOPORT3
+setvar $PLANET~FOUNDPORT FALSE
+
+:FOUNDPORT
+killtrigger FOUNDPORT
+killtrigger NOPORT
+killtrigger NOPORT2
+killtrigger NOPORT3
+setvar $PLANET~FOUNDPORT TRUE
+settextlinetrigger PORTINFO1 :PORTINFO1 "Fuel Ore "
+settextlinetrigger PORTINFO2 :PORTINFO2 "Organics"
+settextlinetrigger PORTINFO3 :PORTINFO3 "Equipment"
+settextlinetrigger GOTCR :GOTCR "Computer command [TL="
+pause
+
+:PORTINFO1
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.OREBUYING 3
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORETRADING 4
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.OREPERCENT 5
+striptext $PLAYER~CURRENT_SECTOR.OREPERCENT "%"
+pause
+
+:PORTINFO2
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGBUYING 2
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGTRADING 3
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGPERCENT 4
+striptext $PLAYER~CURRENT_SECTOR.ORGPERCENT "%"
+pause
+
+:PORTINFO3
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUBUYING 2
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUTRADING 3
+getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUPERCENT 4
+striptext $PLAYER~CURRENT_SECTOR.EQUPERCENT "%"
+send "Q|"
+pause
+
+:GOTCR
+killtrigger PORTINFO1
+killtrigger PORTINFO2
+killtrigger PORTINFO3
+killtrigger GOTCR
+
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :PLANET~KILLPLANETTRIGGERS
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 killtrigger FUELSTART

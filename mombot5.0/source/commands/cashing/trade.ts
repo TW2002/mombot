@@ -372,13 +372,13 @@ return
 
 :voidadjacent
 	setVar $PLAYER~CURRENT_SECTOR CURRENTSECTOR
-	gosub :PLAYER~VOIDADJACENT
+	gosub :SECTOR~VOIDADJACENT
 	setVar $SWITCHBOARD~message "Avoids set on adjacent sectors!*"
 	gosub :SWITCHBOARD~switchboard
 return
 :clearadjacent
 	setVar $PLAYER~CURRENT_SECTOR CURRENTSECTOR
-	gosub :PLAYER~CLEARADJACENT
+	gosub :SECTOR~CLEARVOIDADJACENT
 	setVar $SWITCHBOARD~message "Avoids cleared on adjacent sectors!*"
 	gosub :SWITCHBOARD~switchboard
 return
@@ -387,6 +387,7 @@ halt
 
 #INCLUDES:
 include "source\include\player"
+include "source\include\sector"
 include "source\include\loadvars"
 include "source\include\haggle"
 include "source\include\help"

@@ -88,7 +88,7 @@ if ($useplanet = TRUE)
 	send "q"
 end
 
-gosub :PLAYER~voidAdjacent
+gosub :SECTOR~VOIDADJACENT
 
 
 setVar $i 1
@@ -225,19 +225,19 @@ while ($y < $trips)
 	if ($player~credits < 5000)
 		setvar $switchboard~message "Low on cash, Halting...*"
 		gosub :switchboard~switchboard
-		gosub :PLAYER~clearadjacent
+		gosub :SECTOR~CLEARVOIDADJACENT
 		halt
 	end
 	if ($player~turns < 50)
 		setvar $switchboard~message "Turns low.. keeping a few up our sleeve.. halting*"
 		gosub :switchboard~switchboard
-		gosub :PLAYER~clearadjacent
+		gosub :SECTOR~CLEARVOIDADJACENT
 		halt
 	end
 	if ($player~EXPERIENCE > $halt_exp)
 		setvar $switchboard~message "Experience target met.. halting*"
 		gosub :switchboard~switchboard
-		gosub :PLAYER~clearadjacent
+		gosub :SECTOR~CLEARVOIDADJACENT
 		halt
 	end
 
@@ -245,21 +245,21 @@ while ($y < $trips)
 		if ($restockOre = 1)
 			setvar $switchboard~message "Low on available fuel ore, Halting...*"
 			gosub :switchboard~switchboard
-			gosub :PLAYER~clearadjacent
+			gosub :SECTOR~CLEARVOIDADJACENT
 			halt
 		end
 
 		if ($restockOrg = 1)
 			setvar $switchboard~message "Low on available Organics, Halting...*"
 			gosub :switchboard~switchboard
-			gosub :PLAYER~clearadjacent
+			gosub :SECTOR~CLEARVOIDADJACENT
 			halt
 		end
 
 		if ($restockEqu = 1)
 			setvar $switchboard~message "Low on available Equipment, Halting...*"
 			gosub :switchboard~switchboard
-			gosub :PLAYER~clearadjacent
+			gosub :SECTOR~CLEARVOIDADJACENT
 			halt
 		end
 	else
@@ -422,4 +422,5 @@ include "source\include\player"
 include "source\include\loadvars"
 include "source\include\haggle"
 include "source\include\help"
+include "source\include\sector"
 include "source\include\switchboard.ts"

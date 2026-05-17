@@ -2,10 +2,15 @@
 :PORT~GETPORTINFO
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 if ($PORT~STARTINGLOCATION = "Citadel")
-  send "S*CR*"
+  send "S*CR"
 else
-  send "*CR*"
+  send "*CR"
 end
+if ($PORT~REMOTEPORT > 0)
+  send $PORT~REMOTEPORT
+end
+send "*"
+setvar $PORT~REMOTEPORT 0
 setvar $PORT~NOPORT 1
 setvar $PORT~FUELSELLING 0
 setvar $PORT~ORGSELLING 0

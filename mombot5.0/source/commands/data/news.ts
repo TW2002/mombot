@@ -1,40 +1,25 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
+setVar $HELP~HELP[1]  $HELP~TAB&"Reads and reports daily game news."
+setVar $HELP~HELP[2]  $HELP~TAB&" "
+setVar $HELP~HELP[3]  $HELP~TAB&"news [category] {r|yest}"
+setVar $HELP~HELP[4]  $HELP~TAB&" "
+setVar $HELP~HELP[5]  $HELP~TAB&"Categories:"
+setVar $HELP~HELP[6]  $HELP~TAB&"        {rep}    Overall reporting of events in the Log"
+setVar $HELP~HELP[7]  $HELP~TAB&"      {foton}    Lists fotons fired"
+setVar $HELP~HELP[8]  $HELP~TAB&"        {tow}    Who was towed"
+setVar $HELP~HELP[9]  $HELP~TAB&"      {ports}    Port activity"
+setVar $HELP~HELP[10] $HELP~TAB&"    {planets}    Who popped planet(s) and how many"
+setVar $HELP~HELP[11] $HELP~TAB&"       {corp}    Corporate news"
+setVar $HELP~HELP[12] $HELP~TAB&"        {fed}    Commish awards and bounties"
+setVar $HELP~HELP[13] $HELP~TAB&"       {pods}    Itemized list of who podded"
+setVar $HELP~HELP[14] $HELP~TAB&"  {overloads}    Sectors with overloaded planets"
+setVar $HELP~HELP[15] $HELP~TAB&"   {announce}    Announcements made"
+setVar $HELP~HELP[16] $HELP~TAB&" "
+setVar $HELP~HELP[17] $HELP~TAB&"Refresh:"
+setVar $HELP~HELP[18] $HELP~TAB&"          {r}    Refreshes using current game date"
+setVar $HELP~HELP[19] $HELP~TAB&"       {yest}    Refreshes previous day game date data"
+gosub :HELP~HELPFILE
 
 loadvar $BOT_NAME
 loadvar $USER_COMMAND_LINE
@@ -56,27 +41,6 @@ getword $USER_COMMAND_LINE $PARM6 6
 getword $USER_COMMAND_LINE $PARM7 7
 getword $USER_COMMAND_LINE $PARM8 8
 
-if ($PARM1 = "help")
-  send "'*{" $BOT_NAME "} - news [category] {r}*"
-  send " Categories Allowed:*"
-  send "    rep         - Overall reporting of events in the Log*"
-  send "    foton       - Lists fotons fired*"
-  send "    tow         - Who was towed*"
-  send "    ports       - Port activity (construction, demolition, Openings)*"
-  send "    planets     - Who popped planet(s) and how many*"
-
-  send "    corp        - Corporate news, formations, hirings, firings, etc.*"
-  send "    fed         - Awarded Commish, Bounties*"
-  send "    pods        - Itemized list of who podded*"
-
-  send "    overloads   - List of sectors with overloaded planets*"
-  send "    announce    - Reporting of any announcements made*"
-  send "                *"
-  send " Refresh command line params:*"
-  send "    r           - does a refresh using current game date*"
-  send "    yest        - does a refresh of previous day game date data**"
-  halt
-end
 :READ_NEWS_PAPER
 
 setvar $NEWS_PARAM1 $PARM1
@@ -1619,5 +1583,7 @@ end
 setvar $NEWS_READ TRUE
 waiton "<Computer deactivated>"
 return
+include "source\include\loadvars"
 include "source\include\player"
+include "source\include\help"
 include "source\include\switchboard.ts"

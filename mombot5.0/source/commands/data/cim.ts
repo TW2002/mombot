@@ -8,7 +8,6 @@ loadvar $GAME~PORT_MAX
 loadvar $GAME~PTRADESETTING
 loadvar $BOT~MCIC_FILE
 
-
 setvar $HELP~HELP[1] $HELP~TAB&"     Computer Interrogation Mode: Port Report     "
 setvar $HELP~HELP[2] $HELP~TAB&"           "
 setvar $HELP~HELP[3] $HELP~TAB&"    cim {upgrade level} {warps}   "
@@ -26,10 +25,6 @@ gosub :SWITCHBOARD~SWITCHBOARD
 
 setvar $PLAYER~SAVE TRUE
 :CIM
-
-
-
-
 
 gosub :PLAYER~QUIKSTATS
 setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT

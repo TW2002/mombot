@@ -96,6 +96,7 @@ loadvar $SUBSPACE
 loadvar $COMMAND
 goto :WROB_START
 include "source\include\planethaggle"
+include "source\include\sector"
 :WROB_START
 
 fileexists $DOESHELPFILEEXIST "scripts\MOMBot\Help\"&$COMMAND&".txt"

@@ -1,11 +1,13 @@
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
+setVar $HELP~HELP[1]  $HELP~TAB&"Pages the bot owner."
+setVar $HELP~HELP[2]  $HELP~TAB&" "
+setVar $HELP~HELP[3]  $HELP~TAB&"page"
+gosub :HELP~HELPFILE
+
 loadvar $BOT_NAME
 loadvar $PARM1
 
-if ($PARM1 = "help")
-  setvar $switchboard~message "page - Pages bot owner*"
-  gosub :switchboard~switchboard
-  halt
-end
 :PAGE
 
 
@@ -55,4 +57,6 @@ echo ANSI_14 "-YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_
 setvar $switchboard~message "Bot Owner Paged*"
 gosub :switchboard~switchboard
 halt
+include "source\include\loadvars"
+include "source\include\help"
 include "source\include\switchboard.ts"

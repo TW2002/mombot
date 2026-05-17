@@ -1,3 +1,9 @@
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
+setVar $HELP~HELP[1]  $HELP~TAB&"Gives the first five sector quasar shots for entered planets."
+setVar $HELP~HELP[2]  $HELP~TAB&" "
+setVar $HELP~HELP[3]  $HELP~TAB&"qreport [planet1] [planet2] ... [planet x]"
+gosub :HELP~HELPFILE
 
 loadvar $BOT_NAME
 loadvar $USER_COMMAND_LINE
@@ -11,11 +17,6 @@ loadvar $PARM7
 loadvar $PARM8
 loadvar $MBBS
 
-if ($PARM1 = "help")
-  setvar $switchboard~message "qreport [planet1] [planet2] ... [planet x]  - gives first 5 shots of sector quasar of all planets entered*"
-  gosub :switchboard~switchboard
-  halt
-end
 :CANNONCALCULATOR
 
 gosub :PLAYER~QUIKSTATS
@@ -119,5 +120,7 @@ send $QUASAROUTPUT
 halt
 
 # includes:
+include "source\include\loadvars"
 include "source\include\planet"
+include "source\include\help"
 include "source\include\switchboard.ts"
