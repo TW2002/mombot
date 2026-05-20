@@ -573,6 +573,7 @@ while (true)
 	end
 end
 
+:donesalesman
 :donemerchant
 send "p"&$startingsector&"*y"
 setvar $switchboard~message "Travelling Salesman completed.*"
