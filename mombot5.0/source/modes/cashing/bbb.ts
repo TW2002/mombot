@@ -110,29 +110,29 @@ while ($y < $trips)
 	setTextLineTrigger equ1 :equ1 "Equipment"
 	pause
 	:ore1
-		killalltriggers
-		getWord CURRENTLINE $oreLeft 5
-		goto :portwaitagain
+	killalltriggers
+	getWord CURRENTLINE $oreLeft 5
+	goto :portwaitagain
 	:org1
-		killalltriggers
-		getWord CURRENTLINE $orgLeft 4
-		goto :portwaitagain
+	killalltriggers
+	getWord CURRENTLINE $orgLeft 4
+	goto :portwaitagain
 	:equ1
-		killalltriggers
-		getWord CURRENTLINE $equipLeft 4
+	killalltriggers
+	getWord CURRENTLINE $equipLeft 4
 		
 	striptext $oreLeft "%"
 	striptext $orgLeft "%"
 	striptext $equipLeft "%"
 
 	if ($oreLeft <= 2)
-		setVar $restockOre 1
+	setVar $restockOre 1
 	end
 	if ($orgLeft <= 2)
-		setVar $restockOrg 1
+	setVar $restockOrg 1
 	end
 	if ($equipLeft <= 2)
-		setVar $restockEqu 1
+	setVar $restockEqu 1
 	end
 
 	setVar $quant 0
@@ -141,12 +141,12 @@ while ($y < $trips)
 	send $oreholds "*"
 
 	if (HAGGLE = FALSE)
-		gosub :HAGGLE~startHaggle
-		setVar $cred2 $PLAYER~nCredits
+	gosub :HAGGLE~startHaggle
+	setVar $cred2 $PLAYER~nCredits
 	else
-		killalltriggers
-		settextlinetrigger oredone :oredone "credits and"
-		pause
+	killalltriggers
+	settextlinetrigger oredone :oredone "credits and"
+	pause
 		:oredone
 		getword CURRENTLINE $cred2 3
 		stripText $cred2 ","
@@ -307,108 +307,108 @@ end
 halt
 
 :checkSizing
-	# maths just has to be rough
+# maths just has to be rough
 
-	setVar $oreCost (0 - ($cred2 - $cred1))
-	setVar $orgCost (0 - ($cred3 - $cred2))
-	setVar $equCost (0 - ($cred4 - $cred3))
+setVar $oreCost (0 - ($cred2 - $cred1))
+setVar $orgCost (0 - ($cred3 - $cred2))
+setVar $equCost (0 - ($cred4 - $cred3))
 	
-	if (($oreCost = 0) or ($orgCost = 0) or ($equCost = 0))
-		return
+if (($oreCost = 0) or ($orgCost = 0) or ($equCost = 0))
+	return
+end
+setVar $oreunit ($oreCost/$oreholds)
+setVar $orgunit ($orgCost/$org_holds)
+setVar $equunit ($equCost/$equip_holds)
+	
+
+if ($oreCost < 100)
+	setVar $min_ore $oreholds
+	setVar $unitprice $oreunit
+	setVar $currentcost $oreCost
+	goSub :getAdd
+	add $oreholds $unitsToAdd
+else
+	setvar $test ($oreCost - $oreunit)
+	if ($test > 100)
+		#if (($oreholds - 1) > $min_ore)
+			subtract $oreholds 1
+		#end
 	end
-	setVar $oreunit ($oreCost/$oreholds)
-	setVar $orgunit ($orgCost/$org_holds)
-	setVar $equunit ($equCost/$equip_holds)
-	
-
-	if ($oreCost < 100)
-		setVar $min_ore $oreholds
-		setVar $unitprice $oreunit
-		setVar $currentcost $oreCost
-		goSub :getAdd
-		add $oreholds $unitsToAdd
-	else
-		setvar $test ($oreCost - $oreunit)
-		if ($test > 100)
-			#if (($oreholds - 1) > $min_ore)
-				subtract $oreholds 1
-			#end
-		end
-	end
+end
 	
 
 
-	if ($orgCost < 100)
-		setVar $min_org $org_holds
+if ($orgCost < 100)
+	setVar $min_org $org_holds
 		
-		setVar $unitprice $orgunit
-		setVar $currentcost $orgCost
-		goSub :getAdd
-		add $org_holds $unitsToAdd
-	else
-		setvar $test ($orgCost - $orgunit)
-		if ($test > 100)
-			#if (($org_holds - 1) > $min_org)
-				subtract $org_holds 1
-			#end
-		end
+	setVar $unitprice $orgunit
+	setVar $currentcost $orgCost
+	goSub :getAdd
+	add $org_holds $unitsToAdd
+else
+	setvar $test ($orgCost - $orgunit)
+	if ($test > 100)
+		#if (($org_holds - 1) > $min_org)
+			subtract $org_holds 1
+		#end
 	end
+end
 
-	if ($equCost < 100)
-		setVar $min_equip $equip_holds
-		setVar $unitprice $equunit
-		setVar $currentcost $equCost
-		goSub :getAdd
-		add $equip_holds $unitsToAdd
-	else
+if ($equCost < 100)
+	setVar $min_equip $equip_holds
+	setVar $unitprice $equunit
+	setVar $currentcost $equCost
+	goSub :getAdd
+	add $equip_holds $unitsToAdd
+else
 		
-		setvar $test ($equCost - $equunit)
-		if ($test > 100)
-			#if (($equip_holds - 1) > $min_equip)
-				subtract $equip_holds 1
-			#end
-		end
+	setvar $test ($equCost - $equunit)
+	if ($test > 100)
+		#if (($equip_holds - 1) > $min_equip)
+			subtract $equip_holds 1
+		#end
 	end
+end
 
 return
 
 :getAdd
-	setVar $v 1
-	setVar $go 1
-	while ($go = 1)
-		setVar $newcost ($currentcost + ($v * $unitprice))
-		if ($newcost > 100)
-			setVar $go 0
-			setVar $unitsToAdd $v
-		else
-			add $v 1
-		end
-
+setVar $v 1
+setVar $go 1
+while ($go = 1)
+	setVar $newcost ($currentcost + ($v * $unitprice))
+	if ($newcost > 100)
+		setVar $go 0
+		setVar $unitsToAdd $v
+	else
+		add $v 1
 	end
+
+end
 
 return
 
 
 :weareselling
-	waitfor "We are selling up to"
-	getword CURRENTLINE $quant 6
-	stripText $quant "."
+waitfor "We are selling up to"
+getword CURRENTLINE $quant 6
+stripText $quant "."
 return
 
 
 :calcstats
 	
-	setVar $expdiff ($player~experience - $startexp)
-	setVar $turndiff ($startturns - $player~turns)
-	if ($turndiff <= 0)
-		send "'Experience gained: " $expdiff "; exp @ " $player~experience "*"
-		return
-	end
-	setPrecision 2
-	setVar $expperturn ($expdiff/$turndiff)
-	setPrecision 0
+setVar $expdiff ($player~experience - $startexp)
+setVar $turndiff ($startturns - $player~turns)
+if ($turndiff <= 0)
+	send "'Experience gained: " $expdiff "; exp @ " $player~experience "*"
+	return
+end
+setPrecision 2
+setVar $expperturn ($expdiff/$turndiff)
+setPrecision 0
 
-	send "'We are making " $expperturn " per turn; exp @ " $player~experience "*"
+send "'We are making " $expperturn " per turn; exp @ " $player~experience "*"
 
 return
 

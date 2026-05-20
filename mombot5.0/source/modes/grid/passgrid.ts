@@ -50,6 +50,8 @@
 	loadVar $MAP~alpha_centauri
 	loadVar $BOT~LIMP_FILE 		
 	loadVar $BOT~ARMID_FILE 
+	loadvar $bot~folder
+	setVar $LOG_FName $bot~folder&"/"&GAMENAME&"_PassiveGrid.log"
 
 	setVar $HELP~HELP[1]  $HELP~TAB&"       LS Passive Gridder - Still the best "
 	setVar $HELP~HELP[2]  $HELP~TAB&"       "
@@ -369,92 +371,92 @@
 	goto :Lets_Get_It_On
 
 :Lets_Get_It_On
-    getTime $Stamp "t d/m/yy"
-	if ($TRACKER)
-		setVar $MCICd	0
-		setArray $MCIC	SECTORS
+getTime $Stamp "t d/m/yy"
+if ($TRACKER)
+	setVar $MCICd	0
+	setArray $MCIC	SECTORS
 
-		setVar $m 11
-		while ($m <= SECTORS)
-			getSectorParameter $m "EQUIPMENT-" $mtest
-			isNumber $tst $mtest
-			if ($tst)
+	setVar $m 11
+	while ($m <= SECTORS)
+		getSectorParameter $m "EQUIPMENT-" $mtest
+		isNumber $tst $mtest
+		if ($tst)
 
-				setVar $MCIC[$m] TRUE
-				add $Results 1
-				add $MCICd 1
-			end
-			add $m 1
+			setVar $MCIC[$m] TRUE
+			add $Results 1
+			add $MCICd 1
 		end
+		add $m 1
+	end
 
 
+else
+	if ($player~equipment_holds > 0)
+	    send "   j   y   "
+	end
+end
+
+write $LOG_FName "-------------------------{ " & $Stamp & " }-------------------------"
+echo "***"
+if ($Update_Figs)
+	#echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"ReFreshing Deployed Fighter Data"&ANSI_8&">*")
+	gosub :Build_FIG_LIST
+end
+
+#echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Reading Figs"&ANSI_8&">*")
+setVar $idx 1
+while ($idx <= SECTORS)
+	getSectorParameter $idx "FIGSEC" $flag
+	isNumber $tst $flag
+	if ($tst <> 0)
+		if ($flag <> 0)
+			Add $DEP_FIGS 1
+		end
 	else
-		if ($player~equipment_holds > 0)
-		    send "   j   y   "
-		end
+		setSectorParameter $idx "FIGSEC" FALSE
 	end
+	add $idx 1
+end
 
-	write $LOG_FName "-------------------------{ " & $Stamp & " }-------------------------"
-	echo "***"
-	if ($Update_Figs)
-		#echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"ReFreshing Deployed Fighter Data"&ANSI_8&">*")
-		gosub :Build_FIG_LIST
-	end
+if ($DEP_FIGS = 0)
+	echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"No Deployed Fighter Data Found"&ANSI_8&">*")
+	halt
+else
+	echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Deployed Fighters "&ANSI_14&" : "&ANSI_15&$DEP_FIGS&ANSI_8&">*")
+end
 
-	#echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Reading Figs"&ANSI_8&">*")
+if ($Update_Limps)
+	echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"ReFreshing Limpet Data"&ANSI_8&">*")
+	gosub :Build_LIMP_LIST
+else
+	echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Reading Limps"&ANSI_8&">*")
 	setVar $idx 1
 	while ($idx <= SECTORS)
-		getSectorParameter $idx "FIGSEC" $flag
-		isNumber $tst $flag
+		getSectorParameter $idx "LIMPSEC" $flag
+		isNumber $tst $Flag
 		if ($tst <> 0)
-			if ($flag <> 0)
-				Add $DEP_FIGS 1
+			if ($flag > 0)
+				setVar $Limps[$idx] 1
+				add $DEP_LIMP 1
 			end
-		else
-			setSectorParameter $idx "FIGSEC" FALSE
 		end
 		add $idx 1
 	end
+end
 
-	if ($DEP_FIGS = 0)
-		echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"No Deployed Fighter Data Found"&ANSI_8&">*")
-		halt
-	else
-		echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Deployed Fighters "&ANSI_14&" : "&ANSI_15&$DEP_FIGS&ANSI_8&">*")
-	end
+  	window status 500 245 (" " & $TAGLINE & " v" & $Version)
+  	#echo "**"
+#echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Gridded Sectors: "&ANSI_14&$DEP_FIGS&ANSI_8&">*")
+#echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Limp'd Sector  : "&ANSI_14&$DEP_LIMP&ANSI_8&">**")
 
-	if ($Update_Limps)
-		echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"ReFreshing Limpet Data"&ANSI_8&">*")
-		gosub :Build_LIMP_LIST
-	else
-		echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Reading Limps"&ANSI_8&">*")
-		setVar $idx 1
-		while ($idx <= SECTORS)
-			getSectorParameter $idx "LIMPSEC" $flag
-			isNumber $tst $Flag
-			if ($tst <> 0)
-				if ($flag > 0)
-					setVar $Limps[$idx] 1
-					add $DEP_LIMP 1
-				end
-			end
-			add $idx 1
-		end
-	end
-
-   	window status 500 245 (" " & $TAGLINE & " v" & $Version)
-   	#echo "**"
-	#echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Gridded Sectors: "&ANSI_14&$DEP_FIGS&ANSI_8&">*")
-	#echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Limp'd Sector  : "&ANSI_14&$DEP_LIMP&ANSI_8&">**")
-
-    send " C ;UYQ "
-	waitfor "Max Figs Per Attack:"
-	getWord CurrentLine $maxFigAttack 5
-	stripText $maxFigAttack ","
-	isNumber $tst $maxFigAttack
-	if ($tst = 0)
-		setVar $maxFigAttack 9999
-	end
+send " C ;UYQ "
+waitfor "Max Figs Per Attack:"
+getWord CurrentLine $maxFigAttack 5
+stripText $maxFigAttack ","
+isNumber $tst $maxFigAttack
+if ($tst = 0)
+	setVar $maxFigAttack 9999
+end
 
 	:PASSGRID_MAIN_LOOP
 	gosub :player~quikstats
@@ -475,70 +477,70 @@
 	  	setTextTrigger		2	:gotWarpInfo "Command [TL="
 		pause
 		:getWarp
-		  	getWord CURRENTLINE $anm 13
-		  	getText CURRENTLINE $temp "Warps :" "NavHaz :"
-			stripText $temp " "
-			stripText $temp ","
+  	getWord CURRENTLINE $anm 13
+  	getText CURRENTLINE $temp "Warps :" "NavHaz :"
+		stripText $temp " "
+		stripText $temp ","
 
-			setVar $DENS[$anon_ptr] $temp
-			setVar $ANOM[$anon_ptr] $anm
-			add $anon_ptr 1
-			setTextLineTrigger	1	:getWarp "Sector "
-			pause
+		setVar $DENS[$anon_ptr] $temp
+		setVar $ANOM[$anon_ptr] $anm
+		add $anon_ptr 1
+		setTextLineTrigger	1	:getWarp "Sector "
+		pause
 		:gotWarpInfo
-			killAllTriggers
+		killAllTriggers
 
-			if ($TRACKER)
-				gosub :Haggel_Checker
-			elseif (($player~ore_holds < $player~total_holds) AND ($player~TWARP_TYPE <> "No"))
+		if ($TRACKER)
+			gosub :Haggel_Checker
+		elseif (($player~ore_holds < $player~total_holds) AND ($player~TWARP_TYPE <> "No"))
 
-				if ((PORT.CLASS[$player~CURRENT_SECTOR] = 3) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 4) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 5) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 7))
-					#Echo "***Stupid Attmpt**"
-					if (HAGGLE)
-						setVar $restoreHaggle 1
-						autohaggle off
-					end
-					send "P T ** 0* 0* "
+			if ((PORT.CLASS[$player~CURRENT_SECTOR] = 3) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 4) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 5) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 7))
+				#Echo "***Stupid Attmpt**"
+				if (HAGGLE)
+					setVar $restoreHaggle 1
+					autohaggle off
+				end
+				send "P T ** 0* 0* "
 					
-				end
 			end
-			if ($restock = 1)
-				if ($PLAYER~CREDITS < 100000)
-					send ("'["&$TagLineB&"] Restocking halted as credits low*")
-					setVar $restock 0
-				end
+		end
+		if ($restock = 1)
+			if ($PLAYER~CREDITS < 100000)
+				send ("'["&$TagLineB&"] Restocking halted as credits low*")
+				setVar $restock 0
+			end
 
-				if (($player~ore_holds = $player~total_holds) AND ($player~TWARP_TYPE <> "No"))
+			if (($player~ore_holds = $player~total_holds) AND ($player~TWARP_TYPE <> "No"))
 				
-					setVar $doRestock 0
-					if (($DROP_ARMID > 0) and ($DROP_LIMP > 0))
-						if (($player~ARMIDS < 4) or ($player~LIMPETS < 4))
-							setVar $doRestock 1
-						end
-					elseif ($DROP_ARMID > 0)
-						if ($player~ARMIDS < 4)
-							setVar $doRestock 1
-						end
-					elseif ($DROP_LIMP > 0)
-						if ($player~LIMPETS < 4)
-							setVar $doRestock 1
-						end
-
+				setVar $doRestock 0
+				if (($DROP_ARMID > 0) and ($DROP_LIMP > 0))
+					if (($player~ARMIDS < 4) or ($player~LIMPETS < 4))
+						setVar $doRestock 1
 					end
-					if ($doRestock = 1)
-						setVar $BOT~command "lsd"
-						setVar $BOT~user_command_line $LSDString
-						setVar $BOT~parm1 $LSDString
+				elseif ($DROP_ARMID > 0)
+					if ($player~ARMIDS < 4)
+						setVar $doRestock 1
+					end
+				elseif ($DROP_LIMP > 0)
+					if ($player~LIMPETS < 4)
+						setVar $doRestock 1
+					end
+
+				end
+				if ($doRestock = 1)
+					setVar $BOT~command "lsd"
+					setVar $BOT~user_command_line $LSDString
+					setVar $BOT~parm1 $LSDString
 						
-						saveVar $BOT~parm1
+					saveVar $BOT~parm1
 						
-						saveVar $BOT~command
-						saveVar $BOT~user_command_line
-						load "scripts\"&$bot~mombot_directory&"\modes\resource\lsd.cts"
-						setEventTrigger        moveended        :moveended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\resource\lsd.cts"
-						pause
+					saveVar $BOT~command
+					saveVar $BOT~user_command_line
+					load "scripts\"&$bot~mombot_directory&"\modes\resource\lsd.cts"
+					setEventTrigger        moveended        :moveended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\resource\lsd.cts"
+					pause
 						:moveended
-							killalltriggers
+						killalltriggers
 						gosub :player~quikstats
 						gosub :resetMinesAfterRestock
 					end
@@ -821,7 +823,7 @@
 				end
 			end
 			:Next_ADJ_Please
-        		add $i 1
+    		add $i 1
 		end
 
 		setVar $idx 1
@@ -830,8 +832,8 @@
 
 		while ($idx <= SECTOR.WARPCOUNT[$player~CURRENT_SECTOR])
 			if (($Adj_Targets[$idx] < $Target) AND ($Target <> 0))
-				setVar $Target $Adj_Targets[$idx]
-				setVar $Target_IDX $idx
+			setVar $Target $Adj_Targets[$idx]
+			setVar $Target_IDX $idx
 			end
 			add $idx 1
 		end
@@ -839,12 +841,12 @@
 		if ($Target_IDX <> 0)
 			setVar $Target SECTOR.WARPS[$player~CURRENT_SECTOR][$Target_IDX]
 			if (SECTOR.DENSITY[$Target] >= 100)
-				send " c r"&$Target&"*q"
-				setTextLineTrigger	NoData1	:NoData		"You have never visted sector"
-				setTextLineTrigger	NoData2	:NoData		"I have no information about a port in that sector"
-				setTextLineTrigger	YaData1	:YaData		"Items     Status  Trading % of max OnBoard"
-				setTextLineTrigger	YaData2	:YaData		"A  Cargo holds     :"
-				pause
+			send " c r"&$Target&"*q"
+			setTextLineTrigger	NoData1	:NoData		"You have never visted sector"
+			setTextLineTrigger	NoData2	:NoData		"I have no information about a port in that sector"
+			setTextLineTrigger	YaData1	:YaData		"Items     Status  Trading % of max OnBoard"
+			setTextLineTrigger	YaData2	:YaData		"A  Cargo holds     :"
+			pause
 				:NoData
 				killAllTriggers
 				if ($HOLO)
@@ -974,13 +976,13 @@
 											setTextLineTrigger portexistsno2 :portexistsno2 "u have never visted sector"
 											pause
 											:portexists
-												setVar $portOk 1
+											setVar $portOk 1
 								
 											:portexistsno
 											:portexistsno2
-												killtrigger portexistsno
-												killtrigger portexistsno2
-												killtrigger portexists
+											killtrigger portexistsno
+											killtrigger portexistsno2
+											killtrigger portexists
 											
 
 										end
@@ -1033,135 +1035,135 @@
 				setTextTrigger				Sector__Far		:Sector__Far	"You do not have enough Fuel Ore to make the jump."
 				pause
 				:Sector__Bad
-					killAllTriggers
-					goto :We_Done
+				killAllTriggers
+				goto :We_Done
 				:Sector__Far
-					killAllTriggers
-					getNearestWarps $WarpArray $player~CURRENT_SECTOR
-					setVar $c 1
-					while ($c <= $WarpArray)
-						setVar $focus $WarpArray[$c]
-						if ((PORT.CLASS[$focus] = 3) OR (PORT.CLASS[$focus] = 4) OR (PORT.CLASS[$focus] = 5) OR (PORT.CLASS[$focus] = 7))
-							getSectorParameter $focus "FIGSEC" $Flag
-							isNumber $tst $flag
-							if ($tst = 0)
-								setVar $flag 0
-								setSectorParameter $focus "FIGSEC" FALSE
-							end
-                        	if ($flag = 1)
-								setVar $destination $focus
-								gosub :getCourse
-								if ($courseLength <> 0)
-									setVar $j 2
-									setVar $result ""
+				killAllTriggers
+				getNearestWarps $WarpArray $player~CURRENT_SECTOR
+				setVar $c 1
+				while ($c <= $WarpArray)
+					setVar $focus $WarpArray[$c]
+					if ((PORT.CLASS[$focus] = 3) OR (PORT.CLASS[$focus] = 4) OR (PORT.CLASS[$focus] = 5) OR (PORT.CLASS[$focus] = 7))
+						getSectorParameter $focus "FIGSEC" $Flag
+						isNumber $tst $flag
+						if ($tst = 0)
+							setVar $flag 0
+							setSectorParameter $focus "FIGSEC" FALSE
+						end
+                    	if ($flag = 1)
+							setVar $destination $focus
+							gosub :getCourse
+							if ($courseLength <> 0)
+								setVar $j 2
+								setVar $result ""
 
-									while ($j <= $courseLength)
+								while ($j <= $courseLength)
+									getSectorParameter $COURSE[$j] "FIGSEC" $Flag
+									isNumber $tst $Flag
+									if ($tst = 0)
+										setVar $Flag 0
+										setSectorParameter $COURSE[$j] "FIGSEC" FALSE
+									end
+									if (($Flag = 0) AND ($COURSE[$j] <> $player~CURRENT_SECTOR))
+										goto :Next_SXX_Port
+									end
+									setVar $result $result&"m"&$COURSE[$j]&"* "
+									if (($COURSE[$j] > 10) AND ($COURSE[$j] <> STARDOCK))
+										setVar $result ($result&" Z  A  "&$maxFigAttack&"*  *  ")
+									end
+									# If Not FED Space, Drop A Fig, if we haven't already
+									if (($COURSE[$j] > 10) AND ($COURSE[$j] <> STARDOCK) AND ($j > 2))
 										getSectorParameter $COURSE[$j] "FIGSEC" $Flag
 										isNumber $tst $Flag
 										if ($tst = 0)
 											setVar $Flag 0
 											setSectorParameter $COURSE[$j] "FIGSEC" FALSE
 										end
-										if (($Flag = 0) AND ($COURSE[$j] <> $player~CURRENT_SECTOR))
-											goto :Next_SXX_Port
+										if ($Flag = 0)
+											setVar $result ($result&" F  Z  1 * Z  C  D  *  ")
+											setSectorParameter $COURSE[$j] "FIGSEC" TRUE
 										end
-										setVar $result $result&"m"&$COURSE[$j]&"* "
-										if (($COURSE[$j] > 10) AND ($COURSE[$j] <> STARDOCK))
-											setVar $result ($result&" Z  A  "&$maxFigAttack&"*  *  ")
-										end
-										# If Not FED Space, Drop A Fig, if we haven't already
-										if (($COURSE[$j] > 10) AND ($COURSE[$j] <> STARDOCK) AND ($j > 2))
-											getSectorParameter $COURSE[$j] "FIGSEC" $Flag
-											isNumber $tst $Flag
-											if ($tst = 0)
-												setVar $Flag 0
-												setSectorParameter $COURSE[$j] "FIGSEC" FALSE
-											end
-											if ($Flag = 0)
-												setVar $result ($result&" F  Z  1 * Z  C  D  *  ")
-												setSectorParameter $COURSE[$j] "FIGSEC" TRUE
-											end
-										end
-										add $j 1
 									end
-									waitfor "Command ["
-
-									if ($TRACKER)
-										send ($result&"  **  ")
-										gosub :player~quikstats
-										gosub :Haggel_Checker
-									else
-										send ($result&"  **    P   T   *   *   *   *   ")
-									end
-
-									gosub :player~quikstats
-									if ($player~total_holds <> $player~ore_holds) AND ($TRACKER = 0)
-										if ($PLAYER~CREDITS < 10000)
-											Echo "**" & $TAGLINEc & " " & " Appear To Be Out of Funds for ORE purchase.**"
-										elseif (($UNLIM = FALSE) AND (CURRENTTURNS < 1))
-											Echo "**" & $TAGLINEc & " " & " Appear To Be Out Turns. Photon'd Maybe??**"
-										else
-											Echo "**" & $TAGLINEc & " " & " Not Enough ORE to continue.**"
-										end
-										halt
-									elseif ($TRACKER) AND ($player~ore_holds < ($player~total_holds - $EQU_MIN))
-										if ($PLAYER~CREDITS < 10000)
-											Echo "**" & $TAGLINEc & " " & " Appear To Be Out of Funds for ORE purchase.**"
-										elseif (($UNLIM = FALSE) AND (CURRENTTURNS < 1))
-											Echo "**" & $TAGLINEc & " " & " Appear To Be Out Turns. Photon'd Maybe??**"
-										else
-											Echo "**" & $TAGLINEc & " " & " Not Enough ORE to continue.**"
-										end
-										halt
-									elseif ($PLAYER~CREDITS < 10000)
-										Echo "**" & $TAGLINEc & " " & " Too Few Credits to continue.**"
-										halt
-									end
-									goto :To_The_Top
+									add $j 1
 								end
+								waitfor "Command ["
+
+								if ($TRACKER)
+									send ($result&"  **  ")
+									gosub :player~quikstats
+									gosub :Haggel_Checker
+								else
+									send ($result&"  **    P   T   *   *   *   *   ")
+								end
+
+								gosub :player~quikstats
+								if ($player~total_holds <> $player~ore_holds) AND ($TRACKER = 0)
+									if ($PLAYER~CREDITS < 10000)
+										Echo "**" & $TAGLINEc & " " & " Appear To Be Out of Funds for ORE purchase.**"
+									elseif (($UNLIM = FALSE) AND (CURRENTTURNS < 1))
+										Echo "**" & $TAGLINEc & " " & " Appear To Be Out Turns. Photon'd Maybe??**"
+									else
+										Echo "**" & $TAGLINEc & " " & " Not Enough ORE to continue.**"
+									end
+									halt
+								elseif ($TRACKER) AND ($player~ore_holds < ($player~total_holds - $EQU_MIN))
+									if ($PLAYER~CREDITS < 10000)
+										Echo "**" & $TAGLINEc & " " & " Appear To Be Out of Funds for ORE purchase.**"
+									elseif (($UNLIM = FALSE) AND (CURRENTTURNS < 1))
+										Echo "**" & $TAGLINEc & " " & " Appear To Be Out Turns. Photon'd Maybe??**"
+									else
+										Echo "**" & $TAGLINEc & " " & " Not Enough ORE to continue.**"
+									end
+									halt
+								elseif ($PLAYER~CREDITS < 10000)
+									Echo "**" & $TAGLINEc & " " & " Too Few Credits to continue.**"
+									halt
+								end
+								goto :To_The_Top
 							end
 						end
+					end
 						:Next_SXX_Port
                     	add $c 1
 					end
 					goto :We_Done
 				:Sector__GoodNav
-					send "*q"
-					setVar $engagestring ""
+				send "*q"
+				setVar $engagestring ""
 				:Sector__Good
-					killAllTriggers
-					#echo ("**" & $TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Twarping To Jump Point: "&ANSI_14&$Focus&ANSI_8&">*")
+				killAllTriggers
+				#echo ("**" & $TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Twarping To Jump Point: "&ANSI_14&$Focus&ANSI_8&">*")
 
-					setVar $DROP_STR ""
-					if ($DROPING_MINES <> 0)
-						if (SECTOR.WARPINCOUNT[$focus] >= 3)
-							if (($DROPING_MINES = 1) OR ($DROPING_MINES = 3))
-								if ($player~LIMPETS > $DROP_LIMP)
-									setVar $DROP_STR ($DROP_STR & "H 2 Z "&$DROP_LIMP&"* C * ")
-								else
-								   if ($DROPING_MINES = 1)
-								   	setVar $DROPING_MINES 0
-								   else
-								   	setVar $DROPING_MINES 2
-								   end
-								end
+				setVar $DROP_STR ""
+				if ($DROPING_MINES <> 0)
+					if (SECTOR.WARPINCOUNT[$focus] >= 3)
+						if (($DROPING_MINES = 1) OR ($DROPING_MINES = 3))
+							if ($player~LIMPETS > $DROP_LIMP)
+								setVar $DROP_STR ($DROP_STR & "H 2 Z "&$DROP_LIMP&"* C * ")
+							else
+							   if ($DROPING_MINES = 1)
+							   	setVar $DROPING_MINES 0
+							   else
+							   	setVar $DROPING_MINES 2
+							   end
 							end
+						end
 
-							if (($DROPING_MINES = 2) OR ($DROPING_MINES = 3))
-								if ($player~ARMIDS > $DROP_ARMID)
-									setVar $DROP_STR ($DROP_STR & "H 1 Z "&$DROP_ARMID&"* C * ")
+						if (($DROPING_MINES = 2) OR ($DROPING_MINES = 3))
+							if ($player~ARMIDS > $DROP_ARMID)
+								setVar $DROP_STR ($DROP_STR & "H 1 Z "&$DROP_ARMID&"* C * ")
+							else
+								if ($DROPING_MINES = 2)
+									setVar $DROPING_MINES 0
 								else
-									if ($DROPING_MINES = 2)
-										setVar $DROPING_MINES 0
-									else
-										setVar $DROPING_MINES 1
-									end
+									setVar $DROPING_MINES 1
 								end
 							end
 						end
 					end
-					send $engagestring "  *  A Z " & $maxFigAttack & "998877665544332211 n  *  **   " & $DROP_STR
-					gosub :player~quikstats
+				end
+				send $engagestring "  *  A Z " & $maxFigAttack & "998877665544332211 n  *  **   " & $DROP_STR
+				gosub :player~quikstats
 			goto :To_The_Top
 		else
 			Echo "**" & $TAGLINEc & " " & " Walled In (No Twarp Available)***"
@@ -1187,18 +1189,18 @@
 		waiton ":[" & $Target & "] (?=Help)"
 		goto :help_me_jmp
 		:help_me
-			killAllTriggers
-			getWord CURRENTLINE $spoofy 1
-			if ($spoofy <> "Your") AND ($spoofy <> "You") AND ($spoofy <> "An") AND ($spoofy <> "Quasar")
-				goto :help_me_jmp
-			end
-			stop _ck_callsaveme
-			stop _ck_callsaveme
-			send "   N   Y  *  N   *   R   *   Q   Q   Q   Z   N   *   R   *   "
-			waitFor "Command [TL="
-			load _ck_callsaveme
-			waitFor "Message sent on sub-space channel"
-			halt
+		killAllTriggers
+		getWord CURRENTLINE $spoofy 1
+		if ($spoofy <> "Your") AND ($spoofy <> "You") AND ($spoofy <> "An") AND ($spoofy <> "Quasar")
+			goto :help_me_jmp
+		end
+		stop _ck_callsaveme
+		stop _ck_callsaveme
+		send "   N   Y  *  N   *   R   *   Q   Q   Q   Z   N   *   R   *   "
+		waitFor "Command [TL="
+		load _ck_callsaveme
+		waitFor "Message sent on sub-space channel"
+		halt
 		:help_me_jmp
 		add $DEP_FIGS 1
 		add $DEP_NEW 1
@@ -1300,232 +1302,232 @@
 	halt
 
 :TurnsGone
-	gosub :RestoreHaggle
-	killAllTriggers
-	send "   *   *    *   /"
-	waiton #179 & "Turns"
-	getText CURRENTLINE $LOCAL "Sect" (#179 & "Turns")
-	stripText $LOCAL " "
-	send "'"
-	waitfor "Sub-space radio ("
-	send $LOCAL & "=saveme*"
-	waitfor "Message sent on sub-space channel"
-	send "F  Z  1*  Z  C  D  *  "
-	setDelayTrigger		NoHelpComming	:NoHelpComming	4000
-	setTextLineTrigger	HelpCame		:HelpCame		"Saveme script activated - "
-	pause
+gosub :RestoreHaggle
+killAllTriggers
+send "   *   *    *   /"
+waiton #179 & "Turns"
+getText CURRENTLINE $LOCAL "Sect" (#179 & "Turns")
+stripText $LOCAL " "
+send "'"
+waitfor "Sub-space radio ("
+send $LOCAL & "=saveme*"
+waitfor "Message sent on sub-space channel"
+send "F  Z  1*  Z  C  D  *  "
+setDelayTrigger		NoHelpComming	:NoHelpComming	4000
+setTextLineTrigger	HelpCame		:HelpCame		"Saveme script activated - "
+pause
 	:NoHelpComming
-		killAllTriggers
-		send "'["&$TAGLINEb&"] No Help Came.*"
-		halt
+	killAllTriggers
+	send "'["&$TAGLINEb&"] No Help Came.*"
+	halt
 	:HelpCame
-		killAllTriggers
-		getText CURRENTLINE $planet~planet "Planet" "to"
-		stripText $planet~planet " "
-		send "L Z" & #8 & $planet~planet & "*  J  C  *  "
-		halt
+	killAllTriggers
+	getText CURRENTLINE $planet~planet "Planet" "to"
+	stripText $planet~planet " "
+	send "L Z" & #8 & $planet~planet & "*  J  C  *  "
+	halt
 
 
 
 :Build_FIG_LIST
-	killAllTriggers
-	send "'Scanning Deployed Fighters...*G"
-	SetVar $idx 1
-	while ($idx <= SECTORS)
-		setSectorParameter $idx "FIGSEC"	FALSE
-    	add $idx 1
-	end
-	killAllTriggers
-	waitfor "==========================================================="
-	setTextLineTrigger FigLine1		:AddInFigC	" Corp "
-	setTextLineTrigger FigLine2		:AddInFigP	" Personal "
-	setTextLineTrigger LstBottom	:LstBottom	" Total "
-	setTextLineTrigger LstNone		:LstBottom	"No fighters deployed"
-	pause
+killAllTriggers
+send "'Scanning Deployed Fighters...*G"
+SetVar $idx 1
+while ($idx <= SECTORS)
+	setSectorParameter $idx "FIGSEC"	FALSE
+	add $idx 1
+end
+killAllTriggers
+waitfor "==========================================================="
+setTextLineTrigger FigLine1		:AddInFigC	" Corp "
+setTextLineTrigger FigLine2		:AddInFigP	" Personal "
+setTextLineTrigger LstBottom	:LstBottom	" Total "
+setTextLineTrigger LstNone		:LstBottom	"No fighters deployed"
+pause
 	:AddInFigP
-		getWord CURRENTLINE $sector 1
-		setSectorParameter $sector "FIGSEC" TRUE
-		add $DEP_FIGS 1
-		setTextLineTrigger FigLine2		:AddInFigP	" Personal "
-		pause
+	getWord CURRENTLINE $sector 1
+	setSectorParameter $sector "FIGSEC" TRUE
+	add $DEP_FIGS 1
+	setTextLineTrigger FigLine2		:AddInFigP	" Personal "
+	pause
 	:AddInFigC
-		getWord CURRENTLINE $sector 1
-		setSectorParameter $sector "FIGSEC" TRUE
-		add $DEP_FIGS 1
-		setTextLineTrigger FigLine1		:AddInFigC	" Corp "
-		pause
+	getWord CURRENTLINE $sector 1
+	setSectorParameter $sector "FIGSEC" TRUE
+	add $DEP_FIGS 1
+	setTextLineTrigger FigLine1		:AddInFigC	" Corp "
+	pause
 	:LstBottom
-		killAllTriggers
+	killAllTriggers
 
 	return
 
 :Build_LIMP_LIST
-	killAllTriggers
-	setArray $Limps	SECTORS
+killAllTriggers
+setArray $Limps	SECTORS
 
-	SetVar $idx		1
-	while ($idx <= SECTORS)
-		setSectorParameter $idx "LIMPSEC"	0
-		add $idx 1
-	end
+SetVar $idx		1
+while ($idx <= SECTORS)
+	setSectorParameter $idx "LIMPSEC"	0
+	add $idx 1
+end
 
-	send "'Scanning Deployed Limpets...*k2"
-	waitfor "===================================="
-	setTextLineTrigger LimpLine1		:AddInLimpC	" Corporate"
-	setTextLineTrigger LimpLine2		:AddInLimpP	" Personal "
-	setTextLineTrigger LstBottom		:LimpLstBottom	"Activated  Limpet  Scan"
-	setTextLineTrigger LstNone			:LimpLstBottom	"No Limpet mines deployed"
-	pause
+send "'Scanning Deployed Limpets...*k2"
+waitfor "===================================="
+setTextLineTrigger LimpLine1		:AddInLimpC	" Corporate"
+setTextLineTrigger LimpLine2		:AddInLimpP	" Personal "
+setTextLineTrigger LstBottom		:LimpLstBottom	"Activated  Limpet  Scan"
+setTextLineTrigger LstNone			:LimpLstBottom	"No Limpet mines deployed"
+pause
 	:AddInLimpC
-		getWord CURRENTLINE $sector 1
-		setSectorParameter $sector "LIMPSEC" TRUE
-		add $DEP_LIMP 1
-		setVar $Limps[$sector] TRUE
-		setTextLineTrigger LimpLine1		:AddInLimpC	" Corporate"
-		pause
+	getWord CURRENTLINE $sector 1
+	setSectorParameter $sector "LIMPSEC" TRUE
+	add $DEP_LIMP 1
+	setVar $Limps[$sector] TRUE
+	setTextLineTrigger LimpLine1		:AddInLimpC	" Corporate"
+	pause
 	:AddInLimpP
-		getWord CURRENTLINE $sector 1
-		setSectorParameter $sector "LIMPSEC" TRUE
-		add $DEP_LIMP 1
-		setVar $Limps[$sector] TRUE
-		setTextLineTrigger LimpLine2		:AddInLimpP	" Personal "
-		pause
+	getWord CURRENTLINE $sector 1
+	setSectorParameter $sector "LIMPSEC" TRUE
+	add $DEP_LIMP 1
+	setVar $Limps[$sector] TRUE
+	setTextLineTrigger LimpLine2		:AddInLimpP	" Personal "
+	pause
 	:LimpLstBottom
-		killAllTriggers
+	killAllTriggers
 
 	return
 
 :UpdateStatus_window
-	setVar $Window_TXT ""
+setVar $Window_TXT ""
 
-	setVar $Window_TXT ($Window_TXT & " Sector    : " & $player~CURRENT_SECTOR & "*")
-	if ($UNLIM)
-		setVar $Window_TXT ($Window_TXT & " Turns     : Unlimited*")
-	else
-		setVar $CashAmount CURRENTTURNS
-		gosub :CommaSize
-		setVar $Window_TXT ($Window_TXT & " Turns     : " & $CashAmount)
-		setVar $CashAmount $Turn_Limit
-		gosub :CommaSize
-		setVar $Window_TXT ($Window_TXT & " (Turn Limit " & $CashAmount & ")*")
+setVar $Window_TXT ($Window_TXT & " Sector    : " & $player~CURRENT_SECTOR & "*")
+if ($UNLIM)
+	setVar $Window_TXT ($Window_TXT & " Turns     : Unlimited*")
+else
+	setVar $CashAmount CURRENTTURNS
+	gosub :CommaSize
+	setVar $Window_TXT ($Window_TXT & " Turns     : " & $CashAmount)
+	setVar $CashAmount $Turn_Limit
+	gosub :CommaSize
+	setVar $Window_TXT ($Window_TXT & " (Turn Limit " & $CashAmount & ")*")
+end
+
+setVar $CashAmount $PLAYER~CREDITS
+gosub :CommaSize
+setVar $Window_TXT ($Window_TXT & " Credits   : $" & $CashAmount & "*")
+
+setVar $CashAmount $player~FIGHTERS
+gosub :CommaSize
+setVar $Window_TXT ($Window_TXT & " Fighters  : " & $CashAmount & "*")
+
+setVar $CashAmount $DEP_FIGS
+gosub :CommaSize
+setVar $CashAmount1 $CashAmount
+setVar $CashAmount SECTORS
+gosub :CommaSize
+setVar $Window_TXT ($Window_TXT & " Grid      : " & $CashAmount1 & " of " & $CashAmount & "*")
+
+setVar $CashAmount $DEP_NEW
+gosub :CommaSize
+setVar $Window_TXT ($Window_TXT & " Gridded   : " & $CashAmount & "*")
+if ($TRACKER)
+	setVar $CashAmount $MCICd
+	gosub :CommaSize
+	setVar $Window_TXT ($Window_TXT & " MCIC'd    : " & $CashAmount & " ("&$Track_File&")*")
+end
+
+setVar $Window_TXT ($Window_TXT & "    ----------------: Log Entries :----------------*")
+setVar $ii 1
+
+while ($ii <= 5)
+	if ($LOG_ENTRIES[$ii] <> "")
+		setVar $Window_TXT ($Window_TXT & " " & $LOG_ENTRIES[$ii] & "*")
 	end
-
-	setVar $CashAmount $PLAYER~CREDITS
-	gosub :CommaSize
-	setVar $Window_TXT ($Window_TXT & " Credits   : $" & $CashAmount & "*")
-
-	setVar $CashAmount $player~FIGHTERS
-	gosub :CommaSize
-	setVar $Window_TXT ($Window_TXT & " Fighters  : " & $CashAmount & "*")
-
-	setVar $CashAmount $DEP_FIGS
-	gosub :CommaSize
-	setVar $CashAmount1 $CashAmount
-	setVar $CashAmount SECTORS
-	gosub :CommaSize
-	setVar $Window_TXT ($Window_TXT & " Grid      : " & $CashAmount1 & " of " & $CashAmount & "*")
-
-	setVar $CashAmount $DEP_NEW
-	gosub :CommaSize
-	setVar $Window_TXT ($Window_TXT & " Gridded   : " & $CashAmount & "*")
-	if ($TRACKER)
-		setVar $CashAmount $MCICd
-		gosub :CommaSize
-		setVar $Window_TXT ($Window_TXT & " MCIC'd    : " & $CashAmount & " ("&$Track_File&")*")
-	end
-
-	setVar $Window_TXT ($Window_TXT & "    ----------------: Log Entries :----------------*")
-	setVar $ii 1
-
-	while ($ii <= 5)
-		if ($LOG_ENTRIES[$ii] <> "")
-			setVar $Window_TXT ($Window_TXT & " " & $LOG_ENTRIES[$ii] & "*")
-		end
-    	add $ii 1
-	end
-	setWindowContents status ("*" & $Window_TXT)
-	setvar $window_content $Window_TXT
-	replacetext $window_content "*" "[][]"
-	savevar $window_content
-	return
+	add $ii 1
+end
+setWindowContents status ("*" & $Window_TXT)
+setvar $window_content $Window_TXT
+replacetext $window_content "*" "[][]"
+savevar $window_content
+return
 
 :CommaSize
-	if ($CashAmount < 1000)
-		#do nothing
-	elseif ($CashAmount < 1000000)
-    	getLength $CashAmount $len
-		setVar $len ($len - 3)
-		cutText $CashAmount $tmp 1 $len
-		cutText $CashAMount $tmp1 ($len + 1) 999
-		setVar $tmp $tmp & "," & $tmp1
-		setVar $CashAmount $tmp
-	elseif ($CashAmount <= 999999999)
-		getLength $CashAmount $len
-		setVar $len ($len - 6)
-		cutText $CashAmount $tmp 1 $len
-		setVar $tmp $tmp & ","
-		cutText $CashAmount $tmp1 ($len + 1) 3
-		setVar $tmp $tmp & $tmp1 & ","
-		cutText $CashAmount $tmp1 ($len + 4) 999
-		setVar $tmp $tmp & $tmp1
-		setVar $CashAmount $tmp
-	end
-	return
+if ($CashAmount < 1000)
+	#do nothing
+elseif ($CashAmount < 1000000)
+	getLength $CashAmount $len
+	setVar $len ($len - 3)
+	cutText $CashAmount $tmp 1 $len
+	cutText $CashAMount $tmp1 ($len + 1) 999
+	setVar $tmp $tmp & "," & $tmp1
+	setVar $CashAmount $tmp
+elseif ($CashAmount <= 999999999)
+	getLength $CashAmount $len
+	setVar $len ($len - 6)
+	cutText $CashAmount $tmp 1 $len
+	setVar $tmp $tmp & ","
+	cutText $CashAmount $tmp1 ($len + 1) 3
+	setVar $tmp $tmp & $tmp1 & ","
+	cutText $CashAmount $tmp1 ($len + 4) 999
+	setVar $tmp $tmp & $tmp1
+	setVar $CashAmount $tmp
+end
+return
 
 :Move_Down
-	setVar $LOG_ENTRIES[5] $LOG_ENTRIES[4]
-	setVar $LOG_ENTRIES[4] $LOG_ENTRIES[3]
-	setVar $LOG_ENTRIES[3] $LOG_ENTRIES[2]
-	setVar $LOG_ENTRIES[2] $LOG_ENTRIES[1]
-	setVar $LOG_ENTRIES[1] ($LOG_EVENT & " " & $LOG_TEXT)
-	return
+setVar $LOG_ENTRIES[5] $LOG_ENTRIES[4]
+setVar $LOG_ENTRIES[4] $LOG_ENTRIES[3]
+setVar $LOG_ENTRIES[3] $LOG_ENTRIES[2]
+setVar $LOG_ENTRIES[2] $LOG_ENTRIES[1]
+setVar $LOG_ENTRIES[1] ($LOG_EVENT & " " & $LOG_TEXT)
+return
 
 :getCourse
-	killalltriggers
-	setVar $sectors ""
-	setTextLineTrigger sectorlinetrig :sectorsline " > "
-	send "^f*"&$destination&"*nq"
-	pause
+killalltriggers
+setVar $sectors ""
+setTextLineTrigger sectorlinetrig :sectorsline " > "
+send "^f*"&$destination&"*nq"
+pause
 	:sectorsline
-		killAllTriggers
-		setVar $line CURRENTLINE
-		replacetext $line ">" " "
-		striptext $line "("
-		striptext $line ")"
-		setVar $line $line&" "
-		getWordPos $line $pos "So what's the point?"
-		getWordPos $line $pos2 ": ENDINTERROG"
-		getWordPos $line $pos3 "*** Error"
+	killAllTriggers
+	setVar $line CURRENTLINE
+	replacetext $line ">" " "
+	striptext $line "("
+	striptext $line ")"
+	setVar $line $line&" "
+	getWordPos $line $pos "So what's the point?"
+	getWordPos $line $pos2 ": ENDINTERROG"
+	getWordPos $line $pos3 "*** Error"
 
 	if (($pos > 0) OR ($pos2 > 0))
-		setVar $courseLength 0
-		return
+	setVar $courseLength 0
+	return
 	end
 	getWordPos $line $pos " sector "
 	getWordPos $line $pos2 "TO"
 	if (($pos <= 0) AND ($pos2 <= 0))
-		setVar $sectors $sectors & " " & $line
+	setVar $sectors $sectors & " " & $line
 	end
-		getWordPos $line $pos " "&$destination&" "
-		getWordPos $line $pos2 "("&$destination&")"
-		getWordPos $line $pos3 "TO"
-		if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
-			goto :gotSectors
-		end
+	getWordPos $line $pos " "&$destination&" "
+	getWordPos $line $pos2 "("&$destination&")"
+	getWordPos $line $pos3 "TO"
+	if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
+		goto :gotSectors
+	end
 	:waitForNextCourseLine
-		setTextLineTrigger sectorlinetrig :sectorsline " > "
-		setTextLineTrigger sectorlinetrig2 :sectorsline " "&$destination&" "
-		setTextLineTrigger sectorlinetrig3 :sectorsline " "&$destination
-		setTextLineTrigger sectorlinetrig4 :sectorsline "("&$destination&")"
-		setTextLineTrigger donePath :sectorsline "So what's the point?"
-		setTextLineTrigger donePath2 :sectorsline ": ENDINTERROG"
-		pause
+	setTextLineTrigger sectorlinetrig :sectorsline " > "
+	setTextLineTrigger sectorlinetrig2 :sectorsline " "&$destination&" "
+	setTextLineTrigger sectorlinetrig3 :sectorsline " "&$destination
+	setTextLineTrigger sectorlinetrig4 :sectorsline "("&$destination&")"
+	setTextLineTrigger donePath :sectorsline "So what's the point?"
+	setTextLineTrigger donePath2 :sectorsline ": ENDINTERROG"
+	pause
 
 :gotSectors
-	killAllTriggers
-	setVar $sectors $sectors&" :::"
-	setVar $courseLength 0
-	setVar $index 1
+killAllTriggers
+setVar $sectors $sectors&" :::"
+setVar $courseLength 0
+setVar $index 1
 	:keepGoing
 	if ($sectors = " FM     :::")
 		return
@@ -1539,67 +1541,67 @@
 	return
 
 :Haggel_Checker
-	killAllTriggers
-	#
-	#	Been a few double ups so making some changes!
-	#		We need to trade on one of three conditions
-	#		- Low Ore and they sell ore
-	#		- Low Equip and they sell Equip
-	#		- Buy Equip and no MCIC
+killAllTriggers
+#
+#	Been a few double ups so making some changes!
+#		We need to trade on one of three conditions
+#		- Low Ore and they sell ore
+#		- Low Equip and they sell Equip
+#		- Buy Equip and no MCIC
 
-		setVar $dotrade 0
-		if (($player~ore_holds < 75) and (PORT.BUYFUEL[$player~CURRENT_SECTOR] = 0))
-			setVar $dotrade 1
-		elseif (($player~equipment_holds < $EQU_MIN_BUY) and (PORT.BUYEQUIP[$player~CURRENT_SECTOR] = 0))
-			setVar $dotrade 1
-		elseif ((PORT.BUYEQUIP[$player~CURRENT_SECTOR] = 1) and ($MCIC[$player~CURRENT_SECTOR] = FALSE))
-			setVar $dotrade 1
-		end
-		if ($dotrade = 0)
-			return
-		end
-	# End addition
+	setVar $dotrade 0
+	if (($player~ore_holds < 75) and (PORT.BUYFUEL[$player~CURRENT_SECTOR] = 0))
+		setVar $dotrade 1
+	elseif (($player~equipment_holds < $EQU_MIN_BUY) and (PORT.BUYEQUIP[$player~CURRENT_SECTOR] = 0))
+		setVar $dotrade 1
+	elseif ((PORT.BUYEQUIP[$player~CURRENT_SECTOR] = 1) and ($MCIC[$player~CURRENT_SECTOR] = FALSE))
+		setVar $dotrade 1
+	end
+	if ($dotrade = 0)
+		return
+	end
+# End addition
 
-		setVar $restoreHaggle 0
-		if (HAGGLE)
-			setVar $restoreHaggle 1
-			autohaggle off
-		end
+	setVar $restoreHaggle 0
+	if (HAGGLE)
+		setVar $restoreHaggle 1
+		autohaggle off
+	end
 
-		setVar $EQU_NEED2BUY ($EQU_MIN - $player~equipment_holds)
-		setVar $ORE_NEED2BUY (($player~total_holds - $EQU_MIN) - $player~ore_holds)
-	if (PORT.CLASS[$player~CURRENT_SECTOR] = 1) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 5) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 6) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 7) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 3) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 4) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 2)
-			#send "CR*Q"
-			#waiton "<Computer deactivated>"
-			#if (PORT.EQUIP[$player~CURRENT_SECTOR] >= $EQU_NEED2BUY) AND ($EQU_NEED2BUY <> 0)
-			setVar $tradeStarted 0
-			setTextTrigger noPort :noPort "Corp Menu"
-			send "pt"
-			Waiton "<Port>"
-			setTextTrigger	noFuel		:noFuel		"How many holds of Fuel Ore do you want to buy"
-			setTextTrigger	noOrg		:noOrg		"How many holds of Organics do you want to buy"
-			setTextTrigger	equp		:equp		"How many holds of Equipment do you want to sell ["
-			setTextTrigger	buyequp		:buyequp	"How many holds of Equipment do you want to buy"
-			setTextTrigger	nosell		:nosell		"You don't have anything they want"
-			setTextTrigger	fuelsell 	:fuelsell	"How many holds of Fuel Ore do you want to sell"
-			setTextTrigger	orgSell 	:orgSell	"How many holds of Organics do you want to sell"
-			setTextTrigger	offer		:offer		"Your offer ["
-			setTextTrigger	finaloffer	:offer		"Our final offer"
-			setTextTrigger	done		:done		"Command [TL"
-			pause
+	setVar $EQU_NEED2BUY ($EQU_MIN - $player~equipment_holds)
+	setVar $ORE_NEED2BUY (($player~total_holds - $EQU_MIN) - $player~ore_holds)
+if (PORT.CLASS[$player~CURRENT_SECTOR] = 1) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 5) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 6) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 7) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 3) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 4) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 2)
+		#send "CR*Q"
+		#waiton "<Computer deactivated>"
+		#if (PORT.EQUIP[$player~CURRENT_SECTOR] >= $EQU_NEED2BUY) AND ($EQU_NEED2BUY <> 0)
+		setVar $tradeStarted 0
+		setTextTrigger noPort :noPort "Corp Menu"
+		send "pt"
+		Waiton "<Port>"
+		setTextTrigger	noFuel		:noFuel		"How many holds of Fuel Ore do you want to buy"
+		setTextTrigger	noOrg		:noOrg		"How many holds of Organics do you want to buy"
+		setTextTrigger	equp		:equp		"How many holds of Equipment do you want to sell ["
+		setTextTrigger	buyequp		:buyequp	"How many holds of Equipment do you want to buy"
+		setTextTrigger	nosell		:nosell		"You don't have anything they want"
+		setTextTrigger	fuelsell 	:fuelsell	"How many holds of Fuel Ore do you want to sell"
+		setTextTrigger	orgSell 	:orgSell	"How many holds of Organics do you want to sell"
+		setTextTrigger	offer		:offer		"Your offer ["
+		setTextTrigger	finaloffer	:offer		"Our final offer"
+		setTextTrigger	done		:done		"Command [TL"
+		pause
 			:noPort
-				killAllTriggers
-				gosub :RestoreHaggle
-				Echo "***Hmmm.. where'd the port go?!?**"
-				halt
+			killAllTriggers
+			gosub :RestoreHaggle
+			Echo "***Hmmm.. where'd the port go?!?**"
+			halt
 			:done
-				if ($tradeStarted = 0)
-					setTextTrigger	done		:done		"Command [TL"
-					pause
-				end
-				killAllTriggers
-				gosub :RestoreHaggle
-				return
+			if ($tradeStarted = 0)
+				setTextTrigger	done		:done		"Command [TL"
+				pause
+			end
+			killAllTriggers
+			gosub :RestoreHaggle
+			return
 			:noFuel
 			setVar $tradeStarted 1
         		if ($ORE_NEED2BUY >= 1)
@@ -1665,19 +1667,19 @@
 	gosub :RestoreHaggle
 	return
 :RestoreHaggle
-	if ($restoreHaggle = 1)
-		autohaggle on
-		setVar $restoreHaggle 0
-	end
-	return
+if ($restoreHaggle = 1)
+	autohaggle on
+	setVar $restoreHaggle 0
+end
+return
 :Do_Holo
-	setArray $HoloOutput 2000
-	setVar $Line_Pointer 1
-                	send "SzH*  "
-	setTextLineTrigger	TurnsGone		:TurnsGone		"Do you want instructions (Y/N) [N]?"
-	setTextLineTrigger	DoneScan		:DoneScan		"Warps to Sector(s) :"
+setArray $HoloOutput 2000
+setVar $Line_Pointer 1
+            	send "SzH*  "
+setTextLineTrigger	TurnsGone		:TurnsGone		"Do you want instructions (Y/N) [N]?"
+setTextLineTrigger	DoneScan		:DoneScan		"Warps to Sector(s) :"
 
-	waiton "Long Range Scan"
+waiton "Long Range Scan"
     :reset_trigger
 	setTextLineTrigger holo_line :holo_line
 	pause
@@ -1693,20 +1695,20 @@
 	return
 
 :Display_Holo
-	setVar $Holo_i 1
-	setVar $Holo_ptr 1
-	setVar $Holo_s ""
-	setVar $AvoidFlag ""
-	while (SECTOR.WARPS[$player~CURRENT_SECTOR][$Holo_i] > 0)
-		setVar $Holo_adj SECTOR.WARPS[$player~CURRENT_SECTOR][$Holo_i]
-		if ((SECTOR.PLANETCOUNT[$Holo_adj] > 0) OR (SECTOR.TRADERCOUNT[$Holo_adj] > 0) OR (SECTOR.SHIPCOUNT[$Holo_adj] > 0))
-	       		setVar $figOwner SECTOR.FIGS.OWNER[$Holo_adj]
-			if ((SECTOR.FIGS.QUANTITY[$Holo_adj] >= 100) AND (($figOwner <> "belong to your Corp") OR ($figOwner <> "yours")))
-				while ($Holo_ptr <= $Line_Pointer)
-	            			getWordPos $HoloOutput[$Holo_ptr] $Holo_pos ("Sector  : " & $Holo_adj)
-	            			setVar $AvoidFlag ($AvoidFlag & " " & $Holo_adj)
-					if ($Holo_pos <> 0)
-						setvar $Holo_s ($Holo_s & $HoloOutput[$Holo_ptr] & "*")
+setVar $Holo_i 1
+setVar $Holo_ptr 1
+setVar $Holo_s ""
+setVar $AvoidFlag ""
+while (SECTOR.WARPS[$player~CURRENT_SECTOR][$Holo_i] > 0)
+	setVar $Holo_adj SECTOR.WARPS[$player~CURRENT_SECTOR][$Holo_i]
+	if ((SECTOR.PLANETCOUNT[$Holo_adj] > 0) OR (SECTOR.TRADERCOUNT[$Holo_adj] > 0) OR (SECTOR.SHIPCOUNT[$Holo_adj] > 0))
+       		setVar $figOwner SECTOR.FIGS.OWNER[$Holo_adj]
+		if ((SECTOR.FIGS.QUANTITY[$Holo_adj] >= 100) AND (($figOwner <> "belong to your Corp") OR ($figOwner <> "yours")))
+			while ($Holo_ptr <= $Line_Pointer)
+            			getWordPos $HoloOutput[$Holo_ptr] $Holo_pos ("Sector  : " & $Holo_adj)
+            			setVar $AvoidFlag ($AvoidFlag & " " & $Holo_adj)
+				if ($Holo_pos <> 0)
+					setvar $Holo_s ($Holo_s & $HoloOutput[$Holo_ptr] & "*")
 						:Lets_Go_Again
 						add $Holo_ptr 1
 						getWordPos $HoloOutput[$Holo_ptr] $pos "Warps to Sector(s) :"
@@ -1726,7 +1728,7 @@
     	add $Holo_i 1
 	end
 
-	SetVar	$HOLO_TARGETS	"LSHRED_" & GAMENAME & ".log"
+	SetVar	$HOLO_TARGETS	$bot~folder&"/LSHRED_" & GAMENAME & ".log"
 	if ($Holo_s <> "")
 		send "'*["&$TagLineB&"] SCAN RESULTS----------------------[ADJ SECTOR: " & CURRENTSECTOR & "*"
 		send $Holo_s & "* "
@@ -1736,28 +1738,28 @@
 	
 :resetMinesAfterRestock
 
-	if (($DROP_ARMID > 0) and ($DROP_LIMP > 0))
-		setVar $DROPING_MINES 3
-	elseif ($DROP_ARMID > 0)
+if (($DROP_ARMID > 0) and ($DROP_LIMP > 0))
+	setVar $DROPING_MINES 3
+elseif ($DROP_ARMID > 0)
 
-		setVar $DROPING_MINES 2
-	elseif ($DROP_LIMP > 0)
+	setVar $DROPING_MINES 2
+elseif ($DROP_LIMP > 0)
 
-		setVar $DROPING_MINES 1
-	else
-		setVar $DROPING_MINES 0
-	end
+	setVar $DROPING_MINES 1
+else
+	setVar $DROPING_MINES 0
+end
 return
 
 
 :getPersonalPlanets
 
-	# Planet list from personal planets - relies on no shields being present
-	setVar $planet~planetsInSectors SECTORS
+# Planet list from personal planets - relies on no shields being present
+setVar $planet~planetsInSectors SECTORS
 
-	send "cyq"
-	waitfor "<Computer activated>"
-	waitfor "Sector  Planet Name"
+send "cyq"
+waitfor "<Computer activated>"
+waitfor "Sector  Planet Name"
 
 	:pread
 	setTextLineTrigger pread1 :pread1 "#" 
@@ -1765,13 +1767,13 @@ return
 	setTextLineTrigger preadDone2 :preadDone "No Planets claimed"
 	pause
 	:pread1
-		killAllTriggers
-		getWord CURRENTLINE $sector 1
-		add $planet~planetsInSectors[$sector] 1
-		goto :pread
+	killAllTriggers
+	getWord CURRENTLINE $sector 1
+	add $planet~planetsInSectors[$sector] 1
+	goto :pread
 	
 	:preadDone
-		killAllTriggers
+	killAllTriggers
 	return
 
 

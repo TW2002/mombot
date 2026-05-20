@@ -3,6 +3,6 @@ setTextOutTrigger fed :fed "`"
 pause
 
 :fed
-	send "'"
-	setTextOutTrigger fed :fed "`"
-	pause
+send "'"
+setTextOutTrigger fed :fed "`"
+pause

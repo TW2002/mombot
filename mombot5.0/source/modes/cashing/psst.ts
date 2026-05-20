@@ -287,9 +287,10 @@ include "source\include\player"
 
 
 
-setvar $BUST_FILE "MOM_"&GAMENAME&"_Busts.txt"
-setvar $FIG_FILE "MOM_"&GAMENAME&"_Fighter_Grid.txt"
-setvar $FIG_COUNT_FILE "MOM_"&GAMENAME&"_Fighter_Grid_Count.cnt"
+loadvar $bot~folder
+setvar $BUST_FILE $bot~folder&"/MOM_"&GAMENAME&"_Busts.txt"
+setvar $FIG_FILE $bot~folder&"/MOM_"&GAMENAME&"_Fighter_Grid.txt"
+setvar $FIG_COUNT_FILE $bot~folder&"/MOM_"&GAMENAME&"_Fighter_Grid_Count.cnt"
 loadvar $STEAL_FACTOR
 loadvar $UNLIMITEDGAME
 loadvar $BOT_TURN_LIMIT

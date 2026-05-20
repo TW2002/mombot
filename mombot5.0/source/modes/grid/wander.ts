@@ -161,49 +161,49 @@
 	while (true)
 		setVar $tried_paths " "
 		:try_again
-			setVar $tried 0
-			setvar $loop_limit 100
-			setvar $loop 0
+		setVar $tried 0
+		setvar $loop_limit 100
+		setvar $loop 0
 		:get_new_random_path
-			replaceText $database "  " " "
-			if ($nearest = TRUE)
-				getNearestWarps $nearArray $player~current_sector
-				setVar $i 1
-				setvar $destination 0
-				while ($i <= $nearArray)
-					setVar $focus $nearArray[$i]
-					getSectorParameter $focus "FIGSEC" $isFigged
-					getWordPos $database $pos " "&$focus&" "
-					if (($isFigged <> TRUE) and ($pos > 0))
-                        getDistance $distanceThere $player~current_sector $focus
-                        getDistance $distanceBack $focus $player~current_sector
-                        if ($distanceThere < 0)
-                                send "^f"&$player~current_sector&"*"&$focus&"*q"
-                                waitOn "ENDINTERROG"
-                                getDistance $distanceThere $player~current_sector $focus
-                        end
-                        if ($distanceBack < 0)
-                                send "^f"&$focus&"*"&$player~current_sector&"*q"
-                                waitOn "ENDINTERROG"
-                                getDistance $distanceBack $focus $player~current_sector
-                        end
-                        setvar $destination $focus
-						goto :check_answer
-					end
-					add $i 1
+		replaceText $database "  " " "
+		if ($nearest = TRUE)
+			getNearestWarps $nearArray $player~current_sector
+			setVar $i 1
+			setvar $destination 0
+			while ($i <= $nearArray)
+				setVar $focus $nearArray[$i]
+				getSectorParameter $focus "FIGSEC" $isFigged
+				getWordPos $database $pos " "&$focus&" "
+				if (($isFigged <> TRUE) and ($pos > 0))
+                    getDistance $distanceThere $player~current_sector $focus
+                    getDistance $distanceBack $focus $player~current_sector
+                    if ($distanceThere < 0)
+                            send "^f"&$player~current_sector&"*"&$focus&"*q"
+                            waitOn "ENDINTERROG"
+                            getDistance $distanceThere $player~current_sector $focus
+                    end
+                    if ($distanceBack < 0)
+                            send "^f"&$focus&"*"&$player~current_sector&"*q"
+                            waitOn "ENDINTERROG"
+                            getDistance $distanceBack $focus $player~current_sector
+                    end
+                    setvar $destination $focus
+					goto :check_answer
 				end
-			else
-				getRnd $random 1 $databaseCount
-				getWord $database $destination $random
-				getWordPos $tried_paths $pos " "&$destination&" "
-				if (($destination <> 0) AND ($pos > 0))
-					add $loop 1
-					if ($loop > $loop_limit)
-						goto :stop_gridder
-					end
-					goto :get_new_random_path
-				end
+				add $i 1
 			end
+		else
+			getRnd $random 1 $databaseCount
+			getWord $database $destination $random
+			getWordPos $tried_paths $pos " "&$destination&" "
+			if (($destination <> 0) AND ($pos > 0))
+				add $loop 1
+				if ($loop > $loop_limit)
+					goto :stop_gridder
+				end
+				goto :get_new_random_path
+			end
+		end
 		:check_answer
 		setvar $stripped_database $database
 		replaceText $stripped_database " " ""
@@ -496,49 +496,49 @@
 				end
 				//check for adjacent non-figged sectors without twarping away first.
 				:checkForAdjacent
-					gosub :PLAYER~quikstats
-					setvar $i 1
-					setvar $isFigged false
-					setvar $adjacentTarget 0
-					while ((SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i] > 0) and ($isFigged <> TRUE))
-						getSectorParameter SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i] "FIGSEC" $isFigged
-						if (($isFigged <> TRUE) and (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i] > 10) AND (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i] <> $MAP~STARDOCK))
-							setVar $adjacentTarget SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i]
-						end
-						add $i 1
+				gosub :PLAYER~quikstats
+				setvar $i 1
+				setvar $isFigged false
+				setvar $adjacentTarget 0
+				while ((SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i] > 0) and ($isFigged <> TRUE))
+					getSectorParameter SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i] "FIGSEC" $isFigged
+					if (($isFigged <> TRUE) and (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i] > 10) AND (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i] <> $MAP~STARDOCK))
+						setVar $adjacentTarget SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i]
 					end
-					if ($adjacentTarget > 0)
-						setVar $result "m  "&$adjacentTarget&"* "
-						setVar $player~current_sector $adjacentTarget
-						saveVar $player~current_sector
-						setVar $figsToDrop 1
-						add $total_turns $player~turns_per_warp
-						if (($adjacentTarget > 10) AND ($adjacentTarget <> $MAP~STARDOCK))
-							setVar $result $result&"za"&$maxFigAttack&"* z * "	
-						end
-						if (($adjacentTarget > 10) AND ($adjacentTarget <> $MAP~STARDOCK))
-							setVar $result $result&"f "&$figsToDrop&"* c d *"
-							getSectorParameter $adjacentTarget "FIGSEC" $isFigged
-							if ($isfigged <> true)
-								add $total_gridded 1
-								setSectorParameter $adjacentTarget "FIGSEC" TRUE
-								setvar $figged_sectors $figged_sectors&" "&$adjacentTarget&" "
-
-								gosub :window
-							end
-							setVar $temp " "&$adjacentTarget&" "
-							getWordPos $database $pos $temp
-							if ($pos > 0)
-								replaceText $database $temp " "
-								subtract $databasecount 1	
-							end
-						end
-						setVar $result $result&"**   "
-						send $result
-						goto :checkForAdjacent
-					else
-
+					add $i 1
+				end
+				if ($adjacentTarget > 0)
+					setVar $result "m  "&$adjacentTarget&"* "
+					setVar $player~current_sector $adjacentTarget
+					saveVar $player~current_sector
+					setVar $figsToDrop 1
+					add $total_turns $player~turns_per_warp
+					if (($adjacentTarget > 10) AND ($adjacentTarget <> $MAP~STARDOCK))
+						setVar $result $result&"za"&$maxFigAttack&"* z * "	
 					end
+					if (($adjacentTarget > 10) AND ($adjacentTarget <> $MAP~STARDOCK))
+						setVar $result $result&"f "&$figsToDrop&"* c d *"
+						getSectorParameter $adjacentTarget "FIGSEC" $isFigged
+						if ($isfigged <> true)
+							add $total_gridded 1
+							setSectorParameter $adjacentTarget "FIGSEC" TRUE
+							setvar $figged_sectors $figged_sectors&" "&$adjacentTarget&" "
+
+							gosub :window
+						end
+						setVar $temp " "&$adjacentTarget&" "
+						getWordPos $database $pos $temp
+						if ($pos > 0)
+							replaceText $database $temp " "
+							subtract $databasecount 1	
+						end
+					end
+					setVar $result $result&"**   "
+					send $result
+					goto :checkForAdjacent
+				else
+
+				end
 
 			else
 
@@ -561,124 +561,124 @@
 
 
 :findAllTargetSectors
-	setVar $targetSectorCount 11
-	setVar $databaseCount 0
-	setVar $database ""
-	setVar $adjacentDatabase ""
+setVar $targetSectorCount 11
+setVar $databaseCount 0
+setVar $database ""
+setVar $adjacentDatabase ""
 
-	echo ANSI_14 "* Loading target sectors..*" ANSI_7
-	setVar $perc 0
-	if ($gridTargets)
-		setVar $m 1
-		while ($m <= $targetSectors)
-			setVar $destination $targetSectors[$m]
-			getSectorParameter $destination "FIGSEC"  $isFigged
-			if ($isFigged = "")
-				setVar $isFigged FALSE
-			end
-			#gosub :getCourses
-
-			stripText $destination " "
-			if (($isFigged <= 0) and ($destination > 10) and ($destination <> $map~stardock))
-				setVar $database $database&" "&$destination&" "
-				setVar $isFound TRUE
-				add $databaseCount 1
-			end
-			setVar $percTest (($m * 100) / $targetSectors)
-			if ($percTest > $perc)
-				setVar $perc (($m * 100) / $targetSectors)
-				echo "*"
-				echo #27 "["&($perc / 2)&"C"
-				echo ANSI_14 "°" ANSI_15 " " $perc "%" #27 & "[1A   "
-			end
-			add $m 1
+echo ANSI_14 "* Loading target sectors..*" ANSI_7
+setVar $perc 0
+if ($gridTargets)
+	setVar $m 1
+	while ($m <= $targetSectors)
+		setVar $destination $targetSectors[$m]
+		getSectorParameter $destination "FIGSEC"  $isFigged
+		if ($isFigged = "")
+			setVar $isFigged FALSE
 		end
+		#gosub :getCourses
 
-	else
-		while ($targetSectorCount <= SECTORS)
-			getSectorParameter $targetSectorCount "FIGSEC"  $isFigged
-			if ($isFigged = "")
-				setVar $isFigged FALSE
-			end
-			if (($isFigged <= 0) AND ($targetSectorCount <> $MAP~stardock))
-				setVar $database $database&" "&$targetSectorCount&" "
-				setVar $isFound TRUE
-				add $databaseCount 1
-			end
-			setVar $percTest (($targetSectorCount * 100) / SECTORS)
-			if ($percTest > $perc)
-				setVar $perc (($targetSectorCount * 100) / SECTORS)
-				echo "*"
-				echo #27 "["&($perc / 2)&"C"
-				echo ANSI_14 "°" ANSI_15 " " $perc "%" #27 & "[1A   "
-			end
-			add $targetSectorCount 1
-
+		stripText $destination " "
+		if (($isFigged <= 0) and ($destination > 10) and ($destination <> $map~stardock))
+			setVar $database $database&" "&$destination&" "
+			setVar $isFound TRUE
+			add $databaseCount 1
 		end
+		setVar $percTest (($m * 100) / $targetSectors)
+		if ($percTest > $perc)
+			setVar $perc (($m * 100) / $targetSectors)
+			echo "*"
+			echo #27 "["&($perc / 2)&"C"
+			echo ANSI_14 "°" ANSI_15 " " $perc "%" #27 & "[1A   "
+		end
+		add $m 1
 	end
-	setVar $SWITCHBOARD~message " "&$databaseCount&" target sectors without fighters found.*"
+
+else
+	while ($targetSectorCount <= SECTORS)
+		getSectorParameter $targetSectorCount "FIGSEC"  $isFigged
+		if ($isFigged = "")
+			setVar $isFigged FALSE
+		end
+		if (($isFigged <= 0) AND ($targetSectorCount <> $MAP~stardock))
+			setVar $database $database&" "&$targetSectorCount&" "
+			setVar $isFound TRUE
+			add $databaseCount 1
+		end
+		setVar $percTest (($targetSectorCount * 100) / SECTORS)
+		if ($percTest > $perc)
+			setVar $perc (($targetSectorCount * 100) / SECTORS)
+			echo "*"
+			echo #27 "["&($perc / 2)&"C"
+			echo ANSI_14 "°" ANSI_15 " " $perc "%" #27 & "[1A   "
+		end
+		add $targetSectorCount 1
+
+	end
+end
+setVar $SWITCHBOARD~message " "&$databaseCount&" target sectors without fighters found.*"
+gosub :SWITCHBOARD~switchboard
+if ($databaseCount <= 0)
+	setVar $SWITCHBOARD~message " Wandered everywhere I could go... Refresh fighters and update warp data to verify..*"
 	gosub :SWITCHBOARD~switchboard
-	if ($databaseCount <= 0)
-		setVar $SWITCHBOARD~message " Wandered everywhere I could go... Refresh fighters and update warp data to verify..*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
+	halt
+end
 return
 
 :callSaveMe
-	send "'"&CURRENTSECTOR&"=saveme*q q q q * '"&$switchboard~bot_name&" call*"
+send "'"&CURRENTSECTOR&"=saveme*q q q q * '"&$switchboard~bot_name&" call*"
 halt
 
 :getCourses
-	killalltriggers
-	setArray $COURSE 80
-	setVar $courseLength 0
-	setVar $sectors ""
-	setTextLineTrigger sectorlinetrig :sectorsline " > "
-	send "^f*"&$destination&"**q"
-	pause
+killalltriggers
+setArray $COURSE 80
+setVar $courseLength 0
+setVar $sectors ""
+setTextLineTrigger sectorlinetrig :sectorsline " > "
+send "^f*"&$destination&"**q"
+pause
 
 
 :sectorsline
-	killAllTriggers
-	setVar $line CURRENTLINE
-	replacetext $line ">" " "
-	striptext $line "("
-	striptext $line ")"
-	setVar $line $line&" "
-	getWordPos $line $pos "So what's the point?"
-	getWordPos $line $pos2 ": ENDINTERROG"
-	if (($pos > 0) OR ($pos2 > 0))
-		goto :noPath
-	end
-	getWordPos $line $pos " sector "
-	getWordPos $line $pos2 "TO"
-	if (($pos <= 0) AND ($pos2 <= 0))
-		setVar $sectors $sectors & " " & $line
-	end
-	getWordPos $line $pos " "&$destination&" "
-	getWordPos $line $pos2 "("&$destination&")"
-	getWordPos $line $pos3 "TO"
-	if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
-		goto :gotSectors
-	else
-		setTextLineTrigger sectorlinetrig :sectorsline " > "
-		setTextLineTrigger sectorlinetrig2 :sectorsline " "&$destination&" "
-		setTextLineTrigger sectorlinetrig3 :sectorsline " "&$destination
-		setTextLineTrigger sectorlinetrig4 :sectorsline "("&$destination&")"
-		setTextLineTrigger donePath :sectorsline "So what's the point?"
-		setTextLineTrigger donePath2 :sectorsline ": ENDINTERROG"
-	end
-	pause
+killAllTriggers
+setVar $line CURRENTLINE
+replacetext $line ">" " "
+striptext $line "("
+striptext $line ")"
+setVar $line $line&" "
+getWordPos $line $pos "So what's the point?"
+getWordPos $line $pos2 ": ENDINTERROG"
+if (($pos > 0) OR ($pos2 > 0))
+	goto :noPath
+end
+getWordPos $line $pos " sector "
+getWordPos $line $pos2 "TO"
+if (($pos <= 0) AND ($pos2 <= 0))
+	setVar $sectors $sectors & " " & $line
+end
+getWordPos $line $pos " "&$destination&" "
+getWordPos $line $pos2 "("&$destination&")"
+getWordPos $line $pos3 "TO"
+if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
+	goto :gotSectors
+else
+	setTextLineTrigger sectorlinetrig :sectorsline " > "
+	setTextLineTrigger sectorlinetrig2 :sectorsline " "&$destination&" "
+	setTextLineTrigger sectorlinetrig3 :sectorsline " "&$destination
+	setTextLineTrigger sectorlinetrig4 :sectorsline "("&$destination&")"
+	setTextLineTrigger donePath :sectorsline "So what's the point?"
+	setTextLineTrigger donePath2 :sectorsline ": ENDINTERROG"
+end
+pause
 
 :gotSectors
-	killAllTriggers
-	setVar $sectors $sectors&" :::"
-	setVar $courseLength 0
-	setVar $courseFighters 0
-	setVar $index 1
-	setVar $valid FALSE
-	setvar $course_print ""
+killAllTriggers
+setVar $sectors $sectors&" :::"
+setVar $courseLength 0
+setVar $courseFighters 0
+setVar $index 1
+setVar $valid FALSE
+setvar $course_print ""
 	:keepGoing
 	getWord $sectors $COURSE[$index] $index
 	while ($COURSE[$index] <> ":::")
@@ -704,123 +704,123 @@ halt
 	end
 						
 :noPath
-	killAllTriggers
+killAllTriggers
 
-	if (($gridTargets <> TRUE) AND ($PLAYER~unlimitedGame <> TRUE) AND ($tried <= 0) AND ($nearest <> TRUE))
-		if (($courseLength <= 10) AND (($courseLength - $courseFighters) <= 0)) OR (($courseLength > 10) AND ($player~fuel_ore < 150) AND (($courseLength - $courseFighters) <= 3))
-			setVar $valid FALSE
-		end
+if (($gridTargets <> TRUE) AND ($PLAYER~unlimitedGame <> TRUE) AND ($tried <= 0) AND ($nearest <> TRUE))
+	if (($courseLength <= 10) AND (($courseLength - $courseFighters) <= 0)) OR (($courseLength > 10) AND ($player~fuel_ore < 150) AND (($courseLength - $courseFighters) <= 3))
+		setVar $valid FALSE
 	end
-	if (($valid = TRUE) AND ($tried <= 0))
-		setVar $window_content $course_print&"[][]Total turns: "&$total_turns&"[][]Total gridded: "&$total_gridded&"[][]"
-		savevar $window_content
-	end
+end
+if (($valid = TRUE) AND ($tried <= 0))
+	setVar $window_content $course_print&"[][]Total turns: "&$total_turns&"[][]Total gridded: "&$total_gridded&"[][]"
+	savevar $window_content
+end
 return
 
 
 :window
-	setVar $c 2
-	setvar $course_print ""
-	while ($c <= $courseLength)
-		getSectorParameter $COURSE[$c] "FIGSEC"  $isFigged
-		if ($isFigged) 
-			if ($twarp_to = $course[$c])
-				setvar $course_print $course_print&" ->["&$course[$c]&"]<-"
+setVar $c 2
+setvar $course_print ""
+while ($c <= $courseLength)
+	getSectorParameter $COURSE[$c] "FIGSEC"  $isFigged
+	if ($isFigged) 
+		if ($twarp_to = $course[$c])
+			setvar $course_print $course_print&" ->["&$course[$c]&"]<-"
+		else
+			if ($twarp_from = $course[$c])
+				setvar $course_print $course_print&" ["&$course[$c]&"]-->"	
 			else
-				if ($twarp_from = $course[$c])
-					setvar $course_print $course_print&" ["&$course[$c]&"]-->"	
-				else
-					setvar $course_print $course_print&" ["&$course[$c]&"]"	
-				end
-			end		
-		else
-			setvar $course_print $course_print&" "&$course[$c]
-		end	
-		add $c 1
-	end
-	setVar $window_content $course_print&"[][]Total turns: "&$total_turns&"[][]Total gridded: "&$total_gridded&"[][]"
-	if ($nearest = true)
-		setVar $window_content $window_content&"Nearest unfigged: "&$destination&" ("&$distanceThere&" hop(s))[][]"
-	end
-	#if ($adjacentTarget > 0)
-	#	setVar $window_content $window_content&"Adjacent Sector: "&$adjacentTarget&"[][]"
-	#else
-	#	setVar $window_content $window_content&"No Adjacent Sector Found [][] [][]"
-	#end
+				setvar $course_print $course_print&" ["&$course[$c]&"]"	
+			end
+		end		
+	else
+		setvar $course_print $course_print&" "&$course[$c]
+	end	
+	add $c 1
+end
+setVar $window_content $course_print&"[][]Total turns: "&$total_turns&"[][]Total gridded: "&$total_gridded&"[][]"
+if ($nearest = true)
+	setVar $window_content $window_content&"Nearest unfigged: "&$destination&" ("&$distanceThere&" hop(s))[][]"
+end
+#if ($adjacentTarget > 0)
+#	setVar $window_content $window_content&"Adjacent Sector: "&$adjacentTarget&"[][]"
+#else
+#	setVar $window_content $window_content&"No Adjacent Sector Found [][] [][]"
+#end
 	
-	setvar $i 1
-	setvar $isFigged false
-	setarray $displayArray 6
-	setvar $displayArray[1] "     "
-	setvar $displayArray[2] "     "
-	setvar $displayArray[3] "     "
-	setvar $displayArray[4] "     "
-	setvar $displayArray[5] "     "
-	setvar $displayArray[6] "     "
+setvar $i 1
+setvar $isFigged false
+setarray $displayArray 6
+setvar $displayArray[1] "     "
+setvar $displayArray[2] "     "
+setvar $displayArray[3] "     "
+setvar $displayArray[4] "     "
+setvar $displayArray[5] "     "
+setvar $displayArray[6] "     "
 
-	while ((SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i] > 0) and ($isFigged <> TRUE))
-		getSectorParameter SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i] "FIGSEC" $isFigged
-		if ($isFigged <> TRUE)
-			setVar $displayArray[$i] SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i]
-		else
-			setVar $displayArray[$i] "["&SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i]&"]"
-		end
-		add $i 1
+while ((SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i] > 0) and ($isFigged <> TRUE))
+	getSectorParameter SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i] "FIGSEC" $isFigged
+	if ($isFigged <> TRUE)
+		setVar $displayArray[$i] SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i]
+	else
+		setVar $displayArray[$i] "["&SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i]&"]"
 	end
+	add $i 1
+end
 
-	getSectorParameter $PLAYER~CURRENT_SECTOR "FIGSEC" $isFigged
-	if ($isFigged = TRUE)
-		setvar $displayCenter "["&$PLAYER~CURRENT_SECTOR&"]"
-	else
-		setvar $displayCenter $PLAYER~CURRENT_SECTOR
-	end
+getSectorParameter $PLAYER~CURRENT_SECTOR "FIGSEC" $isFigged
+if ($isFigged = TRUE)
+	setvar $displayCenter "["&$PLAYER~CURRENT_SECTOR&"]"
+else
+	setvar $displayCenter $PLAYER~CURRENT_SECTOR
+end
 
-	setvar $window_content $window_content&$displayArray[1]&"  "&$displayArray[5]&"  "&$displayArray[2]&"[][]"
-	setvar $window_content $window_content&"        "
-	if ($displayArray[1] <> "     ")
-		setvar $window_content $window_content&"\"
-	else
-		setvar $window_content $window_content&" "
-	end
-	setvar $window_content $window_content&"   "
-	if ($displayArray[5] <> "     ")
-		setvar $window_content $window_content&"|"
-	else
-		setvar $window_content $window_content&" "
-	end
-	setvar $window_content $window_content&"  "
-	if ($displayArray[2] <> "     ")
-		setvar $window_content $window_content&"/"
-	else
-		setvar $window_content $window_content&" "
-	end
-	setvar $window_content $window_content&"[][]"
+setvar $window_content $window_content&$displayArray[1]&"  "&$displayArray[5]&"  "&$displayArray[2]&"[][]"
+setvar $window_content $window_content&"        "
+if ($displayArray[1] <> "     ")
+	setvar $window_content $window_content&"\"
+else
+	setvar $window_content $window_content&" "
+end
+setvar $window_content $window_content&"   "
+if ($displayArray[5] <> "     ")
+	setvar $window_content $window_content&"|"
+else
+	setvar $window_content $window_content&" "
+end
+setvar $window_content $window_content&"  "
+if ($displayArray[2] <> "     ")
+	setvar $window_content $window_content&"/"
+else
+	setvar $window_content $window_content&" "
+end
+setvar $window_content $window_content&"[][]"
 
-	setvar $window_content $window_content&"         "&$displayCenter&"  [][]"
+setvar $window_content $window_content&"         "&$displayCenter&"  [][]"
 
-	setvar $window_content $window_content&"        "
-	if ($displayArray[3] <> "     ")
-		setvar $window_content $window_content&"/"
-	else
-		setvar $window_content $window_content&" "
-	end
-	setvar $window_content $window_content&"   "
-	if ($displayArray[6] <> "     ")
-		setvar $window_content $window_content&"|"
-	else
-		setvar $window_content $window_content&" "
-	end
-	setvar $window_content $window_content&"  "
-	if ($displayArray[4] <> "     ")
-		setvar $window_content $window_content&"\"
-	else
-		setvar $window_content $window_content&" "
-	end
-	setvar $window_content $window_content&"[][]"
+setvar $window_content $window_content&"        "
+if ($displayArray[3] <> "     ")
+	setvar $window_content $window_content&"/"
+else
+	setvar $window_content $window_content&" "
+end
+setvar $window_content $window_content&"   "
+if ($displayArray[6] <> "     ")
+	setvar $window_content $window_content&"|"
+else
+	setvar $window_content $window_content&" "
+end
+setvar $window_content $window_content&"  "
+if ($displayArray[4] <> "     ")
+	setvar $window_content $window_content&"\"
+else
+	setvar $window_content $window_content&" "
+end
+setvar $window_content $window_content&"[][]"
 
-	setvar $window_content $window_content&$displayArray[3]&"  "&$displayArray[6]&"  "&$displayArray[4]&"[][]"
+setvar $window_content $window_content&$displayArray[3]&"  "&$displayArray[6]&"  "&$displayArray[4]&"[][]"
 	
-	savevar $window_content
+savevar $window_content
 return
 
 #INCLUDES:

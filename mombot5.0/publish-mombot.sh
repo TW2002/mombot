@@ -7,18 +7,20 @@ RELEASE_TREE="$RELEASE_ROOT/mombot"
 LIVE_ROOT="${MOMBOT_LIVE_ROOT:-/Users/mosleym/twx/scripts/mombot}"
 LIVE_HELP="$LIVE_ROOT/help"
 RELEASE_HELP="$RELEASE_TREE/help"
+HELP_GENERATOR="${MOMBOT_HELP_GENERATOR:-/Users/mosleym/.codex/skills/twx-mombot/scripts/mombot-generate-help}"
 SOURCE_ALIASES="$ROOT/source/aliases.cfg"
 SOURCE_MOMBOT_CFG="$ROOT/source/mombot.cfg"
 WIKI_HTML="$ROOT/mombot-scripting-wiki/Mombot_Scripting.html"
 ZIP_PATH="$RELEASE_ROOT/mombot.zip"
+GENERATED_HELP="$(mktemp -d "${TMPDIR:-/tmp}/mombot-help.XXXXXX")"
+
+cleanup() {
+  rm -rf "$GENERATED_HELP"
+}
+trap cleanup EXIT
 
 if [[ ! -d "$RELEASE_TREE" ]]; then
   echo "Release tree not found: $RELEASE_TREE" >&2
-  exit 1
-fi
-
-if [[ ! -d "$LIVE_HELP" ]]; then
-  echo "Live help directory not found: $LIVE_HELP" >&2
   exit 1
 fi
 
@@ -38,6 +40,11 @@ if [[ ! -f "$WIKI_HTML" ]]; then
   exit 1
 fi
 
+if [[ ! -x "$HELP_GENERATOR" ]]; then
+  echo "Mombot help generator not found or not executable: $HELP_GENERATOR" >&2
+  exit 1
+fi
+
 if ! command -v rsync >/dev/null 2>&1; then
   echo "rsync is required to refresh release help files" >&2
   exit 1
@@ -48,7 +55,19 @@ if ! command -v zip >/dev/null 2>&1; then
   exit 1
 fi
 
-mkdir -p "$RELEASE_HELP"
+mkdir -p "$LIVE_HELP" "$RELEASE_HELP"
+
+"$HELP_GENERATOR" \
+  --source-root "$ROOT/source" \
+  --out-dir "$GENERATED_HELP" \
+  --compare-dir "$LIVE_HELP"
+
+generated_help_count="$(find "$GENERATED_HELP" -type f -name '*.txt' | wc -l | tr -d ' ')"
+echo "Generated $generated_help_count help files from source into $GENERATED_HELP"
+
+rsync -a --delete "$GENERATED_HELP/" "$LIVE_HELP/"
+echo "Synced generated help files to $LIVE_HELP"
+
 cp "$SOURCE_ALIASES" "$RELEASE_TREE/aliases.cfg"
 echo "Copied $SOURCE_ALIASES to $RELEASE_TREE/aliases.cfg"
 
@@ -58,10 +77,10 @@ echo "Copied $SOURCE_MOMBOT_CFG to $RELEASE_TREE/mombot.cfg"
 cp "$WIKI_HTML" "$RELEASE_TREE/Mombot_Scripting.html"
 echo "Copied $WIKI_HTML to $RELEASE_TREE/Mombot_Scripting.html"
 
-rsync -a --delete "$LIVE_HELP/" "$RELEASE_HELP/"
+rsync -a --delete "$GENERATED_HELP/" "$RELEASE_HELP/"
 
 help_count="$(find "$RELEASE_HELP" -type f | wc -l | tr -d ' ')"
-echo "Synced $help_count help files from $LIVE_HELP to $RELEASE_HELP"
+echo "Synced $help_count generated help files to $RELEASE_HELP"
 
 rm -f "$ZIP_PATH"
 (cd "$RELEASE_ROOT" && zip -qr "$(basename "$ZIP_PATH")" mombot)

@@ -26,84 +26,84 @@ gosub :HELP~INITIALIZE
 # ======================     START TWARP SUBROUTINES     =================
 :twarp
 :t
-	setVar $player~warpto_p ""
-	setvar $player~save true
-	gosub :PLAYER~quikstats
-	setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
-	setVar $bot~validPrompts "Command <Underground> Do How Corporate Citadel Planet Computer Terra <StarDock> <FedPolice> <Tavern> <Libram <Galactic <Hardware <Shipyards>"
-	gosub :PLAYER~CHECKSTARTINGPROMPT
-	gosub :player~checkfortravelname
-	if ($PLAYER~TWARP_TYPE = "No")
-		setVar $SWITCHBOARD~message "This ship does not have a transwarp drive!*"
-		gosub :SWITCHBOARD~switchboard
+setVar $player~warpto_p ""
+setvar $player~save true
+gosub :PLAYER~quikstats
+setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
+setVar $bot~validPrompts "Command <Underground> Do How Corporate Citadel Planet Computer Terra <StarDock> <FedPolice> <Tavern> <Libram <Galactic <Hardware <Shipyards>"
+gosub :PLAYER~CHECKSTARTINGPROMPT
+gosub :player~checkfortravelname
+if ($PLAYER~TWARP_TYPE = "No")
+	setVar $SWITCHBOARD~message "This ship does not have a transwarp drive!*"
+	gosub :SWITCHBOARD~switchboard
+	goto :wait_for_command
+end
+gosub :travelProtections
+gosub :move~twarp
+if ($PLAYER~twarpSuccess = FALSE)
+	if (($PLAYER~startingLocation = "Citadel") OR ($PLAYER~startingLocation = "Planet"))
+		if ($planet~planet <> 0)
+			gosub  :player~currentPrompt
+			if ($PLAYER~CURRENT_PROMPT = "Command")
+				gosub :PLANET~landingSub
+			end
+		end
 		goto :wait_for_command
 	end
-	gosub :travelProtections
-	gosub :move~twarp
-	if ($PLAYER~twarpSuccess = FALSE)
-		if (($PLAYER~startingLocation = "Citadel") OR ($PLAYER~startingLocation = "Planet"))
-			if ($planet~planet <> 0)
-				gosub  :player~currentPrompt
-				if ($PLAYER~CURRENT_PROMPT = "Command")
-					gosub :PLANET~landingSub
-				end
-			end
-			goto :wait_for_command
-		end
-		if (($PLAYER~startingLocation = "<StarDock>") OR ($PLAYER~startingLocation = "<FedPolice") OR ($PLAYER~startingLocation = "<Tavern>") OR ($PLAYER~startingLocation = "<Libram") OR ($PLAYER~startingLocation = "<Galact") OR ($PLAYER~startingLocation = "<Hardware") OR ($PLAYER~startingLocation = "<Shipyards>"))
-			send "p z s h *"
-			goto :wait_for_command
-		end
-		if ($PLAYER~msg <> "You can't twarp with photons without override!")
-			setVar $SWITCHBOARD~message $PLAYER~msg&"*"
-			gosub :SWITCHBOARD~switchboard
-		end
-	else
-		if ($bot~parm2 = "p")
-			send $player~warpto_p
-		elseif (($player~warpto_p <> 0) AND ($player~warpto_p <> ""))
-			setVar $planet~planet $player~warpto_p
-			gosub :PLANET~landingSub
-		end
-		setVar $bot~target $PLAYER~warpto
-		setVar $PLAYER~target $bot~target
-		gosub :player~addfigtodata
+	if (($PLAYER~startingLocation = "<StarDock>") OR ($PLAYER~startingLocation = "<FedPolice") OR ($PLAYER~startingLocation = "<Tavern>") OR ($PLAYER~startingLocation = "<Libram") OR ($PLAYER~startingLocation = "<Galact") OR ($PLAYER~startingLocation = "<Hardware") OR ($PLAYER~startingLocation = "<Shipyards>"))
+		send "p z s h *"
+		goto :wait_for_command
+	end
+	if ($PLAYER~msg <> "You can't twarp with photons without override!")
 		setVar $SWITCHBOARD~message $PLAYER~msg&"*"
 		gosub :SWITCHBOARD~switchboard
 	end
-	goto :wait_for_command
+else
+	if ($bot~parm2 = "p")
+		send $player~warpto_p
+	elseif (($player~warpto_p <> 0) AND ($player~warpto_p <> ""))
+		setVar $planet~planet $player~warpto_p
+		gosub :PLANET~landingSub
+	end
+	setVar $bot~target $PLAYER~warpto
+	setVar $PLAYER~target $bot~target
+	gosub :player~addfigtodata
+	setVar $SWITCHBOARD~message $PLAYER~msg&"*"
+	gosub :SWITCHBOARD~switchboard
+end
+goto :wait_for_command
 # ======================     END TWARP SUBROUTINES     ==========================
 :travelProtections
-	isNumber $test $bot~parm1
-	if ($test = FALSE)
-		setVar $SWITCHBOARD~message "Sector must be entered as a number*"
-		gosub :SWITCHBOARD~switchboard
-		goto :wait_for_command
-	else
-		if ($bot~parm2 = "p")
-			setVar $player~warpto_p "p z t *"
-			if ($bot~parm1 = $MAP~stardock)
-				setVar $player~warpto_p "p z s h *"
-			end
-		else
-			isNumber $test $bot~parm2
-			if ($test = FALSE)
-				setVar $player~warpto_p ""
-			else
-				setVar $player~warpto_p $bot~parm2
-			end
+isNumber $test $bot~parm1
+if ($test = FALSE)
+	setVar $SWITCHBOARD~message "Sector must be entered as a number*"
+	gosub :SWITCHBOARD~switchboard
+	goto :wait_for_command
+else
+	if ($bot~parm2 = "p")
+		setVar $player~warpto_p "p z t *"
+		if ($bot~parm1 = $MAP~stardock)
+			setVar $player~warpto_p "p z s h *"
 		end
-		setVar $PLAYER~warpto $bot~parm1
-		if ($PLAYER~CURRENT_SECTOR = $PLAYER~warpto)
-			setVar $SWITCHBOARD~message "Already in that sector!*"
-			gosub :SWITCHBOARD~switchboard
-			goto :wait_for_command
-		elseif (($PLAYER~warpto <= 0) OR ($PLAYER~warpto > SECTORS))
-			setVar $SWITCHBOARD~message "Destination sector is out of range!*"
-			gosub :SWITCHBOARD~switchboard
-			goto :wait_for_command
+	else
+		isNumber $test $bot~parm2
+		if ($test = FALSE)
+			setVar $player~warpto_p ""
+		else
+			setVar $player~warpto_p $bot~parm2
 		end
 	end
+	setVar $PLAYER~warpto $bot~parm1
+	if ($PLAYER~CURRENT_SECTOR = $PLAYER~warpto)
+		setVar $SWITCHBOARD~message "Already in that sector!*"
+		gosub :SWITCHBOARD~switchboard
+		goto :wait_for_command
+	elseif (($PLAYER~warpto <= 0) OR ($PLAYER~warpto > SECTORS))
+		setVar $SWITCHBOARD~message "Destination sector is out of range!*"
+		gosub :SWITCHBOARD~switchboard
+		goto :wait_for_command
+	end
+end
 return
 
 

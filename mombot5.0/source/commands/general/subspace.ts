@@ -34,12 +34,12 @@ else
 	pause
 
 	:bad
-		setVar $SWITCHBOARD~message currentline&"*"
-		gosub :SWITCHBOARD~switchboard	
-		send "q q "
-		halt
+	setVar $SWITCHBOARD~message currentline&"*"
+	gosub :SWITCHBOARD~switchboard	
+	send "q q "
+	halt
 	:good
-		send $BOT~subspace&"* q q "
+	send $BOT~subspace&"* q q "
 end
 
 halt

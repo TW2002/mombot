@@ -470,7 +470,8 @@ else
     if ($PLAYER~FASTTWARP)
       send "mz" $PLAYER~WARPTO "*"
     else
-      send "q q q n n 0 * c u y q mz" $PLAYER~WARPTO "*"
+#      send "q q q n n 0 * c u y q mz" $PLAYER~WARPTO "*"
+      send "q q q n n 0 * mz" $PLAYER~WARPTO "*"
     end
   end
 end

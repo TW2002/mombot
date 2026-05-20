@@ -143,81 +143,81 @@
 		pause
 
 		:toomany	
-			setVar $SWITCHBOARD~MESSAGE "Too many bots responding to mega"&$i&".  Please fix bot teams so each mega bot is unique.*"
-			gosub :SWITCHBOARD~SWITCHBOARD
-			halt
+		setVar $SWITCHBOARD~MESSAGE "Too many bots responding to mega"&$i&".  Please fix bot teams so each mega bot is unique.*"
+		gosub :SWITCHBOARD~SWITCHBOARD
+		halt
 
 		:found
-			getWordPos CURRENTLINE $pos "Team: "
-			cutText CURRENTLINE $line $pos 9999
-			getWord $line $sector 4
-			getWord $line $exp 6
-			getWord $line $align 8
-			getWord $line $credits 10
-			getWord $line $ship 12
-			getWord $line $turns 14
+		getWordPos CURRENTLINE $pos "Team: "
+		cutText CURRENTLINE $line $pos 9999
+		getWord $line $sector 4
+		getWord $line $exp 6
+		getWord $line $align 8
+		getWord $line $credits 10
+		getWord $line $ship 12
+		getWord $line $turns 14
 
-			if (($turns < $stopTurns) AND ($PLAYER~UNLIMITED_GAME <> TRUE))
-				setVar $SWITCHBOARD~MESSAGE "mega"&$i&" does not have enough turns for buydowns.  Replace them with someone with turns.*"
-				gosub :SWITCHBOARD~SWITCHBOARD
-				halt
-			end			
-			getWordPos $align $pos "-"
-			setVar $BOTS[$i] $i
-			if ($pos > 0)
-				if ($align > $MIN_RED_ALIGNMENT)
-					add $blue_count 1
-					setVar $SWITCHBOARD~MESSAGE "mega"&$i&" needs alignment lower then " & $MIN_RED_ALIGNMENT & ".  Treating as a blue mega.*"
-					gosub :SWITCHBOARD~SWITCHBOARD
-				else
-					add $red_count 1
-					#mark as potential robber#
-					setvar $BOTS[$i][2] true
-					if ($current_robber <> 0)
-						setvar $backup_robber $current_robber
-					end
-					setvar $current_robber $BOTS[$i]
-					setVar $SWITCHBOARD~MESSAGE "Found potential megarob robber!*"
-					gosub :SWITCHBOARD~SWITCHBOARD
-				end
-			else
+		if (($turns < $stopTurns) AND ($PLAYER~UNLIMITED_GAME <> TRUE))
+			setVar $SWITCHBOARD~MESSAGE "mega"&$i&" does not have enough turns for buydowns.  Replace them with someone with turns.*"
+			gosub :SWITCHBOARD~SWITCHBOARD
+			halt
+		end			
+		getWordPos $align $pos "-"
+		setVar $BOTS[$i] $i
+		if ($pos > 0)
+			if ($align > $MIN_RED_ALIGNMENT)
 				add $blue_count 1
-			end
-			setVar $BOTS[$i][1] $turns
-			setVar $CURRENT_SHIP[$i] $ship
-			setVar $ORIGINAL_SHIP[$i] $ship
-			killtrigger 1
-			setTextLineTrigger 1 :toomany "} - Team: mega"&$i&" " 
-			pause
-		:done
-			killtrigger 1
-			if ($BOTS[$i] = 0)
-				setVar $roll_call_done TRUE
-			else
-				send "'mega"&$i&"*"
-				waiton "} - You are logged into this bot. "
-				# bot name #
-				setvar $current_line currentline
-				gettext currentline $BOTS[$i][3] "{" "} - You are logged into this bot." 
-				getword $current_line $isthisme 1
-				if ($isthisme = "R")
-					gettext $current_line $BOTS[$i][4] "R " "[" 
-				else
-					setvar $bots[$i][4] $player~TRADER_NAME					
-				end 
-
-				send "'" $BOTS[$i][3] " unlock*"
-				waiton "{"&$BOTS[$i][3]&"} - Ship has been unlocked!"
-
-				setVar $SWITCHBOARD~MESSAGE "Bot name captured as: "&$BOTS[$i][3]&" for "&$bots[$i][4]&"*"
+				setVar $SWITCHBOARD~MESSAGE "mega"&$i&" needs alignment lower then " & $MIN_RED_ALIGNMENT & ".  Treating as a blue mega.*"
 				gosub :SWITCHBOARD~SWITCHBOARD
-
-				if ($bots[$i][2] <> true)
-					# mark this person as a swappable ship #
-					setvar $swapwithme $bots[$i][4]
+			else
+				add $red_count 1
+				#mark as potential robber#
+				setvar $BOTS[$i][2] true
+				if ($current_robber <> 0)
+					setvar $backup_robber $current_robber
 				end
+				setvar $current_robber $BOTS[$i]
+				setVar $SWITCHBOARD~MESSAGE "Found potential megarob robber!*"
+				gosub :SWITCHBOARD~SWITCHBOARD
 			end
-			add $i 1
+		else
+			add $blue_count 1
+		end
+		setVar $BOTS[$i][1] $turns
+		setVar $CURRENT_SHIP[$i] $ship
+		setVar $ORIGINAL_SHIP[$i] $ship
+		killtrigger 1
+		setTextLineTrigger 1 :toomany "} - Team: mega"&$i&" " 
+		pause
+		:done
+		killtrigger 1
+		if ($BOTS[$i] = 0)
+			setVar $roll_call_done TRUE
+		else
+			send "'mega"&$i&"*"
+			waiton "} - You are logged into this bot. "
+			# bot name #
+			setvar $current_line currentline
+			gettext currentline $BOTS[$i][3] "{" "} - You are logged into this bot." 
+			getword $current_line $isthisme 1
+			if ($isthisme = "R")
+				gettext $current_line $BOTS[$i][4] "R " "[" 
+			else
+				setvar $bots[$i][4] $player~TRADER_NAME					
+			end 
+
+			send "'" $BOTS[$i][3] " unlock*"
+			waiton "{"&$BOTS[$i][3]&"} - Ship has been unlocked!"
+
+			setVar $SWITCHBOARD~MESSAGE "Bot name captured as: "&$BOTS[$i][3]&" for "&$bots[$i][4]&"*"
+			gosub :SWITCHBOARD~SWITCHBOARD
+
+			if ($bots[$i][2] <> true)
+				# mark this person as a swappable ship #
+				setvar $swapwithme $bots[$i][4]
+			end
+		end
+		add $i 1
 	end
 	
 	gosub :killthetriggers
@@ -260,61 +260,61 @@ while (true)
 	gosub :pwarptoport
 	if ($go_to_next_port = false)
 		if ($isGoodBuyer = true)
+		gosub :findbestcandidates
+		gosub :selloffproduct
+		setvar $check $current_trader
+		gosub :checkin
+
+		if (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 0)
 			gosub :findbestcandidates
-			gosub :selloffproduct
+			if ($current_robber = $current_trader)
+				gosub :switchships
+			end
+			gosub :startbuydownfuel
 			setvar $check $current_trader
 			gosub :checkin
-
-			if (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 0)
-				gosub :findbestcandidates
-				if ($current_robber = $current_trader)
-					gosub :switchships
-				end
-				gosub :startbuydownfuel
-				setvar $check $current_trader
-				gosub :checkin
-				if ($current_robber = $current_trader)
-					gosub :switchships
-				end
+			if ($current_robber = $current_trader)
+				gosub :switchships
 			end
 		end
+		end
 		if ($isGoodSeller = true)
-			gosub :findbestcandidates
-			if ($current_robber = $current_trader)
-				gosub :switchships
-			end
-			gosub :startbuydownequip
-			setvar $check $current_trader
-			gosub :checkin
-			if ($current_robber = $current_trader)
-				gosub :switchships
-			end
+		gosub :findbestcandidates
+		if ($current_robber = $current_trader)
+			gosub :switchships
+		end
+		gosub :startbuydownequip
+		setvar $check $current_trader
+		gosub :checkin
+		if ($current_robber = $current_trader)
+			gosub :switchships
+		end
 
-			gosub :findbestcandidates
-			if ($current_robber = $current_trader)
-				gosub :switchships
-			end
-			if (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 0)
-				gosub :startbuydownfuel
-			end
-			setvar $check $current_trader
-			gosub :checkin
-			if ($current_robber = $current_trader)
-				gosub :switchships
-			end
+		gosub :findbestcandidates
+		if ($current_robber = $current_trader)
+			gosub :switchships
+		end
+		if (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 0)
+			gosub :startbuydownfuel
+		end
+		setvar $check $current_trader
+		gosub :checkin
+		if ($current_robber = $current_trader)
+			gosub :switchships
+		end
 
-			gosub :findbestcandidates
+		gosub :findbestcandidates
+		gosub :domega
+		if (($do_backup_robber = true) and ($backup_robber <> "0"))
+			setvar $save_current_robber $current_robber
+			setvar $current_robber $backup_robber
+			gosub :switchrobberships
 			gosub :domega
-			if (($do_backup_robber = true) and ($backup_robber <> "0"))
-				setvar $save_current_robber $current_robber
-				setvar $current_robber $backup_robber
-				gosub :switchrobberships
-				gosub :domega
-				gosub :switchrobberships
-				setvar $current_robber $save_current_robber
-			end
-			setvar $check $current_robber
-			gosub :checkin
+			gosub :switchrobberships
+			setvar $current_robber $save_current_robber
+		end
+		setvar $check $current_robber
+		gosub :checkin
 		end
 	end
 end
@@ -324,27 +324,27 @@ end
 halt
 
 :checkin
-	killtrigger 1
-	send "'mega"&$check&" callout*"
-	setTextLineTrigger 1 :foundtrader "Team: mega"&$check&" " 	
-	pause
+killtrigger 1
+send "'mega"&$check&" callout*"
+setTextLineTrigger 1 :foundtrader "Team: mega"&$check&" " 	
+pause
 
 	:foundtrader
-		getWordPos CURRENTLINE $pos "Team: "
-		cutText CURRENTLINE $line $pos 9999
-		getWord $line $sector 4
-		getWord $line $exp 6
-		getWord $line $align 8
-		getWord $line $credits 10
-		getWord $line $ship 12
-		getWord $line $turns 14
+	getWordPos CURRENTLINE $pos "Team: "
+	cutText CURRENTLINE $line $pos 9999
+	getWord $line $sector 4
+	getWord $line $exp 6
+	getWord $line $align 8
+	getWord $line $credits 10
+	getWord $line $ship 12
+	getWord $line $turns 14
 
-		setvar $BOTS[$check][1] $turns
+	setvar $BOTS[$check][1] $turns
 return
 
 :domega
-	setvar $once 0
-	setvar $do_backup_robber false
+setvar $once 0
+setvar $do_backup_robber false
 	:megaagain
 	setvar $evilbot $BOTS[$current_robber][3]
 	if ($game~mbbs = true)
@@ -359,24 +359,24 @@ return
 	setTextLineTrigger 5 :mrsecond "credits left for a second mega"
 	pause
 		:mrshort 
-			return
+		return
 		:mrrobbed
-			gosub :killthetriggers
-			setTextLineTrigger 1 :mrsecond "credits left for a second mega"
-			setDelayTrigger    2 :mrdelayover 2000
-			pause
+		gosub :killthetriggers
+		setTextLineTrigger 1 :mrsecond "credits left for a second mega"
+		setDelayTrigger    2 :mrdelayover 2000
+		pause
 			:mrdelayover
-				gosub :killthetriggers 
-				return
-		:mrsecond
-			setvar $do_backup_robber true
 			gosub :killthetriggers 
 			return
+		:mrsecond
+		setvar $do_backup_robber true
+		gosub :killthetriggers 
+		return
 		:mrBusted
 		:mrBusted2
-			setvar $do_backup_robber true
-			gosub :killthetriggers 
-			return
+		setvar $do_backup_robber true
+		gosub :killthetriggers 
+		return
 
 return
 
@@ -398,27 +398,27 @@ return
 return
 
 :startbuydownequip
-	setvar $nextbot $BOTS[$current_trader][3]
-	send "'" & $nextbot & " buy e w *"
+setvar $nextbot $BOTS[$current_trader][3]
+send "'" & $nextbot & " buy e w *"
 
-	setTextLineTrigger 1 :startDock1 " docks at"
-	setTextLineTrigger 2 :startDock2 "Commerce report for"
-	setDelayTrigger    3 :startDockDelay 5000
-	pause
+setTextLineTrigger 1 :startDock1 " docks at"
+setTextLineTrigger 2 :startDock2 "Commerce report for"
+setDelayTrigger    3 :startDockDelay 5000
+pause
 	:startDockDelay
-		gosub :killthetriggers
-		send "'" $nextBot " stopall*"
-		waitfor " non-system scripts and modules killed, and mode"
+	gosub :killthetriggers
+	send "'" $nextBot " stopall*"
+	waitfor " non-system scripts and modules killed, and mode"
 
-		send "'" $nextBot " land*"
-		waitfor "] {"&$nextbot&"} - In Cit - Plane"
-		send "'" $nextBot " cn*"
-		waitfor "] {"&$nextbot&"} - CN Settings are reset for this bo"
-		send "'" & $nextbot & " buy e w *"
+	send "'" $nextBot " land*"
+	waitfor "] {"&$nextbot&"} - In Cit - Plane"
+	send "'" $nextBot " cn*"
+	waitfor "] {"&$nextbot&"} - CN Settings are reset for this bo"
+	send "'" & $nextbot & " buy e w *"
 	:startDock1
 	:startDock2
 	:bdagain1
-		gosub :killthetriggers
+	gosub :killthetriggers
 
 
 	setTextLineTrigger 1 :bdComplete1 "] {"&$nextbot&"} - Buy down exiting --- Nothing to buy"
@@ -427,39 +427,39 @@ return
 
 	pause
 	:bdcash1
-		gosub :killthetriggers
-		send "'" $nextBot " w 4000000*"
-		waitfor "] {"&$nextbot&"} - 4,000,000 credits taken from citadel."
-		goto :bdagain1
+	gosub :killthetriggers
+	send "'" $nextBot " w 4000000*"
+	waitfor "] {"&$nextbot&"} - 4,000,000 credits taken from citadel."
+	goto :bdagain1
 	:bdComplete1
-		gosub :killthetriggers
-		send "cr*q"
-		waitfor "Commerce report for"
-		waitfor "Equipment"
-		getWord CURRENTLINE $eonhand 3
+	gosub :killthetriggers
+	send "cr*q"
+	waitfor "Commerce report for"
+	waitfor "Equipment"
+	getWord CURRENTLINE $eonhand 3
 return
 
 :startbuydownfuel
-	setvar $nextbot $BOTS[$current_trader][3]
-	send "'" & $nextbot & " buy f s *"
+setvar $nextbot $BOTS[$current_trader][3]
+send "'" & $nextbot & " buy f s *"
 
-	setTextLineTrigger 1 :startDock3 " docks at"
-	setTextLineTrigger 2 :startDock4 "Commerce report for"
-	setDelayTrigger    3 :startDockDelay2 5000
-	pause
+setTextLineTrigger 1 :startDock3 " docks at"
+setTextLineTrigger 2 :startDock4 "Commerce report for"
+setDelayTrigger    3 :startDockDelay2 5000
+pause
 	:startDockDelay2
-		gosub :killthetriggers
-		send "'" $nextBot " stopall*"
-		waitfor " non-system scripts and modules killed, and mode"
+	gosub :killthetriggers
+	send "'" $nextBot " stopall*"
+	waitfor " non-system scripts and modules killed, and mode"
 
-		send "'" $nextBot " land*"
-		waitfor "] {"&$nextbot&"} - In Cit - Plane"
-		send "'" $nextBot " cn*"
-		waitfor "] {"&$nextbot&"} - CN Settings are reset for this bo"
-		send "'" & $nextbot & " buy f s *"
+	send "'" $nextBot " land*"
+	waitfor "] {"&$nextbot&"} - In Cit - Plane"
+	send "'" $nextBot " cn*"
+	waitfor "] {"&$nextbot&"} - CN Settings are reset for this bo"
+	send "'" & $nextbot & " buy f s *"
 	:startDock3
 	:startDock4
-		gosub :killthetriggers
+	gosub :killthetriggers
 
 	setTextLineTrigger 1 :Complete1 "] {"&$nextbot&"} - Buy down exiting --- Nothing to buy"
 	setTextLineTrigger 2 :Complete1 "] {"&$nextbot&"} - Buy down exiting --- Normal Exit"
@@ -467,16 +467,16 @@ return
 
 	pause
 	:cash1
-		gosub :killthetriggers
-		send "'" $nextBot " w 4000000*"
-		waitfor "] {"&$nextbot&"} - 4,000,000 credits taken from citadel."
-		goto :bdagain1
+	gosub :killthetriggers
+	send "'" $nextBot " w 4000000*"
+	waitfor "] {"&$nextbot&"} - 4,000,000 credits taken from citadel."
+	goto :bdagain1
 	:Complete1
-		gosub :killthetriggers
-		send "cr*q"
-		waitfor "Commerce report for"
-		waitfor "Equipment"
-		getWord CURRENTLINE $eonhand 3
+	gosub :killthetriggers
+	send "cr*q"
+	waitfor "Commerce report for"
+	waitfor "Equipment"
+	getWord CURRENTLINE $eonhand 3
 return
 
 :selloffproduct
@@ -507,30 +507,30 @@ return
 
 
 :findbestcandidates
-	setvar $i 1
-	setvar $highest_turns 0
-	setvar $current_trader 0 
-	while ($i <= $MAX_BOTS)
-		# pick the bot with highest turn who is not the designated robber/a robber and has more than
-		# stop turns  stop_turns - minus half a port
-		if (($BOTS[$i][1] > $highest_turns) and (($BOTS[$i][1] -65) > $stopTurns))
-			setvar $current_trader $BOTS[$i] 
-			setvar $highest_turns $BOTS[$i][1]
-		end
-		add $i 1
+setvar $i 1
+setvar $highest_turns 0
+setvar $current_trader 0 
+while ($i <= $MAX_BOTS)
+	# pick the bot with highest turn who is not the designated robber/a robber and has more than
+	# stop turns  stop_turns - minus half a port
+	if (($BOTS[$i][1] > $highest_turns) and (($BOTS[$i][1] -65) > $stopTurns))
+		setvar $current_trader $BOTS[$i] 
+		setvar $highest_turns $BOTS[$i][1]
 	end
-	if ($current_trader = "0")
-		setVar $SWITCHBOARD~MESSAGE "Well, that shouldn't have happened.  I can't find a trader to go next!  Halting.*"
-		gosub :SWITCHBOARD~SWITCHBOARD
-		halt
-	end
+	add $i 1
+end
+if ($current_trader = "0")
+	setVar $SWITCHBOARD~MESSAGE "Well, that shouldn't have happened.  I can't find a trader to go next!  Halting.*"
+	gosub :SWITCHBOARD~SWITCHBOARD
+	halt
+end
 return
 
 :switchrobberships
-	setvar $switchto $bots[$save_current_robber][4]
-	goto :doswitch
+setvar $switchto $bots[$save_current_robber][4]
+goto :doswitch
 :switchships 
-	setvar $switchto $swapwithme
+setvar $switchto $swapwithme
 	
 	:doswitch
 	send "'" $bots[$current_trader][3] " switch " $switchto "*"
@@ -539,19 +539,19 @@ return
 
 
 :grabplanetstats
-	send "q"
-	waitOn "Planet command (?"
-	gosub :PLANET~getPlanetInfo
-	send "c"
+send "q"
+waitOn "Planet command (?"
+gosub :PLANET~getPlanetInfo
+send "c"
 return
 
 :findports 
-		setVar $bottom 1
-		setVar $top 1
-		setvar $nearfig 0
-		setVar $que[1] $PLAYER~CURRENT_SECTOR
-		setArray $checked SECTORS
-		setVar $checked[$PLAYER~CURRENT_SECTOR] 1
+setVar $bottom 1
+setVar $top 1
+setvar $nearfig 0
+setVar $que[1] $PLAYER~CURRENT_SECTOR
+setArray $checked SECTORS
+setVar $checked[$PLAYER~CURRENT_SECTOR] 1
 
 		:tryAgain2
 		while ($bottom <= $top)
@@ -627,27 +627,27 @@ if ($nearfig > 0)
 	setTextLineTrigger 4 :doneNoFuel "You do not have enough Fuel Ore on this planet to make the jump."
 	pause			
 	:emptyPort
-		gosub :killthetriggers
-		send "cr"&$NearFig&"*q"
-		gosub :PLAYER~quikstats
-		setSectorParameter $NearFig "FIGSEC" TRUE
-		if ((PORT.EXISTS[$NearFig] = TRUE) AND (PORT.CLASS[$NearFig] > 0) AND (SECTOR.EXPLORED[$NearFig] = "YES") AND (PORT.EQUIP[$NearFig] >= $minimumProduct))
-			setvar $go_to_next_port false
-		else
-			setvar $go_to_next_port true
-		end
-			
-		return
-	:noFigAtLocation
-		gosub :killthetriggers
-		setSectorParameter $NearFig "FIGSEC" FALSE
+	gosub :killthetriggers
+	send "cr"&$NearFig&"*q"
+	gosub :PLAYER~quikstats
+	setSectorParameter $NearFig "FIGSEC" TRUE
+	if ((PORT.EXISTS[$NearFig] = TRUE) AND (PORT.CLASS[$NearFig] > 0) AND (SECTOR.EXPLORED[$NearFig] = "YES") AND (PORT.EQUIP[$NearFig] >= $minimumProduct))
+		setvar $go_to_next_port false
+	else
 		setvar $go_to_next_port true
-		return
+	end
+			
+	return
+	:noFigAtLocation
+	gosub :killthetriggers
+	setSectorParameter $NearFig "FIGSEC" FALSE
+	setvar $go_to_next_port true
+	return
 	:doneNoFuel
-		gosub :killthetriggers
-		setVar $SWITCHBOARD~message "Your planet doesn't have enough fuel to jump to the next closest port.  Halting.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
+	gosub :killthetriggers
+	setVar $SWITCHBOARD~message "Your planet doesn't have enough fuel to jump to the next closest port.  Halting.*"
+	gosub :SWITCHBOARD~switchboard
+	halt
 else
 	setVar $SWITCHBOARD~message "Couldn't find a way to another port.  Weird.*"
 	gosub :SWITCHBOARD~switchboard
@@ -655,12 +655,12 @@ else
 end
 
 :killthetriggers
-	killtrigger 1
-	killtrigger 2
-	killtrigger 3
-	killtrigger 4
-	killtrigger 5
-	killtrigger 6
+killtrigger 1
+killtrigger 2
+killtrigger 3
+killtrigger 4
+killtrigger 5
+killtrigger 6
 return
 
 #INCLUDES:

@@ -7,111 +7,111 @@ end
 
 # ============================== SINGLE MACRO (MAC) ==============================
 :mac
-	setVar $nmac 1
-	goto :go_macro
+setVar $nmac 1
+goto :go_macro
 :nmac
-	setVar $nmac $bot~parm1
+setVar $nmac $bot~parm1
 :go_macro
-	isNumber $number $nmac
-	if ($number <> TRUE)
-		setvar $switchboard~message "Invalid Macro Count*"
-		gosub :switchboard~switchboard
-		goto :wait_for_command
-	end
-	if ($nmac <= 0)
-		setvar $switchboard~message "Invalid Macro Count*"
-		gosub :switchboard~switchboard
-		goto :wait_for_command
-	end
-	gosub :macroProtections
-	setVar $i 0
-	while ($i < $nmac)
-		send $bot~user_command_line
-		add $i 1
-	end
-	if ($nmac > 1)
-		setvar $switchboard~message "Numbered Macro - "&$nmac&" Cycles Complete*"
-		gosub :switchboard~switchboard
-	else
-		setvar $switchboard~message "Macro Complete*"
-		gosub :switchboard~switchboard
-	end
+isNumber $number $nmac
+if ($number <> TRUE)
+	setvar $switchboard~message "Invalid Macro Count*"
+	gosub :switchboard~switchboard
 	goto :wait_for_command
+end
+if ($nmac <= 0)
+	setvar $switchboard~message "Invalid Macro Count*"
+	gosub :switchboard~switchboard
+	goto :wait_for_command
+end
+gosub :macroProtections
+setVar $i 0
+while ($i < $nmac)
+	send $bot~user_command_line
+	add $i 1
+end
+if ($nmac > 1)
+	setvar $switchboard~message "Numbered Macro - "&$nmac&" Cycles Complete*"
+	gosub :switchboard~switchboard
+else
+	setvar $switchboard~message "Macro Complete*"
+	gosub :switchboard~switchboard
+end
+goto :wait_for_command
 # ============================== END MACROS (MAC/NMAC) SUB ==============================
 :macroProtections
-	stripText $bot~user_command_line $SWITCHBOARD~bot_name
-	StripText $bot~user_command_line " mac "
-	replaceText $bot~user_command_line "^m" "*"
-	replaceText $bot~user_command_line "^b" #8
-	replaceText $bot~user_command_line #42 "*"
-	getWordPos $bot~user_command_line $pos "`"
-	getWordPos $bot~user_command_line $pos2 "'"
-	getWordPos $bot~user_command_line $pos3 "="
-	if (($pos > 0) OR ($pos2 > 0) OR ($pos3 > 0))
-		setvar $switchboard~message "No talking with the bot :P*"
-		gosub :switchboard~switchboard
-		goto :wait_for_command
-	end
-	setVar $cbyCheck $bot~user_command_line
-	lowercase $cbyCheck
-	getWordPos $cbyCheck $posc "c"
-	getWordPos $cbyCheck $posb "b"
-	getWordPos $cbyCheck $posy "y"
-	gosub  :player~currentPrompt
-	if (($PLAYER~CURRENT_PROMPT = "Computer") AND ($posb > 0) AND ($posy > 0))
-		setvar $switchboard~message "Self Destruct Protection Activated*"
-		gosub :switchboard~switchboard
-		goto :wait_for_command
-	end
-	if (($PLAYER~self_destruct_prompt = true) AND ($posy > 0))
-		setvar $switchboard~message "Self Destruct Protection Activated*"
-		gosub :switchboard~switchboard
-		goto :wait_for_command
-	end
+stripText $bot~user_command_line $SWITCHBOARD~bot_name
+StripText $bot~user_command_line " mac "
+replaceText $bot~user_command_line "^m" "*"
+replaceText $bot~user_command_line "^b" #8
+replaceText $bot~user_command_line #42 "*"
+getWordPos $bot~user_command_line $pos "`"
+getWordPos $bot~user_command_line $pos2 "'"
+getWordPos $bot~user_command_line $pos3 "="
+if (($pos > 0) OR ($pos2 > 0) OR ($pos3 > 0))
+	setvar $switchboard~message "No talking with the bot :P*"
+	gosub :switchboard~switchboard
+	goto :wait_for_command
+end
+setVar $cbyCheck $bot~user_command_line
+lowercase $cbyCheck
+getWordPos $cbyCheck $posc "c"
+getWordPos $cbyCheck $posb "b"
+getWordPos $cbyCheck $posy "y"
+gosub  :player~currentPrompt
+if (($PLAYER~CURRENT_PROMPT = "Computer") AND ($posb > 0) AND ($posy > 0))
+	setvar $switchboard~message "Self Destruct Protection Activated*"
+	gosub :switchboard~switchboard
+	goto :wait_for_command
+end
+if (($PLAYER~self_destruct_prompt = true) AND ($posy > 0))
+	setvar $switchboard~message "Self Destruct Protection Activated*"
+	gosub :switchboard~switchboard
+	goto :wait_for_command
+end
 
-	getLength $cbyCheck $length
-	setVar $i 1
-	while ($i <= $length)
-		if (($posc > 0) AND ($posb > $posc) AND ($posy > $posb))
-			setvar $switchboard~message "Self Destruct Protection Activated*"
-			gosub :switchboard~switchboard
-			goto :wait_for_command
-		end
-		if ($foundC = FALSE)
-			getWordPos $cbyCheck $pos "c"
-			if ($pos = 1)
-				setVar $foundC TRUE
-			end
-		elseif ($foundB = FALSE)
-			getWordPos $cbyCheck $pos "b"
-			if ($pos = 1)
-				setVar $foundB TRUE
-			end
-		elseif ($foundY = FALSE)
-			getWordPos $cbyCheck $pos "y"
-			if ($pos = 1)
-				setVar $foundY TRUE
-			end
-		end
-		if ($foundC AND $foundB AND $foundY)
-			setvar $switchboard~message "Self Destruct Protection Activated*"
-			gosub :switchboard~switchboard
-			goto :wait_for_command
-		end
-		if ($testLength > 1)
-			cutText $cbyCheck $cbyCheck 2 9999
-		end
-		add $i 1
+getLength $cbyCheck $length
+setVar $i 1
+while ($i <= $length)
+	if (($posc > 0) AND ($posb > $posc) AND ($posy > $posb))
+		setvar $switchboard~message "Self Destruct Protection Activated*"
+		gosub :switchboard~switchboard
+		goto :wait_for_command
 	end
+	if ($foundC = FALSE)
+		getWordPos $cbyCheck $pos "c"
+		if ($pos = 1)
+			setVar $foundC TRUE
+		end
+	elseif ($foundB = FALSE)
+		getWordPos $cbyCheck $pos "b"
+		if ($pos = 1)
+			setVar $foundB TRUE
+		end
+	elseif ($foundY = FALSE)
+		getWordPos $cbyCheck $pos "y"
+		if ($pos = 1)
+			setVar $foundY TRUE
+		end
+	end
+	if ($foundC AND $foundB AND $foundY)
+		setvar $switchboard~message "Self Destruct Protection Activated*"
+		gosub :switchboard~switchboard
+		goto :wait_for_command
+	end
+	if ($testLength > 1)
+		cutText $cbyCheck $cbyCheck 2 9999
+	end
+	add $i 1
+end
 return
 # ============================== END MULTIPLE MACRO (NMAC) SUB ==============================
 
 :wait_for_command
-	setVar $HELP~HELP[1]  $HELP~TAB&"   Macro          "
-	setVar $HELP~HELP[2]  $HELP~TAB&"               "
-	setVar $HELP~HELP[3]  $HELP~TAB&"    mac {macro to send}  "
-	setVar $HELP~HELP[4]  $HELP~TAB&"        "
-	gosub :HELP~HELPFILE
+setVar $HELP~HELP[1]  $HELP~TAB&"   Macro          "
+setVar $HELP~HELP[2]  $HELP~TAB&"               "
+setVar $HELP~HELP[3]  $HELP~TAB&"    mac {macro to send}  "
+setVar $HELP~HELP[4]  $HELP~TAB&"        "
+gosub :HELP~HELPFILE
 halt
 
 # includes:

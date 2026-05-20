@@ -984,76 +984,76 @@ halt
 
 :checkPortRequirements
 
-	# Mark them all ok, and we'll rule them out
-	setVar $pi 1
-	while ($pi <= 8)
-		setVar $portClassOk[$pi] 1
-		add $pi 1
-	end
+# Mark them all ok, and we'll rule them out
+setVar $pi 1
+while ($pi <= 8)
+	setVar $portClassOk[$pi] 1
+	add $pi 1
+end
 
-	setVar $tword $word
-	uppercase $tword
-	cutText $tword $f 1 1
-	cutText $tword $o 2 1
-	cutText $tword $e 3 1
-	if (($f = "B") or ($f = "S") or ($f = "X"))
-		if (($o = "B") or ($o = "S") or ($o = "X"))
-			if (($e = "B") or ($e = "S") or ($e = "X"))
-				setVar $portClassWanted 1
-			end
+setVar $tword $word
+uppercase $tword
+cutText $tword $f 1 1
+cutText $tword $o 2 1
+cutText $tword $e 3 1
+if (($f = "B") or ($f = "S") or ($f = "X"))
+	if (($o = "B") or ($o = "S") or ($o = "X"))
+		if (($e = "B") or ($e = "S") or ($e = "X"))
+			setVar $portClassWanted 1
 		end
 	end
-	if ($portClassWanted = 0)
-		return
-	end
-	# 0 - zzz
-	# 1 - BBS
-	# 2 - BSB
-	# 3 - SBB
-	# 4 - SSB
-	# 5 - SBS
-	# 6 - BSS
-	# 7 - SSS
-	# 8 - BBB
+end
+if ($portClassWanted = 0)
+	return
+end
+# 0 - zzz
+# 1 - BBS
+# 2 - BSB
+# 3 - SBB
+# 4 - SSB
+# 5 - SBS
+# 6 - BSS
+# 7 - SSS
+# 8 - BBB
 
-	if ($f = "B")
-		setVar $portClassOk[3] 0
-		setVar $portClassOk[4] 0
-		setVar $portClassOk[5] 0
-		setVar $portClassOk[7] 0
-	elseif ($f = "S")
-		setVar $portClassOk[1] 0
-		setVar $portClassOk[2] 0
-		setVar $portClassOk[6] 0
-		setVar $portClassOk[8] 0
-	end
+if ($f = "B")
+	setVar $portClassOk[3] 0
+	setVar $portClassOk[4] 0
+	setVar $portClassOk[5] 0
+	setVar $portClassOk[7] 0
+elseif ($f = "S")
+	setVar $portClassOk[1] 0
+	setVar $portClassOk[2] 0
+	setVar $portClassOk[6] 0
+	setVar $portClassOk[8] 0
+end
 		
-	if ($o = "B")
-		setVar $portClassOk[2] 0
-		setVar $portClassOk[4] 0
-		setVar $portClassOk[6] 0
-		setVar $portClassOk[7] 0
-	elseif ($o = "S")
-		setVar $portClassOk[1] 0
-		setVar $portClassOk[3] 0
-		setVar $portClassOk[5] 0
-		setVar $portClassOk[8] 0
-	end
+if ($o = "B")
+	setVar $portClassOk[2] 0
+	setVar $portClassOk[4] 0
+	setVar $portClassOk[6] 0
+	setVar $portClassOk[7] 0
+elseif ($o = "S")
+	setVar $portClassOk[1] 0
+	setVar $portClassOk[3] 0
+	setVar $portClassOk[5] 0
+	setVar $portClassOk[8] 0
+end
 			
 			
-	if ($e = "B")
-		setVar $portClassOk[1] 0
-		setVar $portClassOk[5] 0
-		setVar $portClassOk[6] 0
-		setVar $portClassOk[7] 0
-	elseif ($e = "S")
-		setVar $portClassOk[2] 0
-		setVar $portClassOk[3] 0
-		setVar $portClassOk[4] 0
-		setVar $portClassOk[8] 0
+if ($e = "B")
+	setVar $portClassOk[1] 0
+	setVar $portClassOk[5] 0
+	setVar $portClassOk[6] 0
+	setVar $portClassOk[7] 0
+elseif ($e = "S")
+	setVar $portClassOk[2] 0
+	setVar $portClassOk[3] 0
+	setVar $portClassOk[4] 0
+	setVar $portClassOk[8] 0
 	
-	end
-	setVar $portReqF 1
+end
+setVar $portReqF 1
 
 return
 

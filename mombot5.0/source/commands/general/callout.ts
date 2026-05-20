@@ -14,8 +14,8 @@ end
 send "'" & "Team: " & $BOT~bot_team_name & " Sec: "&$PLAYER~CURRENT_SECTOR&" Exp: "&$PLAYER~EXPERIENCE&" Aln: "&$PLAYER~ALIGNMENT&" Creds: "&$PLAYER~CREDITS&" Ship: "&$PLAYER~SHIP_NUMBER&" Turns: "&$PLAYER~TURNS&"*"
 
 :wait_for_command
-	setVar $HELP~HELP[1] $HELP~TAB&"Reports team name and current sector."
-	gosub :HELP~HELPFILE
+setVar $HELP~HELP[1] $HELP~TAB&"Reports team name and current sector."
+gosub :HELP~HELPFILE
 halt
 
 #INCLUDES:

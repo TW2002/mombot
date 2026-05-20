@@ -18,65 +18,75 @@ loadVar $bot~parm8
 		
 #============================== RUNAWAY (RUNAWAY) ==============================
 :runaway
-	setVar $FIG_FILE 		"_MOM_" & GAMENAME & ".figs"
+setVar $FIG_FILE 		"_MOM_" & GAMENAME & ".figs"
 		
-	gosub :player~quikstats
-	setVar $startingLocation $player~CURRENT_PROMPT
-	if ($bot~parm1 <> "on") and ($bot~parm1 <> "off")
-		setvar $switchboard~message "Please use - Runaway [on/off] format*"
-		gosub :switchboard~switchboard
-		halt
-	end
+gosub :player~quikstats
+setVar $startingLocation $player~CURRENT_PROMPT
+if ($bot~parm1 <> "on") and ($bot~parm1 <> "off")
+	setvar $switchboard~message "Please use - Runaway [on/off] format*"
+	gosub :switchboard~switchboard
+	halt
+end
 
-	if ($bot~parm1 = "on")
-		if ($startingLocation <> "Citadel")
-			setvar $switchboard~message "Runaway must start at Citadel prompt*"
-			gosub :switchboard~switchboard
-			halt
-		end
-		setvar $switchboard~message "Activating Runaway*"
-		gosub :switchboard~switchboard
-		goto :load_runaway
-	else
-		setvar $switchboard~message "Please use - Runaway [on/off] format**"
+if ($bot~parm1 = "on")
+	if ($startingLocation <> "Citadel")
+		setvar $switchboard~message "Runaway must start at Citadel prompt*"
 		gosub :switchboard~switchboard
 		halt
 	end
+	setvar $switchboard~message "Activating Runaway*"
+	gosub :switchboard~switchboard
+	goto :load_runaway
+else
+	setvar $switchboard~message "Please use - Runaway [on/off] format**"
+	gosub :switchboard~switchboard
+	halt
+end
 
 :load_runaway
-	isNumber $test $bot~parm2
-	if ($test)
-		setVar $firstrun $bot~parm2
-	else
-		setVar $firstrun 0
-	end
-	getWordPos $bot~user_command_line $pos "evac"
-	if ($pos > 0)
-		setVar $doEvacuate TRUE
-	else
-		setVar $doEvacuate FALSE
-	end
+isNumber $test $bot~parm2
+if ($test)
+	setVar $firstrun $bot~parm2
+else
+	setVar $firstrun 0
+end
+getWordPos $bot~user_command_line $pos "evac"
+if ($pos > 0)
+	setVar $doEvacuate TRUE
+else
+	setVar $doEvacuate FALSE
+end
 
-	send "s*"
-	waitFor "<Scan Sector>"
-	waitFor "(?="
-	setVar $runsec $player~CURRENT_SECTOR
+send "s*"
+waitFor "<Scan Sector>"
+waitFor "(?="
+setVar $runsec $player~CURRENT_SECTOR
 
 
 :set_flee_data
-	setvar $switchboard~message "Runaway initiated - Mapping...*"
-	gosub :switchboard~switchboard
-	setVar $run_count 1
-	setVar $run_database_count 0
-	setVar $sectiona SECTORS
-	divide $sectiona 78
-	setVar $echo_count 1
-	setArray $run_database SECTORS
-	echo "** Plotting Primary Flee Sectors...**"
+setvar $switchboard~message "Runaway initiated - Mapping...*"
+gosub :switchboard~switchboard
+setVar $run_count 1
+setVar $run_database_count 0
+setVar $sectiona SECTORS
+divide $sectiona 78
+setVar $echo_count 1
+setArray $run_database SECTORS
+echo "** Plotting Primary Flee Sectors...**"
 
 :start_run_count
-	while ($run_count <= SECTORS)
-		if (SECTOR.WARPCOUNT[$run_count] <> 2)
+while ($run_count <= SECTORS)
+	if (SECTOR.WARPCOUNT[$run_count] <> 2)
+			if ($echo_count = $sectiona)
+				echo ansi_13 #178
+				setVar $echo_count 1
+			else
+				add $echo_count 1
+			end
+	else
+		getSectorParameter $run_count "FIGSEC" $isFigged
+		getDistance $rundist $runsec $run_count
+		if (($rundist < 4) OR ($rundist > 12) OR ($isFigged < 1))
 				if ($echo_count = $sectiona)
 					echo ansi_13 #178
 					setVar $echo_count 1
@@ -84,54 +94,44 @@ loadVar $bot~parm8
 					add $echo_count 1
 				end
 		else
-			getSectorParameter $run_count "FIGSEC" $isFigged
-			getDistance $rundist $runsec $run_count
-			if (($rundist < 4) OR ($rundist > 12) OR ($isFigged < 1))
-					if ($echo_count = $sectiona)
-						echo ansi_13 #178
-						setVar $echo_count 1
-					else
-						add $echo_count 1
-					end
-			else
-				setvar $adjrunsec1 SECTOR.WARPS[$run_count][1]
-				setVar $adjrunsec2 SECTOR.WARPS[$run_count][2]
-				getSectorParameter $adjrunsec1 "FIGSEC" $isFiggedAdj1
-				getSectorParameter $adjrunsec2 "FIGSEC" $isFiggedAdj2
-				if ((SECTOR.WARPCOUNT[$adjrunsec1] = 1) OR (SECTOR.WARPCOUNT[$adjrunsec2] = 1) OR ($isFiggedAdj1 < 1) OR ($isFiggedAdj2 < 1))
-					if ($echo_count = $sectiona)
-						echo ansi_13 #178
-						setVar $echo_count 1
-					else
-						add $echo_count 1
-					end
-				end
-				add $run_database_count 1
+			setvar $adjrunsec1 SECTOR.WARPS[$run_count][1]
+			setVar $adjrunsec2 SECTOR.WARPS[$run_count][2]
+			getSectorParameter $adjrunsec1 "FIGSEC" $isFiggedAdj1
+			getSectorParameter $adjrunsec2 "FIGSEC" $isFiggedAdj2
+			if ((SECTOR.WARPCOUNT[$adjrunsec1] = 1) OR (SECTOR.WARPCOUNT[$adjrunsec2] = 1) OR ($isFiggedAdj1 < 1) OR ($isFiggedAdj2 < 1))
 				if ($echo_count = $sectiona)
 					echo ansi_13 #178
 					setVar $echo_count 1
 				else
 					add $echo_count 1
 				end
-				setVar $run_database[$run_database_count]  $run_count
+			end
+			add $run_database_count 1
+			if ($echo_count = $sectiona)
+				echo ansi_13 #178
+				setVar $echo_count 1
+			else
+				add $echo_count 1
+			end
+			setVar $run_database[$run_database_count]  $run_count
 
-			end		
-		end
-		add $run_count 1
+		end		
 	end
-	if ($run_database_count < 20)
-		setvar $switchboard~message "Runaway list too short - ReMapping...*"
-		gosub :switchboard~switchboard
-		waitFor "Message sent on"
-	else
-		goto :end_map
-	end
-	setVar $run_count 1
+	add $run_count 1
+end
+if ($run_database_count < 20)
+	setvar $switchboard~message "Runaway list too short - ReMapping...*"
+	gosub :switchboard~switchboard
+	waitFor "Message sent on"
+else
+	goto :end_map
+end
+setVar $run_count 1
 
 	
 	
-	echo "** Plotting Secondary Flee Sectors...**"
-	setVar $echo_count 1
+echo "** Plotting Secondary Flee Sectors...**"
+setVar $echo_count 1
 	:second_run_count
 	while ($run_count <= SECTORS)
 		
@@ -194,205 +194,205 @@ loadVar $bot~parm8
 		add $run_count 1
 	end
 :end_map
-	if ($doEvacuate)
-		setvar $switchboard~message "Runaway/Evacuate Multiple Planets Mode - " $run_database_count " flee sectors plotted.*"
-		gosub :switchboard~switchboard
-	else
-		setvar $switchboard~message "Runaway - " $run_database_count " flee sectors plotted.*"
-		gosub :switchboard~switchboard
-	end
-	goto :getsettings
+if ($doEvacuate)
+	setvar $switchboard~message "Runaway/Evacuate Multiple Planets Mode - " $run_database_count " flee sectors plotted.*"
+	gosub :switchboard~switchboard
+else
+	setvar $switchboard~message "Runaway - " $run_database_count " flee sectors plotted.*"
+	gosub :switchboard~switchboard
+end
+goto :getsettings
 
 :run_pwarp
-	if ($firstrun <> 0)
-		setVar $planet~warpto $firstrun
-		setVar $firstrun 0
-	else
-		gosub :getNewRunAwaySector
-	end
-	if ($doEvacuate)
-		setVar $bot~parm1 $planet~warpto
-		goto :evac_start
-	end
-	setVar $planet~PWARP_SCAN FALSE
-	setVar $player~bot_name $switchboard~bot_name
-	gosub :planet~pwarp
-	gosub :player~quikstats
-	if ($player~CURRENT_SECTOR <> $planet~warpto)
-		goto :run_pwarp
-	end
-	setVar $runsec $player~CURRENT_SECTOR
-	goto :getsettings
+if ($firstrun <> 0)
+	setVar $planet~warpto $firstrun
+	setVar $firstrun 0
+else
+	gosub :getNewRunAwaySector
+end
+if ($doEvacuate)
+	setVar $bot~parm1 $planet~warpto
+	goto :evac_start
+end
+setVar $planet~PWARP_SCAN FALSE
+setVar $player~bot_name $switchboard~bot_name
+gosub :planet~pwarp
+gosub :player~quikstats
+if ($player~CURRENT_SECTOR <> $planet~warpto)
+	goto :run_pwarp
+end
+setVar $runsec $player~CURRENT_SECTOR
+goto :getsettings
 
 :getNewRunAwaySector
-	setVar $planet~warpto 0
-	while ($planet~warpto <= 0)
-		getRnd $random 1 $run_database_count
-		setVar $planet~warpto $run_database[$random]
-	end
+setVar $planet~warpto 0
+while ($planet~warpto <= 0)
+	getRnd $random 1 $run_database_count
+	setVar $planet~warpto $run_database[$random]
+end
 return
 #============================== END RUNAWAY (RUNAWAY) SUB ==============================
 
 :getsettings
-	killalltriggers
-	setTextLineTrigger 1 :findfig "Deployed Fighters Report Sector"	
-	pause
+killalltriggers
+setTextLineTrigger 1 :findfig "Deployed Fighters Report Sector"	
+pause
 
 :findfig
-	killalltriggers
-	gosub :validateFighterHit
-	if ($isValid <> TRUE)
-		goto :getsettings
-	end
-	#getWord CURRENTLINE $fighit 5
-	#stripText $fighit ":"
-	#isNumber $test $fighit
-	getDistance $dist $dropSector $player~CURRENT_SECTOR
-	echo "[" $dist "]*"
-	if ($dist <= 2)
-		goto :run_pwarp
-	end
+killalltriggers
+gosub :validateFighterHit
+if ($isValid <> TRUE)
 	goto :getsettings
+end
+#getWord CURRENTLINE $fighit 5
+#stripText $fighit ":"
+#isNumber $test $fighit
+getDistance $dist $dropSector $player~CURRENT_SECTOR
+echo "[" $dist "]*"
+if ($dist <= 2)
+	goto :run_pwarp
+end
+goto :getsettings
 	
 # ======================     START PLANET MOVER (EVAC) SUBROUTINE    ==========================
 	:evac_start
-		gosub :player~quikstats
-		setVar $startingLocation $player~CURRENT_PROMPT
-		if (($startingLocation <> "Citadel") AND ($startingLocation <> "Command"))
-			setvar $switchboard~message "Must start from Citadel or Command Prompt*"
-			gosub :switchboard~switchboard
-			halt
-		end
-		if (($bot~parm1 = "s") and ($stardock <> 0))
-			setvar $bot~parm1 $stardock
-		end
-		if (($bot~parm1 = "r") and ($rylos <> 0))
-			setvar $bot~parm1 $rylos
-		end
-		if (($bot~parm1 = "a") and ($alpha_centauri <> 0))
-			setvar $bot~parm1 $alpha_centauri
-		end
-		if (($bot~parm1 = "h") and ($home_sector <> 0))
-			setvar $bot~parm1 $home_sector
-		end
-		setvar $target_sector $bot~parm1
-	:evac_run	
-		setvar $switchboard~message "Starting Planet Evacuation to sector: "&$target_sector&".*"
+	gosub :player~quikstats
+	setVar $startingLocation $player~CURRENT_PROMPT
+	if (($startingLocation <> "Citadel") AND ($startingLocation <> "Command"))
+		setvar $switchboard~message "Must start from Citadel or Command Prompt*"
 		gosub :switchboard~switchboard
-		setvar $evac_home $player~CURRENT_SECTOR
-		if ($startingLocation = "Citadel")
-			send "qq"
-		end
-		send "j  y  lq*"
+		halt
+	end
+	if (($bot~parm1 = "s") and ($stardock <> 0))
+		setvar $bot~parm1 $stardock
+	end
+	if (($bot~parm1 = "r") and ($rylos <> 0))
+		setvar $bot~parm1 $rylos
+	end
+	if (($bot~parm1 = "a") and ($alpha_centauri <> 0))
+		setvar $bot~parm1 $alpha_centauri
+	end
+	if (($bot~parm1 = "h") and ($home_sector <> 0))
+		setvar $bot~parm1 $home_sector
+	end
+	setvar $target_sector $bot~parm1
+	:evac_run	
+	setvar $switchboard~message "Starting Planet Evacuation to sector: "&$target_sector&".*"
+	gosub :switchboard~switchboard
+	setvar $evac_home $player~CURRENT_SECTOR
+	if ($startingLocation = "Citadel")
+		send "qq"
+	end
+	send "j  y  lq*"
 	
 	:evac_get_planets
-		waitOn "Registry# and Planet Name"
-		setVar $planet~planetCount 0
-		setVar $planet~planetSkip 0
-		settexttrigger planetGrabber :evac_planetline "   <"
-		settexttrigger beDone :evac_done "Land on which planet "
-		settexttrigger no_scanner :evac_no_scanner "Planet command (?=help)"
-		pause
+	waitOn "Registry# and Planet Name"
+	setVar $planet~planetCount 0
+	setVar $planet~planetSkip 0
+	settexttrigger planetGrabber :evac_planetline "   <"
+	settexttrigger beDone :evac_done "Land on which planet "
+	settexttrigger no_scanner :evac_no_scanner "Planet command (?=help)"
+	pause
 
 	:evac_planetline
-		killtrigger planetgrabber
-		killtrigger bedone
-		killtrigger no_scanner 
-		killtrigger getline2
-		killtrigger getend
-		setVar $line CURRENTLINE
-		replacetext $line "<" " "
-		replacetext $line ">" " "
-		striptext $line ","
-		add $planet~planetCount 1
-		getWord $line $planet~planet[$planet~planetCount] 1
-		setTextLineTrigger getLine2 :evac_planetline "   <"
-		setTextLineTrigger getEnd :evac_done "Land on which planet "
-		pause
+	killtrigger planetgrabber
+	killtrigger bedone
+	killtrigger no_scanner 
+	killtrigger getline2
+	killtrigger getend
+	setVar $line CURRENTLINE
+	replacetext $line "<" " "
+	replacetext $line ">" " "
+	striptext $line ","
+	add $planet~planetCount 1
+	getWord $line $planet~planet[$planet~planetCount] 1
+	setTextLineTrigger getLine2 :evac_planetline "   <"
+	setTextLineTrigger getEnd :evac_done "Land on which planet "
+	pause
 
 	:evac_no_scanner
-		goto :evac_Move
+	goto :evac_Move
 	
 	:evac_done
-		killtrigger getline2
-		setvar $evac_total $planet~planetCount
-		setvar $planet~planetCount 1
+	killtrigger getline2
+	setvar $evac_total $planet~planetCount
+	setvar $planet~planetCount 1
 
 	:evac_move
-		send "l " $planet~planet[$planet~planetCount] "* "
-		gosub :planet~getPlanetInfo
-		if ($planet~CITADEL < 4)
-			add $planet~planetSkip 1
-			goto :evac_twarp
-		elseif ($planet~CITADEL > 3)
-			send "m * * * t n t 1 * c p " $target_sector "*"
-			settextlinetrigger warp :evac_Pwarp "Locating beam pinpointed, TransWarp"
-			settextlinetrigger no_warp :evac_no_fig "You do not have any fighters in Sector"
-			pause
-		end
+	send "l " $planet~planet[$planet~planetCount] "* "
+	gosub :planet~getPlanetInfo
+	if ($planet~CITADEL < 4)
+		add $planet~planetSkip 1
+		goto :evac_twarp
+	elseif ($planet~CITADEL > 3)
+		send "m * * * t n t 1 * c p " $target_sector "*"
+		settextlinetrigger warp :evac_Pwarp "Locating beam pinpointed, TransWarp"
+		settextlinetrigger no_warp :evac_no_fig "You do not have any fighters in Sector"
+		pause
+	end
 
 	:evac_Pwarp
-		killtrigger no_Warp
-		send "y*"
-		if ($planet~planetCount = $evac_total)
-			subtract $planet~planetCount $planet~planetSkip
-			setvar $switchboard~message "Evac Complete. Moved: "&$planet~planetCount&" Skipped: "&$planet~planetSkip&". *"
-			gosub :switchboard~switchboard
-			goto :evac_end
-		end
-		send "qq  z  n  *  m" $evac_home "*y"
-		SetTextTrigger warp :evac_twarp "All Systems Ready, shall we engage?"
-		SetTextTrigger no_warp :evac_no_warp_back "Do you want to make"
-		pause
-
-	:evac_twarp
-		killtrigger no_Warp
-		add $planet~planetCount 1
-		send "y  *  *  *  q  z  n  *"
-		goto :evac_move
-
-	:evac_no_warp_back
-		killtrigger warp
-		setvar $switchboard~message "No Fighter at Home Sector.  Shutting down Evac.*"
+	killtrigger no_Warp
+	send "y*"
+	if ($planet~planetCount = $evac_total)
+		subtract $planet~planetCount $planet~planetSkip
+		setvar $switchboard~message "Evac Complete. Moved: "&$planet~planetCount&" Skipped: "&$planet~planetSkip&". *"
 		gosub :switchboard~switchboard
 		goto :evac_end
+	end
+	send "qq  z  n  *  m" $evac_home "*y"
+	SetTextTrigger warp :evac_twarp "All Systems Ready, shall we engage?"
+	SetTextTrigger no_warp :evac_no_warp_back "Do you want to make"
+	pause
+
+	:evac_twarp
+	killtrigger no_Warp
+	add $planet~planetCount 1
+	send "y  *  *  *  q  z  n  *"
+	goto :evac_move
+
+	:evac_no_warp_back
+	killtrigger warp
+	setvar $switchboard~message "No Fighter at Home Sector.  Shutting down Evac.*"
+	gosub :switchboard~switchboard
+	goto :evac_end
 
 	:evac_no_fig
-		killtrigger warp
-		if ($mode = "Runaway")
-			send "qqq* "
-			gosub :getNewRunAwaySector
-			setVar $target_sector $planet~warpto
-			goto :evac_move
-		end
-		setvar $switchboard~message "No Fighter at Target Sector.  Shutting down Evac.*"
-		gosub :switchboard~switchboard
+	killtrigger warp
+	if ($mode = "Runaway")
+		send "qqq* "
+		gosub :getNewRunAwaySector
+		setVar $target_sector $planet~warpto
+		goto :evac_move
+	end
+	setvar $switchboard~message "No Fighter at Target Sector.  Shutting down Evac.*"
+	gosub :switchboard~switchboard
 
 	:evac_end
-		goto :getsettings
+	goto :getsettings
 
 # ======================     END PLANET MOVER (EVAC) SUBROUTINE    ==========================
 
 :validateFighterHit
-	setVar $isValid FALSE
-	cutText CURRENTLINE&" " $radio 1 1
-	getText CURRENTLINE $dropSector $START_FIG_HIT $END_FIG_HIT
-	if ($radio <> "D")
+setVar $isValid FALSE
+cutText CURRENTLINE&" " $radio 1 1
+getText CURRENTLINE $dropSector $START_FIG_HIT $END_FIG_HIT
+if ($radio <> "D")
+	return
+end
+getText CURRENTANSILINE $alien_check $START_FIG_HIT_OWNER $END_FIG_HIT_OWNER
+getWordPos CURRENTLINE $pos $START_FIG_HIT_OWNER
+getWordPos $alien_check $apos $ALIEN_ANSI
+if (($apos > 0) OR ($pos = 0))
+	return
+end
+if ($targetingPerson)
+	getWordPos CURRENTLINE $pos " "&$target&"'s "
+	if ($pos <= 0)
 		return
 	end
-	getText CURRENTANSILINE $alien_check $START_FIG_HIT_OWNER $END_FIG_HIT_OWNER
-	getWordPos CURRENTLINE $pos $START_FIG_HIT_OWNER
-	getWordPos $alien_check $apos $ALIEN_ANSI
-	if (($apos > 0) OR ($pos = 0))
-		return
-	end
-	if ($targetingPerson)
-		getWordPos CURRENTLINE $pos " "&$target&"'s "
-		if ($pos <= 0)
-			return
-		end
-	end
-	setVar $isValid TRUE
+end
+setVar $isValid TRUE
 return
 
 include "source\include\planet"

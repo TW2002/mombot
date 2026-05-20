@@ -98,9 +98,9 @@ if ($stardock = 0)
     setTextLineTrigger getBackDockCrazy :getBackDockCrazy "The StarDock is located in sector"
     pause
     :getBackDockCrazy
-        killalltriggers
-        getWord CURRENTLINE $stardock 7
-		STRIPTEXT $stardock "."
+    killalltriggers
+    getWord CURRENTLINE $stardock 7
+	STRIPTEXT $stardock "."
 end
 # FUTURE VARS
 # Limps/Mines bot vars
@@ -119,19 +119,19 @@ else
 	isNumber $number $halt_turns
 
 	if ($number <> 1)
-		setvar $switchboard~message "Please select what turns to halt at.*"
-		gosub :switchboard~switchboard
-		halt
+	setvar $switchboard~message "Please select what turns to halt at.*"
+	gosub :switchboard~switchboard
+	halt
 
 	end
 
 	if ($halt_turns <= 0)
-		setvar $switchboard~message "Halt turns must be greater than 0.*"
-		gosub :switchboard~switchboard
-		halt
+	setvar $switchboard~message "Halt turns must be greater than 0.*"
+	gosub :switchboard~switchboard
+	halt
 	else
-		setvar $switchboard~message "We will stop when we reach " & $halt_turns & " turns.*"
-		gosub :switchboard~switchboard
+	setvar $switchboard~message "We will stop when we reach " & $halt_turns & " turns.*"
+	gosub :switchboard~switchboard
 	end
 end
 
@@ -204,21 +204,21 @@ if ($pos > 0)
 else
 	getWordPos $bot~user_command_line $pos "org"
 	if ($pos > 0)
-		setVar $pptTradingOption "org"
-		setVar $msg $msg&"Trading Organic - Equipment Ports*"
+	setVar $pptTradingOption "org"
+	setVar $msg $msg&"Trading Organic - Equipment Ports*"
 	else
-		getWordPos $bot~user_command_line $pos "buys"
+	getWordPos $bot~user_command_line $pos "buys"
+	if ($pos > 0)
+		setVar $pptTradingOption "buys"
+		setVar $msg $msg&"Trading Org - Equip at BXXs only"
+	else
+		getWordPos $bot~user_command_line $pos "none"
 		if ($pos > 0)
-			setVar $pptTradingOption "buys"
-			setVar $msg $msg&"Trading Org - Equip at BXXs only"
-		else
-			getWordPos $bot~user_command_line $pos "none"
-			if ($pos > 0)
-				setVar $pptTradingOption "none"
-				setVar $msg $msg&"We are not trading at ports*"
-				setVar $singleTrades 0
-			end
+			setVar $pptTradingOption "none"
+			setVar $msg $msg&"We are not trading at ports*"
+			setVar $singleTrades 0
 		end
+	end
 	end
 end
 
@@ -230,8 +230,8 @@ if ($pos > 0)
 else
 	getWordPos $bot~user_command_line $pos "warps"
 	if ($pos > 0)
-		setVar $gridPriority "warps"
-		setVar $msg $msg&"Prioritising sectors with best gridding option*"
+	setVar $gridPriority "warps"
+	setVar $msg $msg&"Prioritising sectors with best gridding option*"
 	end
 end
 
@@ -256,7 +256,7 @@ if ($limpchk = false)
 	setEventTrigger        limpchkend        :limpchkend "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\data\update.cts"
 	pause
 	:limpchkend
-		killalltriggers
+	killalltriggers
 	readToArray $BOT~LIMP_FILE $allLimps
 else
 	readToArray $BOT~LIMP_FILE $allLimps
@@ -287,10 +287,11 @@ setWindowContents dora $stuff
 #reqRecording
 
 
-setVar $doraExploredFile "dora_explored_" &  GAMENAME  & ".txt"
+loadvar $bot~folder
+setVar $doraExploredFile $bot~folder&"/dora_explored_" &  GAMENAME  & ".txt"
 # Good POrts - tehse are those we can come back and explore - if we have twarp
 # if we don't, we'll just grid them as we go
-setVar $dangerousSectorLogFile "Grid_Warnings_" &  GAMENAME & "_" & $date & ".txt"
+setVar $dangerousSectorLogFile $bot~folder&"/Grid_Warnings_" &  GAMENAME & "_" & $date & ".txt"
 
 
 setArray $explored SECTORS
@@ -317,23 +318,23 @@ fileExists $figlchk $doraExploredFile
 if ($figlchk = 1)
 	
 	if ($deleteData = TRUE)
-		echo "*###########"
-		echo "*# DELETED #"
-		echo "*###########"
-		setvar $switchboard~message "Deleting Previous Data.*"
-		gosub :switchboard~switchboard
-		delete $doraExploredFile
+	echo "*###########"
+	echo "*# DELETED #"
+	echo "*###########"
+	setvar $switchboard~message "Deleting Previous Data.*"
+	gosub :switchboard~switchboard
+	delete $doraExploredFile
 	else
-		if ($figlchk = 1)
+	if ($figlchk = 1)
 			
-			readToArray $doraExploredFile $voidsList
-			setVar $i 1
-			while ($i <= $voidsList)
-				setVar $explored[$voidsList[$i]] 1
-				#echo "* adding: " $voidsList[$i]
-				add $i 1
-			end
+		readToArray $doraExploredFile $voidsList
+		setVar $i 1
+		while ($i <= $voidsList)
+			setVar $explored[$voidsList[$i]] 1
+			#echo "* adding: " $voidsList[$i]
+			add $i 1
 		end
+	end
 	end
 end
 
@@ -344,19 +345,19 @@ while ($i <= SECTORS)
 	getSectorParameter $i "BUBBLEDOOR" $blockSec
 	isNumber $test $blockSec
 	if ($test = 1)
-		if ($blockSec > 0)
-			setVar $explored[$i] 1
-			echo "Blocking Bubble Door: " $i "*"
-		end
+	if ($blockSec > 0)
+		setVar $explored[$i] 1
+		echo "Blocking Bubble Door: " $i "*"
+	end
 	end
 
 	getSectorParameter $i "TUNNELDOOR" $blockSec 
 	isNumber $test $blockSec
 	if ($test = 1)
-		if ($blockSec > 0)
-			setVar $explored[$i] 1
-			echo "Blocking Tunnel Door: " $i "*"
-		end
+	if ($blockSec > 0)
+		setVar $explored[$i] 1
+		echo "Blocking Tunnel Door: " $i "*"
+	end
 	end
 	
 	add $i 1
@@ -531,147 +532,147 @@ halt
 
 :updateFreshSectors
 	
-	# just get all ports and single sectors plots back
-	# this is to make sure we don't go down a 1 way whether navigating or ppt
+# just get all ports and single sectors plots back
+# this is to make sure we don't go down a 1 way whether navigating or ppt
 	
-	setVar $i 1
-	while ($i <= $deni)
-		# only get warps of target ports
-		setVar $cl PORT.CLASS[$nSector[$i]]
-		# only get paths of singles when no ppt'ing
-		if (($pptTradingOption <> "none") or (($gridPriority = "ports") and (($cl = 4) or ($cl = 5) or ((($cl = 2) or ($cl = 1)) and ($nWarps[$i] > 2)))))
-			if ((($nWarps[$i] = 1) and ($nNew[$i] = 1)) or (($nDensity[$i] = 100) and ($nNew[$i] = 1)))
-				send "cf" $nSector[$i] "*" $PLAYER~CURRENT_SECTOR "*q"
-				waitfor "omputer deactivated"
-			end
-		else
-			# Unsure if I want to test 1 ways..
-			if (($nWarps[$i] = 1) and ($nNew[$i] = 1))
-				#send "cf" $nSector[$i] "*" $PLAYER~CURRENT_SECTOR "*q"
-				#waitfor "omputer deactivated"
-			end
+setVar $i 1
+while ($i <= $deni)
+	# only get warps of target ports
+	setVar $cl PORT.CLASS[$nSector[$i]]
+	# only get paths of singles when no ppt'ing
+	if (($pptTradingOption <> "none") or (($gridPriority = "ports") and (($cl = 4) or ($cl = 5) or ((($cl = 2) or ($cl = 1)) and ($nWarps[$i] > 2)))))
+		if ((($nWarps[$i] = 1) and ($nNew[$i] = 1)) or (($nDensity[$i] = 100) and ($nNew[$i] = 1)))
+			send "cf" $nSector[$i] "*" $PLAYER~CURRENT_SECTOR "*q"
+			waitfor "omputer deactivated"
 		end
-		add $i 1
+	else
+		# Unsure if I want to test 1 ways..
+		if (($nWarps[$i] = 1) and ($nNew[$i] = 1))
+			#send "cf" $nSector[$i] "*" $PLAYER~CURRENT_SECTOR "*q"
+			#waitfor "omputer deactivated"
+		end
 	end
+	add $i 1
+end
 return
 
 
 :getNextWarp
 	
-	# COLLECT DATA - Some used in one routine and not the other
-	setVar $i 1
-	setVar $safeSectors 0
-	setVar $safes 0
-	setVar $numSells 0
-	setVar $sells 0
-	setVar $numBuys 0
-	setVar $buys 0
-	setVar $bestSector 0
+# COLLECT DATA - Some used in one routine and not the other
+setVar $i 1
+setVar $safeSectors 0
+setVar $safes 0
+setVar $numSells 0
+setVar $sells 0
+setVar $numBuys 0
+setVar $buys 0
+setVar $bestSector 0
 
-	while ($i <= $deni)
+while ($i <= $deni)
 
-		setVar $danger 0
-		setVar $dSector $nSector[$i]
-		setVar $dIndex $i
-		setvar $class PORT.CLASS[$dSector]
-		getSectorParameter $dSector "FIGSEC" $hasFig
-		if ($hasFig = "")
-			setVar $hasFig 0
-		end
-		goSub :checkDanger
-#echo "$danger:" $danger " $explored[$dSector]:" $explored[$dSector] " $class:" $class " $hasFig:" $hasFig "*"
-		if (($danger = 0) and ($explored[$dSector] = 0))
-
-			if ((($class = 4) or ($class = 5)) and ($hasFig = 0))
-#echo "Found NumSells*"
-				add $numSells 1
-				setVar $sells[$numSells] $dSector
-			end
-
-			# we'll store buys with 4+ as th next option they are twice as prevlant as Sxx's, so it'll work out even
-			if ((($class = 1) or ($class = 2)) and ($hasFig = 0) and ($warpCount[$dSector] > 2))
-				add $numBuys 1
-				setVar $buys[$numBuys] $dSector
-			end
-			if (($hasFig = 0) or ($hasFig = ""))
-				add $safeSectors 1
-				setVar $safes[$safeSectors] $dSector
-			end
-		end
-		add $i 1
+	setVar $danger 0
+	setVar $dSector $nSector[$i]
+	setVar $dIndex $i
+	setvar $class PORT.CLASS[$dSector]
+	getSectorParameter $dSector "FIGSEC" $hasFig
+	if ($hasFig = "")
+		setVar $hasFig 0
 	end
+	goSub :checkDanger
+#echo "$danger:" $danger " $explored[$dSector]:" $explored[$dSector] " $class:" $class " $hasFig:" $hasFig "*"
+	if (($danger = 0) and ($explored[$dSector] = 0))
 
-	# Chanse sell ports
-	if ($gridPriority = "ports")
-		
-		if ($numSells > 0)
-			setVar $chkOptioni $numSells
-			setVar $chkOption 0
-			setVar $i 1
-			while ($i <= $numSells)
-				setVar $chkOption[$i] $sells[$i]
-				add $i 1
-			end
-
-			goSub :getBestSectorFromList
-			if ($newOptions > 1)
-				goSub :goGridOtherOptions
-			end
+		if ((($class = 4) or ($class = 5)) and ($hasFig = 0))
+#echo "Found NumSells*"
+			add $numSells 1
+			setVar $sells[$numSells] $dSector
 		end
+
+		# we'll store buys with 4+ as th next option they are twice as prevlant as Sxx's, so it'll work out even
+		if ((($class = 1) or ($class = 2)) and ($hasFig = 0) and ($warpCount[$dSector] > 2))
+			add $numBuys 1
+			setVar $buys[$numBuys] $dSector
+		end
+		if (($hasFig = 0) or ($hasFig = ""))
+			add $safeSectors 1
+			setVar $safes[$safeSectors] $dSector
+		end
+	end
+	add $i 1
+end
+
+# Chanse sell ports
+if ($gridPriority = "ports")
 		
-		setVar $chkOptioni $numBuys
+	if ($numSells > 0)
+		setVar $chkOptioni $numSells
 		setVar $chkOption 0
 		setVar $i 1
-		while ($i <= $numBuys)
-			setVar $chkOption[$i] $buys[$i]
+		while ($i <= $numSells)
+			setVar $chkOption[$i] $sells[$i]
 			add $i 1
 		end
 
-		if ($bestSector = 0)
-			# we don't have a SELL ore pair, lets get a Buy Ore Pair port
-			
-			goSub :getBestSectorFromList
-			if ($newOptions > 1)
-				goSub :goGridOtherOptions
-			end
-		else
-			# going to grid the buys now anyway - may remove this later
-			# just testing ot see if we can increase number of trades post
-			# - taking note, we are using the best sector routine to sort these
-			# so need to save and restore
-			setVar $temp_$bestSector $bestSector
-			goSub :getBestSectorFromList
-			#restore it, and grid them all
-			setVar $bestSector $temp_$bestSector
-			if ($newOptions > 0)
-				goSub :goGridOtherOptions
-			end
-
+		goSub :getBestSectorFromList
+		if ($newOptions > 1)
+			goSub :goGridOtherOptions
 		end
-		if ($bestSector = 0)
-			# found no ports we wanted, lets just go best warps
-			goSub :getBestWarps
-		end	
-
-	else
-		goSub :getBestWarps
+	end
+		
+	setVar $chkOptioni $numBuys
+	setVar $chkOption 0
+	setVar $i 1
+	while ($i <= $numBuys)
+		setVar $chkOption[$i] $buys[$i]
+		add $i 1
 	end
 
 	if ($bestSector = 0)
-
-
-
-		goSub :checkOptions
-		if ($safeOptionsBack = 0)
-			setVar $SWITCHBOARD~message "Currently No safe path back - if have TWARP then we could move else where using DB *"
-			gosub :SWITCHBOARD~switchboard 
-			halt
-		else
+		# we don't have a SELL ore pair, lets get a Buy Ore Pair port
 			
-			setVar $chkSec $PLAYER~CURRENT_SECTOR
-			setVar $adjSec $safeOptionsBackDirect
-			goSub :checkAdj
-			if (($moveTwarp = 1) and ($isAdj = 0))
+		goSub :getBestSectorFromList
+		if ($newOptions > 1)
+			goSub :goGridOtherOptions
+		end
+	else
+		# going to grid the buys now anyway - may remove this later
+		# just testing ot see if we can increase number of trades post
+		# - taking note, we are using the best sector routine to sort these
+		# so need to save and restore
+		setVar $temp_$bestSector $bestSector
+		goSub :getBestSectorFromList
+		#restore it, and grid them all
+		setVar $bestSector $temp_$bestSector
+		if ($newOptions > 0)
+			goSub :goGridOtherOptions
+		end
+
+	end
+	if ($bestSector = 0)
+		# found no ports we wanted, lets just go best warps
+		goSub :getBestWarps
+	end	
+
+else
+	goSub :getBestWarps
+end
+
+if ($bestSector = 0)
+
+
+
+	goSub :checkOptions
+	if ($safeOptionsBack = 0)
+		setVar $SWITCHBOARD~message "Currently No safe path back - if have TWARP then we could move else where using DB *"
+		gosub :SWITCHBOARD~switchboard 
+		halt
+	else
+			
+		setVar $chkSec $PLAYER~CURRENT_SECTOR
+		setVar $adjSec $safeOptionsBackDirect
+		goSub :checkAdj
+		if (($moveTwarp = 1) and ($isAdj = 0))
 				:jumpagain
 				setVar $player~warpto $safeOptionsBackDirect
 				gosub :move~twarp
@@ -763,221 +764,221 @@ return
 return
 :goGridOtherOptions
 
-	setVar $returnSector $PLAYER~CURRENT_SECTOR
+setVar $returnSector $PLAYER~CURRENT_SECTOR
 
-	if ($moveTwarp = 11) 
-		# STORE OTHER OPTIONS HERE ? Undecided
-		# do we still want to do this as we are using the stack and already pushing
-	else
+if ($moveTwarp = 11) 
+	# STORE OTHER OPTIONS HERE ? Undecided
+	# do we still want to do this as we are using the stack and already pushing
+else
 
-		setVar $i 1
-		while ($i <= $newOptions)
-			if ($newi[$i] <> $bestSector)
+	setVar $i 1
+	while ($i <= $newOptions)
+		if ($newi[$i] <> $bestSector)
 
-				setVar $MOVE~moveIntoSector $newi[$i] 
-				gosub :MOVE~moveIntoSector
-				setSectorParameter  $newi[$i] "FIGSEC" TRUE
-				gosub :player~quikstats
-				send "sd"
-				goSub :checkPassingTrading
-				add $stat_moves 1
-				add $stat_figsdown 1		
-				setVar $MOVE~moveIntoSector $returnSector 
-				gosub :MOVE~moveIntoSector
-				gosub :player~quikstats
-				add $stat_moves 1
-			end
-			add $i 1
+			setVar $MOVE~moveIntoSector $newi[$i] 
+			gosub :MOVE~moveIntoSector
+			setSectorParameter  $newi[$i] "FIGSEC" TRUE
+			gosub :player~quikstats
+			send "sd"
+			goSub :checkPassingTrading
+			add $stat_moves 1
+			add $stat_figsdown 1		
+			setVar $MOVE~moveIntoSector $returnSector 
+			gosub :MOVE~moveIntoSector
+			gosub :player~quikstats
+			add $stat_moves 1
 		end
-	
+		add $i 1
 	end
+	
+end
 return
 
 :checkAdj
-	setVar $isAdj 0
-	setVar $cc 1
-	while ($cc <= SECTOR.WARPCOUNT[$chkSec])
-		if (SECTOR.WARPS[$chkSec][$cc] = $adjSec)
+setVar $isAdj 0
+setVar $cc 1
+while ($cc <= SECTOR.WARPCOUNT[$chkSec])
+	if (SECTOR.WARPS[$chkSec][$cc] = $adjSec)
 
-			setVar $isAdj 1
-			return
-		end
-		add $cc 1
+		setVar $isAdj 1
+		return
 	end
+	add $cc 1
+end
 
 return
 
 :getBestSectorFromList
 
 	
-	setVar $newOptions 0
-	setVar $newi 0
+setVar $newOptions 0
+setVar $newi 0
 
+setVar $i 1
+while ($i <= $chkOptioni)
+	setVar $chkSec $chkOption[$i]
+	setVar $adjSec $PLAYER~CURRENT_SECTOR
+	goSub :checkAdj
+	if ($isAdj = 1)
+		add $newOptions 1
+		setVar $newi[$newOptions] $chkSec
+	else
+	end
+	add $i 1
+end
+
+if ($newOptions > 0)
+	# select best
+	setVar $denCount 0
+	setVar $bestSector 0
 	setVar $i 1
-	while ($i <= $chkOptioni)
-		setVar $chkSec $chkOption[$i]
-		setVar $adjSec $PLAYER~CURRENT_SECTOR
-		goSub :checkAdj
-		if ($isAdj = 1)
-			add $newOptions 1
-			setVar $newi[$newOptions] $chkSec
-		else
+	while ($i <= $newOptions)
+		if ($warpCount[$newi[$i]] > $denCount)
+			setVar $bestSector $newi[$i]
+			setVar $denCount $warpCount[$newi[$i]]
 		end
 		add $i 1
 	end
-
-	if ($newOptions > 0)
-		# select best
-		setVar $denCount 0
-		setVar $bestSector 0
-		setVar $i 1
-		while ($i <= $newOptions)
-			if ($warpCount[$newi[$i]] > $denCount)
-				setVar $bestSector $newi[$i]
-				setVar $denCount $warpCount[$newi[$i]]
-			end
-			add $i 1
-		end
-	end
+end
 
 return
 
 
 :getBestWarps
-	setVar $i 1
-	setVar $denCount 0
-	setVar $bestSector 0
-	while ($i <= $safeSectors)
-		if ($warpCount[$safes[$i]] > $denCount)
-			setVar $bestSector $safes[$i]
-			setVar $denCount $warpCount[$safes[$i]]
-		end
-		add $i 1
+setVar $i 1
+setVar $denCount 0
+setVar $bestSector 0
+while ($i <= $safeSectors)
+	if ($warpCount[$safes[$i]] > $denCount)
+		setVar $bestSector $safes[$i]
+		setVar $denCount $warpCount[$safes[$i]]
 	end
+	add $i 1
+end
 
 return
 
 
 :checkTrade
 	
-	# $pptTradingOption
-	#  "all" all pairs  (which still excludes fuel<>org
-	#  "org" all Org-Equ
-	#  "buys" org - equip not selling ore
-	#  "none"  skip this step
+# $pptTradingOption
+#  "all" all pairs  (which still excludes fuel<>org
+#  "org" all Org-Equ
+#  "buys" org - equip not selling ore
+#  "none"  skip this step
 #	echo "$pptTradingOption: " $pptTradingOption "*"
-	setVar $trades 0
-	setVar $tradesi 0
-	setVar $tradestype 0
+setVar $trades 0
+setVar $tradesi 0
+setVar $tradestype 0
 
-	if (($pptTradingOption <> "none") and (PORT.EXISTS[$PLAYER~CURRENT_SECTOR] = 1))
+if (($pptTradingOption <> "none") and (PORT.EXISTS[$PLAYER~CURRENT_SECTOR] = 1))
 
-		# get neighbours with a potenial trading port that warp back
-		setVar $cport PORT.CLASS[$PLAYER~CURRENT_SECTOR]
-		setVar $i 1
-		while ($i <= $deni)
-			setVar $danger 0
-			setVar $dSector $nSector[$i]
-			setVar $dIndex $i
+	# get neighbours with a potenial trading port that warp back
+	setVar $cport PORT.CLASS[$PLAYER~CURRENT_SECTOR]
+	setVar $i 1
+	while ($i <= $deni)
+		setVar $danger 0
+		setVar $dSector $nSector[$i]
+		setVar $dIndex $i
 			
-			goSub :checkDanger
+		goSub :checkDanger
 
-			if ((PORT.EXISTS[$nSector[$i]]) and ($danger = 0))
-				setVar $nport PORT.CLASS[$nSector[$i]]
-				setVar $chkSec $nSector[$i]
-				setVar $adjSec $PLAYER~CURRENT_SECTOR
-				goSub :checkAdj
-				if ($isAdj = 1)
-					# all - i.e. 1 to 6
-					if (($pptTradingOption = "all") and ($nport > 0) and ($nport < 7))
-						goSub :isAllPair
-						if ($portCanTrade = 1)
-							add $tradesi 1
-							setVar $trades[$tradesi] $chkSec
-							setVar $tradestype[$tradesi] $tradingType
-						end 
-					elseif (($pptTradingOption = "org") and (($nport = 1) or ($nport = 2) or ($nport = 4) or ($nport = 5)))
-						goSub :isOrgEPair
-						if ($portCanTrade = 1)
-							add $tradesi 1
-							setVar $trades[$tradesi] $chkSec
-							setVar $tradestype[$tradesi] $tradingType
-						end 
-					elseif (($pptTradingOption = "buys") and (($nport = 1) or ($nport = 2)))
-						goSub :isBuysPair
-						if ($portCanTrade = 1)
-							add $tradesi 1
-							setVar $trades[$tradesi] $chkSec
-							setVar $tradestype[$tradesi] $tradingType
-						end 
-					end
+		if ((PORT.EXISTS[$nSector[$i]]) and ($danger = 0))
+			setVar $nport PORT.CLASS[$nSector[$i]]
+			setVar $chkSec $nSector[$i]
+			setVar $adjSec $PLAYER~CURRENT_SECTOR
+			goSub :checkAdj
+			if ($isAdj = 1)
+				# all - i.e. 1 to 6
+				if (($pptTradingOption = "all") and ($nport > 0) and ($nport < 7))
+					goSub :isAllPair
+					if ($portCanTrade = 1)
+						add $tradesi 1
+						setVar $trades[$tradesi] $chkSec
+						setVar $tradestype[$tradesi] $tradingType
+					end 
+				elseif (($pptTradingOption = "org") and (($nport = 1) or ($nport = 2) or ($nport = 4) or ($nport = 5)))
+					goSub :isOrgEPair
+					if ($portCanTrade = 1)
+						add $tradesi 1
+						setVar $trades[$tradesi] $chkSec
+						setVar $tradestype[$tradesi] $tradingType
+					end 
+				elseif (($pptTradingOption = "buys") and (($nport = 1) or ($nport = 2)))
+					goSub :isBuysPair
+					if ($portCanTrade = 1)
+						add $tradesi 1
+						setVar $trades[$tradesi] $chkSec
+						setVar $tradestype[$tradesi] $tradingType
+					end 
 				end
-
 			end
-			
-			add $i 1
+
 		end
+			
+		add $i 1
+	end
 		
-		if ($tradesi > 0)
+	if ($tradesi > 0)
 			 
-			if ($tradesi > 1)
-				setVar $i 1
-				while ($i <= $tradesi)
-					send "cr" $trades[$i] "*q"
-					waitfor "Computer deactivated>"
-					add $i 1
-				end
-
-
-				setVar $maxe 0
-				setVar $tradePort 0
-				setVar $i 1
-				
-				while ($i <= $tradesi)
-					if (PORT.EQUIP[$trades[$i]] > $maxe)
-						setVAr $maxe PORT.EQUIP[$trades[$i]]
-						setVar $tradePort $trades[$i]
-					end
-					add $i 1
-				end
-			else
-				setVar $tradePort $trades[1]
+		if ($tradesi > 1)
+			setVar $i 1
+			while ($i <= $tradesi)
+				send "cr" $trades[$i] "*q"
+				waitfor "Computer deactivated>"
+				add $i 1
 			end
 
-			
-			setVar $originSector $PLAYER~CURRENT_SECTOR
-			setVar $prepptc $player~credits
 
-			setVar $BOT~command "ppt"
-			setVar $BOT~user_command_line $tradePort &" p:50 k:10"
-			setVar $BOT~parm1 $tradePort
-			setVar $BOT~parm2 "p:50"
-			setVar $BOT~parm3 "k:10"
+			setVar $maxe 0
+			setVar $tradePort 0
+			setVar $i 1
+				
+			while ($i <= $tradesi)
+				if (PORT.EQUIP[$trades[$i]] > $maxe)
+					setVAr $maxe PORT.EQUIP[$trades[$i]]
+					setVar $tradePort $trades[$i]
+				end
+				add $i 1
+			end
+		else
+			setVar $tradePort $trades[1]
+		end
 
-			saveVar $BOT~parm1
-			saveVar $BOT~parm2
-			saveVar $BOT~parm3
 			
-			saveVar $BOT~command
-			saveVar $BOT~user_command_line
+		setVar $originSector $PLAYER~CURRENT_SECTOR
+		setVar $prepptc $player~credits
+
+		setVar $BOT~command "ppt"
+		setVar $BOT~user_command_line $tradePort &" p:50 k:10"
+		setVar $BOT~parm1 $tradePort
+		setVar $BOT~parm2 "p:50"
+		setVar $BOT~parm3 "k:10"
+
+		saveVar $BOT~parm1
+		saveVar $BOT~parm2
+		saveVar $BOT~parm3
+			
+		saveVar $BOT~command
+		saveVar $BOT~user_command_line
 	
-			load "scripts\"&$bot~mombot_directory&"\commands\cashing\ppt.cts"
+		load "scripts\"&$bot~mombot_directory&"\commands\cashing\ppt.cts"
 			:backpptwait
 			setTextLineTrigger        pptPauseForCash        :pptPauseForCash "[atm:" & $SWITCHBOARD~BOT_NAME & "]"
 			setTextLineTrigger        pptMove        :pptMove "<Move>"
 			setEventTrigger        pptended        :pptended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\cashing\ppt.cts"
 			pause
 			:pptPauseForCash
-				killalltriggers
-				setVar $cashPause 1
-				send "'[atm:ack] Will pause at next SXB post trading.*"
-				goto :backpptwait
+			killalltriggers
+			setVar $cashPause 1
+			send "'[atm:ack] Will pause at next SXB post trading.*"
+			goto :backpptwait
 			:pptMove
-				killalltriggers
-				add $stat_moves 1
-				goto :backpptwait
+			killalltriggers
+			add $stat_moves 1
+			goto :backpptwait
 			:pptended
-				killalltriggers
+			killalltriggers
 			gosub :player~quikstats
 			setVar $stat_dollarsppt ($stat_dollarsppt + ($player~credits - $prepptc))
 
@@ -986,9 +987,9 @@ return
 			setSectorParameter $tradePort "FIGSEC" TRUE
 			
 			if ($originSector <> $PLAYER~CURRENT_SECTOR)
-				# Finished up next door, return
+			# Finished up next door, return
 				
-				return
+			return
 			end
 		else
 			#echo "No Trade*"
@@ -1010,36 +1011,36 @@ return
 :doSingleTrade
 	
 	
-	if (($testMcicBuy = 0) and ($testMcicSell = 0))
-		setVar $keepquant 0
+if (($testMcicBuy = 0) and ($testMcicSell = 0))
+	setVar $keepquant 0
+else
+	if ($pptTradingOption = "none")
+		setVar $keepquant 15
 	else
-		if ($pptTradingOption = "none")
-			setVar $keepquant 15
-		else
-			setVar $keepquant 5
-		end
+		setVar $keepquant 5
 	end
-	setVar $pretradec $player~credits
-	setVar $BOT~command "trade"
-	setVar $BOT~user_command_line $keepquant
-	setVar $BOT~parm1 $keepquant
+end
+setVar $pretradec $player~credits
+setVar $BOT~command "trade"
+setVar $BOT~user_command_line $keepquant
+setVar $BOT~parm1 $keepquant
 	
-	saveVar $BOT~parm1
+saveVar $BOT~parm1
 	
-	saveVar $BOT~command
-	saveVar $BOT~user_command_line
-	load "scripts\"&$bot~mombot_directory&"\commands\cashing\trade.cts"
+saveVar $BOT~command
+saveVar $BOT~user_command_line
+load "scripts\"&$bot~mombot_directory&"\commands\cashing\trade.cts"
 	:backtradewait
 	setTextLineTrigger        tradePauseForCash        :tradePauseForCash "[atm:" & $SWITCHBOARD~BOT_NAME & "]"
 	setEventTrigger        tradeended        :tradeended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\cashing\trade.cts"
 	pause
 	:tradePauseForCash
-		killalltriggers
-		setVar $cashPause 1
-		send "'[atm:ack] Will pause at next SXB post trading.*"
-		goto :backtradewait
+	killalltriggers
+	setVar $cashPause 1
+	send "'[atm:ack] Will pause at next SXB post trading.*"
+	goto :backtradewait
 	:tradeended
-		killalltriggers
+	killalltriggers
 	add $stat_trades 1
 	gosub :player~quikstats
 
@@ -1048,156 +1049,156 @@ return
 return
 
 :isAllPair
-	# Any port combo returns a postitve
-	setVar $portCanTrade 0
-	if ((($cport = 1) or ($cport = 5)) and (($nport = 2) or ($nport = 4)))
-		setVar $portCanTrade 1
-		setVar $tradingType 1
-	elseif ((($cport = 2) or ($cport = 4)) and (($nport = 1) or ($nport = 5)))
-		setVar $portCanTrade 1
-		setVar $tradingType 1
-	elseif ((($cport = 3) or ($cport = 4)) and (($nport = 1) or ($nport = 6)))
-		setVar $portCanTrade 1
-		setVar $tradingType 2
-	elseif ((($cport = 1) or ($cport = 6)) and (($nport = 3) or ($nport = 4)))
-		setVar $portCanTrade 1
-		setVar $tradingType 2
-	end
+# Any port combo returns a postitve
+setVar $portCanTrade 0
+if ((($cport = 1) or ($cport = 5)) and (($nport = 2) or ($nport = 4)))
+	setVar $portCanTrade 1
+	setVar $tradingType 1
+elseif ((($cport = 2) or ($cport = 4)) and (($nport = 1) or ($nport = 5)))
+	setVar $portCanTrade 1
+	setVar $tradingType 1
+elseif ((($cport = 3) or ($cport = 4)) and (($nport = 1) or ($nport = 6)))
+	setVar $portCanTrade 1
+	setVar $tradingType 2
+elseif ((($cport = 1) or ($cport = 6)) and (($nport = 3) or ($nport = 4)))
+	setVar $portCanTrade 1
+	setVar $tradingType 2
+end
 
 return
 
 
 :isOrgEPair
-	# Any port combo returns a postitve
-	setVar $portCanTrade 0
+# Any port combo returns a postitve
+setVar $portCanTrade 0
 
-	if (($cport = 1) or ($cport = 5))
-		if (($nport = 2) or ($nport = 4))
-			setVar $portCanTrade 1
-			setVar $tradingType 1
-		end
-	elseif (($cport = 2) or ($cport = 4))
-		if (($nport = 1) or ($nport = 5))
-			setVar $portCanTrade 1
-			setVar $tradingType 1
-		end
+if (($cport = 1) or ($cport = 5))
+	if (($nport = 2) or ($nport = 4))
+		setVar $portCanTrade 1
+		setVar $tradingType 1
 	end
+elseif (($cport = 2) or ($cport = 4))
+	if (($nport = 1) or ($nport = 5))
+		setVar $portCanTrade 1
+		setVar $tradingType 1
+	end
+end
 
 return
 
 
 :isBuysPair
-	# Any port combo returns a postitve
-	setVar $portCanTrade 0
+# Any port combo returns a postitve
+setVar $portCanTrade 0
 
-	if ($cport = 1)
-		if ($nport = 2)
-			setVar $portCanTrade 1
-			setVar $tradingType 1
-		end
-	elseif ($cport = 2)
-		if ($nport = 1)
-			setVar $portCanTrade 1
-			setVar $tradingType 1
-		end
+if ($cport = 1)
+	if ($nport = 2)
+		setVar $portCanTrade 1
+		setVar $tradingType 1
 	end
+elseif ($cport = 2)
+	if ($nport = 1)
+		setVar $portCanTrade 1
+		setVar $tradingType 1
+	end
+end
 
 return
 
 :checkPassingTrading
-		# for sectors we've explored/tested MCIC - do we want to trade
-		if ($singleTrades = 1)
-			gosub :ensureCurrentPortReport
-			setVar $doQuickTrade 0
+# for sectors we've explored/tested MCIC - do we want to trade
+if ($singleTrades = 1)
+	gosub :ensureCurrentPortReport
+	setVar $doQuickTrade 0
 
-			if (($player~ORE_HOLDS > 40) and (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTFUEL[$PLAYER~CURRENT_SECTOR] >= 20))
-				setVar $doQuickTrade 1
-			elseif (($player~ORGANIC_HOLDS > 40) and (PORT.BUYORG[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTORG[$PLAYER~CURRENT_SECTOR] >= 20))
-				setVar $doQuickTrade 1
-			elseif (($player~EQUIPMENT_HOLDS > 40) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTEQUIP[$PLAYER~CURRENT_SECTOR] >= 20))
-				setVar $doQuickTrade 1
-			end
-			if ($doQuickTrade = 1)
-				goSub :doSingleTrade
-			end
+	if (($player~ORE_HOLDS > 40) and (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTFUEL[$PLAYER~CURRENT_SECTOR] >= 20))
+		setVar $doQuickTrade 1
+	elseif (($player~ORGANIC_HOLDS > 40) and (PORT.BUYORG[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTORG[$PLAYER~CURRENT_SECTOR] >= 20))
+		setVar $doQuickTrade 1
+	elseif (($player~EQUIPMENT_HOLDS > 40) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTEQUIP[$PLAYER~CURRENT_SECTOR] >= 20))
+		setVar $doQuickTrade 1
 	end
+	if ($doQuickTrade = 1)
+		goSub :doSingleTrade
+	end
+end
 	
 return
 
 :checkSingleTrading
+setVar $doQuickTrade 0
+setVar $empty_holds ($PLAYER~TOTAL_HOLDS - ($player~ORE_HOLDS + $player~ORGANIC_HOLDS + $player~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
+
+if ($singleTrades = 1)
+	gosub :ensureCurrentPortReport
 	setVar $doQuickTrade 0
-	setVar $empty_holds ($PLAYER~TOTAL_HOLDS - ($player~ORE_HOLDS + $player~ORGANIC_HOLDS + $player~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
 
-	if ($singleTrades = 1)
-		gosub :ensureCurrentPortReport
-		setVar $doQuickTrade 0
-
-		if (($player~ORE_HOLDS > 40) and (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTFUEL[$PLAYER~CURRENT_SECTOR] >= 20))
+	if (($player~ORE_HOLDS > 40) and (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTFUEL[$PLAYER~CURRENT_SECTOR] >= 20))
+		setVar $doQuickTrade 1
+	elseif (($player~ORGANIC_HOLDS > 40) and (PORT.BUYORG[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTORG[$PLAYER~CURRENT_SECTOR] >= 20))
+		setVar $doQuickTrade 1
+	elseif (($player~EQUIPMENT_HOLDS > 40) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTEQUIP[$PLAYER~CURRENT_SECTOR] >= 20))
+		setVar $doQuickTrade 1
+	elseif (((PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 0) and (PORT.PERCENTFUEL[$PLAYER~CURRENT_SECTOR] >= 20)) or ((PORT.BUYORG[$PLAYER~CURRENT_SECTOR] = 0) and (PORT.PERCENTORG[$PLAYER~CURRENT_SECTOR] >= 20)) or ((PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 0) and (PORT.PERCENTEQUIP[$PLAYER~CURRENT_SECTOR] >= 20)))
+		if ($empty_holds > 10)
 			setVar $doQuickTrade 1
-		elseif (($player~ORGANIC_HOLDS > 40) and (PORT.BUYORG[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTORG[$PLAYER~CURRENT_SECTOR] >= 20))
-			setVar $doQuickTrade 1
-		elseif (($player~EQUIPMENT_HOLDS > 40) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.PERCENTEQUIP[$PLAYER~CURRENT_SECTOR] >= 20))
-			setVar $doQuickTrade 1
-		elseif (((PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = 0) and (PORT.PERCENTFUEL[$PLAYER~CURRENT_SECTOR] >= 20)) or ((PORT.BUYORG[$PLAYER~CURRENT_SECTOR] = 0) and (PORT.PERCENTORG[$PLAYER~CURRENT_SECTOR] >= 20)) or ((PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 0) and (PORT.PERCENTEQUIP[$PLAYER~CURRENT_SECTOR] >= 20)))
-			if ($empty_holds > 10)
-				setVar $doQuickTrade 1
-			end
 		end
+	end
 		
-	end
-	getSectorParameter $PLAYER~CURRENT_SECTOR "EQUIPMENTH" $doneMCIC
-	if ($doneMCIC = "")
-		setVar $doneMCIC 0
-	end
+end
+getSectorParameter $PLAYER~CURRENT_SECTOR "EQUIPMENTH" $doneMCIC
+if ($doneMCIC = "")
+	setVar $doneMCIC 0
+end
 #echo "$singleTrades: " $singleTrades " $doneMCIC:" $doneMCIC " $testMcicBuy:" $testMcicBuy "PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] : " PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR]  " $player~EQUIPMENT_HOLDS: " $player~EQUIPMENT_HOLDS "*"
-	# if we haven't done MCIC, and it buys equip, and we are testing eqip, and we have at least one hold
-	# TEST BUY PORT
-	if (($doneMCIC = 0) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 1) and ($testMcicBuy = 1) and ($player~EQUIPMENT_HOLDS > 0))
-		setVar $doQuickTrade 1
-	end
-	# TEST SELL PORT
-	if (($doneMCIC = 0) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 0) and ($testMcicSell = 1) and ($empty_holds > 0))
-		setVar $doQuickTrade 1
-	end
+# if we haven't done MCIC, and it buys equip, and we are testing eqip, and we have at least one hold
+# TEST BUY PORT
+if (($doneMCIC = 0) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 1) and ($testMcicBuy = 1) and ($player~EQUIPMENT_HOLDS > 0))
+	setVar $doQuickTrade 1
+end
+# TEST SELL PORT
+if (($doneMCIC = 0) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 0) and ($testMcicSell = 1) and ($empty_holds > 0))
+	setVar $doQuickTrade 1
+end
 	
-	# OUT OF EQUIP BUY IT
-	if (($testMcicBuy = 1) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 0) and ($player~EQUIPMENT_HOLDS < 2))
-		setVar $doQuickTrade 1
-	end
+# OUT OF EQUIP BUY IT
+if (($testMcicBuy = 1) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 0) and ($player~EQUIPMENT_HOLDS < 2))
+	setVar $doQuickTrade 1
+end
 	
-	# NEED TO FREE UP EQUIP
-	if (($testMcicSell = 1) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 1) and ($empty_holds < 2) and ($player~EQUIPMENT_HOLDS > 0))
-		setVar $doQuickTrade 1
-	end
+# NEED TO FREE UP EQUIP
+if (($testMcicSell = 1) and (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = 1) and ($empty_holds < 2) and ($player~EQUIPMENT_HOLDS > 0))
+	setVar $doQuickTrade 1
+end
 	
-	if ($doQuickTrade = 1)
-		goSub :doSingleTrade
-	end
+if ($doQuickTrade = 1)
+	goSub :doSingleTrade
+end
 
 return
 
 :ensureCurrentPortReport
-	if ((PORT.EXISTS[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.UPDATED[$PLAYER~CURRENT_SECTOR] = ""))
-		send "cr*q"
-		waiton "Commerce report for "
-		waiton "Command [TL="
-	end
+if ((PORT.EXISTS[$PLAYER~CURRENT_SECTOR] = 1) and (PORT.UPDATED[$PLAYER~CURRENT_SECTOR] = ""))
+	send "cr*q"
+	waiton "Commerce report for "
+	waiton "Command [TL="
+end
 
 return
 
 :restock
 
 	
-	gosub :player~quikstats
-	setVar $prestockcredits $player~credits
-	stripText $precredits ","
+gosub :player~quikstats
+setVar $prestockcredits $player~credits
+stripText $precredits ","
 
-	gosub :restockself
+gosub :restockself
 
-	gosub :player~quikstats
-	setVar $poststockcredits $player~credits
-	stripText $poststockcredits ","
-	setVar $stat_dollarstrade ($precredits - $poststockcredits)
+gosub :player~quikstats
+setVar $poststockcredits $player~credits
+stripText $poststockcredits ","
+setVar $stat_dollarstrade ($precredits - $poststockcredits)
 	
 
 return
@@ -1205,121 +1206,121 @@ return
 
 
 :checkCorpPlanet
-	setVar $planetFound 0
-	setVar $checki 1
-	while (($checki <= SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR]) AND ($planetFound = 0))
-		getWord SECTOR.PLANETS[$PLAYER~CURRENT_SECTOR][$checki] $checkplanet 1
-		if ($checkplanet <> "")
-			setVar $planetFound 1
-		end
-		add $checki 1
+setVar $planetFound 0
+setVar $checki 1
+while (($checki <= SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR]) AND ($planetFound = 0))
+	getWord SECTOR.PLANETS[$PLAYER~CURRENT_SECTOR][$checki] $checkplanet 1
+	if ($checkplanet <> "")
+		setVar $planetFound 1
 	end
+	add $checki 1
+end
 return
 
 
 :checkCorpAtDock
-	setVar $corpNotAtDock TRUE
+setVar $corpNotAtDock TRUE
 return
 
 
 :restockself
-	add $stat_refurbs 1
-	send "d"
-	setVar $returnSpot $PLAYER~CURRENT_SECTOR
+add $stat_refurbs 1
+send "d"
+setVar $returnSpot $PLAYER~CURRENT_SECTOR
 	
-	setVar $restockMakePlanet 0
-	if ($useGuard = true)
+setVar $restockMakePlanet 0
+if ($useGuard = true)
 		
-		setVar $planetFound 0
-		goSub :checkCorpPlanet
-		if ($planetFound = 0)
-			setVar $restockMakePlanet 1
-		else
-			setVar $restockMakePlanet 0
+	setVar $planetFound 0
+	goSub :checkCorpPlanet
+	if ($planetFound = 0)
+		setVar $restockMakePlanet 1
+	else
+		setVar $restockMakePlanet 0
+	end
+
+end
+
+if ($corpCashDump = TRUE)
+
+	setVar $doDockCashDump FALSE
+	if ($PLAYER~CREDITS > 1100000)
+		setVar $corpNotAtDock TRUE
+		gosub :checkCorpAtDock
+		if ($corpNotAtDock = FALSE)
+			setVar $doDockCashDump TRUE
 		end
 
 	end
-
-	if ($corpCashDump = TRUE)
-
-		setVar $doDockCashDump FALSE
-		if ($PLAYER~CREDITS > 1100000)
-			setVar $corpNotAtDock TRUE
-			gosub :checkCorpAtDock
-			if ($corpNotAtDock = FALSE)
-				setVar $doDockCashDump TRUE
-			end
-
-		end
-	end 
-	send "m" $stardock "*y"
-	waitfor "Locating beam pinpointed, TransWarp"
-	send "y  "
+end 
+send "m" $stardock "*y"
+waitfor "Locating beam pinpointed, TransWarp"
+send "y  "
 	
-	send "p   sh"
+send "p   sh"
 	
-		send "a"
-		setTextTrigger shipCheckBuyAtomics :shipCheckBuyAtomics "How many Atomic Detonators do you want"
-		pause
+	send "a"
+	setTextTrigger shipCheckBuyAtomics :shipCheckBuyAtomics "How many Atomic Detonators do you want"
+	pause
 		:shipCheckBuyAtomics
-			killalltriggers
-			getWord CURRENTLINE $AtomicssAvail 9
-			stripText $AtomicssAvail ")"
-			if ($AtomicssAvail = 0)
-				#waitfor "next@"
-				send "*"
-			else
-				send  "*a" $AtomicssAvail "*"
-			end
+		killalltriggers
+		getWord CURRENTLINE $AtomicssAvail 9
+		stripText $AtomicssAvail ")"
+		if ($AtomicssAvail = 0)
+			#waitfor "next@"
+			send "*"
+		else
+			send  "*a" $AtomicssAvail "*"
+		end
 			
 
 		send "t"
 		setTextTrigger shipCheckBuyTorps :shipCheckBuyTorps "How many Genesis Torpedoes do you want"
 		pause
 		:shipCheckBuyTorps
-			killalltriggers
-			getWord CURRENTLINE $TorpssAvail 9
-			stripText $TorpssAvail ")"
-			if ($TorpssAvail = 0)
-				waitfor "next@"
-			end
-			send $TorpssAvail "*"
+		killalltriggers
+		getWord CURRENTLINE $TorpssAvail 9
+		stripText $TorpssAvail ")"
+		if ($TorpssAvail = 0)
+			waitfor "next@"
+		end
+		send $TorpssAvail "*"
 		
 		
-			gosub :player~quikstats
-			send "qsp"
+		gosub :player~quikstats
+		send "qsp"
 
-			setTextTrigger refurbFigPricet :refurbFigPricet "credits per fighter"
+		setTextTrigger refurbFigPricet :refurbFigPricet "credits per fighter"
 			:checkShields
 			setTextTrigger refurbShields :refurbShields "Shield Points"
 			pause
 			:refurbFigPricet
-				killalltriggers
-				if ($furbfigs = TRUE)
-					getWord CURRENTLINE $figPrice 4
-					getWord CURRENTLINE $canBuy 8
-					setVar $figsToBuy $player~credits
-					subtract $figsToBuy 250000
-					divide $figsToBuy $figPrice
+			killalltriggers
+			if ($furbfigs = TRUE)
+				getWord CURRENTLINE $figPrice 4
+				getWord CURRENTLINE $canBuy 8
+				setVar $figsToBuy $player~credits
+				subtract $figsToBuy 250000
+				divide $figsToBuy $figPrice
 					
-					if ($figsToBuy > $canBuy)
-						setVar $figsToBuy $canBuy
-					end
-					send "b" $figsToBuy "*"
+				if ($figsToBuy > $canBuy)
+					setVar $figsToBuy $canBuy
 				end
-				goto :checkShields
+				send "b" $figsToBuy "*"
+			end
+			goto :checkShields
 			:refurbShields
-				killalltriggers
-				getWord CURRENTLINE $shieldPrice 5
-				getWord CURRENTLINE $canBuy 9
-				setVar $shieldsToBuy $player~credits
-				subtract $shieldsToBuy 250000
-				divide $shieldsToBuy $shieldPrice
+			killalltriggers
+			getWord CURRENTLINE $shieldPrice 5
+			getWord CURRENTLINE $canBuy 9
+			setVar $shieldsToBuy $player~credits
+			subtract $shieldsToBuy 250000
+			divide $shieldsToBuy $shieldPrice
 				
-				if ($shieldsToBuy > $canBuy)
-					setVar $shieldsToBuy $canBuy
-				end
-				send "c" $shieldsToBuy "*"
+			if ($shieldsToBuy > $canBuy)
+				setVar $shieldsToBuy $canBuy
+			end
+			send "c" $shieldsToBuy "*"
 			
 			
 	
@@ -1328,9 +1329,9 @@ return
 		if ($doDockCashDump = TRUE)
 			goSUb :player~quikstats
 			if ($PLAYER~CREDITS > 1100000)
-				setVar $dumpcash ($PLAYER~CREDITS - 150000)
+			setVar $dumpcash ($PLAYER~CREDITS - 150000)
 			else
-				setVar $doDockCashDump FALSE
+			setVar $doDockCashDump FALSE
 			end
 		end
 	end
@@ -1351,14 +1352,14 @@ return
 	setTextLineTrigger restockBack2 :restockBack2  "Systems Ready, shall we engag"
 	pause
 		:restockBack1
-			killalltriggers
-			send "q * q * * pss"
-			setVar $SWITCHBOARD~message "Failed to leave dock!! Hopefully on dock..*"
-			gosub :SWITCHBOARD~switchboard
-			halt	
+		killalltriggers
+		send "q * q * * pss"
+		setVar $SWITCHBOARD~message "Failed to leave dock!! Hopefully on dock..*"
+		gosub :SWITCHBOARD~switchboard
+		halt	
 
 		:restockBack2
-			killalltriggers
+		killalltriggers
 	
 return
 
@@ -1371,93 +1372,93 @@ return
 
 :setVoidSectors
 
-	clearAllAvoids
-	# we don't really want to sit outside of SD.
+clearAllAvoids
+# we don't really want to sit outside of SD.
 
-	setVar $explored[$stardock] 1
-	if ($PLAYER~CURRENT_SECTOR <> $stardock)
-		setVar $a 1
-		while ($a <= SECTOR.WARPCOUNT[$stardock])
-			# Avoids warps out of StarDock unless we're launching from Dock.
-			setVar $explored[SECTOR.WARPS[$stardock][$a]] 1
-			setAvoid SECTOR.WARPS[$stardock][$a]
-			add $a 1
-		end
+setVar $explored[$stardock] 1
+if ($PLAYER~CURRENT_SECTOR <> $stardock)
+	setVar $a 1
+	while ($a <= SECTOR.WARPCOUNT[$stardock])
+		# Avoids warps out of StarDock unless we're launching from Dock.
+		setVar $explored[SECTOR.WARPS[$stardock][$a]] 1
+		setAvoid SECTOR.WARPS[$stardock][$a]
+		add $a 1
 	end
+end
 
-	setVar $doMini 0
-	setVar $i 2
-	while ($i < 11)
-		if (SECTOR.WARPCOUNT[$i] = 0)
-			setVar $doMini 1
-		end
-		add $i 1
+setVar $doMini 0
+setVar $i 2
+while ($i < 11)
+	if (SECTOR.WARPCOUNT[$i] = 0)
+		setVar $doMini 1
 	end
-	if ($doMini = 1)
-		goSub :doMini
-	end
+	add $i 1
+end
+if ($doMini = 1)
+	goSub :doMini
+end
 
-	setVar $i 2
-	while ($i < 11)
-		setVar $a 1
-		while ($a <= SECTOR.WARPCOUNT[$i])
-			setVar $explored[SECTOR.WARPS[$i][$a]] 1
-			setAvoid SECTOR.WARPS[$i][$a]
-			add $a 1
-		end
-		add $i 1
+setVar $i 2
+while ($i < 11)
+	setVar $a 1
+	while ($a <= SECTOR.WARPCOUNT[$i])
+		setVar $explored[SECTOR.WARPS[$i][$a]] 1
+		setAvoid SECTOR.WARPS[$i][$a]
+		add $a 1
 	end
+	add $i 1
+end
 
 return
 
 
 :doMini
-	# we just want to check we have all warps out of fed
-	send "c"
-	setVar $i 10
-	while ($i > 1)
-		send "f" $i "*1*"
-		subtract $i 1
-	end
+# we just want to check we have all warps out of fed
+send "c"
+setVar $i 10
+while ($i > 1)
+	send "f" $i "*1*"
+	subtract $i 1
+end
 	
-	send "/"
-	waitfor "Shlds"
+send "/"
+waitfor "Shlds"
 
-	setVar $plot 1
-	while ($plot = 1)
+setVar $plot 1
+while ($plot = 1)
 		
-		send "f1*" $stardock "*"
-		setTextLineTrigger pathgood :pathgood "he shortest path"
-		setTextLineTrigger pathbad :pathbad "No route within"
-		pause
+	send "f1*" $stardock "*"
+	setTextLineTrigger pathgood :pathgood "he shortest path"
+	setTextLineTrigger pathbad :pathbad "No route within"
+	pause
 		:pathbad
-			killalltriggers
-			send "yq"
-			setVar $plot 0
-			goto :endplot
+		killalltriggers
+		send "yq"
+		setVar $plot 0
+		goto :endplot
 		:pathgood
-			killalltriggers
-			waitfor ">"
-			getWord CURRENTLINE $sec1 3 
-			getWord CURRENTLINE $sec2 5 
-			getWord CURRENTLINE $sec3 7 
-			stripText $sec1 "("
-			stripText $sec2 "("
-			stripText $sec3 "("
+		killalltriggers
+		waitfor ">"
+		getWord CURRENTLINE $sec1 3 
+		getWord CURRENTLINE $sec2 5 
+		getWord CURRENTLINE $sec3 7 
+		stripText $sec1 "("
+		stripText $sec2 "("
+		stripText $sec3 "("
 		
-			stripText $sec1 ")"
-			stripText $sec2 ")"
-			stripText $sec3 ")"
+		stripText $sec1 ")"
+		stripText $sec2 ")"
+		stripText $sec3 ")"
 
-			if ($sec1 > 10)
-				setVar $voidS $sec1
-			elseif ($sec2 > 10)
-				setVar $voidS $sec2
-			elseif ($sec3 > 10)
-				setVar $voidS $sec3
-			end
-			send "v" $voidS "*"
-			waitfor "future navigation calc"
+		if ($sec1 > 10)
+			setVar $voidS $sec1
+		elseif ($sec2 > 10)
+			setVar $voidS $sec2
+		elseif ($sec3 > 10)
+			setVar $voidS $sec3
+		end
+		send "v" $voidS "*"
+		waitfor "future navigation calc"
 			
 		
 
@@ -1467,93 +1468,93 @@ return
 
 :subreport
 
-	setVar $stuff ""
-	gosub :calcStats
-	setvar $switchboard~message $stuff & "**"
-	gosub :switchboard~switchboard
+setVar $stuff ""
+gosub :calcStats
+setvar $switchboard~message $stuff & "**"
+gosub :switchboard~switchboard
 return
 
 :updateStats
 
-	setVar $stuff ""
-	gosub :calcStats
+setVar $stuff ""
+gosub :calcStats
 
-	setWindowContents dora $stuff
-	add $updateCount 1
-	if ($updateCount > 20)
-		setVar $updateCount 1
-		send "'Dora Update - Figs: " $stat_figsdown " Turns: " $stat_turnsUsed "*"
-	end
+setWindowContents dora $stuff
+add $updateCount 1
+if ($updateCount > 20)
+	setVar $updateCount 1
+	send "'Dora Update - Figs: " $stat_figsdown " Turns: " $stat_turnsUsed "*"
+end
 return
 
 :calcStats
 
-	setVar $stat_dollarsnet ($stat_dollarsppt + $stat_dollarstrade)
+setVar $stat_dollarsnet ($stat_dollarsppt + $stat_dollarstrade)
 	
-	setVar $stat_turnsUsed ($startturns - $player~turns)
+setVar $stat_turnsUsed ($startturns - $player~turns)
 
-	setvar $stuff "Turns Used: " & $stat_turnsUsed & "*Figs Down: " & $stat_figsdown & "*Ports Traded: " & $stat_trades  & "*Pairs Traded: " & $stat_ppts_done  & "*Moves Made: " & $stat_moves& "*Backtracks Made: " & $stat_retreats
+setvar $stuff "Turns Used: " & $stat_turnsUsed & "*Figs Down: " & $stat_figsdown & "*Ports Traded: " & $stat_trades  & "*Pairs Traded: " & $stat_ppts_done  & "*Moves Made: " & $stat_moves& "*Backtracks Made: " & $stat_retreats
 	
-	setvar $stuff $stuff & "*Cash Pairs:" & $stat_dollarsppt & "*Cash Trades:" & $stat_dollarstrade & "*Total Cash:" & $stat_dollarsnet & "*Refurbs: " & $stat_refurbs
+setvar $stuff $stuff & "*Cash Pairs:" & $stat_dollarsppt & "*Cash Trades:" & $stat_dollarstrade & "*Total Cash:" & $stat_dollarsnet & "*Refurbs: " & $stat_refurbs
 return
 
 :checkDanger
 	
-	# Remove all known items and then compare	
-	setVar $compareDensity $nDensity[$dIndex]
-	if (PORT.EXISTS[$dSector])
-		subtract $compareDensity 100
+# Remove all known items and then compare	
+setVar $compareDensity $nDensity[$dIndex]
+if (PORT.EXISTS[$dSector])
+	subtract $compareDensity 100
+end
+getSectorParameter $dSector "FIGSEC" $hasFig
+if ($hasFig = "")
+	setVar $hasFig 0
+end
+if ($hasFig = 1)
+	if (SECTOR.FIGS.OWNER[$dSector] = "belong to your Corp")
+		subtract $compareDensity (SECTOR.FIGS.QUANTITY[$dSector] * 5)
 	end
-	getSectorParameter $dSector "FIGSEC" $hasFig
-	if ($hasFig = "")
-		setVar $hasFig 0
-	end
-	if ($hasFig = 1)
-		if (SECTOR.FIGS.OWNER[$dSector] = "belong to your Corp")
-			subtract $compareDensity (SECTOR.FIGS.QUANTITY[$dSector] * 5)
-		end
-	end
+end
 
-	if ($allLimps[$dSector] > 0)
-		subtract $compareDensity (2 * $allLimps[$dSector])
-		setVar $nAnom[$dIndex] 0
-	end
+if ($allLimps[$dSector] > 0)
+	subtract $compareDensity (2 * $allLimps[$dSector])
+	setVar $nAnom[$dIndex] 0
+end
 
-	if ($allArmids[$dSector] > 0)
-		subtract $compareDensity (10 * $allArmids[$dSector])
-	end
+if ($allArmids[$dSector] > 0)
+	subtract $compareDensity (10 * $allArmids[$dSector])
+end
 
 
-	if ($compareDensity = 0)
+if ($compareDensity = 0)
+	setVar $danger 0
+else
+	if ($dSector < 11)
 		setVar $danger 0
+		#echo "* ## Fed Safe so OK: " $dSector
 	else
-		if ($dSector < 11)
-			setVar $danger 0
-			#echo "* ## Fed Safe so OK: " $dSector
-		else
-			#echo "* ## Odd Density - Avoiding: " $dSector
-			setVar $danger 1
-		end
+		#echo "* ## Odd Density - Avoiding: " $dSector
+		setVar $danger 1
 	end
+end
 	
 
-	if ($danger = 1)
+if ($danger = 1)
 
-		#echo "*#####################################################"
-		#echo "*# Sector " $nDensity[$dIndex] " shows danger *"
-		#echo "*#####################################################"
+	#echo "*#####################################################"
+	#echo "*# Sector " $nDensity[$dIndex] " shows danger *"
+	#echo "*#####################################################"
 		
-		write $dangerousSectorLogFile $dSector & " N:" & $PLAYER~CURRENT_SECTOR & " D: " & $nDensity[$dIndex] & " A: " & $nAnom[$dIndex]
-		setVar $a 1
-		while ($a <= SECTOR.WARPCOUNT[$PLAYER~CURRENT_SECTOR])
+	write $dangerousSectorLogFile $dSector & " N:" & $PLAYER~CURRENT_SECTOR & " D: " & $nDensity[$dIndex] & " A: " & $nAnom[$dIndex]
+	setVar $a 1
+	while ($a <= SECTOR.WARPCOUNT[$PLAYER~CURRENT_SECTOR])
 			
-			if (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$a] = $dSector)
-				write $dangerousSectorLogFile $holoData[$a]
-			end
-			add $a 1
+		if (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$a] = $dSector)
+			write $dangerousSectorLogFile $holoData[$a]
 		end
+		add $a 1
+	end
 		
-	end 
+end 
 return
 
 
@@ -1565,164 +1566,164 @@ return
 ########################### GRID NEXT SECTOR
 :gridNextSector
 
-	if (($bestSector < 11) or ($bestSector = $stardock))
-		send "m" $bestSector "**"
-		add $stat_moves 1
-	else
-		setVar $origin $PLAYER~CURRENT_SECTOR
+if (($bestSector < 11) or ($bestSector = $stardock))
+	send "m" $bestSector "**"
+	add $stat_moves 1
+else
+	setVar $origin $PLAYER~CURRENT_SECTOR
 
-		setVar $MOVE~moveIntoSector $bestSector
-		gosub :MOVE~moveIntoSector
-		setSectorParameter $bestSector "FIGSEC" TRUE
-		waitfor "Warps to S"
-		waitfor "Command ["
-		gosub :player~quikstats
+	setVar $MOVE~moveIntoSector $bestSector
+	gosub :MOVE~moveIntoSector
+	setSectorParameter $bestSector "FIGSEC" TRUE
+	waitfor "Warps to S"
+	waitfor "Command ["
+	gosub :player~quikstats
 		
-		setVar $chkSec $PLAYER~CURRENT_SECTOR
-		setVar $adjSec $origin
-		goSub :checkAdj
-		if ($isAdj = 1)
-			setVar $stackSector $origin
-			goSub :pushPath
+	setVar $chkSec $PLAYER~CURRENT_SECTOR
+	setVar $adjSec $origin
+	goSub :checkAdj
+	if ($isAdj = 1)
+		setVar $stackSector $origin
+		goSub :pushPath
 			
-		else
-			# We may have moved through a one way or hit stale adjacency data.
-			# Do not nuke the whole backtrack stack here; keep older retreat points.
-			# We simply avoid pushing this immediate origin as a reversible step.
-		end
-		add $stat_figsdown 1
-		add $stat_moves 1
+	else
+		# We may have moved through a one way or hit stale adjacency data.
+		# Do not nuke the whole backtrack stack here; keep older retreat points.
+		# We simply avoid pushing this immediate origin as a reversible step.
 	end
+	add $stat_figsdown 1
+	add $stat_moves 1
+end
 	
 return
 
 ############# PATH Stack
 
 :moveStackToOption
-	# if we twarp back to a spot on the path
-	# we should trim stack to there 
-	# Takes - $toStackSector
+# if we twarp back to a spot on the path
+# we should trim stack to there 
+# Takes - $toStackSector
 	
-	setVar $movei 1
-	while ($movei <= $pathBacki)
+setVar $movei 1
+while ($movei <= $pathBacki)
 		
-		setVar $stackSector $pathBack[$movei]
-		goSub :popPath 
-		if ($stackSector = $toStackSector)
-			setVar $movei 30001
-			return
-		end
-		add $movei 1
+	setVar $stackSector $pathBack[$movei]
+	goSub :popPath 
+	if ($stackSector = $toStackSector)
+		setVar $movei 30001
+		return
 	end
+	add $movei 1
+end
 
 return
 
 :checkOptions
-	setVar $safeOptionsBack 0
-	setVar $safeOptionsBackDirect 0
-	setVar $ii 1
+setVar $safeOptionsBack 0
+setVar $safeOptionsBackDirect 0
+setVar $ii 1
 
-	while ($ii <= $pathBacki)
-		if ($pathBackHasOptions[$ii] = 1)
-			setVar $safeOptionsBackDirect $pathBack[$ii]
-			setVar $safeOptionsBack 1
-			setVar $ii 30001
-			return
-		end
-		add $ii 1
+while ($ii <= $pathBacki)
+	if ($pathBackHasOptions[$ii] = 1)
+		setVar $safeOptionsBackDirect $pathBack[$ii]
+		setVar $safeOptionsBack 1
+		setVar $ii 30001
+		return
 	end
+	add $ii 1
+end
 
 return
 :popPath
-	goSub :printPath
-	if ($pathBacki = 0)
-		setVar $stackSector 0
-		return
-	else
-		setVar $stackSector $pathBack[1]
-		setVar $tempi 1
-		while ($tempi < $pathBacki)
-			setVar $tempy ($tempi + 1)
-			setVar $pathBack[$tempi] $pathBack[$tempy]
-			setVar $pathBackHasOptions[$tempi] $pathBackHasOptions[$tempy]
-			add $tempi 1
-		end
-		setVar $pathBack[$pathBacki] 0
-		setVar $pathBackHasOptions[$pathBacki] 0
-		subtract $pathBacki 1
+goSub :printPath
+if ($pathBacki = 0)
+	setVar $stackSector 0
+	return
+else
+	setVar $stackSector $pathBack[1]
+	setVar $tempi 1
+	while ($tempi < $pathBacki)
+		setVar $tempy ($tempi + 1)
+		setVar $pathBack[$tempi] $pathBack[$tempy]
+		setVar $pathBackHasOptions[$tempi] $pathBackHasOptions[$tempy]
+		add $tempi 1
 	end
-	goSub :printPath
+	setVar $pathBack[$pathBacki] 0
+	setVar $pathBackHasOptions[$pathBacki] 0
+	subtract $pathBacki 1
+end
+goSub :printPath
 return
 
 :pushPath
 
-	#goSub :printPath
+#goSub :printPath
 
-	if ($maxPathBack = $pathBacki)
+if ($maxPathBack = $pathBacki)
 
-		setVAr $tempi ($maxPathBack - 1)
-		while ($tempi >= 1)
-			# i.e. 50 = 49, then 49 = 48
-			setVar $tempy ($tempi + 1)
-			setVar $pathBack[$tempy] $pathBack[$tempi]
-			setVar $pathBackHasOptions[$tempy] $pathBackHasOptions[$tempi]
-			subtract $tempi 1
-		end 
-		setVar $pathBack[1] $stackSector
-		# We are going to one of the safe sectors, so we need 2+ to have an option
-		if ($safeSectors > 1)
-			setVar $pathBackHasOptions[1] 1
-		else
-			setVar $pathBackHasOptions[1] 0
-		end
+	setVAr $tempi ($maxPathBack - 1)
+	while ($tempi >= 1)
+		# i.e. 50 = 49, then 49 = 48
+		setVar $tempy ($tempi + 1)
+		setVar $pathBack[$tempy] $pathBack[$tempi]
+		setVar $pathBackHasOptions[$tempy] $pathBackHasOptions[$tempi]
+		subtract $tempi 1
+	end 
+	setVar $pathBack[1] $stackSector
+	# We are going to one of the safe sectors, so we need 2+ to have an option
+	if ($safeSectors > 1)
+		setVar $pathBackHasOptions[1] 1
 	else
-		setVAr $tempi $pathBacki
-		while ($tempi >= 1)
-			# i.e. 50 = 49, then 49 = 48
-			setVar $tempy ($tempi + 1)
-			setVar $pathBack[$tempy] $pathBack[$tempi]
-			setVar $pathBackHasOptions[$tempy] $pathBackHasOptions[$tempi]
-			subtract $tempi 1
-		end 
-		setVar $pathBack[1] $stackSector
-		# We are going to one of the safe sectors, so we need 2+ to have an option
-		if ($safeSectors > 1)
-			setVar $pathBackHasOptions[1] 1
-		else
-			setVar $pathBackHasOptions[1] 0
-		end
-		add $pathBacki 1
+		setVar $pathBackHasOptions[1] 0
 	end
-	#goSub :printPath
+else
+	setVAr $tempi $pathBacki
+	while ($tempi >= 1)
+		# i.e. 50 = 49, then 49 = 48
+		setVar $tempy ($tempi + 1)
+		setVar $pathBack[$tempy] $pathBack[$tempi]
+		setVar $pathBackHasOptions[$tempy] $pathBackHasOptions[$tempi]
+		subtract $tempi 1
+	end 
+	setVar $pathBack[1] $stackSector
+	# We are going to one of the safe sectors, so we need 2+ to have an option
+	if ($safeSectors > 1)
+		setVar $pathBackHasOptions[1] 1
+	else
+		setVar $pathBackHasOptions[1] 0
+	end
+	add $pathBacki 1
+end
+#goSub :printPath
 
 return
 :printPath
-	# JUST FOR DEBUGGING
-	return
-	echo "Printing Stack Size:" $pathBacki "/" $maxPathBack "*"
-	setVar $tempi 1
-	while ($tempi <= $maxPathBack)
-		echo "  " $tempi ": " $pathBack[$tempi] " opt:" $pathBackHasOptions[$tempi] "*"
-		add $tempi 1
-	end
+# JUST FOR DEBUGGING
+return
+echo "Printing Stack Size:" $pathBacki "/" $maxPathBack "*"
+setVar $tempi 1
+while ($tempi <= $maxPathBack)
+	echo "  " $tempi ": " $pathBack[$tempi] " opt:" $pathBackHasOptions[$tempi] "*"
+	add $tempi 1
+end
 
 return
 ###### END PATH STac
 
 :holoScan
 	
-	send "sh"
-	waitfor "Long Range Scan"
-	setVar $hIndex 1
-	setVar $hData ""
+send "sh"
+waitfor "Long Range Scan"
+setVar $hIndex 1
+setVar $hData ""
 
 	:holoSectorStart
-		setTextLineTrigger holoScanFirstSector :holoScanFirstSector "Sector  :"
-		pause
+	setTextLineTrigger holoScanFirstSector :holoScanFirstSector "Sector  :"
+	pause
 		:holoScanFirstSector
-			killtrigger holoScanFirstSector
-			getWord CURRENTLINE $hSector 3
-			setVar $hData "     " & CURRENTLINE
+		killtrigger holoScanFirstSector
+		getWord CURRENTLINE $hSector 3
+		setVar $hData "     " & CURRENTLINE
 
 		
 		:holoScanContinue
@@ -1730,19 +1731,19 @@ return
 		pause
 		:holoScanDetails
 
-			killtrigger holoScanDetails
-			getWord CURRENTLINE $firstword 1
-			if ($firstword = "Warps")
-				return
-			elseif ($firstword = "Sector")
-				setVar $holoData[$hIndex] $hData
-				add $hIndex 1
-				setVar $hData "     " & CURRENTLINE
-				goto :holoScanContinue
-			else
-				setVar $hData "     " & $hData & "*" & CURRENTLINE
-				goto :holoScanContinue
-			end
+		killtrigger holoScanDetails
+		getWord CURRENTLINE $firstword 1
+		if ($firstword = "Warps")
+			return
+		elseif ($firstword = "Sector")
+			setVar $holoData[$hIndex] $hData
+			add $hIndex 1
+			setVar $hData "     " & CURRENTLINE
+			goto :holoScanContinue
+		else
+			setVar $hData "     " & $hData & "*" & CURRENTLINE
+			goto :holoScanContinue
+		end
 
 return
 
@@ -1750,85 +1751,85 @@ return
 
 
 :densityScan
-	send "sd"
-	waitfor "Relative Density Scan"
+send "sd"
+waitfor "Relative Density Scan"
 
-	setVar $deni 0
-	setVar $nDensity 0
-	setVar $nSector 0
-	setVar $nWarps 0
-	setVar $nHaz 0
-	setVar $nAnom 0
-	setVar $nNew 0
+setVar $deni 0
+setVar $nDensity 0
+setVar $nSector 0
+setVar $nWarps 0
+setVar $nHaz 0
+setVar $nAnom 0
+setVar $nNew 0
 
-	setVar $freshSectors 0
-	setVar $freshSectorsi 0
-	setVar $freshSectorsNewPorts 0
+setVar $freshSectors 0
+setVar $freshSectorsi 0
+setVar $freshSectorsNewPorts 0
 	
 
 	:densityScanning
-		setTextLineTrigger densityScanLine :densityScanLine "Sector"
-		setTextTrigger densityScanEnd :densityScanEnd "Help)?"
-		pause
+	setTextLineTrigger densityScanLine :densityScanLine "Sector"
+	setTextTrigger densityScanEnd :densityScanEnd "Help)?"
+	pause
 	
 		:densityScanLine
 	
-			KillTrigger densityScanLine
-			KillTrigger densityScanEnd
+		KillTrigger densityScanLine
+		KillTrigger densityScanEnd
 			
-			getWord CURRENTLINE $scanSector 2
-			if ($scanSector = "(")
-				getWord CURRENTLINE $scanSector 3
-				getWord CURRENTLINE $secDensity 5
-				getWord CURRENTLINE $secWarps 8
-				getWord CURRENTLINE $nHaz 11
-				getWord CURRENTLINE $scanAnom 14
-			else
-				getWord CURRENTLINE $secDensity 4
-				getWord CURRENTLINE $secWarps 7
-				getWord CURRENTLINE $nHaz 10
-				getWord CURRENTLINE $scanAnom 13
-			end
+		getWord CURRENTLINE $scanSector 2
+		if ($scanSector = "(")
+			getWord CURRENTLINE $scanSector 3
+			getWord CURRENTLINE $secDensity 5
+			getWord CURRENTLINE $secWarps 8
+			getWord CURRENTLINE $nHaz 11
+			getWord CURRENTLINE $scanAnom 14
+		else
+			getWord CURRENTLINE $secDensity 4
+			getWord CURRENTLINE $secWarps 7
+			getWord CURRENTLINE $nHaz 10
+			getWord CURRENTLINE $scanAnom 13
+		end
 			
-			stripText $nHaz "%"
+		stripText $nHaz "%"
 			
-			getLength $scanSector $len
+		getLength $scanSector $len
 
-			stripText $scanSector ")"
-			stripText $scanSector "("
-			getLength $scanSector $len2
+		stripText $scanSector ")"
+		stripText $scanSector "("
+		getLength $scanSector $len2
 			
-			stripText $$secDensity ","
+		stripText $$secDensity ","
 
-			add $deni 1
-			if ($len2 < $len)
-				add $freshSectorsi 1
-				setVar $freshSectors[$freshSectorsi] $scanSector
-				if ($secDensity = 100)
-					add $freshSectorsNewPorts 1
-				end
-				setVar $nNew[$deni] 1
-			else
-				setVar $nNew[$deni] 0
+		add $deni 1
+		if ($len2 < $len)
+			add $freshSectorsi 1
+			setVar $freshSectors[$freshSectorsi] $scanSector
+			if ($secDensity = 100)
+				add $freshSectorsNewPorts 1
 			end
+			setVar $nNew[$deni] 1
+		else
+			setVar $nNew[$deni] 0
+		end
 			
-			STRIPTEXT $secDensity ","			
-			setVar $nDensity[$deni] $secDensity
-			setVar $nSector[$deni] $scanSector
-			setVar $nWarps[$deni] $secWarps
-			setVar $warpCount[$scanSector] $secWarps
-			setVar $nHaz[$deni] $nHaz
-			setVar $nAnom[$deni] 0
-			if ($scanAnom = "Yes")
-				setVar $anomoly[$scanSector] 1
-				setVar $nAnom[$deni] 1
-			end
+		STRIPTEXT $secDensity ","			
+		setVar $nDensity[$deni] $secDensity
+		setVar $nSector[$deni] $scanSector
+		setVar $nWarps[$deni] $secWarps
+		setVar $warpCount[$scanSector] $secWarps
+		setVar $nHaz[$deni] $nHaz
+		setVar $nAnom[$deni] 0
+		if ($scanAnom = "Yes")
+			setVar $anomoly[$scanSector] 1
+			setVar $nAnom[$deni] 1
+		end
 	
-			goto :densityScanning
+		goto :densityScanning
 			
 		:densityScanEnd
-			KillTrigger densityScanLine
-			KillTrigger densityScanEnd
+		KillTrigger densityScanLine
+		KillTrigger densityScanEnd
 	return
 
 
@@ -1837,27 +1838,27 @@ halt
 
 
 :gotoDock
-	send "y1*q"
-	send "m" $stardock "*y"
-	waitfor "All Systems Ready, shall we engage?"
-	send "y"
-	waitfor "TransWarp Drive Engaged!"
-	send "ps"
-	gosub :limpetCheck
+send "y1*q"
+send "m" $stardock "*y"
+waitfor "All Systems Ready, shall we engage?"
+send "y"
+waitfor "TransWarp Drive Engaged!"
+send "ps"
+gosub :limpetCheck
 
 return
 
 :limpetCheck
-		setTextTrigger limpetchecky :limpetchecky "A port official runs"
-		setTextTrigger limpetcheckn :limpetcheckn "StarDock> Where to?"
-		pause
+setTextTrigger limpetchecky :limpetchecky "A port official runs"
+setTextTrigger limpetcheckn :limpetcheckn "StarDock> Where to?"
+pause
 		:limpetchecky
-			killalltriggers
-			send "y"
-			return
+		killalltriggers
+		send "y"
+		return
 		:limpetcheckn
-			killalltriggers
-			return
+		killalltriggers
+		return
 
 return
 

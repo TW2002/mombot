@@ -1,590 +1,561 @@
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
-	gosub :combat~init 
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
+gosub :combat~init 
 
 
-	setVar $HELP~HELP[1]   $HELP~TAB&" density {kill} {escape:#} {photon} {pel} "
-	setVar $HELP~HELP[2]   $HELP~TAB&"         {call} {holo} {attack:#}"
-	setVar $HELP~HELP[3]   $HELP~TAB&"   - Density scans until it sees ship or planet and "
-	setVar $HELP~HELP[4]   $HELP~TAB&"     then performs an action  "
-	setVar $HELP~HELP[5]   $HELP~TAB&"             "
-	setVar $HELP~HELP[6]   $HELP~TAB&"          {kill} - will kill/holokill "
-	setVar $HELP~HELP[7]   $HELP~TAB&"        {escape} - will escape to home sector "
-	setVar $HELP~HELP[8]   $HELP~TAB&"      {escape:#} - will escape to sector provided"
-	setVar $HELP~HELP[9]   $HELP~TAB&"      {attack:#} - will only photon sector provided"
-	setVar $HELP~HELP[10]  $HELP~TAB&"        {photon} - photon sector"
-	setVar $HELP~HELP[11]  $HELP~TAB&"          {holo} - holoscan sector and broadcast"
-	setVar $HELP~HELP[12]  $HELP~TAB&"         {pgrid} - pgrid in to sector"
-	setVar $HELP~HELP[13]  $HELP~TAB&"          {call} - calls saveme"
-	setVar $HELP~HELP[14]  $HELP~TAB&"           {pel} - photon, enter, land"
-	setVar $HELP~HELP[15]  $HELP~TAB&"         {pel:#} - pel with planet number"
-	setVar $HELP~HELP[16]  $HELP~TAB&" {density:value} - only react to density changes of this "
-	setVar $HELP~HELP[17]  $HELP~TAB&"                   value or higher. Default is 40."
-	setVar $HELP~HELP[18]  $HELP~TAB&"      {killport} - Blows port with macro"
-	setVar $HELP~HELP[19]  $HELP~TAB&"                  "
-	setVar $HELP~HELP[20]  $HELP~TAB&"      Examples:   "
-	setVar $HELP~HELP[21]  $HELP~TAB&"             >density kill call escape:1922"
-	setVar $HELP~HELP[22]  $HELP~TAB&"             >density pel density:500"
-	setVar $HELP~HELP[23]  $HELP~TAB&"             >density pel:10 "
-	setVar $HELP~HELP[24]  $HELP~TAB&"             >density photon holo"
-	setVar $HELP~HELP[25]  $HELP~TAB&"             >density pgrid killport kill escape:123"
-	gosub :HELP~HELPFILE
+setVar $HELP~HELP[1]   $HELP~TAB&" density {kill} {escape:#} {photon} {pel} "
+setVar $HELP~HELP[2]   $HELP~TAB&"         {call} {holo} {attack:#}"
+setVar $HELP~HELP[3]   $HELP~TAB&"   - Density scans until it sees ship or planet and "
+setVar $HELP~HELP[4]   $HELP~TAB&"     then performs an action  "
+setVar $HELP~HELP[5]   $HELP~TAB&"             "
+setVar $HELP~HELP[6]   $HELP~TAB&"          {kill} - will kill/holokill "
+setVar $HELP~HELP[7]   $HELP~TAB&"        {escape} - will escape to home sector "
+setVar $HELP~HELP[8]   $HELP~TAB&"      {escape:#} - will escape to sector provided"
+setVar $HELP~HELP[9]   $HELP~TAB&"      {attack:#} - will only photon sector provided"
+setVar $HELP~HELP[10]  $HELP~TAB&"        {photon} - photon sector"
+setVar $HELP~HELP[11]  $HELP~TAB&"          {holo} - holoscan sector and broadcast"
+setVar $HELP~HELP[12]  $HELP~TAB&"         {pgrid} - pgrid in to sector"
+setVar $HELP~HELP[13]  $HELP~TAB&"          {call} - calls saveme"
+setVar $HELP~HELP[14]  $HELP~TAB&"           {pel} - photon, enter, land"
+setVar $HELP~HELP[15]  $HELP~TAB&"         {pel:#} - pel with planet number"
+setVar $HELP~HELP[16]  $HELP~TAB&" {density:value} - only react to density changes of this "
+setVar $HELP~HELP[17]  $HELP~TAB&"                   value or higher. Default is 40."
+setVar $HELP~HELP[18]  $HELP~TAB&"      {killport} - Blows port with macro"
+setVar $HELP~HELP[19]  $HELP~TAB&"                  "
+setVar $HELP~HELP[20]  $HELP~TAB&"      Examples:   "
+setVar $HELP~HELP[21]  $HELP~TAB&"             >density kill call escape:1922"
+setVar $HELP~HELP[22]  $HELP~TAB&"             >density pel density:500"
+setVar $HELP~HELP[23]  $HELP~TAB&"             >density pel:10 "
+setVar $HELP~HELP[24]  $HELP~TAB&"             >density photon holo"
+setVar $HELP~HELP[25]  $HELP~TAB&"             >density pgrid killport kill escape:123"
+gosub :HELP~HELPFILE
 
 #check mines * on portkill
 #check plist 
 #add kazi option
 
-	setVar $PLAYER~save TRUE
+setVar $PLAYER~save TRUE
 
-	gosub :player~quikstats
-	gosub :ship~getshipstats
+gosub :player~quikstats
+gosub :ship~getshipstats
 
-	setVar $startingLocation $player~current_prompt
-	setArray $adj 7
-	setArray $dens 7
-	setArray $adjsec 7
-	setArray $density 7
-	setvar $looking_for_planet false
+setVar $startingLocation $player~current_prompt
+setArray $adj 7
+setArray $dens 7
+setArray $adjsec 7
+setArray $density 7
+setvar $looking_for_planet false
 
-	if ($startingLocation = "Command")
-	elseif ($startingLocation = "Planet")
-		gosub :planet~getplanetinfo
-		send "q"
-	elseif ($startingLocation = "Citadel")
-		send "q"
-		gosub :planet~getplanetinfo
-		send "q"
-	elseif ($startingLocation = "<StarDock>")
-		send "q"
-	else
-		setVar $SWITCHBOARD~message "Must be run from Command, Planet, Citadel, or Stardock Prompt.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
+if ($startingLocation = "Command")
+elseif ($startingLocation = "Planet")
+	gosub :planet~getplanetinfo
+	send "q"
+elseif ($startingLocation = "Citadel")
+	send "q"
+	gosub :planet~getplanetinfo
+	send "q"
+elseif ($startingLocation = "<StarDock>")
+	send "q"
+else
+	setVar $SWITCHBOARD~message "Must be run from Command, Planet, Citadel, or Stardock Prompt.*"
+	gosub :SWITCHBOARD~switchboard
+	halt
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " kill "
+setvar $kill false
+if ($pos > 0)
+	setvar $kill true
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " holo "
+setvar $holo false
+if ($pos > 0)
+	setvar $holo true
+	if (CURRENTSCANTYPE <> "Holo")
+		setVar $SWITCHBOARD~message "Can't holoscan without a holoscanner.  Duh.*"
+		goto :dtorp_end
 	end
+	if ((CURRENTTURNS <= 0) and ($player~unlimitedGame <> true))
+		setVar $SWITCHBOARD~message "Can't holoscan without turns.*"
+		goto :dtorp_end
+	end
+end
 
-	getWordPos " "&$bot~user_command_line&" " $pos " kill "
-	setvar $kill false
+getWordPos " "&$bot~user_command_line&" " $pos " escape "
+getWordPos " "&$bot~user_command_line&" " $pos2 " escape:"
+setvar $escape false
+if ($pos > 0) or ($pos2 > 0)
+	setvar $escape true
+	setvar $escape_sector $map~home_sector
+	getWordPos $bot~user_command_line $pos "escape:"
 	if ($pos > 0)
-		setvar $kill true
+		getText $bot~user_command_line&" " $escape_sector "escape:" " "
+		isNumber $test $escape_sector
+		if ($test <> true)
+			setVar $SWITCHBOARD~message "Escape sector should be a number.*"
+			goto :dtorp_end
+		end
 	end
+	if ($escape_sector = 0)
+		setVar $SWITCHBOARD~message "Escape sector is not defined.  Either define when calling, or define home sector.*"
+		goto :dtorp_end
+	end
+end
 
-	getWordPos " "&$bot~user_command_line&" " $pos " holo "
-	setvar $holo false
+getWordPos " "&$bot~user_command_line&" " $pos " attack:"
+setvar $attack false
+if ($pos > 0)
+	setvar $attack true
+	getText $bot~user_command_line&" " $attack_sector "attack:" " "
+	isNumber $test $attack_sector
+	if ($test <> true)
+		setVar $SWITCHBOARD~message "Attack sector should be a number.*"
+		goto :dtorp_end
+	end
+	if ($attack_sector = 0)
+		setVar $SWITCHBOARD~message "Escape sector is not defined.*"
+		goto :dtorp_end
+	end
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " photon "
+setvar $photon false
+if ($pos > 0)
+	setvar $photon true
+	if ($player~photons <= 0)
+		setVar $SWITCHBOARD~message "Without a photon, you can't run photon option.*"
+		goto :dtorp_end
+	end
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " pgrid "
+setvar $pgrid false
+if ($pos > 0)
+	setvar $pgrid true
+	if ($startingLocation <> "Citadel")
+		setVar $SWITCHBOARD~message "Need to start at citadel for pgrid mode.*"
+		goto :dtorp_end
+	end
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " killport "
+setvar $killport false
+if ($pos > 0)
+	setvar $killport true
+	send "c;q"
+	waitFor "Figs Per Attack:"
+	getWord CURRENTLINE $SHIP~maxFigAttack 5
+end
+
+
+getWordPos " "&$bot~user_command_line&" " $pos " pel "
+getWordPos " "&$bot~user_command_line&" " $pos2 " pel:"
+setvar $pel false
+if ($pos > 0) or ($pos2 > 0)
+	setvar $pel true
+	setvar $pel_planet 0
+	getWordPos $bot~user_command_line $pos "pel:"
 	if ($pos > 0)
-		setvar $holo true
-		if (CURRENTSCANTYPE <> "Holo")
-			setVar $SWITCHBOARD~message "Can't holoscan without a holoscanner.  Duh.*"
-			goto :dtorp_end
-		end
-		if ((CURRENTTURNS <= 0) and ($player~unlimitedGame <> true))
-			setVar $SWITCHBOARD~message "Can't holoscan without turns.*"
+		getText $bot~user_command_line&" " $pel_planet "pel:" " "
+
+		isNumber $test $pel_planet
+
+		if ($test <> true)
+			setVar $SWITCHBOARD~message "Pel planet should be a number.*"
 			goto :dtorp_end
 		end
 	end
 
-	getWordPos " "&$bot~user_command_line&" " $pos " escape "
-	getWordPos " "&$bot~user_command_line&" " $pos2 " escape:"
-	setvar $escape false
-	if ($pos > 0) or ($pos2 > 0)
-		setvar $escape true
-		setvar $escape_sector $map~home_sector
-		getWordPos $bot~user_command_line $pos "escape:"
-		if ($pos > 0)
-			getText $bot~user_command_line&" " $escape_sector "escape:" " "
-			isNumber $test $escape_sector
-			if ($test <> true)
-				setVar $SWITCHBOARD~message "Escape sector should be a number.*"
-				goto :dtorp_end
-			end
-		end
-		if ($escape_sector = 0)
-			setVar $SWITCHBOARD~message "Escape sector is not defined.  Either define when calling, or define home sector.*"
-			goto :dtorp_end
-		end
+	if ($player~photons <= 0)
+		setVar $SWITCHBOARD~message "Without a photon, you can't run pel option.*"
+		goto :dtorp_end
 	end
+
+	if (($pel_planet = 0) and (CURRENTPLANETSCANNER = "Yes"))
+		setVar $SWITCHBOARD~message "Pel option can't be run with a planet scanner onboard unless you define a planet number.  Believe me, it'd just be messy.*"
+		goto :dtorp_end
+	end
+
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " call "
+setvar $call false
+if ($pos > 0)
+	setvar $call true
+end
+
+getWordPos $bot~user_command_line $pos "density:"
+setvar $density_change 40
+if ($pos > 0)
+	getText $bot~user_command_line&" " $density_change "density:" " "
+
+	isNumber $test $density_change
 	
-	getWordPos " "&$bot~user_command_line&" " $pos " attack:"
-	setvar $attack false
-	if ($pos > 0)
-		setvar $attack true
-		getText $bot~user_command_line&" " $attack_sector "attack:" " "
-		isNumber $test $attack_sector
-		if ($test <> true)
-			setVar $SWITCHBOARD~message "Attack sector should be a number.*"
-			goto :dtorp_end
-		end
-		if ($attack_sector = 0)
-			setVar $SWITCHBOARD~message "Escape sector is not defined.*"
-			goto :dtorp_end
-		end
-	end
-
-	getWordPos " "&$bot~user_command_line&" " $pos " photon "
-	setvar $photon false
-	if ($pos > 0)
-		setvar $photon true
-		if ($player~photons <= 0)
-			setVar $SWITCHBOARD~message "Without a photon, you can't run photon option.*"
-			goto :dtorp_end
-		end
-	end
-
-	getWordPos " "&$bot~user_command_line&" " $pos " pgrid "
-	setvar $pgrid false
-	if ($pos > 0)
-		setvar $pgrid true
-		if ($startingLocation <> "Citadel")
-			setVar $SWITCHBOARD~message "Need to start at citadel for pgrid mode.*"
-			goto :dtorp_end
-		end
-	end
-
-	getWordPos " "&$bot~user_command_line&" " $pos " killport "
-	setvar $killport false
-	if ($pos > 0)
-		setvar $killport true
-		send "c;q"
-		waitFor "Figs Per Attack:"
-		getWord CURRENTLINE $SHIP~maxFigAttack 5
-	end
-
-
-	getWordPos " "&$bot~user_command_line&" " $pos " pel "
-	getWordPos " "&$bot~user_command_line&" " $pos2 " pel:"
-	setvar $pel false
-	if ($pos > 0) or ($pos2 > 0)
-		setvar $pel true
-		setvar $pel_planet 0
-		getWordPos $bot~user_command_line $pos "pel:"
-		if ($pos > 0)
-			getText $bot~user_command_line&" " $pel_planet "pel:" " "
-
-			isNumber $test $pel_planet
-
-			if ($test <> true)
-				setVar $SWITCHBOARD~message "Pel planet should be a number.*"
-				goto :dtorp_end
-			end
-		end
-
-		if ($player~photons <= 0)
-			setVar $SWITCHBOARD~message "Without a photon, you can't run pel option.*"
-			goto :dtorp_end
-		end
-
-		if (($pel_planet = 0) and (CURRENTPLANETSCANNER = "Yes"))
-			setVar $SWITCHBOARD~message "Pel option can't be run with a planet scanner onboard unless you define a planet number.  Believe me, it'd just be messy.*"
-			goto :dtorp_end
-		end
-
-	end
-
-	getWordPos " "&$bot~user_command_line&" " $pos " call "
-	setvar $call false
-	if ($pos > 0)
-		setvar $call true
-	end
-
-	getWordPos $bot~user_command_line $pos "density:"
-	setvar $density_change 40
-	if ($pos > 0)
-		getText $bot~user_command_line&" " $density_change "density:" " "
-
-		isNumber $test $density_change
-		
-		if ($test <> true)
-			setVar $SWITCHBOARD~message "Density change amount should be a number.*"
-			goto :dtorp_end
-		end
-		if ($density_change > 499)
-			setvar $density_upper_limit 99999
-		else
-			setvar $density_upper_limit 499
-		end
+	if ($test <> true)
+		setVar $SWITCHBOARD~message "Density change amount should be a number.*"
+		goto :dtorp_end
 	end
 	if ($density_change > 499)
 		setvar $density_upper_limit 99999
 	else
 		setvar $density_upper_limit 499
 	end
+end
+if ($density_change > 499)
+	setvar $density_upper_limit 99999
+else
+	setvar $density_upper_limit 499
+end
 
-	if ((pgrid <> true) and ($kill <> true) and ($killport <> true) and ($photon <> true) and ($pel <> true) and ($holo <> true) and ($call <> true) and ($escape <> true))
-		setvar $photon true
+if ((pgrid <> true) and ($kill <> true) and ($killport <> true) and ($photon <> true) and ($pel <> true) and ($holo <> true) and ($call <> true) and ($escape <> true))
+	setvar $photon true
+end
+setVar $message "Density Trigger running in sector "&$player~current_sector&"*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
+setVar $message $message&"*        On Density Change >= ("&$density_change&" - "&$density_upper_limit&"), I will:"
+if ($pgrid)
+	setVar $message $message&"*          PGRID to Sector"
+end
+if ($kill)
+	setVar $message $message&"*          Kill/Holokill"
+end
+if ($killport)
+	setVar $message $message&"*          Kill Port"
+end
+if ($photon)
+	setVar $message $message&"*          Photon"
+elseif ($pel)
+	setVar $message $message&"*          Photon, Enter, Land"
+	if ($pel_planet <> 0)
+		setVar $message $message&" on Planet "&$pel_planet
 	end
-	setVar $message "Density Trigger running in sector "&$player~current_sector&"*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
-	setVar $message $message&"*        On Density Change >= ("&$density_change&" - "&$density_upper_limit&"), I will:"
-	if ($pgrid)
-		setVar $message $message&"*          PGRID to Sector"
-	end
-	if ($kill)
-		setVar $message $message&"*          Kill/Holokill"
-	end
-	if ($killport)
-		setVar $message $message&"*          Kill Port"
-	end
-	if ($photon)
-		setVar $message $message&"*          Photon"
-	elseif ($pel)
-		setVar $message $message&"*          Photon, Enter, Land"
-		if ($pel_planet <> 0)
-			setVar $message $message&" on Planet "&$pel_planet
-		end
-	end
-	if ($holo)
-		setVar $message $message&"*          Holoscan"
-	end
-	if ($call)
-		setVar $message $message&"*          Call Saveme"
-	end
-	if ($escape)
-		setVar $message $message&"*          Escape to Sector "&$escape_sector
-	end
-	if ($attack)
-		setVar $message $message&"*          Only Responding to Sector "&$attack_sector
-	end
-	setVar $message $message&"*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-**"	
-	setvar $switchboard~message $message
-	gosub :switchboard~switchboard
+end
+if ($holo)
+	setVar $message $message&"*          Holoscan"
+end
+if ($call)
+	setVar $message $message&"*          Call Saveme"
+end
+if ($escape)
+	setVar $message $message&"*          Escape to Sector "&$escape_sector
+end
+if ($attack)
+	setVar $message $message&"*          Only Responding to Sector "&$attack_sector
+end
+setVar $message $message&"*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-**"	
+setvar $switchboard~message $message
+gosub :switchboard~switchboard
 
 
 
 :check_dens
-	setVar $mm 0
-	setVar $i 1
-	send "sz*"
-	waiton "Relative Density Scan"
+setVar $mm 0
+setVar $i 1
+send "sz*"
+waiton "Relative Density Scan"
 
 :dtorp_Start
-	killTrigger alldone
-	setvar $attack_sector_found false
-	setTextLineTrigger getSec :getSec "Sector"
-	setTextTrigger allDone :allDone "Command [TL="
-	pause
+killTrigger alldone
+setvar $attack_sector_found false
+setTextLineTrigger getSec :getSec "Sector"
+setTextTrigger allDone :allDone "Command [TL="
+pause
 
 :getSec
-	getText CURRENTLINE $temp "Sector" "==>"
-	stripText $temp "("
-	stripText $temp ")"
-	stripText $temp " "
-	if ((($attack = true) and ($temp = $attack_sector)) or ($attack = false))
-		if (($attack = true) and ($temp = $attack_sector))
-			setvar $attack_sector_found true
-		end
-		setvar $adj[$i] $temp
-		getText CURRENTLINE $Dens[$i] "==>" "Warps :"
-		stripText $dens[$i] ","
-		stripText $dens[$i] " "
+getText CURRENTLINE $temp "Sector" "==>"
+stripText $temp "("
+stripText $temp ")"
+stripText $temp " "
+if ((($attack = true) and ($temp = $attack_sector)) or ($attack = false))
+	if (($attack = true) and ($temp = $attack_sector))
+		setvar $attack_sector_found true
 	end
-	if ($attack <> true)
-		add $i 1
-	end
-	setTextLineTrigger getSec :getSec "Sector"
-	pause
+	setvar $adj[$i] $temp
+	getText CURRENTLINE $Dens[$i] "==>" "Warps :"
+	stripText $dens[$i] ","
+	stripText $dens[$i] " "
+end
+if ($attack <> true)
+	add $i 1
+end
+setTextLineTrigger getSec :getSec "Sector"
+pause
 :allDone
-	killTrigger getSec
-	if (($attack = true) and ($attack_sector_found <> true))
-		setvar $switchboard~message "Attack sector is not adjacent.  Try again.*"
-		goto :dtorp_end
-	end
-	gosub :firechk
+killTrigger getSec
+if (($attack = true) and ($attack_sector_found <> true))
+	setvar $switchboard~message "Attack sector is not adjacent.  Try again.*"
+	goto :dtorp_end
+end
+gosub :firechk
 
 :letslook
-	setVar $w 0
+setVar $w 0
 
 :sublooky
-	add $w 1
-	if ($w > $i)
-		goto :alldone
-	elseif ($density[$w] <> $dens[$w])
-		setVar $diff ($density[$w] - $dens[$w])
-		if (($diff >= $density_change) and ($diff <= $density_upper_limit))
-			gosub :do_action
-			goto :dtorp_end
-		else
-			goto :sublooky
-		end
+add $w 1
+if ($w > $i)
+	goto :alldone
+elseif ($density[$w] <> $dens[$w])
+	setVar $diff ($density[$w] - $dens[$w])
+	if (($diff >= $density_change) and ($diff <= $density_upper_limit))
+		gosub :do_action
+		goto :dtorp_end
 	else
 		goto :sublooky
 	end
+else
+	goto :sublooky
+end
 
 :firechk
-	setVar $y 1
-	send "sz*"
-	waiton "Relative Density Scan"
+setVar $y 1
+send "sz*"
+waiton "Relative Density Scan"
 
 :looky
-	killtrigger manual_stop
-	killtrigger dtop_dtorp
-	killtrigger getsec
-	killtrigger alldone
-	killtrigger donelook
-	setTextLineTrigger getSec :looksec "Sector"
-	setTextTrigger donelook :donelook "Command [TL="
-	pause
+killtrigger manual_stop
+killtrigger dtop_dtorp
+killtrigger getsec
+killtrigger alldone
+killtrigger donelook
+setTextLineTrigger getSec :looksec "Sector"
+setTextTrigger donelook :donelook "Command [TL="
+pause
 
 :looksec
-	getText CURRENTLINE $temp "Sector" "==>"
-	stripText $temp "("
-	stripText $temp ")"
-	stripText $temp " "
-	if ((($attack = true) and ($temp = $attack_sector)) or ($attack = false))
-		setvar $adjsec[$y] $temp
-		getText CURRENTLINE $Density[$y] "==>" "Warps :"
-		stripText $density[$y] ","
-		stripText $density[$y] " "
-	end
-	if ($attack <> true)
-		add $y 1
-	end
-	setTextLineTrigger getSec :looksec "Sector"
-	pause
+getText CURRENTLINE $temp "Sector" "==>"
+stripText $temp "("
+stripText $temp ")"
+stripText $temp " "
+if ((($attack = true) and ($temp = $attack_sector)) or ($attack = false))
+	setvar $adjsec[$y] $temp
+	getText CURRENTLINE $Density[$y] "==>" "Warps :"
+	stripText $density[$y] ","
+	stripText $density[$y] " "
+end
+if ($attack <> true)
+	add $y 1
+end
+setTextLineTrigger getSec :looksec "Sector"
+pause
 
 :donelook
-	killtrigger getSec
-	return
+killtrigger getSec
+return
 
 :dtorp_end
-	if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
-		if (($escape <> true) and ($call <> true) and ($photon <> true))
-			gosub :planet~landingsub
-		end
+if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
+	if (($escape <> true) and ($call <> true) and ($photon <> true))
+		gosub :planet~landingsub
 	end
-	gosub :switchboard~switchboard
+end
+gosub :switchboard~switchboard
 
-	halt
+halt
 
 
 :do_action
-	if (($photon = true) and ($player~photons > 0))
-		if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
-			send " c  p  y  " $adj[$w] "**q   l " $PLANET~PLANET " * n n * j m * * * j c  *  "
-		else
-			send " c  p  y  " $adj[$w] "**q   "		
-		end
+if (($photon = true) and ($player~photons > 0))
+	if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
+		send " c  p  y  " $adj[$w] "**q   l " $PLANET~PLANET " * n n * j m * * * j c  *  "
+	else
+		send " c  p  y  " $adj[$w] "**q   "		
 	end
-	gosub :player~quikstats
+end
+gosub :player~quikstats
 
-	# #if we pgrid we want to do a different kill action
-	if (($pgrid = true) and ($player~fighters > 0))
+# #if we pgrid we want to do a different kill action
+if (($pgrid = true) and ($player~fighters > 0))
 
-		if ($player~current_prompt = "Command")
-			gosub :planet~landingsub
-		end
-		setvar $BOT~COMMAND "pgrid"
-		setvar $BOT~USER_COMMAND_LINE " pgrid " & $adj[$w]
-		setvar $BOT~PARM1 $adj[$w]
-		savevar $BOT~PARM1
-		savevar $BOT~COMMAND
-		savevar $BOT~USER_COMMAND_LINE
-		load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\pgrid.cts"
-		seteventtrigger PGRIDDONE :DENSITY_PGRIDDONE "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\pgrid.cts"
-		pause
-		:DENSITY_PGRIDDONE
-		if ($killport = true)
-			send "s*"
-			waitfor "Warps to Sector(s)"
-			if (PORT.EXISTS[$player~current_sector] = 1)
-				if ($player~current_prompt = "Citadel")
-					send "q q "
-				end
-				send "p a y " $ship~maxFigAttack " * * z $ship~maxFigAttack * * "
-				if ($player~current_prompt = "Citadel")
-					send "l" $planet~planet "* c"
-					waitfor "<Enter Citadel>"
-				else
-					setTextLineTrigger endPortDestroy :endPortDestroy "ou destroyed the Star Port"
-					setDelayTrigger endPortTimeout :endPortTimeout 150
-					pause
+	if ($player~current_prompt = "Command")
+		gosub :planet~landingsub
+	end
+	setvar $grid~pgridSector $adj[$w]
+	gosub :grid~pgrid
+	if ($killport = true)
+		send "s*"
+		waitfor "Warps to Sector(s)"
+		if (PORT.EXISTS[$player~current_sector] = 1)
+			if ($player~current_prompt = "Citadel")
+				send "q q "
+			end
+			send "p a y " $ship~maxFigAttack " * * z $ship~maxFigAttack * * "
+			if ($player~current_prompt = "Citadel")
+				send "l" $planet~planet "* c"
+				waitfor "<Enter Citadel>"
+			else
+				setTextLineTrigger endPortDestroy :endPortDestroy "ou destroyed the Star Port"
+				setDelayTrigger endPortTimeout :endPortTimeout 150
+				pause
 						:endPortTimeout
 						:endPortDestroy
-						killalltriggers
-				end
+					killalltriggers
 			end
 		end
-		if ($kill = true)
-			gosub :player~quikstats
+	end
+	if ($kill = true)
+		gosub :player~quikstats
 			:scanit_again2
-			setvar $player~startingLocation $player~current_prompt
-			gosub :sector~getSectorData
-			if ($sector~realTraderCount > ($sector~corpieCount + $sector~defenderShips))
-				goSub :combat~fastCitadelAttack
-				goto :scanit_again2
-			elseif (($sector~emptyShipCount > $sector~myShipCount))
-				gosub :combat~fastCapture
-				goto :scanit_again2
-			end
+		setvar $player~startingLocation $player~current_prompt
+		gosub :sector~getSectorData
+		if ($sector~realTraderCount > ($sector~corpieCount + $sector~defenderShips))
+			goSub :combat~fastCitadelAttack
+			goto :scanit_again2
+		elseif (($sector~emptyShipCount > $sector~myShipCount))
+			gosub :combat~fastCapture
+			goto :scanit_again2
 		end
-	
-		if ($escape = true)
-
-			setVar $PLANET~WARPTO $escape_sector
-			setVar $PLANET~PWARP_SCAN FALSE
-			gosub :player~quikstats
-
-			if ($player~current_prompt = "Citadel")
-				gosub :PLANET~pwarp
-			end
-		end
-	
-	else
-
-		if (($kill = true) and ($player~fighters > 0))
-			gosub :player~quikstats
-			:scanit_again
-			setvar $player~startingLocation $player~current_prompt
-			gosub :sector~getSectorData
-			if ($sector~realTraderCount > ($sector~corpieCount + $sector~defenderShips))
-				gosub :combat~fastAttack
-				goto :scanit_again
-			elseif (($sector~emptyShipCount > $sector~myShipCount))
-				gosub :combat~fastCapture
-				goto :scanit_again
-			end
-			setvar $before_holo_kill_sector $player~current_sector
-			gosub :combat~holokill
-			if ($player~current_sector <> $before_holo_kill_sector)
-				setVar $PLAYER~WARPTO $before_holo_kill_sector
-				gosub :MOVE~twarp
-				if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
-					setvar $switchboard~message "Could not make it back to starting sector before holokill. - ["&$player~msg&"]*"
-					gosub :switchboard~switchboard
-				end
-			end
-		end
-
-		if ($holo = true)
-			gosub :HOLO_RUN
-		end
-
-		if ($pel = true)
-			if ($pel_planet = 0) 
-				# Fake planet number to make script trigger - no scanners so will still land
-				setVar $pel_planet 99999
-			end
-			setvar $BOT~COMMAND "invader"
-			setvar $BOT~COMMAND_TYPED "pel"
-			setvar $BOT~USER_COMMAND_LINE " pel "&$adj[$w]&" "&$pel_planet
-			setvar $BOT~PARM1 $adj[$w]
-			setvar $BOT~PARM2 $pel_planet
-			setvar $BOT~PARM3 ""
-			setvar $BOT~PARM4 ""
-			setvar $BOT~PARM5 ""
-			setvar $BOT~PARM6 ""
-			savevar $BOT~PARM1
-			savevar $BOT~PARM2
-			savevar $BOT~PARM3
-			savevar $BOT~PARM4
-			savevar $BOT~PARM5
-			savevar $BOT~PARM6
-			savevar $BOT~COMMAND
-			savevar $BOT~COMMAND_TYPED
-			savevar $BOT~USER_COMMAND_LINE
-			load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\offense\invader.cts"
-			seteventtrigger PELENDED :PELENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\offense\invader.cts"
-			pause
-			:PELENDED
-			halt
-		end
-
-		if ($call = true)
-			gosub :CALL_RUN
-		end
-
-		if ($escape = true)
-			killalltriggers
-
-			setVar $PLANET~WARPTO $escape_sector
-			setVar $PLANET~PWARP_SCAN FALSE
-			if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
-				gosub :player~quikstats
-				if (($player~current_prompt <> "Citadel") and ($player~current_prompt <> "Planet"))
-					gosub :planet~landingsub
-				end
-				gosub :player~quikstats
-				if ($player~current_prompt = "Citadel")
-					gosub :PLANET~pwarp
-				else
-					goto :twarp
-				end
-			else
-				:twarp
-					gosub :MOVE~twarp
-					if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
-						setvar $switchboard~message "Could not escape. - ["&$player~msg&"]*"
-						gosub :switchboard~switchboard
-						halt
-					end
-			end
-		end
-
 	end
 
-	
+	if ($escape = true)
 
-	setvar $switchboard~message "Density trigger complete.*"
-	gosub :switchboard~switchboard
+		setVar $PLANET~WARPTO $escape_sector
+		setVar $PLANET~PWARP_SCAN FALSE
+		gosub :player~quikstats
 
-	return
+		if ($player~current_prompt = "Citadel")
+			gosub :PLANET~pwarp
+		end
+	end
+
+else
+
+	if (($kill = true) and ($player~fighters > 0))
+		gosub :player~quikstats
+			:scanit_again
+		setvar $player~startingLocation $player~current_prompt
+		gosub :sector~getSectorData
+		if ($sector~realTraderCount > ($sector~corpieCount + $sector~defenderShips))
+			gosub :combat~fastAttack
+			goto :scanit_again
+		elseif (($sector~emptyShipCount > $sector~myShipCount))
+			gosub :combat~fastCapture
+			goto :scanit_again
+		end
+		setvar $before_holo_kill_sector $player~current_sector
+		gosub :combat~holokill
+		if ($player~current_sector <> $before_holo_kill_sector)
+			setVar $PLAYER~WARPTO $before_holo_kill_sector
+			gosub :MOVE~twarp
+			if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
+				setvar $switchboard~message "Could not make it back to starting sector before holokill. - ["&$player~msg&"]*"
+				gosub :switchboard~switchboard
+			end
+		end
+	end
+
+	if ($holo = true)
+		gosub :HOLO_RUN
+	end
+
+	if ($pel = true)
+		if ($pel_planet = 0) 
+			# Fake planet number to make script trigger - no scanners so will still land
+			setVar $pel_planet 99999
+		end
+		setvar $BOT~COMMAND "invader"
+		setvar $BOT~COMMAND_TYPED "pel"
+		setvar $BOT~USER_COMMAND_LINE " pel "&$adj[$w]&" "&$pel_planet
+		setvar $BOT~PARM1 $adj[$w]
+		setvar $BOT~PARM2 $pel_planet
+		setvar $BOT~PARM3 ""
+		setvar $BOT~PARM4 ""
+		setvar $BOT~PARM5 ""
+		setvar $BOT~PARM6 ""
+		savevar $BOT~PARM1
+		savevar $BOT~PARM2
+		savevar $BOT~PARM3
+		savevar $BOT~PARM4
+		savevar $BOT~PARM5
+		savevar $BOT~PARM6
+		savevar $BOT~COMMAND
+		savevar $BOT~COMMAND_TYPED
+		savevar $BOT~USER_COMMAND_LINE
+		load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\offense\invader.cts"
+		seteventtrigger PELENDED :PELENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\offense\invader.cts"
+		pause
+			:PELENDED
+		halt
+	end
+
+	if ($call = true)
+		:CALL
+		gosub :combat~callsaveme
+		gosub :PLAYER~QUIKSTATS
+		if ($PLAYER~CURRENT_PROMPT <> "Citadel")
+			setvar $SWITCHBOARD~MESSAGE "Not on planet even after call saveme.  I'm in real trouble.  Will try again in 15 seconds.*"
+			gosub :SWITCHBOARD~SWITCHBOARD
+			killalltriggers
+			setdelaytrigger CALLRETRY :CALL 15000
+			pause
+		end
+	end
+
+	if ($escape = true)
+		killalltriggers
+
+		setVar $PLANET~WARPTO $escape_sector
+		setVar $PLANET~PWARP_SCAN FALSE
+		if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
+			gosub :player~quikstats
+			if (($player~current_prompt <> "Citadel") and ($player~current_prompt <> "Planet"))
+				gosub :planet~landingsub
+			end
+			gosub :player~quikstats
+			if ($player~current_prompt = "Citadel")
+				gosub :PLANET~pwarp
+			else
+				goto :twarp
+			end
+		else
+				:twarp
+				gosub :MOVE~twarp
+				if (($PLAYER~twarpSuccess = FALSE) and ($player~msg <> "Already in that sector!"))
+					setvar $switchboard~message "Could not escape. - ["&$player~msg&"]*"
+					gosub :switchboard~switchboard
+					halt
+				end
+		end
+	end
+
+end
+
+
+
+setvar $switchboard~message "Density trigger complete.*"
+gosub :switchboard~switchboard
+
+return
 
 :HOLO_RUN
 :HOLO
-	setvar $BOT~COMMAND "holo"
-	setvar $BOT~USER_COMMAND_LINE " holo"
-	setvar $BOT~PARM1 ""
-	setvar $BOT~PARM2 ""
-	setvar $BOT~PARM3 ""
-	setvar $BOT~PARM4 ""
-	setvar $BOT~PARM5 ""
-	setvar $BOT~PARM6 ""
-	savevar $BOT~COMMAND
-	savevar $BOT~USER_COMMAND_LINE
-	savevar $BOT~PARM1
-	savevar $BOT~PARM2
-	savevar $BOT~PARM3
-	savevar $BOT~PARM4
-	savevar $BOT~PARM5
-	savevar $BOT~PARM6
-	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\holo.cts"
-	seteventtrigger HOLOEND1 :HOLO_END1 "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\holo.cts"
-	pause
+setvar $BOT~COMMAND "holo"
+setvar $BOT~USER_COMMAND_LINE " holo"
+setvar $BOT~PARM1 ""
+setvar $BOT~PARM2 ""
+setvar $BOT~PARM3 ""
+setvar $BOT~PARM4 ""
+setvar $BOT~PARM5 ""
+setvar $BOT~PARM6 ""
+savevar $BOT~COMMAND
+savevar $BOT~USER_COMMAND_LINE
+savevar $BOT~PARM1
+savevar $BOT~PARM2
+savevar $BOT~PARM3
+savevar $BOT~PARM4
+savevar $BOT~PARM5
+savevar $BOT~PARM6
+load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\holo.cts"
+seteventtrigger HOLOEND1 :HOLO_END1 "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\holo.cts"
+pause
 :HOLO_END1
 return
 
-:CALL_RUN
-:CALL
-	setvar $BOT~COMMAND "call"
-	setvar $BOT~PARM1 ""
-	setvar $BOT~USER_COMMAND_LINE " call  "
-	setvar $BOT~PARM2 ""
-	setvar $BOT~PARM3 ""
-	setvar $BOT~PARM4 ""
-	setvar $BOT~PARM5 ""
-	setvar $BOT~PARM6 ""
-	savevar $BOT~COMMAND
-	savevar $BOT~USER_COMMAND_LINE
-	savevar $BOT~PARM1
-	savevar $BOT~PARM2
-	savevar $BOT~PARM3
-	savevar $BOT~PARM4
-	savevar $BOT~PARM5
-	savevar $BOT~PARM6
-	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\defense\call.cts"
-	seteventtrigger CALLEND1 :CALL_END1 "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\defense\call.cts"
-	pause
-:CALL_END1
-	gosub :PLAYER~QUIKSTATS
-	if ($PLAYER~CURRENT_PROMPT <> "Citadel")
-		setvar $SWITCHBOARD~MESSAGE "Not on planet even after call saveme.  I'm in real trouble.  Will try again in 15 seconds.*"
-		gosub :SWITCHBOARD~SWITCHBOARD
-		killalltriggers
-		setdelaytrigger CALLRETRY :CALL 15000
-		pause
-	end
-return
-		
-	#INCLUDES:
+#INCLUDES:
 include "source\include\planet"
-	include "source\include\combat"
-	include "source\include\loadvars"
+include "source\include\combat"
+include "source\include\loadvars"
 include "source\include\help"
+include "source\include\grid"
+include "source\include\combat"
 include "source\include\switchboard.ts"

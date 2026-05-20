@@ -14,6 +14,7 @@ loadvar $PARM6
 loadvar $PARM7
 loadvar $PARM8
 loadvar $COMMAND
+loadvar $bot~folder
 
 :FARM_START
 fileexists $DOESHELPFILEEXIST "scripts\MOMBot\Help\"&$COMMAND&".txt"
@@ -31,7 +32,7 @@ if ($DOESHELPFILEEXIST <> TRUE)
   setvar $switchboard~message "Writing help file for this command in Help directory.*"
   gosub :switchboard~switchboard
 end
-setvar $FARMER_FILE "_"&GAMENAME&"_FARMER.list"
+setvar $FARMER_FILE $bot~folder&"/_"&GAMENAME&"_FARMER.list"
 
 getwordpos $USER_COMMAND_LINE $POS "silent"
 if ($POS > 0)

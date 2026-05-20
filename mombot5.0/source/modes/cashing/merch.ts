@@ -21,8 +21,10 @@ setvar $HELP~HELP[12] $HELP~TAB&"      {upfuel}   upgrade fuel ore ports (usuall
 setvar $HELP~HELP[13] $HELP~TAB&"        {half}   sell half of port (neg only for now) "
 setvar $HELP~HELP[14] $HELP~TAB&"       {upequ}   upgrade good equipment ports"
 setvar $HELP~HELP[15] $HELP~TAB&"       {uporg}   upgrade good organics ports"
-setvar $HELP~HELP[16] $HELP~TAB&"    {upmcic #}   maximum mcic to upgrade (default: -60)"
-setvar $HELP~HELP[17] $HELP~TAB&"  {sellmcic #}   minimum mcic to sell product (default: none)"
+setvar $HELP~HELP[16] $HELP~TAB&"   {checkmcic}   make small trades at non-upgraded ports missing mcic"
+setvar $HELP~HELP[17] $HELP~TAB&"    {upmcic #}   maximum mcic to upgrade (default: -60)"
+setvar $HELP~HELP[18] $HELP~TAB&"  {sellmcic #}   minimum mcic to sell product (default: none)"
+setvar $HELP~HELP[18] $HELP~TAB&"    {minpct #}   minimum percent to sell to a port (default: 50)"
 gosub :HELP~HELPFILE
 
 setvar $SWITCHBOARD~MESSAGE "Planet Merchant starting up!*"
@@ -105,6 +107,13 @@ else
   setvar $SKIPCIM FALSE
 end
 
+getwordpos $bot~user_command_line $POS "checkmcic"
+if ($POS > 0)
+  setvar $CHECKMCIC TRUE
+else
+  setvar $CHECKMCIC FALSE
+end
+
 getwordpos $bot~user_command_line $POS "upfuel"
 if ($POS > 0)
   setvar $UPFUEL TRUE
@@ -164,6 +173,24 @@ if ($POS > 0)
   end
 end
 
+setvar $minpct 50
+getwordpos $bot~user_command_line $POS "minpct"
+if ($POS > 0)
+  cuttext $bot~user_command_line $TMP_COMMAND_LINE $POS 999
+  getword $TMP_COMMAND_LINE $TMPVAL 2
+  striptext $TMPVAL "%"
+  isnumber $TEST $TMPVAL
+  if ($TEST = TRUE)
+    if ($TMPVAL > 0)
+      setvar $minpct $tmpval
+    end
+  else
+    setvar $switchboard~message "Invalid value for minpct argument"
+    gosub :switchboard~switchboard
+    halt
+  end
+end
+
 :MERCHANT
 killalltriggers
 setarray $CHECKEDPORTS SECTORS
@@ -195,7 +222,23 @@ end
 loadvar $game~port_max
 setvar $HALF_PORT_MAX $game~port_max
 divide $HALF_PORT_MAX 2
-while ($SELLINGORG and ($planet~planet_organics >= $MINIMUMFUEL)) or ($SELLINGEQUIP and ($planet~planet_equipment >= $MINIMUMFUEL))
+setvar $MERCH_MIN_PRODUCT $MINIMUMFUEL
+setvar $MERCH_SAMPLE_AMOUNT $player~total_holds
+if ($MERCH_SAMPLE_AMOUNT <= 0)
+  setvar $MERCH_SAMPLE_AMOUNT 255
+end
+setvar $MERCH_NEG_SAMPLE_AMOUNT $MERCH_SAMPLE_AMOUNT
+if ($MERCH_NEG_SAMPLE_AMOUNT > 255)
+  setvar $MERCH_NEG_SAMPLE_AMOUNT 255
+end
+if ($CHECKMCIC = TRUE)
+  if ($planet~planetnegotiate = TRUE)
+    setvar $MERCH_MIN_PRODUCT $MERCH_NEG_SAMPLE_AMOUNT
+  else
+    setvar $MERCH_MIN_PRODUCT $MERCH_SAMPLE_AMOUNT
+  end
+end
+while ($SELLINGORG and ($planet~planet_organics >= $MERCH_MIN_PRODUCT)) or ($SELLINGEQUIP and ($planet~planet_equipment >= $MERCH_MIN_PRODUCT))
   :INAC
   if (($player~unlimitedgame = FALSE) and ($player~turns <= $BOT_TURN_LIMIT))
     setvar $switchboard~message "Turns too low to continue.*"
@@ -203,22 +246,24 @@ while ($SELLINGORG and ($planet~planet_organics >= $MINIMUMFUEL)) or ($SELLINGEQ
     goto :DONEMERCHANT
   end
   :TRYAGAIN2
-  setvar $BESTMCICSECTOR 0
-  setvar $BESTMCICSCORE 49
-  setvar $FOCUS 1
-  setvar $MERCHCHECKREMOTE FALSE
-  while ($FOCUS <= SECTORS)
-    gosub :CHECKMERCHPORT
-    if (($MERCHGOODPORT = TRUE) and ($MERCHMCICSCORE > $BESTMCICSCORE))
-      setvar $BESTMCICSCORE $MERCHMCICSCORE
-      setvar $BESTMCICSECTOR $FOCUS
+  if ($CHECKMCIC <> TRUE)
+    setvar $BESTMCICSECTOR 0
+    setvar $BESTMCICSCORE 49
+    setvar $FOCUS 1
+    setvar $MERCHCHECKREMOTE FALSE
+    while ($FOCUS <= SECTORS)
+      gosub :CHECKMERCHPORT
+      if (($MERCHGOODPORT = TRUE) and ($MERCHMCICSCORE > $BESTMCICSCORE))
+        setvar $BESTMCICSCORE $MERCHMCICSCORE
+        setvar $BESTMCICSECTOR $FOCUS
+      end
+      add $FOCUS 1
     end
-    add $FOCUS 1
-  end
-  if ($BESTMCICSECTOR > 0)
-    setvar $NEARFIG $BESTMCICSECTOR
-    setvar $CHECKEDPORTS[$NEARFIG] TRUE
-    goto :CONTINUEON2
+    if ($BESTMCICSECTOR > 0)
+      setvar $NEARFIG $BESTMCICSECTOR
+      setvar $CHECKEDPORTS[$NEARFIG] TRUE
+      goto :CONTINUEON2
+    end
   end
   setvar $BOTTOM 1
   setvar $TOP 1
@@ -243,7 +288,6 @@ while ($SELLINGORG and ($planet~planet_organics >= $MINIMUMFUEL)) or ($SELLINGEQ
     setvar $A 1
     while (SECTOR.WARPS[$FOCUS][$A] > 0)
       setvar $ADJACENT SECTOR.WARPS[$FOCUS][$A]
-
       if ($CHECKED[$ADJACENT] = 0)
 
         setvar $CHECKED[$ADJACENT] 1
@@ -255,9 +299,11 @@ while ($SELLINGORG and ($planet~planet_organics >= $MINIMUMFUEL)) or ($SELLINGEQ
 
     add $BOTTOM 1
   end
+
   setvar $switchboard~message "Can't find a route to any other ports.*"
   gosub :switchboard~switchboard
   goto :DONEMERCHANT
+
   :CONTINUEON2
   if ($NEARFIG > 0)
     killalltriggers
@@ -278,18 +324,20 @@ while ($SELLINGORG and ($planet~planet_organics >= $MINIMUMFUEL)) or ($SELLINGEQ
       goto :TRYAGAIN2
     end
     setvar $CANSELLORGHERE FALSE
-    if ($SELLINGORG and PORT.BUYORG[$NEARFIG] and (PORT.ORG[$NEARFIG] >= $MINIMUMFUEL) and ($planet~planet_organics >= $MINIMUMFUEL))
+    if ($SELLINGORG and PORT.BUYORG[$NEARFIG] and (PORT.ORG[$NEARFIG] >= $MERCH_MIN_PRODUCT) and ($planet~planet_organics >= $MERCH_MIN_PRODUCT))
       setvar $CANSELLORGHERE TRUE
     end
     setvar $CANSELLEQUIPHERE FALSE
-    if ($SELLINGEQUIP and PORT.BUYEQUIP[$NEARFIG] and (PORT.EQUIP[$NEARFIG] >= $MINIMUMFUEL) and ($planet~planet_equipment >= $MINIMUMFUEL))
+    if ($SELLINGEQUIP and PORT.BUYEQUIP[$NEARFIG] and (PORT.EQUIP[$NEARFIG] >= $MERCH_MIN_PRODUCT) and ($planet~planet_equipment >= $MERCH_MIN_PRODUCT))
       setvar $CANSELLEQUIPHERE TRUE
     end
     if ($planet~planetnegotiate = TRUE)
       killalltriggers
       setvar $planethaggle~_ck_pnego_fueltosell "-1"
       if ($CANSELLORGHERE)
-        if ($SELLHALF)
+        if ($CHECKMCIC = TRUE)
+          setvar $planethaggle~_ck_pnego_orgtosell $MERCH_NEG_SAMPLE_AMOUNT
+        elseif ($SELLHALF)
           setvar $ORG_TO_SELL (PORT.ORG[$NEARFIG] - $HALF_PORT_MAX)
           if ($ORG_TO_SELL <= 0)
             setvar $planethaggle~_ck_pnego_orgtosell "-1"
@@ -303,7 +351,9 @@ while ($SELLINGORG and ($planet~planet_organics >= $MINIMUMFUEL)) or ($SELLINGEQ
         setvar $planethaggle~_ck_pnego_orgtosell "-1"
       end
       if ($CANSELLEQUIPHERE)
-        if ($SELLHALF)
+        if ($CHECKMCIC = TRUE)
+          setvar $planethaggle~_ck_pnego_equiptosell $MERCH_NEG_SAMPLE_AMOUNT
+        elseif ($SELLHALF)
           setvar $EQUIP_TO_SELL (PORT.EQUIP[$NEARFIG] - $HALF_PORT_MAX)
           if ($EQUIP_TO_SELL <= 0)
             setvar $planethaggle~_ck_pnego_equiptosell "-1"
@@ -326,11 +376,13 @@ while ($SELLINGORG and ($planet~planet_organics >= $MINIMUMFUEL)) or ($SELLINGEQ
       if ($planethaggle~sellhagglesucceeded = TRUE)
         send "cr"&$NEARFIG&"*q"
         waiton "<Computer deactivated>"
-        if ($CANSELLEQUIPHERE and (PORT.EQUIP[$NEARFIG] >= $MINIMUMFUEL))
-          setvar $CHECKEDPORTS[$NEARFIG] FALSE
-        end
-        if ($CANSELLORGHERE and (PORT.ORG[$NEARFIG] >= $MINIMUMFUEL))
-          setvar $CHECKEDPORTS[$NEARFIG] FALSE
+        if ($CHECKMCIC <> TRUE)
+          if ($CANSELLEQUIPHERE and (PORT.EQUIP[$NEARFIG] >= $MINIMUMFUEL))
+            setvar $CHECKEDPORTS[$NEARFIG] FALSE
+          end
+          if ($CANSELLORGHERE and (PORT.ORG[$NEARFIG] >= $MINIMUMFUEL))
+            setvar $CHECKEDPORTS[$NEARFIG] FALSE
+          end
         end
       end
       if (($BUYFUEL = TRUE) and (PORT.BUYFUEL[$NEARFIG] = FALSE))
@@ -355,7 +407,9 @@ while ($SELLINGORG and ($planet~planet_organics >= $MINIMUMFUEL)) or ($SELLINGEQ
         setvar $player~turnstoemptyfuel (($PLAYER~CURRENT_SECTOR.ORETRADING / $player~total_holds) - 1)
       end
       if ($CANSELLORGHERE)
-        if ($planet~planet_organics < $PLAYER~CURRENT_SECTOR.ORGTRADING)
+        if ($CHECKMCIC = TRUE)
+          setvar $player~turnssellingproduct 1
+        elseif ($planet~planet_organics < $PLAYER~CURRENT_SECTOR.ORGTRADING)
           setvar $player~turnssellingproduct (($planet~planet_organics / $player~total_holds) - 1)
         else
           setvar $player~turnssellingproduct ($PLAYER~CURRENT_SECTOR.ORGTRADING / $player~total_holds)
@@ -379,7 +433,9 @@ while ($SELLINGORG and ($planet~planet_organics >= $MINIMUMFUEL)) or ($SELLINGEQ
         end
       end
       if ($CANSELLEQUIPHERE)
-        if ($planet~planet_equipment < $PLAYER~CURRENT_SECTOR.EQUTRADING)
+        if ($CHECKMCIC = TRUE)
+          setvar $player~turnssellingproduct 1
+        elseif ($planet~planet_equipment < $PLAYER~CURRENT_SECTOR.EQUTRADING)
           setvar $player~turnssellingproduct (($planet~planet_equipment / $player~total_holds) - 1)
         else
           setvar $player~turnssellingproduct ($PLAYER~CURRENT_SECTOR.EQUTRADING / $player~total_holds)
@@ -540,7 +596,7 @@ if (($FOCUS <> $player~current_sector) and ($HASFIGATFOCUS <> TRUE))
   return
 end
 if (($MERCHCHECKREMOTE = TRUE) and (($DOCIM = FALSE) and ($SKIPCIM = FALSE)))
-  if (($CHECKEDPORTS[$FOCUS] <> TRUE) and (((PORT.EXISTS[$FOCUS] = TRUE) and (((PORT.CLASS[$FOCUS] > 0) and (((SECTOR.EXPLORED[$FOCUS] = "YES") and ((($SELLINGORG = TRUE) and (($planet~planet_organics >= $MINIMUMFUEL) and PORT.BUYORG[$FOCUS])) or (($SELLINGEQUIP = TRUE) and (($planet~planet_equipment >= $MINIMUMFUEL) and PORT.BUYEQUIP[$FOCUS]))))))))))
+  if (($CHECKEDPORTS[$FOCUS] <> TRUE) and (((PORT.EXISTS[$FOCUS] = TRUE) and (((PORT.CLASS[$FOCUS] > 0) and (((SECTOR.EXPLORED[$FOCUS] = "YES") and ((($SELLINGORG = TRUE) and (($planet~planet_organics >= $MERCH_MIN_PRODUCT) and PORT.BUYORG[$FOCUS])) or (($SELLINGEQUIP = TRUE) and (($planet~planet_equipment >= $MERCH_MIN_PRODUCT) and PORT.BUYEQUIP[$FOCUS]))))))))))
     send "cr"&$FOCUS&"*q"
   end
 end
@@ -548,55 +604,109 @@ getsectorparameter $FOCUS "BUSTED" $ISBUSTED
 if (($ISBUSTED = TRUE) or ($CHECKEDPORTS[$FOCUS] = TRUE) or (PORT.EXISTS[$FOCUS] <> TRUE))
   return
 end
-if (($SELLINGORG = TRUE) and ($planet~planet_organics >= $MINIMUMFUEL) and (PORT.BUYORG[$FOCUS] = TRUE) and (PORT.ORG[$FOCUS] >= $MINIMUMFUEL))
-  if (($SELLHALF <> TRUE) or ((PORT.PERCENTORG[$FOCUS] > 50) and (PORT.ORG[$FOCUS] > $HALF_PORT_MAX)))
+if ($CHECKMCIC = TRUE)
+  gosub :MERCHUPGRADEDPORT
+  if ($MERCHUPGRADED = TRUE)
+    return
+  end
+end
+if (($SELLINGORG = TRUE) and ($planet~planet_organics >= $MERCH_MIN_PRODUCT) and (PORT.BUYORG[$FOCUS] = TRUE) and (PORT.ORG[$FOCUS] >= $MERCH_MIN_PRODUCT))
+  if (($CHECKMCIC = TRUE) or (($SELLHALF <> TRUE) or ((PORT.PERCENTORG[$FOCUS] > $minpct) and (PORT.ORG[$FOCUS] > $HALF_PORT_MAX))))
     setvar $MERCH_CANSELLORG TRUE
   end
 end
-if (($SELLINGEQUIP = TRUE) and ($planet~planet_equipment >= $MINIMUMFUEL) and (PORT.BUYEQUIP[$FOCUS] = TRUE) and (PORT.EQUIP[$FOCUS] >= $MINIMUMFUEL))
-  if (($SELLHALF <> TRUE) or ((PORT.PERCENTEQUIP[$FOCUS] > 50) and (PORT.EQUIP[$FOCUS] > $HALF_PORT_MAX)))
+if (($SELLINGEQUIP = TRUE) and ($planet~planet_equipment >= $MERCH_MIN_PRODUCT) and (PORT.BUYEQUIP[$FOCUS] = TRUE) and (PORT.EQUIP[$FOCUS] >= $MERCH_MIN_PRODUCT))
+  if (($CHECKMCIC = TRUE) or (($SELLHALF <> TRUE) or ((PORT.PERCENTEQUIP[$FOCUS] > $minpct) and (PORT.EQUIP[$FOCUS] > $HALF_PORT_MAX))))
     setvar $MERCH_CANSELLEQUIP TRUE
   end
 end
 if (($MERCH_CANSELLORG <> TRUE) and ($MERCH_CANSELLEQUIP <> TRUE))
   return
 end
-if (($MERCH_CANSELLORG = TRUE) and ($SELLMCIC <> 0))
+if (($MERCH_CANSELLORG = TRUE) and ($CHECKMCIC = TRUE))
   getsectorparameter $FOCUS "ORGMCIC" $TMP
-  if (($TMP <> 0) and ($TMP > $SELLMCIC))
+  if (($TMP <> "") and ($TMP <> 0))
     setvar $MERCH_CANSELLORG FALSE
   end
 end
-if (($MERCH_CANSELLEQUIP = TRUE) and ($SELLMCIC <> 0))
+if (($MERCH_CANSELLEQUIP = TRUE) and ($CHECKMCIC = TRUE))
   getsectorparameter $FOCUS "EQUMCIC" $TMP
-  if (($TMP <> 0) and ($TMP > $SELLMCIC))
+  if (($TMP <> "") and ($TMP <> 0))
     setvar $MERCH_CANSELLEQUIP FALSE
   end
 end
 if (($MERCH_CANSELLORG <> TRUE) and ($MERCH_CANSELLEQUIP <> TRUE))
   return
 end
-if ($MERCH_CANSELLORG = TRUE)
-  getsectorparameter $FOCUS "ORGMCIC" $TMP
-  setvar $MERCHSCORE $TMP
-  if ($TMP < 0)
-    setvar $MERCHSCORE (0 - $TMP)
+if ($CHECKMCIC <> TRUE)
+  if (($MERCH_CANSELLORG = TRUE) and ($SELLMCIC <> 0))
+    getsectorparameter $FOCUS "ORGMCIC" $TMP
+    if (($TMP <> 0) and ($TMP > $SELLMCIC))
+      setvar $MERCH_CANSELLORG FALSE
+    end
   end
-  if ($MERCHSCORE > $MERCHMCICSCORE)
-    setvar $MERCHMCICSCORE $MERCHSCORE
+  if (($MERCH_CANSELLEQUIP = TRUE) and ($SELLMCIC <> 0))
+    getsectorparameter $FOCUS "EQUMCIC" $TMP
+    if (($TMP <> 0) and ($TMP > $SELLMCIC))
+      setvar $MERCH_CANSELLEQUIP FALSE
+    end
   end
-end
-if ($MERCH_CANSELLEQUIP = TRUE)
-  getsectorparameter $FOCUS "EQUMCIC" $TMP
-  setvar $MERCHSCORE $TMP
-  if ($TMP < 0)
-    setvar $MERCHSCORE (0 - $TMP)
+  if (($MERCH_CANSELLORG <> TRUE) and ($MERCH_CANSELLEQUIP <> TRUE))
+    return
   end
-  if ($MERCHSCORE > $MERCHMCICSCORE)
-    setvar $MERCHMCICSCORE $MERCHSCORE
+  if ($MERCH_CANSELLORG = TRUE)
+    getsectorparameter $FOCUS "ORGMCIC" $TMP
+    setvar $MERCHSCORE $TMP
+    if ($TMP < 0)
+      setvar $MERCHSCORE (0 - $TMP)
+    end
+    if ($MERCHSCORE > $MERCHMCICSCORE)
+      setvar $MERCHMCICSCORE $MERCHSCORE
+    end
+  end
+  if ($MERCH_CANSELLEQUIP = TRUE)
+    getsectorparameter $FOCUS "EQUMCIC" $TMP
+    setvar $MERCHSCORE $TMP
+    if ($TMP < 0)
+      setvar $MERCHSCORE (0 - $TMP)
+    end
+    if ($MERCHSCORE > $MERCHMCICSCORE)
+      setvar $MERCHMCICSCORE $MERCHSCORE
+    end
   end
 end
 setvar $MERCHGOODPORT TRUE
+return
+
+:MERCHUPGRADEDPORT
+setvar $MERCHUPGRADED FALSE
+if (PORT.PERCENTFUEL[$FOCUS] > 0)
+  setvar $MERCHPORTTOTAL (PORT.FUEL[$FOCUS] * 100)
+  divide $MERCHPORTTOTAL PORT.PERCENTFUEL[$FOCUS]
+  if ($MERCHPORTTOTAL > $game~port_max)
+    setvar $MERCHUPGRADED TRUE
+  end
+elseif (PORT.FUEL[$FOCUS] > $game~port_max)
+  setvar $MERCHUPGRADED TRUE
+end
+if (PORT.PERCENTORG[$FOCUS] > 0)
+  setvar $MERCHPORTTOTAL (PORT.ORG[$FOCUS] * 100)
+  divide $MERCHPORTTOTAL PORT.PERCENTORG[$FOCUS]
+  if ($MERCHPORTTOTAL > $game~port_max)
+    setvar $MERCHUPGRADED TRUE
+  end
+elseif (PORT.ORG[$FOCUS] > $game~port_max)
+  setvar $MERCHUPGRADED TRUE
+end
+if (PORT.PERCENTEQUIP[$FOCUS] > 0)
+  setvar $MERCHPORTTOTAL (PORT.EQUIP[$FOCUS] * 100)
+  divide $MERCHPORTTOTAL PORT.PERCENTEQUIP[$FOCUS]
+  if ($MERCHPORTTOTAL > $game~port_max)
+    setvar $MERCHUPGRADED TRUE
+  end
+elseif (PORT.EQUIP[$FOCUS] > $game~port_max)
+  setvar $MERCHUPGRADED TRUE
+end
 return
 
 :DONEMERCHANT

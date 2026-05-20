@@ -43,72 +43,72 @@ END
 
 :start
 #send "g"
-		send "gny"
+send "gny"
 
 :nextRound
-		killTrigger 1
-		killTrigger 2
-		killTrigger 3
-		killtrigger 4
-		setTextTrigger 1 :done "Play again?"
-		setTextLineTrigger 2 :round "Round "
-		setTextLineTrigger 3 :won "C o n g r a t u l a t i o n s ! ! ! !"
-		setTextLineTrigger 4 :nocred "You ain't got the creds"
-		pause
+killTrigger 1
+killTrigger 2
+killTrigger 3
+killtrigger 4
+setTextTrigger 1 :done "Play again?"
+setTextLineTrigger 2 :round "Round "
+setTextLineTrigger 3 :won "C o n g r a t u l a t i o n s ! ! ! !"
+setTextLineTrigger 4 :nocred "You ain't got the creds"
+pause
 
 :round
-		send "231"
-		goto :nextRound
+send "231"
+goto :nextRound
 
 :done
-		add $games_played 1
-		subtract $games 1
-		IF (($games = 0) and ($towin <> "YES"))
-				gosub :player~quikstats
-				subtract $player~credits $INITCREDITS
-				setvar $switchboard~message "Tri-Conn Played Winning "&$player~credits&" in "&$games_played&" Games.*"
-				gosub :switchboard~switchboard
-				send "n"
-				goto :end
-		END
-		send "y"
-		goto :nextRound
-
-:won
-		subtract $games 1
-		add $games_played 1
-		IF (($games = 0) and ($towin <> "YES"))
-				gosub :player~quikstats
-				subtract $player~credits $INITCREDITS
-				setvar $switchboard~message "Tri-Conn Played Winning "&$player~credits&" in "&$games_played&" Games.*"
-				gosub :switchboard~switchboard
-				send "n"
-				goto :end
-		END
-		IF ($towin = "YES")
-				 gosub :player~quikstats
-				 subtract $player~credits $INITCREDITS
-				 setvar $switchboard~message "Tri-Conn Won.  I won "&$player~credits&" by playing "&$games_played&" Games.*"
-				 gosub :switchboard~switchboard
-				 goto :end
-		END
-		goto :start
-
-:nocred
+add $games_played 1
+subtract $games 1
+IF (($games = 0) and ($towin <> "YES"))
 		gosub :player~quikstats
 		subtract $player~credits $INITCREDITS
-		setvar $switchboard~message "Out of Credits.  Tri-Conn Games played Winning "&$player~credits&" in "&$games_played&" Games.*"
+		setvar $switchboard~message "Tri-Conn Played Winning "&$player~credits&" in "&$games_played&" Games.*"
 		gosub :switchboard~switchboard
 		send "n"
+		goto :end
+END
+send "y"
+goto :nextRound
+
+:won
+subtract $games 1
+add $games_played 1
+IF (($games = 0) and ($towin <> "YES"))
+		gosub :player~quikstats
+		subtract $player~credits $INITCREDITS
+		setvar $switchboard~message "Tri-Conn Played Winning "&$player~credits&" in "&$games_played&" Games.*"
+		gosub :switchboard~switchboard
+		send "n"
+		goto :end
+END
+IF ($towin = "YES")
+		 gosub :player~quikstats
+		 subtract $player~credits $INITCREDITS
+		 setvar $switchboard~message "Tri-Conn Won.  I won "&$player~credits&" by playing "&$games_played&" Games.*"
+		 gosub :switchboard~switchboard
+		 goto :end
+END
+goto :start
+
+:nocred
+gosub :player~quikstats
+subtract $player~credits $INITCREDITS
+setvar $switchboard~message "Out of Credits.  Tri-Conn Games played Winning "&$player~credits&" in "&$games_played&" Games.*"
+gosub :switchboard~switchboard
+send "n"
 
 :end
-		if ($prompt = "Command")
-				send "qqqzn"
-		elseif ($prompt = "<StarDock>")
-				send "q"
-		else
-		END
-		halt
+if ($prompt = "Command")
+		send "qqqzn"
+elseif ($prompt = "<StarDock>")
+		send "q"
+else
+END
+halt
 		
 
 #INCLUDES:

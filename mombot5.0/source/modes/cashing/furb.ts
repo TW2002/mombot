@@ -93,85 +93,85 @@ gosub :_START_
 			send "C ZQ "
 			waitfor "<Active Ship Scan>"
 			:eachship
-				setTextLineTrigger shiploc :shiploc " "&$bustship&" "
-				setTextLineTrigger nofind :nofind "Computer command [TL="
-				pause
+			setTextLineTrigger shiploc :shiploc " "&$bustship&" "
+			setTextLineTrigger nofind :nofind "Computer command [TL="
+			pause
 			:nofind
-				killtrigger shiploc
-				setvar $switchboard~message "Can't find ship " & $bustship & "*"
-				gosub :switchboard~switchboard
-				halt
+			killtrigger shiploc
+			setvar $switchboard~message "Can't find ship " & $bustship & "*"
+			gosub :switchboard~switchboard
+			halt
 			:shiploc
-				killtrigger nofind
-				getWord CURRENTLINE $isbustship 1
-				if ($isbustship = $bustship)
-					getWord CURRENTLINE $bustloc 2
-					if ($bustloc = STARDOCK)
-						setvar $switchboard~message "Cannot Furb StarDock Sector*"
-						gosub :switchboard~switchboard
-						halt
-					end
-					setvar $switchboard~message "Ship " & $bustship & " found, heading in to citadel furb.*"
+			killtrigger nofind
+			getWord CURRENTLINE $isbustship 1
+			if ($isbustship = $bustship)
+				getWord CURRENTLINE $bustloc 2
+				if ($bustloc = STARDOCK)
+					setvar $switchboard~message "Cannot Furb StarDock Sector*"
 					gosub :switchboard~switchboard
-					setVar $PLAYER~warpto $bustloc
-					gosub :move~twarp
-					if ($PLAYER~twarpSuccess = FALSE)
-						setvar $switchboard~message "Couldn't TWARP - something is wrong.  Halting.*"
+					halt
+				end
+				setvar $switchboard~message "Ship " & $bustship & " found, heading in to citadel furb.*"
+				gosub :switchboard~switchboard
+				setVar $PLAYER~warpto $bustloc
+				gosub :move~twarp
+				if ($PLAYER~twarpSuccess = FALSE)
+					setvar $switchboard~message "Couldn't TWARP - something is wrong.  Halting.*"
+					gosub :switchboard~switchboard
+					halt
+				else
+					send "l "&$planet~planet_number&"* c e y "
+					if ($PLAYER~CREDITS < 1000000)
+						send "t f "&(1000000-$PLAYER~CREDITS)&"*"
+					end
+					send "q t*l3*t*t1*c "
+					setVar $PLAYER~warpto STARDOCK
+					if ($bwarp)
+						gosub :player~bwarp
+					else
+						send "q q * * "
+						gosub :move~twarp
+					end
+					gosub :PLAYER~quikstats
+				    if ((CURRENTSECTOR = 1) OR (PORT.CLASS[CURRENTSECTOR] = 0))
+				        if ($startingLocation = "Citadel")
+				            send "q "
+				            gosub :PLANET~getPlanetInfo
+				            send "q "
+				        end
+				        send "p ty"
+				    elseif (CURRENTSECTOR = $MAP~STARDOCK)
+				        send "p ss ys *p"
+				    else
+						setvar $switchboard~message "Couldn't BWARP - something is wrong.  Halting.*"
 						gosub :switchboard~switchboard
 						halt
-					else
-						send "l "&$planet~planet_number&"* c e y "
-						if ($PLAYER~CREDITS < 1000000)
-							send "t f "&(1000000-$PLAYER~CREDITS)&"*"
-						end
-						send "q t*l3*t*t1*c "
-						setVar $PLAYER~warpto STARDOCK
-						if ($bwarp)
-							gosub :player~bwarp
-						else
-							send "q q * * "
-							gosub :move~twarp
-						end
-						gosub :PLAYER~quikstats
-					    if ((CURRENTSECTOR = 1) OR (PORT.CLASS[CURRENTSECTOR] = 0))
-					        if ($startingLocation = "Citadel")
-					            send "q "
-					            gosub :PLANET~getPlanetInfo
-					            send "q "
-					        end
-					        send "p ty"
-					    elseif (CURRENTSECTOR = $MAP~STARDOCK)
-					        send "p ss ys *p"
-					    else
-							setvar $switchboard~message "Couldn't BWARP - something is wrong.  Halting.*"
-							gosub :switchboard~switchboard
-							halt
-					    end
-					    setVar $SWITCHBOARD~message ""
-					    setTextLineTrigger limpet   :markLimpet     "After an intensive scanning search, they find and remove the Limpet"
-					    setTextLineTrigger limpetno     :markLimpetNo   "The port official frowns at you (you haven't the funds!) and storms"
-					    setTextLineTrigger holds  :buyholds    "A  Cargo holds     :"
-					    pause
+				    end
+				    setVar $SWITCHBOARD~message ""
+				    setTextLineTrigger limpet   :markLimpet     "After an intensive scanning search, they find and remove the Limpet"
+				    setTextLineTrigger limpetno     :markLimpetNo   "The port official frowns at you (you haven't the funds!) and storms"
+				    setTextLineTrigger holds  :buyholds    "A  Cargo holds     :"
+				    pause
 					    :markLimpet
-					        setVar $message "Limpet scrubbed off of hull.*"
-					        pause
+				        setVar $message "Limpet scrubbed off of hull.*"
+				        pause
 					    :markLimpetNo
-					        setVar $message "Limpet exists, but not enough cash to get scrubbed.*"
-					        pause   
+				        setVar $message "Limpet exists, but not enough cash to get scrubbed.*"
+				        pause   
 					    :buyholds
-					        killtrigger limpet
-					        killtrigger limpetno
-					        killtrigger holds
-							getWord CURRENTLINE $holdsToBuy 10
-							send "a "&$holdsToBuy&"* y q q q * "
-					        if ($startingLocation = "Citadel")
-					            gosub :PLANET~landingSub
-					        end
-					        gosub :PLAYER~quikstats
-					        if ($message <> "")
-					            setVar $SWITCHBOARD~message $message
-					            gosub :SWITCHBOARD~switchboard
-					        end
+				        killtrigger limpet
+				        killtrigger limpetno
+				        killtrigger holds
+						getWord CURRENTLINE $holdsToBuy 10
+						send "a "&$holdsToBuy&"* y q q q * "
+				        if ($startingLocation = "Citadel")
+				            gosub :PLANET~landingSub
+				        end
+				        gosub :PLAYER~quikstats
+				        if ($message <> "")
+				            setVar $SWITCHBOARD~message $message
+				            gosub :SWITCHBOARD~switchboard
+				        end
 					end
 
 				else
@@ -223,114 +223,114 @@ gosub :_START_
 	gosub :switchboard~switchboard
 
 :setCKFurbTriggers
-	killalltriggers
-    gosub :PLAYER~quikstats
+killalltriggers
+gosub :PLAYER~quikstats
 
-    if (($PLAYER~FIGHTERS + $PLAYER~SHIELDS) < 1001)
-		setvar $switchboard~message "Have too few Fighters/Shields To Survive 100% Haz*"
-		gosub :switchboard~switchboard
-		halt
-	end
-	if ($player~unlimitedGame = FALSE) and ($PLAYER~TURNS < 10)
-		setvar $switchboard~message "Too Low On Turns To Continue*"
-		gosub :switchboard~switchboard
-		halt
-	end
-	if ($player~unlimitedGame = FALSE)
-		setvar $switchboard~message "Ready To Bring A Furb (" &$PLAYER~TURNS & ")*"
-		gosub :switchboard~switchboard
-	else
-		setvar $switchboard~message "Ready To Bring A Furb*"
-		gosub :switchboard~switchboard
-	end
+if (($PLAYER~FIGHTERS + $PLAYER~SHIELDS) < 1001)
+	setvar $switchboard~message "Have too few Fighters/Shields To Survive 100% Haz*"
+	gosub :switchboard~switchboard
+	halt
+end
+if ($player~unlimitedGame = FALSE) and ($PLAYER~TURNS < 10)
+	setvar $switchboard~message "Too Low On Turns To Continue*"
+	gosub :switchboard~switchboard
+	halt
+end
+if ($player~unlimitedGame = FALSE)
+	setvar $switchboard~message "Ready To Bring A Furb (" &$PLAYER~TURNS & ")*"
+	gosub :switchboard~switchboard
+else
+	setvar $switchboard~message "Ready To Bring A Furb*"
+	gosub :switchboard~switchboard
+end
 
-	setVar $_str_ (ANSI_9 & "**{"&ANSI_14&$switchboard~bot_name&ANSI_9&"} " & ANSI_15 & "---------- Furb v"&$VERSION&" Running ----------*")
-	setVar $_str_ ($_str_ & ANSI_15 & "    Normal Furb Runs  "&ANSI_14&":"&ANSI_7&" " & $THE_nRUNS & "*")
-	setVar $_str_ ($_str_ & ANSI_15 & "    Fake Furb Runs    "&ANSI_14&":"&ANSI_7&" " & $THE_fRUNS & "*")
-	if ($player~unlimitedGame = FALSE)
-	setVar $_str_ ($_str_ & ANSI_15 & "    Turns Left        "&ANSI_14&":"&ANSI_7&" " & $PLAYER~TURNS & "*")
-	else
-	setVar $_str_ ($_str_ & ANSI_15 & "    Turns Left        "&ANSI_14&":"&ANSI_7&" UNLIMITED*")
-	end
-	setVar $CashAmount ($PLAYER~CREDITS - $START_CASH)
-	gosub :CommaSize
-	setVar $_str_ ($_str_ & ANSI_15 & "    Profit            "&ANSI_14&":"&ANSI_7&"$" & $CashAmount & "*")
+setVar $_str_ (ANSI_9 & "**{"&ANSI_14&$switchboard~bot_name&ANSI_9&"} " & ANSI_15 & "---------- Furb v"&$VERSION&" Running ----------*")
+setVar $_str_ ($_str_ & ANSI_15 & "    Normal Furb Runs  "&ANSI_14&":"&ANSI_7&" " & $THE_nRUNS & "*")
+setVar $_str_ ($_str_ & ANSI_15 & "    Fake Furb Runs    "&ANSI_14&":"&ANSI_7&" " & $THE_fRUNS & "*")
+if ($player~unlimitedGame = FALSE)
+setVar $_str_ ($_str_ & ANSI_15 & "    Turns Left        "&ANSI_14&":"&ANSI_7&" " & $PLAYER~TURNS & "*")
+else
+setVar $_str_ ($_str_ & ANSI_15 & "    Turns Left        "&ANSI_14&":"&ANSI_7&" UNLIMITED*")
+end
+setVar $CashAmount ($PLAYER~CREDITS - $START_CASH)
+gosub :CommaSize
+setVar $_str_ ($_str_ & ANSI_15 & "    Profit            "&ANSI_14&":"&ANSI_7&"$" & $CashAmount & "*")
 
-	if ($THE_nRUNS <> 0) OR ($THE_fRUNS <> 0)
-		add $FURB_COST ($Temp - ($PLAYER~CREDITS - $DECASH))
-	end
-	setVar $CashAmount $FURB_COST
-	gosub :CommaSize
-	setVar $_str_ ($_str_ & ANSI_15 & "    Expenditure       "&ANSI_14&":"&ANSI_7&"$" & $CashAmount & "*")
-	setVar $_str_ ($_str_ & ANSI_9 & "{"&ANSI_14&$switchboard~bot_name&ANSI_9&"} " & ANSI_15 & "---------------------------------------**")
-	Echo $_str_
-	SetTextLineTrigger 1 :ckfurbrequested "Busted in ship"
-	SetTextLineTrigger 2 :ckfakefurbrequested "FAKE Busted in Ship"
-	pause
+if ($THE_nRUNS <> 0) OR ($THE_fRUNS <> 0)
+	add $FURB_COST ($Temp - ($PLAYER~CREDITS - $DECASH))
+end
+setVar $CashAmount $FURB_COST
+gosub :CommaSize
+setVar $_str_ ($_str_ & ANSI_15 & "    Expenditure       "&ANSI_14&":"&ANSI_7&"$" & $CashAmount & "*")
+setVar $_str_ ($_str_ & ANSI_9 & "{"&ANSI_14&$switchboard~bot_name&ANSI_9&"} " & ANSI_15 & "---------------------------------------**")
+Echo $_str_
+SetTextLineTrigger 1 :ckfurbrequested "Busted in ship"
+SetTextLineTrigger 2 :ckfakefurbrequested "FAKE Busted in Ship"
+pause
 
 :ckfurbrequested
-	# R Cherok Busted in ship 2, FURB please, I still have 327 turns to run.
-	cutText CURRENTLINE $spoof 1 1
-	if ($spoof <> "R")
-		if ($CK_MODE)
-			goto :setCKFurbTriggers
-		else
-			halt
-		end
-	end
-	getLength CURRENTLINE $len
-	if ($len >= 25)
-		cutText CURRENTLINE $bustship 25 4
+# R Cherok Busted in ship 2, FURB please, I still have 327 turns to run.
+cutText CURRENTLINE $spoof 1 1
+if ($spoof <> "R")
+	if ($CK_MODE)
+		goto :setCKFurbTriggers
 	else
-		if ($CK_MODE)
-			goto :setCKFurbTriggers
-		else
-			halt
-		end
+		halt
 	end
-	stripText $bustship "."
-	stripText $bustship ","
-	stripText $bustship " "
-	setVar $shipname "CK FURB "
-	setVar $addHolds $FURB_nHOLDS
-	setVar $shipLetter $FURB_nLETTER
-	add $THE_nRUNS 1
-	goto :startfurb
+end
+getLength CURRENTLINE $len
+if ($len >= 25)
+	cutText CURRENTLINE $bustship 25 4
+else
+	if ($CK_MODE)
+		goto :setCKFurbTriggers
+	else
+		halt
+	end
+end
+stripText $bustship "."
+stripText $bustship ","
+stripText $bustship " "
+setVar $shipname "CK FURB "
+setVar $addHolds $FURB_nHOLDS
+setVar $shipLetter $FURB_nLETTER
+add $THE_nRUNS 1
+goto :startfurb
 
 :ckfakefurbrequested
-	# R Cherok FAKE Busted in Ship 49, need a super furb
-	cutText CURRENTLINE $spoof 1 1
-	if ($spoof <> "R")
-		if ($CK_MODE)
-			goto :setCKFurbTriggers
-		else
-			halt
-		end
-	end
-        getLength CURRENTLINE $len
-	if ($len >= 30)
-		cutText CURRENTLINE $bustship 30 4
+# R Cherok FAKE Busted in Ship 49, need a super furb
+cutText CURRENTLINE $spoof 1 1
+if ($spoof <> "R")
+	if ($CK_MODE)
+		goto :setCKFurbTriggers
 	else
-		if ($CK_MODE)
-			goto :setCKFurbTriggers
-		else
-			halt
-		end
+		halt
 	end
-	stripText $bustship "."
-	stripText $bustship ","
-	stripText $bustship " "
-	setVar $shipName "CK FAKE FURB"
-	setVar $addHolds $FURB_fHOLDS
-    setVar $shipLetter $FURB_fLETTER
-	add $THE_fRUNS 1
-    goto :startfurb
+end
+    getLength CURRENTLINE $len
+if ($len >= 30)
+	cutText CURRENTLINE $bustship 30 4
+else
+	if ($CK_MODE)
+		goto :setCKFurbTriggers
+	else
+		halt
+	end
+end
+stripText $bustship "."
+stripText $bustship ","
+stripText $bustship " "
+setVar $shipName "CK FAKE FURB"
+setVar $addHolds $FURB_fHOLDS
+setVar $shipLetter $FURB_fLETTER
+add $THE_fRUNS 1
+goto :startfurb
 
 :startFurb
-    killalltriggers
-    send "C ZQ "
+killalltriggers
+send "C ZQ "
 
-	waitfor "<Active Ship Scan>"
+waitfor "<Active Ship Scan>"
 	:eachshiploc
 	setTextLineTrigger shiploc :shiplocf " "&$bustship&" "
 	setTextLineTrigger nofind :nofindf "Computer command [TL="
@@ -458,36 +458,36 @@ gosub :_START_
 	pause
 
 	:firstship
-		killtrigger firstship
-		getText CURRENTLINE $name "Ships   : " " [Owned by]"
-		if ($name = $shipName)
-			setVar $foundn 1
-			goto :doneships
-		end
-		setVar $shiplisti 1
+	killtrigger firstship
+	getText CURRENTLINE $name "Ships   : " " [Owned by]"
+	if ($name = $shipName)
+		setVar $foundn 1
+		goto :doneships
+	end
+	setVar $shiplisti 1
 
 	:moreships
-		setTextLineTrigger nextShip :nextShip "ftrs,"
-		setTextLineTrigger doneships :doneships "Warps to Sector(s) :"
-		pause
+	setTextLineTrigger nextShip :nextShip "ftrs,"
+	setTextLineTrigger doneships :doneships "Warps to Sector(s) :"
+	pause
 		:nextShip
-			add $shiplisti 1
-			killtrigger nextShip
-			killtrigger doneships
-			getText CURRENTLINE $name "          " " [Owned by]"
-			if ($name = $shipName)
-				setVar $foundn $shiplisti
-				goto :doneships
-			end
+		add $shiplisti 1
+		killtrigger nextShip
+		killtrigger doneships
+		getText CURRENTLINE $name "          " " [Owned by]"
+		if ($name = $shipName)
+			setVar $foundn $shiplisti
+			goto :doneships
+		end
 			
-			goto :moreships
+		goto :moreships
 		
 		:doneships
-			killtrigger nextShip
-			killtrigger doneships
+		killtrigger nextShip
+		killtrigger doneships
 	echo "#" $foundn "#"
 	if ($waitsecs > 0)
- 		send "tc"
+		send "tc"
 		setTextTrigger		THERE		:THERE		"Exchange with"
 		setTextLineTrigger	NOTTHERE	:NOTTHERE	"Your Associate must be in the same sector to conduct transfers!"
 		pause
@@ -543,37 +543,37 @@ gosub :_START_
 			send "lq*"
 
 			:checkPlanetsInSector
-				setTextLineTrigger orenoplanet :orenoplanet "There isn't a planet in this sector."
-				setTextLineTrigger oreoneplanet :oreoneplanet "-------  ---------  ---------  ---------  ---------  --"
-				setTextLineTrigger orestartplannum :orestartplannum "and Planet Name"
-				setTextLineTrigger orestartplanetsok :orestartplanetsok "< "
+			setTextLineTrigger orenoplanet :orenoplanet "There isn't a planet in this sector."
+			setTextLineTrigger oreoneplanet :oreoneplanet "-------  ---------  ---------  ---------  ---------  --"
+			setTextLineTrigger orestartplannum :orestartplannum "and Planet Name"
+			setTextLineTrigger orestartplanetsok :orestartplanetsok "< "
 				
-				pause
+			pause
 				:orestartplannum 
-					killalltriggers
-					setVar $planet~planetnumok 1
-					goto :checkPlanetsInSector
+				killalltriggers
+				setVar $planet~planetnumok 1
+				goto :checkPlanetsInSector
 				:orenoplanet
-					killAllTriggers
-					setvar $switchboard~message "I'd love to get ore off a planet but there isn't one here!*"
-					gosub :switchboard~switchboard
-					goto :checkPlanetsFinishWait
+				killAllTriggers
+				setvar $switchboard~message "I'd love to get ore off a planet but there isn't one here!*"
+				gosub :switchboard~switchboard
+				goto :checkPlanetsFinishWait
 				:orestartplanetsok
-					killAllTriggers 
-					if ($planet~planetnumok = 1)
+				killAllTriggers 
+				if ($planet~planetnumok = 1)
 					
-						getWord CURRENTLINE $cPlanetNum 2
-						stripText $cPlanetNum ">"
+					getWord CURRENTLINE $cPlanetNum 2
+					stripText $cPlanetNum ">"
 					
-						send "l" $cPlanetNum "* t n t 1 * q "
-						goto :checkPlanetsFinishWait
-					else
-						goto :checkPlanetsInSector
-					end
+					send "l" $cPlanetNum "* t n t 1 * q "
+					goto :checkPlanetsFinishWait
+				else
+					goto :checkPlanetsInSector
+				end
 					
 				:oreoneplanet
-					killAllTriggers
-					send "l t n t 1 * q "
+				killAllTriggers
+				send "l t n t 1 * q "
 					
 
 			:checkPlanetsFinishWait
@@ -666,20 +666,20 @@ gosub :_START_
 		halt
 	end
 :buyfurbs
-	setVar $Temp $PLAYER~CREDITS
-    send "P S G Y G Q S B N Y " & $shipletter & "Y qrP " & $shipName &"* * * "
-    if ($PLAYER~FIGHTERS <= 1001)
-	setVar $ftobuy (1002 - $PLAYER~FIGHTERS)
-		send "P B " $ftobuy "* q  "
-    end
-	waitfor "[Pause]"
+setVar $Temp $PLAYER~CREDITS
+send "P S G Y G Q S B N Y " & $shipletter & "Y qrP " & $shipName &"* * * "
+if ($PLAYER~FIGHTERS <= 1001)
+setVar $ftobuy (1002 - $PLAYER~FIGHTERS)
+	send "P B " $ftobuy "* q  "
+end
+waitfor "[Pause]"
 :listfurbs
-    send "S"
-    waitfor "<Sell an old Ship>"
-    setTextLineTrigger notefurb :notefurb $shipName
-    setTextLineTrigger nofurb :nofurb "You do not own any other ships orbiting the Stardock!"
-    setTextTrigger nofurb2 :nofurb "Choose which ship to sell (Q=Quit)"
-    pause
+send "S"
+waitfor "<Sell an old Ship>"
+setTextLineTrigger notefurb :notefurb $shipName
+setTextLineTrigger nofurb :nofurb "You do not own any other ships orbiting the Stardock!"
+setTextTrigger nofurb2 :nofurb "Choose which ship to sell (Q=Quit)"
+pause
     :nofurb
 	send "q q '{" $switchboard~bot_name "} Furb purchase not possible (maybe not enough cash on hand?)*"
 	if ($CK_MODE)
@@ -702,135 +702,135 @@ gosub :_START_
 	return
 
 :_START_
-	loadVar $switchboard~bot_name
-	loadVar $bot~user_command_line
-	loadvar $player~unlimitedGame
-		gosub :LOADVARS~LOADVARS
-		gosub :HELP~INITIALIZE
+loadVar $switchboard~bot_name
+loadVar $bot~user_command_line
+loadvar $player~unlimitedGame
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
 									
 
-	setVar $HELP~HELP[1] $HELP~TAB&"FURB - Buys and delivers a Ship to a Corpy to attack  "
-	setVar $HELP~HELP[2] $HELP~TAB&"- furb [ship number] {swap} {bwarp} {extra holds} {ship letter} {topp}"
-	setVar $HELP~HELP[3] $HELP~TAB&"- [ship number]   = ship number that needs the furb"
-	setVar $HELP~HELP[4] $HELP~TAB&"- [extra holds]   = extra holds to buy      - default is 33"
-	setVar $HELP~HELP[5] $HELP~TAB&"- [ship letter]   = ship letter to purchase - default is H"
-	setVar $HELP~HELP[6] $HELP~TAB&"- [swap]          = swap furb (only use with twarp ships)"
-	setVar $HELP~HELP[7] $HELP~TAB&"- [bwarp]         = bwarp from furb planet"
-	setVar $HELP~HELP[8] $HELP~TAB&"- [planet:#]      = planet # of furb planet"
-	setVar $HELP~HELP[9] $HELP~TAB&"- [topp]          = attempts to get ore from top planet in sector if port low"
-	setVar $HELP~HELP[10] $HELP~TAB&"                "
-	setVar $HELP~HELP[11] $HELP~TAB&" CK Furb Mode (Mimicks CK Furb)"
-	setVar $HELP~HELP[12] $HELP~TAB&"- furb ck {[norm hold] [fake hold] [norm letter] [fake letter]}"
-	setVar $HELP~HELP[13] $HELP~TAB&"- [normal holds]  = extra holds to buy - Normal    - default is 33"
-	setVar $HELP~HELP[14] $HELP~TAB&"- [fake holds]    = extra holds to buy - Fake      - default is 97"
-	setVar $HELP~HELP[15] $HELP~TAB&"- [normal letter] = ship letter to buy - Normal    - default is H"
-	setVar $HELP~HELP[16] $HELP~TAB&"- [fake letter]   = ship letter to buy - Fake      - default is O"
-	gosub :HELP~HELPFILE
+setVar $HELP~HELP[1] $HELP~TAB&"FURB - Buys and delivers a Ship to a Corpy to attack  "
+setVar $HELP~HELP[2] $HELP~TAB&"- furb [ship number] {swap} {bwarp} {extra holds} {ship letter} {topp}"
+setVar $HELP~HELP[3] $HELP~TAB&"- [ship number]   = ship number that needs the furb"
+setVar $HELP~HELP[4] $HELP~TAB&"- [extra holds]   = extra holds to buy      - default is 33"
+setVar $HELP~HELP[5] $HELP~TAB&"- [ship letter]   = ship letter to purchase - default is H"
+setVar $HELP~HELP[6] $HELP~TAB&"- [swap]          = swap furb (only use with twarp ships)"
+setVar $HELP~HELP[7] $HELP~TAB&"- [bwarp]         = bwarp from furb planet"
+setVar $HELP~HELP[8] $HELP~TAB&"- [planet:#]      = planet # of furb planet"
+setVar $HELP~HELP[9] $HELP~TAB&"- [topp]          = attempts to get ore from top planet in sector if port low"
+setVar $HELP~HELP[10] $HELP~TAB&"                "
+setVar $HELP~HELP[11] $HELP~TAB&" CK Furb Mode (Mimicks CK Furb)"
+setVar $HELP~HELP[12] $HELP~TAB&"- furb ck {[norm hold] [fake hold] [norm letter] [fake letter]}"
+setVar $HELP~HELP[13] $HELP~TAB&"- [normal holds]  = extra holds to buy - Normal    - default is 33"
+setVar $HELP~HELP[14] $HELP~TAB&"- [fake holds]    = extra holds to buy - Fake      - default is 97"
+setVar $HELP~HELP[15] $HELP~TAB&"- [normal letter] = ship letter to buy - Normal    - default is H"
+setVar $HELP~HELP[16] $HELP~TAB&"- [fake letter]   = ship letter to buy - Fake      - default is O"
+gosub :HELP~HELPFILE
 
 
-	getWordPos $bot~user_command_line $pos "planet:"
-	setVar $planet~planet_number 0
-	if ($pos > 0)
-		cutText $bot~user_command_line $line $pos 9999
-		getWord $line $planet~planet_line 1
-		replaceText $planet~planet_line ":" " "
-		getWord $planet~planet_line $planet~planet_number 2		
-		replaceText $bot~user_command_line "planet:"&$planet~planet_number " "
-		isNumber $is_a_number $planet~planet_number
-		if ($is_a_number <> TRUE)
-			setVar $planet~planet_number 0
-		end
+getWordPos $bot~user_command_line $pos "planet:"
+setVar $planet~planet_number 0
+if ($pos > 0)
+	cutText $bot~user_command_line $line $pos 9999
+	getWord $line $planet~planet_line 1
+	replaceText $planet~planet_line ":" " "
+	getWord $planet~planet_line $planet~planet_number 2		
+	replaceText $bot~user_command_line "planet:"&$planet~planet_number " "
+	isNumber $is_a_number $planet~planet_number
+	if ($is_a_number <> TRUE)
+		setVar $planet~planet_number 0
 	end
+end
 	
-	getWordPos $bot~user_command_line $pos "blow:"
-	setVar $blowbot ""
-	setVar $doBlow 0
-	if ($pos > 0)
-		cutText $bot~user_command_line $line $pos 9999
-		getWord $line $blowline 1
-		replaceText $blowline ":" " "
-		getWord $blowline $blowbot 2		
-		replaceText $bot~user_command_line "blow:"&$blowbot " "
-		setVar $doBlow 1
-	end
+getWordPos $bot~user_command_line $pos "blow:"
+setVar $blowbot ""
+setVar $doBlow 0
+if ($pos > 0)
+	cutText $bot~user_command_line $line $pos 9999
+	getWord $line $blowline 1
+	replaceText $blowline ":" " "
+	getWord $blowline $blowbot 2		
+	replaceText $bot~user_command_line "blow:"&$blowbot " "
+	setVar $doBlow 1
+end
 
-	getWordPos $bot~user_command_line $pos "swap"
-	if ($pos > 0)
-		setVar $planet~CITADEL_furb TRUE
-		if ($planet~planet_number = "0")
-			setvar $switchboard~message "Planet must be defined for swap furbing.*"
-			gosub :switchboard~switchboard
-			halt
-		end
+getWordPos $bot~user_command_line $pos "swap"
+if ($pos > 0)
+	setVar $planet~CITADEL_furb TRUE
+	if ($planet~planet_number = "0")
+		setvar $switchboard~message "Planet must be defined for swap furbing.*"
+		gosub :switchboard~switchboard
+		halt
 	end
+end
 	
-	setvar $nodecash false
-	getWordPos $bot~user_command_line $pos "nodecash"
-	if ($pos > 0)
-		setvar $nodecash true
-	end
+setvar $nodecash false
+getWordPos $bot~user_command_line $pos "nodecash"
+if ($pos > 0)
+	setvar $nodecash true
+end
 
-	setVar $topplanet FALSE
-	getWordPos $bot~user_command_line $pos "topp"
-	if ($pos > 0)
-		StripText $bot~user_command_line "topp"
-		setVar $topplanet TRUE
-	end
+setVar $topplanet FALSE
+getWordPos $bot~user_command_line $pos "topp"
+if ($pos > 0)
+	StripText $bot~user_command_line "topp"
+	setVar $topplanet TRUE
+end
 
-	getWordPos $bot~user_command_line $pos "bwarp"
-	if ($pos > 0)
+getWordPos $bot~user_command_line $pos "bwarp"
+if ($pos > 0)
 
-		setVar $bwarp TRUE
-	end
+	setVar $bwarp TRUE
+end
 
-	getWord $bot~user_command_line $bot~parm1 1 0
-	getWord $bot~user_command_line $bot~parm2 2 0
-	getWord $bot~user_command_line $bot~parm3 3 0
-	getWord $bot~user_command_line $bot~parm4 4 0
-	getWord $bot~user_command_line $bot~parm5 5 0
+getWord $bot~user_command_line $bot~parm1 1 0
+getWord $bot~user_command_line $bot~parm2 2 0
+getWord $bot~user_command_line $bot~parm3 3 0
+getWord $bot~user_command_line $bot~parm4 4 0
+getWord $bot~user_command_line $bot~parm5 5 0
 
-	gosub :PLAYER~quikstats
+gosub :PLAYER~quikstats
 
-	setVar $START_CASH $PLAYER~CREDITS
-	setVar $startingLocation $PLAYER~CURRENT_PROMPT
+setVar $START_CASH $PLAYER~CREDITS
+setVar $startingLocation $PLAYER~CURRENT_PROMPT
 
-	if ($startingLocation <> "Command") OR ($PLAYER~CURRENT_SECTOR <> stardock)
-		setvar $switchboard~message "Furb must be run from Command Prompt at StarDock.*"
-		gosub :switchboard~switchboard
-		halt
-	end
+if ($startingLocation <> "Command") OR ($PLAYER~CURRENT_SECTOR <> stardock)
+	setvar $switchboard~message "Furb must be run from Command Prompt at StarDock.*"
+	gosub :switchboard~switchboard
+	halt
+end
 
-	if ($PLAYER~TWARP_TYPE <> 2)
-		setvar $switchboard~message "Furbing Ship Must Have Twarp Type-2*"
-		gosub :switchboard~switchboard
-		halt
-	end
+if ($PLAYER~TWARP_TYPE <> 2)
+	setvar $switchboard~message "Furbing Ship Must Have Twarp Type-2*"
+	gosub :switchboard~switchboard
+	halt
+end
 
-	#if ($PLAYER~ALIGNMENT < 1000)
-	#	send "'{" $switchboard~bot_name "} - Must Have a Commission*"
-	#	halt
-	#end
+#if ($PLAYER~ALIGNMENT < 1000)
+#	send "'{" $switchboard~bot_name "} - Must Have a Commission*"
+#	halt
+#end
 
-	if ($player~unlimitedGame = FALSE) and ($PLAYER~TURNS < 30)
-		setvar $switchboard~message "Must Have At Least 30 Turns*"
-		gosub :switchboard~switchboard
-		halt
-	end
+if ($player~unlimitedGame = FALSE) and ($PLAYER~TURNS < 30)
+	setvar $switchboard~message "Must Have At Least 30 Turns*"
+	gosub :switchboard~switchboard
+	halt
+end
 
-	if ($PLAYER~CREDITS < 100000)
-		setvar $switchboard~message "Must Have At Least 100,000 Cred On Hand*"
-		gosub :switchboard~switchboard
-		halt
-	end
+if ($PLAYER~CREDITS < 100000)
+	setvar $switchboard~message "Must Have At Least 100,000 Cred On Hand*"
+	gosub :switchboard~switchboard
+	halt
+end
 
-	setVar $waitsecs   10
-	setVar $waitms ($waitsecs * 1000)
-	setVar $towship $PLAYER~SHIP_NUMBER
+setVar $waitsecs   10
+setVar $waitms ($waitsecs * 1000)
+setVar $towship $PLAYER~SHIP_NUMBER
 
-	send " C R " & stardock & "*"
-	setTextLineTrigger itsalive 		:itsalive 		"Items     Status  Trading % of max OnBoard"
-	setTextLineTrigger nosoupforme 		:nosoupforme 	"I have no information about a port in that sector"
-	pause
+send " C R " & stardock & "*"
+setTextLineTrigger itsalive 		:itsalive 		"Items     Status  Trading % of max OnBoard"
+setTextLineTrigger nosoupforme 		:nosoupforme 	"I have no information about a port in that sector"
+pause
 	:nosoupforme
 	killAllTriggers
 	send " Q  '{" $switchboard~bot_name "} " & $TagLineB & " - StarDock appears to have been Blown Up!**"
@@ -846,27 +846,27 @@ gosub :_START_
 
 return
 :CommaSize
-	If ($CashAmount < 1000)
-		#do nothing
-	ElseIf ($CashAmount < 1000000)
-    	getLength $CashAmount $len
-		SetVar $len ($len - 3)
-		cutText $CashAmount $tmp 1 $len
-		cutText $CashAMount $tmp1 ($len + 1) 999
-		SetVar $tmp $tmp & "," & $tmp1
-		SetVar $CashAmount $tmp
-	ElseIf ($CashAmount <= 999999999)
-		getLength $CashAmount $len
-		SetVar $len ($len - 6)
-		cutText $CashAmount $tmp 1 $len
-		SetVar $tmp $tmp & ","
-		cutText $CashAmount $tmp1 ($len + 1) 3
-		SetVar $tmp $tmp & $tmp1 & ","
-		cutText $CashAmount $tmp1 ($len + 4) 999
-		SetVar $tmp $tmp & $tmp1
-		SetVar $CashAmount $tmp
-	end
-	return
+If ($CashAmount < 1000)
+	#do nothing
+ElseIf ($CashAmount < 1000000)
+	getLength $CashAmount $len
+	SetVar $len ($len - 3)
+	cutText $CashAmount $tmp 1 $len
+	cutText $CashAMount $tmp1 ($len + 1) 999
+	SetVar $tmp $tmp & "," & $tmp1
+	SetVar $CashAmount $tmp
+ElseIf ($CashAmount <= 999999999)
+	getLength $CashAmount $len
+	SetVar $len ($len - 6)
+	cutText $CashAmount $tmp 1 $len
+	SetVar $tmp $tmp & ","
+	cutText $CashAmount $tmp1 ($len + 1) 3
+	SetVar $tmp $tmp & $tmp1 & ","
+	cutText $CashAmount $tmp1 ($len + 4) 999
+	SetVar $tmp $tmp & $tmp1
+	SetVar $CashAmount $tmp
+end
+return
 
 
 :debugFFS

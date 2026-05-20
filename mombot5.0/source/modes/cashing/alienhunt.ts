@@ -38,183 +38,183 @@
 	gosub :HELP~HELPFILE
  
  :restart
-	setvar $SWITCHBOARD~MESSAGE "Alien Hunter starting up!*"
-	gosub :SWITCHBOARD~SWITCHBOARD
+setvar $SWITCHBOARD~MESSAGE "Alien Hunter starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
 
-	setVar $PLAYER~save TRUE
+setVar $PLAYER~save TRUE
 
-	setVar $START_FIG_HIT "Deployed Fighters Report Sector "
-	setVar $END_FIG_HIT   ":"
-	setVar $ALIEN_ANSI    #27 & "[1;36m" & #27 & "["
-	setVar $START_FIG_HIT_OWNER ":"
-	setVar $END_FIG_HIT_OWNER "'s"
+setVar $START_FIG_HIT "Deployed Fighters Report Sector "
+setVar $END_FIG_HIT   ":"
+setVar $ALIEN_ANSI    #27 & "[1;36m" & #27 & "["
+setVar $START_FIG_HIT_OWNER ":"
+setVar $END_FIG_HIT_OWNER "'s"
 	
-	Window alienhunt_script 560 170 ("Alienhunt - " & GAMENAME) ONTOP
+Window alienhunt_script 560 170 ("Alienhunt - " & GAMENAME) ONTOP
 
-	getSectorParameter SECTORS "FIGSEC" $isFigged
-	if (($MAP~stardock = 0) OR ($MAP~stardock = ""))
-		setVar $SWITCHBOARD~message "Stardock is not defined.  Please define stardock variable in the bot.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
-	if ($isFigged = "")
-		setVar $SWITCHBOARD~message "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
+getSectorParameter SECTORS "FIGSEC" $isFigged
+if (($MAP~stardock = 0) OR ($MAP~stardock = ""))
+	setVar $SWITCHBOARD~message "Stardock is not defined.  Please define stardock variable in the bot.*"
+	gosub :SWITCHBOARD~switchboard
+	halt
+end
+if ($isFigged = "")
+	setVar $SWITCHBOARD~message "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+	gosub :SWITCHBOARD~switchboard
+	halt
+end
 
-	gosub :PLAYER~quikstats
-	setVar $startingLocation $PLAYER~CURRENT_PROMPT
-	if ($PLAYER~current_prompt <> "Citadel")
-		setVar $SWITCHBOARD~message "Must run alien hunter commands from citadel prompt.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
+gosub :PLAYER~quikstats
+setVar $startingLocation $PLAYER~CURRENT_PROMPT
+if ($PLAYER~current_prompt <> "Citadel")
+	setVar $SWITCHBOARD~message "Must run alien hunter commands from citadel prompt.*"
+	gosub :SWITCHBOARD~switchboard
+	halt
+end
 
-	if ($bot~parm1 = "off")
-		send "qoccco*cq"
-		waitOn "<Computer deactivated>"
-		setVar $SWITCHBOARD~message "Alien hunter shutting down.  Making ship and planet corporate again.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
+if ($bot~parm1 = "off")
+	send "qoccco*cq"
+	waitOn "<Computer deactivated>"
+	setVar $SWITCHBOARD~message "Alien hunter shutting down.  Making ship and planet corporate again.*"
+	gosub :SWITCHBOARD~switchboard
+	halt
+end
 
-	if ($player~photons > 0)
-		setVar $SWITCHBOARD~message "Please pick a ship with no photons.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
-	getwordpos $bot~user_command_line $pos "corp"
-	if ($pos > 0)
-		setvar $corp true
-	else
-		setvar $corp false
-	end
+if ($player~photons > 0)
+	setVar $SWITCHBOARD~message "Please pick a ship with no photons.*"
+	gosub :SWITCHBOARD~switchboard
+	halt
+end
+getwordpos $bot~user_command_line $pos "corp"
+if ($pos > 0)
+	setvar $corp true
+else
+	setvar $corp false
+end
 	
-	getwordpos $bot~user_command_line $pos "patp"
-	if ($pos > 0)
-		setvar $patp true
-	else
-		setvar $patp false
-	end
+getwordpos $bot~user_command_line $pos "patp"
+if ($pos > 0)
+	setvar $patp true
+else
+	setvar $patp false
+end
 
-	getwordpos $bot~user_command_line $pos "buyfig"
-	if ($pos > 0)
-		setvar $buyfig true
-	else
-		setvar $buyfig false
-	end
+getwordpos $bot~user_command_line $pos "buyfig"
+if ($pos > 0)
+	setvar $buyfig true
+else
+	setvar $buyfig false
+end
 
-	getwordpos $bot~user_command_line $pos "buyshield"
-	if ($pos > 0)
-		setvar $buyshield true
-	else
-		setvar $buyshield false
-	end
+getwordpos $bot~user_command_line $pos "buyshield"
+if ($pos > 0)
+	setvar $buyshield true
+else
+	setvar $buyshield false
+end
 
-	getwordpos $bot~user_command_line $pos "fuel"
-	if ($pos > 0)
-		setvar $refuel true
-	else
-		setvar $refuel false
-	end
+getwordpos $bot~user_command_line $pos "fuel"
+if ($pos > 0)
+	setvar $refuel true
+else
+	setvar $refuel false
+end
 
-	getwordpos $bot~user_command_line $pos "upgrade"
-	if ($pos > 0)
-		setvar $upgrade true
-	else
-		setvar $upgrade false
-	end
+getwordpos $bot~user_command_line $pos "upgrade"
+if ($pos > 0)
+	setvar $upgrade true
+else
+	setvar $upgrade false
+end
 
-	getwordpos $bot~user_command_line $pos "sell"
-	if ($pos > 0)
-		setvar $sell true
-	else
-		setvar $sell false
-	end
+getwordpos $bot~user_command_line $pos "sell"
+if ($pos > 0)
+	setvar $sell true
+else
+	setvar $sell false
+end
 
-	getwordpos $bot~user_command_line $pos "cannon"
-	if ($pos > 0)
-		setvar $cannon true
-	else
-		setvar $cannon false
-	end
+getwordpos $bot~user_command_line $pos "cannon"
+if ($pos > 0)
+	setvar $cannon true
+else
+	setvar $cannon false
+end
 
-	getwordpos $bot~user_command_line $pos "passive"
-	if ($pos > 0)
-		setvar $passive true
-	else
-		setvar $passive false
-	end
+getwordpos $bot~user_command_line $pos "passive"
+if ($pos > 0)
+	setvar $passive true
+else
+	setvar $passive false
+end
 
-	getwordpos $bot~user_command_line $pos "return"
-	if ($pos > 0)
-		setvar $return true
-	else
-		setvar $return false
-	end
+getwordpos $bot~user_command_line $pos "return"
+if ($pos > 0)
+	setvar $return true
+else
+	setvar $return false
+end
 
-	getwordpos $bot~user_command_line $pos "home"
-	if ($pos > 0)
-		setvar $home true
+getwordpos $bot~user_command_line $pos "home"
+if ($pos > 0)
+	setvar $home true
+else
+	setvar $home false
+end
+setvar $filterships ""
+getWordPos $bot~user_command_line $pos #34
+if ($pos > 0)
+	getText $bot~user_command_line $filterships #34 #34
+	replaceText $bot~user_command_line #34&$filterships&#34 " "
+	if ($filterships = false)
+		setVar $SWITCHBOARD~message "Invalid ship filter entered.*"
+		gosub :SWITCHBOARD~switchboard
+		halt			
 	else
-		setvar $home false
+		setVar $SWITCHBOARD~message "Moving all ships matching: ["&$filterships&"], and bringing them home.*"
+		gosub :SWITCHBOARD~switchboard
 	end
-	setvar $filterships ""
-	getWordPos $bot~user_command_line $pos #34
-	if ($pos > 0)
-		getText $bot~user_command_line $filterships #34 #34
-		replaceText $bot~user_command_line #34&$filterships&#34 " "
-		if ($filterships = false)
-			setVar $SWITCHBOARD~message "Invalid ship filter entered.*"
-			gosub :SWITCHBOARD~switchboard
-			halt			
-		else
-			setVar $SWITCHBOARD~message "Moving all ships matching: ["&$filterships&"], and bringing them home.*"
-			gosub :SWITCHBOARD~switchboard
-		end
-	end
+end
 
-	setvar $filteraliens ""
-	getWordPos $bot~user_command_line $pos #34
-	if ($pos > 0)
-		getText $bot~user_command_line $filteraliens #34 #34
-		replaceText $bot~user_command_line #34&$filteraliens&#34 " "
-		if ($filteraliens = false)
-			setVar $SWITCHBOARD~message "Invalid alien filter entered.*"
-			gosub :SWITCHBOARD~switchboard
-			halt			
-		else
-			setVar $SWITCHBOARD~message "Ignoring aliens matching: ["&$filteraliens&"].*"
-			gosub :SWITCHBOARD~switchboard
-		end
+setvar $filteraliens ""
+getWordPos $bot~user_command_line $pos #34
+if ($pos > 0)
+	getText $bot~user_command_line $filteraliens #34 #34
+	replaceText $bot~user_command_line #34&$filteraliens&#34 " "
+	if ($filteraliens = false)
+		setVar $SWITCHBOARD~message "Invalid alien filter entered.*"
+		gosub :SWITCHBOARD~switchboard
+		halt			
+	else
+		setVar $SWITCHBOARD~message "Ignoring aliens matching: ["&$filteraliens&"].*"
+		gosub :SWITCHBOARD~switchboard
 	end
+end
 
 
 	
 
-	gosub :PLAYER~getInfo
-	setVar $homesector $PLAYER~CURRENT_SECTOR
+gosub :PLAYER~getInfo
+setVar $homesector $PLAYER~CURRENT_SECTOR
 		
-	killalltriggers	
-	send "q"
-	gosub :PLANET~getPlanetInfo	
-	gosub :setwindow
-	setvar $starting_sector_cannon $planet~SECTOR_CANNON
-	setvar $starting_atmos_cannon $planet~ATMOSPHERE_CANNON
-	setvar $sector_total ((($planet~planet_FUEL * $starting_sector_cannon) / 100)/3)
+killalltriggers	
+send "q"
+gosub :PLANET~getPlanetInfo	
+gosub :setwindow
+setvar $starting_sector_cannon $planet~SECTOR_CANNON
+setvar $starting_atmos_cannon $planet~ATMOSPHERE_CANNON
+setvar $sector_total ((($planet~planet_FUEL * $starting_sector_cannon) / 100)/3)
 
-	setTextTrigger need_ig :ig_was_off "Your Interdictor generator is now OFF"
-	setTextTrigger skip_ig :skipig "is not equipped with an Interdictor Generator"
-	send "q q q q* b"
-	waitOn "Do you wish to change it? (Y/N)"
-	send "*"
-	goto :skipig
+setTextTrigger need_ig :ig_was_off "Your Interdictor generator is now OFF"
+setTextTrigger skip_ig :skipig "is not equipped with an Interdictor Generator"
+send "q q q q* b"
+waitOn "Do you wish to change it? (Y/N)"
+send "*"
+goto :skipig
 
 	:ig_was_off
-		send "y"
-		setVar $SWITCHBOARD~message "Turning on ship IG.*"
-		gosub :SWITCHBOARD~switchboard
+	send "y"
+	setVar $SWITCHBOARD~message "Turning on ship IG.*"
+	gosub :SWITCHBOARD~switchboard
 
 	:skipig
 	killalltriggers
@@ -251,9 +251,9 @@
 	goto :skipplanetig
 
 	:planet_ig_was_off
-		send "y"
-		setVar $SWITCHBOARD~message "Turning off planet IG.*"
-		gosub :SWITCHBOARD~switchboard
+	send "y"
+	setVar $SWITCHBOARD~message "Turning off planet IG.*"
+	gosub :SWITCHBOARD~switchboard
 
 	:skipplanetig
 	killalltriggers
@@ -349,26 +349,26 @@
 	halt
 
 	:validateFighterHit
-		send "q "
-		gosub :planet~getplanetinfo
-		gosub :setwindow
-		gosub :ensureCitadelForPwarp
+	send "q "
+	gosub :planet~getplanetinfo
+	gosub :setwindow
+	gosub :ensureCitadelForPwarp
 	if ($planet~planet_fighters < ($planet~planet_fighters_max/10))
-		if ($buyfig = true)
-			gosub :ALIENHUNT_WITH_RUN
-			gosub :ALIENHUNT_BUYFIG_RUN
-			gosub :ALIENHUNT_DEP_RUN
-		else
-			setVar $SWITCHBOARD~message "Alien hunter shutting down.  Making ship and planet corporate again.  Check to make sure I made it home.*"
-			gosub :SWITCHBOARD~switchboard
-			gosub :gohome
-		end
+	if ($buyfig = true)
+		gosub :ALIENHUNT_WITH_RUN
+		gosub :ALIENHUNT_BUYFIG_RUN
+		gosub :ALIENHUNT_DEP_RUN
+	else
+		setVar $SWITCHBOARD~message "Alien hunter shutting down.  Making ship and planet corporate again.  Check to make sure I made it home.*"
+		gosub :SWITCHBOARD~switchboard
+		gosub :gohome
+	end
 	end
 	loadvar $planet~planet_shields
 	if (($planet~planet_shields <= 300) and ($buyshield = true))
-			gosub :ALIENHUNT_WITH_RUN
-			gosub :ALIENHUNT_BUYSHIELD_RUN
-			gosub :ALIENHUNT_DEP_RUN
+		gosub :ALIENHUNT_WITH_RUN
+		gosub :ALIENHUNT_BUYSHIELD_RUN
+		gosub :ALIENHUNT_DEP_RUN
 	end
 	setTextLineTrigger fig :checkFighter "Deployed Fighters Report Sector"
 	setTextTrigger armid :attackSectorMine "Your mines in "
@@ -403,191 +403,191 @@ goto :RESTART
 
 
 	:attackSectorMine
-		gosub :validateMineHit
-		if ($isValid = true)
-			goto :go_to_drop_sector
-		else
-			setTextTrigger armid :attackSectorMine "Your mines in "
-			pause
-		end
+	gosub :validateMineHit
+	if ($isValid = true)
+		goto :go_to_drop_sector
+	else
+		setTextTrigger armid :attackSectorMine "Your mines in "
+		pause
+	end
 	pause
 	:checkFighter
-		cutText CURRENTLINE&" " $radio 1 1
-		getText CURRENTLINE $dropSector $START_FIG_HIT $END_FIG_HIT
-		isNumber $isDropSectorNumeric $dropSector
-		if ($isDropSectorNumeric <> TRUE)
-			setTextLineTrigger fig :checkFighter "Deployed Fighters Report Sector"
-			pause
-		end
-		getText CURRENTANSILINE $alien_check $START_FIG_HIT_OWNER $END_FIG_HIT_OWNER
-		getWordPos $alien_check $apos $ALIEN_ANSI
-		setvar $fighter_line CURRENTLINE
-		lowercase $fighter_line
-		lowercase $filteraliens
-		setvar $alien_type_match 0
-		if ($filteraliens <> "")
-			getWordPos $fighter_line $alien_type_match $filteraliens
-		end
-		if ((($apos <= 0) OR ($radio <> "D")) or (($filteraliens <> "") AND ($alien_type_match > 0)))
-			setTextLineTrigger fig :checkFighter "Deployed Fighters Report Sector"
-			pause
-		end
+	cutText CURRENTLINE&" " $radio 1 1
+	getText CURRENTLINE $dropSector $START_FIG_HIT $END_FIG_HIT
+	isNumber $isDropSectorNumeric $dropSector
+	if ($isDropSectorNumeric <> TRUE)
+		setTextLineTrigger fig :checkFighter "Deployed Fighters Report Sector"
+		pause
+	end
+	getText CURRENTANSILINE $alien_check $START_FIG_HIT_OWNER $END_FIG_HIT_OWNER
+	getWordPos $alien_check $apos $ALIEN_ANSI
+	setvar $fighter_line CURRENTLINE
+	lowercase $fighter_line
+	lowercase $filteraliens
+	setvar $alien_type_match 0
+	if ($filteraliens <> "")
+		getWordPos $fighter_line $alien_type_match $filteraliens
+	end
+	if ((($apos <= 0) OR ($radio <> "D")) or (($filteraliens <> "") AND ($alien_type_match > 0)))
+		setTextLineTrigger fig :checkFighter "Deployed Fighters Report Sector"
+		pause
+	end
 
 	:go_to_drop_sector
-		killAllTriggers
-		isNumber $isDropSectorNumeric $dropSector
-		if ($isDropSectorNumeric <> TRUE)
-			return
-		end
-		if ($dropSector <> $player~current_sector)
-			if ($cannon = true)
-	                send "*ls0* la0*  "
-            end
-            send "p " $dropSector "*y"
-			setTextLineTrigger pwarpNotOk :pwarpTryAdjacent "You do not have any fighters in Sector "
-			setTextLineTrigger pwarpOk :pwarpConfirmed " Planetary TransWarp Drive Engaged! "
-			setTextLineTrigger pwarpOk2 :pwarpConfirmed "You are already in that sector!"
-			pause
+	killAllTriggers
+	isNumber $isDropSectorNumeric $dropSector
+	if ($isDropSectorNumeric <> TRUE)
+		return
+	end
+	if ($dropSector <> $player~current_sector)
+		if ($cannon = true)
+                send "*ls0* la0*  "
+        end
+        send "p " $dropSector "*y"
+		setTextLineTrigger pwarpNotOk :pwarpTryAdjacent "You do not have any fighters in Sector "
+		setTextLineTrigger pwarpOk :pwarpConfirmed " Planetary TransWarp Drive Engaged! "
+		setTextLineTrigger pwarpOk2 :pwarpConfirmed "You are already in that sector!"
+		pause
 			
 			:pwarpDone
-				killAllTriggers
+			killAllTriggers
 		end
 		:pwarpTryAdjacent
-			killAllTriggers
-			setSectorParameter $dropSector "FIGSEC" FALSE
-			gosub :findAdjacent
-			gosub :attemptDrop
-			gosub :dosurround
-			setvar $planet~warpto $dropSector
+		killAllTriggers
+		setSectorParameter $dropSector "FIGSEC" FALSE
+		gosub :findAdjacent
+		gosub :attemptDrop
+		gosub :dosurround
+		setvar $planet~warpto $dropSector
+		gosub :ensureCitadelForPwarp
+		gosub :planet~pwarp
+		setVar $index 1
+		setVar $checkSector SECTOR.WARPS[$dropSector][$index]
+		while ($checkSector > 0)
+			setvar $planet~warpto $checksector
 			gosub :ensureCitadelForPwarp
 			gosub :planet~pwarp
-			setVar $index 1
-			setVar $checkSector SECTOR.WARPS[$dropSector][$index]
-			while ($checkSector > 0)
-				setvar $planet~warpto $checksector
-				gosub :ensureCitadelForPwarp
-				gosub :planet~pwarp
-				gosub :attackandmoveship
-				add $index 1
-				setVar $checkSector SECTOR.WARPS[$dropSector][$index]
-			end
-			return
-	:pwarpConfirmed
-		killalltriggers
-		gosub :player~quikstats
-		gosub :attackandmoveship
-		if ($targetsFound = TRUE)
-			gosub :dosurround
 			gosub :attackandmoveship
-		end
-		isNumber $isDropSectorNumeric $dropSector
-		if (($isDropSectorNumeric <> TRUE) or ($dropSector <= 0))
-			setvar $dropsector $player~current_sector
-		end
-		setVar $index 1
+			add $index 1
 			setVar $checkSector SECTOR.WARPS[$dropSector][$index]
-			while ($checkSector > 0)
-				setvar $planet~warpto $checksector
-				gosub :ensureCitadelForPwarp
-				gosub :planet~pwarp
-				gosub :attackandmoveship
-				add $index 1
-				setVar $checkSector SECTOR.WARPS[$dropSector][$index]
-			end
+		end
+		return
+	:pwarpConfirmed
+	killalltriggers
+	gosub :player~quikstats
+	gosub :attackandmoveship
+	if ($targetsFound = TRUE)
+		gosub :dosurround
+		gosub :attackandmoveship
+	end
+	isNumber $isDropSectorNumeric $dropSector
+	if (($isDropSectorNumeric <> TRUE) or ($dropSector <= 0))
+		setvar $dropsector $player~current_sector
+	end
+	setVar $index 1
+		setVar $checkSector SECTOR.WARPS[$dropSector][$index]
+		while ($checkSector > 0)
+			setvar $planet~warpto $checksector
+			gosub :ensureCitadelForPwarp
+			gosub :planet~pwarp
+			gosub :attackandmoveship
+			add $index 1
+			setVar $checkSector SECTOR.WARPS[$dropSector][$index]
+		end
 
 return
 :findAdjacent
-	getSectorParameter $dropSector "FIGSEC" $isFigged
-	setVar $i 1
-	setVar $checkSector SECTOR.WARPS[$dropSector][$i]
-	setArray $targetSectors 6
-	setVar $targetCount 0
-	while ($checkSector > 0)
+getSectorParameter $dropSector "FIGSEC" $isFigged
+setVar $i 1
+setVar $checkSector SECTOR.WARPS[$dropSector][$i]
+setArray $targetSectors 6
+setVar $targetCount 0
+while ($checkSector > 0)
 #		getSectorParameter $checkSector "FIGSEC" $isFigged
 #		if ($isFigged = TRUE)
-			add $targetCount 1
-			setVar $targetSectors[$targetCount] $checkSector
+		add $targetCount 1
+		setVar $targetSectors[$targetCount] $checkSector
 #		end
-		add $i 1
-		setVar $checkSector SECTOR.WARPS[$dropSector][$i]
-	end
-	if ($targetCount <= 0)
-		setvar $switchboard~message " No Targets..*"
-		gosub :echo 
-		setVar $targetSectors[1] $dropSector
-	end
+	add $i 1
+	setVar $checkSector SECTOR.WARPS[$dropSector][$i]
+end
+if ($targetCount <= 0)
+	setvar $switchboard~message " No Targets..*"
+	gosub :echo 
+	setVar $targetSectors[1] $dropSector
+end
 
 return
 :attemptDrop
 	
-	if ($targetCount > 0)
-		getRnd $randomTarget 1 $targetCount
-		setVar $gotoSector $targetSectors[$randomTarget]
-		setvar $planet~warpto $gotoSector
-		gosub :ensureCitadelForPwarp
-		gosub :planet~pwarp
-	end
+if ($targetCount > 0)
+	getRnd $randomTarget 1 $targetCount
+	setVar $gotoSector $targetSectors[$randomTarget]
+	setvar $planet~warpto $gotoSector
+	gosub :ensureCitadelForPwarp
+	gosub :planet~pwarp
+end
 	
 return
 
 	:ensureCitadelForPwarp
+	gosub :PLAYER~quikstats
+	if ($PLAYER~CURRENT_PROMPT = "Computer")
+		send "q"
 		gosub :PLAYER~quikstats
-		if ($PLAYER~CURRENT_PROMPT = "Computer")
+	end
+	if ($PLAYER~CURRENT_PROMPT = "Command")
+		gosub :PLANET~landingSub
+		gosub :PLAYER~quikstats
+	end
+	if ($PLAYER~CURRENT_PROMPT = "Planet")
+		send "c "
+		settexttrigger ALIENHUNT_CITADEL_READY :ALIENHUNT_CITADEL_READY "Citadel command (?=help)"
+		settexttrigger ALIENHUNT_CITADEL_MISROUTE :ALIENHUNT_CITADEL_MISROUTE "Computer command [TL="
+		pause
+			:ALIENHUNT_CITADEL_READY
+			killalltriggers
+			gosub :PLAYER~quikstats
+			return
+			:ALIENHUNT_CITADEL_MISROUTE
+			killalltriggers
 			send "q"
 			gosub :PLAYER~quikstats
-		end
-		if ($PLAYER~CURRENT_PROMPT = "Command")
-			gosub :PLANET~landingSub
-			gosub :PLAYER~quikstats
-		end
-		if ($PLAYER~CURRENT_PROMPT = "Planet")
-			send "c "
-			settexttrigger ALIENHUNT_CITADEL_READY :ALIENHUNT_CITADEL_READY "Citadel command (?=help)"
-			settexttrigger ALIENHUNT_CITADEL_MISROUTE :ALIENHUNT_CITADEL_MISROUTE "Computer command [TL="
-			pause
-			:ALIENHUNT_CITADEL_READY
-				killalltriggers
+			if ($PLAYER~CURRENT_PROMPT = "Command")
+				gosub :PLANET~landingSub
 				gosub :PLAYER~quikstats
-				return
-			:ALIENHUNT_CITADEL_MISROUTE
-				killalltriggers
-				send "q"
-				gosub :PLAYER~quikstats
-				if ($PLAYER~CURRENT_PROMPT = "Command")
-					gosub :PLANET~landingSub
+			end
+				if ($PLAYER~CURRENT_PROMPT = "Planet")
+					send "c "
+					waiton "Citadel command (?=help)"
 					gosub :PLAYER~quikstats
 				end
-					if ($PLAYER~CURRENT_PROMPT = "Planet")
-						send "c "
-						waiton "Citadel command (?=help)"
-						gosub :PLAYER~quikstats
-					end
 			end
 			setVar $PLANET~PWARP_SCAN FALSE
 		return
 
 
 :dosurround
-	if ($player~surroundPassive = true)
-		setvar $BOT~COMMAND "dscan"
-		setvar $BOT~USER_COMMAND_LINE " dscan silent"
-		setvar $BOT~PARM1 "silent"
-		setvar $BOT~PARM2 ""
-		setvar $BOT~PARM3 ""
-		setvar $BOT~PARM4 ""
-		setvar $BOT~PARM5 ""
-		setvar $BOT~PARM6 ""
-		savevar $BOT~PARM1
-		savevar $BOT~PARM2
-		savevar $BOT~PARM3
-		savevar $BOT~PARM4
-		savevar $BOT~PARM5
-		savevar $BOT~PARM6
-		savevar $BOT~COMMAND
-		savevar $BOT~USER_COMMAND_LINE
-		load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\dscan.cts"
-		seteventtrigger DSCANDONE :ALIENHUNT_DSCANDONE "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\dscan.cts"
-		pause
+if ($player~surroundPassive = true)
+	setvar $BOT~COMMAND "dscan"
+	setvar $BOT~USER_COMMAND_LINE " dscan silent"
+	setvar $BOT~PARM1 "silent"
+	setvar $BOT~PARM2 ""
+	setvar $BOT~PARM3 ""
+	setvar $BOT~PARM4 ""
+	setvar $BOT~PARM5 ""
+	setvar $BOT~PARM6 ""
+	savevar $BOT~PARM1
+	savevar $BOT~PARM2
+	savevar $BOT~PARM3
+	savevar $BOT~PARM4
+	savevar $BOT~PARM5
+	savevar $BOT~PARM6
+	savevar $BOT~COMMAND
+	savevar $BOT~USER_COMMAND_LINE
+	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\dscan.cts"
+	seteventtrigger DSCANDONE :ALIENHUNT_DSCANDONE "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\data\dscan.cts"
+	pause
 		:ALIENHUNT_DSCANDONE
 	end
 	send "q "
@@ -604,296 +604,296 @@ return
 return
 
 :attackandmoveship
-		gosub :PLAYER~quikstats
-		setvar $startingLocation $player~current_prompt
-		if ($player~current_prompt = "Command")
-			gosub :PLANET~landingSub		
-			gosub :PLAYER~currentprompt
+gosub :PLAYER~quikstats
+setvar $startingLocation $player~current_prompt
+if ($player~current_prompt = "Command")
+	gosub :PLANET~landingSub		
+	gosub :PLAYER~currentprompt
+end
+setVar $SECTOR~federalCount 0
+setvar $SECTOR~fakeTraderCount 1
+setVar $targetsFound FALSE
+while ($SECTOR~fakeTraderCount > $SECTOR~federalCount)
+	gosub :PLAYER~quikstats
+	setvar $player~startingLocation $player~current_prompt
+	if ($player~current_prompt = "Command")
+		gosub :PLANET~landingSub		
+		gosub :PLAYER~currentprompt
+		setvar $player~startingLocation $player~current_prompt
+	end
+	goSub :SECTOR~getSectorData			
+	if ($SECTOR~realTraderCount > $SECTOR~corpieCount)
+		setvar $targetsFound true
+		gosub :combat~fastCitadelAttack
+		send "'Just attacked (and hopefully killed) a trader in my sector! Sector "&$player~current_sector&".*"
+	end
+	if ($SECTOR~fakeTraderCount > $SECTOR~federalCount)
+		setVar $targetsFound TRUE
+		setvar $lastSectorAttacked $player~current_sector
+		goSub :combat~fastCapture
+	end
+end
+gosub :PLAYER~quikstats
+if ($player~current_prompt = "Command")
+	gosub :PLANET~landingSub
+end
+if ($targetsFound = true)
+	send "q m*** c "
+	gosub :PLAYER~quikstats
+	setVar $startingSector $PLAYER~CURRENT_SECTOR
+	setVar $player~shields_needed ($SHIP~SHIP_SHIELD_MAX - $PLAYER~SHIELDS)
+	setVar $planet~planet_shields_to_take ($player~shields_needed/10)
+				
+	if (($planet~planet_shields_to_take > 0) and ($planet~planet_shields > 360))
+		send "gf"&$planet~planet_shields_to_take&"*"
+	end
+else
+	setVar $startingSector CURRENTSECTOR		
+end
+
+if ($targetsFound = TRUE)
+
+		send "s*  "
+		waiton "Warps to Sector(s) : "
+		setVar $figowner SECTOR.FIGS.OWNER[currentsector]
+		setVar $figCount SECTOR.FIGS.QUANTITY[currentsector]
+	
+		if ($figcount <= 0)
+			if ((CURRENTSECTOR > 10) and (CURRENTSECTOR <> STARDOCK))
+				setvar $bot~startingLocation $PLAYER~CURRENT_PROMPT
+				setvar $fighters~amount 1
+					gosub :fighters~deploy
+					gosub :PLAYER~quikstats
+					if ($PLAYER~CURRENT_PROMPT = "Planet")
+						gosub :ensureCitadelForPwarp
+					end
+				end
+		elseif (($figOwner <> "belong to your Corp") AND ($figOwner <> "yours"))
+			gosub :xenter~run
+		end		
+		setVar $emptyShips SECTOR.SHIPCOUNT[currentsector]
+	if ($emptyShips > 0)
+		loadVar $MAP~stardock
+		if ($filterships <> "")
+			setVar $BOT~user_command_line " moveship h silent "&#34&$filterships&#34
+			setVar $BOT~parm1 $MAP~home_sector
+			gosub :runMoveshipScript
+			send "s*  "
+			gosub :player~quikstats
+			setVar $emptyShips SECTOR.SHIPCOUNT[currentsector]
 		end
-		setVar $SECTOR~federalCount 0
-		setvar $SECTOR~fakeTraderCount 1
-		setVar $targetsFound FALSE
-		while ($SECTOR~fakeTraderCount > $SECTOR~federalCount)
-			gosub :PLAYER~quikstats
-			setvar $player~startingLocation $player~current_prompt
-			if ($player~current_prompt = "Command")
-				gosub :PLANET~landingSub		
-				gosub :PLAYER~currentprompt
-				setvar $player~startingLocation $player~current_prompt
+		if ($emptyships > 0)
+			if ($sell)
+				if ($home = true)
+					setVar $BOT~user_command_line " moveship "&$homesector&" silent"
+					setVar $BOT~parm1 $homesector
+				else
+					setVar $BOT~user_command_line " moveship "&$MAP~stardock&" sell dep silent"
+					setVar $BOT~parm1 $MAP~stardock
+				end
+			else
+					setVar $BOT~user_command_line " moveship "&$MAP~stardock&" silent"
+					setVar $BOT~parm1 $MAP~stardock						
 			end
-			goSub :SECTOR~getSectorData			
-			if ($SECTOR~realTraderCount > $SECTOR~corpieCount)
-				setvar $targetsFound true
-				gosub :combat~fastCitadelAttack
-				send "'Just attacked (and hopefully killed) a trader in my sector! Sector "&$player~current_sector&".*"
-			end
-			if ($SECTOR~fakeTraderCount > $SECTOR~federalCount)
-				setVar $targetsFound TRUE
-				setvar $lastSectorAttacked $player~current_sector
-				goSub :combat~fastCapture
+			gosub :runMoveshipScript
+			if ($startingSector <> currentsector)
+				setvar $alienhuntMowDestination $startingSector
+				setvar $alienhuntMowDeploy "1"
+				gosub :runMowScript
+				gosub :PLANET~landingSub
 			end
 		end
 		gosub :PLAYER~quikstats
 		if ($player~current_prompt = "Command")
 			gosub :PLANET~landingSub
 		end
-		if ($targetsFound = true)
-			send "q m*** c "
-			gosub :PLAYER~quikstats
-			setVar $startingSector $PLAYER~CURRENT_SECTOR
-			setVar $player~shields_needed ($SHIP~SHIP_SHIELD_MAX - $PLAYER~SHIELDS)
-			setVar $planet~planet_shields_to_take ($player~shields_needed/10)
-				
-			if (($planet~planet_shields_to_take > 0) and ($planet~planet_shields > 360))
-				send "gf"&$planet~planet_shields_to_take&"*"
-			end
+end
+
+killalltriggers
+setvar $is_fuel_buyer PORT.BUYFUEL[currentsector]
+setvar $is_port PORT.EXISTS[currentsector]
+setvar $class PORT.CLASS[currentsector]
+setvar $under_construction (PORT.BUILDTIME[currentsector] > 0)
+getSectorParameter currentsector "BUSTED" $isBusted
+getSectorParameter currentsector "UPGRADEF" $isUpgradedFuel
+loadvar $planet~planet_fuel_max
+loadvar $planet~planet_fuel
+if (($refuel = true) and ($is_fuel_buyer <> true) and ($is_port = true) and ($class > 0) and ($isBusted <> true) and ($under_construction <> true) and ($planet~planet_fuel < ($planet~planet_fuel_max-$game~port_max)))
+	if (($upgrade = true) and ($isUpgradedFuel <> true))
+		gosub :runPortUpgradeScript
+		gosub :setwindow
 		else
-			setVar $startingSector CURRENTSECTOR		
-		end
-
-		if ($targetsFound = TRUE)
-
-				send "s*  "
-				waiton "Warps to Sector(s) : "
-				setVar $figowner SECTOR.FIGS.OWNER[currentsector]
-				setVar $figCount SECTOR.FIGS.QUANTITY[currentsector]
-	
-				if ($figcount <= 0)
-					if ((CURRENTSECTOR > 10) and (CURRENTSECTOR <> STARDOCK))
-						setvar $bot~startingLocation $PLAYER~CURRENT_PROMPT
-						setvar $fighters~amount 1
-							gosub :fighters~deploy
-							gosub :PLAYER~quikstats
-							if ($PLAYER~CURRENT_PROMPT = "Planet")
-								gosub :ensureCitadelForPwarp
-							end
-						end
-				elseif (($figOwner <> "belong to your Corp") AND ($figOwner <> "yours"))
-					gosub :xenter~run
-				end		
-				setVar $emptyShips SECTOR.SHIPCOUNT[currentsector]
-			if ($emptyShips > 0)
-				loadVar $MAP~stardock
-				if ($filterships <> "")
-					setVar $BOT~user_command_line " moveship h silent "&#34&$filterships&#34
-					setVar $BOT~parm1 $MAP~home_sector
-					gosub :runMoveshipScript
-					send "s*  "
-					gosub :player~quikstats
-					setVar $emptyShips SECTOR.SHIPCOUNT[currentsector]
-				end
-				if ($emptyships > 0)
-					if ($sell)
-						if ($home = true)
-							setVar $BOT~user_command_line " moveship "&$homesector&" silent"
-							setVar $BOT~parm1 $homesector
-						else
-							setVar $BOT~user_command_line " moveship "&$MAP~stardock&" sell dep silent"
-							setVar $BOT~parm1 $MAP~stardock
-						end
-					else
-							setVar $BOT~user_command_line " moveship "&$MAP~stardock&" silent"
-							setVar $BOT~parm1 $MAP~stardock						
-					end
-					gosub :runMoveshipScript
-					if ($startingSector <> currentsector)
-						setvar $alienhuntMowDestination $startingSector
-						setvar $alienhuntMowDeploy "1"
-						gosub :runMowScript
-						gosub :PLANET~landingSub
-					end
-				end
+			gosub :PLAYER~quikstats
+			if ($PLAYER~CURRENT_PROMPT = "Citadel")
+				send "q q "
 				gosub :PLAYER~quikstats
-				if ($player~current_prompt = "Command")
-					gosub :PLANET~landingSub
-				end
-		end
-
-		killalltriggers
-		setvar $is_fuel_buyer PORT.BUYFUEL[currentsector]
-		setvar $is_port PORT.EXISTS[currentsector]
-		setvar $class PORT.CLASS[currentsector]
-		setvar $under_construction (PORT.BUILDTIME[currentsector] > 0)
-		getSectorParameter currentsector "BUSTED" $isBusted
-		getSectorParameter currentsector "UPGRADEF" $isUpgradedFuel
-		loadvar $planet~planet_fuel_max
-		loadvar $planet~planet_fuel
-		if (($refuel = true) and ($is_fuel_buyer <> true) and ($is_port = true) and ($class > 0) and ($isBusted <> true) and ($under_construction <> true) and ($planet~planet_fuel < ($planet~planet_fuel_max-$game~port_max)))
-			if (($upgrade = true) and ($isUpgradedFuel <> true))
-				gosub :runPortUpgradeScript
-				gosub :setwindow
-				else
-					gosub :PLAYER~quikstats
-					if ($PLAYER~CURRENT_PROMPT = "Citadel")
-						send "q q "
-						gosub :PLAYER~quikstats
-					elseif ($PLAYER~CURRENT_PROMPT = "Planet")
-						send "q "
-						gosub :PLAYER~quikstats
-					end
-				end
-			end
-			setvar $fuel PORT.FUEL[currentsector]
-			if ((($upgrade = true) and ($fuel > 10000)) or (($upgrade <> true) and ($fuel > 1000)))
-				gosub :ALIENHUNT_BUYFUEL_RUN
+			elseif ($PLAYER~CURRENT_PROMPT = "Planet")
+				send "q "
+				gosub :PLAYER~quikstats
 			end
 		end
-		if (($patp = true) and ($planet~planet_fuel < ($planet~planet_fuel_max/10)))
-			setvar $PATP_MINIMUM 1000
-			setvar $PATP_UPGRADE TRUE
-			setvar $PATP_DOCIM ""
-			if ($PATP_MINIMUM = 0)
-			  setvar $PATP_MINIMUM 10000
-			end
-			if ($PATP_UPGRADE = TRUE)
-			  setvar $PATP_UPGRADE "upgrade"
-			end
-			if ($PATP_DOCIM = TRUE)
-			  setvar $PATP_DOCIM "docim"
-			end
-			setvar $BOT~COMMAND "patp"
-			setvar $BOT~USER_COMMAND_LINE " patp "&$PATP_MINIMUM&" "&$PATP_UPGRADE&" "&$PATP_DOCIM&" silent"
-			setvar $BOT~PARM1 $PATP_MINIMUM
-			savevar $BOT~PARM1
-			setvar $BOT~PARM2 $PATP_UPGRADE
-			savevar $BOT~PARM2
-			setvar $BOT~PARM3 $PATP_DOCIM
-			savevar $BOT~PARM3
-			savevar $BOT~COMMAND
-			savevar $BOT~USER_COMMAND_LINE
-			load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\resource\patp.cts"
-			seteventtrigger PATPENDED :ALIENHUNT_PATPENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\resource\patp.cts"
-			pause
+	end
+	setvar $fuel PORT.FUEL[currentsector]
+	if ((($upgrade = true) and ($fuel > 10000)) or (($upgrade <> true) and ($fuel > 1000)))
+		gosub :ALIENHUNT_BUYFUEL_RUN
+	end
+end
+if (($patp = true) and ($planet~planet_fuel < ($planet~planet_fuel_max/10)))
+	setvar $PATP_MINIMUM 1000
+	setvar $PATP_UPGRADE TRUE
+	setvar $PATP_DOCIM ""
+	if ($PATP_MINIMUM = 0)
+	  setvar $PATP_MINIMUM 10000
+	end
+	if ($PATP_UPGRADE = TRUE)
+	  setvar $PATP_UPGRADE "upgrade"
+	end
+	if ($PATP_DOCIM = TRUE)
+	  setvar $PATP_DOCIM "docim"
+	end
+	setvar $BOT~COMMAND "patp"
+	setvar $BOT~USER_COMMAND_LINE " patp "&$PATP_MINIMUM&" "&$PATP_UPGRADE&" "&$PATP_DOCIM&" silent"
+	setvar $BOT~PARM1 $PATP_MINIMUM
+	savevar $BOT~PARM1
+	setvar $BOT~PARM2 $PATP_UPGRADE
+	savevar $BOT~PARM2
+	setvar $BOT~PARM3 $PATP_DOCIM
+	savevar $BOT~PARM3
+	savevar $BOT~COMMAND
+	savevar $BOT~USER_COMMAND_LINE
+	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\resource\patp.cts"
+	seteventtrigger PATPENDED :ALIENHUNT_PATPENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\resource\patp.cts"
+	pause
 			:ALIENHUNT_PATPENDED
 		end
 		killalltriggers
 return
 
 :validateMineHit
-	setVar $isValid FALSE
-	cutText CURRENTLINE&"    " $ck 1 1
-	if ($ck <> "Y")
-		return
-	end
-	getText CURRENTLINE $dropSector "Your mines in " " did"
-	isNumber $isDropSectorNumeric $dropSector
-	if ($isDropSectorNumeric <> TRUE)
-		return
-	end
-	getText CURRENTANSILINE&"[][][]" $alien_check "Your mines in" "[][][]"
-	getWordPos CURRENTLINE $pos " damage to "
-	getWordPos $alien_check $apos $ALIEN_ANSI
-	if (($apos > 0) OR ($pos = 0))
-		return
-	end
-	setVar $isValid TRUE
+setVar $isValid FALSE
+cutText CURRENTLINE&"    " $ck 1 1
+if ($ck <> "Y")
+	return
+end
+getText CURRENTLINE $dropSector "Your mines in " " did"
+isNumber $isDropSectorNumeric $dropSector
+if ($isDropSectorNumeric <> TRUE)
+	return
+end
+getText CURRENTANSILINE&"[][][]" $alien_check "Your mines in" "[][][]"
+getWordPos CURRENTLINE $pos " damage to "
+getWordPos $alien_check $apos $ALIEN_ANSI
+if (($apos > 0) OR ($pos = 0))
+	return
+end
+setVar $isValid TRUE
 return
 
 
 :setWindow
-	setVar $msg "*   Current Sector: " & currentsector &"                            "
-	cutText $msg $msg 1 30
-	if ($player~unlimitedGame = true)
-		setVar $msg $msg & "   Turns: Unlimited"
-	else
-		setVar $msg $msg & "   Turns: " & currentturns
-	end
-	setarray $window_lines 7
-	setvar $window_lines[1] "* Alienhunt Planet: " & $planet~planet
-	setvar $window_lines[2] "* ---------------------------------------------------------------"
-	loadvar $planet~planet_fuel
-	format $planet~planet_fuel $formatted_value NUMBER
-	setvar $window_lines[3] "*      Planet Fuel: " & $formatted_value&"                          "
-	cutText $window_lines[3] $window_lines[3] 1 30
-	loadvar $planet~planet_fighters
-	format $planet~planet_fighters $formatted_value NUMBER
-	setvar $window_lines[4] "   Planet Fighters: " & $formatted_value
-	loadvar $planet~planet_shields
-	format $planet~planet_shields $formatted_value NUMBER
-	setvar $window_lines[5] "*   Planet Shields: " & $formatted_value&"                          "
-	cutText $window_lines[5] $window_lines[5] 1 30
-	loadvar $planet~citadel_credits
-	format $planet~citadel_credits $formatted_value NUMBER
-	setvar $window_lines[6] "   Citadel Credits: " & $formatted_value
-	format $player~fighters $formatted_value NUMBER
-	setvar $window_lines[7] "*    Ship Fighters: " & $formatted_value&"*"
+setVar $msg "*   Current Sector: " & currentsector &"                            "
+cutText $msg $msg 1 30
+if ($player~unlimitedGame = true)
+	setVar $msg $msg & "   Turns: Unlimited"
+else
+	setVar $msg $msg & "   Turns: " & currentturns
+end
+setarray $window_lines 7
+setvar $window_lines[1] "* Alienhunt Planet: " & $planet~planet
+setvar $window_lines[2] "* ---------------------------------------------------------------"
+loadvar $planet~planet_fuel
+format $planet~planet_fuel $formatted_value NUMBER
+setvar $window_lines[3] "*      Planet Fuel: " & $formatted_value&"                          "
+cutText $window_lines[3] $window_lines[3] 1 30
+loadvar $planet~planet_fighters
+format $planet~planet_fighters $formatted_value NUMBER
+setvar $window_lines[4] "   Planet Fighters: " & $formatted_value
+loadvar $planet~planet_shields
+format $planet~planet_shields $formatted_value NUMBER
+setvar $window_lines[5] "*   Planet Shields: " & $formatted_value&"                          "
+cutText $window_lines[5] $window_lines[5] 1 30
+loadvar $planet~citadel_credits
+format $planet~citadel_credits $formatted_value NUMBER
+setvar $window_lines[6] "   Citadel Credits: " & $formatted_value
+format $player~fighters $formatted_value NUMBER
+setvar $window_lines[7] "*    Ship Fighters: " & $formatted_value&"*"
 
-	setvar $i 1
-	while ($i <= 7)
-		setvar $msg $msg&$window_lines[$i]
-		add $i 1
-	end
-	setWindowContents alienhunt_script $msg 
-	setVar $window_content $msg 
-	replaceText $window_content "*" "[][]"
-	saveVar $window_content
+setvar $i 1
+while ($i <= 7)
+	setvar $msg $msg&$window_lines[$i]
+	add $i 1
+end
+setWindowContents alienhunt_script $msg 
+setVar $window_content $msg 
+replaceText $window_content "*" "[][]"
+saveVar $window_content
 return
 
 :runMoveshipScript
-	setvar $BOT~COMMAND "moveship"
-	setvar $BOT~PARM2 ""
-	setvar $BOT~PARM3 ""
-	setvar $BOT~PARM4 ""
-	setvar $BOT~PARM5 ""
-	setvar $BOT~PARM6 ""
-	savevar $BOT~PARM1
-	savevar $BOT~PARM2
-	savevar $BOT~PARM3
-	savevar $BOT~PARM4
-	savevar $BOT~PARM5
-	savevar $BOT~PARM6
-	savevar $BOT~COMMAND
-	savevar $BOT~USER_COMMAND_LINE
-	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\resource\moveship.cts"
-	seteventtrigger MOVESHIPENDED :ALIENHUNT_MOVESHIP_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\resource\moveship.cts"
-	pause
+setvar $BOT~COMMAND "moveship"
+setvar $BOT~PARM2 ""
+setvar $BOT~PARM3 ""
+setvar $BOT~PARM4 ""
+setvar $BOT~PARM5 ""
+setvar $BOT~PARM6 ""
+savevar $BOT~PARM1
+savevar $BOT~PARM2
+savevar $BOT~PARM3
+savevar $BOT~PARM4
+savevar $BOT~PARM5
+savevar $BOT~PARM6
+savevar $BOT~COMMAND
+savevar $BOT~USER_COMMAND_LINE
+load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\resource\moveship.cts"
+seteventtrigger MOVESHIPENDED :ALIENHUNT_MOVESHIP_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\resource\moveship.cts"
+pause
 :ALIENHUNT_MOVESHIP_ENDED
 return
 
 :runPortUpgradeScript
-	setvar $PORT_UPGRADE_TYPE "f"
-	setvar $BOT~COMMAND "port"
-	setvar $BOT~USER_COMMAND_LINE " port upgrade "&$PORT_UPGRADE_TYPE&" NOEXP silent "
-	setvar $BOT~PARM1 "upgrade"
-	setvar $BOT~PARM2 ""
-	setvar $BOT~PARM3 ""
-	setvar $BOT~PARM4 ""
-	setvar $BOT~PARM5 ""
-	setvar $BOT~PARM6 ""
-	savevar $BOT~PARM1
-	savevar $BOT~PARM2
-	savevar $BOT~PARM3
-	savevar $BOT~PARM4
-	savevar $BOT~PARM5
-	savevar $BOT~PARM6
-	savevar $BOT~COMMAND
-	savevar $BOT~USER_COMMAND_LINE
-	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\port.cts"
-	seteventtrigger PORTENDED :ALIENHUNT_PORT_UPGRADE_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\port.cts"
-	pause
+setvar $PORT_UPGRADE_TYPE "f"
+setvar $BOT~COMMAND "port"
+setvar $BOT~USER_COMMAND_LINE " port upgrade "&$PORT_UPGRADE_TYPE&" NOEXP silent "
+setvar $BOT~PARM1 "upgrade"
+setvar $BOT~PARM2 ""
+setvar $BOT~PARM3 ""
+setvar $BOT~PARM4 ""
+setvar $BOT~PARM5 ""
+setvar $BOT~PARM6 ""
+savevar $BOT~PARM1
+savevar $BOT~PARM2
+savevar $BOT~PARM3
+savevar $BOT~PARM4
+savevar $BOT~PARM5
+savevar $BOT~PARM6
+savevar $BOT~COMMAND
+savevar $BOT~USER_COMMAND_LINE
+load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\port.cts"
+seteventtrigger PORTENDED :ALIENHUNT_PORT_UPGRADE_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\port.cts"
+pause
 :ALIENHUNT_PORT_UPGRADE_ENDED
 return
 
 :runMowScript
-	setVar $BOT~COMMAND "mow"
-	setVar $BOT~USER_COMMAND_LINE " mow "&$alienhuntMowDestination&" "&$alienhuntMowDeploy
-	setVar $BOT~PARM1 $alienhuntMowDestination
-	setVar $BOT~PARM2 $alienhuntMowDeploy
-	setVar $BOT~PARM3 ""
-	setVar $BOT~PARM4 ""
-	setVar $BOT~PARM5 ""
-	setVar $BOT~PARM6 ""
-	saveVar $BOT~PARM1
-	saveVar $BOT~PARM2
-	saveVar $BOT~PARM3
-	saveVar $BOT~PARM4
-	saveVar $BOT~PARM5
-	saveVar $BOT~PARM6
-	saveVar $BOT~COMMAND
-	saveVar $BOT~USER_COMMAND_LINE
-	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\grid\mow.cts"
-	setEventTrigger ALIENHUNT_MOWENDED :ALIENHUNT_MOWENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\grid\mow.cts"
-	pause
+setVar $BOT~COMMAND "mow"
+setVar $BOT~USER_COMMAND_LINE " mow "&$alienhuntMowDestination&" "&$alienhuntMowDeploy
+setVar $BOT~PARM1 $alienhuntMowDestination
+setVar $BOT~PARM2 $alienhuntMowDeploy
+setVar $BOT~PARM3 ""
+setVar $BOT~PARM4 ""
+setVar $BOT~PARM5 ""
+setVar $BOT~PARM6 ""
+saveVar $BOT~PARM1
+saveVar $BOT~PARM2
+saveVar $BOT~PARM3
+saveVar $BOT~PARM4
+saveVar $BOT~PARM5
+saveVar $BOT~PARM6
+saveVar $BOT~COMMAND
+saveVar $BOT~USER_COMMAND_LINE
+load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\grid\mow.cts"
+setEventTrigger ALIENHUNT_MOWENDED :ALIENHUNT_MOWENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\grid\mow.cts"
+pause
 	:ALIENHUNT_MOWENDED
 return
 
@@ -923,127 +923,127 @@ return
 
 :ALIENHUNT_DEP_RUN
 :ALIENHUNT_DEP
-	if ($DEP_AMOUNT = 0)
-		setvar $DEP_AMOUNT ""
-	end
-	setvar $BOT~COMMAND "dep"
-	setvar $BOT~USER_COMMAND_LINE " dep silent"
-	setvar $BOT~PARM1 $DEP_AMOUNT
-	setvar $BOT~PARM2 ""
-	setvar $BOT~PARM3 ""
-	setvar $BOT~PARM4 ""
-	setvar $BOT~PARM5 ""
-	setvar $BOT~PARM6 ""
-	savevar $BOT~PARM1
-	savevar $BOT~PARM2
-	savevar $BOT~PARM3
-	savevar $BOT~PARM4
-	savevar $BOT~PARM5
-	savevar $BOT~PARM6
-	savevar $BOT~COMMAND
-	savevar $BOT~USER_COMMAND_LINE
-	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\dep.cts"
-	seteventtrigger DEPENDED :ALIENHUNT_DEP_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\dep.cts"
-	pause
+if ($DEP_AMOUNT = 0)
+	setvar $DEP_AMOUNT ""
+end
+setvar $BOT~COMMAND "dep"
+setvar $BOT~USER_COMMAND_LINE " dep silent"
+setvar $BOT~PARM1 $DEP_AMOUNT
+setvar $BOT~PARM2 ""
+setvar $BOT~PARM3 ""
+setvar $BOT~PARM4 ""
+setvar $BOT~PARM5 ""
+setvar $BOT~PARM6 ""
+savevar $BOT~PARM1
+savevar $BOT~PARM2
+savevar $BOT~PARM3
+savevar $BOT~PARM4
+savevar $BOT~PARM5
+savevar $BOT~PARM6
+savevar $BOT~COMMAND
+savevar $BOT~USER_COMMAND_LINE
+load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\dep.cts"
+seteventtrigger DEPENDED :ALIENHUNT_DEP_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\dep.cts"
+pause
 :ALIENHUNT_DEP_ENDED
 return
 
 :ALIENHUNT_WITH_RUN
 :ALIENHUNT_WITH
-	if ($WITH_AMOUNT = 0)
-		setvar $WITH_AMOUNT ""
-	end
-	setvar $BOT~COMMAND "with"
-	setvar $BOT~USER_COMMAND_LINE " with silent"
-	setvar $BOT~PARM1 $WITH_AMOUNT
-	setvar $BOT~PARM2 ""
-	setvar $BOT~PARM3 ""
-	setvar $BOT~PARM4 ""
-	setvar $BOT~PARM5 ""
-	setvar $BOT~PARM6 ""
-	savevar $BOT~PARM1
-	savevar $BOT~PARM2
-	savevar $BOT~PARM3
-	savevar $BOT~PARM4
-	savevar $BOT~PARM5
-	savevar $BOT~PARM6
-	savevar $BOT~COMMAND
-	savevar $BOT~USER_COMMAND_LINE
-	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\with.cts"
-	seteventtrigger WITHENDED :ALIENHUNT_WITH_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\with.cts"
-	pause
+if ($WITH_AMOUNT = 0)
+	setvar $WITH_AMOUNT ""
+end
+setvar $BOT~COMMAND "with"
+setvar $BOT~USER_COMMAND_LINE " with silent"
+setvar $BOT~PARM1 $WITH_AMOUNT
+setvar $BOT~PARM2 ""
+setvar $BOT~PARM3 ""
+setvar $BOT~PARM4 ""
+setvar $BOT~PARM5 ""
+setvar $BOT~PARM6 ""
+savevar $BOT~PARM1
+savevar $BOT~PARM2
+savevar $BOT~PARM3
+savevar $BOT~PARM4
+savevar $BOT~PARM5
+savevar $BOT~PARM6
+savevar $BOT~COMMAND
+savevar $BOT~USER_COMMAND_LINE
+load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\with.cts"
+seteventtrigger WITHENDED :ALIENHUNT_WITH_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\with.cts"
+pause
 :ALIENHUNT_WITH_ENDED
 return
 
 :ALIENHUNT_BUYFIG_RUN
 :ALIENHUNT_BUYFIG
-	setvar $BOT~COMMAND "buy"
-	setvar $BOT~USER_COMMAND_LINE " buy fig silent"
-	setvar $BOT~PARM1 "fig"
-	setvar $BOT~PARM2 ""
-	setvar $BOT~PARM3 ""
-	setvar $BOT~PARM4 ""
-	setvar $BOT~PARM5 ""
-	setvar $BOT~PARM6 ""
-	savevar $BOT~PARM1
-	savevar $BOT~PARM2
-	savevar $BOT~PARM3
-	savevar $BOT~PARM4
-	savevar $BOT~PARM5
-	savevar $BOT~PARM6
-	savevar $BOT~COMMAND
-	savevar $BOT~USER_COMMAND_LINE
-	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
-	seteventtrigger BUYFIGENDED :ALIENHUNT_BUYFIG_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
-	pause
+setvar $BOT~COMMAND "buy"
+setvar $BOT~USER_COMMAND_LINE " buy fig silent"
+setvar $BOT~PARM1 "fig"
+setvar $BOT~PARM2 ""
+setvar $BOT~PARM3 ""
+setvar $BOT~PARM4 ""
+setvar $BOT~PARM5 ""
+setvar $BOT~PARM6 ""
+savevar $BOT~PARM1
+savevar $BOT~PARM2
+savevar $BOT~PARM3
+savevar $BOT~PARM4
+savevar $BOT~PARM5
+savevar $BOT~PARM6
+savevar $BOT~COMMAND
+savevar $BOT~USER_COMMAND_LINE
+load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+seteventtrigger BUYFIGENDED :ALIENHUNT_BUYFIG_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+pause
 :ALIENHUNT_BUYFIG_ENDED
 return
 
 :ALIENHUNT_BUYFUEL_RUN
 :ALIENHUNT_BUYFUEL
-	setvar $BOT~COMMAND "buy"
-	setvar $BOT~USER_COMMAND_LINE " buy f s silent override"
-	setvar $BOT~PARM1 "f"
-	setvar $BOT~PARM2 "s"
-	setvar $BOT~PARM3 ""
-	setvar $BOT~PARM4 ""
-	setvar $BOT~PARM5 ""
-	setvar $BOT~PARM6 ""
-	savevar $BOT~PARM1
-	savevar $BOT~PARM2
-	savevar $BOT~PARM3
-	savevar $BOT~PARM4
-	savevar $BOT~PARM5
-	savevar $BOT~PARM6
-	savevar $BOT~COMMAND
-	savevar $BOT~USER_COMMAND_LINE
-	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
-	seteventtrigger BUYFUELENDED :ALIENHUNT_BUYFUEL_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
-	pause
+setvar $BOT~COMMAND "buy"
+setvar $BOT~USER_COMMAND_LINE " buy f s silent override"
+setvar $BOT~PARM1 "f"
+setvar $BOT~PARM2 "s"
+setvar $BOT~PARM3 ""
+setvar $BOT~PARM4 ""
+setvar $BOT~PARM5 ""
+setvar $BOT~PARM6 ""
+savevar $BOT~PARM1
+savevar $BOT~PARM2
+savevar $BOT~PARM3
+savevar $BOT~PARM4
+savevar $BOT~PARM5
+savevar $BOT~PARM6
+savevar $BOT~COMMAND
+savevar $BOT~USER_COMMAND_LINE
+load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+seteventtrigger BUYFUELENDED :ALIENHUNT_BUYFUEL_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+pause
 :ALIENHUNT_BUYFUEL_ENDED
 return
 
 :ALIENHUNT_BUYSHIELD_RUN
 :ALIENHUNT_BUYSHIELD
-	setvar $BOT~COMMAND "buy"
-	setvar $BOT~USER_COMMAND_LINE " buy sh silent"
-	setvar $BOT~PARM1 "sh"
-	setvar $BOT~PARM2 ""
-	setvar $BOT~PARM3 ""
-	setvar $BOT~PARM4 ""
-	setvar $BOT~PARM5 ""
-	setvar $BOT~PARM6 ""
-	savevar $BOT~PARM1
-	savevar $BOT~PARM2
-	savevar $BOT~PARM3
-	savevar $BOT~PARM4
-	savevar $BOT~PARM5
-	savevar $BOT~PARM6
-	savevar $BOT~COMMAND
-	savevar $BOT~USER_COMMAND_LINE
-	load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
-	seteventtrigger BUYSHIELDENDED :ALIENHUNT_BUYSHIELD_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
-	pause
+setvar $BOT~COMMAND "buy"
+setvar $BOT~USER_COMMAND_LINE " buy sh silent"
+setvar $BOT~PARM1 "sh"
+setvar $BOT~PARM2 ""
+setvar $BOT~PARM3 ""
+setvar $BOT~PARM4 ""
+setvar $BOT~PARM5 ""
+setvar $BOT~PARM6 ""
+savevar $BOT~PARM1
+savevar $BOT~PARM2
+savevar $BOT~PARM3
+savevar $BOT~PARM4
+savevar $BOT~PARM5
+savevar $BOT~PARM6
+savevar $BOT~COMMAND
+savevar $BOT~USER_COMMAND_LINE
+load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+seteventtrigger BUYSHIELDENDED :ALIENHUNT_BUYSHIELD_ENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\buy.cts"
+pause
 :ALIENHUNT_BUYSHIELD_ENDED
 return
 

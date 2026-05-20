@@ -2152,8 +2152,9 @@ setvar $Gopop_EquValue "125"
 gosub :fedcomoff
 
 # set up planet catalog
+loadvar $bot~folder
 if ($PLANET_CATALOG_FILE = "") or ($PLANET_CATALOG_FILE = 0)
-	setvar $PLANET_CATALOG_FILE "games\" & GAMENAME & "\planetprods.cfg"
+	setvar $PLANET_CATALOG_FILE $bot~folder&"/planetprods.cfg"
 end
 gosub :planet~loadplanetprods
 
@@ -2245,21 +2246,21 @@ return
 
 ##################################################################################################################################
 :ansiColors
-  setVar $cls #27 & "[2J"
-  setVar $black #27 & "[1;30m"
-  setVar $red #27 & "[1;31m"
-  setVar $green #27 & "[1;32m"
-  setVar $yellow #27 & "[1;33m"
-  setVar $blue #27 & "[1;34m"
-  setVar $magenta #27 & "[1;35m"
-  setVar $cyan #27 & "[1;36m"
-  setVar $white #27 & "[1;37m"
-  setVar $blackWhite #27 & "[0;30;47m"
-  setVar $whiteRed #27 & "[1;37;41m"
-  setVar $redWhite #27 & "[1;31;47m"
-  setVar $yellowRed #27 & "[1;33;41m"
-  setVar $resetBlack #27 & "[1;37;40m"
- return
+setVar $cls #27 & "[2J"
+setVar $black ANSI_8
+setVar $red ANSI_12
+setVar $green ANSI_10
+setVar $yellow ANSI_14
+setVar $blue ANSI_9
+setVar $magenta ANSI_13
+setVar $cyan ANSI_11
+setVar $white ANSI_15
+setVar $blackWhite #27 & "[0;30;47m"
+setVar $whiteRed #27 & "[1;37;41m"
+setVar $redWhite #27 & "[1;31;47m"
+setVar $yellowRed #27 & "[1;33;41m"
+setVar $resetBlack #27 & "[1;37;40m"
+return
 
 
 
@@ -4544,58 +4545,58 @@ setTextTrigger     noturns     :twarpPhotoned  "Your ship was hit by a Photon an
 setTextTrigger     noroute     :twarpNoRoute   "Do you really want to warp there? (Y/N)"
 pause
 :adj_warp	
-	gosub :MOVE~KILLTWARPTRIGGERS
-	send "z*"
-	goto :twarp_adj
+gosub :MOVE~KILLTWARPTRIGGERS
+send "z*"
+goto :twarp_adj
 :locking
-	gosub :MOVE~KILLTWARPTRIGGERS
-	send "y"
-	setTextLineTrigger twarp_lock :twarp_lock "TransWarp Locked"
-	setTextLineTrigger no_twrp_lock :no_twarp_lock "No locating beam found"
-	setTextLineTrigger twarp_adj :twarp_adj "<Set NavPoint>"
-	setTextLineTrigger no_fuel :twarpNoFuel "You do not have enough Fuel Ore"
-	pause
+gosub :MOVE~KILLTWARPTRIGGERS
+send "y"
+setTextLineTrigger twarp_lock :twarp_lock "TransWarp Locked"
+setTextLineTrigger no_twrp_lock :no_twarp_lock "No locating beam found"
+setTextLineTrigger twarp_adj :twarp_adj "<Set NavPoint>"
+setTextLineTrigger no_fuel :twarpNoFuel "You do not have enough Fuel Ore"
+pause
 :twarpNoFuel
-	gosub :MOVE~KILLTWARPTRIGGERS
-	setVar $gpm~msg "Not enough fuel for T-warp."
-	goto :twarpDone
+gosub :MOVE~KILLTWARPTRIGGERS
+setVar $gpm~msg "Not enough fuel for T-warp."
+goto :twarpDone
 :twarp_adj
-	gosub :MOVE~KILLTWARPTRIGGERS
-	send "z* "
-	setVar $gpm~msg "That sector is next door, just plain warping."
-	setVar $player~twarpsuccess TRUE
-	goto :twarpDone
+gosub :MOVE~KILLTWARPTRIGGERS
+send "z* "
+setVar $gpm~msg "That sector is next door, just plain warping."
+setVar $player~twarpsuccess TRUE
+goto :twarpDone
 :twarpNoRoute
-	gosub :MOVE~KILLTWARPTRIGGERS
-	send "n* z* "
-	setVar $gpm~msg "No route available to that sector!"
-	goto :twarpDone
+gosub :MOVE~KILLTWARPTRIGGERS
+send "n* z* "
+setVar $gpm~msg "No route available to that sector!"
+goto :twarpDone
 :no_twarp_lock
-	gosub :MOVE~KILLTWARPTRIGGERS
-	send "n* z* "
-	setVar $target $warpto
-	gosub :removeFigFromData
-	setVar $gpm~msg "No fighters at T-warp point!"
-	goto :twarpDone
+gosub :MOVE~KILLTWARPTRIGGERS
+send "n* z* "
+setVar $target $warpto
+gosub :removeFigFromData
+setVar $gpm~msg "No fighters at T-warp point!"
+goto :twarpDone
 :twarpIgd
-	gosub :MOVE~KILLTWARPTRIGGERS
-	setVar $gpm~msg "My ship is being held by Interdictor!"
-	goto :twarpDone
+gosub :MOVE~KILLTWARPTRIGGERS
+setVar $gpm~msg "My ship is being held by Interdictor!"
+goto :twarpDone
 :twarpPhotoned
-	gosub :MOVE~KILLTWARPTRIGGERS
-	setVar $gpm~msg "I have been photoned and can not T-warp!"
-	goto :twarpDone
+gosub :MOVE~KILLTWARPTRIGGERS
+setVar $gpm~msg "I have been photoned and can not T-warp!"
+goto :twarpDone
 :twarp_lock
-	gosub :MOVE~KILLTWARPTRIGGERS
-	setVar $target $warpto
-	gosub :addFigToData
-	if ($warpto = $MAP~STARDOCK)
-		send "y ps"
-	else
-		send "y "
-	end
-	setVar $gpm~msg "T-warp completed."
-	setVar $player~twarpsuccess TRUE
+gosub :MOVE~KILLTWARPTRIGGERS
+setVar $target $warpto
+gosub :addFigToData
+if ($warpto = $MAP~STARDOCK)
+	send "y ps"
+else
+	send "y "
+end
+setVar $gpm~msg "T-warp completed."
+setVar $player~twarpsuccess TRUE
 
 :twarpDone
 killalltriggers
@@ -4636,22 +4637,22 @@ while (SECTOR.WARPSIN[$target][$i] > 0)
 		setTextLineTrigger TwarpAdj			:TwarpAdj "<Set NavPoint>"
 		pause
 		:TwarpAdj
-			gosub :killthetriggers
-			send " * "
-			return
+		gosub :killthetriggers
+		send " * "
+		return
 
 		:TwarpVoided
-			gosub :killthetriggers
-			send " N N "
-			goto :TryingNextAdj
+		gosub :killthetriggers
+		send " N N "
+		goto :TryingNextAdj
 
 		:TwarpLocked
-			gosub :killthetriggers
-			goto :SectorLocked
+		gosub :killthetriggers
+		goto :SectorLocked
 
 		:TwarpBlind
-			gosub :killthetriggers
-			send " N "
+		gosub :killthetriggers
+		send " N "
 	end
 	:TryingNextAdj
 	add $i 1
@@ -4850,107 +4851,107 @@ return
 # ======================     END MOW SUBROUTINES     ==========================
 :safemow
 :smow
-	gosub :killthetriggers
-	gosub :PLAYER~QUIKSTATS
-	if ($PLAYER~SCAN_TYPE = "None")
-		setvar $switchboard~message "Safe Mow can only be run when you have a long range scanner.*"
-		gosub :switchboard~switchboard
-	        return
-	end
-	setVar $startingLocation $PLAYER~CURRENT_PROMPT
-	setVar $validPrompts "Command <Underground> Do How Corporate Citadel Planet Computer Terra <StarDock> <FedPolice> <Tavern> <Libram <Galactic <Hardware <Shipyards>"
-	gosub :checkStartingPrompt
-	if ($startingLocation = "Command")
-		gosub :getShipStats
-	elseif ($SHIP_MAX_ATTACK <= 0)
-		setVar $SHIP_MAX_ATTACK 99991111
-	end
-	setVar $msec $parm1
-	isNumber $number $msec
-	if ($number <> 1)
-		setvar $switchboard~message "Sector entered is not a number, cannot mow!*"
-		gosub :switchboard~switchboard
-		return
-	elseif (($msec <= 0) OR ($msec > SECTORS))
-		setvar $switchboard~message "Sector entered is not valid, cannot mow!*"
-		gosub :switchboard~switchboard
-		return
-	end
-	if ($parm2 = "p")
+gosub :killthetriggers
+gosub :PLAYER~QUIKSTATS
+if ($PLAYER~SCAN_TYPE = "None")
+	setvar $switchboard~message "Safe Mow can only be run when you have a long range scanner.*"
+	gosub :switchboard~switchboard
+        return
+end
+setVar $startingLocation $PLAYER~CURRENT_PROMPT
+setVar $validPrompts "Command <Underground> Do How Corporate Citadel Planet Computer Terra <StarDock> <FedPolice> <Tavern> <Libram <Galactic <Hardware <Shipyards>"
+gosub :checkStartingPrompt
+if ($startingLocation = "Command")
+	gosub :getShipStats
+elseif ($SHIP_MAX_ATTACK <= 0)
+	setVar $SHIP_MAX_ATTACK 99991111
+end
+setVar $msec $parm1
+isNumber $number $msec
+if ($number <> 1)
+	setvar $switchboard~message "Sector entered is not a number, cannot mow!*"
+	gosub :switchboard~switchboard
+	return
+elseif (($msec <= 0) OR ($msec > SECTORS))
+	setvar $switchboard~message "Sector entered is not valid, cannot mow!*"
+	gosub :switchboard~switchboard
+	return
+end
+if ($parm2 = "p")
+	setVar $are_we_docking TRUE
+else
+	if ($parm3 = "p")
 		setVar $are_we_docking TRUE
 	else
-		if ($parm3 = "p")
-			setVar $are_we_docking TRUE
-		else
-			setVar $are_we_docking FALSE
-		end
+		setVar $are_we_docking FALSE
 	end
-	setVar $figsToDrop $parm2
-	isNumber $number $figsToDrop
-	if ($number <> 1)
-		if ($parm2 <> "p")
-			setvar $switchboard~message "Fighters to drop entered is not a number, cannot mow!*"
-			gosub :switchboard~switchboard
-			return
-		end
-		setVar $figsToDrop 0
-	elseif ($figsToDrop > 50000)
-		setvar $switchboard~message "Cannot drop more than 50,000 fighters per sector!*"
+end
+setVar $figsToDrop $parm2
+isNumber $number $figsToDrop
+if ($number <> 1)
+	if ($parm2 <> "p")
+		setvar $switchboard~message "Fighters to drop entered is not a number, cannot mow!*"
 		gosub :switchboard~switchboard
 		return
 	end
-	if ($SHIP_MAX_ATTACK > $PLAYER~FIGHTERS)
-		setVar $SHIP_MAX_ATTACK 9999
-	end
-	gosub :getCourse
-	setVar $j 3
-	setVar $result "q q q * "
-	setVar $isSafe TRUE
-	while (($j <= $courseLength) AND ($isSafe))
-		setVar $nextSafeSector $mowCourse[$j]
-		if ($PLAYER~SCAN_TYPE = "Holo")
-			send "sdsh"
-		elseif ($PLAYER~SCAN_TYPE = "Dens")
-			send "sd"
-		end
-                gosub :PLAYER~QUIKSTATS
-		setVar $minesSafe ((SECTOR.MINES.QUANTITY[$nextSafeSector] <= 0) OR (((SECTOR.MINES.OWNER[$nextSafeSector] = "yours") OR (SECTOR.MINES.OWNER[$nextSafeSector] = "belong to your Corp"))))
-                setVar $figsSafe  ((SECTOR.FIGS.QUANTITY[$nextSafeSector] <= 0) OR (((SECTOR.FIGS.OWNER[$nextSafeSector] = "yours") OR (SECTOR.FIGS.OWNER[$nextSafeSector] = "belong to your Corp"))))
-                setVar $planetSafe ((SECTOR.PLANETCOUNT[$nextSafeSector] <= 0) OR (($nextSafeSector = $MAP~STARDOCK) OR ($nextSafeSector <= 10)))
-                setVar $navHazSafe (SECTOR.NAVHAZ[$nextSafeSector] <= 0)
-                setVar $densitySafe (SECTOR.DENSITY[$nextSafeSector] <= 0)
-                setVar $limpetsSafe (SECTOR.ANOMOLY[$nextSafeSector] = FALSE) OR ((((SECTOR.LIMPETS.OWNER[$nextSafeSector] = "yours") OR (SECTOR.LIMPETS.OWNER[$nextSafeSector] = "belong to your Corp"))))
-                if ($densitySafe OR ($limpetsSafe AND $figsSafe AND $minesSafe AND $navHazSafe AND $planetSafe))
-                        send "m "&$mowCourse[$j]&"* "
-                else
-                        setvar $switchboard~message "Cannot safely move into sector " & $nextSafeSector & "*"
-                        gosub :switchboard~switchboard
-                        return
-                end
-		if (($figsToDrop > 0) AND ($mowCourse[$j] > 10) AND ($mowCourse[$j] <> $MAP~STARDOCK) AND ($j > 2))
-			send "f "&$figsToDrop&" * c d "
-			setVar $target $mowCourse[$j]
-			gosub :addFigToData
-		end
-		add $j 1
-	end
-	setVar $docking_instructions ""
-	if ($are_we_docking)
-		setVar $docking_instructions " p z t *"
-		if ($msec = $MAP~STARDOCK)
-			setVar $docking_instructions " p z s g y g q h *"
-		end
-		send $docking_instructions
-	end
-	gosub :PLAYER~QUIKSTATS
-	if ($PLAYER~CURRENT_SECTOR <> $msec)
-		setvar $switchboard~message "Safe mow did not reach destination!*"
-		gosub :switchboard~switchboard
-	else
-		setvar $switchboard~message "Safe mow completed.*"
-		gosub :switchboard~switchboard
-	end
+	setVar $figsToDrop 0
+elseif ($figsToDrop > 50000)
+	setvar $switchboard~message "Cannot drop more than 50,000 fighters per sector!*"
+	gosub :switchboard~switchboard
 	return
+end
+if ($SHIP_MAX_ATTACK > $PLAYER~FIGHTERS)
+	setVar $SHIP_MAX_ATTACK 9999
+end
+gosub :getCourse
+setVar $j 3
+setVar $result "q q q * "
+setVar $isSafe TRUE
+while (($j <= $courseLength) AND ($isSafe))
+	setVar $nextSafeSector $mowCourse[$j]
+	if ($PLAYER~SCAN_TYPE = "Holo")
+		send "sdsh"
+	elseif ($PLAYER~SCAN_TYPE = "Dens")
+		send "sd"
+	end
+            gosub :PLAYER~QUIKSTATS
+	setVar $minesSafe ((SECTOR.MINES.QUANTITY[$nextSafeSector] <= 0) OR (((SECTOR.MINES.OWNER[$nextSafeSector] = "yours") OR (SECTOR.MINES.OWNER[$nextSafeSector] = "belong to your Corp"))))
+            setVar $figsSafe  ((SECTOR.FIGS.QUANTITY[$nextSafeSector] <= 0) OR (((SECTOR.FIGS.OWNER[$nextSafeSector] = "yours") OR (SECTOR.FIGS.OWNER[$nextSafeSector] = "belong to your Corp"))))
+            setVar $planetSafe ((SECTOR.PLANETCOUNT[$nextSafeSector] <= 0) OR (($nextSafeSector = $MAP~STARDOCK) OR ($nextSafeSector <= 10)))
+            setVar $navHazSafe (SECTOR.NAVHAZ[$nextSafeSector] <= 0)
+            setVar $densitySafe (SECTOR.DENSITY[$nextSafeSector] <= 0)
+            setVar $limpetsSafe (SECTOR.ANOMOLY[$nextSafeSector] = FALSE) OR ((((SECTOR.LIMPETS.OWNER[$nextSafeSector] = "yours") OR (SECTOR.LIMPETS.OWNER[$nextSafeSector] = "belong to your Corp"))))
+            if ($densitySafe OR ($limpetsSafe AND $figsSafe AND $minesSafe AND $navHazSafe AND $planetSafe))
+                    send "m "&$mowCourse[$j]&"* "
+            else
+                    setvar $switchboard~message "Cannot safely move into sector " & $nextSafeSector & "*"
+                    gosub :switchboard~switchboard
+                    return
+            end
+	if (($figsToDrop > 0) AND ($mowCourse[$j] > 10) AND ($mowCourse[$j] <> $MAP~STARDOCK) AND ($j > 2))
+		send "f "&$figsToDrop&" * c d "
+		setVar $target $mowCourse[$j]
+		gosub :addFigToData
+	end
+	add $j 1
+end
+setVar $docking_instructions ""
+if ($are_we_docking)
+	setVar $docking_instructions " p z t *"
+	if ($msec = $MAP~STARDOCK)
+		setVar $docking_instructions " p z s g y g q h *"
+	end
+	send $docking_instructions
+end
+gosub :PLAYER~QUIKSTATS
+if ($PLAYER~CURRENT_SECTOR <> $msec)
+	setvar $switchboard~message "Safe mow did not reach destination!*"
+	gosub :switchboard~switchboard
+else
+	setvar $switchboard~message "Safe mow completed.*"
+	gosub :switchboard~switchboard
+end
+return
 # ======================     END SAFE MOW SUBROUTINES     ==========================
 
 # Includes

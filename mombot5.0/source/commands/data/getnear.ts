@@ -1,6 +1,7 @@
 gosub :PLAYER~QUIKSTATS
 setvar $VERSION "1.1a"
-setvar $MOM GAMENAME&".nego"
+loadvar $bot~folder
+setvar $MOM $bot~folder&"/"&GAMENAME&".nego"
 setarray $PORT SECTORS
 setvar $CNT 0
 setvar $BUYER 0

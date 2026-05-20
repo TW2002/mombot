@@ -89,30 +89,30 @@ waitfor "Message sent on sub-space channel"
 
 
 :reload_limps
-	gosub :player~quikstats
-	if ($player~total_holds <> $player~ore_holds)
-		Echo $TAGLINE & "Planet Short On Gas*"
-		waitfor "Message sent on sub-space channel"
-		halt
-	end
-	send " C R " & STARDOCK & "*Q "
-	setTextLineTrigger	itsalive 	:itsalive		"Items     Status  Trading % of max OnBoard"
-	setTextLineTrigger	nosoupforme	:nosoupforme	"I have no information about a port in that sector"
-	setDelayTrigger		WeHaveAProb	:WeHaveAProb	3000
-	pause
+gosub :player~quikstats
+if ($player~total_holds <> $player~ore_holds)
+	Echo $TAGLINE & "Planet Short On Gas*"
+	waitfor "Message sent on sub-space channel"
+	halt
+end
+send " C R " & STARDOCK & "*Q "
+setTextLineTrigger	itsalive 	:itsalive		"Items     Status  Trading % of max OnBoard"
+setTextLineTrigger	nosoupforme	:nosoupforme	"I have no information about a port in that sector"
+setDelayTrigger		WeHaveAProb	:WeHaveAProb	3000
+pause
 	:WeHaveAProb
-		killAllTriggers
-		waitfor "Citadel command"
-		Echo "*Unexpected Problem. Halting.*"
-		halt
+	killAllTriggers
+	waitfor "Citadel command"
+	Echo "*Unexpected Problem. Halting.*"
+	halt
 	:nosoupforme
-		killAllTriggers
-		waitfor "Citadel command"
-		Echo "*Dock Is gone*"
-		halt
+	killAllTriggers
+	waitfor "Citadel command"
+	Echo "*Dock Is gone*"
+	halt
 	:itsalive
-		killAllTriggers
-		waitfor "Citadel command"
+	killAllTriggers
+	waitfor "Citadel command"
 
 	send "Q Q M " & STARDOCK & "* Y"
 	waiton "Federation beacon acknowledged,"
@@ -128,26 +128,26 @@ waitfor "Message sent on sub-space channel"
 	gosub :player~quikstats
 
 	if ($player~current_prompt <> "Citadel")
-		send $TAGLINE & "*Not In Citadel. Something's Wrong*"
-		waitfor "Message sent on sub-space channel"
-		halt
+	send $TAGLINE & "*Not In Citadel. Something's Wrong*"
+	waitfor "Message sent on sub-space channel"
+	halt
 	end
 
 	if ($player~limpets < 10)
-		send $TAGLINE & "Furb Failed. Halting*"
-		waitfor "Message sent on sub-space channel"
-		halt
+	send $TAGLINE & "Furb Failed. Halting*"
+	waitfor "Message sent on sub-space channel"
+	halt
 	end
 
     if ($player~fighters < 100)
-    	send $TAGLINE & "Ship Fighters Below 100. Kinda Dangerous*"
-    	waitfor "Message sent on sub-space channel"
-    	halt
+	send $TAGLINE & "Ship Fighters Below 100. Kinda Dangerous*"
+	waitfor "Message sent on sub-space channel"
+	halt
     end
 
 	if ($player~credits > 50000)
-		send "tt" & ($player~credits - 50000) & "*"
-		waiton "How much to transfer?"
+	send "tt" & ($player~credits - 50000) & "*"
+	waiton "How much to transfer?"
 	end
 
 :rerun

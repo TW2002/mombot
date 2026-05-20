@@ -149,30 +149,30 @@ end
 halt
 
 :MakePlanet
-  # sys_check
+# sys_check
 
 
 
-  setVar $Failed 0
-  gosub :PLAYER~QUIKSTATS
+setVar $Failed 0
+gosub :PLAYER~QUIKSTATS
 
-  setvar $sector $PLAYER~CURRENT_SECTOR
-  setVar $Credits $PLAYER~CREDITS
-  setVar $holds $PLAYER~TOTAL_HOLDS
-  setVar $torps $PLAYER~GENESIS
-  setVar $dets $PLAYER~ATOMIC
-  setVar $figs $PLAYER~FIGHTERS
-  setVar $shield $PLAYER~SHIELDS
+setvar $sector $PLAYER~CURRENT_SECTOR
+setVar $Credits $PLAYER~CREDITS
+setVar $holds $PLAYER~TOTAL_HOLDS
+setVar $torps $PLAYER~GENESIS
+setVar $dets $PLAYER~ATOMIC
+setVar $figs $PLAYER~FIGHTERS
+setVar $shield $PLAYER~SHIELDS
 
 
-  # see if we really can twarp
-  if ((SECTOR.FIGS.QUANTITY[$Sector] <= 0) or ((SECTOR.FIGS.OWNER[$Sector] <> "belong to your Corp") and (SECTOR.FIGS.OWNER[$Sector] = "yours")) or (($PLAYER~TWARP_TYPE = 0) or ($PLAYER~TWARP_TYPE = "No")) or ($PLAYER~ALIGNMENT < 1000)) and ($WarpType = "T")
-	setVar $SWITCHBOARD~message "Cannot twarp safely, so halting.  Check alignment and make sure fighter is in sector.*"
-	gosub :SWITCHBOARD~switchboard
-	halt
-  end
+# see if we really can twarp
+if ((SECTOR.FIGS.QUANTITY[$Sector] <= 0) or ((SECTOR.FIGS.OWNER[$Sector] <> "belong to your Corp") and (SECTOR.FIGS.OWNER[$Sector] = "yours")) or (($PLAYER~TWARP_TYPE = 0) or ($PLAYER~TWARP_TYPE = "No")) or ($PLAYER~ALIGNMENT < 1000)) and ($WarpType = "T")
+setVar $SWITCHBOARD~message "Cannot twarp safely, so halting.  Check alignment and make sure fighter is in sector.*"
+gosub :SWITCHBOARD~switchboard
+halt
+end
 
-  setVar $announce_message ""
+setVar $announce_message ""
 
   :bust
 
@@ -320,58 +320,58 @@ end
 
 
 :sub_Resupply
-  if ($Credits < $CreditLimit)
-    # low on cash
-    setVar $Failed 1
-    return
-  end
+if ($Credits < $CreditLimit)
+# low on cash
+setVar $Failed 1
+return
+end
 
-  gosub :PLAYER~QUIKSTATS
-  setVar $buyFigs ($figs - $PLAYER~FIGHTERS)
-  setVar $buyShield ($shield - $PLAYER~SHIELDS)
-  setVar $Credits $PLAYER~CREDITS
+gosub :PLAYER~QUIKSTATS
+setVar $buyFigs ($figs - $PLAYER~FIGHTERS)
+setVar $buyShield ($shield - $PLAYER~SHIELDS)
+setVar $Credits $PLAYER~CREDITS
 
-  loadvar $map~stardock
+loadvar $map~stardock
 
-  if ($WarpType = "T")
-    # TWarp to stardock
-    gosub :calc_twarp_ore
-    if ($ore_short > 0)
-      if ($empty_holds <= 0)
-        setVar $SWITCHBOARD~message "Need more ore for the round trip to StarDock, but the ship has no empty holds.*"
-        gosub :SWITCHBOARD~switchboard
-        setVar $Failed 1
-        return
-      end
+if ($WarpType = "T")
+# TWarp to stardock
+gosub :calc_twarp_ore
+if ($ore_short > 0)
+ if ($empty_holds <= 0)
+setVar $SWITCHBOARD~message "Need more ore for the round trip to StarDock, but the ship has no empty holds.*"
+gosub :SWITCHBOARD~switchboard
+setVar $Failed 1
+return
+ end
 
-      if ($empty_holds < $ore_short)
-        setVar $SWITCHBOARD~message "Need "&$ore_short&" holds of ore for the round trip to StarDock, but only "&$empty_holds&" holds are free.*"
-        gosub :SWITCHBOARD~switchboard
-        setVar $Failed 1
-        return
-      end
+ if ($empty_holds < $ore_short)
+setVar $SWITCHBOARD~message "Need "&$ore_short&" holds of ore for the round trip to StarDock, but only "&$empty_holds&" holds are free.*"
+gosub :SWITCHBOARD~switchboard
+setVar $Failed 1
+return
+ end
 
-      setVar $SeekProduct~Product 1
-      setVar $SeekProduct~Holds $ore_short
-      gosub :seekproduct
-    end
+ setVar $SeekProduct~Product 1
+ setVar $SeekProduct~Holds $ore_short
+ gosub :seekproduct
+end
 
-    if ($map~stardock < 600) or (SECTORS > 5000)
-      send $map~stardock "*yy"
-    else
-      send $map~stardock "yy"
-    end
-  else
-    setVar $Warp~Mode $WarpType
-    setVar $Warp~Dest $map~stardock
-    gosub :warp
-  end
+if ($map~stardock < 600) or (SECTORS > 5000)
+ send $map~stardock "*yy"
+else
+ send $map~stardock "yy"
+end
+else
+setVar $Warp~Mode $WarpType
+setVar $Warp~Dest $map~stardock
+gosub :warp
+end
 
-  send "ps  g yg qh t"
-  waitFor "Planning on starting a colony eh?"
+send "ps  g yg qh t"
+waitFor "Planning on starting a colony eh?"
 
-  setTextTrigger Resupply_GetTorps :Resupply_GetTorps ") [0] ?"
-  pause
+setTextTrigger Resupply_GetTorps :Resupply_GetTorps ") [0] ?"
+pause
 
   :Resupply_GetTorps
   getWord CURRENTLINE $Resupply_Torps 9
@@ -437,24 +437,24 @@ gosub :MOVE~MOVE
 
 if ($seek_found = "P")
 :seek_buyproduct
-  if ($seek_product = 1)
-    setvar $HAGGLE~BUYPROD "Fuel"
-  elseif ($seek_product = 2)
-    setvar $HAGGLE~BUYPROD "Organics"
-  else
-    setvar $HAGGLE~BUYPROD "Equipment"
-  end
-
-  setvar $HAGGLE~QUANTITY 0
-  setvar $HAGGLE~SECTOR $seek_source_sector
-  send "pt"
-  gosub :HAGGLE~HAGGLE
-
-  if ($HAGGLE~ABORT)
-    goto :seek_buyproduct
-  end
+if ($seek_product = 1)
+setvar $HAGGLE~BUYPROD "Fuel"
+elseif ($seek_product = 2)
+setvar $HAGGLE~BUYPROD "Organics"
 else
-  send "tnt"&$seek_product "*q"
+setvar $HAGGLE~BUYPROD "Equipment"
+end
+
+setvar $HAGGLE~QUANTITY 0
+setvar $HAGGLE~SECTOR $seek_source_sector
+send "pt"
+gosub :HAGGLE~HAGGLE
+
+if ($HAGGLE~ABORT)
+goto :seek_buyproduct
+end
+else
+send "tnt"&$seek_product "*q"
 end
 return
 

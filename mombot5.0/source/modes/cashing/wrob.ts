@@ -50,6 +50,7 @@ loadvar $DEBRIS_LOSS
 loadvar $RADIATION_LIFETIME
 loadvar $LIMPET_REMOVAL_COST
 loadvar $MAX_PLANETS_PER_SECTOR
+loadvar $bot~folder
 if (($PORT_MAX = 0) and ($GAME~PORT_MAX > 0))
   setvar $PORT_MAX $GAME~PORT_MAX
   savevar $PORT_MAX
@@ -66,7 +67,7 @@ if (($CLEAR_BUST_DAYS = 0) and ($GAME~CLEAR_BUST_DAYS > 0))
   setvar $CLEAR_BUST_DAYS $GAME~CLEAR_BUST_DAYS
   savevar $CLEAR_BUST_DAYS
 end
-setvar $NO_CREDITS_FILE "MOM_"&GAMENAME&"_No_Credits.txt"
+setvar $NO_CREDITS_FILE $bot~folder&"/MOM_"&GAMENAME&"_No_Credits.txt"
 
 
 loadvar $PASSWORD

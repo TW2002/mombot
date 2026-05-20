@@ -1741,100 +1741,100 @@ end
 pause
 
 :process_chat
-        gosub :killchattriggers
-        getOutText $chat_symbol
-        processOut $chat_symbol
+gosub :killchattriggers
+getOutText $chat_symbol
+processOut $chat_symbol
         :wait_for_chat
         settextouttrigger chat :processchatstring ""
         pause
         :processchatstring
-                getOutText $character
-                processOut $character
-                getwordpos $character $pos #13
-                setvar $found_enter_key false
-                if ($pos > 0)
-                        setvar $found_enter_key true
-                end
-                if ($found_enter_key = true)
-                        goto :start
-                else
-                        goto :wait_for_chat
-                end
+        getOutText $character
+        processOut $character
+        getwordpos $character $pos #13
+        setvar $found_enter_key false
+        if ($pos > 0)
+                setvar $found_enter_key true
+        end
+        if ($found_enter_key = true)
+                goto :start
+        else
+                goto :wait_for_chat
+        end
 
 :process_up
-        gosub :killchattriggers
-        getDeafClients $BOT~botIsDeaf
-        if ($BOT~botIsDeaf)
-                if ($comm_window_start_index < ($comsize-$comm_window_size))
-                        add $comm_window_start_index $comm_window_size
-                        if ($comm_window_start_index > ($comsize-$comm_window_size))
-                                setVar $comm_window_start_index ($comsize-$comm_window_size)
-                        end
+gosub :killchattriggers
+getDeafClients $BOT~botIsDeaf
+if ($BOT~botIsDeaf)
+        if ($comm_window_start_index < ($comsize-$comm_window_size))
+                add $comm_window_start_index $comm_window_size
+                if ($comm_window_start_index > ($comsize-$comm_window_size))
+                        setVar $comm_window_start_index ($comsize-$comm_window_size)
                 end
         end
-        goto :start
+end
+goto :start
 
 :process_down
-        gosub :killchattriggers
-        if ($BOT~botIsDeaf)
-                if ($comm_window_start_index > 1)
-                        subtract $comm_window_start_index $comm_window_size
-                        if ($comm_window_start_index < 1)
-                                setVar $comm_window_start_index 1
-                        end
+gosub :killchattriggers
+if ($BOT~botIsDeaf)
+        if ($comm_window_start_index > 1)
+                subtract $comm_window_start_index $comm_window_size
+                if ($comm_window_start_index < 1)
+                        setVar $comm_window_start_index 1
                 end
         end
-        goto :start
+end
+goto :start
 
 :process_command
-        gosub :killchattriggers
-        getDeafClients $BOT~botIsDeaf
-        if ($BOT~botIsDeaf)
-                setvar $active_viewscreen false
-                setDeafClients false
-                echo #27&"[255D"&#27&"[255B"&#27&"[K"
-                echo "*"&ansi_5&"Viewscreen shutting down..*"&ansi_15&CURRENTANSILINE
-        else
-                setvar $active_viewscreen true
-                setDeafClients true
-                setVar $comm_window_start_index 1
-                setvar $old_output ""
-                gosub :refreshChatMenu
-        end
-        getDeafClients $BOT~botIsDeaf
-        saveVar $BOT~botIsDeaf
-        goto :start
+gosub :killchattriggers
+getDeafClients $BOT~botIsDeaf
+if ($BOT~botIsDeaf)
+        setvar $active_viewscreen false
+        setDeafClients false
+        echo #27&"[255D"&#27&"[255B"&#27&"[K"
+        echo "*"&ansi_5&"Viewscreen shutting down..*"&ansi_15&CURRENTANSILINE
+else
+        setvar $active_viewscreen true
+        setDeafClients true
+        setVar $comm_window_start_index 1
+        setvar $old_output ""
+        gosub :refreshChatMenu
+end
+getDeafClients $BOT~botIsDeaf
+saveVar $BOT~botIsDeaf
+goto :start
 
 :toggle_battle_screen
-        gosub :killchattriggers
-        getDeafClients $BOT~botIsDeaf
-        if ($BOT~botIsDeaf)
-                if ($battle_screen = true)
-                        setvar $battle_screen false
-                else
-                        setvar $battle_screen true
-                end
-                goto :start
+gosub :killchattriggers
+getDeafClients $BOT~botIsDeaf
+if ($BOT~botIsDeaf)
+        if ($battle_screen = true)
+                setvar $battle_screen false
+        else
+                setvar $battle_screen true
         end
+        goto :start
+end
 :toggle_mute_me
-        gosub :killchattriggers
-        getDeafClients $BOT~botIsDeaf
-        if ($BOT~botIsDeaf)
-                if ($ignoreme = true)
-                        setvar $ignoreme false
-                else
-                        setvar $ignoreme true
-                end
-                goto :start
+gosub :killchattriggers
+getDeafClients $BOT~botIsDeaf
+if ($BOT~botIsDeaf)
+        if ($ignoreme = true)
+                setvar $ignoreme false
+        else
+                setvar $ignoreme true
         end
+        goto :start
+end
 
 :refresh
-        getDeafClients $BOT~botIsDeaf
-        if (($BOT~botIsDeaf) and ($active_viewscreen = true))
-                gosub :refreshChatMenu
-                setDelayTrigger delay :refresh 500
-        end
-        pause
+getDeafClients $BOT~botIsDeaf
+if (($BOT~botIsDeaf) and ($active_viewscreen = true))
+        gosub :refreshChatMenu
+        setDelayTrigger delay :refresh 500
+end
+pause
 
 :lookForCom
 gosub :killchattriggers
@@ -2310,13 +2310,13 @@ if ($fighter_output <> "")
 else
         setvar $output $output&"*"
 end
-setVar $output $output&ANSI_15&"--------"&ANSI_12&" "&#27&"[35m["&#27&"[32m'"&#27&"[35m]"&ANSI_15&"Sub ("&$BOT~subspace&") "&ansi_15&"----- "&#27&"[35m["&#27&"[32m`"&#27&"[35m]"&ANSI_15&"Fed "&ansi_15&"---- "&#27&"[35mPage ["&#27&"[32mU"&#27&"[35m]p Chat "&ansi_15&"--"&#27&"[35m Page "&#27&"[35m["&#27&"[32mD"&#27&"[35m]own Chat "&ansi_15&"---- "
+setVar $output $output&ANSI_15&"--------"&ANSI_12&" "&ANSI_5&"["&ANSI_2&"'"&ANSI_5&"]"&ANSI_15&"Sub ("&$BOT~subspace&") "&ansi_15&"----- "&ANSI_5&"["&ANSI_2&"`"&ANSI_5&"]"&ANSI_15&"Fed "&ansi_15&"---- "&ANSI_5&"Page ["&ANSI_2&"U"&ANSI_5&"]p Chat "&ansi_15&"--"&ANSI_5&" Page "&ANSI_5&"["&ANSI_2&"D"&ANSI_5&"]own Chat "&ansi_15&"---- "
 loadvar $bot~subspace
 
 if ($ignoreme = true)
-        setvar $output $output&#27&"[35m["&#27&"[32m+"&#27&"[35m]Show Me"&ANSI_15&" ---------*"
+        setvar $output $output&ANSI_5&"["&ANSI_2&"+"&ANSI_5&"]Show Me"&ANSI_15&" ---------*"
 else
-        setvar $output $output&#27&"[35m["&#27&"[32m+"&#27&"[35m]Ignore Me"&ANSI_15&" -------*"
+        setvar $output $output&ANSI_5&"["&ANSI_2&"+"&ANSI_5&"]Ignore Me"&ANSI_15&" -------*"
 end
 
 if ($output <> $old_output)

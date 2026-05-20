@@ -130,120 +130,120 @@
 	gosub :ship~getShipStats
 
 :warning
-	send "q m * * * "
-	gosub :player~quikstats
-	gosub :planet~getPlanetInfo
-	format $planet~planet_fighters $formatted_fighters NUMBER
+send "q m * * * "
+gosub :player~quikstats
+gosub :planet~getPlanetInfo
+format $planet~planet_fighters $formatted_fighters NUMBER
 	
-	if ($player~targetingPerson)
-		setvar $switchboard~message "Citadel Killer Targeting "&$target&" :: Running on Planet "&$planet~planet&" :: "&$formatted_fighters&" Fighters available on surface.*"
-		gosub :switchboard~switchboard
-	elseif ($player~targetingCorp)
-		setvar $switchboard~message "Citadel Killer Targeting Corp "&$target&" :: Running on Planet "&$planet~planet&" :: "&$formatted_fighters&" Fighters available on surface.*"
-		gosub :switchboard~switchboard
-	else
-		setvar $switchboard~message "Citadel Killer :: Running on Planet "&$planet~planet&" :: "&$formatted_fighters&" Fighters available on surface.*"
-		gosub :switchboard~switchboard
-	end
-	if ($player~shotgun)
-		setvar $switchboard~message "Shotgun mode enabled.*"
-		gosub :switchboard~switchboard
-	elseif ($player~doubletap)
-		setvar $switchboard~message "Doubletap mode enabled.*"
-		gosub :switchboard~switchboard
-	end
-	send "c  "
+if ($player~targetingPerson)
+	setvar $switchboard~message "Citadel Killer Targeting "&$target&" :: Running on Planet "&$planet~planet&" :: "&$formatted_fighters&" Fighters available on surface.*"
+	gosub :switchboard~switchboard
+elseif ($player~targetingCorp)
+	setvar $switchboard~message "Citadel Killer Targeting Corp "&$target&" :: Running on Planet "&$planet~planet&" :: "&$formatted_fighters&" Fighters available on surface.*"
+	gosub :switchboard~switchboard
+else
+	setvar $switchboard~message "Citadel Killer :: Running on Planet "&$planet~planet&" :: "&$formatted_fighters&" Fighters available on surface.*"
+	gosub :switchboard~switchboard
+end
+if ($player~shotgun)
+	setvar $switchboard~message "Shotgun mode enabled.*"
+	gosub :switchboard~switchboard
+elseif ($player~doubletap)
+	setvar $switchboard~message "Doubletap mode enabled.*"
+	gosub :switchboard~switchboard
+end
+send "c  "
 
-	goto :scanit_cit_kill
+goto :scanit_cit_kill
 
 :main
-	killalltriggers
-	gosub :player~quikstats
-	setTextLineTrigger 	limp 	:scanit_cit_kill 	"Limpet mine in "&$player~CURRENT_SECTOR
-	setTextLineTrigger 	warps 	:scanit_cit_kill 	"warps into the sector."
-	setTextLineTrigger 	lifts 	:scanit_cit_kill 	"lifts off from"
-	setTextLineTrigger 	deffig 	:scanit_cit_kill 	"Deployed Fighters Report Sector "&$player~CURRENT_SECTOR
-	setTextLineTrigger 	secgun 	:scanit_cit_kill 	"Quasar Cannon on"
-	setTextLineTrigger 	ig		:scanit_cit_kill 	"Shipboard Computers The Interdictor Generator on"
-	setTextLineTrigger 	power 	:scanit_cit_kill 	"is powering up weapons systems!"
-	settextlinetrigger  wave    :scanit_cit_kill    " launches a wave of fighters at  "
-	settextlinetrigger  planet  :scanit_cit_kill	" launches a Genesis Torpedo into the sector!"
-	settextlinetrigger  atomic  :scanit_cit_kill    " appears from the planetary rubble."
-	setTextLineTrigger 	exits 	:scanit_cit_kill 	"exits the game."
-	setTextLineTrigger 	enters 	:scanit_cit_kill 	"enters the game."
-	setDelayTrigger		delay	:scanit_cit_kill	30000
-	setTextTrigger 		pause 	:pausing 		"Planet command (?="
-	setTextTrigger 		pause2 	:pausing 		"Computer command ["
-	setTextTrigger 		pause3 	:pausing 		"Corporate command ["
-	pause
+killalltriggers
+gosub :player~quikstats
+setTextLineTrigger 	limp 	:scanit_cit_kill 	"Limpet mine in "&$player~CURRENT_SECTOR
+setTextLineTrigger 	warps 	:scanit_cit_kill 	"warps into the sector."
+setTextLineTrigger 	lifts 	:scanit_cit_kill 	"lifts off from"
+setTextLineTrigger 	deffig 	:scanit_cit_kill 	"Deployed Fighters Report Sector "&$player~CURRENT_SECTOR
+setTextLineTrigger 	secgun 	:scanit_cit_kill 	"Quasar Cannon on"
+setTextLineTrigger 	ig		:scanit_cit_kill 	"Shipboard Computers The Interdictor Generator on"
+setTextLineTrigger 	power 	:scanit_cit_kill 	"is powering up weapons systems!"
+settextlinetrigger  wave    :scanit_cit_kill    " launches a wave of fighters at  "
+settextlinetrigger  planet  :scanit_cit_kill	" launches a Genesis Torpedo into the sector!"
+settextlinetrigger  atomic  :scanit_cit_kill    " appears from the planetary rubble."
+setTextLineTrigger 	exits 	:scanit_cit_kill 	"exits the game."
+setTextLineTrigger 	enters 	:scanit_cit_kill 	"enters the game."
+setDelayTrigger		delay	:scanit_cit_kill	30000
+setTextTrigger 		pause 	:pausing 		"Planet command (?="
+setTextTrigger 		pause2 	:pausing 		"Computer command ["
+setTextTrigger 		pause3 	:pausing 		"Corporate command ["
+pause
 
 
 :pausing
-	killAllTriggers
-	echo ANSI_6 "*[" ANSI_14 "Citadel Killer paused. To restart, re-enter citadel prompt" ANSI_6 "]*" ANSI_7
-	setTextTrigger restart :restarting "Citadel command ("
-	pause
+killAllTriggers
+echo ANSI_6 "*[" ANSI_14 "Citadel Killer paused. To restart, re-enter citadel prompt" ANSI_6 "]*" ANSI_7
+setTextTrigger restart :restarting "Citadel command ("
+pause
 :restarting
-	killAllTriggers
-	echo ANSI_6 "*[" ANSI_14 "Citadel Killer restarted" ANSI_6 "]*" ANSI_7
-	goto :main
+killAllTriggers
+echo ANSI_6 "*[" ANSI_14 "Citadel Killer restarted" ANSI_6 "]*" ANSI_7
+goto :main
 
 :scanit_cit_kill
-	killAllTriggers
-	getWord CURRENTLINE $test 1
-	if (($test = "P") OR ($test = "F") OR ($test = "R") OR ($test = ">"))
-		echo ANSI_14 "*spoof attempt!*"
-		goto :main
-	end	
+killAllTriggers
+getWord CURRENTLINE $test 1
+if (($test = "P") OR ($test = "F") OR ($test = "R") OR ($test = ">"))
+	echo ANSI_14 "*spoof attempt!*"
+	goto :main
+end	
 :scanit_again
-	killAllTriggers
-	gosub :player~quikstats
-	setvar $planet~planet_count SECTOR.PLANETCOUNT[$player~current_sector]
-	if (($planet~planet_count = 1) and ($overide = false))
-		setvar $one_planet true
-		setvar $player~override true
-	else
-		setvar $player~override $override
-	end
+killAllTriggers
+gosub :player~quikstats
+setvar $planet~planet_count SECTOR.PLANETCOUNT[$player~current_sector]
+if (($planet~planet_count = 1) and ($overide = false))
+	setvar $one_planet true
+	setvar $player~override true
+else
+	setvar $player~override $override
+end
 	
-	gosub :sector~getSectorData
+gosub :sector~getSectorData
 
-	if ($sector~realTraderCount > ($sector~corpieCount + $sector~defenderShips))
+if ($sector~realTraderCount > ($sector~corpieCount + $sector~defenderShips))
 	
-		goSub :combat~fastCitadelAttack
+	goSub :combat~fastCitadelAttack
 		
+	if ($player~fighters <= 0)
+		setvar $switchboard~message "Fighters are gone - halting.*"
+		gosub :switchboard~switchboard
+		halt
+	end
+	goto :scanit_again
+elseif (($sector~emptyShipCount > $sector~myShipCount) AND ($capEmptyShips = TRUE))
+	
+	setvar $player~startinglocation "Citadel"
+	gosub :combat~fastCapture
+	gosub :player~quikstats
+	if ($player~current_prompt = "Command")
+		send " l " $PLANET~PLANET " * n n * j m * * * j c  *  "
+		gosub :player~quikstats
 		if ($player~fighters <= 0)
 			setvar $switchboard~message "Fighters are gone - halting.*"
 			gosub :switchboard~switchboard
 			halt
 		end
-		goto :scanit_again
-	elseif (($sector~emptyShipCount > $sector~myShipCount) AND ($capEmptyShips = TRUE))
-	
-		setvar $player~startinglocation "Citadel"
-		gosub :combat~fastCapture
-		gosub :player~quikstats
-		if ($player~current_prompt = "Command")
-			send " l " $PLANET~PLANET " * n n * j m * * * j c  *  "
-			gosub :player~quikstats
-			if ($player~fighters <= 0)
-				setvar $switchboard~message "Fighters are gone - halting.*"
-				gosub :switchboard~switchboard
-				halt
-			end
-		end
-		goto :scanit_again
 	end
-	goto :halt
+	goto :scanit_again
+end
+goto :halt
 
 :halt
 :final
-	echo ansi_12 "*NO Targets*"
-	if ($sector~defenderShips > 0)
-		setvar $switchboard~message "Enemy defender ship in sector!  Not attacking.  Override if you want to attempt to kill them.*"
-		gosub :switchboard~switchboard
-	end
-	goto :main
+echo ansi_12 "*NO Targets*"
+if ($sector~defenderShips > 0)
+	setvar $switchboard~message "Enemy defender ship in sector!  Not attacking.  Override if you want to attempt to kill them.*"
+	gosub :switchboard~switchboard
+end
+goto :main
 
 halt
 

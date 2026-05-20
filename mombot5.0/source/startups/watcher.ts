@@ -78,546 +78,546 @@ setTextLineTrigger underattack2 :underattack "is powering up weapons systems!"
 pause
 
 :foundbigbubble
-	getText CURRENTLINE $bsec " Door: " " Internal Sec:"
-	isnumber $test $bsec 
-	if ($test = TRUE)
-		getSectorParameter $bsec "BUBBLEDOOR" $param_tunnel
-		if ($param_tunnel = "")
-			setVar $param_tunnel FALSE
-		end
-		if ($param_tunnel = FALSE)
-			setSectorParameter $bsec "BUBBLEDOOR" 1
-			getText CURRENTLINE $int "Internal Sec:" ""
-			setSectorParameter $bsec "BUBBLEINT" $int
-		end
+getText CURRENTLINE $bsec " Door: " " Internal Sec:"
+isnumber $test $bsec 
+if ($test = TRUE)
+	getSectorParameter $bsec "BUBBLEDOOR" $param_tunnel
+	if ($param_tunnel = "")
+		setVar $param_tunnel FALSE
 	end
-	setTextLineTrigger foundbigbubble :foundbigbubble "[Found Big Bubble]"
-	pause
+	if ($param_tunnel = FALSE)
+		setSectorParameter $bsec "BUBBLEDOOR" 1
+		getText CURRENTLINE $int "Internal Sec:" ""
+		setSectorParameter $bsec "BUBBLEINT" $int
+	end
+end
+setTextLineTrigger foundbigbubble :foundbigbubble "[Found Big Bubble]"
+pause
 :foundbigtunnel
-	getText CURRENTLINE $dsec1 "Door 1: " " Door 2:"
-	getText CURRENTLINE $dsec2 "Door 2: " " Internal"
-	isnumber $test $dsec1 
-	if ($test = TRUE)
-		getSectorParameter $dsec1 "TUNNELDOOR" $param_tunnel
+getText CURRENTLINE $dsec1 "Door 1: " " Door 2:"
+getText CURRENTLINE $dsec2 "Door 2: " " Internal"
+isnumber $test $dsec1 
+if ($test = TRUE)
+	getSectorParameter $dsec1 "TUNNELDOOR" $param_tunnel
 
-		if ($param_tunnel = "")
-			setVar $param_tunnel FALSE
-		end
-		if ($param_tunnel = FALSE)
-			setSectorParameter $dsec1 "TUNNELDOOR" 1
-			setSectorParameter $dsec2 "TUNNELDOOR" 1
-			getText CURRENTLINE $int "Internal Sec:" ""
-			setSectorParameter $dsec1 "TUNNELINT" $int
-			setSectorParameter $dsec2 "TUNNELINT" $int
-		end
+	if ($param_tunnel = "")
+		setVar $param_tunnel FALSE
 	end
-	setTextLineTrigger foundbigtunnel :foundbigtunnel "[Found Big Tunnel]"
-	pause
+	if ($param_tunnel = FALSE)
+		setSectorParameter $dsec1 "TUNNELDOOR" 1
+		setSectorParameter $dsec2 "TUNNELDOOR" 1
+		getText CURRENTLINE $int "Internal Sec:" ""
+		setSectorParameter $dsec1 "TUNNELINT" $int
+		setSectorParameter $dsec2 "TUNNELINT" $int
+	end
+end
+setTextLineTrigger foundbigtunnel :foundbigtunnel "[Found Big Tunnel]"
+pause
 :manualsubspace
-	getText CURRENTLINE&"  [XX][XX][XX]" $bot~subspace "Ok, you will send and receive sub-space messages on channel " " now.  [XX][XX][XX]"
-	savevar $bot~subspace
-	settextlinetrigger manualsubspace :manualsubspace "Ok, you will send and receive sub-space messages on channel "
-	pause
+getText CURRENTLINE&"  [XX][XX][XX]" $bot~subspace "Ok, you will send and receive sub-space messages on channel " " now.  [XX][XX][XX]"
+savevar $bot~subspace
+settextlinetrigger manualsubspace :manualsubspace "Ok, you will send and receive sub-space messages on channel "
+pause
 
 :busted
-	loadvar $player~current_sector
-	setSectorParameter $player~current_sector "BUSTED" true
-	setSectorParameter 1 "LRA" $player~current_sector
-	settextlinetrigger busted :busted "For getting caught your alignment went down by"
-	pause
+loadvar $player~current_sector
+setSectorParameter $player~current_sector "BUSTED" true
+setSectorParameter 1 "LRA" $player~current_sector
+settextlinetrigger busted :busted "For getting caught your alignment went down by"
+pause
 
 :fakebusted
-	loadvar $player~current_sector
-	setSectorParameter $player~current_sector "FAKEBUST" true
-	settextlinetrigger fakebusted :fakebusted "(You realize the guards saw you last time!)"
-	pause
+loadvar $player~current_sector
+setSectorParameter $player~current_sector "FAKEBUST" true
+settextlinetrigger fakebusted :fakebusted "(You realize the guards saw you last time!)"
+pause
 
 :lracheck
-	killtrigger lracheck
-	killtrigger lracheck2
-	loadvar $player~current_sector
-	setSectorParameter 1 "LRA" $player~current_sector
-	settextlinetrigger lracheck :lracheck "For stealing from this port, your alignment"
-	settextlinetrigger lracheck2 :lracheck "For robbing this port, your alignment"
-	pause		
+killtrigger lracheck
+killtrigger lracheck2
+loadvar $player~current_sector
+setSectorParameter 1 "LRA" $player~current_sector
+settextlinetrigger lracheck :lracheck "For stealing from this port, your alignment"
+settextlinetrigger lracheck2 :lracheck "For robbing this port, your alignment"
+pause		
 
 :setShipNumberRaw
-	getWord CURRENTLINE $spoof 1
-	if ($spoof = "Choose")
-		getWord CURRENTLINE $PLAYER~SHIP_NUMBER 8
-		isNumber $test $PLAYER~SHIP_NUMBER 
-		if ($test = TRUE)
-			saveVar $PLAYER~SHIP_NUMBER
-		end
+getWord CURRENTLINE $spoof 1
+if ($spoof = "Choose")
+	getWord CURRENTLINE $PLAYER~SHIP_NUMBER 8
+	isNumber $test $PLAYER~SHIP_NUMBER 
+	if ($test = TRUE)
+		saveVar $PLAYER~SHIP_NUMBER
 	end
-	setTextLineTrigger  getShipNumberRaw       :setShipNumberRaw "Choose which ship to beam to (Q=Quit) "
-	pause
+end
+setTextLineTrigger  getShipNumberRaw       :setShipNumberRaw "Choose which ship to beam to (Q=Quit) "
+pause
 
 pause
 
 
 :setPlanetNumberRaw
-	getWord CURRENTLINE $spoof 1
-	if ($spoof = "Land")
-		getWord CURRENTLINE $planet~planet 9
-		isNumber $test $planet~planet
-		if ($test = TRUE)
-			saveVar $planet~planet
-		end
+getWord CURRENTLINE $spoof 1
+if ($spoof = "Land")
+	getWord CURRENTLINE $planet~planet 9
+	isNumber $test $planet~planet
+	if ($test = TRUE)
+		saveVar $planet~planet
 	end
-	setTextLineTrigger  getPlanetNumberRaw    :setPlanetNumberRaw "Land on which planet <Q to abort> ? "
-	pause
+end
+setTextLineTrigger  getPlanetNumberRaw    :setPlanetNumberRaw "Land on which planet <Q to abort> ? "
+pause
 
 pause
 
 :fedEraseFig
-	getWord CURRENTLINE $spoof 1
-	if ($spoof <> "The")
-		goto :endFedEraseFig
-	end
-	getText CURRENTLINE&"  [XX][XX][XX]" $temp " fighters in sector " ".  [XX][XX][XX]"
-	if ($temp <> "")
-		isNumber $test $temp
-		if ($test = TRUE)
-			if (($temp <= SECTORS) AND ($temp > 0))
-				setVar $target $temp
-				setSectorParameter $target "MSLSEC" TRUE
-				gosub :removefigfromdata
-			end
+getWord CURRENTLINE $spoof 1
+if ($spoof <> "The")
+	goto :endFedEraseFig
+end
+getText CURRENTLINE&"  [XX][XX][XX]" $temp " fighters in sector " ".  [XX][XX][XX]"
+if ($temp <> "")
+	isNumber $test $temp
+	if ($test = TRUE)
+		if (($temp <= SECTORS) AND ($temp > 0))
+			setVar $target $temp
+			setSectorParameter $target "MSLSEC" TRUE
+			gosub :removefigfromdata
 		end
 	end
+end
 :endFedEraseFig
-	setTextLineTrigger  federase        :fedEraseFig        "The Federation We destroyed "
-	pause
+setTextLineTrigger  federase        :fedEraseFig        "The Federation We destroyed "
+pause
 :eraseFig
-	setvar $line CURRENTLINE
-	setvar $ansi_line CURRENTANSILINE
-	cutText $line&"     " $spoof 1 2 
-	cutText $line&"     " $spoof2 1 1 
-	if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
-		goto :endEraseFig
-	end
-	getText $line&" [XX][XX][XX]" $temp " destroyed " " [XX][XX][XX]"
-	if ($temp <> "")
-		getWord $temp $fig_hit 7
-		getWord $temp $fig_number 1
-		isNumber $test $fig_hit 
-		if (($test = TRUE) AND ($fig_number <> "0"))
-			if (($fig_hit <= SECTORS) AND ($fig_hit > 0))
-				setVar $target $fig_hit
-				setvar $bot~last_fighter_hit $fig_hit
-				setvar $bot~last_hit $fig_hit
-				saveVar $bot~last_fighter_hit
-				saveVar $bot~last_hit
-				gosub :removefigfromdata
-			end
+setvar $line CURRENTLINE
+setvar $ansi_line CURRENTANSILINE
+cutText $line&"     " $spoof 1 2 
+cutText $line&"     " $spoof2 1 1 
+if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
+	goto :endEraseFig
+end
+getText $line&" [XX][XX][XX]" $temp " destroyed " " [XX][XX][XX]"
+if ($temp <> "")
+	getWord $temp $fig_hit 7
+	getWord $temp $fig_number 1
+	isNumber $test $fig_hit 
+	if (($test = TRUE) AND ($fig_number <> "0"))
+		if (($fig_hit <= SECTORS) AND ($fig_hit > 0))
+			setVar $target $fig_hit
+			setvar $bot~last_fighter_hit $fig_hit
+			setvar $bot~last_hit $fig_hit
+			saveVar $bot~last_fighter_hit
+			saveVar $bot~last_hit
+			gosub :removefigfromdata
 		end
 	end
+end
 :endEraseFig
-	setTextLineTrigger fighterserase :eraseFig " of your fighters in sector "
-	pause
+setTextLineTrigger fighterserase :eraseFig " of your fighters in sector "
+pause
 :eraseWarpFig
-	getWord CURRENTLINE $spoof 1
-	if ($spoof <> "You")
-		setTextLineTrigger      warpfigerase        :eraseWarpFig       "You do not have any fighters in Sector "
-		pause
-	end
-	getText CURRENTLINE&" [XX][XX][XX]" $temp "You do not have any fighters in Sector " ". [XX][XX][XX]"
-	if ($temp <> "")
-		isNumber $test $temp 
-		if ($test)
-			if (($temp <= SECTORS) AND ($temp > 0))
-				setVar $target $temp
-				gosub :removefigfromdata
-			end
-		end
-	end
+getWord CURRENTLINE $spoof 1
+if ($spoof <> "You")
 	setTextLineTrigger      warpfigerase        :eraseWarpFig       "You do not have any fighters in Sector "
 	pause
-:limpsave
-	setvar $line CURRENTLINE
-	cutText $line&"     " $spoof 1 2 
-	cutText $line&"     " $spoof2 1 1 
-	if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
-		goto :endSaveLimp
-	end
-	getText $line&" [XX][XX][XX]" $temp "Limpet mine in " " activated"
-	if ($temp <> "")
-		setvar $limp_hit $temp
-		isNumber $test $limp_hit 
-		if ($test = TRUE)
-			if (($limp_hit <= SECTORS) AND ($limp_hit > 0))
-				setvar $bot~last_limpet_attack $line
-				saveVar $bot~last_limpet_attack
-				setvar $bot~last_hit_type "limpet"
-				saveVar $bot~last_hit_type
-				setvar $bot~last_limpet_hit $limp_hit
-				setvar $bot~last_hit $limp_hit
-				saveVar $bot~last_hit
-				saveVar $bot~last_limpet_hit
-			end
+end
+getText CURRENTLINE&" [XX][XX][XX]" $temp "You do not have any fighters in Sector " ". [XX][XX][XX]"
+if ($temp <> "")
+	isNumber $test $temp 
+	if ($test)
+		if (($temp <= SECTORS) AND ($temp > 0))
+			setVar $target $temp
+			gosub :removefigfromdata
 		end
 	end
+end
+setTextLineTrigger      warpfigerase        :eraseWarpFig       "You do not have any fighters in Sector "
+pause
+:limpsave
+setvar $line CURRENTLINE
+cutText $line&"     " $spoof 1 2 
+cutText $line&"     " $spoof2 1 1 
+if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
+	goto :endSaveLimp
+end
+getText $line&" [XX][XX][XX]" $temp "Limpet mine in " " activated"
+if ($temp <> "")
+	setvar $limp_hit $temp
+	isNumber $test $limp_hit 
+	if ($test = TRUE)
+		if (($limp_hit <= SECTORS) AND ($limp_hit > 0))
+			setvar $bot~last_limpet_attack $line
+			saveVar $bot~last_limpet_attack
+			setvar $bot~last_hit_type "limpet"
+			saveVar $bot~last_hit_type
+			setvar $bot~last_limpet_hit $limp_hit
+			setvar $bot~last_hit $limp_hit
+			saveVar $bot~last_hit
+			saveVar $bot~last_limpet_hit
+		end
+	end
+end
 :endSaveLimp
-	settextlinetrigger  limpsave		:limpsave	"Limpet mine in "
-	pause
+settextlinetrigger  limpsave		:limpsave	"Limpet mine in "
+pause
 
 :armidsave
-	setvar $line CURRENTLINE
-	setvar $ansi_line CURRENTANSILINE
-	cutText $line&"     " $spoof 1 2 
-	cutText $line&"     " $spoof2 1 1 
-	if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
-		goto :endSaveArmid
-	end
-	#Your mines in 4441 did 628 damage to Mind
-	getText $line&" [XX][XX][XX]" $temp "Your mines in " " did "
-	if ($temp <> "")
-		setvar $mine_hit $temp
-		isNumber $test $mine_hit 
-		if ($test = TRUE)
-			if (($mine_hit <= SECTORS) AND ($mine_hit > 0))
-				setvar $bot~last_armid_attack $line
-				setvar $bot~ansi_last_armid_attack $ansi_line
-				saveVar $bot~last_armid_attack
-				saveVar $bot~ansi_last_armid_attack
-				setvar $bot~last_hit_type "armid"
-				saveVar $bot~last_hit_type
-				setvar $bot~last_armid_hit $mine_hit
-				setvar $bot~last_hit $mine_hit
-				saveVar $bot~last_hit
-				saveVar $bot~last_armid_hit
-			end
+setvar $line CURRENTLINE
+setvar $ansi_line CURRENTANSILINE
+cutText $line&"     " $spoof 1 2 
+cutText $line&"     " $spoof2 1 1 
+if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
+	goto :endSaveArmid
+end
+#Your mines in 4441 did 628 damage to Mind
+getText $line&" [XX][XX][XX]" $temp "Your mines in " " did "
+if ($temp <> "")
+	setvar $mine_hit $temp
+	isNumber $test $mine_hit 
+	if ($test = TRUE)
+		if (($mine_hit <= SECTORS) AND ($mine_hit > 0))
+			setvar $bot~last_armid_attack $line
+			setvar $bot~ansi_last_armid_attack $ansi_line
+			saveVar $bot~last_armid_attack
+			saveVar $bot~ansi_last_armid_attack
+			setvar $bot~last_hit_type "armid"
+			saveVar $bot~last_hit_type
+			setvar $bot~last_armid_hit $mine_hit
+			setvar $bot~last_hit $mine_hit
+			saveVar $bot~last_hit
+			saveVar $bot~last_armid_hit
 		end
 	end
+end
 :endSaveArmid
-	setTextLineTrigger 	armidsave 		:armidsave "Your mines in "
-	pause
+setTextLineTrigger 	armidsave 		:armidsave "Your mines in "
+pause
 
 
 
 :fightersave
-	setvar $line CURRENTLINE
-	setvar $ansi_line CURRENTANSILINE
-	cutText $line&"     " $spoof 1 2 
-	cutText $line&"     " $spoof2 1 1 
-	if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
-		goto :endfightersave
-	end
-	#Deployed Fighters Report Sector 8920: Mind's Imperial StarShip entered sector.
-	getText $line&" [XX][XX][XX]" $temp "Deployed Fighters Report Sector " ": "
-	if ($temp <> "")
-		setvar $fighit $temp
-		isNumber $test $fighit 
-		if ($test = TRUE)
-			if (($fighit <= SECTORS) AND ($fighit > 0))
-				setvar $bot~last_hit_type "fighter"
-				saveVar $bot~last_hit_type
-				setvar $bot~last_fighter_attack $line
-				saveVar $bot~last_fighter_attack
-				setvar $bot~ansi_last_fighter_attack $ansi_line
-				saveVar $bot~ansi_last_fighter_attack
-				setvar $bot~last_fighter_hit $fighit
-				setvar $bot~last_hit $fighit
-				saveVar $bot~last_hit
-				saveVar $bot~last_fighter_hit
-			end
+setvar $line CURRENTLINE
+setvar $ansi_line CURRENTANSILINE
+cutText $line&"     " $spoof 1 2 
+cutText $line&"     " $spoof2 1 1 
+if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
+	goto :endfightersave
+end
+#Deployed Fighters Report Sector 8920: Mind's Imperial StarShip entered sector.
+getText $line&" [XX][XX][XX]" $temp "Deployed Fighters Report Sector " ": "
+if ($temp <> "")
+	setvar $fighit $temp
+	isNumber $test $fighit 
+	if ($test = TRUE)
+		if (($fighit <= SECTORS) AND ($fighit > 0))
+			setvar $bot~last_hit_type "fighter"
+			saveVar $bot~last_hit_type
+			setvar $bot~last_fighter_attack $line
+			saveVar $bot~last_fighter_attack
+			setvar $bot~ansi_last_fighter_attack $ansi_line
+			saveVar $bot~ansi_last_fighter_attack
+			setvar $bot~last_fighter_hit $fighit
+			setvar $bot~last_hit $fighit
+			saveVar $bot~last_hit
+			saveVar $bot~last_fighter_hit
 		end
 	end
+end
 :endfightersave
-	setTextLineTrigger  fightersave 	:fightersave "Deployed Fighters "
-	pause
+setTextLineTrigger  fightersave 	:fightersave "Deployed Fighters "
+pause
 
 :erasebusts
-	loadvar $bot~subspace
-	cutText CURRENTLINE&"   " $spoof 1 1
-	getwordpos currentline $pos "<"&$bot~subspace&">["
-	getwordpos currentline $pos2 "]<"&$bot~subspace&">"
-	if (($pos <= 0) or ($pos2 <= 0))
-		setvar $spoof true
-	end
-	if ($spoof <> "R")
-		setTextLineTrigger  clearbusts      :erasebusts     ">[Busted:"
-		pause
-	end
-	getText CURRENTLINE&" [XX][XX][XX]" $temp ">[Busted:" "]<"
-
-	if ($temp <> "")
-		isNumber $test $temp
-		if ($test)
-			if (($temp <= SECTORS) AND ($temp > 0))
-				setSectorParameter $temp "BUSTED" FALSE
-				setSectorParameter $temp "FAKEBUST" FALSE
-			end
-		end
-	end
+loadvar $bot~subspace
+cutText CURRENTLINE&"   " $spoof 1 1
+getwordpos currentline $pos "<"&$bot~subspace&">["
+getwordpos currentline $pos2 "]<"&$bot~subspace&">"
+if (($pos <= 0) or ($pos2 <= 0))
+	setvar $spoof true
+end
+if ($spoof <> "R")
 	setTextLineTrigger  clearbusts      :erasebusts     ">[Busted:"
 	pause
+end
+getText CURRENTLINE&" [XX][XX][XX]" $temp ">[Busted:" "]<"
+
+if ($temp <> "")
+	isNumber $test $temp
+	if ($test)
+		if (($temp <= SECTORS) AND ($temp > 0))
+			setSectorParameter $temp "BUSTED" FALSE
+			setSectorParameter $temp "FAKEBUST" FALSE
+		end
+	end
+end
+setTextLineTrigger  clearbusts      :erasebusts     ">[Busted:"
+pause
 
 :addFigs
-	loadvar $bot~subspace
-	cutText CURRENTLINE&"   " $spoof 1 1
-	getwordpos currentline $pos "<"&$bot~subspace&">["
-	getwordpos currentline $pos2 "]<"&$bot~subspace&">"
-	if (($pos <= 0) or ($pos2 <= 0))
-		setvar $spoof true
-	end
-	if ($spoof <> "R")
-		setTextLineTrigger  addfigs      :addFigs     ">[Figged:"
+loadvar $bot~subspace
+cutText CURRENTLINE&"   " $spoof 1 1
+getwordpos currentline $pos "<"&$bot~subspace&">["
+getwordpos currentline $pos2 "]<"&$bot~subspace&">"
+if (($pos <= 0) or ($pos2 <= 0))
+	setvar $spoof true
+end
+if ($spoof <> "R")
+	setTextLineTrigger  addfigs      :addFigs     ">[Figged:"
 	
-		pause
-	end
-	getText CURRENTLINE&" [XX][XX][XX]" $temp ">[Figged:" "]<"
-	if ($temp <> "")
-		setvar $junk "JUNKJUNK"
-		setvar $i 1
+	pause
+end
+getText CURRENTLINE&" [XX][XX][XX]" $temp ">[Figged:" "]<"
+if ($temp <> "")
+	setvar $junk "JUNKJUNK"
+	setvar $i 1
 		:check_figs_again
-			getWord $temp $temp_sector $i $junk
-			if ($temp_sector <> $junk)
-				isNumber $test $temp_sector
-				if ($test)
-					setSectorParameter $temp_sector "FIGSEC" true
-					getSectorParameter 2 "FIG_COUNT" $figCount
-					setSectorParameter 2 "FIG_COUNT" ($figCount+1)
-				end
-				add $i 1
-				goto :check_figs_again
+		getWord $temp $temp_sector $i $junk
+		if ($temp_sector <> $junk)
+			isNumber $test $temp_sector
+			if ($test)
+				setSectorParameter $temp_sector "FIGSEC" true
+				getSectorParameter 2 "FIG_COUNT" $figCount
+				setSectorParameter 2 "FIG_COUNT" ($figCount+1)
 			end
+			add $i 1
+			goto :check_figs_again
+		end
 	end
 	setTextLineTrigger  addfigs      :addFigs     ">[Figged:"
 	pause
 
 :updatePlanetMovement
-	cutText CURRENTLINE&"   " $spoof 1 1
-	if ($spoof <> "R")
-		setTextLineTrigger  planetmoved      :updatePlanetMovement     " moved to sector "
-		pause
-	end
-	getWordPos CURRENTLINE $pos "} - Planet #" 
-	getWordPos CURRENTLINE $pos2 " moved to sector " 
-	if (($pos > 0) and ($pos2 > 0))
-		getWord CURRENTLINE $planet~planet_id 6
-		getWord CURRENTLINE $planet~planet_sector 10
-		replaceText $planet~planet_id "#" ""
-		replaceText $planet~planet_sector "." ""
-		isNumber $test $planet~planet_sector
-		if ($test)
-			setSectorParameter $planet~planet_id "PSECTOR" $planet~planet_sector
-		end
-	end
+cutText CURRENTLINE&"   " $spoof 1 1
+if ($spoof <> "R")
 	setTextLineTrigger  planetmoved      :updatePlanetMovement     " moved to sector "
 	pause
+end
+getWordPos CURRENTLINE $pos "} - Planet #" 
+getWordPos CURRENTLINE $pos2 " moved to sector " 
+if (($pos > 0) and ($pos2 > 0))
+	getWord CURRENTLINE $planet~planet_id 6
+	getWord CURRENTLINE $planet~planet_sector 10
+	replaceText $planet~planet_id "#" ""
+	replaceText $planet~planet_sector "." ""
+	isNumber $test $planet~planet_sector
+	if ($test)
+		setSectorParameter $planet~planet_id "PSECTOR" $planet~planet_sector
+	end
+end
+setTextLineTrigger  planetmoved      :updatePlanetMovement     " moved to sector "
+pause
 
 :pgridadd
-	cutText CURRENTLINE&"   " $spoof 1 1
-	if ($spoof <> "R")
-		setTextLineTrigger  pgridadd    :pgridadd   "Successfully P-gridded into sector "
-		pause
-	end
-
-	getText CURRENTLINE&" [XX][XX][XX]" $temp "Successfully P-gridded into sector " " [XX][XX][XX]"
-	if ($temp <> "")
-		isNumber $test $temp
-		if ($test)
-			if (($temp <= SECTORS) AND ($temp > 0))
-				setVar $target $temp
-				gosub :addfigtodata 
-			end
-		end
-	end
+cutText CURRENTLINE&"   " $spoof 1 1
+if ($spoof <> "R")
 	setTextLineTrigger  pgridadd    :pgridadd   "Successfully P-gridded into sector "
 	pause
+end
+
+getText CURRENTLINE&" [XX][XX][XX]" $temp "Successfully P-gridded into sector " " [XX][XX][XX]"
+if ($temp <> "")
+	isNumber $test $temp
+	if ($test)
+		if (($temp <= SECTORS) AND ($temp > 0))
+			setVar $target $temp
+			gosub :addfigtodata 
+		end
+	end
+end
+setTextLineTrigger  pgridadd    :pgridadd   "Successfully P-gridded into sector "
+pause
 
 :pgridxportadd
-	cutText CURRENTLINE&"   " $spoof 1 1
-	if ($spoof <> "R")
-		setTextLineTrigger  pgridxportadd    :pgridxportadd   "Successfully P-gridded w/xport into sector "
-		pause
-	end
-
-	getText CURRENTLINE&" [XX][XX][XX]" $temp "Successfully P-gridded w/xport into sector " " [XX][XX][XX]"
-	if ($temp <> "")
-		isNumber $test $temp
-		if ($test)
-			if (($temp <= SECTORS) AND ($temp > 0))
-				setVar $target $temp
-				gosub :addfigtodata 
-			end
-		end
-	end
+cutText CURRENTLINE&"   " $spoof 1 1
+if ($spoof <> "R")
 	setTextLineTrigger  pgridxportadd    :pgridxportadd   "Successfully P-gridded w/xport into sector "
 	pause
+end
+
+getText CURRENTLINE&" [XX][XX][XX]" $temp "Successfully P-gridded w/xport into sector " " [XX][XX][XX]"
+if ($temp <> "")
+	isNumber $test $temp
+	if ($test)
+		if (($temp <= SECTORS) AND ($temp > 0))
+			setVar $target $temp
+			gosub :addfigtodata 
+		end
+	end
+end
+setTextLineTrigger  pgridxportadd    :pgridxportadd   "Successfully P-gridded w/xport into sector "
+pause
 
 :pgridremove
-	cutText CURRENTLINE&"   " $spoof 1 1
-	if ($spoof <> "R")
-		setTextLineTrigger  pgridremove    :pgridremove   "Unsuccessful P-grid into sector "
-		pause
-	end
-
-	getText CURRENTLINE&" [XX][XX][XX]" $temp "Unsuccessful P-grid into sector " ". Someone make sure bot is picked up."
-	if ($temp <> "")
-		isNumber $test $temp
-		if ($test)
-			if (($temp <= SECTORS) AND ($temp > 0))
-				setVar $target $temp
-				gosub :removefigfromdata 
-			end
-		end
-	end
+cutText CURRENTLINE&"   " $spoof 1 1
+if ($spoof <> "R")
 	setTextLineTrigger  pgridremove    :pgridremove   "Unsuccessful P-grid into sector "
 	pause
+end
+
+getText CURRENTLINE&" [XX][XX][XX]" $temp "Unsuccessful P-grid into sector " ". Someone make sure bot is picked up."
+if ($temp <> "")
+	isNumber $test $temp
+	if ($test)
+		if (($temp <= SECTORS) AND ($temp > 0))
+			setVar $target $temp
+			gosub :removefigfromdata 
+		end
+	end
+end
+setTextLineTrigger  pgridremove    :pgridremove   "Unsuccessful P-grid into sector "
+pause
 
 :ferrengihitcorp
-	setvar $line CURRENTLINE
-	cutText $line&"     " $spoof 1 2 
-	cutText $line&"     " $spoof2 1 1 
-	if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
-		goto :endferrengihitcorp
-	end
-	#Your Corp's fighters in sector 14179 lost 1 fighting off Tejgek Ceuggeem.
-	getText $line&" [XX][XX][XX]" $temp "Your Corp's fighters in sector " " lost "
-	if ($temp <> "")
-		setvar $target $temp
-		isNumber $test $target 
-		if ($test = TRUE)
-			if (($target <= SECTORS) AND ($target > 0))
-				gosub :removefigfromdata
-			end
+setvar $line CURRENTLINE
+cutText $line&"     " $spoof 1 2 
+cutText $line&"     " $spoof2 1 1 
+if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
+	goto :endferrengihitcorp
+end
+#Your Corp's fighters in sector 14179 lost 1 fighting off Tejgek Ceuggeem.
+getText $line&" [XX][XX][XX]" $temp "Your Corp's fighters in sector " " lost "
+if ($temp <> "")
+	setvar $target $temp
+	isNumber $test $target 
+	if ($test = TRUE)
+		if (($target <= SECTORS) AND ($target > 0))
+			gosub :removefigfromdata
 		end
 	end
+end
 :endferrengihitcorp
-	setTextLineTrigger ferrengihitcorp :ferrengihitcorp "Your Corp's fighters in sector "
-	pause
+setTextLineTrigger ferrengihitcorp :ferrengihitcorp "Your Corp's fighters in sector "
+pause
 
 :ferrengihitpers
-	setvar $line CURRENTLINE
-	cutText $line&"     " $spoof 1 2 
-	cutText $line&"     " $spoof2 1 1 
-	if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
-		goto :endferrengihitpers
-	end
-	#Your fighters in sector 4994 lost 1 fighting off Lufchar Ceacnaes
-	getText $line&" [XX][XX][XX]" $temp "Your fighters in sector " " lost "
-	if ($temp <> "")
-		setvar $target $temp
-		isNumber $test $target 
-		if ($test = TRUE)
-			if (($target <= SECTORS) AND ($target > 0))
-				gosub :removefigfromdata
-			end
+setvar $line CURRENTLINE
+cutText $line&"     " $spoof 1 2 
+cutText $line&"     " $spoof2 1 1 
+if (($spoof = "R ") OR ($spoof = "F ") OR ($spoof = "P ") OR ($spoof2 = "'") OR ($spoof2 = "`"))
+	goto :endferrengihitpers
+end
+#Your fighters in sector 4994 lost 1 fighting off Lufchar Ceacnaes
+getText $line&" [XX][XX][XX]" $temp "Your fighters in sector " " lost "
+if ($temp <> "")
+	setvar $target $temp
+	isNumber $test $target 
+	if ($test = TRUE)
+		if (($target <= SECTORS) AND ($target > 0))
+			gosub :removefigfromdata
 		end
 	end
+end
 :endferrengihitpers
-	setTextLineTrigger ferrengihitpers :ferrengihitpers "Your fighters in sector "
-	pause
+setTextLineTrigger ferrengihitpers :ferrengihitpers "Your fighters in sector "
+pause
 
 :addFig
-	isNumber $test CURRENTSECTOR
-	if ($test)
-		if ((CURRENTSECTOR > 10) AND (CURRENTSECTOR < SECTORS))
-			setVar $target CURRENTSECTOR
-			gosub :addfigtodata
-		end
+isNumber $test CURRENTSECTOR
+if ($test)
+	if ((CURRENTSECTOR > 10) AND (CURRENTSECTOR < SECTORS))
+		setVar $target CURRENTSECTOR
+		gosub :addfigtodata
 	end
-	setTextLineTrigger      fightersadd     :addFig         "Should they be (D)efensive, (O)ffensive or Charge a (T)oll ?"
-	pause
+end
+setTextLineTrigger      fightersadd     :addFig         "Should they be (D)efensive, (O)ffensive or Charge a (T)oll ?"
+pause
 
 
 
 :removeFigFromData
-	getSectorParameter $target "FIGSEC" $check
-	if ($check = TRUE)
-		getSectorParameter 2 "FIG_COUNT" $figCount
-		setSectorParameter 2 "FIG_COUNT" ($figCount-1)
-	end
-	setSectorParameter $target "FIGSEC" FALSE
+getSectorParameter $target "FIGSEC" $check
+if ($check = TRUE)
+	getSectorParameter 2 "FIG_COUNT" $figCount
+	setSectorParameter 2 "FIG_COUNT" ($figCount-1)
+end
+setSectorParameter $target "FIGSEC" FALSE
 return
 :addFigToData
-	getSectorParameter $target "FIGSEC" $check
-	if ($check <> TRUE)
-		getSectorParameter 2 "FIG_COUNT" $figCount
-		setSectorParameter 2 "FIG_COUNT" ($figCount+1)
-	end
-	setSectorParameter $target "FIGSEC" TRUE
+getSectorParameter $target "FIGSEC" $check
+if ($check <> TRUE)
+	getSectorParameter 2 "FIG_COUNT" $figCount
+	setSectorParameter 2 "FIG_COUNT" ($figCount+1)
+end
+setSectorParameter $target "FIGSEC" TRUE
 return
 
 
 # ============================== START GET PLANET STATS TRIGGERS==============================
 :setPlanetNumber
-	getWordPos RAWPACKET $pos "Planet " & #27 & "[1;33m#" & #27 & "[36m"
-	if ($pos > 0)
-		getText RAWPACKET $planet~planet "Planet " & #27 & "[1;33m#" & #27 & "[36m" #27 & "[0;32m in sector "
-		isNumber $test $planet~planet 
-		if ($test = TRUE)
-			saveVar $planet~planet
-			setSectorParameter $planet~planet "PSECTOR" CURRENTSECTOR
-		end
+getWordPos RAWPACKET $pos "Planet " & #27 & "[1;33m#" & #27 & "[36m"
+if ($pos > 0)
+	getText RAWPACKET $planet~planet "Planet " & #27 & "[1;33m#" & #27 & "[36m" #27 & "[0;32m in sector "
+	isNumber $test $planet~planet 
+	if ($test = TRUE)
+		saveVar $planet~planet
+		setSectorParameter $planet~planet "PSECTOR" CURRENTSECTOR
 	end
-	setTextLineTrigger  getPlanetNumber :setPlanetNumber    "Planet #"
-	pause
+end
+setTextLineTrigger  getPlanetNumber :setPlanetNumber    "Planet #"
+pause
 # =============================== END GET PLANET STATS TRIGGERS===============================
 # ============================== CHECK SECTOR DATA ========================================
 :checkSectorData
-	getText CURRENTLINE $cursec "]:[" "] ("
-	if ($cursec = CURRENTSECTOR)
-		setVar $PLAYER~CURRENT_SECTOR $cursec
-		saveVar $PLAYER~CURRENT_SECTOR
-		getSectorParameter $PLAYER~CURRENT_SECTOR "BUSTED" $isBusted
-		loadVar $BOT~command_prompt_extras
-		if (($BOT~command_prompt_extras = TRUE) and ($isBusted = TRUE))
-			echo ANSI_5 "[" ANSI_12 "BUSTED" ANSI_5 "] : "
-		end
-		getSectorParameter $PLAYER~CURRENT_SECTOR "MSLSEC" $isMSL
-		if (($BOT~command_prompt_extras = TRUE) and ($isMSL = TRUE))
-			echo ANSI_5 "[" ANSI_9 "MSL" ANSI_5 "] : "
-		end
+getText CURRENTLINE $cursec "]:[" "] ("
+if ($cursec = CURRENTSECTOR)
+	setVar $PLAYER~CURRENT_SECTOR $cursec
+	saveVar $PLAYER~CURRENT_SECTOR
+	getSectorParameter $PLAYER~CURRENT_SECTOR "BUSTED" $isBusted
+	loadVar $BOT~command_prompt_extras
+	if (($BOT~command_prompt_extras = TRUE) and ($isBusted = TRUE))
+		echo ANSI_5 "[" ANSI_12 "BUSTED" ANSI_5 "] : "
 	end
-	pause
+	getSectorParameter $PLAYER~CURRENT_SECTOR "MSLSEC" $isMSL
+	if (($BOT~command_prompt_extras = TRUE) and ($isMSL = TRUE))
+		echo ANSI_5 "[" ANSI_9 "MSL" ANSI_5 "] : "
+	end
+end
+pause
 # ============================ END CHECK SECTOR DATA ========================================
 # ============================== START GET SHIP STATS TRIGGERS==============================
 :setShipOffensiveOdds
-	getWordPos CURRENTANSILINE $pos "[0;31m:[1;36m1"
+getWordPos CURRENTANSILINE $pos "[0;31m:[1;36m1"
+if ($pos > 0)
+	getText CURRENTANSILINE $SHIP~SHIP_OFFENSIVE_ODDS "Offensive Odds[1;33m:[36m " "[0;31m:[1;36m1"
+	stripText $SHIP~SHIP_OFFENSIVE_ODDS "."
+	stripText $SHIP~SHIP_OFFENSIVE_ODDS " "
+	saveVar $SHIP~SHIP_OFFENSIVE_ODDS
+	gettext CURRENTANSILINE $SHIP~SHIP_FIGHTERS_MAX "Max Fighters[1;33m:[36m" "[0;32m Offensive Odds"
+	stripText $SHIP~SHIP_FIGHTERS_MAX ","
+	stripText $SHIP~SHIP_FIGHTERS_MAX " "
+	saveVar $SHIP~SHIP_FIGHTERS_MAX
+else
+	getWordPos CURRENTLINE $pos "Offensive Odds:"
 	if ($pos > 0)
-		getText CURRENTANSILINE $SHIP~SHIP_OFFENSIVE_ODDS "Offensive Odds[1;33m:[36m " "[0;31m:[1;36m1"
+		getText CURRENTLINE $SHIP~SHIP_OFFENSIVE_ODDS "Offensive Odds:" ":1"
 		stripText $SHIP~SHIP_OFFENSIVE_ODDS "."
 		stripText $SHIP~SHIP_OFFENSIVE_ODDS " "
 		saveVar $SHIP~SHIP_OFFENSIVE_ODDS
-		gettext CURRENTANSILINE $SHIP~SHIP_FIGHTERS_MAX "Max Fighters[1;33m:[36m" "[0;32m Offensive Odds"
+		getText CURRENTLINE $SHIP~SHIP_FIGHTERS_MAX "Max Fighters:" "Offensive Odds:"
 		stripText $SHIP~SHIP_FIGHTERS_MAX ","
 		stripText $SHIP~SHIP_FIGHTERS_MAX " "
 		saveVar $SHIP~SHIP_FIGHTERS_MAX
-	else
-		getWordPos CURRENTLINE $pos "Offensive Odds:"
-		if ($pos > 0)
-			getText CURRENTLINE $SHIP~SHIP_OFFENSIVE_ODDS "Offensive Odds:" ":1"
-			stripText $SHIP~SHIP_OFFENSIVE_ODDS "."
-			stripText $SHIP~SHIP_OFFENSIVE_ODDS " "
-			saveVar $SHIP~SHIP_OFFENSIVE_ODDS
-			getText CURRENTLINE $SHIP~SHIP_FIGHTERS_MAX "Max Fighters:" "Offensive Odds:"
-			stripText $SHIP~SHIP_FIGHTERS_MAX ","
-			stripText $SHIP~SHIP_FIGHTERS_MAX " "
-			saveVar $SHIP~SHIP_FIGHTERS_MAX
-		end
 	end
-	setTextLineTrigger  getshipstats    :setShipOffensiveOdds   "Offensive Odds: "
-	pause
+end
+setTextLineTrigger  getshipstats    :setShipOffensiveOdds   "Offensive Odds: "
+pause
 :setShipMaxFigAttack
-	getWordPos CURRENTANSILINE $pos "[0m[32m Max Figs Per Attack[1;33m:[36m"
+getWordPos CURRENTANSILINE $pos "[0m[32m Max Figs Per Attack[1;33m:[36m"
+if ($pos > 0)
+	getText CURRENTANSILINE $SHIP~SHIP_MAX_ATTACK "[0m[32m Max Figs Per Attack[1;33m:[36m" "[0;32mTransWarp"
+	striptext $SHIP~SHIP_MAX_ATTACK " "
+	saveVar $SHIP~SHIP_MAX_ATTACK
+else
+	getWordPos CURRENTLINE $pos "Max Figs Per Attack:"
 	if ($pos > 0)
-		getText CURRENTANSILINE $SHIP~SHIP_MAX_ATTACK "[0m[32m Max Figs Per Attack[1;33m:[36m" "[0;32mTransWarp"
+		getText CURRENTLINE $SHIP~SHIP_MAX_ATTACK "Max Figs Per Attack:" "TransWarp Drive:"
 		striptext $SHIP~SHIP_MAX_ATTACK " "
 		saveVar $SHIP~SHIP_MAX_ATTACK
-	else
-		getWordPos CURRENTLINE $pos "Max Figs Per Attack:"
-		if ($pos > 0)
-			getText CURRENTLINE $SHIP~SHIP_MAX_ATTACK "Max Figs Per Attack:" "TransWarp Drive:"
-			striptext $SHIP~SHIP_MAX_ATTACK " "
-			saveVar $SHIP~SHIP_MAX_ATTACK
-		end
 	end
-	setTextLineTrigger  getshipmaxfighters  :setShipMaxFigAttack    " TransWarp Drive:   "
-	pause
+end
+setTextLineTrigger  getshipmaxfighters  :setShipMaxFigAttack    " TransWarp Drive:   "
+pause
 # ============================== END GET SHIP STATS TRIGGERS==============================
 return
 
@@ -708,19 +708,19 @@ setTextLineTrigger  shipdestroyed         :shipdestroyed "You will have to start
 pause
 
 :emergency_reboot
-	loadvar $bot~subspace
-	loadvar $bot~bot_name
-	loadvar $bot~bot_password
-	getwordpos currentline $pos $bot~bot_name&" "&$bot~subspace&"<EMERGENCY REBOOT>"&$bot~bot_password
-	if ($pos <= 0)
-		setTextLineTrigger  emergency_reboot      :emergency_reboot "<EMERGENCY REBOOT>"&$bot~bot_password
-		pause
-	end
-	setVar $i 1
-	setVar $found FALSE
-	setVar $rebooted FALSE
-	setdelaytrigger listokaynowemergency :listokaynowemergency 1500
+loadvar $bot~subspace
+loadvar $bot~bot_name
+loadvar $bot~bot_password
+getwordpos currentline $pos $bot~bot_name&" "&$bot~subspace&"<EMERGENCY REBOOT>"&$bot~bot_password
+if ($pos <= 0)
+	setTextLineTrigger  emergency_reboot      :emergency_reboot "<EMERGENCY REBOOT>"&$bot~bot_password
 	pause
+end
+setVar $i 1
+setVar $found FALSE
+setVar $rebooted FALSE
+setdelaytrigger listokaynowemergency :listokaynowemergency 1500
+pause
 	:listokaynowemergency
 	listActiveScripts $scripts
 	while ($i <= $scripts)
@@ -746,36 +746,36 @@ pause
 	pause
 
 :checkifbotalive
-	loadvar $bot~do_not_resuscitate
-	loadVar $map~stardock
-	loadvar $bot~subspace
-	loadvar $bot~bot_password
-	loadvar $bot~bot_name
+loadvar $bot~do_not_resuscitate
+loadVar $map~stardock
+loadvar $bot~subspace
+loadvar $bot~bot_password
+loadvar $bot~bot_name
 
-	if (ISNATIVEBOT = TRUE)
+if (ISNATIVEBOT = TRUE)
+	killtrigger         checkifbotalive
+	setdelaytrigger		checkifbotalive       :checkifbotalive 60000
+	pause
+end
+
+	if ($bot~do_not_resuscitate <> true)
+	setvar $found false
+	listActiveScripts $scripts
+	setvar $i 1
+	while (($i <= $scripts) and ($found = false))
+		getWordPos "<><><>"&$scripts[$i] $pos "mombot"
+		if ($pos > 0)
+			if ($found = FALSE)
+				setVar $found TRUE
+			end
+		end
+		add $i 1
+	end
+	if ($FOUND = FALSE)
+		ECHO "**"&ansi_2&"["&ansi_4&"No mombot is running, automatically booting up mombot."&ansi_2&"]**"
+		load "scripts\"&$bot~mombot_directory&"\mombot.cts"
+	end
 		killtrigger         checkifbotalive
 		setdelaytrigger		checkifbotalive       :checkifbotalive 60000
 		pause
 	end
-
-		if ($bot~do_not_resuscitate <> true)
-		setvar $found false
-		listActiveScripts $scripts
-		setvar $i 1
-		while (($i <= $scripts) and ($found = false))
-			getWordPos "<><><>"&$scripts[$i] $pos "mombot"
-			if ($pos > 0)
-				if ($found = FALSE)
-					setVar $found TRUE
-				end
-			end
-			add $i 1
-		end
-		if ($FOUND = FALSE)
-			ECHO "**"&ansi_2&"["&ansi_4&"No mombot is running, automatically booting up mombot."&ansi_2&"]**"
-			load "scripts\"&$bot~mombot_directory&"\mombot.cts"
-		end
-			killtrigger         checkifbotalive
-			setdelaytrigger		checkifbotalive       :checkifbotalive 60000
-			pause
-		end

@@ -209,20 +209,20 @@ halt
 
 :portandtrade
 	
-	//
-	setVar $report 0
-	send "p   t"
-	waitfor "Commerce report for"
+//
+setVar $report 0
+send "p   t"
+waitfor "Commerce report for"
 	
-	setTextLineTrigger checkCash :checkCash "empty cargo holds"
-	setTextLineTrigger portFail :portFail "ou don't have anything they want, and they don't have anything you can b"
-	pause
+setTextLineTrigger checkCash :checkCash "empty cargo holds"
+setTextLineTrigger portFail :portFail "ou don't have anything they want, and they don't have anything you can b"
+pause
 	:portFail
-		setVar $SWITCHBOARD~message "Oops nothing to trade; script fail?*"
-		gosub :SWITCHBOARD~switchboard
-		halt
+	setVar $SWITCHBOARD~message "Oops nothing to trade; script fail?*"
+	gosub :SWITCHBOARD~switchboard
+	halt
 	:checkCash
-		killAllTriggers
+	killAllTriggers
 		
 
 
@@ -238,117 +238,117 @@ halt
 	pause
 
 	:sell1
-		killalltriggers
-		setVar $PLAYER~multiplier 105
-		if ($sellOre > 0)
-			setVar $tradeQuant $sellOre
-			gosub :doTrade
-		else
-			gosub :noTrade
-		end
-		goto :tradeloop
+	killalltriggers
+	setVar $PLAYER~multiplier 105
+	if ($sellOre > 0)
+		setVar $tradeQuant $sellOre
+		gosub :doTrade
+	else
+		gosub :noTrade
+	end
+	goto :tradeloop
 	:sell2
-		killalltriggers
-		setVar $PLAYER~multiplier 105
-		if ($sellOrg > 0)
-			setVar $tradeQuant $sellOrg
-			gosub :doTrade
-		else
-			gosub :noTrade
-		end
-		goto :tradeloop
+	killalltriggers
+	setVar $PLAYER~multiplier 105
+	if ($sellOrg > 0)
+		setVar $tradeQuant $sellOrg
+		gosub :doTrade
+	else
+		gosub :noTrade
+	end
+	goto :tradeloop
 	:sell3
-		killalltriggers
-		setVar $PLAYER~multiplier 105
-		if ($sellEquip > 0)
-			setVar $tradeQuant $sellEquip
-			gosub :doTrade
-		else
-			gosub :noTrade
-		end
-		goto :tradeloop
+	killalltriggers
+	setVar $PLAYER~multiplier 105
+	if ($sellEquip > 0)
+		setVar $tradeQuant $sellEquip
+		gosub :doTrade
+	else
+		gosub :noTrade
+	end
+	goto :tradeloop
 		
 	:buy1
-		killalltriggers
-		setVar $PLAYER~multiplier 95
-		if ($buyOre > 0)
-			setVar $tradeQuant $buyOre
-			gosub :doTrade
-		else
-			gosub :noTrade
-		end
-		goto :tradeloop
+	killalltriggers
+	setVar $PLAYER~multiplier 95
+	if ($buyOre > 0)
+		setVar $tradeQuant $buyOre
+		gosub :doTrade
+	else
+		gosub :noTrade
+	end
+	goto :tradeloop
 	:buy2
-		killalltriggers
-		setVar $PLAYER~multiplier 95
-		if ($buyOrg > 0)
-			setVar $tradeQuant $buyOrg
-			gosub :doTrade
-		else
-			gosub :noTrade
-		end
-		goto :tradeloop
+	killalltriggers
+	setVar $PLAYER~multiplier 95
+	if ($buyOrg > 0)
+		setVar $tradeQuant $buyOrg
+		gosub :doTrade
+	else
+		gosub :noTrade
+	end
+	goto :tradeloop
 	:buy3
-		killalltriggers
-		setVar $PLAYER~multiplier 95
+	killalltriggers
+	setVar $PLAYER~multiplier 95
 
-		if ($buyEquip > 0)
-			setVar $tradeQuant $buyEquip
-			gosub :doTrade
-		else
-			gosub :noTrade
-		end
-		goto :tradeloop
+	if ($buyEquip > 0)
+		setVar $tradeQuant $buyEquip
+		gosub :doTrade
+	else
+		gosub :noTrade
+	end
+	goto :tradeloop
 
 	:tradeloopdone
-		killalltriggers
+	killalltriggers
 return
 
 
 :noTrade
-	send "0*"
-	waitfor "empty cargo holds."
+send "0*"
+waitfor "empty cargo holds."
 return
 
 :doTrade
-	setVar $promptMax ""
-	getText CURRENTLINE $promptMax "[" "]"
-	stripText $promptMax ","
-	stripText $promptMax "."
-	isNumber $promptMaxIsNum $promptMax
-	if ($promptMaxIsNum = TRUE)
-		if ($promptMax < $tradeQuant)
-			setVar $tradeQuant $promptMax
-		end
+setVar $promptMax ""
+getText CURRENTLINE $promptMax "[" "]"
+stripText $promptMax ","
+stripText $promptMax "."
+isNumber $promptMaxIsNum $promptMax
+if ($promptMaxIsNum = TRUE)
+	if ($promptMax < $tradeQuant)
+		setVar $tradeQuant $promptMax
 	end
+end
 
-	if ($tradeQuant <= 0)
-		send "0*"
-		waitfor "empty cargo holds."
-		return
-	end
+if ($tradeQuant <= 0)
+	send "0*"
+	waitfor "empty cargo holds."
+	return
+end
 
-	send $tradeQuant "*"
+send $tradeQuant "*"
 	
 		
-	if ($haggle = "t")
-		waitfor "Agreed,"
-		setTextLineTrigger tradeFin :tradeFin "empty cargo holds"
-		pause
+if ($haggle = "t")
+	waitfor "Agreed,"
+	setTextLineTrigger tradeFin :tradeFin "empty cargo holds"
+	pause
 		:tradeFin
-			killAllTriggers
-			getWord CURRENTLINE $nCredits 3
-			stripText $nCredits ","
-			stripText $nCredits "."
+		killAllTriggers
+		getWord CURRENTLINE $nCredits 3
+		stripText $nCredits ","
+		stripText $nCredits "."
 			
-			if ($nCredits = $cCredits)
-				setVar $report 1
-			else
-				setVar $cCredits $nCredits
-			end	
+		if ($nCredits = $cCredits)
+			setVar $report 1
+		else
+			setVar $cCredits $nCredits
+		end	
 		elseif ($haggle = "h")
 		
-			gosub :HAGGLE~startHaggle
+		gosub :HAGGLE~startHaggle
 		end
 	
 return
@@ -359,28 +359,28 @@ return
 
 :chkFtr
 	
-	if (SECTOR.FIGS.QUANTITY[CURRENTSECTOR] = 0)
-		if (CURRENTSECTOR > 10)
-			send "f   1  *  c  d "
+if (SECTOR.FIGS.QUANTITY[CURRENTSECTOR] = 0)
+	if (CURRENTSECTOR > 10)
+		send "f   1  *  c  d "
 
-		end
 	end
+end
 
 return
 
 
 
 :voidadjacent
-	setVar $PLAYER~CURRENT_SECTOR CURRENTSECTOR
-	gosub :SECTOR~VOIDADJACENT
-	setVar $SWITCHBOARD~message "Avoids set on adjacent sectors!*"
-	gosub :SWITCHBOARD~switchboard
+setVar $PLAYER~CURRENT_SECTOR CURRENTSECTOR
+gosub :SECTOR~VOIDADJACENT
+setVar $SWITCHBOARD~message "Avoids set on adjacent sectors!*"
+gosub :SWITCHBOARD~switchboard
 return
 :clearadjacent
-	setVar $PLAYER~CURRENT_SECTOR CURRENTSECTOR
-	gosub :SECTOR~CLEARVOIDADJACENT
-	setVar $SWITCHBOARD~message "Avoids cleared on adjacent sectors!*"
-	gosub :SWITCHBOARD~switchboard
+setVar $PLAYER~CURRENT_SECTOR CURRENTSECTOR
+gosub :SECTOR~CLEARVOIDADJACENT
+setVar $SWITCHBOARD~message "Avoids cleared on adjacent sectors!*"
+gosub :SWITCHBOARD~switchboard
 return
 
 halt

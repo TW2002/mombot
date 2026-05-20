@@ -1,437 +1,445 @@
 # MD Planet Stripper
-	reqRecording
-	logging off
-		gosub :LOADVARS~LOADVARS
-		gosub :HELP~INITIALIZE
-		setVar $BOT~command "strip"
-	loadVar $BOT~bot_turn_limit
+gosub :LOADVARS~LOADVARS
+gosub :HELP~INITIALIZE
+setVar $BOT~command "strip"
+loadVar $BOT~bot_turn_limit
 
-	setVar $HELP~HELP[1]  $HELP~TAB&"Strips planets of resources and places them on starting planet.  "
-	setVar $HELP~HELP[2]  $HELP~TAB&" "
-	setVar $HELP~HELP[3]  $HELP~TAB&"Options:"
-	setVar $HELP~HELP[4]  $HELP~TAB&"[planet# | all]   - Planet number or all to strip all planets in sector."
-	setVar $HELP~HELP[5]  $HELP~TAB&"            {f}   - Strip fuel ore"
-	setVar $HELP~HELP[6]  $HELP~TAB&"            {o}   - Strip organics"
-	setVar $HELP~HELP[7]  $HELP~TAB&"            {e}   - Strip equipment"
-	setVar $HELP~HELP[8]  $HELP~TAB&"           {fc}   - Strip fuel ore colonists"
-	setVar $HELP~HELP[9]  $HELP~TAB&"           {oc}   - Strip organic colonists"
-	setVar $HELP~HELP[10] $HELP~TAB&"           {ec}   - Strip equipment colonists"
-	setVar $HELP~HELP[11] $HELP~TAB&"          {fig}   - Strip fighters"
-	setVar $HELP~HELP[13] $HELP~TAB&"     "
-	setVar $HELP~HELP[14] $HELP~TAB&"          Originally written by Mind Dagger"
-	gosub :HELP~HELPFILE
+setVar $HELP~HELP[1]  $HELP~TAB&"Strips planets of resources and places them on starting planet.  "
+setVar $HELP~HELP[2]  $HELP~TAB&" "
+setVar $HELP~HELP[3]  $HELP~TAB&"Options:"
+setVar $HELP~HELP[4]  $HELP~TAB&"[planet# | all]   - Planet number or all to strip all planets in sector."
+setVar $HELP~HELP[5]  $HELP~TAB&"            {f}   - Strip fuel ore"
+setVar $HELP~HELP[6]  $HELP~TAB&"            {o}   - Strip organics"
+setVar $HELP~HELP[7]  $HELP~TAB&"            {e}   - Strip equipment"
+setVar $HELP~HELP[8]  $HELP~TAB&"           {fc}   - Strip fuel ore colonists"
+setVar $HELP~HELP[9]  $HELP~TAB&"           {oc}   - Strip organic colonists"
+setVar $HELP~HELP[10] $HELP~TAB&"           {ec}   - Strip equipment colonists"
+setVar $HELP~HELP[11] $HELP~TAB&"          {fig}   - Strip fighters"
+setVar $HELP~HELP[12] $HELP~TAB&"     "
+setVar $HELP~HELP[13] $HELP~TAB&"          Originally written by Mind Dagger"
+gosub :HELP~HELPFILE
 
-	gosub :PLAYER~quikstats
-	setVar $startingLocation $PLAYER~CURRENT_PROMPT
-	if (($startingLocation <> "Citadel") AND ($startingLocation <> "Planet"))
-		setVar $SWITCHBOARD~message "Planet Stripper must be started from Citadel or Planet prompt*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
-	isNumber $test $bot~parm1
-	if (($test = FALSE) AND ($bot~parm1 <> "all"))
-		setVar $SWITCHBOARD~message "Invalid planet. Please enter a planet number or 'all'.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
-	getWordPos " "&$bot~user_command_line&" " $pos " f "
-	if ($pos > 0)
-		setVar $emptyFuel TRUE
-	else
-		setVar $emptyFuel FALSE
-	end
-	getWordPos " "&$bot~user_command_line&" " $pos " o "
-	if ($pos > 0)
-		setVar $emptyOrganics TRUE
-	else
-		setVar $emptyOrganics FALSE
-	end
-	getWordPos " "&$bot~user_command_line&" " $pos " e "
-	if ($pos > 0)
-		setVar $emptyEquipment TRUE
-	else
-		setVar $emptyEquipment FALSE
-	end
-	
-	getWordPos " "&$bot~user_command_line&" " $pos " c1 "
-	if ($pos > 0)
-		setVar $emptyFuelColonists TRUE
-	end
-	getWordPos " "&$bot~user_command_line&" " $pos " c2 "
-	if ($pos > 0)
-		setVar $emptyOrganicColonists TRUE
-	end
-	getWordPos " "&$bot~user_command_line&" " $pos " c3 "
-	if ($pos > 0)
-		setVar $emptyEquipmentColonists TRUE
-	end
-	getWordPos " "&$bot~user_command_line&" " $pos " fc "
-	if ($pos > 0)
-		setVar $emptyFuelColonists TRUE
-	end
-	getWordPos " "&$bot~user_command_line&" " $pos " oc "
-	if ($pos > 0)
-		setVar $emptyOrganicColonists TRUE
-	end
-	getWordPos " "&$bot~user_command_line&" " $pos " ec "
-	if ($pos > 0)
-		setVar $emptyEquipmentColonists TRUE
-	end
-
-	getWordPos " "&$bot~user_command_line&" " $pos " fig "
-	if ($pos > 0)
-		setVar $emptyFighters TRUE
-	else
-		setVar $emptyFighters FALSE
-	end
-
-	getWordPos " "&$bot~user_command_line&" " $pos " figs "
-	if ($pos > 0)
-		setVar $emptyFighters TRUE
-	end
-
-	getWordPos " "&$bot~user_command_line&" " $pos " sh"
-	if ($pos > 0)
-		setVar $emptyShields TRUE
-	else
-		setVar $emptyShields FALSE
-	end
-	getWordPos " "&$bot~user_command_line&" " $pos " silent "
-	if ($pos > 0)
-		setVar $SWITCHBOARD~self_command TRUE
-	end
-	
-	if ($startingLocation = "Citadel")
-		send "q "
-	end
-	gosub :PLANET~getPlanetInfo
-	send "q ** jy "
-    gosub :PLAYER~quikstats
-
-    setVar $player~total_holds $player~total_holds
-
-	if (SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR] <= 1)
-		setVar $SWITCHBOARD~message "This script must be run with at least two planets in the sector*"
-		gosub :SWITCHBOARD~switchboard
-		send "l "&$planet~planet&"* "
-		if ($startingLocation = "Citadel")
-			send "c "
-		end
-		halt
-	end
-	gosub :countPlanets
-
-:startUpMessage
-	setVar $planet~planetToFill $planet~planet
-	if ($bot~parm1 <> "all")
-		setVar $planet~planetCount 1
-		setVar $planet~planets[1] $bot~parm1
-	end
-	setVar $SWITCHBOARD~message "Planet Stripper Powering Up!  Filling Planet "&$planet~planetToFill&"*"
+gosub :PLAYER~quikstats
+setVar $startingLocation $PLAYER~CURRENT_PROMPT
+if (($startingLocation <> "Citadel") AND ($startingLocation <> "Planet"))
+	setVar $SWITCHBOARD~message "Planet Stripper must be started from Citadel or Planet prompt*"
 	gosub :SWITCHBOARD~switchboard
-	
-:startFilling
-	setVar $i 1
-	setVar $countFuel 0
-	setVar $countOrganics 0
-	setVar $countEquipment 0
-	setVar $countColonists 0
-	:lookUpPlanetStats
-		send "l "&$planet~planetToFill&"*"
-		killtrigger wrongPlanet
-		killtrigger badPlanet
-		killtrigger goodPlanet
-		setTextLineTrigger wrongPlanet :badPlanet "That planet is not in this sector."
-		setTextLineTrigger badPlanet :badPlanet "Invalid registry number, landing aborted."
-		setTextLineTrigger goodPlanet :goodPlanet "Claimed by:"
-		pause
-	:badPlanet
-		killtrigger wrongPlanet
-		killtrigger badPlanet
-		killtrigger goodPlanet
-		send "q*"
-		setVar $SWITCHBOARD~message "Planet #"&$planet~planetToFill&" is not valid for this sector*"
-		gosub :SWITCHBOARD~switchboard
-		halt	
-	:goodPlanet
-		killtrigger wrongPlanet
-		killtrigger badPlanet
-		if ($emptyFighters)
-			send "m*l* "
-		end
-		send " q "
+	halt
+end
 
-	gosub :PLAYER~ENTER_MENU_DEAF
+isNumber $test $bot~parm1
+if (($test = FALSE) AND ($bot~parm1 <> "all"))
+	setVar $SWITCHBOARD~message "Invalid planet. Please enter a planet number or 'all'.*"
+	gosub :SWITCHBOARD~switchboard
+	halt
+end
 
-	while ($i <= $planet~planetCount)
-		if ($planet~planetToFill <> $planet~planets[$i])
-			echo "*Stripping Planet " &$planet~planets[$i]&"...*"
-			#gosub :PLAYER~quikstats
-			send "l "&$planet~planets[$i]&"*   "
-			gosub :PLANET~getPlanetInfo
-			send " q j y "
+getWordPos " "&$bot~user_command_line&" " $pos " f "
+if ($pos > 0)
+	setVar $emptyFuel TRUE
+else
+	setVar $emptyFuel FALSE
+end
 
-			if ($emptyFuel)
-				setVar $amount_to_strip $planet~planet_FUEL
-				setVar $category 1
-				setVar $type "t"
-				gosub :stripCategory
-				add $countFuel $count
-			end
-			if ($emptyOrganics)
-				setVar $amount_to_strip $planet~planet_ORGANICS
-				setVar $category 2
-				setVar $type "t"
-				gosub :stripCategory
-				add $countOrganics $count
-			end
-			if ($emptyEquipment)
-				setVar $amount_to_strip $planet~planet_EQUIPMENT
-				setVar $category 3
-				setVar $type "t"
-				gosub :stripCategory
-				add $countEquipment $count
-			end
-			if ($emptyFuelColonists)
-				setVar $amount_to_strip $planet~planet_FUEL_COLONISTS
-				setVar $category 1
-				setVar $type "s"
-				gosub :stripCategory
-				add $countColonists $count
-			end
-			if ($emptyOrganicColonists)
-				setVar $amount_to_strip $planet~planet_ORGANICS_COLONISTS
-				setVar $category 2
-				setVar $type "s"
-				gosub :stripCategory
-				add $countColonists $count
-			end
-			if ($emptyEquipmentColonists)
-				setVar $amount_to_strip $planet~planet_EQUIPMENT_COLONISTS
-				setVar $category 3
-				setVar $type "s"
-				gosub :stripCategory
-				add $countColonists $count
-			end
+getWordPos " "&$bot~user_command_line&" " $pos " o "
+if ($pos > 0)
+	setVar $emptyOrganics TRUE
+else
+	setVar $emptyOrganics FALSE
+end
 
-			:tryFighters
-				if ($emptyFighters)
-					killtrigger success
-					killtrigger emptyEmpty
-					killtrigger fullFill
-					killtrigger empty
-					send "l j"&#8&$planet~planets[$i]&"* jm ** *x q l j"&#8&$planet~planetToFill&"* jm*jl*x q "
-					setTextTrigger success :tryFighters "The Fighters join your battle force."
-					setTextTrigger emptyEmpty :doneWithThisPlanet "There isn't room on the planet"
-					setTextTrigger fullFill :doneWithThisPlanet "They don't have room for that many "
-					setTextTrigger empty :doneWithThisPlanet "How many Fighters do you want to take (0 Max) [0]"
-					pause
-				end
-				:doneWithThisPlanet			
-		end
-		add $i 1
+getWordPos " "&$bot~user_command_line&" " $pos " e "
+if ($pos > 0)
+	setVar $emptyEquipment TRUE
+else
+	setVar $emptyEquipment FALSE
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " c1 "
+if ($pos > 0)
+	setVar $emptyFuelColonists TRUE
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " c2 "
+if ($pos > 0)
+	setVar $emptyOrganicColonists TRUE
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " c3 "
+if ($pos > 0)
+	setVar $emptyEquipmentColonists TRUE
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " fc "
+if ($pos > 0)
+	setVar $emptyFuelColonists TRUE
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " oc "
+if ($pos > 0)
+	setVar $emptyOrganicColonists TRUE
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " ec "
+if ($pos > 0)
+	setVar $emptyEquipmentColonists TRUE
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " fig "
+if ($pos > 0)
+	setVar $emptyFighters TRUE
+else
+	setVar $emptyFighters FALSE
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " figs "
+if ($pos > 0)
+	setVar $emptyFighters TRUE
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " sh"
+if ($pos > 0)
+	setVar $emptyShields TRUE
+else
+	setVar $emptyShields FALSE
+end
+
+getWordPos " "&$bot~user_command_line&" " $pos " silent "
+if ($pos > 0)
+	setVar $SWITCHBOARD~self_command TRUE
+end
+
+if ($startingLocation = "Citadel")
+	send "q "
+end
+
+gosub :PLANET~getPlanetInfo
+send "q ** jy "
+gosub :PLAYER~quikstats
+
+if (SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR] <= 1)
+	setVar $SWITCHBOARD~message "This script must be run with at least two planets in the sector*"
+	gosub :SWITCHBOARD~switchboard
+	send "l "&$planet~planet&"* "
+	if ($startingLocation = "Citadel")
+		send "c "
+	end
+	halt
+end
+gosub :countPlanets
+
+setVar $planet~planetToFill $planet~planet
+if ($bot~parm1 <> "all")
+	setVar $planet~planetCount 1
+	setVar $planet~planets[1] $bot~parm1
+end
+setVar $SWITCHBOARD~message "Planet Stripper Powering Up!  Filling Planet "&$planet~planetToFill&"*"
+gosub :SWITCHBOARD~switchboard
+
+setVar $i 1
+setVar $countFuel 0
+setVar $countOrganics 0
+setVar $countEquipment 0
+setVar $countColonists 0
+
+send "l "&$planet~planetToFill&"*"
+killtrigger wrongPlanet
+killtrigger badPlanet
+killtrigger goodPlanet
+setTextLineTrigger wrongPlanet :badPlanet "That planet is not in this sector."
+setTextLineTrigger badPlanet :badPlanet "Invalid registry number, landing aborted."
+setTextLineTrigger goodPlanet :goodPlanet "Claimed by:"
+pause
+
+:badPlanet
+killtrigger wrongPlanet
+killtrigger badPlanet
+killtrigger goodPlanet
+send "q*"
+setVar $SWITCHBOARD~message "Planet #"&$planet~planetToFill&" is not valid for this sector*"
+gosub :SWITCHBOARD~switchboard
+halt	
+
+:goodPlanet
+killtrigger wrongPlanet
+killtrigger badPlanet
+if ($emptyFighters)
+	send "m*l* "
+end
+send " q "
+
+logging off
+gosub :PLAYER~ENTER_MENU_DEAF
+
+while ($i <= $planet~planetCount)
+if ($planet~planetToFill <> $planet~planets[$i])
+	echo "*Stripping Planet " &$planet~planets[$i]&"...*"
+	send "l "&$planet~planets[$i]&"*   "
+	gosub :PLANET~getPlanetInfo
+	send " q j y "
+
+	if ($emptyFuel)
+		setVar $amount_to_strip $planet~planet_FUEL
+		setVar $category 1
+		setVar $type "t"
+		gosub :stripCategory
+		add $countFuel $count
+	end
+	if ($emptyOrganics)
+		setVar $amount_to_strip $planet~planet_ORGANICS
+		setVar $category 2
+		setVar $type "t"
+		gosub :stripCategory
+		add $countOrganics $count
+	end
+	if ($emptyEquipment)
+		setVar $amount_to_strip $planet~planet_EQUIPMENT
+		setVar $category 3
+		setVar $type "t"
+		gosub :stripCategory
+		add $countEquipment $count
+	end
+	if ($emptyFuelColonists)
+		setVar $amount_to_strip $planet~planet_FUEL_COLONISTS
+		setVar $category 1
+		setVar $type "s"
+		gosub :stripCategory
+		add $countColonists $count
+	end
+	if ($emptyOrganicColonists)
+		setVar $amount_to_strip $planet~planet_ORGANICS_COLONISTS
+		setVar $category 2
+		setVar $type "s"
+		gosub :stripCategory
+		add $countColonists $count
+	end
+	if ($emptyEquipmentColonists)
+		setVar $amount_to_strip $planet~planet_EQUIPMENT_COLONISTS
+		setVar $category 3
+		setVar $type "s"
+		gosub :stripCategory
+		add $countColonists $count
 	end
 
-	:lookUpPlanetStats2
-		gosub :PLAYER~quikstats
-		send "l "&$planet~planetToFill&"*jm ** * "
-		killAllTriggers
-		setTextLineTrigger wrongPlanet :badPlanet2 "That planet is not in this sector."
-		setTextLineTrigger badPlanet :badPlanet2 "Invalid registry number, landing aborted."
-		setTextLineTrigger goodPlanet :goodPlanet2 "Claimed by:"
-		pause
-	:badPlanet2
-		killAllTriggers
-		send "q*"
-		setVar $SWITCHBOARD~message "Planet #"&$planet~planetToFill&" is not valid for this sector*"
-		gosub :SWITCHBOARD~switchboard
-		halt	
-	:goodPlanet2
-		killAllTriggers
-		send "q "
-		send "l "&$planet~planetToFill&"*m* * * c * "
-		gosub :PLAYER~EXIT_MENU_DEAF
-		gosub :endReport
-		send "/"
-		waitOn #179
-		setVar $SWITCHBOARD~message "Planet Stripper Shutting Down*"
-		gosub :SWITCHBOARD~switchboard
-		halt
+		:tryFighters
+		if ($emptyFighters)
+			killtrigger success
+			killtrigger emptyEmpty
+			killtrigger fullFill
+			killtrigger empty
+			send "l j"&#8&$planet~planets[$i]&"* jm ** *x q l j"&#8&$planet~planetToFill&"* jm*jl*x q "
+			setTextTrigger success :tryFighters "The Fighters join your battle force."
+			setTextTrigger emptyEmpty :doneWithThisPlanet "There isn't room on the planet"
+			setTextTrigger fullFill :doneWithThisPlanet "They don't have room for that many "
+			setTextTrigger empty :doneWithThisPlanet "How many Fighters do you want to take (0 Max) [0]"
+			pause
+		end
+			:doneWithThisPlanet			
+	end
+	add $i 1
+end
+
+:lookUpPlanetStats2
+gosub :PLAYER~quikstats
+send "l "&$planet~planetToFill&"*jm ** * "
+killAllTriggers
+setTextLineTrigger wrongPlanet :badPlanet2 "That planet is not in this sector."
+setTextLineTrigger badPlanet :badPlanet2 "Invalid registry number, landing aborted."
+setTextLineTrigger goodPlanet :goodPlanet2 "Claimed by:"
+pause
+:badPlanet2
+killAllTriggers
+send "q*"
+setVar $SWITCHBOARD~message "Planet #"&$planet~planetToFill&" is not valid for this sector*"
+gosub :SWITCHBOARD~switchboard
+halt	
+:goodPlanet2
+killAllTriggers
+send "q "
+send "l "&$planet~planetToFill&"*m* * * c * "
+gosub :PLAYER~EXIT_MENU_DEAF
+logging on
+gosub :endReport
+send "/"
+waitOn #179
+setVar $SWITCHBOARD~message "Planet Stripper Shutting Down*"
+gosub :SWITCHBOARD~switchboard
+halt
 
 :clearScreen
-	echo #27 & "[2J"
-	return
+echo #27 & "[2J"
+return
 
 :stripCategory
-	setVar $PLAYER~TURNS ($PLAYER~TURNS-1)
-	setVar $count 0 
-	gosub :player~quikstats
+setVar $PLAYER~TURNS ($PLAYER~TURNS-1)
+setVar $count 0 
+gosub :player~quikstats
 
-	:again
-		setVar $loop 0
-		killtrigger success
-		killtrigger empty
-		killtrigger full
-		killtrigger success_colos
-		killtrigger empty_colos
+:again
+setVar $loop 0
+killtrigger success
+killtrigger empty
+killtrigger full
+killtrigger success_colos
+killtrigger empty_colos
 
-		if ($PLAYER~TURNS <= $BOT~bot_turn_limit)
-			goto :lookUpPlanetStats2
-		end
-		if (($player~total_holds > $amount_to_strip) AND ($amount_to_strip > 0))
-			setVar $get $amount_to_strip
-		else
-			if ($amount_to_strip <= 0)
-				setVar $get 0
-			else
-				setVar $get $player~total_holds
-			end
-		end
-		add $count $get
-		setVar $amount_to_strip ($amount_to_strip - $get)
-		if ($get <= 0)
-			goto :done
-		end
+if ($PLAYER~TURNS <= $BOT~bot_turn_limit)
+	goto :lookUpPlanetStats2
+end
+if (($player~total_holds > $amount_to_strip) AND ($amount_to_strip > 0))
+	setVar $get $amount_to_strip
+else
+	if ($amount_to_strip <= 0)
+		setVar $get 0
+	else
+		setVar $get $player~total_holds
+	end
+end
+add $count $get
+setVar $amount_to_strip ($amount_to_strip - $get)
+if ($get <= 0)
+	goto :done
+end
 
-		setvar $rounds ($amount_to_strip / $player~total_holds)
-		if ($rounds < 1)
-			setVar $rounds 1
-		end
-		setvar $extra ($amount_to_strip - ($player~total_holds * $rounds))
+setvar $rounds ($amount_to_strip / $player~total_holds)
+if ($rounds < 1)
+	setVar $rounds 1
+end
+setvar $extra ($amount_to_strip - ($player~total_holds * $rounds))
 
-		setVar $macro "l j"&#8&$planet~planets[$i]&"* j"&$type&"* jt"&$category&$get&"* x q l j"&#8&$planet~planetToFill&"* j"&$type&"* jl"&$category&"* x q "
-		#send $macro
-		setVar $loop 0
-		setTextTrigger empty         :done     "There aren't that many "
-		setTextTrigger full          :empty    "They don't have room for that many "
-		setTextTrigger empty_colos   :switch    "There isn't room on the planet"
+setVar $macro "l j"&#8&$planet~planets[$i]&"* j"&$type&"* jt"&$category&$get&"* x q l j"&#8&$planet~planetToFill&"* j"&$type&"* jl"&$category&"* x q "
+#send $macro
+setVar $loop 0
+setTextTrigger empty         :done     "There aren't that many "
+setTextTrigger full          :empty    "They don't have room for that many "
+setTextTrigger empty_colos   :switch    "There isn't room on the planet"
 
-		setvar $loop 0
-		:strip_loop
-		if ($loop >= $rounds)
-			goto :move_extra
-		end	
-		send $macro
-		add $loop 1
-		goto :strip_loop
+setvar $loop 0
+:strip_loop
+if ($loop >= $rounds)
+	goto :move_extra
+end	
+send $macro
+add $loop 1
+goto :strip_loop
 
-		:move_extra
-		if ($extra > 0)
-			send $macro "l j"&#8&$planet~planets[$i]&"* j"&$type&"* jt"&$category&$extra&"* x q l j"&#8&$planet~planetToFill&"* j"&$type&"* jl"&$category&"* x q "
-		end
-		goto :done
+:move_extra
+if ($extra > 0)
+	send $macro "l j"&#8&$planet~planets[$i]&"* j"&$type&"* jt"&$category&$extra&"* x q l j"&#8&$planet~planetToFill&"* j"&$type&"* jl"&$category&"* x q "
+end
+goto :done
 
-		:switch
-		killalltriggers
-		add $category 1
-		if ($category >= 4)
-			goto :again			
-		else
-			send $macro
-		end
-		goto :again
+:switch
+killalltriggers
+add $category 1
+if ($category >= 4)
+	goto :again			
+else
+	send $macro
+end
+goto :again
 
-	:empty
-		killalltriggers
-		send "q q * * j y "
-	:done
-		killalltriggers
-	return
+:empty
+killalltriggers
+send "q q * * j y "
+:done
+killalltriggers
+return
 
 
 :countPlanets
 
-	setVar $planet~planetCount 0
-	killalltriggers
-	setTextLineTrigger planetGrabber :planetline "   <"
-	setTextLineTrigger beDone :done "Land on which planet "
-	send "lq*"
-	pause
-	:planetline
-		killalltriggers
-		getWordPos CURRENTLINE $pos "<<<< SHIELDED"
-		if ($pos <= 0)
-			setVar $line CURRENTLINE
-			replacetext $line "<" " "
-			replacetext $line ">" " "
-			striptext $line ","
-			add $planet~planetCount 1
-			getWord $line $planet~planets[$planet~planetCount] 1
-		end
-		setTextLineTrigger getLine2 :planetline "   <"
-		setTextLineTrigger getEnd :done "Land on which planet "
-		pause
-	:done
+setVar $planet~planetCount 0
+killalltriggers
+setTextLineTrigger planetGrabber :planetline "   <"
+setTextLineTrigger beDone :done "Land on which planet "
+send "lq*"
+pause
+:planetline
+killalltriggers
+getWordPos CURRENTLINE $pos "<<<< SHIELDED"
+if ($pos <= 0)
+	setVar $line CURRENTLINE
+	replacetext $line "<" " "
+	replacetext $line ">" " "
+	striptext $line ","
+	add $planet~planetCount 1
+	getWord $line $planet~planets[$planet~planetCount] 1
+end
+setTextLineTrigger getLine2 :planetline "   <"
+setTextLineTrigger getEnd :done "Land on which planet "
+pause
+:done
 return
 
 
 
 :endReport
-	setVar $formattedCountFuel ""
+setVar $formattedCountFuel ""
+getLength $countFuel $length
+while ($length > 3)
+	cutText $countFuel $snippet $length-2 9999
+	cutText $countFuel $countFuel 1 $length-3
 	getLength $countFuel $length
-	while ($length > 3)
-		cutText $countFuel $snippet $length-2 9999
-		cutText $countFuel $countFuel 1 $length-3
-		getLength $countFuel $length
-		setVar $formattedCountFuel ","&$snippet&$formattedCountFuel
-	end
-	setVar $formattedCountFuel $countFuel&$formattedCountFuel
-	
-	setVar $formattedCountOrganics ""
+	setVar $formattedCountFuel ","&$snippet&$formattedCountFuel
+end
+setVar $formattedCountFuel $countFuel&$formattedCountFuel
+
+setVar $formattedCountOrganics ""
+getLength $countOrganics $length
+while ($length > 3)
+	cutText $countOrganics $snippet $length-2 9999
+	cutText $countOrganics $countOrganics 1 $length-3
 	getLength $countOrganics $length
-	while ($length > 3)
-		cutText $countOrganics $snippet $length-2 9999
-		cutText $countOrganics $countOrganics 1 $length-3
-		getLength $countOrganics $length
-		setVar $formattedCountOrganics ","&$snippet&$formattedCountOrganics
-	end
-	setVar $formattedCountOrganics $countOrganics&$formattedCountOrganics
-	
-	setVar $formattedCountEquipment ""
+	setVar $formattedCountOrganics ","&$snippet&$formattedCountOrganics
+end
+setVar $formattedCountOrganics $countOrganics&$formattedCountOrganics
+
+setVar $formattedCountEquipment ""
+getLength $countEquipment $length
+while ($length > 3)
+	cutText $countEquipment $snippet $length-2 9999
+	cutText $countEquipment $countEquipment 1 $length-3
 	getLength $countEquipment $length
-	while ($length > 3)
-		cutText $countEquipment $snippet $length-2 9999
-		cutText $countEquipment $countEquipment 1 $length-3
-		getLength $countEquipment $length
-		setVar $formattedCountEquipment ","&$snippet&$formattedCountEquipment
-	end
-	setVar $formattedCountEquipment $countEquipment&$formattedCountEquipment
-	
-	setVar $formattedCountColonists ""
+	setVar $formattedCountEquipment ","&$snippet&$formattedCountEquipment
+end
+setVar $formattedCountEquipment $countEquipment&$formattedCountEquipment
+
+setVar $formattedCountColonists ""
+getLength $countColonists $length
+while ($length > 3)
+	cutText $countColonists $snippet $length-2 9999
+	cutText $countColonists $countColonists 1 $length-3
 	getLength $countColonists $length
-	while ($length > 3)
-		cutText $countColonists $snippet $length-2 9999
-		cutText $countColonists $countColonists 1 $length-3
-		getLength $countColonists $length
-		setVar $formattedCountColonists ","&$snippet&$formattedCountColonists
+	setVar $formattedCountColonists ","&$snippet&$formattedCountColonists
+end
+setVar $formattedCountColonists $countColonists&$formattedCountColonists
+
+setVar $SWITCHBOARD~message "Planet Stripper - Completion Report*"	
+if ($emptyFuel)
+	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  Fuel Ore  Moved: "&$formattedCountFuel&" Holds*"
+end
+if ($emptyOrganics)
+	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  Organics  Moved: "&$formattedCountOrganics&" Holds*"
+end
+if ($emptyEquipment)
+	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  Equipment Moved: "&$formattedCountEquipment&" Holds*"
+end
+if ($emptyFuelColonists OR $emptyOrganicColonists OR $emptyEquipmentColonists)
+	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  Colonists Moved: "&$formattedCountColonists&" Holds*"
+end
+if ($emptyFighters)
+	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  All possible fighters stripped and placed on planet*"
+end
+if ($PLAYER~unlimitedGame <> TRUE)
+	if ($PLAYER~TURNS <= $BOT~bot_turn_limit)
+		setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  Turns too low to continue. (Turn limit: "&$BOT~bot_turn_limit&"*"
 	end
-	setVar $formattedCountColonists $countColonists&$formattedCountColonists
-	
-	setVar $SWITCHBOARD~message "Planet Stripper - Completion Report*"	
-	if ($emptyFuel)
-		setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  Fuel Ore  Moved: "&$formattedCountFuel&" Holds*"
-	end
-	if ($emptyOrganics)
-		setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  Organics  Moved: "&$formattedCountOrganics&" Holds*"
-	end
-	if ($emptyEquipment)
-		setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  Equipment Moved: "&$formattedCountEquipment&" Holds*"
-	end
-	if ($emptyFuelColonists OR $emptyOrganicColonists OR $emptyEquipmentColonists)
-		setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  Colonists Moved: "&$formattedCountColonists&" Holds*"
-	end
-	if ($emptyFighters)
-		setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  All possible fighters stripped and placed on planet*"
-	end
-	if ($PLAYER~unlimitedGame <> TRUE)
-		if ($PLAYER~TURNS <= $BOT~bot_turn_limit)
-			setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  Turns too low to continue. (Turn limit: "&$BOT~bot_turn_limit&"*"
-		end
-	end
-	if ($SWITCHBOARD~self_command <> TRUE)
-		setVar $SWITCHBOARD~self_command 2
-	end
-	gosub :SWITCHBOARD~switchboard
+end
+if ($SWITCHBOARD~self_command <> TRUE)
+	setVar $SWITCHBOARD~self_command 2
+end
+gosub :SWITCHBOARD~switchboard
 return
 
 

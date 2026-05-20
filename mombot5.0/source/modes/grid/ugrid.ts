@@ -32,9 +32,10 @@ loadvar $FIG_FILE
 loadvar $LIMP_FILE
 loadvar $ARMID_FILE
 loadvar $COMMAND
-setvar $GRIDDER_FILE "_MOM"&GAMENAME&"_GRIDDER_TARGETS.txt"
-setvar $MASTER_EDGE_FILE "_MOM_"&GAMENAME&"_EdgeMasterList.sectors"
-setvar $UNEXPLORED_FILE "_MOM_UNEXPLORED_"&GAMENAME&".sectors"
+loadvar $bot~folder
+setvar $GRIDDER_FILE $bot~folder&"/_MOM"&GAMENAME&"_GRIDDER_TARGETS.txt"
+setvar $MASTER_EDGE_FILE $bot~folder&"/_MOM_"&GAMENAME&"_EdgeMasterList.sectors"
+setvar $UNEXPLORED_FILE $bot~folder&"/_MOM_UNEXPLORED_"&GAMENAME&".sectors"
 setvar $IMLIMPED FALSE
 setarray $MOVE SECTORS
 setvar $CHECKEDFORINFO ""

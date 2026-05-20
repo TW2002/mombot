@@ -134,9 +134,9 @@ load "scripts\"&$bot~mombot_directory&"\commands\general\dep.cts"
 setEventTrigger		depended		:depended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\general\dep.cts"
 pause
 :depended
-	setvar $switchboard~message $total&" fighters purchased and added to sector.*"
-	gosub :switchboard~switchboard
-	halt
+setvar $switchboard~message $total&" fighters purchased and added to sector.*"
+gosub :switchboard~switchboard
+halt
 
 #INCLUDES:
 include "source\include\player"

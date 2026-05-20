@@ -404,328 +404,328 @@ reqRecording
 	gosub :player~quikstats
 	setVar $homeSector $player~current_sector
 	:startTargeting
-		killAllTriggers
-		if (($returnHome = TRUE) AND ($isManual <> TRUE) AND ($player~current_sector <> $homeSector))
-			setVar $timeInMilli (($returnHomeDelay * 1000)+100)
-			echo ANSI_6 "*    [" ANSI_14 "Returning Home In " ANSI_15 $returnHomeDelay ANSI_14 " Seconds" ANSI_6 "]*" ANSI_7
-			setDelayTrigger homeDelay :goHome $timeInMilli
+	killAllTriggers
+	if (($returnHome = TRUE) AND ($isManual <> TRUE) AND ($player~current_sector <> $homeSector))
+		setVar $timeInMilli (($returnHomeDelay * 1000)+100)
+		echo ANSI_6 "*    [" ANSI_14 "Returning Home In " ANSI_15 $returnHomeDelay ANSI_14 " Seconds" ANSI_6 "]*" ANSI_7
+		setDelayTrigger homeDelay :goHome $timeInMilli
+	end
+	setTextLineTrigger manual :manualPwarp "Planetary TransWarp Drive Engaged!"
+	if (($triggerDescription = "Fighters and Mines") OR ($triggerDescription = "Mines") OR ($triggerDescription = "Unfigged Mines"))
+		if ($targetingPerson = FALSE)
+			setTextTrigger limp :attackSectorLimpet "Limpet mine in "
 		end
-		setTextLineTrigger manual :manualPwarp "Planetary TransWarp Drive Engaged!"
-		if (($triggerDescription = "Fighters and Mines") OR ($triggerDescription = "Mines") OR ($triggerDescription = "Unfigged Mines"))
-			if ($targetingPerson = FALSE)
-				setTextTrigger limp :attackSectorLimpet "Limpet mine in "
-			end
-			setTextTrigger armid :attackSectorMine "Your mines in "
-		end
-		if (($triggerDescription = "Fighters and Mines") OR ($triggerDescription = "Fighters"))
-			setTextTrigger fig :attackSectorFighter "Deployed Fighters "
-		end
-		setTextLineTrigger warn :keepAlive "INACTIVITY WARNING:"
-		setTextTrigger pause :pausing "Planet command (?="
-		setTextTrigger pause2 :pausing "Computer command ["
-		setTextTrigger pause3 :pausing "Corporate command ["
-		setTextTrigger pause4 :pausing "Transfer To or From the Treasury (T/F)"
-		setTextTrigger pause5 :pausing "Qcannon Control Type :"
-		setTextTrigger pause6 :pausing "Beam to what sector? (U=Upgrade"
-		setTextOutTrigger redoSettings :doSettings "%"
-		#setTextLineTrigger scriptcheck :answer "script?"
-    		#setTextLineTrigger scriptcheck2 :answer "Script?"
-    		setVar $isManual FALSE
-		if ($attackOnSight)
-			setTextLineTrigger 	limp2 	:scan 	"Limpet mine in "&$player~CURRENT_SECTOR
-			setTextLineTrigger 	warps 	:scan 	"warps into the sector."
-			setTextLineTrigger 	lifts 	:scan 	"lifts off from"
-			setTextLineTrigger 	deffig 	:scan 	"Deployed Fighters Report Sector "&$player~CURRENT_SECTOR
-			setTextLineTrigger 	secgun 	:scan 	"Quasar Cannon on"
-			setTextLineTrigger 	ig		:scan 	"Shipboard Computers The Interdictor Generator on"
-			setTextLineTrigger 	power 	:scan 	"is powering up weapons systems!"
-			settextlinetrigger  wave    :scan    " launches a wave of fighters at  "
-			settextlinetrigger  planet  :scan	" launches a Genesis Torpedo into the sector!"
-			settextlinetrigger  atomic  :scan    " appears from the planetary rubble."
-			setTextLineTrigger 	exits 	:scan 	"exits the game."
-			setTextLineTrigger 	enters 	:scan 	"enters the game."
-			setDelayTrigger		delay	:scan	30000
-		end
-		pause
+		setTextTrigger armid :attackSectorMine "Your mines in "
+	end
+	if (($triggerDescription = "Fighters and Mines") OR ($triggerDescription = "Fighters"))
+		setTextTrigger fig :attackSectorFighter "Deployed Fighters "
+	end
+	setTextLineTrigger warn :keepAlive "INACTIVITY WARNING:"
+	setTextTrigger pause :pausing "Planet command (?="
+	setTextTrigger pause2 :pausing "Computer command ["
+	setTextTrigger pause3 :pausing "Corporate command ["
+	setTextTrigger pause4 :pausing "Transfer To or From the Treasury (T/F)"
+	setTextTrigger pause5 :pausing "Qcannon Control Type :"
+	setTextTrigger pause6 :pausing "Beam to what sector? (U=Upgrade"
+	setTextOutTrigger redoSettings :doSettings "%"
+	#setTextLineTrigger scriptcheck :answer "script?"
+		#setTextLineTrigger scriptcheck2 :answer "Script?"
+		setVar $isManual FALSE
+	if ($attackOnSight)
+		setTextLineTrigger 	limp2 	:scan 	"Limpet mine in "&$player~CURRENT_SECTOR
+		setTextLineTrigger 	warps 	:scan 	"warps into the sector."
+		setTextLineTrigger 	lifts 	:scan 	"lifts off from"
+		setTextLineTrigger 	deffig 	:scan 	"Deployed Fighters Report Sector "&$player~CURRENT_SECTOR
+		setTextLineTrigger 	secgun 	:scan 	"Quasar Cannon on"
+		setTextLineTrigger 	ig		:scan 	"Shipboard Computers The Interdictor Generator on"
+		setTextLineTrigger 	power 	:scan 	"is powering up weapons systems!"
+		settextlinetrigger  wave    :scan    " launches a wave of fighters at  "
+		settextlinetrigger  planet  :scan	" launches a Genesis Torpedo into the sector!"
+		settextlinetrigger  atomic  :scan    " appears from the planetary rubble."
+		setTextLineTrigger 	exits 	:scan 	"exits the game."
+		setTextLineTrigger 	enters 	:scan 	"enters the game."
+		setDelayTrigger		delay	:scan	30000
+	end
+	pause
 
 		:scan
-			killAllTriggers
-			goSub :checkForVictims
-			goto :startTargeting
+		killAllTriggers
+		goSub :checkForVictims
+		goto :startTargeting
 
 			:keepAlive
-				killAllTriggers
-				gosub :warning
-				goto :startTargeting
+			killAllTriggers
+			gosub :warning
+			goto :startTargeting
 
 			:doSettings
-				killAllTriggers
-				goSub :waitforrestart
-				goto :startTargeting
+			killAllTriggers
+			goSub :waitforrestart
+			goto :startTargeting
 
 			:pausing
-				killAllTriggers
+			killAllTriggers
 			echo ANSI_6 "*[" ANSI_14 $script_ver " paused. To restart, re-enter Citadel Prompt" ANSI_6 "]*" ANSI_7
 			setTextTrigger restart :restarting "Citadel command ("
 			pause
 			:restarting
-				killAllTriggers
-				echo ANSI_6 "*[" ANSI_14 $script_ver " restarted" ANSI_6 "]*" ANSI_7
-				goSub :getSectorLocation
-				goto :startTargeting
-
-		:answer
-			killalltriggers
- 			gosub :authenticate
-			if ($auth_result = "true")
-				killAllTriggers
-				send $message
-				waitOn "Sub-space comm-link terminated"
-			end
+			killAllTriggers
+			echo ANSI_6 "*[" ANSI_14 $script_ver " restarted" ANSI_6 "]*" ANSI_7
+			goSub :getSectorLocation
 			goto :startTargeting
 
-		:goHome
+		:answer
+		killalltriggers
+			gosub :authenticate
+		if ($auth_result = "true")
 			killAllTriggers
+			send $message
+			waitOn "Sub-space comm-link terminated"
+		end
+		goto :startTargeting
 
-			if ($dropftrs)
+		:goHome
+		killAllTriggers
 
+		if ($dropftrs)
+
+			goSub :retrieveFigs
+
+		end
+
+
+		send "p " $homeSector "*y"
+
+		:manualPwarp
+		killAllTriggers
+		if ($attackOnSight)
+			goSub :checkForVictims
+		end
+		setVar $isManual TRUE
+		goSub :getSectorLocation
+		goto :startTargeting
+		:attackSectorMine
+		killtrigger fig
+		killtrigger limp
+		gosub :validateMineHit
+		if ($isValid <> TRUE)
+			goto :startTargeting
+		end
+		goto :getDropSector
+		:attackSectorLimpet
+		killtrigger armid
+		killtrigger fig
+		gosub :validateLimpetHit
+		if ($isValid <> TRUE)
+			goto :startTargeting
+		end
+		goto :getDropSector
+		:attackSectorFighter
+		killtrigger armid
+		killtrigger limp
+		gosub :validateFighterHit
+		if ($isValid <> TRUE)
+			goto :startTargeting
+		end
+		:getDropSector
+
+		if ($dropDescription = "Direct")
+			if ($lock = true)
+				setvar $send "p "&$dropSector&"*"
+				send $send
+				goto :doLock
+			else
+				setvar $send "p "&$dropSector&"* y "
+				if ($fastdrop = true)
+					if ($ship~SHIP_FIGHTERS_MAX <= 100000)
+						setvar $figstodrop ($ship~ship_fighters_max/2)
+					else
+						setvar $figstodrop ($ship~SHIP_FIGHTERS_MAX-100000)
+					end
+					setVar $send $send&"q q fz"&$figstodrop&"*z c d * l "&$planet~planet&"*  m  *** c  "
+				end
+				if ($fastkill = true)
+					setvar $send $send&"q q a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** c  "
+				end
+				if ($iglift = 1)
+					setVar $send $send&"q q * * "
+				end
+			end
+
+			send $send
+
+			if ($defender = 1)
+				killAllTriggers
+				goSub :liftDefenders
+			end
+
+			if ($attackOnSight)
+				goSub :checkForVictims
+			end
+			goSub :getSectorLocation
+
+			if ($player~current_sector <> $dropSector)
+				setSectorParameter $dropSector "FIGSEC" FALSE
+				if ($dropFtrs = true)
+					goSub :retrieveFigs
+				end
+			end
+			if ($iglift = 1)
+				if ($player~current_sector <> $dropSector)
+					send "'Planet did not arrive, resetting*"
+					goSub :resetIGLift
+
+				else
+					send "'IGLift Initiated! send reset command to re-enable PDROP (resetpdrop or -)*"
+					waitfor "resetpdrop"
+					goSub :waitforrestart
+					goSub :resetIGLift
+				end
+			end
+			if ($defender = 1)
+				if ($player~current_sector <> $dropSector)
+					send "'Planet did not arrive, resetting*"
+					goSub :resetdefender
+
+				else
+					send "'Defender Initiated! send reset command to re-enable PDROP*"
+					goSub :waitforrestart
+					goSub :setdefender
+				end
+			end
+		elseif ($dropDescription = "Adjacent")
+			if ($density = 1)
+				gosub :findAdjacentDensity
+			else
+				gosub :findAdjacent
+			end
+			goSub :attemptDrop
+			if ($density = 1)
+				if ($targetCount = 0)
+					goto :startTargeting
+				end
+				goSub :densityDrop
+			end
+			if ($defender = 1)
+				killAllTriggers
+				goSub :liftDefenders
+			end
+
+			goSub :getSectorLocation
+			if ($attackOnSight)
+				goSub :checkForVictims
+			end
+			if ($player~current_sector <> $gotoSector)
+				send "'Planet did not arrive, resetting*"
+
+			else
+				if ($iglift = 1)
+					send "'IGLift Initiated! send reset command to re-enable PDROP (resetpdrop or -)*"
+					waitfor "resetpdrop"
+					goSub :waitforrestart
+					goSub :resetIGLift
+				end
+			end
+
+			if ($defender = 1)
+				send "'Defender Initiated! send reset command to re-enable PDROP*"
+				goSub :waitforrestart
+				goSub :setdefender
+			end
+
+
+			if ($dropFtrs = true)
 				goSub :retrieveFigs
 
 			end
-
-
-			send "p " $homeSector "*y"
-
-		:manualPwarp
+		elseif ($dropDescription = "Adjacent, then Direct")
+			gosub :findAdjacent
+			goSub :attemptDrop
+			send "p " $dropSector "* y "
+			goSub :getSectorLocation
+			if ($attackOnSight)
+				goSub :checkForVictims
+			end
+		elseif ($dropDescription = "Surround")
+			setVar $gotoSector 0
+			gosub :attemptSurroundDrop
+			if ($gotoSector > 0) and ($defender = 1)
 				killAllTriggers
-				if ($attackOnSight)
-					goSub :checkForVictims
-				end
-				setVar $isManual TRUE
-				goSub :getSectorLocation
-				goto :startTargeting
-		:attackSectorMine
-			killtrigger fig
-			killtrigger limp
-			gosub :validateMineHit
-			if ($isValid <> TRUE)
-				goto :startTargeting
+				goSub :liftDefenders
 			end
-			goto :getDropSector
-		:attackSectorLimpet
-			killtrigger armid
-			killtrigger fig
-			gosub :validateLimpetHit
-			if ($isValid <> TRUE)
-				goto :startTargeting
+			gosub :getSectorLocation
+			if ($attackOnSight)
+				goSub :checkForVictims
 			end
-			goto :getDropSector
-		:attackSectorFighter
-			killtrigger armid
-			killtrigger limp
-			gosub :validateFighterHit
-			if ($isValid <> TRUE)
-				goto :startTargeting
+			if ($iglift = 1) and ($gotoSector > 0)
+				send "'IGLift Initiated! send reset command to re-enable PDROP (resetpdrop or -)*"
+				waitfor "resetpdrop"
+				goSub :waitforrestart
+				goSub :resetIGLift
 			end
-		:getDropSector
 
-			if ($dropDescription = "Direct")
-				if ($lock = true)
-					setvar $send "p "&$dropSector&"*"
-					send $send
-					goto :doLock
-				else
-					setvar $send "p "&$dropSector&"* y "
-					if ($fastdrop = true)
-						if ($ship~SHIP_FIGHTERS_MAX <= 100000)
-							setvar $figstodrop ($ship~ship_fighters_max/2)
-						else
-							setvar $figstodrop ($ship~SHIP_FIGHTERS_MAX-100000)
-						end
-						setVar $send $send&"q q fz"&$figstodrop&"*z c d * l "&$planet~planet&"*  m  *** c  "
-					end
-					if ($fastkill = true)
-						setvar $send $send&"q q a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** c  "
-					end
-					if ($iglift = 1)
-						setVar $send $send&"q q * * "
-					end
-				end
-
-				send $send
-
-				if ($defender = 1)
-					killAllTriggers
-					goSub :liftDefenders
-				end
-
-				if ($attackOnSight)
-					goSub :checkForVictims
-				end
-				goSub :getSectorLocation
-
-				if ($player~current_sector <> $dropSector)
-					setSectorParameter $dropSector "FIGSEC" FALSE
-					if ($dropFtrs = true)
-						goSub :retrieveFigs
-					end
-				end
-				if ($iglift = 1)
-					if ($player~current_sector <> $dropSector)
-						send "'Planet did not arrive, resetting*"
-						goSub :resetIGLift
-
-					else
-						send "'IGLift Initiated! send reset command to re-enable PDROP (resetpdrop or -)*"
-						waitfor "resetpdrop"
-						goSub :waitforrestart
-						goSub :resetIGLift
-					end
-				end
-				if ($defender = 1)
-					if ($player~current_sector <> $dropSector)
-						send "'Planet did not arrive, resetting*"
-						goSub :resetdefender
-
-					else
-						send "'Defender Initiated! send reset command to re-enable PDROP*"
-						goSub :waitforrestart
-						goSub :setdefender
-					end
-				end
-			elseif ($dropDescription = "Adjacent")
-				if ($density = 1)
-					gosub :findAdjacentDensity
-				else
-					gosub :findAdjacent
-				end
-				goSub :attemptDrop
-				if ($density = 1)
-					if ($targetCount = 0)
-						goto :startTargeting
-					end
-					goSub :densityDrop
-				end
-				if ($defender = 1)
-					killAllTriggers
-					goSub :liftDefenders
-				end
-
-				goSub :getSectorLocation
-				if ($attackOnSight)
-					goSub :checkForVictims
-				end
-				if ($player~current_sector <> $gotoSector)
-					send "'Planet did not arrive, resetting*"
-
-				else
-					if ($iglift = 1)
-						send "'IGLift Initiated! send reset command to re-enable PDROP (resetpdrop or -)*"
-						waitfor "resetpdrop"
-						goSub :waitforrestart
-						goSub :resetIGLift
-					end
-				end
-
-				if ($defender = 1)
-					send "'Defender Initiated! send reset command to re-enable PDROP*"
-					goSub :waitforrestart
-					goSub :setdefender
-				end
-
-
-				if ($dropFtrs = true)
-					goSub :retrieveFigs
-
-				end
-			elseif ($dropDescription = "Adjacent, then Direct")
-				gosub :findAdjacent
-				goSub :attemptDrop
-				send "p " $dropSector "* y "
-				goSub :getSectorLocation
-				if ($attackOnSight)
-					goSub :checkForVictims
-				end
-			elseif ($dropDescription = "Surround")
-				setVar $gotoSector 0
-				gosub :attemptSurroundDrop
-				if ($gotoSector > 0) and ($defender = 1)
-					killAllTriggers
-					goSub :liftDefenders
-				end
-				gosub :getSectorLocation
-				if ($attackOnSight)
-					goSub :checkForVictims
-				end
-				if ($iglift = 1) and ($gotoSector > 0)
-					send "'IGLift Initiated! send reset command to re-enable PDROP (resetpdrop or -)*"
-					waitfor "resetpdrop"
-					goSub :waitforrestart
-					goSub :resetIGLift
-				end
-
-				if ($defender = 1) and ($gotoSector > 0)
-					send "'Defender Initiated! send reset command to re-enable PDROP*"
-					goSub :waitforrestart
-					goSub :setdefender
-				end
-				if ($dropFtrs = true)
-					goSub :retrieveFigs
-				end
-			elseif ($dropDescription = "Deadend Drop")
-				gosub :findDeadend
-				goSub :attemptDrop
-				if ($density = 1)
-					goSub :densityDrop
-				end
-				if ($defender = 1)
-					killAllTriggers
-					goSub :liftDefenders
-				end
-				gosub :getSectorLocation
-				if ($attackOnSight)
-					goSub :checkForVictims
-				end
-				if ($iglift = 1)
-					send "'IGLift Initiated! send reset command to re-enable PDROP (resetpdrop or -)*"
-					waitfor "resetpdrop"
-					goSub :waitforrestart
-					goSub :resetIGLift
-				end
-				if ($defender = 1)
-					send "'Defender Initiated! send reset command to re-enable PDROP*"
-					goSub :waitforrestart
-					goSub :setdefender
-				end
-				if ($dropFtrs = true)
-					goSub :retrieveFigs
-				end
-			else
-				if ($dropSector <> $player~current_sector)
-					send "p " $dropSector "*y"
-					setTextTrigger pwarpNotOk :pwarpTryAdjacent "You do not have any fighters in Sector "
-					setTextTrigger pwarpOk :pwarpDone " Planetary TransWarp Drive Engaged! "
-					pause
+			if ($defender = 1) and ($gotoSector > 0)
+				send "'Defender Initiated! send reset command to re-enable PDROP*"
+				goSub :waitforrestart
+				goSub :setdefender
+			end
+			if ($dropFtrs = true)
+				goSub :retrieveFigs
+			end
+		elseif ($dropDescription = "Deadend Drop")
+			gosub :findDeadend
+			goSub :attemptDrop
+			if ($density = 1)
+				goSub :densityDrop
+			end
+			if ($defender = 1)
+				killAllTriggers
+				goSub :liftDefenders
+			end
+			gosub :getSectorLocation
+			if ($attackOnSight)
+				goSub :checkForVictims
+			end
+			if ($iglift = 1)
+				send "'IGLift Initiated! send reset command to re-enable PDROP (resetpdrop or -)*"
+				waitfor "resetpdrop"
+				goSub :waitforrestart
+				goSub :resetIGLift
+			end
+			if ($defender = 1)
+				send "'Defender Initiated! send reset command to re-enable PDROP*"
+				goSub :waitforrestart
+				goSub :setdefender
+			end
+			if ($dropFtrs = true)
+				goSub :retrieveFigs
+			end
+		else
+			if ($dropSector <> $player~current_sector)
+				send "p " $dropSector "*y"
+				setTextTrigger pwarpNotOk :pwarpTryAdjacent "You do not have any fighters in Sector "
+				setTextTrigger pwarpOk :pwarpDone " Planetary TransWarp Drive Engaged! "
+				pause
 
 					:pwarpDone
-						killAllTriggers
-						setVar $player~current_sector $dropSector
-						if ($attackOnSight)
-							goSub :checkForVictims
-						end
-						goto :startTargeting
-				else
+					killAllTriggers
+					setVar $player~current_sector $dropSector
 					if ($attackOnSight)
 						goSub :checkForVictims
 					end
 					goto :startTargeting
+				else
+					if ($attackOnSight)
+					goSub :checkForVictims
+					end
+					goto :startTargeting
 				end
 				:pwarpTryAdjacent
-					killAllTriggers
-					setSectorParameter $dropSector "FIGSEC" FALSE
-					gosub :findAdjacent
-					gosub :attemptDrop
-					goto :startTargeting
+				killAllTriggers
+				setSectorParameter $dropSector "FIGSEC" FALSE
+				gosub :findAdjacent
+				gosub :attemptDrop
+				goto :startTargeting
 
 			end
 
@@ -733,279 +733,279 @@ reqRecording
 
 
 :end
-	killAllTriggers
-	echo ANSI_6 "*[" ANSI_14 $script_ver " Shutting Down" ANSI_6 "]*" ANSI_7
-	halt
+killAllTriggers
+echo ANSI_6 "*[" ANSI_14 $script_ver " Shutting Down" ANSI_6 "]*" ANSI_7
+halt
 
 :attemptSurroundDrop
-	setVar $i 1
-	setVar $checkSector SECTOR.WARPS[$dropSector][$i]
-	setVar $isFound FALSE
-	while (($checkSector > 0) AND ($isFound = FALSE))
-		getSectorParameter $checkSector "FIGSEC" $isFigged
-		if ($isFigged <> TRUE)
-			setVar $retreatSector $checkSector
-			setVar $isFound TRUE
-		else
-			add $i 1
-			setVar $checkSector SECTOR.WARPS[$dropSector][$i]
-		end
-	end
-
-	if ($isFound)
-		setVar $i 2
-		setVar $checkSector SECTOR.WARPS[$retreatSector][$i]
-		setVar $isFound FALSE
-		setVar $targets ""
-		setVar $targetCount 0
-		while (($checkSector > 0) AND ($targetCount <= 0))
-			getSectorParameter $checkSector "FIGSEC" $isFigged
-			if (($isFigged = TRUE) AND ($checkSector <> $dropSector))
-				setVar $targets $targets&" "&$checkSector&" "
-				add $targetCount 1
-			end
-			setVar $checkSector SECTOR.WARPS[$retreatSector][$i]
-			add $i 1
-		end
-		if ($targetCount > 0)
-			setVar $gotoSector $targets
-			gosub :dopwarp
-		else
-			echo "** No Adjacent Fig Next To Possible Retreat Sector **"
-		end
+setVar $i 1
+setVar $checkSector SECTOR.WARPS[$dropSector][$i]
+setVar $isFound FALSE
+while (($checkSector > 0) AND ($isFound = FALSE))
+	getSectorParameter $checkSector "FIGSEC" $isFigged
+	if ($isFigged <> TRUE)
+		setVar $retreatSector $checkSector
+		setVar $isFound TRUE
 	else
-		echo "** No Possible Retreat Sector **"
+		add $i 1
+		setVar $checkSector SECTOR.WARPS[$dropSector][$i]
 	end
+end
+
+if ($isFound)
+	setVar $i 2
+	setVar $checkSector SECTOR.WARPS[$retreatSector][$i]
+	setVar $isFound FALSE
+	setVar $targets ""
+	setVar $targetCount 0
+	while (($checkSector > 0) AND ($targetCount <= 0))
+		getSectorParameter $checkSector "FIGSEC" $isFigged
+		if (($isFigged = TRUE) AND ($checkSector <> $dropSector))
+			setVar $targets $targets&" "&$checkSector&" "
+			add $targetCount 1
+		end
+		setVar $checkSector SECTOR.WARPS[$retreatSector][$i]
+		add $i 1
+	end
+	if ($targetCount > 0)
+		setVar $gotoSector $targets
+		gosub :dopwarp
+	else
+		echo "** No Adjacent Fig Next To Possible Retreat Sector **"
+	end
+else
+	echo "** No Possible Retreat Sector **"
+end
 return
 
 :attemptDrop
 
-	if ($targetCount > 0)
-		getRnd $randomTarget 1 $targetCount
-		if ($dropDelay > 0) and ($lock = false)
-			killAllTriggers
-			setDelayTrigger delay :planetDrop $dropDelay
-			pause
-		end
+if ($targetCount > 0)
+	getRnd $randomTarget 1 $targetCount
+	if ($dropDelay > 0) and ($lock = false)
+		killAllTriggers
+		setDelayTrigger delay :planetDrop $dropDelay
+		pause
+	end
 		:planetDrop
-			setVar $gotoSector $targetSectors[$randomTarget]
-			if ($lock = true)
-				send "p "&$gotoSector&"*"
-				setVar $dropSector $gotoSector
-				goto :doLock
-			else
+		setVar $gotoSector $targetSectors[$randomTarget]
+		if ($lock = true)
+			send "p "&$gotoSector&"*"
+			setVar $dropSector $gotoSector
+			goto :doLock
+		else
 
-				gosub :dopwarp
-			end
+			gosub :dopwarp
+		end
 	end
 
 return
 
 :dopwarp
 	:planetDrop2
-		killAllTriggers
-		setvar $send "p "&$gotoSector&"*y"
-		if ($dropftrs = true)
-			setvar $send $send & $moveFigMacro
-		end
-		if ($iglift = 1)
-			setVar $send $send&"q q * *"
-		elseif ($fastkill = true)
-			setvar $send $send&"q q a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** c  "
-		end
-		send $send
-		setTextLineTrigger pwarpNo :pwarpNo "You do not have any fighters in Sector "
-		setTextLineTrigger pwarpYes :pwarpYes " Planetary TransWarp Drive Engaged! "
-		setTextLineTrigger pwarpAlreadyThere :pwarpFinished "You are already in that sector!"
-		pause
+	killAllTriggers
+	setvar $send "p "&$gotoSector&"*y"
+	if ($dropftrs = true)
+		setvar $send $send & $moveFigMacro
+	end
+	if ($iglift = 1)
+		setVar $send $send&"q q * *"
+	elseif ($fastkill = true)
+		setvar $send $send&"q q a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** q z n a y y "&$ship~SHIP_MAX_ATTACK&"* * z n q z n  l "&$planet~planet&"*  m  *** c  "
+	end
+	send $send
+	setTextLineTrigger pwarpNo :pwarpNo "You do not have any fighters in Sector "
+	setTextLineTrigger pwarpYes :pwarpYes " Planetary TransWarp Drive Engaged! "
+	setTextLineTrigger pwarpAlreadyThere :pwarpFinished "You are already in that sector!"
+	pause
 	:pwarpNo
-		killAllTriggers
-		setVar $targetSectors[$randomTarget] 0
-		setSectorParameter $gotoSector "FIGSEC" FALSE
-		if ($iglift = 1)
-			send "l" $planet~planet "* c "
-			waitfor "<Enter Citadel>"
-			gosub :player~quikstats
-		elseif ($dropFtrs = true)
-			# we can only try once and will retrieve figs once done
-		else
-			setVar $i 1
-			while ($i <= $targetCount)
-				if ($targetSectors[$i] > 0)
-					setVar $randomTarget $i
-					setVar $gotoSector $targetSectors[$randomTarget]
-					goto :planetDrop2
-				end
-				add $i 1
+	killAllTriggers
+	setVar $targetSectors[$randomTarget] 0
+	setSectorParameter $gotoSector "FIGSEC" FALSE
+	if ($iglift = 1)
+		send "l" $planet~planet "* c "
+		waitfor "<Enter Citadel>"
+		gosub :player~quikstats
+	elseif ($dropFtrs = true)
+		# we can only try once and will retrieve figs once done
+	else
+		setVar $i 1
+		while ($i <= $targetCount)
+			if ($targetSectors[$i] > 0)
+				setVar $randomTarget $i
+				setVar $gotoSector $targetSectors[$randomTarget]
+				goto :planetDrop2
 			end
+			add $i 1
 		end
-		goto :pwarpFinished
+	end
+	goto :pwarpFinished
 	:pwarpYes
-		killAllTriggers
+	killAllTriggers
 	:pwarpFinished
-		goSub :getSectorLocation
+	goSub :getSectorLocation
 
 return
 :doLock
-	killalltriggers
-	setTextLineTrigger doLockNo :doLockNo "You do not have any fighters in Sector "
-	setTextLineTrigger doLockYes :doLockYes "Locating beam pinpointed, TransWarp Locked"
-	setTextLineTrigger doLockYesAlreadyThere :doLockYesAlreadyThere "You are already in that sector!"
-	pause
+killalltriggers
+setTextLineTrigger doLockNo :doLockNo "You do not have any fighters in Sector "
+setTextLineTrigger doLockYes :doLockYes "Locating beam pinpointed, TransWarp Locked"
+setTextLineTrigger doLockYesAlreadyThere :doLockYesAlreadyThere "You are already in that sector!"
+pause
 	:doLockNo
-		killalltriggers
-		goto :startTargeting
+	killalltriggers
+	goto :startTargeting
 	:doLockYesAlreadyThere
-		goto :startTargeting
-		killalltriggers
+	goto :startTargeting
+	killalltriggers
 	:doLockYes
-		setvar $switchboard~message "We have a PLock on " & $dropSector & ", setting kill triggers!*"
-		gosub :switchboard~switchboard
-		killalltriggers
-		goto :setplocktriggers
-		killalltriggers
-		goto :startTargeting
-		halt
+	setvar $switchboard~message "We have a PLock on " & $dropSector & ", setting kill triggers!*"
+	gosub :switchboard~switchboard
+	killalltriggers
+	goto :setplocktriggers
+	killalltriggers
+	goto :startTargeting
+	halt
 return
 :clearScreen
-	echo #27 & "[2J"
+echo #27 & "[2J"
 return
 
 :turnOffAnsi
-	send "c n"
-	killAllTriggers
-	waitOn "(1) ANSI graphics"
-	getWord CURRENTLINE $ansiStatus 5
-	waitOn "(2) Animation display"
-	getWord CURRENTLINE $animationStatus 5
-	if ($animationStatus = "On")
-		send "2"
-	end
-	if ($ansiStatus = "On")
-		send "1 q q"
-	else
-		send "q q"
-	end
-	waitOn "<Computer deactivated>"
+send "c n"
+killAllTriggers
+waitOn "(1) ANSI graphics"
+getWord CURRENTLINE $ansiStatus 5
+waitOn "(2) Animation display"
+getWord CURRENTLINE $animationStatus 5
+if ($animationStatus = "On")
+	send "2"
+end
+if ($ansiStatus = "On")
+	send "1 q q"
+else
+	send "q q"
+end
+waitOn "<Computer deactivated>"
 return
 
 :turnOnAnsi
-	send "c n"
-	killAllTriggers
-	waitOn "(1) ANSI graphics"
-	getWord CURRENTLINE $ansiStatus 5
-	if ($ansiStatus = "Off")
-		send "1 q q"
-	else
-		send "q q"
-	end
-	waitOn "<Computer deactivated>"
+send "c n"
+killAllTriggers
+waitOn "(1) ANSI graphics"
+getWord CURRENTLINE $ansiStatus 5
+if ($ansiStatus = "Off")
+	send "1 q q"
+else
+	send "q q"
+end
+waitOn "<Computer deactivated>"
 return
 
 
 :planetStats
-	gosub :player~quikstats
-	send "q"
-	gosub :planet~getPlanetInfo
-	setVar $planet~planetFighters $planet~PLANET_FIGHTERS
+gosub :player~quikstats
+send "q"
+gosub :planet~getPlanetInfo
+setVar $planet~planetFighters $planet~PLANET_FIGHTERS
 
-	if ($dropftrs)
+if ($dropftrs)
 
-		if ($planet~planet_FIGHTERS < $dropFigQuant)
-			setVar $SWITCHBOARD~message "There are only " & $planet~planet_FIGHTERS & " fighters on the planet.*"
-			gosub :SWITCHBOARD~switchboard
-			halt
-		end
-
-		setVar $SWITCHBOARD~message "Dropping " & $dropFigQuant & " on landing; Cannons not changed.*"
+	if ($planet~planet_FIGHTERS < $dropFigQuant)
+		setVar $SWITCHBOARD~message "There are only " & $planet~planet_FIGHTERS & " fighters on the planet.*"
 		gosub :SWITCHBOARD~switchboard
+		halt
+	end
 
-		setVar $moveFigMacro ""
-		setVar $moved 0
+	setVar $SWITCHBOARD~message "Dropping " & $dropFigQuant & " on landing; Cannons not changed.*"
+	gosub :SWITCHBOARD~switchboard
 
-		while ($moved < $dropFigQuant)
+	setVar $moveFigMacro ""
+	setVar $moved 0
 
-			setVar $toMove ($dropFigQuant - $moved)
+	while ($moved < $dropFigQuant)
 
-			if ($toMove >= $maxFigAttack)
-				setVar $thisMove $maxFigAttack
-				setVar $moved ($moved + $thisMove)
-			else
-				setVar $thisMove $toMove
-				setVar $moved $moved + $thisMove
-			end
+		setVar $toMove ($dropFigQuant - $moved)
 
-			setVar $moveFigMacro $moveFigMacro & "q m n t* q fz " & $moved & "* * zc" & $dropftrsType & " * l" & $planet~planet & " *m* t * ccq"
+		if ($toMove >= $maxFigAttack)
+			setVar $thisMove $maxFigAttack
+			setVar $moved ($moved + $thisMove)
+		else
+			setVar $thisMove $toMove
+			setVar $moved $moved + $thisMove
 		end
 
+		setVar $moveFigMacro $moveFigMacro & "q m n t* q fz " & $moved & "* * zc" & $dropftrsType & " * l" & $planet~planet & " *m* t * ccq"
 	end
-	send "c "
+
+end
+send "c "
 return
 
 :retrieveFigs
-	gosub :player~quikstats
-	send " s*  "
-	setVar $figOwner SECTOR.FIGS.OWNER[$player~current_sector]
-	setVar $figQuant SECTOR.FIGS.QUANTITY[$player~current_sector]
+gosub :player~quikstats
+send " s*  "
+setVar $figOwner SECTOR.FIGS.OWNER[$player~current_sector]
+setVar $figQuant SECTOR.FIGS.QUANTITY[$player~current_sector]
 
-	waitfor "<Scan Sector>"
-	waitfor "Citadel treasury contains"
+waitfor "<Scan Sector>"
+waitfor "Citadel treasury contains"
 
 
-	if ($figQuant <> 0) AND (($figOwner = "belong to your Corp") or ($figOwner = "yours"))
+if ($figQuant <> 0) AND (($figOwner = "belong to your Corp") or ($figOwner = "yours"))
 
-		setVar $retFigMacro ""
-		setVar $moved 0
-		setVar $sectorQuant $figQuant
-		if ($dropFigQuant > $figQuant)
-			setVar $retQuant $figQuant
+	setVar $retFigMacro ""
+	setVar $moved 0
+	setVar $sectorQuant $figQuant
+	if ($dropFigQuant > $figQuant)
+		setVar $retQuant $figQuant
+	else
+		setVar $retQuant $dropFigQuant
+	end
+	while ($moved < $retQuant)
+
+		setVar $toMove ($retQuant - $moved)
+
+		if ($toMove >= $ship~SHIP_FIGHTERS_MAX)
+			setVar $thisMove $ship~SHIP_FIGHTERS_MAX
+			setVar $moved ($moved + $thisMove)
+			setVar $sectorQuant ($sectorQuant - $thisMove)
 		else
-			setVar $retQuant $dropFigQuant
+			setVar $thisMove $toMove
+			setVar $moved $moved + $thisMove
+			setVar $sectorQuant ($sectorQuant - $thisMove)
+
 		end
-		while ($moved < $retQuant)
 
-			setVar $toMove ($retQuant - $moved)
+		if ($sectorQuant = 0)
 
-			if ($toMove >= $ship~SHIP_FIGHTERS_MAX)
-				setVar $thisMove $ship~SHIP_FIGHTERS_MAX
-				setVar $moved ($moved + $thisMove)
-				setVar $sectorQuant ($sectorQuant - $thisMove)
-			else
-				setVar $thisMove $toMove
-				setVar $moved $moved + $thisMove
-				setVar $sectorQuant ($sectorQuant - $thisMove)
+			setVar $retFigMacro $retFigMacro & "q m n l* q fz 1* * zc" & $dropftrsType & " * l" & $planet~planet & " *m* t * ccq"
 
-			end
-
-			if ($sectorQuant = 0)
-
-				setVar $retFigMacro $retFigMacro & "q m n l* q fz 1* * zc" & $dropftrsType & " * l" & $planet~planet & " *m* t * ccq"
-
-			else
-				setVar $retFigMacro $retFigMacro & "q m n l* q fz " & $sectorQuant & "* * zc" & $dropftrsType & " * l" & $planet~planet & " *m* t * ccq"
-			end
-
+		else
+			setVar $retFigMacro $retFigMacro & "q m n l* q fz " & $sectorQuant & "* * zc" & $dropftrsType & " * l" & $planet~planet & " *m* t * ccq"
 		end
 
 	end
 
-	send $retFigMacro
+end
+
+send $retFigMacro
 
 return
 
 :warning
-	send "#"
+send "#"
 return
 
 :landOnPlanetEnterCitadel
-	send "l " $planet~planet "* c"
-	waitOn "<Enter Citadel>"
+send "l " $planet~planet "* c"
+waitOn "<Enter Citadel>"
 return
 
 :leaveCitadelAndPlanet
-	send "q q"
-	waitOn "Blasting off from"
-	waitOn "Command [TL"
+send "q q"
+waitOn "Blasting off from"
+waitOn "Command [TL"
 return
 
 
@@ -1013,24 +1013,24 @@ return
 
 
 :showPrelockOptions
-	echo ANSI_6 "*[" ANSI_14 $script_ver " Pre-locked onto sector " $gotoSector ANSI_6 "]*" ANSI_7
-	echo ANSI_6 "  [" ANSI_14 "%" ANSI_6 "]" ANSI_15 " Let Go of Pre-Lock*"  ANSI_7
-	if ($prelockReleaseTime > 0)
-		echo ANSI_6 "[" ANSI_14 "Script will release pre-lock automatically in "&$prelockReleaseTime&" seconds.." ANSI_6 "]*" ANSI_7
-	end
+echo ANSI_6 "*[" ANSI_14 $script_ver " Pre-locked onto sector " $gotoSector ANSI_6 "]*" ANSI_7
+echo ANSI_6 "  [" ANSI_14 "%" ANSI_6 "]" ANSI_15 " Let Go of Pre-Lock*"  ANSI_7
+if ($prelockReleaseTime > 0)
+	echo ANSI_6 "[" ANSI_14 "Script will release pre-lock automatically in "&$prelockReleaseTime&" seconds.." ANSI_6 "]*" ANSI_7
+end
 return
 
 :showOptions
-	echo ANSI_6 "*[" ANSI_14 $script_ver " Options" ANSI_6 "]*" ANSI_7
-	echo ANSI_6 "  [" ANSI_14 "%" ANSI_6 "]" ANSI_15 " Change Drop Settings*"
-	echo ANSI_6 "[" ANSI_14 $script_ver " waiting for targets.." ANSI_6 "]*" ANSI_7
+echo ANSI_6 "*[" ANSI_14 $script_ver " Options" ANSI_6 "]*" ANSI_7
+echo ANSI_6 "  [" ANSI_14 "%" ANSI_6 "]" ANSI_15 " Change Drop Settings*"
+echo ANSI_6 "[" ANSI_14 $script_ver " waiting for targets.." ANSI_6 "]*" ANSI_7
 return
 
 
 
 :checkForVictims
-	gosub :player~quikstats
-	send " s*  "
+gosub :player~quikstats
+send " s*  "
 	:scanit_again
 	setvar $player~startingLocation $player~current_prompt
 	gosub :sector~getSectorData
@@ -1050,447 +1050,447 @@ return
 
 
 :getDropperStats
-	send "c;q"
-	waitFor "Figs Per Attack:"
-	getWord CURRENTLINE $ship~SHIP_MAX_ATTACK 5
+send "c;q"
+waitFor "Figs Per Attack:"
+getWord CURRENTLINE $ship~SHIP_MAX_ATTACK 5
 
-	send "q m****c "
-	waitOn "Planet #"
-	getWord CURRENTLINE $planet~planet 2
-	waitOn "Fighters        N/A"
-	getWord CURRENTLINE $planet~planetFighters 5
-	waitOn "<Enter Citadel>"
+send "q m****c "
+waitOn "Planet #"
+getWord CURRENTLINE $planet~planet 2
+waitOn "Fighters        N/A"
+getWord CURRENTLINE $planet~planetFighters 5
+waitOn "<Enter Citadel>"
 
-	stripText $planet~planet "#"
-	SetVar $isManual FALSE
-	gosub :player~quikstats
+stripText $planet~planet "#"
+SetVar $isManual FALSE
+gosub :player~quikstats
 return
 
 :getSectorLocation
-	send "/"
-	waitfor "Sect "
-	getWord CURRENTLINE $temp 2
-	stripText $temp "Turns"
-	stripText $temp " "
-	replacetext $temp #179 ""
-	setVar $player~current_sector $temp
+send "/"
+waitfor "Sect "
+getWord CURRENTLINE $temp 2
+stripText $temp "Turns"
+stripText $temp " "
+replacetext $temp #179 ""
+setVar $player~current_sector $temp
 return
 
 
 
 :authenticate
-    killalltriggers
-    setVar $subLine CURRENTLINE
-    setVar $subLine $subLine & "             "
-    getWord $subLine $spoof 1
-    cutText $subLine $subSender 3 6
-    setVar $auth_result "false"
-    if ($spoof = "'")
-        setVar $auth_result "self"
-    elseif ($spoof = "R")
-        setVar $thisCorpie 0
+killalltriggers
+setVar $subLine CURRENTLINE
+setVar $subLine $subLine & "             "
+getWord $subLine $spoof 1
+cutText $subLine $subSender 3 6
+setVar $auth_result "false"
+if ($spoof = "'")
+    setVar $auth_result "self"
+elseif ($spoof = "R")
+    setVar $thisCorpie 0
         :corpieSubLoop
-            add $thisCorpie 1
-            if ($thisCorpie <= $player~corpies)
-                if (($subSender = $player~corpie[$thisCorpie]))
-                    setVar $auth_result "true"
-                    goto :authDone
-                end
-                goto :corpieSubLoop
+        add $thisCorpie 1
+        if ($thisCorpie <= $player~corpies)
+            if (($subSender = $player~corpie[$thisCorpie]))
+                setVar $auth_result "true"
+                goto :authDone
             end
+            goto :corpieSubLoop
+        end
     end
     :authDone
 return
 
 :getName
-    send "I"
-    waitfor "<Info>"
+send "I"
+waitfor "<Info>"
     :waitForName
-        setTextLineTrigger getName :getTraderName "Trader Name    :"
-        setTextTrigger getNameDone :getNameDone "Command [TL="
-        setTextTrigger getNameDone2 :getNameDone "Citadel command"
-        pause
+    setTextLineTrigger getName :getTraderName "Trader Name    :"
+    setTextTrigger getNameDone :getNameDone "Command [TL="
+    setTextTrigger getNameDone2 :getNameDone "Citadel command"
+    pause
 
     :getTraderName
-        killAllTriggers
-        setVar $name CURRENTLINE
-        stripText $name "Trader Name    : "
-        stripText $name "3rd Class "
-        stripText $name "2nd Class "
-        stripText $name "1st Class "
-        stripText $name "Annoyance "
-        stripText $name "Nuisance "
-        stripText $name "Menace "
-        stripText $name "Smuggler Savant "
-        stripText $name "Smuggler "
-        stripText $name "Robber "
-        stripText $name "Private "
-        stripText $name "Lance Corporal "
-        stripText $name "Corporal "
-        stripText $name "Staff Sergeant "
-        stripText $name "Gunnery Sergeant "
-        stripText $name "1st Sergeant "
-        stripText $name "Sergeant Major "
-        stripText $name "Sergeant "
-        stripText $name "Chief Warrant Officer "
-        stripText $name "Warrant Officer "
-        stripText $name "Terrorist "
-        stripText $name "Infamous Pirate "
-        stripText $name "Notorious Pirate "
-        stripText $name "Dread Pirate "
-        stripText $name "Pirate "
-        stripText $name "Galactic Scourge "
-        stripText $name "Enemy of the State "
-        stripText $name "Enemy of the People "
-        stripText $name "Enemy of Humankind "
-        stripText $name "Heinous Overlord "
-        stripText $name "Prime Evil "
-        stripText $name "Ensign "
-        stripText $name "Lieutenant J.G. "
-        stripText $name "Lieutenant Commander "
-        stripText $name "Lieutenant "
-        stripText $name "Commander "
-        stripText $name "Captain "
-        stripText $name "Commodore "
-        stripText $name "Rear Admiral "
-        stripText $name "Vice Admiral "
-        stripText $name "Fleet Admiral"
-        stripText $name "Admiral "
-        stripText $name "Civilian "
-        goto :waitForName
+    killAllTriggers
+    setVar $name CURRENTLINE
+    stripText $name "Trader Name    : "
+    stripText $name "3rd Class "
+    stripText $name "2nd Class "
+    stripText $name "1st Class "
+    stripText $name "Annoyance "
+    stripText $name "Nuisance "
+    stripText $name "Menace "
+    stripText $name "Smuggler Savant "
+    stripText $name "Smuggler "
+    stripText $name "Robber "
+    stripText $name "Private "
+    stripText $name "Lance Corporal "
+    stripText $name "Corporal "
+    stripText $name "Staff Sergeant "
+    stripText $name "Gunnery Sergeant "
+    stripText $name "1st Sergeant "
+    stripText $name "Sergeant Major "
+    stripText $name "Sergeant "
+    stripText $name "Chief Warrant Officer "
+    stripText $name "Warrant Officer "
+    stripText $name "Terrorist "
+    stripText $name "Infamous Pirate "
+    stripText $name "Notorious Pirate "
+    stripText $name "Dread Pirate "
+    stripText $name "Pirate "
+    stripText $name "Galactic Scourge "
+    stripText $name "Enemy of the State "
+    stripText $name "Enemy of the People "
+    stripText $name "Enemy of Humankind "
+    stripText $name "Heinous Overlord "
+    stripText $name "Prime Evil "
+    stripText $name "Ensign "
+    stripText $name "Lieutenant J.G. "
+    stripText $name "Lieutenant Commander "
+    stripText $name "Lieutenant "
+    stripText $name "Commander "
+    stripText $name "Captain "
+    stripText $name "Commodore "
+    stripText $name "Rear Admiral "
+    stripText $name "Vice Admiral "
+    stripText $name "Fleet Admiral"
+    stripText $name "Admiral "
+    stripText $name "Civilian "
+    goto :waitForName
     :getNameDone
-        killalltriggers
+    killalltriggers
 return
 
 
 
 # ----- SUB :getCorpies
 :getCorpies
-    setVar $player~corpies 0
-    send "XAQ"
-    waitfor " Corp Member Name                   Sector  Fighters Shields Mines  Credits"
-    waitfor "------------------------------------------------------------------------------"
+setVar $player~corpies 0
+send "XAQ"
+waitfor " Corp Member Name                   Sector  Fighters Shields Mines  Credits"
+waitfor "------------------------------------------------------------------------------"
     :waitForCorpieName
-        setTextLineTrigger getCorpieName :getCorpieName
-        pause
+    setTextLineTrigger getCorpieName :getCorpieName
+    pause
 
     :getCorpieName
-        killAllTriggers
-        if (CURRENTLINE = "P indicates Trader is on a planet in that sector")
-            goto :getCorpieNameDone
-        end
-        add $player~corpies 1
-        setVar $player~corpieLine CURRENTLINE
-        setVar $player~corpieLine $player~corpieLine & "          "
-        cutText $player~corpieLine $player~corpie[$player~corpies] 1 6
-        goto :waitForCorpieName
+    killAllTriggers
+    if (CURRENTLINE = "P indicates Trader is on a planet in that sector")
+        goto :getCorpieNameDone
+    end
+    add $player~corpies 1
+    setVar $player~corpieLine CURRENTLINE
+    setVar $player~corpieLine $player~corpieLine & "          "
+    cutText $player~corpieLine $player~corpie[$player~corpies] 1 6
+    goto :waitForCorpieName
     :getCorpieNameDone
-        killalltriggers
+    killalltriggers
 return
 
 :validateMineHit
-	setVar $isValid FALSE
-	cutText CURRENTLINE&"    " $ck 1 1
-	if ($ck <> "Y")
+setVar $isValid FALSE
+cutText CURRENTLINE&"    " $ck 1 1
+if ($ck <> "Y")
+	return
+end
+getText CURRENTLINE $dropSector "Your mines in " " did"
+getText CURRENTANSILINE $alien_check $START_FIG_HIT_OWNER $END_FIG_HIT_OWNER
+getWordPos CURRENTLINE $pos $START_FIG_HIT_OWNER
+getWordPos $alien_check $apos $ALIEN_ANSI
+if (($apos > 0) OR ($pos = 0))
+	return
+end
+if ($targetingPerson)
+	getWordPos CURRENTLINE&" " $pos " "&$target&" "
+	if ($pos = 0)
 		return
 	end
-	getText CURRENTLINE $dropSector "Your mines in " " did"
-	getText CURRENTANSILINE $alien_check $START_FIG_HIT_OWNER $END_FIG_HIT_OWNER
-	getWordPos CURRENTLINE $pos $START_FIG_HIT_OWNER
-	getWordPos $alien_check $apos $ALIEN_ANSI
-	if (($apos > 0) OR ($pos = 0))
-		return
-	end
-	if ($targetingPerson)
-		getWordPos CURRENTLINE&" " $pos " "&$target&" "
-		if ($pos = 0)
-			return
-		end
-	end
-	setVar $isValid TRUE
+end
+setVar $isValid TRUE
 return
 
 :validateLimpetHit
-	setVar $isValid FALSE
-	cutText CURRENTLINE&" " $radio 1 1
-	if ($radio <> "L")
-		return
-	end
-	setVar $isValid TRUE
-	getText CURRENTLINE $dropSector "Limpet mine in " " a"
+setVar $isValid FALSE
+cutText CURRENTLINE&" " $radio 1 1
+if ($radio <> "L")
+	return
+end
+setVar $isValid TRUE
+getText CURRENTLINE $dropSector "Limpet mine in " " a"
 return
 
 :validateFighterHit
-	setVar $isValid FALSE
-	cutText CURRENTLINE&" " $radio 1 1
-	getText CURRENTLINE $dropSector $START_FIG_HIT $END_FIG_HIT
-	if ($radio <> "D")
+setVar $isValid FALSE
+cutText CURRENTLINE&" " $radio 1 1
+getText CURRENTLINE $dropSector $START_FIG_HIT $END_FIG_HIT
+if ($radio <> "D")
+	return
+end
+getText CURRENTANSILINE $alien_check $START_FIG_HIT_OWNER $END_FIG_HIT_OWNER
+getWordPos CURRENTLINE $pos $START_FIG_HIT_OWNER
+getWordPos $alien_check $apos $ALIEN_ANSI
+if (($apos > 0) OR ($pos = 0))
+	return
+end
+if ($targetingPerson)
+	getWordPos CURRENTLINE $pos " "&$target&"'s "
+	if ($pos <= 0)
 		return
 	end
-	getText CURRENTANSILINE $alien_check $START_FIG_HIT_OWNER $END_FIG_HIT_OWNER
-	getWordPos CURRENTLINE $pos $START_FIG_HIT_OWNER
-	getWordPos $alien_check $apos $ALIEN_ANSI
-	if (($apos > 0) OR ($pos = 0))
-		return
-	end
-	if ($targetingPerson)
-		getWordPos CURRENTLINE $pos " "&$target&"'s "
-		if ($pos <= 0)
-			return
-		end
-	end
-	setVar $isValid TRUE
+end
+setVar $isValid TRUE
 return
 
 :findAdjacent
-        getSectorParameter $dropSector "FIGSEC" $isFigged
-        if (($triggerDescription = "Unfigged Mines") AND ($isFigged = TRUE))
-                return
-        else
-			if (($perfect =TRUE) and (SECTOR.WARPCOUNT[$dropSector] <> 2))
-				echo "*Not a perfect firing solution"
-				return
-			end
-                setVar $i 1
-                setVar $checkSector SECTOR.WARPS[$dropSector][$i]
-                setArray $targetSectors 6
-                setVar $targetCount 0
-                while ($checkSector > 0)
-                        getSectorParameter $checkSector "FIGSEC" $isFigged
-                        if ($isFigged = TRUE)
-                                add $targetCount 1
-                                setVar $targetSectors[$targetCount] $checkSector
-                        end
-                        add $i 1
-                        setVar $checkSector SECTOR.WARPS[$dropSector][$i]
-                end
-                if ($targetCount <= 0)
-                        echo "No Targets..*"
-                        setVar $targetSectors[1] $CURRENT_LOCATION
-                end
-        end
-
-return
-
-:findAdjacentDensity
-	# We actually want warps IN for density scan.
-
-        getSectorParameter $dropSector "FIGSEC" $isFigged
-
+getSectorParameter $dropSector "FIGSEC" $isFigged
+if (($triggerDescription = "Unfigged Mines") AND ($isFigged = TRUE))
+        return
+else
 	if (($perfect =TRUE) and (SECTOR.WARPCOUNT[$dropSector] <> 2))
 		echo "*Not a perfect firing solution"
 		return
 	end
-	setVar $i 1
-	setVar $checkSector SECTOR.WARPSIN[$dropSector][$i]
-	setArray $targetSectors 6
-	setVar $targetCount 0
-	while ($checkSector > 0)
-		getSectorParameter $checkSector "FIGSEC" $isFigged
-		if ($isFigged = TRUE)
-			add $targetCount 1
-			setVar $targetSectors[$targetCount] $checkSector
-		end
-		add $i 1
-		setVar $checkSector SECTOR.WARPSIN[$dropSector][$i]
-	end
-	if ($targetCount <= 0)
-		echo "No Targets..*"
-		setVar $targetSectors[1] $CURRENT_LOCATION
-	end
+        setVar $i 1
+        setVar $checkSector SECTOR.WARPS[$dropSector][$i]
+        setArray $targetSectors 6
+        setVar $targetCount 0
+        while ($checkSector > 0)
+                getSectorParameter $checkSector "FIGSEC" $isFigged
+                if ($isFigged = TRUE)
+                        add $targetCount 1
+                        setVar $targetSectors[$targetCount] $checkSector
+                end
+                add $i 1
+                setVar $checkSector SECTOR.WARPS[$dropSector][$i]
+        end
+        if ($targetCount <= 0)
+                echo "No Targets..*"
+                setVar $targetSectors[1] $CURRENT_LOCATION
+        end
+end
+
+return
+
+:findAdjacentDensity
+# We actually want warps IN for density scan.
+
+getSectorParameter $dropSector "FIGSEC" $isFigged
+
+if (($perfect =TRUE) and (SECTOR.WARPCOUNT[$dropSector] <> 2))
+echo "*Not a perfect firing solution"
+return
+end
+setVar $i 1
+setVar $checkSector SECTOR.WARPSIN[$dropSector][$i]
+setArray $targetSectors 6
+setVar $targetCount 0
+while ($checkSector > 0)
+getSectorParameter $checkSector "FIGSEC" $isFigged
+if ($isFigged = TRUE)
+	add $targetCount 1
+	setVar $targetSectors[$targetCount] $checkSector
+end
+add $i 1
+setVar $checkSector SECTOR.WARPSIN[$dropSector][$i]
+end
+if ($targetCount <= 0)
+echo "No Targets..*"
+setVar $targetSectors[1] $CURRENT_LOCATION
+end
 
 
 return
 
 
 :findDeadend
-    getSectorParameter $dropSector "FIGSEC" $isFigged
-    if (($triggerDescription = "Unfigged Mines") AND ($isFigged = TRUE))
-            return
-    else
+getSectorParameter $dropSector "FIGSEC" $isFigged
+if (($triggerDescription = "Unfigged Mines") AND ($isFigged = TRUE))
+        return
+else
 
-		getNearestWarps $nearest $dropSector
-		setVar $i 1
-        setVar $targetCount 1
-		while ($i <= $nearest)
-			setVar $focus $nearest[$i]
-			getSectorParameter $focus "FIGSEC" $isFigged
-			if ($twohops = true)
+	getNearestWarps $nearest $dropSector
+	setVar $i 1
+    setVar $targetCount 1
+	while ($i <= $nearest)
+		setVar $focus $nearest[$i]
+		getSectorParameter $focus "FIGSEC" $isFigged
+		if ($twohops = true)
+			getDistance $distance $dropSector $focus
+			if ($distance <= 0)
+				send "^f"&$dropSector&"*"&$focus&"*q"
+				waitOn "ENDINTERROG"
 				getDistance $distance $dropSector $focus
-				if ($distance <= 0)
-					send "^f"&$dropSector&"*"&$focus&"*q"
-					waitOn "ENDINTERROG"
-					getDistance $distance $dropSector $focus
-				end
 			end
-
- 			if (($isFigged = TRUE) AND (SECTOR.WARPCOUNT[$focus] = 1)) AND ((($twohops = true) and ($distance >= 2)) OR ($twohops <> true))
-				#found dead end with fighter!
-                setVar $targetSectors[$targetCount] $focus
-				return
-			end
-			add $i 1
 		end
-        echo "No Targets..*"
-        setVar $targetSectors[1] $CURRENT_LOCATION
-    end
+
+			if (($isFigged = TRUE) AND (SECTOR.WARPCOUNT[$focus] = 1)) AND ((($twohops = true) and ($distance >= 2)) OR ($twohops <> true))
+			#found dead end with fighter!
+            setVar $targetSectors[$targetCount] $focus
+			return
+		end
+		add $i 1
+	end
+    echo "No Targets..*"
+    setVar $targetSectors[1] $CURRENT_LOCATION
+end
 return
 
 
 # ============================== DENSITY PHOTON =========================
 :densityDrop_toslow
 
-	waitfor "Citadel command"
+waitfor "Citadel command"
 
-	setVar $BOT~command "foton"
-	setVar $BOT~user_command_line " on d "
-	setVar $BOT~parm1 "on"
-	setVar $BOT~parm2 "d"
-	saveVar $BOT~parm1
-	saveVar $BOT~parm2
-	saveVar $BOT~command
-	saveVar $BOT~user_command_line
-	load "scripts\"&$bot~mombot_directory&"\modes\offense\foton.cts"
-	setEventTrigger        densityended        :densityended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\offense\foton.cts"
-	pause
+setVar $BOT~command "foton"
+setVar $BOT~user_command_line " on d "
+setVar $BOT~parm1 "on"
+setVar $BOT~parm2 "d"
+saveVar $BOT~parm1
+saveVar $BOT~parm2
+saveVar $BOT~command
+saveVar $BOT~user_command_line
+load "scripts\"&$bot~mombot_directory&"\modes\offense\foton.cts"
+setEventTrigger        densityended        :densityended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\offense\foton.cts"
+pause
 	:densityended
-		killalltriggers
+	killalltriggers
 return
 
 :densityDrop
-	waitfor "Citadel command"
-	send "q m * * * q  * * "
-	send "fz 3500* * zco * "
-	setVar $checks 0
+waitfor "Citadel command"
+send "q m * * * q  * * "
+send "fz 3500* * zco * "
+setVar $checks 0
 
 	:check_dens
 
 
 
-		setVar $mm 0
-		setVar $i 1
-		send "sz*"
-		waiton "Relative Density Scan"
+	setVar $mm 0
+	setVar $i 1
+	send "sz*"
+	waiton "Relative Density Scan"
 
 	:dtorp_Start
-		killTrigger alldone
-		setvar $attack_sector_found false
-		setTextLineTrigger getSec :getSec "Sector"
-		setTextTrigger allDone :allDone "Command [TL="
-		pause
+	killTrigger alldone
+	setvar $attack_sector_found false
+	setTextLineTrigger getSec :getSec "Sector"
+	setTextTrigger allDone :allDone "Command [TL="
+	pause
 
 	:getSec
-		getText CURRENTLINE $temp "Sector" "==>"
-		stripText $temp "("
-		stripText $temp ")"
-		stripText $temp " "
-		setvar $adj[$i] $temp
+	getText CURRENTLINE $temp "Sector" "==>"
+	stripText $temp "("
+	stripText $temp ")"
+	stripText $temp " "
+	setvar $adj[$i] $temp
 
-		getText CURRENTLINE $Dens[$i] "==>" "Warps :"
-		stripText $dens[$i] ","
-		stripText $dens[$i] " "
-		add $i 1
-		setTextLineTrigger getSec :getSec "Sector"
-		pause
+	getText CURRENTLINE $Dens[$i] "==>" "Warps :"
+	stripText $dens[$i] ","
+	stripText $dens[$i] " "
+	add $i 1
+	setTextLineTrigger getSec :getSec "Sector"
+	pause
 	:allDone
-		killTrigger getSec
-		if ($checks > 40)
-			goto :manual_stop
-		end
-		gosub :firechk
+	killTrigger getSec
+	if ($checks > 40)
+		goto :manual_stop
+	end
+	gosub :firechk
 
 	:letslook
-		setVar $w 0
+	setVar $w 0
 
 	:sublooky
-		add $w 1
-		if ($w > $i)
-			goto :alldone
-		elseif ($density[$w] <> $dens[$w])
-			setVar $diff ($density[$w] - $dens[$w])
-			if ($diff <> 0)
-				if ($densityx = TRUE)
-					if ($diff > 1) and ($diff < 40)
-						gosub :do_action
-						goto :dtorp_end
-					else
-						goto :sublooky
-					end
-				else
+	add $w 1
+	if ($w > $i)
+		goto :alldone
+	elseif ($density[$w] <> $dens[$w])
+		setVar $diff ($density[$w] - $dens[$w])
+		if ($diff <> 0)
+			if ($densityx = TRUE)
+				if ($diff > 1) and ($diff < 40)
 					gosub :do_action
 					goto :dtorp_end
+				else
+					goto :sublooky
 				end
 			else
-				goto :sublooky
+				gosub :do_action
+				goto :dtorp_end
 			end
 		else
 			goto :sublooky
 		end
+	else
+		goto :sublooky
+	end
 
 	:firechk
-		setVar $y 1
-		send "sz*"
-		waiton "Relative Density Scan"
-		add $checks 1
+	setVar $y 1
+	send "sz*"
+	waiton "Relative Density Scan"
+	add $checks 1
 	:looky
 
-		killtrigger dtop_dtorp
-		killtrigger getsec
-		killtrigger alldone
-		killtrigger donelook
-		killtrigger manual_stop
-		setTextLineTrigger dtop_dtorp :manual_stop $bot~bot_name & " foton off"
-		setTextLineTrigger getSec :looksec "Sector"
-		setTextTrigger donelook :donelook "Command [TL="
+	killtrigger dtop_dtorp
+	killtrigger getsec
+	killtrigger alldone
+	killtrigger donelook
+	killtrigger manual_stop
+	setTextLineTrigger dtop_dtorp :manual_stop $bot~bot_name & " foton off"
+	setTextLineTrigger getSec :looksec "Sector"
+	setTextTrigger donelook :donelook "Command [TL="
 
-		pause
+	pause
 
 	:looksec
-		getText CURRENTLINE $temp "Sector" "==>"
-		stripText $temp "("
-		stripText $temp ")"
-		stripText $temp " "
+	getText CURRENTLINE $temp "Sector" "==>"
+	stripText $temp "("
+	stripText $temp ")"
+	stripText $temp " "
 
-		setvar $adjsec[$y] $temp
-		getText CURRENTLINE $Density[$y] "==>" "Warps :"
-		stripText $density[$y] ","
-		stripText $density[$y] " "
-		add $y 1
-		setTextLineTrigger getSec :looksec "Sector"
-		pause
+	setvar $adjsec[$y] $temp
+	getText CURRENTLINE $Density[$y] "==>" "Warps :"
+	stripText $density[$y] ","
+	stripText $density[$y] " "
+	add $y 1
+	setTextLineTrigger getSec :looksec "Sector"
+	pause
 
 	:donelook
-		killtrigger getSec
-		return
+	killtrigger getSec
+	return
 
 	:dtorp_end
-		killalltriggers
-		setvar $switchboard~message "Foton Missle Fired into sector => " & $adj[$w] & "*"
-		gosub :switchboard~switchboard
-		gosub :player~quikstats
-		if ($Player~Photons < 1)
-			setVar $SWITCHBOARD~message "No Photons on Board - Exiting!!*"
-			gosub :SWITCHBOARD~switchboard
-			halt
-		end
+	killalltriggers
+	setvar $switchboard~message "Foton Missle Fired into sector => " & $adj[$w] & "*"
+	gosub :switchboard~switchboard
+	gosub :player~quikstats
+	if ($Player~Photons < 1)
+		setVar $SWITCHBOARD~message "No Photons on Board - Exiting!!*"
+		gosub :SWITCHBOARD~switchboard
+		halt
+	end
 
 
-		return
+	return
 	:do_action
-		send " c  p  y  " $adj[$w] "**q   l " $PLANET~PLANET " * n n * j m * * * j c  *  "
-		return
+	send " c  p  y  " $adj[$w] "**q   l " $PLANET~PLANET " * n n * j m * * * j c  *  "
+	return
 
 	:manual_stop
 	:densitywait
-		killalltriggers
-		send " l " $PLANET~PLANET " * n n * j m * * * j c  *  "
-		return
+	killalltriggers
+	send " l " $PLANET~PLANET " * n n * j m * * * j c  *  "
+	return
 
 # ============================== DEFENDER ROUTINES ==============================
 :waitforrestart
-	setTextOutTrigger restart :restart "-"
-	setTextTrigger restart2 :restart2 "resetpdrop"
-	pause
+setTextOutTrigger restart :restart "-"
+setTextTrigger restart2 :restart2 "resetpdrop"
+pause
 	:restart
 	:restart2
 	killtrigger restart
@@ -1498,14 +1498,14 @@ return
 return
 
 :liftDefenders
-	# can't wait for this one, we just hope for the best!
+# can't wait for this one, we just hope for the best!
 
-	send "'defender mac r ^M ^M ^M f 0^M *"
+send "'defender mac r ^M ^M ^M f 0^M *"
 
 
-	if ($defender_kill = 1)
-		setDelayTrigger killwait :killwait 400
-		pause
+if ($defender_kill = 1)
+	setDelayTrigger killwait :killwait 400
+	pause
 		:killwait
 		send "'defender kill*"
 
@@ -1514,43 +1514,43 @@ return
 	setDelayTrigger promtpw :promtpw 500
 	pause
 	:wrongprompt
-		killtrigger wrongprompt
-		send "'defender kill*"
-		pause
+	killtrigger wrongprompt
+	send "'defender kill*"
+	pause
 	:promtpw
 
 return
 
 :checkDefenders
 
-	setVar $defenders 0
-	send "'defender callout*"
+setVar $defenders 0
+send "'defender callout*"
 
 
-	setDelayTrigger defwait :defwait 3000
+setDelayTrigger defwait :defwait 3000
 	:defmore
 	setTextLineTrigger deffound :deffound "Team: defender"
 	pause
 	:deffound
-		killtrigger deffound
-		add $defenders 1
-		goto :defmore
+	killtrigger deffound
+	add $defenders 1
+	goto :defmore
 	:defwait
-		killalltriggers
+	killalltriggers
 
 	if ($defenders = 0)
-		setvar $switchboard~message "We need at least one defender in this mode*"
-		gosub :switchboard~switchboard
-		halt
+	setvar $switchboard~message "We need at least one defender in this mode*"
+	gosub :switchboard~switchboard
+	halt
 	else
-		send "'defender ig on*"
-		waitfor "Auto IG reset"
-		setTextLineTrigger igone :igone "IG on!"
-		setTextLineTrigger igtwo :igtwo "IG was already on"
-		pause
+	send "'defender ig on*"
+	waitfor "Auto IG reset"
+	setTextLineTrigger igone :igone "IG on!"
+	setTextLineTrigger igtwo :igtwo "IG was already on"
+	pause
 		:igone
 		:igtwo
-			killalltriggers
+		killalltriggers
 
 		send "s"
 		setVar $secFigs 0
@@ -1574,8 +1574,8 @@ return
 
 return
 :resetdefender
-	setDelayTrigger quickpause :quickpause 500
-	pause
+setDelayTrigger quickpause :quickpause 500
+pause
 	:quickpause
 	killtrigger quickpause
 	goSub :setdefender
@@ -1584,24 +1584,24 @@ return
 
 :setdefender
 
-	goSub :disArmPlanet
-	send "'defender mac l" & $planet~planet & "^M^M*"
-	setVar $defresp 0
+goSub :disArmPlanet
+send "'defender mac l" & $planet~planet & "^M^M*"
+setVar $defresp 0
 
-	setDelayTrigger defwaitland :defwaitland 3000
+setDelayTrigger defwaitland :defwaitland 3000
 	:deflandmore
 	setTextLineTrigger deflanded :deflanded " - Macro Complete"
 	pause
 	:deflanded
-		killtrigger deflanded
-		add $defresp 1
-		goto :deflandmore
+	killtrigger deflanded
+	add $defresp 1
+	goto :deflandmore
 	:defwaitland
-		killalltriggers
+	killalltriggers
 	if ($defresp < $defenders)
-		setvar $switchboard~message "We didn't get all defenders landing, aborting!*"
-		gosub :switchboard~switchboard
-		halt
+	setvar $switchboard~message "We didn't get all defenders landing, aborting!*"
+	gosub :switchboard~switchboard
+	halt
 	end
 
 	goSub :armPlanet
@@ -1609,23 +1609,23 @@ return
 
 :disArmPlanet
 
-	setVar $cannonAtmos $planet~ATMOSPHERE_CANNON
-	setVar $millevel $planet~MILITARYREACTION
-	setvar $switchboard~message "Disarming planet from Atmos Cannon: "& $cannonAtmos &" and MR:" & $millevel & "*"
-	gosub :switchboard~switchboard
+setVar $cannonAtmos $planet~ATMOSPHERE_CANNON
+setVar $millevel $planet~MILITARYREACTION
+setvar $switchboard~message "Disarming planet from Atmos Cannon: "& $cannonAtmos &" and MR:" & $millevel & "*"
+gosub :switchboard~switchboard
 
-	send "la0*m0*qopc"
-	waitfor "hould this be a (C)orporate or (P)ersonal planet"
+send "la0*m0*qopc"
+waitfor "hould this be a (C)orporate or (P)ersonal planet"
 
 return
 
 :armPlanet
 
-	setvar $switchboard~message "Arming planet to Atmos Cannon: "& $cannonAtmos &" and MR:" & $millevel & "*"
-	gosub :switchboard~switchboard
+setvar $switchboard~message "Arming planet to Atmos Cannon: "& $cannonAtmos &" and MR:" & $millevel & "*"
+gosub :switchboard~switchboard
 
-	send "la" $cannonAtmos "*m" $millevel "*qocc"
-	waitfor "<Enter Citadel>"
+send "la" $cannonAtmos "*m" $millevel "*qocc"
+waitfor "<Enter Citadel>"
 
 return
 
@@ -1633,66 +1633,66 @@ return
 # ================= LIFT PDROP ========== #
 :resetIGLift
 
-	send "l" $planet~planet "*c"
-	waitfor "<Enter Citadel>"
-	gosub :player~quikstats
+send "l" $planet~planet "*c"
+waitfor "<Enter Citadel>"
+gosub :player~quikstats
 return
 :liftAndCheckIG
 
-	send "i"
-	setTextLineTrigger igLiftYes :igLiftYes "Interdictor ON : Yes"
-	setTextLineTrigger igLiftNo :igLiftNo "Interdictor ON : No"
-	setTextLineTrigger igLiftNoIG :igLiftNoIG "Credits        :"
-	pause
+send "i"
+setTextLineTrigger igLiftYes :igLiftYes "Interdictor ON : Yes"
+setTextLineTrigger igLiftNo :igLiftNo "Interdictor ON : No"
+setTextLineTrigger igLiftNoIG :igLiftNoIG "Credits        :"
+pause
 	:igLiftNoIG
-		setvar $switchboard~message "Ship does not have IG. Exiting.*"
-		gosub :switchboard~switchboard
-		halt
+	setvar $switchboard~message "Ship does not have IG. Exiting.*"
+	gosub :switchboard~switchboard
+	halt
 	:igLiftNo
-		killalltriggers
-		send "q q q * b y l" $planet~planet "* c "
-		waitfor "Your Interdictor generator is now ON"
-		waitfor "<Enter Citadel>"
+	killalltriggers
+	send "q q q * b y l" $planet~planet "* c "
+	waitfor "Your Interdictor generator is now ON"
+	waitfor "<Enter Citadel>"
 	:igLiftYes
-		killalltriggers
+	killalltriggers
 
 	gosub :player~quikstats
 return
 
 # ================ END LIFT PDROP ======= #
 :retrieveFigs_old
-	gosub :player~quikstats
+gosub :player~quikstats
 
-	#send "'"&$SWITCHBOARD~bot_name&" movefig p*"
-	#setEventTrigger		movefigended		:movefigended "SCRIPT STOPPED" #"scripts\"&$bot~mombot_directory&"\Modes\Resource\movefig.cts"
-	#pause
-	#:movefigended
+#send "'"&$SWITCHBOARD~bot_name&" movefig p*"
+#setEventTrigger		movefigended		:movefigended "SCRIPT STOPPED" #"scripts\"&$bot~mombot_directory&"\Modes\Resource\movefig.cts"
+#pause
+#:movefigended
 
-	setVar $BOT~command "movefig"
-	setVar $BOT~user_command_line " movefig p "& $dropFigQuant &" "
-	setVar $BOT~parm1 "p"
-	setVar $BOT~parm2 $dropFigQuant
-	setVar $BOT~parm3 ""
-	setVar $BOT~parm4 ""
-	setVar $BOT~parm5 ""
-	setVar $BOT~parm6 ""
-	setVar $BOT~parm7 ""
-	setVar $BOT~parm8 ""
-	saveVar $BOT~parm1
-	saveVar $BOT~parm2
-	saveVar $BOT~parm3
-	saveVar $BOT~parm4
-	saveVar $BOT~parm5
-	saveVar $BOT~parm6
-	saveVar $BOT~parm7
-	saveVar $BOT~parm8
-	saveVar $BOT~command
-	saveVar $BOT~user_command_line
-	load "scripts\"&$bot~mombot_directory&"\modes\resource\movefig.cts"
-	setEventTrigger        moveended        :moveended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\resource\movefig.cts"
-	pause
+setVar $BOT~command "movefig"
+setVar $BOT~user_command_line " movefig p "& $dropFigQuant &" "
+setVar $BOT~parm1 "p"
+setVar $BOT~parm2 $dropFigQuant
+setVar $BOT~parm3 ""
+setVar $BOT~parm4 ""
+setVar $BOT~parm5 ""
+setVar $BOT~parm6 ""
+setVar $BOT~parm7 ""
+setVar $BOT~parm8 ""
+saveVar $BOT~parm1
+saveVar $BOT~parm2
+saveVar $BOT~parm3
+saveVar $BOT~parm4
+saveVar $BOT~parm5
+saveVar $BOT~parm6
+saveVar $BOT~parm7
+saveVar $BOT~parm8
+saveVar $BOT~command
+saveVar $BOT~user_command_line
+load "scripts\"&$bot~mombot_directory&"\modes\resource\movefig.cts"
+setEventTrigger        moveended        :moveended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\resource\movefig.cts"
+pause
 	:moveended
-		killalltriggers
+	killalltriggers
 
 
 
@@ -1702,76 +1702,76 @@ return
 
 
 :setplocktriggers
-	killalltriggers
-	setTextLineTrigger	1	:manual			("Planet is now in sector "&$dropSector)
-	setTextTrigger 		2	:plockFinished	("Planetary TransWarp Drive shutting down.")
-	setTextTrigger 		3	:goFighterPlock 		("Report Sector "&$dropSector&": ")
-	setTextTrigger 		4	:goLimpetPlock 		("Limpet mine in "&$dropSector&" ")
-	setTextTrigger 		5	:goArmidPlock 		("Your mines in "&$dropSector&" ")
-	setTextTrigger 		6	:goPlock 		("Locator beam lost.")
-	if ($plockTimer > 0)
-		setDelayTrigger 		7	:plockTimerExp 		$plockTimer
-	end
-	pause
+killalltriggers
+setTextLineTrigger	1	:manual			("Planet is now in sector "&$dropSector)
+setTextTrigger 		2	:plockFinished	("Planetary TransWarp Drive shutting down.")
+setTextTrigger 		3	:goFighterPlock 		("Report Sector "&$dropSector&": ")
+setTextTrigger 		4	:goLimpetPlock 		("Limpet mine in "&$dropSector&" ")
+setTextTrigger 		5	:goArmidPlock 		("Your mines in "&$dropSector&" ")
+setTextTrigger 		6	:goPlock 		("Locator beam lost.")
+if ($plockTimer > 0)
+	setDelayTrigger 		7	:plockTimerExp 		$plockTimer
+end
+pause
 
 :plockTimerExp
-	killalltriggers
-	send "n '{" $switchboard~bot_name "} - PLOCK Timed Out, Resetting*"
-	return
+killalltriggers
+send "n '{" $switchboard~bot_name "} - PLOCK Timed Out, Resetting*"
+return
 :goArmidPlock
-	cutText currentline&"    " $ck 1 4
-	setvar $spoof false
-	if ($ck <> "Your")
+cutText currentline&"    " $ck 1 4
+setvar $spoof false
+if ($ck <> "Your")
+	setTextTrigger 		5	:goArmidPlock 		("Your mines in "&$dropSector&" ")
+	pause
+end
+if ($game~hasAliens = true)
+	#[K[32mYour mines in [1;33m8174[0;32m did [1;33m14[0;32m damage to #[1;36m[33mFerrengi[36m Nik
+	setvar $alien false
+	getText $bot~ansi_last_armid_attack&"[xx][xx][xx]" $alien_check " damage to " "[xx][xx][xx]"
+	getWordPos $alien_check $pos #27 & "[1;36m" & #27 & "["
+	if ($pos > 0)
 		setTextTrigger 		5	:goArmidPlock 		("Your mines in "&$dropSector&" ")
 		pause
 	end
-	if ($game~hasAliens = true)
-		#[K[32mYour mines in [1;33m8174[0;32m did [1;33m14[0;32m damage to #[1;36m[33mFerrengi[36m Nik
-		setvar $alien false
-		getText $bot~ansi_last_armid_attack&"[xx][xx][xx]" $alien_check " damage to " "[xx][xx][xx]"
-		getWordPos $alien_check $pos #27 & "[1;36m" & #27 & "["
-		if ($pos > 0)
-			setTextTrigger 		5	:goArmidPlock 		("Your mines in "&$dropSector&" ")
-			pause
-		end
-	end
-	goto :goplock
+end
+goto :goplock
 
 :goLimpetPlock
-	cutText currentline&"      " $ck 1 6
-	setvar $spoof false
-	if ($ck <> "Limpet")
-		setTextTrigger 		4	:goLimpetPlock 		("Limpet mine in "&$dropSector&" ")
-		pause
-	end
-	goto :goplock
+cutText currentline&"      " $ck 1 6
+setvar $spoof false
+if ($ck <> "Limpet")
+	setTextTrigger 		4	:goLimpetPlock 		("Limpet mine in "&$dropSector&" ")
+	pause
+end
+goto :goplock
 :goFighterPlock
-	getWord currentline $spoof_test 1
-	getWord currentansiline $ansi_spoof_test 1
-	getWordPos $ansi_spoof_test $ansi_spoof_pos #27 & "[1;33m"
-	setvar $spoof false
-	if ($spoof_test <> "Deployed") OR ($ansi_spoof_pos <= 0)
+getWord currentline $spoof_test 1
+getWord currentansiline $ansi_spoof_test 1
+getWordPos $ansi_spoof_test $ansi_spoof_pos #27 & "[1;33m"
+setvar $spoof false
+if ($spoof_test <> "Deployed") OR ($ansi_spoof_pos <= 0)
+	setTextTrigger 		3	:goFighterPlock 		("Report Sector "&$dropSector&": ")
+	pause
+end
+if ($game~hasAliens = true)
+	setvar $alien false
+	getText currentansiline $alien_check ": " "'s"
+	getWordPos $alien_check $pos #27 & "[1;36m" & #27 & "["
+	if ($pos > 0)
 		setTextTrigger 		3	:goFighterPlock 		("Report Sector "&$dropSector&": ")
 		pause
 	end
-	if ($game~hasAliens = true)
-		setvar $alien false
-		getText currentansiline $alien_check ": " "'s"
-		getWordPos $alien_check $pos #27 & "[1;36m" & #27 & "["
-		if ($pos > 0)
-			setTextTrigger 		3	:goFighterPlock 		("Report Sector "&$dropSector&": ")
-			pause
-		end
-	end
+end
 
 
 :goPlock
 :manual
-	killalltriggers
-	if ($dropDelay > 0)
-		setdelaytrigger plockdelay :continuePlock $dropDelay
-		pause
-	end
+killalltriggers
+if ($dropDelay > 0)
+	setdelaytrigger plockdelay :continuePlock $dropDelay
+	pause
+end
 	:continuePlock
 	send "y '{" $switchboard~bot_name "} - PLOCK Launched*"
 	if ($dropftrs = true)
@@ -1806,10 +1806,10 @@ return
 	send "  s*   "
 	return
 :plockFinished
-	send "  s*   "
-	setvar $switchboard~message "PLOCK Sector Cleared*"
-	gosub :switchboard~switchboard
-	return
+send "  s*   "
+setvar $switchboard~message "PLOCK Sector Cleared*"
+gosub :switchboard~switchboard
+return
 
 
 #####

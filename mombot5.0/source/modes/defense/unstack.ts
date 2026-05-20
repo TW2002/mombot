@@ -122,24 +122,24 @@
 		halt
 	end
 :unstack
-			gosub :count_planets
-			if ($planet~CITADELs[$player~current_sector] > $game~MAX_PLANETS_PER_SECTOR)
-				setVar $j 1
-				setvar $planet~planets_to_move ($planet~CITADELs[$player~current_sector] - $game~MAX_PLANETS_PER_SECTOR)
-				setvar $planet~planets_moved 0
+gosub :count_planets
+if ($planet~CITADELs[$player~current_sector] > $game~MAX_PLANETS_PER_SECTOR)
+	setVar $j 1
+	setvar $planet~planets_to_move ($planet~CITADELs[$player~current_sector] - $game~MAX_PLANETS_PER_SECTOR)
+	setvar $planet~planets_moved 0
 
-				while ($j <= $planet~planetCount)
-					getwordpos $skip $pos " "&$planet~planets[$j]&" "
-					if ($pos <= 0)
-						send "l " & #8 & $planet~planets[$j] & "* "
-						gosub :PLANET~getPlanetInfo
-						if (($planet~planet_FUEL >= 5000) and ($planet~CITADEL >= 4))
+	while ($j <= $planet~planetCount)
+		getwordpos $skip $pos " "&$planet~planets[$j]&" "
+		if ($pos <= 0)
+			send "l " & #8 & $planet~planets[$j] & "* "
+			gosub :PLANET~getPlanetInfo
+			if (($planet~planet_FUEL >= 5000) and ($planet~CITADEL >= 4))
 
-							setVar $bottom 1
-							setVar $top 1
-							setArray $checked SECTORS
-							setVar $que[1] $player~current_sector
-							setVar $checked[$player~current_sector] 1
+				setVar $bottom 1
+				setVar $top 1
+				setArray $checked SECTORS
+				setVar $que[1] $player~current_sector
+				setVar $checked[$player~current_sector] 1
 							:tryAgain2
 							while ($bottom <= $top)
 								# Now, pull out the next sector in the que, and make it our focus
@@ -163,32 +163,32 @@
 									pause
 
 									:warp_it_balance
-										setvar $planet~CITADELs[$focus] ($planet~CITADELs[$focus] + 1)
-										setvar $planet~CITADELs[$player~current_sector] ($planet~CITADELs[$player~current_sector] - 1)
-										setvar $player~startinglocation "Citadel"
-										setVar $PLAYER~warpto $player~current_sector
-										gosub :player~quikstats
-										gosub :move~twarp
-										gosub  :player~currentPrompt
-										if ($PLAYER~twarpSuccess <> TRUE)
-											setvar $switchboard~message "Twarp failed during planet balancing. "&$player~msg&" Halting!*"
-											gosub :switchboard~switchboard
-											halt
-										end
-										setvar $restack_id $restack_id&" "&$planet~planets[$j]&" "
-										setvar $restack_location $restack_location&" "&$focus&" "
-										savevar $restack_id
-										savevar $restack_location
-										add $planet~planets_moved 1
-										if ($planet~planets_moved >= $planet~planets_to_move)
-											goto :done_moving_planets
-										end
+									setvar $planet~CITADELs[$focus] ($planet~CITADELs[$focus] + 1)
+									setvar $planet~CITADELs[$player~current_sector] ($planet~CITADELs[$player~current_sector] - 1)
+									setvar $player~startinglocation "Citadel"
+									setVar $PLAYER~warpto $player~current_sector
+									gosub :player~quikstats
+									gosub :move~twarp
+									gosub  :player~currentPrompt
+									if ($PLAYER~twarpSuccess <> TRUE)
+										setvar $switchboard~message "Twarp failed during planet balancing. "&$player~msg&" Halting!*"
+										gosub :switchboard~switchboard
+										halt
+									end
+									setvar $restack_id $restack_id&" "&$planet~planets[$j]&" "
+									setvar $restack_location $restack_location&" "&$focus&" "
+									savevar $restack_id
+									savevar $restack_location
+									add $planet~planets_moved 1
+									if ($planet~planets_moved >= $planet~planets_to_move)
+										goto :done_moving_planets
+									end
 
 									:no_warp_balance
-										killtrigger 1
-										killtrigger 2
-										killtrigger 3
-										goto :done_moving_this_planet
+									killtrigger 1
+									killtrigger 2
+									killtrigger 3
+									goto :done_moving_this_planet
 
 								else
 									:notit
@@ -218,67 +218,67 @@
 				end
 			end
 			:done_moving_planets
-				setvar $switchboard~message "I unstacked every planet I could.  Check to make sure!*"
-				gosub :switchboard~switchboard
+			setvar $switchboard~message "I unstacked every planet I could.  Check to make sure!*"
+			gosub :switchboard~switchboard
 
 
 halt
 
 
 :count_planets
-	send "qq*  |l"
-	waitOn "Registry# and Planet Name"
-	setVar $planet~planetCount 0
-	killalltriggers
-	setTextLineTrigger planetGrabber :planetline "   <"
-	setTextLineTrigger beDone :done "Land on which planet "
-	setTextLineTrigger noplanets :done "You can create one with a Genesis Torpedo."
-	send "* |"
-	pause
+send "qq*  |l"
+waitOn "Registry# and Planet Name"
+setVar $planet~planetCount 0
+killalltriggers
+setTextLineTrigger planetGrabber :planetline "   <"
+setTextLineTrigger beDone :done "Land on which planet "
+setTextLineTrigger noplanets :done "You can create one with a Genesis Torpedo."
+send "* |"
+pause
 	:planetline
-		killalltriggers
-		getWordPos CURRENTLINE $pos "<<<< SHIELDED"
-		if ($pos <= 0)
-			setVar $line CURRENTLINE
-			replacetext $line "<" " "
-			replacetext $line ">" " "
-			striptext $line ","
-			add $planet~planetCount 1
-			getWord $line $planet~planets[$planet~planetCount] 1
-		end
-		setTextLineTrigger getLine2 :planetline "   <"
-		setTextLineTrigger getend :done "Land on which planet "
-		pause
+	killalltriggers
+	getWordPos CURRENTLINE $pos "<<<< SHIELDED"
+	if ($pos <= 0)
+		setVar $line CURRENTLINE
+		replacetext $line "<" " "
+		replacetext $line ">" " "
+		striptext $line ","
+		add $planet~planetCount 1
+		getWord $line $planet~planets[$planet~planetCount] 1
+	end
+	setTextLineTrigger getLine2 :planetline "   <"
+	setTextLineTrigger getend :done "Land on which planet "
+	pause
 	:done
-         killalltriggers
-         return
+ killalltriggers
+ return
 
 :get_tl_list
-	setVar $sectorCount 0
-	setarray $planet~CITADELs sectors
-	killalltriggers
-	setTextLineTrigger sectorGrabber :sector_planet_line "Class "
-	setTextLineTrigger sectorbeDone :sector_done "======   ============"
-	setVar $tl_planets " "
-	if ($personal = TRUE)
-		send "cyq"
+setVar $sectorCount 0
+setarray $planet~CITADELs sectors
+killalltriggers
+setTextLineTrigger sectorGrabber :sector_planet_line "Class "
+setTextLineTrigger sectorbeDone :sector_done "======   ============"
+setVar $tl_planets " "
+if ($personal = TRUE)
+	send "cyq"
+else
+	if ($startinglocation = "Citadel")
+		send "xlq"
 	else
-		if ($startinglocation = "Citadel")
-			send "xlq"
-		else
-			send "tlq"
-		end
+		send "tlq"
 	end
-	pause
+end
+pause
 	:sector_planet_line
-		killalltriggers
-		getWord CURRENTLINE $testsector 1
-		setvar $planet~CITADEL_count $planet~CITADELs[$testsector]
-		setvar $planet~CITADELs[$testsector] ($planet~CITADEL_count + 1)
-		setVar $tl_planets $tl_planets&" "&$testsector
-		setTextLineTrigger getLine2 :sector_planet_line "Class"
-		setTextLineTrigger getEnd :sector_done "======   ============"
-		pause
+	killalltriggers
+	getWord CURRENTLINE $testsector 1
+	setvar $planet~CITADEL_count $planet~CITADELs[$testsector]
+	setvar $planet~CITADELs[$testsector] ($planet~CITADEL_count + 1)
+	setVar $tl_planets $tl_planets&" "&$testsector
+	setTextLineTrigger getLine2 :sector_planet_line "Class"
+	setTextLineTrigger getEnd :sector_done "======   ============"
+	pause
 	:sector_done
 	killalltriggers
 	send "@"
@@ -288,18 +288,34 @@ return
 
 
 :restack
-	loadvar $starting_sector
-	if ($starting_sector <= 10)
-		setvar $starting_sector $player~current_sector
+loadvar $starting_sector
+if ($starting_sector <= 10)
+	setvar $starting_sector $player~current_sector
+end
+setvar $i 1
+while ($i <= 10000)
+	if ($id[$i] <= 0)
+		goto :next_sector
 	end
-	setvar $i 1
-	while ($i <= 10000)
-		if ($id[$i] <= 0)
-			goto :next_sector
-		end
 
-		setvar $player~startinglocation "Citadel"
-		setVar $PLAYER~warpto $id[$i]
+	setvar $player~startinglocation "Citadel"
+	setVar $PLAYER~warpto $id[$i]
+	gosub :player~quikstats
+	gosub :move~twarp
+	gosub  :player~currentPrompt
+	if ($PLAYER~twarpSuccess <> TRUE)
+		setvar $switchboard~message "Twarp failed during planet balancing. "&$player~msg&" Halting!*"
+		gosub :switchboard~switchboard
+		halt
+	end
+	setvar $planet~planet $i
+	gosub :planet~landingsub
+	gosub :player~quikstats
+	if ($player~current_prompt <> "Citadel")
+		setvar $switchboard~message "Planet "&$i&" has been moved.  Cannot restack. Halting!*"
+		gosub :switchboard~switchboard
+		setvar $player~startingLocation "Command"
+		setVar $PLAYER~warpto $starting_sector
 		gosub :player~quikstats
 		gosub :move~twarp
 		gosub  :player~currentPrompt
@@ -308,39 +324,23 @@ return
 			gosub :switchboard~switchboard
 			halt
 		end
-		setvar $planet~planet $i
+		loadvar $startingplanet
+		setvar $planet~planet $startingplanet
 		gosub :planet~landingsub
-		gosub :player~quikstats
-		if ($player~current_prompt <> "Citadel")
-			setvar $switchboard~message "Planet "&$i&" has been moved.  Cannot restack. Halting!*"
-			gosub :switchboard~switchboard
-			setvar $player~startingLocation "Command"
-			setVar $PLAYER~warpto $starting_sector
-			gosub :player~quikstats
-			gosub :move~twarp
-			gosub  :player~currentPrompt
-			if ($PLAYER~twarpSuccess <> TRUE)
-				setvar $switchboard~message "Twarp failed during planet balancing. "&$player~msg&" Halting!*"
-				gosub :switchboard~switchboard
-				halt
-			end
-			loadvar $startingplanet
-			setvar $planet~planet $startingplanet
-			gosub :planet~landingsub
-			goto :next_sector
-		end
-		send "q "
-		gosub :PLANET~getPlanetInfo
-		if (($planet~planet_FUEL >= 5000) and ($planet~CITADEL >= 4))
-			killtrigger 1
-			killtrigger 2
-			killtrigger 3
-			send "c p "& $starting_sector &"  *ys* "
-			settextlinetrigger 1 :warp_it_unbalance "All Systems Ready, shall we engage?"
-			settextlinetrigger 2 :no_warp_unbalance "You do not have any fighters in Sector"
-			setTextLineTrigger 3 :warp_it_unbalance "You are already in that sector!"
-			pause
-		end
+		goto :next_sector
+	end
+	send "q "
+	gosub :PLANET~getPlanetInfo
+	if (($planet~planet_FUEL >= 5000) and ($planet~CITADEL >= 4))
+		killtrigger 1
+		killtrigger 2
+		killtrigger 3
+		send "c p "& $starting_sector &"  *ys* "
+		settextlinetrigger 1 :warp_it_unbalance "All Systems Ready, shall we engage?"
+		settextlinetrigger 2 :no_warp_unbalance "You do not have any fighters in Sector"
+		setTextLineTrigger 3 :warp_it_unbalance "You are already in that sector!"
+		pause
+	end
 		:warp_it_unbalance
 
 		:next_sector
@@ -352,9 +352,9 @@ return
 
 :no_warp_unbalance
 :no_warp_balance
-	setvar $switchboard~message "Fighter lost in starting sector!  Halting, but you better check it out.*"
-	gosub :switchboard~switchboard
-	halt
+setvar $switchboard~message "Fighter lost in starting sector!  Halting, but you better check it out.*"
+gosub :switchboard~switchboard
+halt
 
 
 

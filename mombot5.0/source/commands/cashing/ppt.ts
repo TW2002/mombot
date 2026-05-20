@@ -533,40 +533,40 @@ gosub :HELP~INITIALIZE
 halt
 
 :moveToSector
-	if ($twarp = 1)
-		setVar $PLAYER~warpto $moveTo
-		gosub :MOVE~twarp	
-		if ($PLAYER~twarpSuccess = FALSE)
-			setVar $SWITCHBOARD~message "Failed to TWARP to: " & $PLAYER~warpto &  " - POTENIAL ISSUE!.*"
-			gosub :SWITCHBOARD~switchboard
-			halt
-		end
-		else
-			setVar $MOVE~moveIntoSector $moveTo
-			gosub :MOVE~moveIntoSector	
-		end
-	return
+if ($twarp = 1)
+	setVar $PLAYER~warpto $moveTo
+	gosub :MOVE~twarp	
+	if ($PLAYER~twarpSuccess = FALSE)
+		setVar $SWITCHBOARD~message "Failed to TWARP to: " & $PLAYER~warpto &  " - POTENIAL ISSUE!.*"
+		gosub :SWITCHBOARD~switchboard
+		halt
+	end
+	else
+		setVar $MOVE~moveIntoSector $moveTo
+		gosub :MOVE~moveIntoSector	
+	end
+return
 
 :portandtrade
 	
-	//
-	setVar $report 0
-	setVar $tradeGood 0
-	send "p   t"
-	waitfor "Commerce report for"
-	goSub :getCommerceReport
-	setTextLineTrigger checkCash :checkCash "empty cargo holds"
-	setTextLineTrigger portFail :portFail "ou don't have anything they want, and they don't have anything you can b"
-	pause
+//
+setVar $report 0
+setVar $tradeGood 0
+send "p   t"
+waitfor "Commerce report for"
+goSub :getCommerceReport
+setTextLineTrigger checkCash :checkCash "empty cargo holds"
+setTextLineTrigger portFail :portFail "ou don't have anything they want, and they don't have anything you can b"
+pause
 	:portFail
-		setVar $SWITCHBOARD~message "Oops nothing to trade; script fail?*"
-		gosub :SWITCHBOARD~switchboard
-		halt
+	setVar $SWITCHBOARD~message "Oops nothing to trade; script fail?*"
+	gosub :SWITCHBOARD~switchboard
+	halt
 	:checkCash
-		killAllTriggers
-		getWord CURRENTLINE $cCredits 3
-		stripText $cCredits ","
-		stripText $cCredits "."
+	killAllTriggers
+	getWord CURRENTLINE $cCredits 3
+	stripText $cCredits ","
+	stripText $cCredits "."
 
 
 	killalltriggers
@@ -581,263 +581,263 @@ halt
 	pause
 
 	:sell1
-		setVar $PLAYER~multiplier 105
-		killalltriggers
-		setVar $tradeGood 1
-		gosub :doTrade
-		goto :tradeloop
+	setVar $PLAYER~multiplier 105
+	killalltriggers
+	setVar $tradeGood 1
+	gosub :doTrade
+	goto :tradeloop
 	:sell2
-		setVar $PLAYER~multiplier 105
-		killalltriggers
-		setVar $tradeGood 2
-		gosub :doTrade
-		goto :tradeloop
+	setVar $PLAYER~multiplier 105
+	killalltriggers
+	setVar $tradeGood 2
+	gosub :doTrade
+	goto :tradeloop
 	:sell3
-		setVar $PLAYER~multiplier 105
-		killalltriggers
-		setVar $tradeGood 3
-		gosub :doTrade
-		goto :tradeloop
+	setVar $PLAYER~multiplier 105
+	killalltriggers
+	setVar $tradeGood 3
+	gosub :doTrade
+	goto :tradeloop
 		
 	:buy1
-		killalltriggers
-		setVar $PLAYER~multiplier 95
-		setVar $tradeGood 4
-		# $skipore = 1 - means we traded it previously and we are retrading and need to skip
-		if ($skipore = 0)
-			if (($tradeFuel = 1) or ($twarp = 1) or ($buyore > 0))
+	killalltriggers
+	setVar $PLAYER~multiplier 95
+	setVar $tradeGood 4
+	# $skipore = 1 - means we traded it previously and we are retrading and need to skip
+	if ($skipore = 0)
+		if (($tradeFuel = 1) or ($twarp = 1) or ($buyore > 0))
 
-				gosub :doTrade
-			else
-				gosub :noTrade
-			end
+			gosub :doTrade
 		else
 			gosub :noTrade
 		end
-		goto :tradeloop
+	else
+		gosub :noTrade
+	end
+	goto :tradeloop
 	:buy2
-		killalltriggers
-		setVar $PLAYER~multiplier 95
-		setVar $tradeGood 5
+	killalltriggers
+	setVar $PLAYER~multiplier 95
+	setVar $tradeGood 5
 
-		if ($skiprest = 1)
-			gosub :noTrade
-		elseif ($tradeOrg = 1)
-			gosub :doTrade
-		else
-			gosub :noTrade
-		end
-		goto :tradeloop
+	if ($skiprest = 1)
+		gosub :noTrade
+	elseif ($tradeOrg = 1)
+		gosub :doTrade
+	else
+		gosub :noTrade
+	end
+	goto :tradeloop
 	:buy3
-		killalltriggers
-		setVar $PLAYER~multiplier 95
-		setVar $tradeGood 6
-		if ($skiprest = 1)
-			gosub :noTrade
-		elseif ($tradeEquip = 1)
-			gosub :doTrade
-		else
-			gosub :noTrade
-		end
+	killalltriggers
+	setVar $PLAYER~multiplier 95
+	setVar $tradeGood 6
+	if ($skiprest = 1)
+		gosub :noTrade
+	elseif ($tradeEquip = 1)
+		gosub :doTrade
+	else
+		gosub :noTrade
+	end
 
 	:tradeloopdone
-		killalltriggers
+	killalltriggers
 return
 
 :getCommerceReport
-	setVar $cFuel 0
-	setVar $cOrg 0
-	setVar $cEquip 0
+setVar $cFuel 0
+setVar $cOrg 0
+setVar $cEquip 0
 	
 
 //get it
-	waitfor "Docking Log"
+waitfor "Docking Log"
 	:dockinglog
 	setTextLineTrigger cr1 :cr1 "Fuel Ore"
 	setTextLineTrigger cr2 :cr2 "Organics"
 	setTextLineTrigger cr3 :cr3 "Equipment"
 	pause
 	:cr1
-		killalltriggers
-		if ($tradeFuel = 1)
-			getWord CURRENTLINE $cFuel 4
-		end
-		goto :dockinglog
+	killalltriggers
+	if ($tradeFuel = 1)
+		getWord CURRENTLINE $cFuel 4
+	end
+	goto :dockinglog
 	:cr2
-		killalltriggers
-		if ($tradeOrg = 1)
-			getWord CURRENTLINE $cOrg 3
-		end
-		goto :dockinglog
+	killalltriggers
+	if ($tradeOrg = 1)
+		getWord CURRENTLINE $cOrg 3
+	end
+	goto :dockinglog
 	:cr3
-		killalltriggers
-		if ($tradeEquip = 1)
-			getWord CURRENTLINE $cEquip 3
-		end
+	killalltriggers
+	if ($tradeEquip = 1)
+		getWord CURRENTLINE $cEquip 3
+	end
 
 	if ($tradeFuel = 1)
-		setVar $cFuel ($cFuel - $PLAYER~TOTAL_HOLDS)
+	setVar $cFuel ($cFuel - $PLAYER~TOTAL_HOLDS)
 	end
 	if ($tradeOrg = 1)
-		setVar $cOrg ($cOrg - $PLAYER~TOTAL_HOLDS)
+	setVar $cOrg ($cOrg - $PLAYER~TOTAL_HOLDS)
 	end
 	if ($tradeEquip = 1)
-		setVar $cEquip ($cEquip - $PLAYER~TOTAL_HOLDS)
+	setVar $cEquip ($cEquip - $PLAYER~TOTAL_HOLDS)
 	end
 	
 	setPrecision 2
 	if (CURRENTSECTOR = $sec1.INDEX)
-		setVar $portGoodOk 1
-		if ($tradeFuel = 1)
-			setVar $cPercFuel (($cFuel/$sec1_maxfuel) * 100)
-			if ($cPercFuel < $tradingMinPer)
-				setVar $portGoodOk 0
-			end
+	setVar $portGoodOk 1
+	if ($tradeFuel = 1)
+		setVar $cPercFuel (($cFuel/$sec1_maxfuel) * 100)
+		if ($cPercFuel < $tradingMinPer)
+			setVar $portGoodOk 0
 		end
-		if ($tradeOrg = 1)
-			setVar $cPercOrg (($cOrg/$sec1_maxorg) * 100)
-			if ($cPercOrg < $tradingMinPer)
-				setVar $portGoodOk 0
-			end
+	end
+	if ($tradeOrg = 1)
+		setVar $cPercOrg (($cOrg/$sec1_maxorg) * 100)
+		if ($cPercOrg < $tradingMinPer)
+			setVar $portGoodOk 0
 		end
-		if ($tradeEquip = 1)
-			setVar $cPercEquip (($cEquip/$sec1_maxequip) * 100)
-			if ($cPercEquip < $tradingMinPer)
-				setVar $portGoodOk 0
-			end
+	end
+	if ($tradeEquip = 1)
+		setVar $cPercEquip (($cEquip/$sec1_maxequip) * 100)
+		if ($cPercEquip < $tradingMinPer)
+			setVar $portGoodOk 0
 		end
-		if ($portGoodOk = 0)
-			setVar $port1Ok 0
-		end
+	end
+	if ($portGoodOk = 0)
+		setVar $port1Ok 0
+	end
 	else
-		setVar $portGoodOk 1
-		if ($tradeFuel = 1)
-			setVar $cPercFuel (($cFuel/$sec2_maxfuel) * 100)
-			if ($cPercFuel < $tradingMinPer)
-				setVar $portGoodOk 0
-			end
+	setVar $portGoodOk 1
+	if ($tradeFuel = 1)
+		setVar $cPercFuel (($cFuel/$sec2_maxfuel) * 100)
+		if ($cPercFuel < $tradingMinPer)
+			setVar $portGoodOk 0
 		end
-		if ($tradeOrg = 1)
-			setVar $cPercOrg (($cOrg/$sec2_maxorg) * 100)
-			if ($cPercOrg < $tradingMinPer)
-				setVar $portGoodOk 0
-			end
+	end
+	if ($tradeOrg = 1)
+		setVar $cPercOrg (($cOrg/$sec2_maxorg) * 100)
+		if ($cPercOrg < $tradingMinPer)
+			setVar $portGoodOk 0
 		end
-		if ($tradeEquip = 1)
-			setVar $cPercEquip (($cEquip/$sec2_maxequip) * 100)
-			if ($cPercEquip < $tradingMinPer)
-				setVar $portGoodOk 0
-			end
+	end
+	if ($tradeEquip = 1)
+		setVar $cPercEquip (($cEquip/$sec2_maxequip) * 100)
+		if ($cPercEquip < $tradingMinPer)
+			setVar $portGoodOk 0
 		end
-		if ($portGoodOk = 0)
-			setVar $port2Ok 0
-		end
+	end
+	if ($portGoodOk = 0)
+		setVar $port2Ok 0
+	end
 	end
 
 	setPrecision 0
 return
 
 :noTrade
-	send "0*"
-	waitfor "empty cargo holds."
+send "0*"
+waitfor "empty cargo holds."
 return
 
 :doTrade
 	
-	if ((($tradeGood = 1) or ($tradeGood = 4)) and ($twarp = 1))
-		# selling or buying ore - and doing twarp
+if ((($tradeGood = 1) or ($tradeGood = 4)) and ($twarp = 1))
+	# selling or buying ore - and doing twarp
 	
-		if ($tradeGood = 4)
-			# Port is selling ore 
-			if ($buyore > 0)
-				# we are buying ore at end of cycle - we should buy ore and exit out.
-				send $buyore "*"
-				setVar $skiprest 1
-			elseif (($currentLocation = 2) and ($buyfuel2 > 0))
-				if ($tradeFuel = 1)
-					# Trade is SXB to BXS - buy all ore
-					send "*"	
-				else
-					send $buyfuel2 "*"
-				end
-			elseif ($currentLocation = 2)
-				goSub :noTrade
-				return
-			elseif (($currentLocation = 1) and ($buyfuel1 > 0))
-				if ($tradeFuel = 1)
-					# Trade is SXB to BXS - buy all ore
-					send "*"	
-				else
-					send $buyfuel1 "*"
-				end
+	if ($tradeGood = 4)
+		# Port is selling ore 
+		if ($buyore > 0)
+			# we are buying ore at end of cycle - we should buy ore and exit out.
+			send $buyore "*"
+			setVar $skiprest 1
+		elseif (($currentLocation = 2) and ($buyfuel2 > 0))
+			if ($tradeFuel = 1)
+				# Trade is SXB to BXS - buy all ore
+				send "*"	
 			else
-				goSub :noTrade
-				return
+				send $buyfuel2 "*"
+			end
+		elseif ($currentLocation = 2)
+			goSub :noTrade
+			return
+		elseif (($currentLocation = 1) and ($buyfuel1 > 0))
+			if ($tradeFuel = 1)
+				# Trade is SXB to BXS - buy all ore
+				send "*"	
+			else
+				send $buyfuel1 "*"
 			end
 		else
-			// Port is Buying Ore
-			if ($tradeFuel = 0)
-				# port wants to buy ore - we are in a Equip-Org cycle
-				# this must be for driving home
-				goSub :noTrade
-				return
-			else
-				# We need to sell some ore - but how much.
-				if ($currentLocation = 1)
-					# we only need to keep enought to get to port 2
-					# one port MUST sell ore, and it's the other.
-					setVar $sellAmount ($player~ORE_HOLDS - $fuelTo2)
-					send $sellAmount "*"
-				else
-					# we only need to keep enought to get to port 1
-					# one port MUST sell ore, and it's the other.
-					setVar $sellAmount ($player~ORE_HOLDS - $fuelTo1)
-					send $sellAmount "*"
-				end
-
-			end
+			goSub :noTrade
+			return
 		end
 	else
-		if (($port1Ok = 0) and ($port2Ok = 0))
-			
-			if (($tradeGood = 4) and ($buyore > 0))
-				send $buyore "*"
-				setVar $skiprest 1
-			else
-				# one of the ports is at min % so we are onto last two trades
-				# we want to keep the min equip holds
-				if (($keepEquip > 0) and (PORT.BUYEQUIP[CURRENTSECTOR]))
-					setvar $h ($PLAYER~TOTAL_HOLDS - $keepEquip)
-					send $h "*"
-				else 
-					send "*"
-				end
-			end
-				
+		// Port is Buying Ore
+		if ($tradeFuel = 0)
+			# port wants to buy ore - we are in a Equip-Org cycle
+			# this must be for driving home
+			goSub :noTrade
+			return
 		else
-			send "*"
+			# We need to sell some ore - but how much.
+			if ($currentLocation = 1)
+				# we only need to keep enought to get to port 2
+				# one port MUST sell ore, and it's the other.
+				setVar $sellAmount ($player~ORE_HOLDS - $fuelTo2)
+				send $sellAmount "*"
+			else
+				# we only need to keep enought to get to port 1
+				# one port MUST sell ore, and it's the other.
+				setVar $sellAmount ($player~ORE_HOLDS - $fuelTo1)
+				send $sellAmount "*"
+			end
+
 		end
 	end
-	if (($haggle = "t") or ($haggle = "h"))
-		
-		
-		if ($haggle = "t")
-			waitfor "Agreed,"
-			setTextLineTrigger tradeFin :tradeFin "empty cargo holds"
-			pause
-			:tradeFin
-				killAllTriggers
-				getWord CURRENTLINE $nCredits 3
-				stripText $nCredits ","
-				stripText $nCredits "."
+else
+	if (($port1Ok = 0) and ($port2Ok = 0))
+			
+		if (($tradeGood = 4) and ($buyore > 0))
+			send $buyore "*"
+			setVar $skiprest 1
+		else
+			# one of the ports is at min % so we are onto last two trades
+			# we want to keep the min equip holds
+			if (($keepEquip > 0) and (PORT.BUYEQUIP[CURRENTSECTOR]))
+				setvar $h ($PLAYER~TOTAL_HOLDS - $keepEquip)
+				send $h "*"
+			else 
+				send "*"
+			end
+		end
 				
-				if ($nCredits = $cCredits)
-					setVar $report 1
-				else
-					setVar $cCredits $nCredits
-				end	
+	else
+		send "*"
+	end
+end
+if (($haggle = "t") or ($haggle = "h"))
+		
+		
+	if ($haggle = "t")
+		waitfor "Agreed,"
+		setTextLineTrigger tradeFin :tradeFin "empty cargo holds"
+		pause
+			:tradeFin
+			killAllTriggers
+			getWord CURRENTLINE $nCredits 3
+			stripText $nCredits ","
+			stripText $nCredits "."
+				
+			if ($nCredits = $cCredits)
+				setVar $report 1
+			else
+				setVar $cCredits $nCredits
+			end	
 			elseif ($haggle = "h")
-				gosub :HAGGLE~startHaggle
+			gosub :HAGGLE~startHaggle
 			end
 	else
 		send "  *  "
@@ -846,116 +846,116 @@ return
 
 
 :checkReportFuel
-	if ($buyore > 0)
-		gosub :player~quikstats
+if ($buyore > 0)
+	gosub :player~quikstats
 echo "ReportFuelCheck: " $reportFuelCheck " $playerholds " $player~ORE_HOLDS " *"
-		if ($reportFuelCheck <> $player~ORE_HOLDS)
-			setVar $buyore 0
-			setVar $skipore 1
-		end
+	if ($reportFuelCheck <> $player~ORE_HOLDS)
+		setVar $buyore 0
+		setVar $skipore 1
 	end
+end
 return
 
 
 :chkFtr
 	
-	if (SECTOR.FIGS.QUANTITY[$chkFtrSector] = 0)
-		if ($chkFtrSector > 10)
-			send "f   1  *  c  d "
+if (SECTOR.FIGS.QUANTITY[$chkFtrSector] = 0)
+	if ($chkFtrSector > 10)
+		send "f   1  *  c  d "
 
-		end
 	end
+end
 
 return
 
 
 :isTradingPort
-	# $portTest1 / $portTest2
-	# $portCanTrade  - result
+# $portTest1 / $portTest2
+# $portCanTrade  - result
 
-	setVar $port1 PORT.CLASS[$portTest1]
-	setVar $port2 PORT.CLASS[$portTest2]
-	setVar $tradeFuel 0
-	setVar $tradeOrg 0
-	setVar $tradeEquip 0
-	setVar $portCanTrade 0
-	setVar $tradingType 0
+setVar $port1 PORT.CLASS[$portTest1]
+setVar $port2 PORT.CLASS[$portTest2]
+setVar $tradeFuel 0
+setVar $tradeOrg 0
+setVar $tradeEquip 0
+setVar $portCanTrade 0
+setVar $tradingType 0
 
-	if (PORT.BUYFUEL[$portTest1] <> PORT.BUYFUEL[$portTest2])
-		setVar $tradeFuel 1
-		add $portCanTrade 1
-	end
-	if (PORT.BUYORG[$portTest1] <> PORT.BUYORG[$portTest2])
-		setVar $tradeOrg 1
-		add $portCanTrade 1
-	end
-	if (PORT.BUYEQUIP[$portTest1] <> PORT.BUYEQUIP[$portTest2])
-		setVar $tradeEquip 1
-		add $portCanTrade 1
-	end
+if (PORT.BUYFUEL[$portTest1] <> PORT.BUYFUEL[$portTest2])
+	setVar $tradeFuel 1
+	add $portCanTrade 1
+end
+if (PORT.BUYORG[$portTest1] <> PORT.BUYORG[$portTest2])
+	setVar $tradeOrg 1
+	add $portCanTrade 1
+end
+if (PORT.BUYEQUIP[$portTest1] <> PORT.BUYEQUIP[$portTest2])
+	setVar $tradeEquip 1
+	add $portCanTrade 1
+end
 
-	if (($tradeOrg = 1) and ($tradeEquip = 1) and ($tradeFuel = 0))
-		setVar $tradingType 1
-	elseif (($tradeFuel = 1) and ($tradeEquip = 1) and ($tradeOrg = 0))
-		setVar $tradingType 2
-	elseif (($tradeFuel = 1) and ($tradeOrg = 1) and ($tradeEquip = 0))
-		setVar $tradingType 3
-	end
-	goSub :setTradeSummary
+if (($tradeOrg = 1) and ($tradeEquip = 1) and ($tradeFuel = 0))
+	setVar $tradingType 1
+elseif (($tradeFuel = 1) and ($tradeEquip = 1) and ($tradeOrg = 0))
+	setVar $tradingType 2
+elseif (($tradeFuel = 1) and ($tradeOrg = 1) and ($tradeEquip = 0))
+	setVar $tradingType 3
+end
+goSub :setTradeSummary
 
 return
 
 :displayPortReport
 	
-	# 0 - zzz
-	# 1 - BBS
-	# 2 - BSB
-	# 3 - SBB
-	# 4 - SSB
-	# 5 - SBS
-	# 6 - BSS
-	# 7 - SSS
-	# 8 - BBB
-	# $tradingPorts - sectors you can trade with
-	# $tradingPortsDetails - details for the port report
-	# $tpi - number of prts you can trade with
-	setVar $tradingPorts 0
-	setVar $tradingPortsDetails 0
-	setVar $tpi 0
+# 0 - zzz
+# 1 - BBS
+# 2 - BSB
+# 3 - SBB
+# 4 - SSB
+# 5 - SBS
+# 6 - BSS
+# 7 - SSS
+# 8 - BBB
+# $tradingPorts - sectors you can trade with
+# $tradingPortsDetails - details for the port report
+# $tpi - number of prts you can trade with
+setVar $tradingPorts 0
+setVar $tradingPortsDetails 0
+setVar $tpi 0
 
 	
-	setVar $i 1
+setVar $i 1
 	
-	while ($i <= SECTOR.WARPCOUNT[CURRENTSECTOR])
+while ($i <= SECTOR.WARPCOUNT[CURRENTSECTOR])
 		
-		# check it has warps back
-		setVar $w 1
-		setVar $warpBack 0
+	# check it has warps back
+	setVar $w 1
+	setVar $warpBack 0
 
-		while ($w <= SECTOR.WARPCOUNT[SECTOR.WARPS[CURRENTSECTOR][$i]])
-			if (CURRENTSECTOR = SECTOR.WARPS[SECTOR.WARPS[CURRENTSECTOR][$i]][$w])
-				setVar $warpBack 1
-			end
-			add $w 1
+	while ($w <= SECTOR.WARPCOUNT[SECTOR.WARPS[CURRENTSECTOR][$i]])
+		if (CURRENTSECTOR = SECTOR.WARPS[SECTOR.WARPS[CURRENTSECTOR][$i]][$w])
+			setVar $warpBack 1
 		end
-		
-		if ($warpBack = 1)
-			setVar $portTest1 SECTOR.WARPS[CURRENTSECTOR][$i]
-			setVar $portTest2 CURRENTSECTOR
-			gosub :isTradingPort
-			if ($portCanTrade > 0)
-				add $tpi 1
-				setVar $tradingPorts[$tpi] SECTOR.WARPS[CURRENTSECTOR][$i]
-				setVar $portReport $tradingPorts[$tpi]
-				setVar $portReportLine ""
-				gosub :portReportLine
-				setVar $tradingPortsDetails[$tpi] $portReportLine
-			end
-		else
-			echo "*############*# Sector " SECTOR.WARPS[CURRENTSECTOR][$i]  " does not warp back "
-		end 
-		add $i 1
+		add $w 1
 	end
+		
+	if ($warpBack = 1)
+		setVar $portTest1 SECTOR.WARPS[CURRENTSECTOR][$i]
+		setVar $portTest2 CURRENTSECTOR
+		gosub :isTradingPort
+		if ($portCanTrade > 0)
+			add $tpi 1
+			setVar $tradingPorts[$tpi] SECTOR.WARPS[CURRENTSECTOR][$i]
+			setVar $portReport $tradingPorts[$tpi]
+			setVar $portReportLine ""
+			gosub :portReportLine
+			setVar $tradingPortsDetails[$tpi] $portReportLine
+		end
+	else
+		echo "*############*# Sector " SECTOR.WARPS[CURRENTSECTOR][$i]  " does not warp back "
+	end 
+	add $i 1
+end
 
 	:GetPort
 	if ($tpi = 0)
@@ -998,148 +998,148 @@ return
 
 :portReportLine
 	
-	setVar $outputLen 6
-	setVar $outputText $portReport
-	gosub :padOutputLen
-	setVar $portReportLine "*" & ANSI_11 & "      Pair(" & $tpi & "): " & ANSI_11 & $outputText & ANSI_10 & " " & $tradeSummary
-	if ($tradeFuel = 1)
-		setVar $reportGoodLabel "F"
-		setVar $reportGoodQty PORT.FUEL[$portReport]
-		setVar $reportGoodPct PORT.PERCENTFUEL[$portReport]
-		gosub :appendPortReportGood
-	end
-	if ($tradeOrg = 1)
-		setVar $reportGoodLabel "O"
-		setVar $reportGoodQty PORT.ORG[$portReport]
-		setVar $reportGoodPct PORT.PERCENTORG[$portReport]
-		gosub :appendPortReportGood
-	end
-	if ($tradeEquip = 1)
-		setVar $reportGoodLabel "E"
-		setVar $reportGoodQty PORT.EQUIP[$portReport]
-		setVar $reportGoodPct PORT.PERCENTEQUIP[$portReport]
-		gosub :appendPortReportGood
-	end
+setVar $outputLen 6
+setVar $outputText $portReport
+gosub :padOutputLen
+setVar $portReportLine "*" & ANSI_11 & "      Pair(" & $tpi & "): " & ANSI_11 & $outputText & ANSI_10 & " " & $tradeSummary
+if ($tradeFuel = 1)
+	setVar $reportGoodLabel "F"
+	setVar $reportGoodQty PORT.FUEL[$portReport]
+	setVar $reportGoodPct PORT.PERCENTFUEL[$portReport]
+	gosub :appendPortReportGood
+end
+if ($tradeOrg = 1)
+	setVar $reportGoodLabel "O"
+	setVar $reportGoodQty PORT.ORG[$portReport]
+	setVar $reportGoodPct PORT.PERCENTORG[$portReport]
+	gosub :appendPortReportGood
+end
+if ($tradeEquip = 1)
+	setVar $reportGoodLabel "E"
+	setVar $reportGoodQty PORT.EQUIP[$portReport]
+	setVar $reportGoodPct PORT.PERCENTEQUIP[$portReport]
+	gosub :appendPortReportGood
+end
 
 return
 
 :appendPortReportGood
 
-	setVar $portReportLine $portReportLine & ANSI_11 & "  " & $reportGoodLabel & ":"
-	setVar $outputLen 8
-	setVar $outputText $reportGoodQty
-	gosub :padOutputLen
-	setVar $portReportLine $portReportLine & ANSI_10 & $outputText
+setVar $portReportLine $portReportLine & ANSI_11 & "  " & $reportGoodLabel & ":"
+setVar $outputLen 8
+setVar $outputText $reportGoodQty
+gosub :padOutputLen
+setVar $portReportLine $portReportLine & ANSI_10 & $outputText
 
-	setVar $outputLen 3
-	setVar $outputText $reportGoodPct
-	gosub :padOutputLen
-	setVar $portReportLine $portReportLine & ANSI_11 & "(" & $outputText & "%)"
+setVar $outputLen 3
+setVar $outputText $reportGoodPct
+gosub :padOutputLen
+setVar $portReportLine $portReportLine & ANSI_11 & "(" & $outputText & "%)"
 
 return
 
 :setTradeSummary
 
-	setVar $tradeSummary ""
-	if ($tradeFuel = 1)
-		setVar $tradeSummary "FUEL"
+setVar $tradeSummary ""
+if ($tradeFuel = 1)
+	setVar $tradeSummary "FUEL"
+end
+if ($tradeOrg = 1)
+	if ($tradeSummary <> "")
+		setVar $tradeSummary $tradeSummary & "/"
 	end
-	if ($tradeOrg = 1)
-		if ($tradeSummary <> "")
-			setVar $tradeSummary $tradeSummary & "/"
-		end
-		setVar $tradeSummary $tradeSummary & "ORG"
+	setVar $tradeSummary $tradeSummary & "ORG"
+end
+if ($tradeEquip = 1)
+	if ($tradeSummary <> "")
+		setVar $tradeSummary $tradeSummary & "/"
 	end
-	if ($tradeEquip = 1)
-		if ($tradeSummary <> "")
-			setVar $tradeSummary $tradeSummary & "/"
-		end
-		setVar $tradeSummary $tradeSummary & "EQU"
-	end
+	setVar $tradeSummary $tradeSummary & "EQU"
+end
 
 return
 
 :buildNoTradeMessage
 
-	setVar $portClassValue PORT.CLASS[$tradingSector2]
-	gosub :portClassCode
-	setVar $portClassName1 $portClassCode
-	setVar $portClassValue PORT.CLASS[$tradingSector1]
-	gosub :portClassCode
-	setVar $portClassName2 $portClassCode
+setVar $portClassValue PORT.CLASS[$tradingSector2]
+gosub :portClassCode
+setVar $portClassName1 $portClassCode
+setVar $portClassValue PORT.CLASS[$tradingSector1]
+gosub :portClassCode
+setVar $portClassName2 $portClassCode
 
-	setVar $SWITCHBOARD~message "No PPT lanes between sector " & $tradingSector2 & " Class " & PORT.CLASS[$tradingSector2] & " (" & $portClassName1 & ") and sector " & $tradingSector1 & " Class " & PORT.CLASS[$tradingSector1] & " (" & $portClassName2 & ").*"
+setVar $SWITCHBOARD~message "No PPT lanes between sector " & $tradingSector2 & " Class " & PORT.CLASS[$tradingSector2] & " (" & $portClassName1 & ") and sector " & $tradingSector1 & " Class " & PORT.CLASS[$tradingSector1] & " (" & $portClassName2 & ").*"
 
 return
 
 :portClassCode
 
-	setVar $portClassCode "ZZZ"
-	if ($portClassValue = 1)
-		setVar $portClassCode "BBS"
-	elseif ($portClassValue = 2)
-		setVar $portClassCode "BSB"
-	elseif ($portClassValue = 3)
-		setVar $portClassCode "SBB"
-	elseif ($portClassValue = 4)
-		setVar $portClassCode "SSB"
-	elseif ($portClassValue = 5)
-		setVar $portClassCode "SBS"
-	elseif ($portClassValue = 6)
-		setVar $portClassCode "BSS"
-	elseif ($portClassValue = 7)
-		setVar $portClassCode "SSS"
-	elseif ($portClassValue = 8)
-		setVar $portClassCode "BBB"
-	end
+setVar $portClassCode "ZZZ"
+if ($portClassValue = 1)
+	setVar $portClassCode "BBS"
+elseif ($portClassValue = 2)
+	setVar $portClassCode "BSB"
+elseif ($portClassValue = 3)
+	setVar $portClassCode "SBB"
+elseif ($portClassValue = 4)
+	setVar $portClassCode "SSB"
+elseif ($portClassValue = 5)
+	setVar $portClassCode "SBS"
+elseif ($portClassValue = 6)
+	setVar $portClassCode "BSS"
+elseif ($portClassValue = 7)
+	setVar $portClassCode "SSS"
+elseif ($portClassValue = 8)
+	setVar $portClassCode "BBB"
+end
 
 return
 
 
 :padOutputLen
 
-	getLength $outputText $len
+getLength $outputText $len
 
-	if ($len < $outputLen)
-		subtract $outputLen $len
-		setVar $padi 1
-		while ($padi <= $outputLen)
-			setVar $outputText   " " & $outputText
-			add $padi 1
-		end
+if ($len < $outputLen)
+	subtract $outputLen $len
+	setVar $padi 1
+	while ($padi <= $outputLen)
+		setVar $outputText   " " & $outputText
+		add $padi 1
 	end
+end
 
 return
 
 :voidadjacent
 	
-	setVar $voidSector $tradingSector1
-	setVar $otherSect $tradingSector2
+setVar $voidSector $tradingSector1
+setVar $otherSect $tradingSector2
 
-	gosub :voidadjacentPPT
-	setVar $voidSector $tradingSector2
-	setVar $otherSect $tradingSector1
-	gosub :voidadjacentPPT
+gosub :voidadjacentPPT
+setVar $voidSector $tradingSector2
+setVar $otherSect $tradingSector1
+gosub :voidadjacentPPT
 
 return
 :clearadjacent
 	
-	setVar $voidSector $tradingSector1
-	setVar $otherSect $tradingSector2
-	gosub :clearadjacentPPT
-	setVar $voidSector $tradingSector2
-	setVar $otherSect $tradingSector1
-	gosub :clearadjacentPPT
+setVar $voidSector $tradingSector1
+setVar $otherSect $tradingSector2
+gosub :clearadjacentPPT
+setVar $voidSector $tradingSector2
+setVar $otherSect $tradingSector1
+gosub :clearadjacentPPT
 
 return
 
 :voidadjacentPPT
-    getSector $voidSector $sectorInfo
-    if ($sectorInfo.warp[1] = 0)
-        send "'This sector has no warps, maybe you need to scan it first*"
-        halt
-    else
-        setVar $voidsect 0
+getSector $voidSector $sectorInfo
+if ($sectorInfo.warp[1] = 0)
+    send "'This sector has no warps, maybe you need to scan it first*"
+    halt
+else
+    setVar $voidsect 0
         :voids
         add $voidsect 1
         if ($voidsect < 7)
@@ -1159,13 +1159,13 @@ return
 return
 
 :clearadjacentPPT
-    getSector $voidSector $sectorInfo
-    if ($sectorInfo.warp[1] = 0)
-        setvar $switchboard~message "This sector has no warps, try to scan it first!*"
-        gosub :switchboard~switchboard
-        halt
-    else
-        setVar $voidsect 0
+getSector $voidSector $sectorInfo
+if ($sectorInfo.warp[1] = 0)
+    setvar $switchboard~message "This sector has no warps, try to scan it first!*"
+    gosub :switchboard~switchboard
+    halt
+else
+    setVar $voidsect 0
         :clearvoids
         add $voidsect 1
         if ($voidsect < 7)

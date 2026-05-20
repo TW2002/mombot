@@ -65,11 +65,11 @@
 
 
 :wait_for_command
-	setVar $HELP~HELP[1]  $HELP~TAB&"   Lands on a planet.          "
-	setVar $HELP~HELP[2]  $HELP~TAB&"               "
-	setVar $HELP~HELP[3]  $HELP~TAB&"    land {planet#}  "
-	setVar $HELP~HELP[4]  $HELP~TAB&"        "
-	gosub :HELP~HELPFILE
+setVar $HELP~HELP[1]  $HELP~TAB&"   Lands on a planet.          "
+setVar $HELP~HELP[2]  $HELP~TAB&"               "
+setVar $HELP~HELP[3]  $HELP~TAB&"    land {planet#}  "
+setVar $HELP~HELP[4]  $HELP~TAB&"        "
+gosub :HELP~HELPFILE
 halt
 
 

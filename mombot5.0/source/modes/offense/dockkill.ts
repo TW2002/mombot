@@ -1,231 +1,231 @@
-	logging off
-		gosub :LOADVARS~LOADVARS
-		gosub :HELP~INITIALIZE
-									
+logging off
+	gosub :LOADVARS~LOADVARS
+	gosub :HELP~INITIALIZE
+								
 
-	setVar $HELP~HELP[1]  $HELP~TAB&"Scans for targets and autokills in sector."
-	setVar $HELP~HELP[2]  $HELP~TAB&"         "
-	setVar $HELP~HELP[3]  $HELP~TAB&"  Options: "
-	setVar $HELP~HELP[4]  $HELP~TAB&"      {off} - Turns off script "
-	setVar $HELP~HELP[5]  $HELP~TAB&"      {pod} - Only shoots pods"
-	setVar $HELP~HELP[6]  $HELP~TAB&"     {meat} - meatgrinder mode"
-	setVar $HELP~HELP[7]  $HELP~TAB&"      {cap} - capture instead of kill"
-	setVar $HELP~HELP[8]  $HELP~TAB&"       {dt} - doubletap mode"
-	setVar $HELP~HELP[9]  $HELP~TAB&"       {sg} - shotgun mode"
-	setVar $HELP~HELP[10] $HELP~TAB&" {defender} - pops a planet before attacking"
-	gosub :HELP~HELPFILE
+setVar $HELP~HELP[1]  $HELP~TAB&"Scans for targets and autokills in sector."
+setVar $HELP~HELP[2]  $HELP~TAB&"         "
+setVar $HELP~HELP[3]  $HELP~TAB&"  Options: "
+setVar $HELP~HELP[4]  $HELP~TAB&"      {off} - Turns off script "
+setVar $HELP~HELP[5]  $HELP~TAB&"      {pod} - Only shoots pods"
+setVar $HELP~HELP[6]  $HELP~TAB&"     {meat} - meatgrinder mode"
+setVar $HELP~HELP[7]  $HELP~TAB&"      {cap} - capture instead of kill"
+setVar $HELP~HELP[8]  $HELP~TAB&"       {dt} - doubletap mode"
+setVar $HELP~HELP[9]  $HELP~TAB&"       {sg} - shotgun mode"
+setVar $HELP~HELP[10] $HELP~TAB&" {defender} - pops a planet before attacking"
+gosub :HELP~HELPFILE
 
-	setvar $SWITCHBOARD~MESSAGE "Dock Killer starting up!*"
-	gosub :SWITCHBOARD~SWITCHBOARD
-	gosub :combat~init 
-	setVar $SWITCHBOARD~self_command TRUE
-	
-
-	gosub :PLAYER~quikstats	
-	setVar $startingLocation $PLAYER~CURRENT_PROMPT
-
-	getWordPos $BOT~user_command_line $pos "pod"
-	if ($pos > 0)
-		setVar $pods TRUE
-	else
-		setVar $pods FALSE
-	end
-
-	getWordPos $BOT~user_command_line $pos "cap"
-	if ($pos > 0)
-		setVar $cap TRUE
-	else
-		setVar $cap FALSE
-	end
-
-	getWordPos $BOT~user_command_line $pos "meat"
-	if ($pos > 0)
-		setVar $meatgrind TRUE
-	else
-		setVar $meatgrind FALSE
-	end
-
-	getWordPos $BOT~user_command_line $pos "def"
-	if ($pos > 0)
-		setVar $combat~defender TRUE
-		if ($player~genesis <= 0)
-			setVar $SWITCHBOARD~message "You have to have genesis torps to run defender mode.*"
-			gosub :switchboard~switchboard
-			halt			
-		end
-	else
-		setVar $combat~defender FALSE
-	end
-
-	setVar $PLAYER~targetingPerson FALSE
-	if ($pods)
-		setVar $PLAYER~targetingShip "Escape Pod"
-	else 
-		setVar $PLAYER~targetingShip FALSE
-	end
-	setVar $PLAYER~targetingCorp FALSE
-	setVar $PLAYER~target ""
-	loadvar $ship~ship_fighters_max
-	loadvar $ship~ship_max_attack
-	loadvar $ship~max_shields
+setvar $SWITCHBOARD~MESSAGE "Dock Killer starting up!*"
+gosub :SWITCHBOARD~SWITCHBOARD
+gosub :combat~init 
+setVar $SWITCHBOARD~self_command TRUE
 
 
-	loadvar $ship~CAP_FILE	
-	fileExists $CAP_FILE_chk $ship~CAP_FILE
-	if ($CAP_FILE_chk)
-		gosub :ship~loadshipinfo
-	else
-		gosub :ship~getShipCapStats
-		gosub :ship~loadShipInfo
-	end 
+gosub :PLAYER~quikstats	
+setVar $startingLocation $PLAYER~CURRENT_PROMPT
 
-	if ($bot~parm1 = "off")
-		setvar $switchboard~message "Shutting down dockkill..*"
+getWordPos $BOT~user_command_line $pos "pod"
+if ($pos > 0)
+	setVar $pods TRUE
+else
+	setVar $pods FALSE
+end
+
+getWordPos $BOT~user_command_line $pos "cap"
+if ($pos > 0)
+	setVar $cap TRUE
+else
+	setVar $cap FALSE
+end
+
+getWordPos $BOT~user_command_line $pos "meat"
+if ($pos > 0)
+	setVar $meatgrind TRUE
+else
+	setVar $meatgrind FALSE
+end
+
+getWordPos $BOT~user_command_line $pos "def"
+if ($pos > 0)
+	setVar $combat~defender TRUE
+	if ($player~genesis <= 0)
+		setVar $SWITCHBOARD~message "You have to have genesis torps to run defender mode.*"
 		gosub :switchboard~switchboard
-		if ($player~current_sector = STARDOCK)
-			send "p ss ys *p"
-			setvar $switchboard~message "Should be on dock.*"
-			gosub :switchboard~switchboard
-		end
-		if ($player~current_sector = "1")
-			send "p ty"
-			setvar $switchboard~message "Should be on port.*"
-			gosub :switchboard~switchboard
-		end
-		halt
-	else
-		if ($startingLocation <> "Command") AND ($startingLocation <> "<StarDock>")
-			setvar $switchboard~message "Stardock Killer must be run from the Command or StarDock Prompt*"
-			gosub :switchboard~switchboard
-			halt
-		end
-		isNumber $test $bot~parm2
-		if ($test)
-			if ($bot~parm2 > 0)
-				setVar $targetingCorp TRUE
-				setVar $target $bot~parm2
-			end
-		else
-			getWordPos $bot~parm2 $pos #34
-			if ($pos > 0)	
-				setvar $bot~user_command_line $bot~user_command_line&" "
-				getText $bot~user_command_line $PLAYER~target " "&#34 #34&" "
-				if ($PLAYER~target <> "")
-					setVar $PLAYER~targetingPerson TRUE
-					lowercase $PLAYER~target
-					stripText $bot~user_command_line " "&#34&$PLAYER~target&#34&" "
-				else
-					setVar $PLAYER~targetingPerson FALSE
-				end
-			end
-		end
-		getWordPos $bot~user_command_line $pos "dt"
-		if ($pos > 0)
-			setVar $PLAYER~doubletap TRUE
-		else
-			setVar $PLAYER~doubletap FALSE
-		end
-		getWordPos $bot~user_command_line $pos "sg"
-		if ($pos > 0)
-			setVar $PLAYER~shotgun TRUE
-		else
-			setVar $PLAYER~shotgun FALSE
-		end
-	end		
+		halt			
+	end
+else
+	setVar $combat~defender FALSE
+end
 
-	if ($ship~ship_max_attack <= 0)
-		gosub :SHIP~getshipstats
-		savevar $ship~ship_fighters_max
-		savevar $ship~ship_max_attack
-		savevar $ship~max_shields
-	end
+setVar $PLAYER~targetingPerson FALSE
+if ($pods)
+	setVar $PLAYER~targetingShip "Escape Pod"
+else 
+	setVar $PLAYER~targetingShip FALSE
+end
+setVar $PLAYER~targetingCorp FALSE
+setVar $PLAYER~target ""
+loadvar $ship~ship_fighters_max
+loadvar $ship~ship_max_attack
+loadvar $ship~max_shields
 
-	if ($PLAYER~targetingPerson)
-		setvar $switchboard~message "StarDock Killer Targeting "&$PLAYER~target&" running in sector "&$PLAYER~current_sector&".*"
-	elseif ($PLAYER~targetingCorp)
-		setvar $switchboard~message "StarDock Killer Targeting Corp "&$PLAYER~target&" running in sector "&$PLAYER~current_sector&".*"
-	else
-		setvar $switchboard~message "StarDock Killer running in sector "&$PLAYER~current_sector&".*"
-	end
-	if ($PLAYER~shotgun)
-		setvar $switchboard~message $switchboard~message&"    -  Shotgun mode enabled.*"
-	elseif ($PLAYER~doubletap)
-		setvar $switchboard~message $switchboard~message&"    -  Doubletap mode enabled.*"
-	end
+
+loadvar $ship~CAP_FILE	
+fileExists $CAP_FILE_chk $ship~CAP_FILE
+if ($CAP_FILE_chk)
+	gosub :ship~loadshipinfo
+else
+	gosub :ship~getShipCapStats
+	gosub :ship~loadShipInfo
+end 
+
+if ($bot~parm1 = "off")
+	setvar $switchboard~message "Shutting down dockkill..*"
 	gosub :switchboard~switchboard
-
-	if (($player~current_sector = 1) or (port.class[$player~current_sector] = 0) or ($player~current_sector = $map~stardock))
-		if ($PLAYER~CURRENT_SECTOR = STARDOCK)
-			setvar $player~refurbString "P  S G Y G Q s p  b  "&$ship~ship_max_attack&"*  b  "&$ship~ship_max_attack&"*  c  "&$ship~max_shields&"*  q q q "
-			if ($startingLocation = "<StarDock>")
-				send "s p"
-			else
-				send "P  S G Y G Q s p"
-			end
-		else
-			setvar $player~refurbString "p  t  b "&$ship~ship_max_attack&"* b "&$ship~ship_max_attack&"* c "&$ship~max_shields&"* q "
-			send "p ty"
-		end
-		waitOn "B  Fighters        :"
-		getWord CURRENTLINE $figsToBuy 8
-		waitOn "C  Shield Points   :"
-		getWord CURRENTLINE $shieldsToBuy 9
-		if (($figsToBuy > 0) or ($shieldsToBuy > 0))
-			send "b " $figsToBuy "* c " $shieldsToBuy "* "
-		end
-		gosub :player~quikstats
-		if ($PLAYER~CURRENT_SECTOR = STARDOCK)
-			send "q q q "
-		else
-			send "q "
-		end
-		goto :execute
+	if ($player~current_sector = STARDOCK)
+		send "p ss ys *p"
+		setvar $switchboard~message "Should be on dock.*"
+		gosub :switchboard~switchboard
 	end
+	if ($player~current_sector = "1")
+		send "p ty"
+		setvar $switchboard~message "Should be on port.*"
+		gosub :switchboard~switchboard
+	end
+	halt
+else
+	if ($startingLocation <> "Command") AND ($startingLocation <> "<StarDock>")
+		setvar $switchboard~message "Stardock Killer must be run from the Command or StarDock Prompt*"
+		gosub :switchboard~switchboard
+		halt
+	end
+	isNumber $test $bot~parm2
+	if ($test)
+		if ($bot~parm2 > 0)
+			setVar $targetingCorp TRUE
+			setVar $target $bot~parm2
+		end
+	else
+		getWordPos $bot~parm2 $pos #34
+		if ($pos > 0)	
+			setvar $bot~user_command_line $bot~user_command_line&" "
+			getText $bot~user_command_line $PLAYER~target " "&#34 #34&" "
+			if ($PLAYER~target <> "")
+				setVar $PLAYER~targetingPerson TRUE
+				lowercase $PLAYER~target
+				stripText $bot~user_command_line " "&#34&$PLAYER~target&#34&" "
+			else
+				setVar $PLAYER~targetingPerson FALSE
+			end
+		end
+	end
+	getWordPos $bot~user_command_line $pos "dt"
+	if ($pos > 0)
+		setVar $PLAYER~doubletap TRUE
+	else
+		setVar $PLAYER~doubletap FALSE
+	end
+	getWordPos $bot~user_command_line $pos "sg"
+	if ($pos > 0)
+		setVar $PLAYER~shotgun TRUE
+	else
+		setVar $PLAYER~shotgun FALSE
+	end
+end		
+
+if ($ship~ship_max_attack <= 0)
+	gosub :SHIP~getshipstats
+	savevar $ship~ship_fighters_max
+	savevar $ship~ship_max_attack
+	savevar $ship~max_shields
+end
+
+if ($PLAYER~targetingPerson)
+	setvar $switchboard~message "StarDock Killer Targeting "&$PLAYER~target&" running in sector "&$PLAYER~current_sector&".*"
+elseif ($PLAYER~targetingCorp)
+	setvar $switchboard~message "StarDock Killer Targeting Corp "&$PLAYER~target&" running in sector "&$PLAYER~current_sector&".*"
+else
+	setvar $switchboard~message "StarDock Killer running in sector "&$PLAYER~current_sector&".*"
+end
+if ($PLAYER~shotgun)
+	setvar $switchboard~message $switchboard~message&"    -  Shotgun mode enabled.*"
+elseif ($PLAYER~doubletap)
+	setvar $switchboard~message $switchboard~message&"    -  Doubletap mode enabled.*"
+end
+gosub :switchboard~switchboard
+
+if (($player~current_sector = 1) or (port.class[$player~current_sector] = 0) or ($player~current_sector = $map~stardock))
+	if ($PLAYER~CURRENT_SECTOR = STARDOCK)
+		setvar $player~refurbString "P  S G Y G Q s p  b  "&$ship~ship_max_attack&"*  b  "&$ship~ship_max_attack&"*  c  "&$ship~max_shields&"*  q q q "
+		if ($startingLocation = "<StarDock>")
+			send "s p"
+		else
+			send "P  S G Y G Q s p"
+		end
+	else
+		setvar $player~refurbString "p  t  b "&$ship~ship_max_attack&"* b "&$ship~ship_max_attack&"* c "&$ship~max_shields&"* q "
+		send "p ty"
+	end
+	waitOn "B  Fighters        :"
+	getWord CURRENTLINE $figsToBuy 8
+	waitOn "C  Shield Points   :"
+	getWord CURRENTLINE $shieldsToBuy 9
+	if (($figsToBuy > 0) or ($shieldsToBuy > 0))
+		send "b " $figsToBuy "* c " $shieldsToBuy "* "
+	end
+	gosub :player~quikstats
+	if ($PLAYER~CURRENT_SECTOR = STARDOCK)
+		send "q q q "
+	else
+		send "q "
+	end
+	goto :execute
+end
 
 
 
 	:inac
-		gosub :PLAYER~quikstats
+	gosub :PLAYER~quikstats
 	:execute
-		setdelaytrigger justwait :okaygo 50
-		pause
+	setdelaytrigger justwait :okaygo 50
+	pause
 		:okaygo
-		goSub :SECTOR~getSectorData
-		if (($player~current_sector <= 10) or ($player~current_sector = $map~stardock))
-			setvar $i 1
-			while ($i <= $sector~realTraderCount)
-				setvar $enemy_fighters $player~traders[$i][4]
-				setvar $enemy_corp $player~traders[$i][2]
-				if (($player~traders[$i][2] = true) and (($player~experience > 1000) or ($player~alignment < 0)) and ($enemy_fighters > ($player~fighters/3)) and ($enemy_corp <> $player~CORP))
-					setvar $hide true
-					setvar $switchboard~message "Hiding on port, because "&$player~traders[$i]&" is in sector, and I can't touch them. Halting.*"
-				end
-				add $i 1
+	goSub :SECTOR~getSectorData
+	if (($player~current_sector <= 10) or ($player~current_sector = $map~stardock))
+		setvar $i 1
+		while ($i <= $sector~realTraderCount)
+			setvar $enemy_fighters $player~traders[$i][4]
+			setvar $enemy_corp $player~traders[$i][2]
+			if (($player~traders[$i][2] = true) and (($player~experience > 1000) or ($player~alignment < 0)) and ($enemy_fighters > ($player~fighters/3)) and ($enemy_corp <> $player~CORP))
+				setvar $hide true
+				setvar $switchboard~message "Hiding on port, because "&$player~traders[$i]&" is in sector, and I can't touch them. Halting.*"
 			end
+			add $i 1
 		end
-		if ($player~fighters < $ship~ship_fighters_max)
-			setvar $hide true
-			setvar $switchboard~message "Can't refurb fighters, so I'm halting.*"
-		end
-		if ($hide = true)
-			if ($PLAYER~CURRENT_SECTOR = STARDOCK)
-				send "P  S G Y G Q s p"
-			else
-				send "p ty"
-			end
-			gosub :switchboard~switchboard
-			halt
-		end
-		#set player~refurbString to allow fast refurbing if you have a mac#
-		if ($cap)
-			goSub :combat~fastCapture
+	end
+	if ($player~fighters < $ship~ship_fighters_max)
+		setvar $hide true
+		setvar $switchboard~message "Can't refurb fighters, so I'm halting.*"
+	end
+	if ($hide = true)
+		if ($PLAYER~CURRENT_SECTOR = STARDOCK)
+			send "P  S G Y G Q s p"
 		else
-			goSub :combat~fastAttack
+			send "p ty"
 		end
-		if (($player~isFound = true) and ($meatgrind = true))
-			send $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* "
-		end
-		goto :execute
+		gosub :switchboard~switchboard
+		halt
+	end
+	#set player~refurbString to allow fast refurbing if you have a mac#
+	if ($cap)
+		goSub :combat~fastCapture
+	else
+		goSub :combat~fastAttack
+	end
+	if (($player~isFound = true) and ($meatgrind = true))
+		send $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* " $combat~attackString "* "
+	end
+	goto :execute
 
 
 
@@ -233,51 +233,51 @@
 
 
 :Discod
-	   	setVar $TagLine				"[Stardock Killer]"
-		setVar $TagLineB			"[Stardock Killer]"
-		killAllTriggers
-	   	Echo "**" & ANSI_14 & $TagLineB & ANSI_15 & " Disconnected **"
+setVar $TagLine				"[Stardock Killer]"
+setVar $TagLineB			"[Stardock Killer]"
+killAllTriggers
+Echo "**" & ANSI_14 & $TagLineB & ANSI_15 & " Disconnected **"
 	   	:Disco_Test
-		if (CONNECTED <> TRUE)
-			setDelayTrigger		Emancipate_CPU		:Emancipate_CPU 3000
-			Echo "**" & ANSI_14 & $TagLineB & ANSI_15 & " Auto Resume Initiated - Awaiting Connection!**"
-			pause
-			:Emancipate_CPU
-			goto :Disco_Test
-		end
-		waitfor "(?="
-		setDelayTrigger		WaitingABit		:WaitingABit	3000
-		Echo "**" & ANSI_14 & $TagLineB & ANSI_15 & " Connected - Waiting For Command Prompt!**"
+	if (CONNECTED <> TRUE)
+		setDelayTrigger		Emancipate_CPU		:Emancipate_CPU 3000
+		Echo "**" & ANSI_14 & $TagLineB & ANSI_15 & " Auto Resume Initiated - Awaiting Connection!**"
 		pause
+			:Emancipate_CPU
+		goto :Disco_Test
+	end
+	waitfor "(?="
+	setDelayTrigger		WaitingABit		:WaitingABit	3000
+	Echo "**" & ANSI_14 & $TagLineB & ANSI_15 & " Connected - Waiting For Command Prompt!**"
+	pause
 		:WaitingABit
-		killAllTriggers
-		gosub :player~quikstats
-		if ($player~current_prompt = "Command")
-			setvar $switchboard~message $TagLineB&" - Restarting!**"
-			gosub :switchboard~switchboard
-		    	waitfor "Message sent on sub-space channel"
-			goto :inac
-		elseif ($player~current_prompt = "Citadel")
-			setvar $switchboard~message $TagLineB&" - Restarting!**"
-			gosub :switchboard~switchboard
-			waitfor "Message sent on sub-space channel"
-	   		send "qqqq**"
-	   		goto :inac
-	   	else
-	   		send (" p d 0* 0* 0* * *** * c q q q q q z 2 2 c q * z * *** * * '" & $TagLineB & "Attempting to Reach Correct Prompt...*")
-			setTextLineTrigger	EMQ_COMPLETE		:EMQ_DELAY "Attempting to Reach Correct Prompt..."
-			setDelayTrigger 	EMQ_DELAY		:EMQ_DELAY 3000
-			pause
+	killAllTriggers
+	gosub :player~quikstats
+	if ($player~current_prompt = "Command")
+		setvar $switchboard~message $TagLineB&" - Restarting!**"
+		gosub :switchboard~switchboard
+	    	waitfor "Message sent on sub-space channel"
+		goto :inac
+	elseif ($player~current_prompt = "Citadel")
+		setvar $switchboard~message $TagLineB&" - Restarting!**"
+		gosub :switchboard~switchboard
+		waitfor "Message sent on sub-space channel"
+   		send "qqqq**"
+   		goto :inac
+   	else
+   		send (" p d 0* 0* 0* * *** * c q q q q q z 2 2 c q * z * *** * * '" & $TagLineB & "Attempting to Reach Correct Prompt...*")
+		setTextLineTrigger	EMQ_COMPLETE		:EMQ_DELAY "Attempting to Reach Correct Prompt..."
+		setDelayTrigger 	EMQ_DELAY		:EMQ_DELAY 3000
+		pause
 			:EMQ_DELAY
-				killAllTriggers
-				goto :Disco_Test
-		end
+			killAllTriggers
+			goto :Disco_Test
+	end
 
 :player~setconnectiontriggers
-	killtrigger discod1
-	killtrigger discod2
-	SetEventTrigger 	Discod1 	:Discod     	"CONNECTION LOST"
-	SetEventTrigger		Discod2		:Discod     	"Connections have been temporarily disabled."
+killtrigger discod1
+killtrigger discod2
+SetEventTrigger 	Discod1 	:Discod     	"CONNECTION LOST"
+SetEventTrigger		Discod2		:Discod     	"Connections have been temporarily disabled."
 
 return
 

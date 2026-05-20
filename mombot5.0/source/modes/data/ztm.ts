@@ -47,132 +47,132 @@ gosub :PLAYER~quikstats
 setVar $location $PLAYER~CURRENT_PROMPT
 setVar $startlocation "x"
 :checkLocation
-	if (($location = "Command") OR ($location = "Citadel") OR ($location = "Computer"))
-		if ($location <> "Computer")
-			send "C"
-			waitFor "Computer command [TL="
-		else
-			setVar $startlocation "comp"
-		end
+if (($location = "Command") OR ($location = "Citadel") OR ($location = "Computer"))
+	if ($location <> "Computer")
+		send "C"
+		waitFor "Computer command [TL="
 	else
-		setvar $switchboard~message "ZTM must be started from Command, Computer, or Citadel prompt.*"
-		gosub :switchboard~switchboard
+		setVar $startlocation "comp"
 	end
+else
+	setvar $switchboard~message "ZTM must be started from Command, Computer, or Citadel prompt.*"
+	gosub :switchboard~switchboard
+end
 
 if ($location = "Command")
 	
-	if ($map~stardock = 0)
-		send "qvc"
-		setTextLineTrigger getBackDock :getBackDock "The StarDock is located in sector"
-		pause
+if ($map~stardock = 0)
+	send "qvc"
+	setTextLineTrigger getBackDock :getBackDock "The StarDock is located in sector"
+	pause
 		:getBackDock
-			killalltriggers
-			getWord CURRENTLINE $map~stardock 7
+		killalltriggers
+		getWord CURRENTLINE $map~stardock 7
 			
-			waitFor "Computer command [TL="
+		waitFor "Computer command [TL="
 	end
 end
 # --- INIT VARIABLES ---
 :initVars
   
-	setVar $maxSector SECTORS
-	# testing purposes going from 10011 to 10100
-	# setVar $maxSector 500
+setVar $maxSector SECTORS
+# testing purposes going from 10011 to 10100
+# setVar $maxSector 500
 
-	setVar $forwardi 2
-	setVar $backi $maxSector
-	# How many paths to do at once.
-	setVar $sectorsToFind 40
-	setVar $forwardSectors 0
+setVar $forwardi 2
+setVar $backi $maxSector
+# How many paths to do at once.
+setVar $sectorsToFind 40
+setVar $forwardSectors 0
 
 # ADD THESE IN LATER
-	loadVar $dztm_resumepass
-	loadVar $dztm_resumesectorforward
+loadVar $dztm_resumepass
+loadVar $dztm_resumesectorforward
 	
-	setVar $bot~user_command_line ($bot~user_command_line & " ")
-	setVar $useOne 0
-	getWordPos $bot~user_command_line $pos "one"
-	if ($pos > 0)
-		setVar $useOne 1
-	end
+setVar $bot~user_command_line ($bot~user_command_line & " ")
+setVar $useOne 0
+getWordPos $bot~user_command_line $pos "one"
+if ($pos > 0)
+	setVar $useOne 1
+end
 
-	setVar $error 0
+setVar $error 0
 
-	getWordPos $bot~user_command_line $pos "p:"
-	if ($pos > 0)
-		getText $bot~user_command_line $value "p:" " "
-		isNumber $number $value
+getWordPos $bot~user_command_line $pos "p:"
+if ($pos > 0)
+	getText $bot~user_command_line $value "p:" " "
+	isNumber $number $value
 
-		if ($number = 1)
-			if ($value > 6)
-				setVar $error 1
-			else
-				setVar $dztm_resumepass $value
-				saveVar $dztm_resumepass
-			end
-			
-		else
+	if ($number = 1)
+		if ($value > 6)
 			setVar $error 1
-		end
-	end
-
-	setVar $sendStats 1
-	getWordPos $bot~user_command_line $pos "noreport"
-	if ($pos > 0)
-		setVar $sendStats 0
-		
-	end
-
-	if ($error = 1)
-		setvar $switchboard~message "Please use format >ztm p:2 s:400*"
-		gosub :switchboard~switchboard
-		halt
-	end
-
-	getWordPos $bot~user_command_line $pos "s:"
-	if ($pos > 0)
-		getText $bot~user_command_line $value "s:" " "
-		isNumber $number $value
-		if ($number = 1)
-			if ($value < 2) or ($value > SECTORS)
-				setVar $error 1
-			else
-				setVar $dztm_resumesectorforward $value
-				saveVar $dztm_resumesectorforward
-			end
-			
 		else
-			setVar $error 1
+			setVar $dztm_resumepass $value
+			saveVar $dztm_resumepass
 		end
+			
 	else
-		# Just to be safe we'll take one loop off
-		setVar $dztm_resumesectorforward ($dztm_resumesectorforward - $sectorsToFind)
-		if ($dztm_resumesectorforward < 2)
-			setVar $dztm_resumesectorforward 2
+		setVar $error 1
+	end
+end
+
+setVar $sendStats 1
+getWordPos $bot~user_command_line $pos "noreport"
+if ($pos > 0)
+	setVar $sendStats 0
+		
+end
+
+if ($error = 1)
+	setvar $switchboard~message "Please use format >ztm p:2 s:400*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+getWordPos $bot~user_command_line $pos "s:"
+if ($pos > 0)
+	getText $bot~user_command_line $value "s:" " "
+	isNumber $number $value
+	if ($number = 1)
+		if ($value < 2) or ($value > SECTORS)
+			setVar $error 1
+		else
+			setVar $dztm_resumesectorforward $value
+			saveVar $dztm_resumesectorforward
 		end
-
+			
+	else
+		setVar $error 1
+	end
+else
+	# Just to be safe we'll take one loop off
+	setVar $dztm_resumesectorforward ($dztm_resumesectorforward - $sectorsToFind)
+	if ($dztm_resumesectorforward < 2)
+		setVar $dztm_resumesectorforward 2
 	end
 
-	if ($error = 1)
-		setvar $switchboard~message "Please use format >ztm p:2 s:400*"
-		gosub :switchboard~switchboard
-		halt
-	end
+end
 
-	if ($dztm_resumesectorforward > 0)
-		setVar $forwardi $dztm_resumesectorforward
-	end
+if ($error = 1)
+	setvar $switchboard~message "Please use format >ztm p:2 s:400*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+if ($dztm_resumesectorforward > 0)
+	setVar $forwardi $dztm_resumesectorforward
+end
 
 	
 	
-	setVar $warpsCheckedi 0
-	setArray $sendReport SECTORS
+setVar $warpsCheckedi 0
+setArray $sendReport SECTORS
 
 # --- INIT PROGRAM ---
 :init
-	send "V0*YY"
-	waitFor "Computer command [TL="
-	gosub :PLAYER~quikstats
+send "V0*YY"
+waitFor "Computer command [TL="
+gosub :PLAYER~quikstats
 
 
 
@@ -376,38 +376,38 @@ halt
 
 		
 :waitForComplete
-	killalltriggers
-	setDelayTrigger     timeout :timeout 		90000
-	setTextLineTrigger  finishedPaths :finishedPaths	"Average Interval Lag"
-	send "@"
-	pause
+killalltriggers
+setDelayTrigger     timeout :timeout 		90000
+setTextLineTrigger  finishedPaths :finishedPaths	"Average Interval Lag"
+send "@"
+pause
 	
 	:timeout
-		killtrigger finishedPaths
-		goSub :waitForSafeResume
+	killtrigger finishedPaths
+	goSub :waitForSafeResume
 
-		setVar $forwardSectorsFound 0
-		if ($donePasses = 1)
-			goto :resumeBackdoor
-		else
-			# go back a bit ot make sure we don't miss any warps
-			subtract $forwardi 100
-			if ($forwardi < 2)
-				setVar $forwardi 2
-			end
-			goto :resumePasses
+	setVar $forwardSectorsFound 0
+	if ($donePasses = 1)
+		goto :resumeBackdoor
+	else
+		# go back a bit ot make sure we don't miss any warps
+		subtract $forwardi 100
+		if ($forwardi < 2)
+			setVar $forwardi 2
 		end
-		halt
+		goto :resumePasses
+	end
+	halt
 	:finishedPaths
-		killtrigger timeout
-		#waitfor "�PlScn"
+	killtrigger timeout
+	#waitfor "�PlScn"
 return
 
 :waitForSafeResume
-	setVar $TagLine				"[ZTM]"
-	setVar $TagLineB			"[ZTM]"
-	killAllTriggers
-	Echo "**" & ANSI_14 & $TagLineB & ANSI_15 & " Disconnected **"
+setVar $TagLine				"[ZTM]"
+setVar $TagLineB			"[ZTM]"
+killAllTriggers
+Echo "**" & ANSI_14 & $TagLineB & ANSI_15 & " Disconnected **"
 	:Disco_Test
 	if (CONNECTED <> TRUE)
 		setDelayTrigger		Emancipate_CPU		:Emancipate_CPU 3000
@@ -446,12 +446,12 @@ return
 return
 
 :checkConnection
-	if (CONNECTED <> TRUE)
-		halt
-	end
+if (CONNECTED <> TRUE)
+	halt
+end
 	
 return
-	#INCLUDES:
+#INCLUDES:
 include "source\include\player"
 include "source\include\loadvars"
 include "source\include\help"

@@ -34,7 +34,7 @@ gosub :HELP~INITIALIZE
     gosub :switchboard~switchboard
     halt
 :switchships 
-	setvar $switchto $trader_name
+setvar $switchto $trader_name
 	:doswitch
 	setvar $foundSwitchShip false
 	killtrigger 1
@@ -45,26 +45,26 @@ gosub :HELP~INITIALIZE
 	pause
 
 	:switchcheck
-		if ($foundSwitchShip = true)
-			send "*"
+	if ($foundSwitchShip = true)
+		send "*"
+	else
+        setvar $current_line currentline
+        lowercase $current_line
+        lowercase $switchto
+        trim $switchto
+		getwordpos $current_line $pos "trade with "&$switchto
+		if ($pos > 0)
+			setvar $foundSwitchShip true
+			send "y"
 		else
-            setvar $current_line currentline
-            lowercase $current_line
-            lowercase $switchto
-            trim $switchto
-			getwordpos $current_line $pos "trade with "&$switchto
-			if ($pos > 0)
-				setvar $foundSwitchShip true
-				send "y"
-			else
-				send "*"
-			end		
-		end
-		setTextTrigger	1	:switchcheck	"Trade with "
-		pause
+			send "*"
+		end		
+	end
+	setTextTrigger	1	:switchcheck	"Trade with "
+	pause
 	:switchdone
-		killtrigger 1
-		killtrigger 2	
+	killtrigger 1
+	killtrigger 2	
 return
 
 #includes

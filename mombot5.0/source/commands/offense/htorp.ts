@@ -10,33 +10,33 @@
 #===============================START HTORP (HTORP) =================================
 :htorp
 
-	gosub :PLAYER~quikstats
-	if ($PLAYER~SCAN_TYPE <> "Holo")
-		setvar $switchboard~message "You can not run htorp without a holographic scanner.*"
-		gosub :switchboard~switchboard
-		halt
-	end
-	setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
-	if ($PLAYER~startingLocation = "Command")
+gosub :PLAYER~quikstats
+if ($PLAYER~SCAN_TYPE <> "Holo")
+	setvar $switchboard~message "You can not run htorp without a holographic scanner.*"
+	gosub :switchboard~switchboard
+	halt
+end
+setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
+if ($PLAYER~startingLocation = "Command")
 	
-	elseif ($PLAYER~startingLocation = "Citadel")
-		send "q "
-		gosub :PLANET~getPlanetInfo
-	else
-		echo "*Wrong prompt for htorp.*"
-		halt
-	end
-	if ($PLAYER~startingLocation = "Citadel")
-		send "q szh* l " & $planet~planet & "* c "
-	else
-		send "szh* "
-	end
-	setTextLineTrigger checkForHolo :continueCheckHolo "Select (H)olo Scan or (D)ensity Scan or (Q)uit?"
-	setTextLineTrigger checkForDens :photonedhtorp "Relative Density Scan"  
-	pause
+elseif ($PLAYER~startingLocation = "Citadel")
+	send "q "
+	gosub :PLANET~getPlanetInfo
+else
+	echo "*Wrong prompt for htorp.*"
+	halt
+end
+if ($PLAYER~startingLocation = "Citadel")
+	send "q szh* l " & $planet~planet & "* c "
+else
+	send "szh* "
+end
+setTextLineTrigger checkForHolo :continueCheckHolo "Select (H)olo Scan or (D)ensity Scan or (Q)uit?"
+setTextLineTrigger checkForDens :photonedhtorp "Relative Density Scan"  
+pause
 	:continueCheckHolo
-		setTextTrigger htorpsector :continuehtorpsector "[" & $PLAYER~CURRENT_SECTOR & "]"
-		pause
+	setTextTrigger htorpsector :continuehtorpsector "[" & $PLAYER~CURRENT_SECTOR & "]"
+	pause
 	:continuehtorpsector
 	if ($PLAYER~PHOTONS <= 0)
 		echo ANSI_14 & "*No Photons on hand.**" & ANSI_7
@@ -81,8 +81,8 @@
 	echo ANSI_14 & "*No valid targets**" & ANSI_7
 	halt
 :photonedHtorp
-	setvar $switchboard~message "You have no holographic scanner, perhaps you were photoned?*"
-	gosub :switchboard~switchboard
+setvar $switchboard~message "You have no holographic scanner, perhaps you were photoned?*"
+gosub :switchboard~switchboard
 halt
 #========================== END HTORP SUB ==============================================
 

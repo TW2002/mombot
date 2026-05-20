@@ -986,26 +986,86 @@ return
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :COMBAT~CALLSAVEME
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $command "call"
-setvar $parm1 ""
-setvar $user_command_line " call  "
-setvar $parm2 ""
-setvar $parm3 ""
-setvar $parm4 ""
-setvar $parm5 ""
-setvar $parm6 ""
-savevar $command
-savevar $user_command_line
-savevar $parm1
-savevar $parm2
-savevar $parm3
-savevar $parm4
-savevar $parm5
-savevar $parm6
-load "scripts\"&$mombot_directory&"\commands\defense\call.cts"
-seteventtrigger CALLEND1 :CALLEND1 "SCRIPT STOPPED" "scripts\"&$mombot_directory&"\commands\defense\call.cts"
+:callSaveMe
+killAllTriggers
+send "q q q * * * * "
+gosub :player~quikstats
+setVar $figstodeploy 1
+
+gosub :deployfigs
+send "'" & $player~current_sector & "=saveme*"
+send "'pickup " & $player~current_sector  & " ::*"
+
+:waitforhelp
+setTextLineTrigger friendlytwarp :friendlytwarp "appears in a brilliant flash of warp energies!"
+setTextLineTrigger friendlyplanet :friendlyplanet "Saveme script activated - Planet "
+setTextLineTrigger towlocked :towlocked "locks a tractor beam on your ship."
+setDelayTrigger timeout :timeout 30000
 pause
-:CALLEND1
+
+:timeout
+killalltriggers
+send "'30 seconds after save call, script halted.*"
+halt
+
+:friendlytwarp
+killalltriggers
+setVar $figstodeploy "ALL"
+gosub :deployfigs
+goto :waitforhelp
+
+:friendlyplanet
+killalltriggers
+getText CURRENTLINE $planet~planet "Saveme script activated - Planet " " to "
+send "L " & $planet~planet & "* m* * * C 'I landed on planet " & $planet~planet & "*"
+
+gosub :player~quikstats
+if ($player~fighters > 100)
+	if ($combat~kill = true)
+		send "'" & $SWITCHBOARD~bot_name " citkill on*"	
+	elseif ($combat~cap = true)
+		send "'" & $SWITCHBOARD~bot_name " citcap on*"
+	end
+end
+return
+
+:towlocked
+killalltriggers
+send "'Tow locked, get us out of here!*"
+return
+
+:deployfigs
+if ($figstodeploy = 0)
+	setVar $figstodeploy 1
+end
+if (($player~current_sector  < 11) or ($player~current_sector  = STARDOCK))
+	send "'Can't deploy figs in fed*"
+	return
+end
+send "a y y 9999* F"
+setTextLineTrigger nocontrol :nocontrol "These fighters are not under your control."
+setTextLineTrigger abletodeploy :abletodeploy "fighters available."
+pause
+
+:nocontrol
+killalltriggers
+send "'We don't control the figs in this sector!*"
+gosub :xenter~run
+return
+
+:abletodeploy
+killalltriggers
+getWord CURRENTLINE $figsavailable 3
+striptext $figsavailable ","
+striptext $figsavailable "."
+if ($figstodeploy = "ALL")
+	setVar $figstodeploy $figsavailable
+end
+if ($figsavailable = 0)
+	send "0* ZC D* 'I have no figs to deploy!*"
+else
+	send $figstodeploy & "* ZC D* '" & $figstodeploy & " figs deployed*"
+end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

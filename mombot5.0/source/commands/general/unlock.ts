@@ -6,40 +6,40 @@
 
 # ============================== START UNLOCK (unlock) Sub ==============================
 :unlock
-    setVar $unlock_attempt 0
-    gosub  :player~currentPrompt
-    setVar $bot~validPrompts "Citadel"
-    gosub :PLAYER~CHECKSTARTINGPROMPT
-    setvar $switchboard~message "Unlock ship initiated*"
-    gosub :switchboard~switchboard
-    send "ryy"
-    setTextlineTrigger unlock_menu :unlock_menu "Game Server"
-    setTextLineTrigger enter_game :enter_game "==-- Trade Wars 2002 --=="
+setVar $unlock_attempt 0
+gosub  :player~currentPrompt
+setVar $bot~validPrompts "Citadel"
+gosub :PLAYER~CHECKSTARTINGPROMPT
+setvar $switchboard~message "Unlock ship initiated*"
+gosub :switchboard~switchboard
+send "ryy"
+setTextlineTrigger unlock_menu :unlock_menu "Game Server"
+setTextLineTrigger enter_game :enter_game "==-- Trade Wars 2002 --=="
 :unlock_tryagain
-    setDelayTrigger unlock_ansiMenu :unlock_ansiMenu 2000
-    pause
+setDelayTrigger unlock_ansiMenu :unlock_ansiMenu 2000
+pause
 :unlock_ansiMenu
-    if ($unlock_attempt < 10)
-        add $unlock_attempt 1
-        send "#"
-        goto :unlock_tryagain
-    end
-    DISCONNECT
-    halt
+if ($unlock_attempt < 10)
+    add $unlock_attempt 1
+    send "#"
+    goto :unlock_tryagain
+end
+DISCONNECT
+halt
 :unlock_menu
-    killalltriggers
-    send $bot~letter & "*"
-    waitOn "module now loading."
-    send "**"
-    waitOn "Enter your choice:"
+killalltriggers
+send $bot~letter & "*"
+waitOn "module now loading."
+send "**"
+waitOn "Enter your choice:"
 :enter_game   
-    killalltriggers
-    send "t***"
-    waitOn "Password?"
-    send $BOT~password & "* * * c"
-    waitOn "Citadel command (?=help)"
-    setvar $switchboard~message "Ship has been unlocked!*"
-    gosub :switchboard~switchboard
+killalltriggers
+send "t***"
+waitOn "Password?"
+send $BOT~password & "* * * c"
+waitOn "Citadel command (?=help)"
+setvar $switchboard~message "Ship has been unlocked!*"
+gosub :switchboard~switchboard
 halt
 # ============================== END UNLOCK (UNLOCK) Sub ==============================
 

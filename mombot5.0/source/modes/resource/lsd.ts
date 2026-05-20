@@ -5,6 +5,7 @@
 	loadVar $BOT~BOT_TURN_LIMIT
 	loadVar $bot~user_command_line
 	loadVar $LSD_Order
+	loadvar $bot~folder
 	gosub	:player~quikstats
     setVar $CURENT_VERSION 		"4.0"
     setVar $TagLineB 			"LSDv" & $CURENT_VERSION
@@ -15,7 +16,7 @@
     setVar $START_SECTOR 		$player~current_sector
 	setVar $ShipData_Valid		FALSE
 	setVar $Ships_Names			"][LSD]["
-	setVar $Ships_File 			"LSD_" & GAMENAME & ".ships"
+	setVar $Ships_File 			$bot~folder&"/LSD_" & GAMENAME & ".ships"
 	setVar $ShipListMax			50
 	setArray $ShipList			$ShipListMax 3
     setVar $LSD__PAD "@"
@@ -344,15 +345,15 @@
 		setTextLineTrigger THERE_CIT :THERES_CIT "Planet has a level "
 		pause
 		:THERES_CIT
-			setVar $Theres_Citadel TRUE
-			pause
+		setVar $Theres_Citadel TRUE
+		pause
 		:THERES_NO_CIT
-			killAllTriggers
+		killAllTriggers
 
 		if ($Theres_Citadel)
-			send " C "
+		send " C "
 		else
-			send " Q "
+		send " Q "
 		end
 #		getWordPos CURRENTANSILINE $pos #27
 #		if ($pos = 0)
@@ -413,96 +414,96 @@
 	end
 
 :start
-	setVar $locationDock 0
-	if ($player~current_sector <> $map~stardock)
-		setVar $figcnt SECTOR.FIGS.QUANTITY[$START_SECTOR]
-		setVar $figowner SECTOR.FIGS.OWNER[$START_SECTOR]
-		if (($figcnt = 0) OR (($figOwner <> "belong to your Corp") AND ($figOwner <> "yours")))
-			setvar $switchboard~message $TagLineB & " - Fig Required In Current Sector**"
-			gosub :switchboard~switchboard
-			halt
-		end
-	else
-		setVar $locationDock 1
-	end
-	#=--------                                                                       -------=#
-	#=------------------------------       Main Event       ------------------------------=#
-	#=--------                                                                       -------=#
-	setVar $RUN_ONCE TRUE
-
-	if (($_Atomics = "") AND ($_Beacons = "") AND ($_Corbo = "") AND ($_Cloak = "") AND ($_Probe = "") AND ($_PScan = "") AND ($_Limps = "") AND ($_Mines = "") AND ($_Photon = "") AND ($_LRScan = "") AND ($_Disrupt = "") AND ($_GenTorp = "") AND ($_T2Twarp = "") AND ($_Holds = "") AND ($_Figs = "") AND ($_Shields = "") AND ($_Trickster = "") AND ($NumberOfShip < 1))
-		setvar $switchboard~message $TagLineB & " - Nothing To Do**"
+setVar $locationDock 0
+if ($player~current_sector <> $map~stardock)
+	setVar $figcnt SECTOR.FIGS.QUANTITY[$START_SECTOR]
+	setVar $figowner SECTOR.FIGS.OWNER[$START_SECTOR]
+	if (($figcnt = 0) OR (($figOwner <> "belong to your Corp") AND ($figOwner <> "yours")))
+		setvar $switchboard~message $TagLineB & " - Fig Required In Current Sector**"
 		gosub :switchboard~switchboard
 		halt
 	end
+else
+	setVar $locationDock 1
+end
+#=--------                                                                       -------=#
+#=------------------------------       Main Event       ------------------------------=#
+#=--------                                                                       -------=#
+setVar $RUN_ONCE TRUE
 
-	#=-------------------This is where we loop too if buying more than one ship
+if (($_Atomics = "") AND ($_Beacons = "") AND ($_Corbo = "") AND ($_Cloak = "") AND ($_Probe = "") AND ($_PScan = "") AND ($_Limps = "") AND ($_Mines = "") AND ($_Photon = "") AND ($_LRScan = "") AND ($_Disrupt = "") AND ($_GenTorp = "") AND ($_T2Twarp = "") AND ($_Holds = "") AND ($_Figs = "") AND ($_Shields = "") AND ($_Trickster = "") AND ($NumberOfShip < 1))
+	setvar $switchboard~message $TagLineB & " - Nothing To Do**"
+	gosub :switchboard~switchboard
+	halt
+end
+
+#=-------------------This is where we loop too if buying more than one ship
 	:HERE_WE_GO_AGAIN
-		setVar $CurrentShip $player~ship_number
-		add $Runs2Dock 1
+	setVar $CurrentShip $player~ship_number
+	add $Runs2Dock 1
 
 	if (($_Tow > 0) AND ($_Trickster = ""))
-		setVar $Pass ""
-		gosub :GetPassWord
-        	gosub :LockTow
-        else
-        	setVar $_Tow 0
-        	send " W N * "
+	setVar $Pass ""
+	gosub :GetPassWord
+    	gosub :LockTow
+    else
+    	setVar $_Tow 0
+    	send " W N * "
 	end
 
-		if ($RUN_ONCE)
-			if ($locationDock = 0)
-				# check adj's for Dock.. if present, then we don't need a jump sector.
-				setVar $i 1
-				setVar $WeAreAdjDock FALSE
-				while ($i <= SECTOR.WARPCOUNT[$START_SECTOR])
-					setVar $adj_start SECTOR.WARPS[$START_SECTOR][$i]
-					if ($adj_start = $map~stardock)
-						setVar $WeAreAdjDock TRUE
-					end
-					add $i 1
+	if ($RUN_ONCE)
+		if ($locationDock = 0)
+			# check adj's for Dock.. if present, then we don't need a jump sector.
+			setVar $i 1
+			setVar $WeAreAdjDock FALSE
+			while ($i <= SECTOR.WARPCOUNT[$START_SECTOR])
+				setVar $adj_start SECTOR.WARPS[$START_SECTOR][$i]
+				if ($adj_start = $map~stardock)
+					setVar $WeAreAdjDock TRUE
 				end
+				add $i 1
+			end
 
-				if (($player~alignment < 1000) AND ($WeAreAdjDock = FALSE))
-					setVar $RED_adj 0
-					gosub :findjumpsector
-					if ($RED_adj <> 0)
-						setvar $switchboard~message $TagLineB & " - Jump Sector Found"&" - Using Sector "&$RED_adj&"**"
-						gosub :switchboard~switchboard
-					else
-						waitfor "Command [TL="
-						setvar $switchboard~message $TagLineB & " - Cannot Find Jump Sector Adjacent Dock**"
-						gosub :switchboard~switchboard
-						halt
-					end
-				end
-
-				if ($player~alignment >= 1000)
-					if ($WeAreAdjDock)
-						send "^F" & $map~stardock & "*" & $START_SECTOR & "*Q/ "
-					else
-						send "^F" & $START_SECTOR & "*" & $map~stardock & "*F" & $map~stardock & "*" & $START_SECTOR & "*Q/ "
-					end
+			if (($player~alignment < 1000) AND ($WeAreAdjDock = FALSE))
+				setVar $RED_adj 0
+				gosub :findjumpsector
+				if ($RED_adj <> 0)
+					setvar $switchboard~message $TagLineB & " - Jump Sector Found"&" - Using Sector "&$RED_adj&"**"
+					gosub :switchboard~switchboard
 				else
-					if ($WeAreAdjDock)
-						send "^F" & $map~stardock & "*" & $START_SECTOR & "*Q/ "
-					else
-						send "^F" & $START_SECTOR & "*" & $RED_adj & "*F" & $map~stardock & "*" & $START_SECTOR & "*Q/ "
-					end
-				end
-				setTextLineTrigger noJoy :noJoy "*** Error - No route within"
-				setTextTrigger cont :cont "(?="
-				pause
-
-				:noJoy
-					killAllTriggers
-					setvar $switchboard~message $TagLineB & " - Cannot Find Path to StarDock!**"
+					waitfor "Command [TL="
+					setvar $switchboard~message $TagLineB & " - Cannot Find Jump Sector Adjacent Dock**"
 					gosub :switchboard~switchboard
 					halt
+				end
+			end
+
+			if ($player~alignment >= 1000)
+				if ($WeAreAdjDock)
+					send "^F" & $map~stardock & "*" & $START_SECTOR & "*Q/ "
+				else
+					send "^F" & $START_SECTOR & "*" & $map~stardock & "*F" & $map~stardock & "*" & $START_SECTOR & "*Q/ "
+				end
+			else
+				if ($WeAreAdjDock)
+					send "^F" & $map~stardock & "*" & $START_SECTOR & "*Q/ "
+				else
+					send "^F" & $START_SECTOR & "*" & $RED_adj & "*F" & $map~stardock & "*" & $START_SECTOR & "*Q/ "
+				end
+			end
+			setTextLineTrigger noJoy :noJoy "*** Error - No route within"
+			setTextTrigger cont :cont "(?="
+			pause
+
+				:noJoy
+				killAllTriggers
+				setvar $switchboard~message $TagLineB & " - Cannot Find Path to StarDock!**"
+				gosub :switchboard~switchboard
+				halt
 				:cont
-					killAllTriggers
-					setDelayTrigger Latency_Delay		:Latency_Delay 500
-					pause
+				killAllTriggers
+				setDelayTrigger Latency_Delay		:Latency_Delay 500
+				pause
 
 					:Latency_Delay
 
@@ -570,66 +571,66 @@
 			setTextLineTrigger nosoupforme :nosoupforme "I have no information about a port in that sector"
 			pause
 			:nosoupforme
-				killAllTriggers
-				setvar $switchboard~message $TagLineB & " - StarDock appears to have been Blown Up!**"
+			killAllTriggers
+			setvar $switchboard~message $TagLineB & " - StarDock appears to have been Blown Up!**"
+			gosub :switchboard~switchboard
+			halt
+			:itsalive
+			killAllTriggers
+			waitfor "(?="
+			setVar $msg ""
+			if ($locationDock = 1)
+				send "P  S G Y G Q "
+			elseif (($player~alignment >= 1000) AND ($WeAreAdjDock = FALSE))
+				setVar $TwarpTo $map~stardock
+				gosub :DoTwarp
+			elseif (($WeAreAdjDock = FALSE) AND ($RED_adj <> 0))
+				setVar $TwarpTo $RED_adj
+				gosub :DoTwarp
+			else
+				send " m " & $map~stardock & "*  *  P  S G Y G Q "
+			end
+			if ($msg = "")
+				waitfor "You leave the Galactic Bank."
+			else
+				setvar $switchboard~message $TagLineB & " - Unknown Problem Detected. Check TA!**"
 				gosub :switchboard~switchboard
 				halt
-			:itsalive
-				killAllTriggers
-				waitfor "(?="
-				setVar $msg ""
-				if ($locationDock = 1)
-					send "P  S G Y G Q "
-				elseif (($player~alignment >= 1000) AND ($WeAreAdjDock = FALSE))
-					setVar $TwarpTo $map~stardock
-					gosub :DoTwarp
-				elseif (($WeAreAdjDock = FALSE) AND ($RED_adj <> 0))
-					setVar $TwarpTo $RED_adj
-					gosub :DoTwarp
-				else
-					send " m " & $map~stardock & "*  *  P  S G Y G Q "
-				end
-				if ($msg = "")
-					waitfor "You leave the Galactic Bank."
-				else
-					setvar $switchboard~message $TagLineB & " - Unknown Problem Detected. Check TA!**"
-					gosub :switchboard~switchboard
-					halt
-				end
+			end
 
 		gosub :player~quikstats
 
 		if (($Start_Creds <= 100) AND ($Start_Exp < $EXPERIECE) AND ($Start_Holds <> $player~total_holds))
-        		setvar $switchboard~message $TagLineB & " - Appear To Have Been Podded!**"
-        		gosub :switchboard~switchboard
-        		halt
+    		setvar $switchboard~message $TagLineB & " - Appear To Have Been Podded!**"
+    		gosub :switchboard~switchboard
+    		halt
 		end
 
 		if ($_Tow > 0)
 			if ($player~current_prompt = "<StarDock>")
-				gosub :DoShipTowedCheck
-				setVar $shipnum $_Tow
-				gosub :DoXport
+			gosub :DoShipTowedCheck
+			setVar $shipnum $_Tow
+			gosub :DoXport
 			else
-				setvar $switchboard~message $TagLineB & " - Not at Expected StarDock Prompt!**"
-				gosub :switchboard~switchboard
-				halt
+			setvar $switchboard~message $TagLineB & " - Not at Expected StarDock Prompt!**"
+			gosub :switchboard~switchboard
+			halt
 			end
 		elseif ($_Trickster <> "")
 			if ($player~current_prompt = "<StarDock>")
-				gosub :BUYSHIP
-				if ($NewShipNumber > 0)
-					setVar $_Tow $NewShipNumber
-					setVar $pass ""
-				else
-					setVar $_Tow 0
-					setVar $NumberOfShip 0
-					goto :GO_HOME_EMPTY_HANDED
-				end
+			gosub :BUYSHIP
+			if ($NewShipNumber > 0)
+				setVar $_Tow $NewShipNumber
+				setVar $pass ""
 			else
-				setvar $switchboard~message $TagLineB & " - Not at Expected StarDock Prompt!**"
-				gosub :switchboard~switchboard
-				halt
+				setVar $_Tow 0
+				setVar $NumberOfShip 0
+				goto :GO_HOME_EMPTY_HANDED
+			end
+			else
+			setvar $switchboard~message $TagLineB & " - Not at Expected StarDock Prompt!**"
+			gosub :switchboard~switchboard
+			halt
 			end
 		end
 
@@ -637,18 +638,18 @@
 
 		if ($_Tow > 0)
 			if ($pass = "")
-				setVar $shipnum $CurrentShip
+			setVar $shipnum $CurrentShip
 			else
-				setVar $shipnum $CurrentShip & "*" & $pass & "*   "
+			setVar $shipnum $CurrentShip & "*" & $pass & "*   "
 			end
 
 			gosub :DoXport
 		    gosub :player~quikstats
 
 			if ($player~current_prompt <> "<StarDock>")
-				setvar $switchboard~message $TagLineB & " - Not at Expected StarDock Prompt!**"
-				gosub :switchboard~switchboard
-				halt
+			setvar $switchboard~message $TagLineB & " - Not at Expected StarDock Prompt!**"
+			gosub :switchboard~switchboard
+			halt
     		end
         end
 
@@ -780,14 +781,14 @@
 			setTextLineTrigger COMMSrOFF	:COMMSrOFF "You'll need to select a radio channel first."
 			pause
 			:COMMSrON
-				killAllTriggers
-				setvar $switchboard~message $TagLineB & " Complete - Spent: $" & $_Spent & " on " & $Runs2Dock & " Ships, OnHand: $" & $_Remain & "*"
-				gosub :switchboard~switchboard
-				send $SpeacalMSG & "*"
-				send "* * "
-				waitfor "Sub-space comm-link terminated"
+			killAllTriggers
+			setvar $switchboard~message $TagLineB & " Complete - Spent: $" & $_Spent & " on " & $Runs2Dock & " Ships, OnHand: $" & $_Remain & "*"
+			gosub :switchboard~switchboard
+			send $SpeacalMSG & "*"
+			send "* * "
+			waitfor "Sub-space comm-link terminated"
 			:COMMSrOFF
-				killAllTriggers
+			killAllTriggers
 		else
 			setvar $switchboard~message $TagLineB & " Completed - Spent: $" & $_Spent & ", On Hand: $" & $_Remain & "*"
 			gosub :switchboard~switchboard
@@ -801,97 +802,97 @@
      #=------------------------------      SUB ROUTINES      ------------------------------=#
     #=--------                                                                       -------=#
 :pad_this
-	if ($str_pad < 10)
-		setVar $str_pad "     " & $str_pad
-	elseif ($str_pad < 100)
-		setVar $str_pad "    " & $str_pad
-	elseif ($str_pad < 1000)
-		setVar $str_pad "   " & $str_pad
-	elseif ($str_pad < 10000)
-		setVar $str_pad "  " & $str_pad
-	elseif ($str_pad < 100000)
-		setVar $str_pad " " & $str_pad
-	end
-	return
+if ($str_pad < 10)
+	setVar $str_pad "     " & $str_pad
+elseif ($str_pad < 100)
+	setVar $str_pad "    " & $str_pad
+elseif ($str_pad < 1000)
+	setVar $str_pad "   " & $str_pad
+elseif ($str_pad < 10000)
+	setVar $str_pad "  " & $str_pad
+elseif ($str_pad < 100000)
+	setVar $str_pad " " & $str_pad
+end
+return
 
 :DoPurchases
-	if ($ShipData_Valid = 0)
-		gosub :ParseShipData
-	end
-	send "h "
-	waitfor "<Hardware Emporium>"
-	#=============================================== PURCHASE ATOMICS
-	if ($_Atomics <> "")
-		send "a "
-		waitfor "How many Atomic Detonators do you want"
-		if ($_Atomics = "Max")
-			getText CURRENTLINE $buy "(Max" ")"
-			send $buy & "* "
-		else
-			send $_Atomics & "* "
-		end
-		waitfor "<Hardware Emporium>"
-	end
-	#=============================================== PURCHASE BEACONS
-	if ($_Beacons <> "")
-		send "b "
-		waitfor "How many Beacons do you want"
-		if ($_Beacons = "Max")
-			getText CURRENTLINE $buy "(Max" ")"
-			send $buy & "* "
-		else
-			send $_Beacons & "* "
-		end
-		waitfor "<Hardware Emporium>"
-	end
-	#=============================================== PURCHASE CORBO
-	if ($_Corbo <> "")
-		send "C "
-		waitfor "How many Corbomite Transducers do you want"
-		if ($_Corbo = "Max")
-			getText CURRENTLINE $buy "(Max" ")"
-			send $buy & "* "
-		else
-			send $_Corbo & "* "
-		end
-		waitfor "<Hardware Emporium>"
-	end
-	#=============================================== PURCHASE CLOAKS
-	if ($_Cloak <> "")
-		send "D "
-		waitfor "How many Cloaking units do you want"
-		if ($_Cloak = "Max")
-			getText CURRENTLINE $buy "(Max" ")"
-		else
-			setVar $buy $_Cloak
-		end
+if ($ShipData_Valid = 0)
+	gosub :ParseShipData
+end
+send "h "
+waitfor "<Hardware Emporium>"
+#=============================================== PURCHASE ATOMICS
+if ($_Atomics <> "")
+	send "a "
+	waitfor "How many Atomic Detonators do you want"
+	if ($_Atomics = "Max")
+		getText CURRENTLINE $buy "(Max" ")"
 		send $buy & "* "
-		waitfor "<Hardware Emporium>"
+	else
+		send $_Atomics & "* "
 	end
-	#=============================================== PURCHASE PROBES
-	if ($_Probe  <> "")
-		send "E "
-		waitfor "How many Probes do you want"
-		if ($_Probe  = "Max")
-			getText CURRENTLINE $buy "(Max" ")"
-			send $buy & "* "
-		else
-			send $_Probe & "* "
-		end
-		waitfor "<Hardware Emporium>"
+	waitfor "<Hardware Emporium>"
+end
+#=============================================== PURCHASE BEACONS
+if ($_Beacons <> "")
+	send "b "
+	waitfor "How many Beacons do you want"
+	if ($_Beacons = "Max")
+		getText CURRENTLINE $buy "(Max" ")"
+		send $buy & "* "
+	else
+		send $_Beacons & "* "
 	end
-	#=============================================== PURCHASE PSCAN
-	if ($_PScan  <> "")
-		send "F "
-		setTextTrigger canpscan		:canpscan "I can let you have one for"
-		setTextTrigger cantpscan	:cantpscan "<Hardware Emporium> So what are you looking for"
-		pause
+	waitfor "<Hardware Emporium>"
+end
+#=============================================== PURCHASE CORBO
+if ($_Corbo <> "")
+	send "C "
+	waitfor "How many Corbomite Transducers do you want"
+	if ($_Corbo = "Max")
+		getText CURRENTLINE $buy "(Max" ")"
+		send $buy & "* "
+	else
+		send $_Corbo & "* "
+	end
+	waitfor "<Hardware Emporium>"
+end
+#=============================================== PURCHASE CLOAKS
+if ($_Cloak <> "")
+	send "D "
+	waitfor "How many Cloaking units do you want"
+	if ($_Cloak = "Max")
+		getText CURRENTLINE $buy "(Max" ")"
+	else
+		setVar $buy $_Cloak
+	end
+	send $buy & "* "
+	waitfor "<Hardware Emporium>"
+end
+#=============================================== PURCHASE PROBES
+if ($_Probe  <> "")
+	send "E "
+	waitfor "How many Probes do you want"
+	if ($_Probe  = "Max")
+		getText CURRENTLINE $buy "(Max" ")"
+		send $buy & "* "
+	else
+		send $_Probe & "* "
+	end
+	waitfor "<Hardware Emporium>"
+end
+#=============================================== PURCHASE PSCAN
+if ($_PScan  <> "")
+	send "F "
+	setTextTrigger canpscan		:canpscan "I can let you have one for"
+	setTextTrigger cantpscan	:cantpscan "<Hardware Emporium> So what are you looking for"
+	pause
 		:canpscan
-			killTrigger canpscan
-			send "Y"
-			pause
+		killTrigger canpscan
+		send "Y"
+		pause
 		:cantpscan
-			killAllTriggers
+		killAllTriggers
 
 	end
 	#=============================================== PURCHASE LIMPS
@@ -899,10 +900,10 @@
 		send "L "
 		waitfor "How many mines do you want"
 		if ($_Limps  = "Max")
-			getText CURRENTLINE $buy "(Max" ")"
-			send $buy & "* "
+		getText CURRENTLINE $buy "(Max" ")"
+		send $buy & "* "
 		else
-			send $buy $_Limps & "* "
+		send $buy $_Limps & "* "
 		end
 		waitfor "<Hardware Emporium>"
 	end
@@ -912,10 +913,10 @@
 		setVar $buy 0
 		waitfor "How many mines do you"
 		if ($_Mines  = "Max")
-			getText CURRENTLINE $buy "(Max" ")"
-			send $buy & "* "
+		getText CURRENTLINE $buy "(Max" ")"
+		send $buy & "* "
 		else
-			send $_Mines & "* "
+		send $_Mines & "* "
 		end
 		waitfor "<Hardware Emporium>"
 	end
@@ -926,16 +927,16 @@
 		send "P "
 		pause
 		:canhouse
-			killAllTriggers
-			if ($_Photon  = "Max")
-				getText CURRENTLINE $buy "(Max" ")"
-				send $buy & "* "
-			else
-				send $_Photon & "* "
-			end
-			waitfor "<Hardware Emporium>"
+		killAllTriggers
+		if ($_Photon  = "Max")
+			getText CURRENTLINE $buy "(Max" ")"
+			send $buy & "* "
+		else
+			send $_Photon & "* "
+		end
+		waitfor "<Hardware Emporium>"
 		:canthouse
-			killAllTriggers
+		killAllTriggers
 	end
 	#=============================================== PURCHASE LRSCAN
 	if ($_LRScan  <> "")
@@ -944,21 +945,21 @@
 		send "R "
 		pause
 		:CanBuyLRScan
-			killAllTriggers
-			send "h"
-			waitfor "<Hardware Emporium>"
+		killAllTriggers
+		send "h"
+		waitfor "<Hardware Emporium>"
 		:CantBuyLRScan
-			killAllTriggers
+		killAllTriggers
 	end
 	#=============================================== PURCHASE DISRUPTORS
 	if ($_Disrupt  <> "")
 		send "S "
 		waitfor "How many Mine Disruptors do you want"
 		if ($_Disrupt  = "Max")
-			getText CURRENTLINE $buy "(Max" ")"
-			send $buy & "* "
+		getText CURRENTLINE $buy "(Max" ")"
+		send $buy & "* "
 		else
-			send $_Disrupt & "* "
+		send $_Disrupt & "* "
 		end
 		waitfor "<Hardware Emporium>"
 	end
@@ -967,9 +968,9 @@
 		send "T "
 		waitfor "How many Genesis Torpedoes do you want"
 		if ($_GenTorp  = "Max")
-			getText CURRENTLINE $buy "(Max" ")"
+		getText CURRENTLINE $buy "(Max" ")"
 		else
-			setVar $buy $_GenTorp
+		setVar $buy $_GenTorp
 		end
 		send $buy & "* "
 		waitfor "<Hardware Emporium>"
@@ -981,15 +982,15 @@
 		setTextTrigger cantTwarp :cantTwarp "<Hardware Emporium> So what are you looking for"
 		pause
 		:canTwarp
-			killTrigger canTwarp
-			if ($player~twarp_type = 1)
-				send "U "
-			else
-				send "2 "
-			end
-			pause
+		killTrigger canTwarp
+		if ($player~twarp_type = 1)
+			send "U "
+		else
+			send "2 "
+		end
+		pause
 		:cantTwarp
-			killAllTriggers
+		killAllTriggers
 	end
 	#=============================================== SHIP YARD
 	if (($_Holds <> "") OR ($_Figs <> "") OR ($_Shields <> ""))
@@ -997,39 +998,39 @@
 		waitfor "Which item do you wish to buy?"
 		#=============================================== SHIP YARD
 		if ($_Holds  = "Max")
-			send "?"
-			waitfor "A  Cargo holds     : "
-			getWord CURRENTLINE $_Holds 10
-			isNumber $tst $_Holds
-			if ($tst <> 0)
-				send "A " & $_Holds & "* y "
-			end
-		elseif ($_Holds <> "")
-			send "A "
-			waitfor "How many Cargo Holds do you want installed?"
-			send $_Holds & "* y "
+		send "?"
+		waitfor "A  Cargo holds     : "
+		getWord CURRENTLINE $_Holds 10
+		isNumber $tst $_Holds
+		if ($tst <> 0)
+			send "A " & $_Holds & "* y "
 		end
- 		if ($_Figs = "Max")
-			send "B "
-			waitfor "How many K-3A fighters do you want to buy"
-			getWord CURRENTLINE $_Figs 11
-			stripText $_Figs ")"
-			send $_Figs & "* "
+		elseif ($_Holds <> "")
+		send "A "
+		waitfor "How many Cargo Holds do you want installed?"
+		send $_Holds & "* y "
+		end
+		if ($_Figs = "Max")
+		send "B "
+		waitfor "How many K-3A fighters do you want to buy"
+		getWord CURRENTLINE $_Figs 11
+		stripText $_Figs ")"
+		send $_Figs & "* "
 		elseif ($_Figs <> "")
-			send "B "
-			waitfor "How many K-3A fighters do you want to buy"
-			send $_Figs & "* "
+		send "B "
+		waitfor "How many K-3A fighters do you want to buy"
+		send $_Figs & "* "
 		end
 		if ($_Shields = "Max")
-			send "C "
-			waitfor "How many shield armor points do you want to buy"
-			getWord CURRENTLINE $_Shields 12
-			stripText $_Shields ")"
-			send $_Shields & "*"
+		send "C "
+		waitfor "How many shield armor points do you want to buy"
+		getWord CURRENTLINE $_Shields 12
+		stripText $_Shields ")"
+		send $_Shields & "*"
 		elseif ($_Shields <> "")
-			send "C "
-			waitfor "How many shield armor points do you want to buy"
-			send $_Shields & "*"
+		send "C "
+		waitfor "How many shield armor points do you want to buy"
+		send $_Shields & "*"
 		end
 	end
 	return
@@ -1043,27 +1044,27 @@
 	pause
 
     :BeamOff
-    	killAllTriggers
-    	goto :TryLockAgain
+	killAllTriggers
+	goto :TryLockAgain
 
 	:DoTow
-		if ($player~current_sector < 10)
-			setVar $TowingPadded $_Tow & "     " & $player~current_sector
-		elseif ($player~current_sector < 100)
-			setVar $TowingPadded $_Tow & "    " & $player~current_sector
-		elseif ($player~current_sector < 1000)
-			setVar $TowingPadded $_Tow & "   " & $player~current_sector
-		elseif ($player~current_sector < 10000)
-			setVar $TowingPadded $_Tow & "  " & $player~current_sector
-		else
-			setVar $TowingPadded $_Tow & " " & $player~current_sector
-		end
-		send "N"
-		killAllTriggers
-		setTextLineTrigger NoShips	:NotHere "You do not own any other ships in this sector!"
-		setTextTrigger ShipScan		:ShipScan $TowingPadded
-   		setTextTrigger NotHere		:NotHere "Choose which ship to tow "
-		pause
+	if ($player~current_sector < 10)
+		setVar $TowingPadded $_Tow & "     " & $player~current_sector
+	elseif ($player~current_sector < 100)
+		setVar $TowingPadded $_Tow & "    " & $player~current_sector
+	elseif ($player~current_sector < 1000)
+		setVar $TowingPadded $_Tow & "   " & $player~current_sector
+	elseif ($player~current_sector < 10000)
+		setVar $TowingPadded $_Tow & "  " & $player~current_sector
+	else
+		setVar $TowingPadded $_Tow & " " & $player~current_sector
+	end
+	send "N"
+	killAllTriggers
+	setTextLineTrigger NoShips	:NotHere "You do not own any other ships in this sector!"
+	setTextTrigger ShipScan		:ShipScan $TowingPadded
+  		setTextTrigger NotHere		:NotHere "Choose which ship to tow "
+	pause
 
         :NotHere
         killAllTriggers
@@ -1099,24 +1100,24 @@
 		return
 
 :DoXport
-	setVar $msg ""
-	killtrigger det_trg1
-	killtrigger det_trg2
-	killtrigger det_trg3
-	killtrigger det_trg4
-	killtrigger det_trg5
-	killtrigger det_trg6
-	killtrigger det_trg7
-	setTextLineTrigger det_trg1	:xport_notavail "That is not an available ship."
-	setTextLineTrigger det_trg2	:xport_badrange "only has a transport range of"
-	setTextLineTrigger det_trg3	:xport_security "SECURITY BREACH! Invalid Password, unable to link transporters."
-	setTextLineTrigger det_trg4	:xport_noaccess "Access denied!"
-	setTextLineTrigger det_trg5	:xport_xprtgood "Security code accepted, engaging transporter control."
-	setTextLineTrigger det_trg6	:xport_go_ahead "Landing on Federation StarDock."
-     # Send the macro
-     send "qqq  z  n  x    " & $shipnum & "    *    *    *    p  s"
-     pause
-     return
+setVar $msg ""
+killtrigger det_trg1
+killtrigger det_trg2
+killtrigger det_trg3
+killtrigger det_trg4
+killtrigger det_trg5
+killtrigger det_trg6
+killtrigger det_trg7
+setTextLineTrigger det_trg1	:xport_notavail "That is not an available ship."
+setTextLineTrigger det_trg2	:xport_badrange "only has a transport range of"
+setTextLineTrigger det_trg3	:xport_security "SECURITY BREACH! Invalid Password, unable to link transporters."
+setTextLineTrigger det_trg4	:xport_noaccess "Access denied!"
+setTextLineTrigger det_trg5	:xport_xprtgood "Security code accepted, engaging transporter control."
+setTextLineTrigger det_trg6	:xport_go_ahead "Landing on Federation StarDock."
+ # Send the macro
+ send "qqq  z  n  x    " & $shipnum & "    *    *    *    p  s"
+ pause
+ return
 
      :xport_notavail
      setVar $msg "Incorrect Ship Number!*"
@@ -1152,93 +1153,93 @@
      return
 
 :DoTwarp
-	setVar $msg ""
-	if ($TwarpTo > 0)
-		send "mz" & $TwarpTo " * "
-		setTextTrigger there        :adj_warp "You are already in that sector!"
-		setTextLineTrigger adj_warp :adj_warp "Sector  : " & $TwarpTo & " "
-		setTextTrigger locking      :locking "Do you want to engage the TransWarp drive?"
-		setTextTrigger igd          :twarpIgd "An Interdictor Generator in this sector holds you fast!"
-		setTextTrigger noturns      :twarpPhotoned "Your ship was hit by a Photon and has been disabled"
-		setTextTrigger noroute      :twarpNoRoute "Do you really want to warp there? (Y/N)"
-		pause
+setVar $msg ""
+if ($TwarpTo > 0)
+	send "mz" & $TwarpTo " * "
+	setTextTrigger there        :adj_warp "You are already in that sector!"
+	setTextLineTrigger adj_warp :adj_warp "Sector  : " & $TwarpTo & " "
+	setTextTrigger locking      :locking "Do you want to engage the TransWarp drive?"
+	setTextTrigger igd          :twarpIgd "An Interdictor Generator in this sector holds you fast!"
+	setTextTrigger noturns      :twarpPhotoned "Your ship was hit by a Photon and has been disabled"
+	setTextTrigger noroute      :twarpNoRoute "Do you really want to warp there? (Y/N)"
+	pause
 		:adj_warp
-			killAllTriggers
-			send "z*"
-			goto :twarp_adj
+		killAllTriggers
+		send "z*"
+		goto :twarp_adj
 		:locking
-			killAllTriggers
-			send "y"
-			setTextLineTrigger twarp_lock 		:twarp_lock "TransWarp Locked"
-			setTextLineTrigger no_twrp_lock 	:no_twarp_lock "No locating beam found"
-			setTextLineTrigger twarp_adj 		:twarp_adj "<Set NavPoint>"
-			setTextLineTrigger no_fuel 			:twarpNoFuel "You do not have enough Fuel Ore"
-			pause
+		killAllTriggers
+		send "y"
+		setTextLineTrigger twarp_lock 		:twarp_lock "TransWarp Locked"
+		setTextLineTrigger no_twrp_lock 	:no_twarp_lock "No locating beam found"
+		setTextLineTrigger twarp_adj 		:twarp_adj "<Set NavPoint>"
+		setTextLineTrigger no_fuel 			:twarpNoFuel "You do not have enough Fuel Ore"
+		pause
 		:twarpNoFuel
-			killAllTriggers
-			setVar $msg "Not enough fuel for T-warp."
-			goto :twarpDone
+		killAllTriggers
+		setVar $msg "Not enough fuel for T-warp."
+		goto :twarpDone
 
 		:twarp_adj
-			killAllTriggers
-			send " * p s"
-			goto :twarpDone
+		killAllTriggers
+		send " * p s"
+		goto :twarpDone
 
 		:twarpNoRoute
-			killAllTriggers
-			send "n* z* "
-			setVar $msg "No route available!"
-			goto :twarpDone
+		killAllTriggers
+		send "n* z* "
+		setVar $msg "No route available!"
+		goto :twarpDone
 
 		:no_twarp_lock
-			killAllTriggers
-			send "n* z* "
-			setVar $msg "No fighter Deployed, cannot Twarp"
-			goto :twarpDone
+		killAllTriggers
+		send "n* z* "
+		setVar $msg "No fighter Deployed, cannot Twarp"
+		goto :twarpDone
 
 		:twarpIgd
-			killAllTriggers
-			setVar $msg "My ship is being held by Interdictor!"
-			goto :twarpDone
+		killAllTriggers
+		setVar $msg "My ship is being held by Interdictor!"
+		goto :twarpDone
 
 		:twarpPhotoned
-			killAllTriggers
-			setVar $msg "I have been photoned and can not T-warp!"
-			goto :twarpDone
+		killAllTriggers
+		setVar $msg "I have been photoned and can not T-warp!"
+		goto :twarpDone
 
 		:twarp_lock
-			KillAlltriggers
-			if ($player~alignment >= 1000)
-				send "y * * p s g y g q "
-			else
-				send "y  *  *  m " & $map~stardock & " *  *  p s g y g q "
-			end
+		KillAlltriggers
+		if ($player~alignment >= 1000)
+			send "y * * p s g y g q "
+		else
+			send "y  *  *  m " & $map~stardock & " *  *  p s g y g q "
+		end
 		:twarpDone
-			if ($msg <> "")
-				setvar $switchboard~message "Twarp Error - " & $msg & "**"
-				gosub :switchboard~switchboard
-			end
+		if ($msg <> "")
+			setvar $switchboard~message "Twarp Error - " & $msg & "**"
+			gosub :switchboard~switchboard
+		end
 	end
 	return
 
 :DoShipTowedCheck
-	if ($map~stardock < 10)
-		setVar $SellingShip $_Tow & "     " & $map~stardock
-	elseif ($map~stardock < 100)
-		setVar $SellingShip $_Tow & "    " & $map~stardock
-	elseif ($map~stardock < 1000)
-		setVar $SellingShip $_Tow & "   " & $map~stardock
-	elseif ($map~stardock < 10000)
-		setVar $SellingShip $_Tow & "  " & $map~stardock
-	else
-		setVar $SellingShip $_Tow & " " & $map~stardock
-	end
+if ($map~stardock < 10)
+	setVar $SellingShip $_Tow & "     " & $map~stardock
+elseif ($map~stardock < 100)
+	setVar $SellingShip $_Tow & "    " & $map~stardock
+elseif ($map~stardock < 1000)
+	setVar $SellingShip $_Tow & "   " & $map~stardock
+elseif ($map~stardock < 10000)
+	setVar $SellingShip $_Tow & "  " & $map~stardock
+else
+	setVar $SellingShip $_Tow & " " & $map~stardock
+end
 
-	send "S S"
-	setTextLineTrigger Nothing2Sell		:Nothing2Sell "You do not own any other ships orbiting the Stardock!"
-	setTextLineTrigger Something2Sell	:Something2Sell $SellingShip
-	setTextTrigger NotInList			:NotInList "Choose which ship to sell "
-	pause
+send "S S"
+setTextLineTrigger Nothing2Sell		:Nothing2Sell "You do not own any other ships orbiting the Stardock!"
+setTextLineTrigger Something2Sell	:Something2Sell $SellingShip
+setTextTrigger NotInList			:NotInList "Choose which ship to sell "
+pause
 
 	:NotInList
 	killAllTriggers
@@ -1257,9 +1258,9 @@
 	return
 
 :GetPassWord
-	send "co"
-	setTextTrigger PLine :PLine "tell it to.  Your last password was : "
-	pause
+send "co"
+setTextTrigger PLine :PLine "tell it to.  Your last password was : "
+pause
 	:PLine
 	killAllTriggers
 	setVar $currentline CURRENTLINE & ""
@@ -1284,63 +1285,63 @@
 	return
 
 :CommaSize
-	if ($CashAmount < 1000)
-		#do nothing
-	elseif ($CashAmount < 1000000)
-    	getLength $CashAmount $len
-		setVar $len ($len - 3)
-		cutText $CashAmount $tmp 1 $len
-		cutText $CashAMount $tmp1 ($len + 1) 999
-		setVar $tmp $tmp & "," & $tmp1
-		setVar $CashAmount $tmp
-	elseif ($CashAmount <= 999999999)
-		getLength $CashAmount $len
-		setVar $len ($len - 6)
-		cutText $CashAmount $tmp 1 $len
-		setVar $tmp $tmp & ","
-		cutText $CashAmount $tmp1 ($len + 1) 3
-		setVar $tmp $tmp & $tmp1 & ","
-		cutText $CashAmount $tmp1 ($len + 4) 999
-		setVar $tmp $tmp & $tmp1
-		setVar $CashAmount $tmp
-	end
-	return
+if ($CashAmount < 1000)
+	#do nothing
+elseif ($CashAmount < 1000000)
+	getLength $CashAmount $len
+	setVar $len ($len - 3)
+	cutText $CashAmount $tmp 1 $len
+	cutText $CashAMount $tmp1 ($len + 1) 999
+	setVar $tmp $tmp & "," & $tmp1
+	setVar $CashAmount $tmp
+elseif ($CashAmount <= 999999999)
+	getLength $CashAmount $len
+	setVar $len ($len - 6)
+	cutText $CashAmount $tmp 1 $len
+	setVar $tmp $tmp & ","
+	cutText $CashAmount $tmp1 ($len + 1) 3
+	setVar $tmp $tmp & $tmp1 & ","
+	cutText $CashAmount $tmp1 ($len + 4) 999
+	setVar $tmp $tmp & $tmp1
+	setVar $CashAmount $tmp
+end
+return
 
 
 
 :PadItemCosts
-	getLength $PadThisCost $len
+getLength $PadThisCost $len
 
-	if ($len = 1)
-		setVar $PadThisCost "      " & $PadThisCost
-	elseif ($len = 2)
-		setVar $PadThisCost "     " & $PadThisCost
-	elseif ($len = 3)
-		setVar $PadThisCost "    " & $PadThisCost
-	elseif ($len = 4)
-		setVar $PadThisCost "   " & $PadThisCost
-	elseif ($len = 5)
-		setVar $PadThisCost "  " & $PadThisCost
-	elseif ($len = 6)
-		setVar $PadThisCost " " & $PadThisCost
-	else
+if ($len = 1)
+	setVar $PadThisCost "      " & $PadThisCost
+elseif ($len = 2)
+	setVar $PadThisCost "     " & $PadThisCost
+elseif ($len = 3)
+	setVar $PadThisCost "    " & $PadThisCost
+elseif ($len = 4)
+	setVar $PadThisCost "   " & $PadThisCost
+elseif ($len = 5)
+	setVar $PadThisCost "  " & $PadThisCost
+elseif ($len = 6)
+	setVar $PadThisCost " " & $PadThisCost
+else
 
-	end
-	return
+end
+return
 
 
 :FindJumpSector
-	setVar $i 1
-	setVar $RED_adj 0
+setVar $i 1
+setVar $RED_adj 0
 
-	while (SECTOR.WARPSIN[$map~stardock][$i] > 0)
-		setVar $RED_adj SECTOR.WARPSIN[$map~stardock][$i]
-		send "m " & $RED_adj & "* y"
-		setTextTrigger TwarpBlind 			:TwarpBlind "Do you want to make this jump blind? "
-		setTextTrigger TwarpLocked			:TwarpLocked "All Systems Ready, shall we engage? "
-		setTextLineTrigger TwarpVoided		:TwarpVoided "Danger Warning Overridden"
-		setTextLineTrigger TwarpAdj			:TwarpAdj "<Set NavPoint>"
-		pause
+while (SECTOR.WARPSIN[$map~stardock][$i] > 0)
+	setVar $RED_adj SECTOR.WARPSIN[$map~stardock][$i]
+	send "m " & $RED_adj & "* y"
+	setTextTrigger TwarpBlind 			:TwarpBlind "Do you want to make this jump blind? "
+	setTextTrigger TwarpLocked			:TwarpLocked "All Systems Ready, shall we engage? "
+	setTextLineTrigger TwarpVoided		:TwarpVoided "Danger Warning Overridden"
+	setTextLineTrigger TwarpAdj			:TwarpAdj "<Set NavPoint>"
+	pause
 		:TwarpAdj
 		killAllTriggers
 		send " * "
@@ -1366,26 +1367,26 @@
 	end
 
 	:NoAdjsFound
-		setVar $RED_adj 0
-		return
+	setVar $RED_adj 0
+	return
 
 	:SectorLocked
-		return
+	return
 
 :ig_turn_it_on
-	killalltriggers
-	setVar $ig_mode 0
-	setTextTrigger no_ig_trigger :no_ig_available "is not equipped with an Interdictor Generator!"
-	setTextTrigger no_ig_beam    :no_ig_beam "Beam to what sector? (U=Upgrade Q=Quit)"
-	setTextTrigger no_ig_cby     :no_ig_cby "ARE YOU SURE CAPTAIN? (Y/N)"
-	setTextTrigger need_ig       :ig_was_off "Your Interdictor generator is now OFF"
-	setTextTrigger ig_fine       :ig_was_on "Your Interdictor generator is now ON"
-	setTextTrigger do_ig         :do_ig_thing "Do you wish to change it? (Y/N)"
-	send " b"
-	pause
+killalltriggers
+setVar $ig_mode 0
+setTextTrigger no_ig_trigger :no_ig_available "is not equipped with an Interdictor Generator!"
+setTextTrigger no_ig_beam    :no_ig_beam "Beam to what sector? (U=Upgrade Q=Quit)"
+setTextTrigger no_ig_cby     :no_ig_cby "ARE YOU SURE CAPTAIN? (Y/N)"
+setTextTrigger need_ig       :ig_was_off "Your Interdictor generator is now OFF"
+setTextTrigger ig_fine       :ig_was_on "Your Interdictor generator is now ON"
+setTextTrigger do_ig         :do_ig_thing "Do you wish to change it? (Y/N)"
+send " b"
+pause
 
 	:no_ig_available
-   	Echo "**" & ANSI_14 & $TagLineB & ANSI_15 & " - No IG available on this ship.**"
+	Echo "**" & ANSI_14 & $TagLineB & ANSI_15 & " - No IG available on this ship.**"
 	return
 
 	:no_ig_beam
@@ -1407,21 +1408,21 @@
 	pause
 
 :do_ig_thing
-	killAllTriggers
-	if ($ig_mode = 0)
-		send "Y"
-		Echo "**" & ANSI_14 & $TagLineB & ANSI_15 & " - IG On!**"
-	else
-		send "N"
-	end
-	return
+killAllTriggers
+if ($ig_mode = 0)
+	send "Y"
+	Echo "**" & ANSI_14 & $TagLineB & ANSI_15 & " - IG On!**"
+else
+	send "N"
+end
+return
 
 
 :TurnsDetect
-	send "i"
-	setTextLineTrigger TurnsDetect_NoTurns		:TurnsDetect_NoTurns	"Total Holds    :"
-	setTextLineTrigger TurnsDetect_GotTurns		:TurnsDetect_GotTurns	"Turns left     : Unlimited"
-	pause
+send "i"
+setTextLineTrigger TurnsDetect_NoTurns		:TurnsDetect_NoTurns	"Total Holds    :"
+setTextLineTrigger TurnsDetect_GotTurns		:TurnsDetect_GotTurns	"Turns left     : Unlimited"
+pause
 	:TurnsDetect_NoTurns
 	killAllTriggers
 	setVar $UNLIM FALSE
@@ -1434,9 +1435,9 @@
 	return
 
 :TurnsRequired
-	send "i"
-	setTextLineTrigger TurnsRequired_TPW	:TurnsRequired_TPW "Turns to Warp  : "
-	pause
+send "i"
+setTextLineTrigger TurnsRequired_TPW	:TurnsRequired_TPW "Turns to Warp  : "
+pause
 
 	:TurnsRequired_TPW
 	killAllTriggers
@@ -1466,118 +1467,118 @@
 
 	#=----------------------------------------------------------------------------------------------------------------
 :BuyShip
-	cuttext $_Trickster $SelectedShip 1 1
-	if ($SelectedShip = "+")
-		cuttext $_Trickster $SelectedShip 1 2
-	end
-	stripText $SelectedShip " "
-	stripText $SelectedShip "^"
+cuttext $_Trickster $SelectedShip 1 1
+if ($SelectedShip = "+")
+	cuttext $_Trickster $SelectedShip 1 2
+end
+stripText $SelectedShip " "
+stripText $SelectedShip "^"
 
-	send "S B N Y " & $SelectedShip & "Y"
-	setTextLineTrigger NotEnoughCash	:NotEnoughCash "You can not afford it!"
-	setTExtLineTrigger NotEnoughEXP		:NotEnoughEXP "Hey!  You need at least "
-	settextlinetrigger notcommished     :notcommished "Hey!  You're not commissioned by the Federation to fly the"
-	setTextTrigger MakeShipCorp			:MakeShipCorp "Should this be a (C)orporate ship or (P)ersonal ship?"
-	setTextLineTrigger NameTheShip		:NameTheShip "What do you want to name this ship?"
-	setTextLineTrigger ShipsBoughtOut	:ShipsBoughtOut "Well if that don't beat all, looks like we don't have anymore ships"
-	pause
+send "S B N Y " & $SelectedShip & "Y"
+setTextLineTrigger NotEnoughCash	:NotEnoughCash "You can not afford it!"
+setTExtLineTrigger NotEnoughEXP		:NotEnoughEXP "Hey!  You need at least "
+settextlinetrigger notcommished     :notcommished "Hey!  You're not commissioned by the Federation to fly the"
+setTextTrigger MakeShipCorp			:MakeShipCorp "Should this be a (C)orporate ship or (P)ersonal ship?"
+setTextLineTrigger NameTheShip		:NameTheShip "What do you want to name this ship?"
+setTextLineTrigger ShipsBoughtOut	:ShipsBoughtOut "Well if that don't beat all, looks like we don't have anymore ships"
+pause
 	:ShipsBoughtOut
-		killAllTriggers
-		send " * Q Q "
-		waitfor "<StarDock> Where to?"
-		setvar $switchboard~message $TagLineB & " - The Maximum Allowable Number of Ships Has Been Reached!**"
-		gosub :switchboard~switchboard
-		setVar $NewShipNumber 0
-		return
+	killAllTriggers
+	send " * Q Q "
+	waitfor "<StarDock> Where to?"
+	setvar $switchboard~message $TagLineB & " - The Maximum Allowable Number of Ships Has Been Reached!**"
+	gosub :switchboard~switchboard
+	setVar $NewShipNumber 0
+	return
 	:NotEnoughEXP
-		killAllTriggers
-		send " Q Q "
-		waitfor "<StarDock> Where to?"
-		setvar $switchboard~message $TagLineB & " - Not Enough Experience To Buy Ship**"
-		gosub :switchboard~switchboard
-		setVar $NewShipNumber 0
-		return
+	killAllTriggers
+	send " Q Q "
+	waitfor "<StarDock> Where to?"
+	setvar $switchboard~message $TagLineB & " - Not Enough Experience To Buy Ship**"
+	gosub :switchboard~switchboard
+	setVar $NewShipNumber 0
+	return
 	:notcommished
-		killAllTriggers
-		send " Q Q "
-		waitfor "<StarDock> Where to?"
-		setvar $switchboard~message $TagLineB & " - Need fed commision to purchase this ship**"
-		gosub :switchboard~switchboard
-		setVar $NewShipNumber 0
-		return
+	killAllTriggers
+	send " Q Q "
+	waitfor "<StarDock> Where to?"
+	setvar $switchboard~message $TagLineB & " - Need fed commision to purchase this ship**"
+	gosub :switchboard~switchboard
+	setVar $NewShipNumber 0
+	return
 
 	:NotEnoughCash
-		killAllTriggers
-		send " Q Q "
-		waitfor "<StarDock> Where to?"
-		setvar $switchboard~message $TagLineB & " - Purchase Failed, Unknown Reason (maybe not enough cash)!**"
-		gosub :switchboard~switchboard
-		setVar $NewShipNumber 0
-		return
+	killAllTriggers
+	send " Q Q "
+	waitfor "<StarDock> Where to?"
+	setvar $switchboard~message $TagLineB & " - Purchase Failed, Unknown Reason (maybe not enough cash)!**"
+	gosub :switchboard~switchboard
+	setVar $NewShipNumber 0
+	return
 
     :MakeShipCorp
-    	send "C"
-		pause
+	send "C"
+	pause
 	:NameTheShip
-		killAllTriggers
-		getRnd $RegistryNumber 100000 999999
-		send "LSDREG#" & $RegistryNumber & "*N * S"
-		setTextLineTrigger PurchasedFailed 		:PurchasedFailed "You do not own any other ships orbiting the Stardock!"
-		setTextLineTrigger GetNewShipNumber		:GetNewShipNumber " " & $map~stardock & " " & "LSDREG#" & $RegistryNumber
-		setTextTrigger GotNewShipNumber			:GotNewShipNumber "Choose which ship to sell "
-		pause
+	killAllTriggers
+	getRnd $RegistryNumber 100000 999999
+	send "LSDREG#" & $RegistryNumber & "*N * S"
+	setTextLineTrigger PurchasedFailed 		:PurchasedFailed "You do not own any other ships orbiting the Stardock!"
+	setTextLineTrigger GetNewShipNumber		:GetNewShipNumber " " & $map~stardock & " " & "LSDREG#" & $RegistryNumber
+	setTextTrigger GotNewShipNumber			:GotNewShipNumber "Choose which ship to sell "
+	pause
 
 	:PurchasedFailed
-		killAllTriggers
-		send " Q "
-		waitfor "<StarDock> Where to?"
-		setvar $switchboard~message $TagLineB & " - Purchase Failed**"
-		gosub :switchboard~switchboard
-		setVar $NewShipNumber 0
-		return
+	killAllTriggers
+	send " Q "
+	waitfor "<StarDock> Where to?"
+	setvar $switchboard~message $TagLineB & " - Purchase Failed**"
+	gosub :switchboard~switchboard
+	setVar $NewShipNumber 0
+	return
 	:GotNewShipNumber
-		killAllTriggers
-		#send " Q "
-		send " Q Q Q Z N * X   " & $NewShipNumber & "*  *  P S S R Y " & $CustomShipName & "* Y Q "
-		waitfor "<StarDock> Where to?"
-		echo "**" & ANSI_14 & "Purchase Success" & ANSI_15 & " - New Ship Number is " & ANSI_7 & $NewShipNumber & "**"
-		return
+	killAllTriggers
+	#send " Q "
+	send " Q Q Q Z N * X   " & $NewShipNumber & "*  *  P S S R Y " & $CustomShipName & "* Y Q "
+	waitfor "<StarDock> Where to?"
+	echo "**" & ANSI_14 & "Purchase Success" & ANSI_15 & " - New Ship Number is " & ANSI_7 & $NewShipNumber & "**"
+	return
 
 	:GetNewShipNumber
-		killTrigger GetNewShipNumber
-		killTrigger PurchasedFailed
-		setVar $CURLINE CURRENTLINE
-		getWordPos $CURLINE $pos " " & $map~stardock
-		if ($pos = 0)
-			send " Q "
-			waitfor "<StarDock> Where to?"
-			echo "**" & ANSI_14 & "No Ship" & ANSI_15 & " - Purchase Failed**"
-			halt
-		end
-		cutText $CURLINE $NewShipNumber 1 $pos
-		stripText $NewShipNumber " "
-		pause
+	killTrigger GetNewShipNumber
+	killTrigger PurchasedFailed
+	setVar $CURLINE CURRENTLINE
+	getWordPos $CURLINE $pos " " & $map~stardock
+	if ($pos = 0)
+		send " Q "
+		waitfor "<StarDock> Where to?"
+		echo "**" & ANSI_14 & "No Ship" & ANSI_15 & " - Purchase Failed**"
+		halt
+	end
+	cutText $CURLINE $NewShipNumber 1 $pos
+	stripText $NewShipNumber " "
+	pause
 
 
 :CN1_AND_CN9_CHECKING
-	#=---------------- CN1 Check ---------------------------------
-	# Done at beginning of script
-	#getWordPos CURRENTANSILINE $pos #27
-	#if ($pos = 0)
-	#	send " c n 1 q q "
-	#	waitfor "Command [TL="
-	#end
-	#=---------------- CN9 Check ---------------------------------
-	if ($location = "Command")
-		send "?d"
-		setTextTrigger ALLKEYS_OFF	:ALLKEYS_OFF "=-=-=-=-=-=-=-="
-		setTextTrigger ALLKEY_ON	:ALLKEY_ON "Warps to Sector(s) : "
-	else
-		send "sn**"
-		setTextTrigger ALLKEYS_OFF	:ALLKEYS_OFF "Warps to Sector(s) : "
-		setTextTrigger ALLKEY_ON	:ALLKEY_ON "<B> Transporter Control"
-	end
-	pause
+#=---------------- CN1 Check ---------------------------------
+# Done at beginning of script
+#getWordPos CURRENTANSILINE $pos #27
+#if ($pos = 0)
+#	send " c n 1 q q "
+#	waitfor "Command [TL="
+#end
+#=---------------- CN9 Check ---------------------------------
+if ($location = "Command")
+	send "?d"
+	setTextTrigger ALLKEYS_OFF	:ALLKEYS_OFF "=-=-=-=-=-=-=-="
+	setTextTrigger ALLKEY_ON	:ALLKEY_ON "Warps to Sector(s) : "
+else
+	send "sn**"
+	setTextTrigger ALLKEYS_OFF	:ALLKEYS_OFF "Warps to Sector(s) : "
+	setTextTrigger ALLKEY_ON	:ALLKEY_ON "<B> Transporter Control"
+end
+pause
 	:ALLKEYS_OFF
 	killTrigger ALLKEYS_OFF
 	setVar $ALLKEYS_OFF TRUE
@@ -1592,100 +1593,100 @@
 
 
 :ParseShipData
-	#[]Ship Letter [Ship Name][Cost][ANSI Ship Name]
-	delete $Ships_File
-	setVar $i 0
-	send "S B N Y ?"
-	waitfor "Which ship are you interested in "
-	setTextLineTrigger NextPage		:NextPage "<+> Next Page"
+#[]Ship Letter [Ship Name][Cost][ANSI Ship Name]
+delete $Ships_File
+setVar $i 0
+send "S B N Y ?"
+waitfor "Which ship are you interested in "
+setTextLineTrigger NextPage		:NextPage "<+> Next Page"
 	:NextPageReset
 	setTextLineTrigger Quit2Leave	:Quit2Leave "<Q> To Leave"
 	:LineTrigNext
 	setTextLineTrigger LineTrig		:LineTrig
 	pause
 	:NextPage
-		killAllTriggers
-		add $i 1
-		setVar $ShipList[$i] "+"
-		setVar $ShipList[$i][1] "This Inidcates"
-		setVar $ShipList[$i][2] "Another"
-		setVar $ShipList[$i][3] "Page is availble for display"
-		send "+"
-		waitfor "Which ship are you interested in "
-		setTextLineTrigger LineTrig		:LineTrig
-		setTextLineTrigger NextPage		:Quit2Leave "<+> Next Page"
-		setTextLineTrigger Quit2Leave	:Quit2Leave "<Q> To Leave"
-		pause
+	killAllTriggers
+	add $i 1
+	setVar $ShipList[$i] "+"
+	setVar $ShipList[$i][1] "This Inidcates"
+	setVar $ShipList[$i][2] "Another"
+	setVar $ShipList[$i][3] "Page is availble for display"
+	send "+"
+	waitfor "Which ship are you interested in "
+	setTextLineTrigger LineTrig		:LineTrig
+	setTextLineTrigger NextPage		:Quit2Leave "<+> Next Page"
+	setTextLineTrigger Quit2Leave	:Quit2Leave "<Q> To Leave"
+	pause
 	:Quit2Leave
-		killAllTriggers
-		send " Q Q "
-		waitfor "<StarDock> Where to? (?="
-		delete $tstFile
-		setVar $ii 1
-		while ($ii <= $i)
-			write $Ships_File $ShipList[$ii] & #9 & $ShipList[$ii][1] & #9 & $ShipList[$ii][2] & #9 & $ShipList[$ii][3]
-	    	add $ii 1
-		end
-		return
+	killAllTriggers
+	send " Q Q "
+	waitfor "<StarDock> Where to? (?="
+	delete $tstFile
+	setVar $ii 1
+	while ($ii <= $i)
+		write $Ships_File $ShipList[$ii] & #9 & $ShipList[$ii][1] & #9 & $ShipList[$ii][2] & #9 & $ShipList[$ii][3]
+    	add $ii 1
+	end
+	return
 	:LineTrig
-		setVar $temp CURRENTLINE & "@@@"
+	setVar $temp CURRENTLINE & "@@@"
 
-		if ($temp <> "@@@")
-			getWordPos $temp $pos "<"
-			if ($pos = 1)
-				getWordPos $temp $pos "<Q>"
-				if ($pos = 0)
-					add $i 1
-					GetText $temp $ShipList[$i] "<" ">"
-					GetText $temp $ShipList[$i][1] "> " "  "
-					GetText $temp $ShipList[$i][2] "  " "@@@"
-					stripText $ShipList[$i][2] " "
-                    if ($ShipList[$i][2] = "")
-                        setvar $ShipList[$i][2] "999,999,999"
-                    end
+	if ($temp <> "@@@")
+		getWordPos $temp $pos "<"
+		if ($pos = 1)
+			getWordPos $temp $pos "<Q>"
+			if ($pos = 0)
+				add $i 1
+				GetText $temp $ShipList[$i] "<" ">"
+				GetText $temp $ShipList[$i][1] "> " "  "
+				GetText $temp $ShipList[$i][2] "  " "@@@"
+				stripText $ShipList[$i][2] " "
+                if ($ShipList[$i][2] = "")
+                    setvar $ShipList[$i][2] "999,999,999"
+                end
 
-					GetText CURRENTANSILINE  $ShipList[$i][3] "[35m> " "  "
-				end
+				GetText CURRENTANSILINE  $ShipList[$i][3] "[35m> " "  "
 			end
 		end
-		goto :LineTrigNext
+	end
+	goto :LineTrigNext
 
 :LoadShipData
-	fileExists $test $Ships_File
-	if ($test)
-		setVar $i 1
-		read $Ships_File $Line $i
-		while (($Line <> EOF) AND ($i <= $ShipListMax))
-			getWordPos $Line $pos #9
-			if ($pos <> 2)
-				setVar $ShipData_Valid FALSE
-				return
-			end
-			cutText $Line $temp 1 1
-			setVar $ShipList[$i] $temp
-			cutText $Line $Line2 3 999
-			SetVar $Line $line2
-			#stripText $Line $temp & #9
+fileExists $test $Ships_File
+if ($test)
+	setVar $i 1
+	read $Ships_File $Line $i
+	while (($Line <> EOF) AND ($i <= $ShipListMax))
+		getWordPos $Line $pos #9
+		if ($pos <> 2)
+			setVar $ShipData_Valid FALSE
+			return
+		end
+		cutText $Line $temp 1 1
+		setVar $ShipList[$i] $temp
+		cutText $Line $Line2 3 999
+		SetVar $Line $line2
+		#stripText $Line $temp & #9
 
-			getWordPos $Line $pos #9
-			if ($pos = 0)
-				setVar $ShipData_Valid FALSE
-				return
-			end
-			cutText $Line $temp1 1 ($pos - 1)
-			setVar $ShipList[$i][1] $temp1
-			stripText $Line $temp1 & #9
+		getWordPos $Line $pos #9
+		if ($pos = 0)
+			setVar $ShipData_Valid FALSE
+			return
+		end
+		cutText $Line $temp1 1 ($pos - 1)
+		setVar $ShipList[$i][1] $temp1
+		stripText $Line $temp1 & #9
 
-			getWordPos $Line $pos #9
-			if ($pos = 0)
-				setVar $ShipData_Valid FALSE
-				return
-			end
-			cutText $Line $temp2 1 ($pos - 1)
-			setVar $ShipList[$i][2] $temp2
-			stripText $Line $temp2 & #9
+		getWordPos $Line $pos #9
+		if ($pos = 0)
+			setVar $ShipData_Valid FALSE
+			return
+		end
+		cutText $Line $temp2 1 ($pos - 1)
+		setVar $ShipList[$i][2] $temp2
+		stripText $Line $temp2 & #9
 
-			setVar $ShipList[$i][3] $Line
+		setVar $ShipList[$i][3] $Line
 
 	        :NextRealLine
 	        add $i 1

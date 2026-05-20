@@ -104,13 +104,13 @@ systemscript
 halt
 
 :strip_time_line
-	getword $timer_array[$i] $time 1
-	getword $timer_array[$i] $ampm 2
-	uppercase $ampm
-	getLength $time $length
-	getWordPos $timer_array[$i] $pos $time
-	cutText $timer_array[$i] $bot_command ($pos + $length + 3) 9999
-	lowercase $bot_command
+getword $timer_array[$i] $time 1
+getword $timer_array[$i] $ampm 2
+uppercase $ampm
+getLength $time $length
+getWordPos $timer_array[$i] $pos $time
+cutText $timer_array[$i] $bot_command ($pos + $length + 3) 9999
+lowercase $bot_command
 return
 
 #INCLUDES:

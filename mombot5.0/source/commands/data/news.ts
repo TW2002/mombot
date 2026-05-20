@@ -31,6 +31,7 @@ loadvar $PARM5
 loadvar $PARM6
 loadvar $PARM7
 loadvar $PARM8
+loadvar $bot~folder
 
 getword $USER_COMMAND_LINE $PARM1 1
 getword $USER_COMMAND_LINE $PARM2 2
@@ -57,7 +58,7 @@ setvar $NEWS_EMPTY "[32mNo log entries today."
 
 setvar $NEWS_VALIDATED FALSE
 setvar $NEWS_FOOTER ""
-setvar $NEWS_FILE "_MOM_"&GAMENAME&".news"
+setvar $NEWS_FILE $bot~folder&"/_MOM_"&GAMENAME&".news"
 
 setvar $FILE_HEADER ""
 setvar $NEWS_READ FALSE

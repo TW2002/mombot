@@ -59,7 +59,8 @@ setVar $sentinel_CLVDetail 1
 setVar $sentinel_CLVCorp 0
 setVar $sentinel_Inactivity 0
 setVar $sentinel_CycleTime 30000
-setVar $sentinel_LogFile GAMENAME & "_SENTINAL.txt"
+loadvar $bot~folder
+setVar $sentinel_LogFile $bot~folder&"/"&GAMENAME & "_SENTINAL.txt"
 
 if ($bot~parm1 = "")
 	setVar $SWITCHBOARD~message "Must at least select CLV*"
@@ -181,6 +182,8 @@ end
 
 if ($sentinel_PerformCIM)
   setVar $CheckCIMLogFile $sentinel_LogFile
+  setVar $CheckCIMCIMLogFile $bot~folder&"/"&GAMENAME&"_SENTINAL_CIM.txt"
+  setVar $CheckCIMCIMTempFile $bot~folder&"/_"&GAMENAME&"_SENTINAL_CIM.txt"
   setVar $CheckCIMBroadcast $sentinel_BroadcastSS
   gosub :CheckCIM
 end
@@ -190,69 +193,69 @@ pause
 
 
 :sub_SetMenu
-  if ($sentinel_PerformCIM)
-    setMenuValue "PerformCIM" YES
-  else
-    setMenuValue "PerformCIM" NO
-  end
+if ($sentinel_PerformCIM)
+setMenuValue "PerformCIM" YES
+else
+setMenuValue "PerformCIM" NO
+end
   
-  if ($sentinel_PerformCLV)
-    setMenuValue "PerformCLV" YES
-  else
-    setMenuValue "PerformCLV" NO
-  end
+if ($sentinel_PerformCLV)
+setMenuValue "PerformCLV" YES
+else
+setMenuValue "PerformCLV" NO
+end
   
-  if ($sentinel_PerformOnline)
-    setMenuValue "PerformOnline" YES
-  else
-    setMenuValue "PerformOnline" NO
-  end
+if ($sentinel_PerformOnline)
+setMenuValue "PerformOnline" YES
+else
+setMenuValue "PerformOnline" NO
+end
   
-  if ($sentinel_BroadcastSS)
-    setMenuValue "BroadcastSS" YES
-  else
-    setMenuValue "BroadcastSS" NO
-  end
+if ($sentinel_BroadcastSS)
+setMenuValue "BroadcastSS" YES
+else
+setMenuValue "BroadcastSS" NO
+end
   
-  if ($sentinel_CLVDetail = 0)
-    setMenuValue "CLVDetail" LOW
-  elseif ($sentinel_CLVDetail = 2)
-    setMenuValue "CLVDetail" MEDIUM
-  else
-    setMenuValue "CLVDetail" HIGH
-  end
+if ($sentinel_CLVDetail = 0)
+setMenuValue "CLVDetail" LOW
+elseif ($sentinel_CLVDetail = 2)
+setMenuValue "CLVDetail" MEDIUM
+else
+setMenuValue "CLVDetail" HIGH
+end
   
-  if ($sentinel_Inactivity)
-    setMenuValue "Inactivity" ON
-  else
-    setMenuValue "Inactivity" OFF
-  end
+if ($sentinel_Inactivity)
+setMenuValue "Inactivity" ON
+else
+setMenuValue "Inactivity" OFF
+end
   
-  setMenuValue "CLVCorp" $sentinel_CLVCorp
-  setMenuValue "LogFile" $sentinel_LogFile
-  setMenuValue "CycleTime" $sentinel_CycleTime
+setMenuValue "CLVCorp" $sentinel_CLVCorp
+setMenuValue "LogFile" $sentinel_LogFile
+setMenuValue "CycleTime" $sentinel_CycleTime
   
-  return
+return
 
 
 # includes:
 
 
 :CheckCLV
-  # sys_check
+# sys_check
   
-  getDate $date
-  getTime $time
-  setVar $date $date & " "
+getDate $date
+getTime $time
+setVar $date $date & " "
   
-  if ($CheckCLVPod = "0")
-    setVar $CheckCLVPod #42 & #42 & #42 & " Escape Pod " & #42 & #42 & #42
-  end
+if ($CheckCLVPod = "0")
+setVar $CheckCLVPod #42 & #42 & #42 & " Escape Pod " & #42 & #42 & #42
+end
   
-  setVar $CLVFigsHit 0
+setVar $CLVFigsHit 0
   
-  setTextLineTrigger CLVBeginCheck :CLVBeginCheck "--- ---------------------"
-  pause
+setTextLineTrigger CLVBeginCheck :CLVBeginCheck "--- ---------------------"
+pause
   
   :CLVBeginCheck
   setTextLineTrigger CLVCheck :CLVCheck
@@ -473,9 +476,9 @@ pause
 # Purpose:   Clears all CLV data for a clean re-check
 
 :ClearData
-  # sys_check
+# sys_check
   
-  setVar $count 1
+setVar $count 1
   :next
   if ($LastPlayer[$count] <> 0)
     setVar $LastPlayer[$count] 0
@@ -515,11 +518,11 @@ pause
 # Triggered: Anywhere the "#" global will work
 
 :CheckOnline
-  # sys_check
+# sys_check
   
-  send "#"
-  setTextLineTrigger pause5 :pause5 "     Who's Playing     "
-  pause
+send "#"
+setTextLineTrigger pause5 :pause5 "     Who's Playing     "
+pause
   :pause5
   killTrigger checkFailed
   setVar $Count 1
@@ -625,250 +628,250 @@ pause
   return
 
 :StripRank
-  # sys_check
+# sys_check
   
-  cutText $StripRankPlayer $Rank 1 6 
-  if ($Rank = "Robber")
-    cutText $StripRankPlayer $StripRankPlayer 8 999
-    return
-  end
-  if ($Rank = "Pirate")
-    cutText $StripRankPlayer $StripRankPlayer 8 999
-    return
-  end
-  if ($Rank = "Ensign")
-    cutText $StripRankPlayer $StripRankPlayer 8 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 6 
+if ($Rank = "Robber")
+cutText $StripRankPlayer $StripRankPlayer 8 999
+return
+end
+if ($Rank = "Pirate")
+cutText $StripRankPlayer $StripRankPlayer 8 999
+return
+end
+if ($Rank = "Ensign")
+cutText $StripRankPlayer $StripRankPlayer 8 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 7 
-  if ($Rank = "Captain")
-    cutText $StripRankPlayer $StripRankPlayer 9 999
-    return
-  end
-  if ($Rank = "Admiral")
-    cutText $StripRankPlayer $StripRankPlayer 9 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 7 
+if ($Rank = "Captain")
+cutText $StripRankPlayer $StripRankPlayer 9 999
+return
+end
+if ($Rank = "Admiral")
+cutText $StripRankPlayer $StripRankPlayer 9 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 8
-  if ($Rank = "Civilian")
-    cutText $StripRankPlayer $StripRankPlayer 10 999
-    return
-  end
-  if ($Rank = "Corporal")
-    cutText $StripRankPlayer $StripRankPlayer 10 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 8
+if ($Rank = "Civilian")
+cutText $StripRankPlayer $StripRankPlayer 10 999
+return
+end
+if ($Rank = "Corporal")
+cutText $StripRankPlayer $StripRankPlayer 10 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 9 
-  if ($Rank = "Annoyance")
-    cutText $StripRankPlayer $StripRankPlayer 11 999
-    return
-  end
-  cutText $StripRankPlayer $Rank 1 9 
-  if ($Rank = "Terrorist")
-    cutText $StripRankPlayer $StripRankPlayer 11 999
-    return
-  end
-  if ($Rank = "Commander")
-    cutText $StripRankPlayer $StripRankPlayer 11 999
-    return
-  end
-  if ($Rank = "Commodore")
-    cutText $StripRankPlayer $StripRankPlayer 11 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 9 
+if ($Rank = "Annoyance")
+cutText $StripRankPlayer $StripRankPlayer 11 999
+return
+end
+cutText $StripRankPlayer $Rank 1 9 
+if ($Rank = "Terrorist")
+cutText $StripRankPlayer $StripRankPlayer 11 999
+return
+end
+if ($Rank = "Commander")
+cutText $StripRankPlayer $StripRankPlayer 11 999
+return
+end
+if ($Rank = "Commodore")
+cutText $StripRankPlayer $StripRankPlayer 11 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 10 
-  if ($Rank = "Prime Evil")
-    cutText $StripRankPlayer $StripRankPlayer 12 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 10 
+if ($Rank = "Prime Evil")
+cutText $StripRankPlayer $StripRankPlayer 12 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 12
-  if ($Rank = "1st Sergeant")
-    cutText $StripRankPlayer $StripRankPlayer 14 999
-    return
-  end
-  if ($Rank = "Rear Admiral")
-    cutText $StripRankPlayer $StripRankPlayer 14 999
-    return
-  end
-  if ($Rank = "Vice Admiral")
-    cutText $StripRankPlayer $StripRankPlayer 14 999
-    return
-  end
-  if ($Rank = "Dread Pirate")
-    cutText $StripRankPlayer $StripRankPlayer 14 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 12
+if ($Rank = "1st Sergeant")
+cutText $StripRankPlayer $StripRankPlayer 14 999
+return
+end
+if ($Rank = "Rear Admiral")
+cutText $StripRankPlayer $StripRankPlayer 14 999
+return
+end
+if ($Rank = "Vice Admiral")
+cutText $StripRankPlayer $StripRankPlayer 14 999
+return
+end
+if ($Rank = "Dread Pirate")
+cutText $StripRankPlayer $StripRankPlayer 14 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 13 
-  if ($Rank = "Fleet Admiral")
-    cutText $StripRankPlayer $StripRankPlayer 15 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 13 
+if ($Rank = "Fleet Admiral")
+cutText $StripRankPlayer $StripRankPlayer 15 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 14
-  if ($Rank = "Lance Corporal")
-    cutText $StripRankPlayer $StripRankPlayer 16 999
-    return
-  end
-  if ($Rank = "Sergeant Major")
-    cutText $StripRankPlayer $StripRankPlayer 16 999
-    return
-  end
-  if ($Rank = "Staff Sergeant")
-    cutText $StripRankPlayer $StripRankPlayer 16 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 14
+if ($Rank = "Lance Corporal")
+cutText $StripRankPlayer $StripRankPlayer 16 999
+return
+end
+if ($Rank = "Sergeant Major")
+cutText $StripRankPlayer $StripRankPlayer 16 999
+return
+end
+if ($Rank = "Staff Sergeant")
+cutText $StripRankPlayer $StripRankPlayer 16 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 15
-  if ($Rank = "Warrant Officer")
-    cutText $StripRankPlayer $StripRankPlayer 17 999
-    return
-  end
-  if ($Rank = "Lieutenant J.G.")
-    cutText $StripRankPlayer $StripRankPlayer 17 999
-    return
-  end
-  if ($Rank = "Smuggler Savant")
-    cutText $StripRankPlayer $StripRankPlayer 17 999
-    return
-  end
-  if ($Rank = "Infamous Pirate")
-    cutText $StripRankPlayer $StripRankPlayer 17 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 15
+if ($Rank = "Warrant Officer")
+cutText $StripRankPlayer $StripRankPlayer 17 999
+return
+end
+if ($Rank = "Lieutenant J.G.")
+cutText $StripRankPlayer $StripRankPlayer 17 999
+return
+end
+if ($Rank = "Smuggler Savant")
+cutText $StripRankPlayer $StripRankPlayer 17 999
+return
+end
+if ($Rank = "Infamous Pirate")
+cutText $StripRankPlayer $StripRankPlayer 17 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 16
-  if ($Rank = "Gunnery Sergeant")
-    cutText $StripRankPlayer $StripRankPlayer 18 999
-    return
-  end
-  if ($Rank = "Menace 3rd Class")
-    cutText $StripRankPlayer $StripRankPlayer 18 999
-    return
-  end
-  if ($Rank = "Menace 2nd Class")
-    cutText $StripRankPlayer $StripRankPlayer 18 999
-    return
-  end
-  if ($Rank = "Menace 1st Class")
-    cutText $StripRankPlayer $StripRankPlayer 18 999
-    return
-  end
-  if ($Rank = "Notorious Pirate")
-    cutText $StripRankPlayer $StripRankPlayer 18 999
-    return
-  end
-  if ($Rank = "Galactic Scourge")
-    cutText $StripRankPlayer $StripRankPlayer 18 999
-    return
-  end
-  if ($Rank = "Heinous Overlord")
-    cutText $StripRankPlayer $StripRankPlayer 18 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 16
+if ($Rank = "Gunnery Sergeant")
+cutText $StripRankPlayer $StripRankPlayer 18 999
+return
+end
+if ($Rank = "Menace 3rd Class")
+cutText $StripRankPlayer $StripRankPlayer 18 999
+return
+end
+if ($Rank = "Menace 2nd Class")
+cutText $StripRankPlayer $StripRankPlayer 18 999
+return
+end
+if ($Rank = "Menace 1st Class")
+cutText $StripRankPlayer $StripRankPlayer 18 999
+return
+end
+if ($Rank = "Notorious Pirate")
+cutText $StripRankPlayer $StripRankPlayer 18 999
+return
+end
+if ($Rank = "Galactic Scourge")
+cutText $StripRankPlayer $StripRankPlayer 18 999
+return
+end
+if ($Rank = "Heinous Overlord")
+cutText $StripRankPlayer $StripRankPlayer 18 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 17
-  if ($Rank = "Private 1st Class")
-    cutText $StripRankPlayer $StripRankPlayer 19 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 17
+if ($Rank = "Private 1st Class")
+cutText $StripRankPlayer $StripRankPlayer 19 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 18 
-  if ($Rank = "Nuisance 3rd Class")
-    cutText $StripRankPlayer $StripRankPlayer 20 999
-    return
-  end
-  if ($Rank = "Nuisance 2nd Class")
-    cutText $StripRankPlayer $StripRankPlayer 20 999
-    return
-  end
-  if ($Rank = "Nuisance 1st Class")
-    cutText $StripRankPlayer $StripRankPlayer 20 999
-    return
-  end
-  if ($Rank = "Smuggler 3rd Class")
-    cutText $StripRankPlayer $StripRankPlayer 20 999
-    return
-  end
-  if ($Rank = "Smuggler 2nd Class")
-    cutText $StripRankPlayer $StripRankPlayer 20 999
-    return
-  end
-  if ($Rank = "Smuggler 1st Class")
-    cutText $StripRankPlayer $StripRankPlayer 20 999
-    return
-  end
-  if ($Rank = "Enemy of the State")
-    cutText $StripRankPlayer $StripRankPlayer 20 999
-    return
-  end
-  if ($Rank = "Enemy of Humankind")
-    cutText $StripRankPlayer $StripRankPlayer 20 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 18 
+if ($Rank = "Nuisance 3rd Class")
+cutText $StripRankPlayer $StripRankPlayer 20 999
+return
+end
+if ($Rank = "Nuisance 2nd Class")
+cutText $StripRankPlayer $StripRankPlayer 20 999
+return
+end
+if ($Rank = "Nuisance 1st Class")
+cutText $StripRankPlayer $StripRankPlayer 20 999
+return
+end
+if ($Rank = "Smuggler 3rd Class")
+cutText $StripRankPlayer $StripRankPlayer 20 999
+return
+end
+if ($Rank = "Smuggler 2nd Class")
+cutText $StripRankPlayer $StripRankPlayer 20 999
+return
+end
+if ($Rank = "Smuggler 1st Class")
+cutText $StripRankPlayer $StripRankPlayer 20 999
+return
+end
+if ($Rank = "Enemy of the State")
+cutText $StripRankPlayer $StripRankPlayer 20 999
+return
+end
+if ($Rank = "Enemy of Humankind")
+cutText $StripRankPlayer $StripRankPlayer 20 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 19 
-  if ($Rank = "Enemy of the People")
-    cutText $StripRankPlayer $StripRankPlayer 21 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 19 
+if ($Rank = "Enemy of the People")
+cutText $StripRankPlayer $StripRankPlayer 21 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 20 
-  if ($Rank = "Lieutenant Commander")
-    cutText $StripRankPlayer $StripRankPlayer 22 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 20 
+if ($Rank = "Lieutenant Commander")
+cutText $StripRankPlayer $StripRankPlayer 22 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 21
-  if ($Rank = "Chief Warrant Officer")
-    cutText $StripRankPlayer $StripRankPlayer 23 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 21
+if ($Rank = "Chief Warrant Officer")
+cutText $StripRankPlayer $StripRankPlayer 23 999
+return
+end
   
-  cutText $StripRankPlayer $Rank 1 7
-  if ($Rank = "Private")
-    cutText $StripRankPlayer $StripRankPlayer 9 999
-    return
-  end
-  cutText $StripRankPlayer $Rank 1 8
-  if ($Rank = "Sergeant")
-    cutText $StripRankPlayer $StripRankPlayer 10 999
-    return
-  end
-  cutText $StripRankPlayer $Rank 1 10 
-  if ($Rank = "Lieutenant")
-    cutText $StripRankPlayer $StripRankPlayer 12 999
-    return
-  end
+cutText $StripRankPlayer $Rank 1 7
+if ($Rank = "Private")
+cutText $StripRankPlayer $StripRankPlayer 9 999
+return
+end
+cutText $StripRankPlayer $Rank 1 8
+if ($Rank = "Sergeant")
+cutText $StripRankPlayer $StripRankPlayer 10 999
+return
+end
+cutText $StripRankPlayer $Rank 1 10 
+if ($Rank = "Lieutenant")
+cutText $StripRankPlayer $StripRankPlayer 12 999
+return
+end
   
-  return
+return
 
 :StripCorp
-  # sys_check
+# sys_check
   
-  getLength $StripRankPlayer $Len
+getLength $StripRankPlayer $Len
   
-  if ($Len < 3)
-    return
-  end
+if ($Len < 3)
+return
+end
   
-  cutText $StripRankPlayer $player~corpData $Len 1
+cutText $StripRankPlayer $player~corpData $Len 1
   
-  if ($player~corpData = "]")
-    subtract $Len 3
-    cutText $StripRankPlayer $player~corpData $Len 99
-    getWord $player~corpData $player~corpData 1
-    StripText $StripRankPlayer " " & $player~corpData
-    StripText $player~corpData "["
-    StripText $player~corpData "]"
-  end
+if ($player~corpData = "]")
+subtract $Len 3
+cutText $StripRankPlayer $player~corpData $Len 99
+getWord $player~corpData $player~corpData 1
+StripText $StripRankPlayer " " & $player~corpData
+StripText $player~corpData "["
+StripText $player~corpData "]"
+end
   
-  return
+return
 
 # Copyright (C) 2005  Remco Mulder
 # 
@@ -901,11 +904,11 @@ pause
 # Returned:  $FoundChange - "1" if change found
 
 :CheckCIM
-  # sys_check
+# sys_check
   
-  send "^rq"
-  setVar $i 1
-  setVar $FoundChange 0
+send "^rq"
+setVar $i 1
+setVar $FoundChange 0
   :redoPause
   setTextTrigger pause2 :pause2 ": "
   pause
@@ -930,7 +933,7 @@ pause
   getTime $time
   
   if ($Init = 1)
-    read "_" & $CheckCIMCIMLogFile $oldPort $i
+    read $CheckCIMCIMTempFile $oldPort $i
     getWord $oldPort $oldSector 1
     getWord $oldPort $oldProduct1 2
     getWord $oldPort $oldProduct2 3
@@ -1020,8 +1023,8 @@ pause
   
   setVar $Init 1
   setVar $sound 0
-  delete "_" & $CheckCIMCIMLogFile
-  rename $CheckCIMCIMLogFile "_" & $CheckCIMCIMLogFile
+  delete $CheckCIMCIMTempFile
+  rename $CheckCIMCIMLogFile $CheckCIMCIMTempFile
   return
 
 # includes:

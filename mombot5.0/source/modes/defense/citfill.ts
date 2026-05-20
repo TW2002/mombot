@@ -74,85 +74,85 @@
 
 
 :FigMe
-	killalltriggers
-	gosub :player~quikstats
-	setVar $startingLocation $player~CURRENT_PROMPT
-	if ($startingLocation <> "Citadel")
-		setvar $switchboard~message "This mode must be run from the Citadel Prompt*"
-		gosub :switchboard~switchboard
-		halt
-	end
-	if ($bot~parm1 = "on")
-		setvar $bot~parm1 $bot~parm2
-	end
-	gosub :ship~getShipStats
-
-	isNumber $test $bot~parm1
-	if ($test <> true)
-		setVar $bot~parm1 $ship~ship_max_attack
-	end
-	if ($bot~parm1 <= 0)
-		setVar $figsToRefill $ship~ship_max_attack
-	else
-		setVar $figsToRefill $bot~parm1
-	end
-	setVar $SHIP~SHIPSTATS FALSE
-	gosub :SHIP~LOADSHIPINFO
-
-	getwordpos " "&$bot~user_command_line&" " $pos " auto "
-	if ($pos > 0)
-		setvar $auto true
-	else
-		setvar $auto false
-	end
-:start_cit_fill
-	setvar $switchboard~message "Citadel Ship Re-Filler :: Powering Up!*"
+killalltriggers
+gosub :player~quikstats
+setVar $startingLocation $player~CURRENT_PROMPT
+if ($startingLocation <> "Citadel")
+	setvar $switchboard~message "This mode must be run from the Citadel Prompt*"
 	gosub :switchboard~switchboard
+	halt
+end
+if ($bot~parm1 = "on")
+	setvar $bot~parm1 $bot~parm2
+end
+gosub :ship~getShipStats
+
+isNumber $test $bot~parm1
+if ($test <> true)
+	setVar $bot~parm1 $ship~ship_max_attack
+end
+if ($bot~parm1 <= 0)
+	setVar $figsToRefill $ship~ship_max_attack
+else
+	setVar $figsToRefill $bot~parm1
+end
+setVar $SHIP~SHIPSTATS FALSE
+gosub :SHIP~LOADSHIPINFO
+
+getwordpos " "&$bot~user_command_line&" " $pos " auto "
+if ($pos > 0)
+	setvar $auto true
+else
+	setvar $auto false
+end
+:start_cit_fill
+setvar $switchboard~message "Citadel Ship Re-Filler :: Powering Up!*"
+gosub :switchboard~switchboard
 
 :warning_cit_fill
+send "\"
+waitFor "Online Auto Flee"
+getWord CURRENTLINE $fleetest 5
+if ($fleetest = "enabled.")
 	send "\"
-	waitFor "Online Auto Flee"
-	getWord CURRENTLINE $fleetest 5
-	if ($fleetest = "enabled.")
-		send "\"
-	end
+end
 
-	send "q m***"
-	gosub :planet~getPlanetInfo
-	send "c "
+send "q m***"
+gosub :planet~getPlanetInfo
+send "c "
 
-	setvar $switchboard~message "Citadel Ship Re-Filler :: Running on Planet "&$planet~planet&" :: "&$planet~planet_FIGHTERS&" Fighters available on surface.*"
+setvar $switchboard~message "Citadel Ship Re-Filler :: Running on Planet "&$planet~planet&" :: "&$planet~planet_FIGHTERS&" Fighters available on surface.*"
+gosub :switchboard~switchboard
+setvar $switchboard~message "Citadel Ship Re-Filler now active! Script will re-fig an ally in the sector over planet " & $planet~planet & ".*"
+gosub :switchboard~switchboard
+if ($auto = true)
+	setvar $switchboard~message " Doing auto refill every five minutes.*"
 	gosub :switchboard~switchboard
-	setvar $switchboard~message "Citadel Ship Re-Filler now active! Script will re-fig an ally in the sector over planet " & $planet~planet & ".*"
-	gosub :switchboard~switchboard
-	if ($auto = true)
-		setvar $switchboard~message " Doing auto refill every five minutes.*"
-		gosub :switchboard~switchboard
-	end
-	goto :settriggers
+end
+goto :settriggers
 
 
 :settriggers
-	killalltriggers
-	setTextLineTrigger 1 :reloadFigMe "launches a wave of fighters"
-	setTextLineTrigger 2 :reloadFigMe "deploys some fighters"
-	if ($auto = true)
-		setdelaytrigger 3 :reloadFigMe 300000
-	end
-	setTextTrigger 		pause 	:pausing 		"Planet command (?="
-	setTextTrigger 		pause2 	:pausing 		"Computer command ["
-	setTextTrigger 		pause3 	:pausing 		"Corporate command ["
-	pause
+killalltriggers
+setTextLineTrigger 1 :reloadFigMe "launches a wave of fighters"
+setTextLineTrigger 2 :reloadFigMe "deploys some fighters"
+if ($auto = true)
+	setdelaytrigger 3 :reloadFigMe 300000
+end
+setTextTrigger 		pause 	:pausing 		"Planet command (?="
+setTextTrigger 		pause2 	:pausing 		"Computer command ["
+setTextTrigger 		pause3 	:pausing 		"Corporate command ["
+pause
 
 :pausing
-	killAllTriggers
-	echo ANSI_6 "*[" ANSI_14 "Citadel Filler paused. To restart, re-enter citadel prompt" ANSI_6 "]*" ANSI_7
-	setTextTrigger restart :restarting "Citadel command ("
-	pause
+killAllTriggers
+echo ANSI_6 "*[" ANSI_14 "Citadel Filler paused. To restart, re-enter citadel prompt" ANSI_6 "]*" ANSI_7
+setTextTrigger restart :restarting "Citadel command ("
+pause
 :restarting
-	killAllTriggers
-	echo ANSI_6 "*[" ANSI_14 "Citadel Filler restarted" ANSI_6 "]*" ANSI_7
-	goto :settriggers
+killAllTriggers
+echo ANSI_6 "*[" ANSI_14 "Citadel Filler restarted" ANSI_6 "]*" ANSI_7
+goto :settriggers
 
 
 :reloadFigMe
@@ -210,393 +210,393 @@ killalltriggers
 	goto :settriggers
 
 :getRefillAmount
-	setVar $unknownShip TRUE
-	setVar $refillAmount 0
-	if ($targetTraderShipType = "")
-		return
-	end
-	if ($SHIP~SHIPSTATS <> TRUE)
-		return
-	end
-	setVar $normalizedTraderShipType $targetTraderShipType
-	lowercase $normalizedTraderShipType
-	stripText $normalizedTraderShipType ""
-	stripText $normalizedTraderShipType "["
-	stripText $normalizedTraderShipType "0m"
-	stripText $normalizedTraderShipType "1m"
-	stripText $normalizedTraderShipType "0;"
-	stripText $normalizedTraderShipType "1;"
-	stripText $normalizedTraderShipType "34m"
-	stripText $normalizedTraderShipType "35m"
-	stripText $normalizedTraderShipType "36m"
-	stripText $normalizedTraderShipType "40m"
-	stripText $normalizedTraderShipType "47m"
-	stripText $normalizedTraderShipType "  "
-	stripText $normalizedTraderShipType "unknown "
-	setVar $shipLookup 1
-	while ($shipLookup <= $SHIP~SHIPCOUNTER)
-		setVar $shipLookupName $SHIP~SHIPLIST[$shipLookup]
-		lowercase $shipLookupName
-		stripText $shipLookupName ""
-		stripText $shipLookupName "["
-		stripText $shipLookupName "0m"
-		stripText $shipLookupName "1m"
-		stripText $shipLookupName "0;"
-		stripText $shipLookupName "1;"
-		stripText $shipLookupName "34m"
-		stripText $shipLookupName "35m"
-		stripText $shipLookupName "36m"
-		stripText $shipLookupName "40m"
-		stripText $shipLookupName "47m"
-		stripText $shipLookupName "  "
-		getWordPos $normalizedTraderShipType $shipMatch1 $shipLookupName
-		getWordPos $shipLookupName $shipMatch2 $normalizedTraderShipType
-		if (($shipLookupName = $normalizedTraderShipType) or ($shipMatch1 > 0) or ($shipMatch2 > 0))
-			setVar $unknownShip FALSE
-			setVar $targetMaxFighters $SHIP~SHIPLIST[$shipLookup][5]
-			setVar $refillAmount ($targetMaxFighters - $targetTraderFighters)
-			if ($refillAmount > $figsToRefill)
-				setVar $refillAmount $figsToRefill
-			end
-			if ($refillAmount < 0)
-				setVar $refillAmount 0
-			end
-			return
-		end
-		add $shipLookup 1
-	end
+setVar $unknownShip TRUE
+setVar $refillAmount 0
+if ($targetTraderShipType = "")
 	return
+end
+if ($SHIP~SHIPSTATS <> TRUE)
+	return
+end
+setVar $normalizedTraderShipType $targetTraderShipType
+lowercase $normalizedTraderShipType
+stripText $normalizedTraderShipType ""
+stripText $normalizedTraderShipType "["
+stripText $normalizedTraderShipType "0m"
+stripText $normalizedTraderShipType "1m"
+stripText $normalizedTraderShipType "0;"
+stripText $normalizedTraderShipType "1;"
+stripText $normalizedTraderShipType "34m"
+stripText $normalizedTraderShipType "35m"
+stripText $normalizedTraderShipType "36m"
+stripText $normalizedTraderShipType "40m"
+stripText $normalizedTraderShipType "47m"
+stripText $normalizedTraderShipType "  "
+stripText $normalizedTraderShipType "unknown "
+setVar $shipLookup 1
+while ($shipLookup <= $SHIP~SHIPCOUNTER)
+	setVar $shipLookupName $SHIP~SHIPLIST[$shipLookup]
+	lowercase $shipLookupName
+	stripText $shipLookupName ""
+	stripText $shipLookupName "["
+	stripText $shipLookupName "0m"
+	stripText $shipLookupName "1m"
+	stripText $shipLookupName "0;"
+	stripText $shipLookupName "1;"
+	stripText $shipLookupName "34m"
+	stripText $shipLookupName "35m"
+	stripText $shipLookupName "36m"
+	stripText $shipLookupName "40m"
+	stripText $shipLookupName "47m"
+	stripText $shipLookupName "  "
+	getWordPos $normalizedTraderShipType $shipMatch1 $shipLookupName
+	getWordPos $shipLookupName $shipMatch2 $normalizedTraderShipType
+	if (($shipLookupName = $normalizedTraderShipType) or ($shipMatch1 > 0) or ($shipMatch2 > 0))
+		setVar $unknownShip FALSE
+		setVar $targetMaxFighters $SHIP~SHIPLIST[$shipLookup][5]
+		setVar $refillAmount ($targetMaxFighters - $targetTraderFighters)
+		if ($refillAmount > $figsToRefill)
+			setVar $refillAmount $figsToRefill
+		end
+		if ($refillAmount < 0)
+			setVar $refillAmount 0
+		end
+		return
+	end
+	add $shipLookup 1
+end
+return
 
 :sendSingleRefill
-	setVar $requestedRefillAmount $refillAmount
-	gosub :enterUnknownShipTransfer
-	killalltriggers
-	setTextLineTrigger knownShipCounts :knownShipCounts "You have "
-	setTextTrigger knownShipAmount :knownShipAmount "How many to transfer?"
-	send "f "&$targetString&" * "
-	pause
-	return
+setVar $requestedRefillAmount $refillAmount
+gosub :enterUnknownShipTransfer
+killalltriggers
+setTextLineTrigger knownShipCounts :knownShipCounts "You have "
+setTextTrigger knownShipAmount :knownShipAmount "How many to transfer?"
+send "f "&$targetString&" * "
+pause
+return
 
 :knownShipCounts
-	setVar $knownShipLine CURRENTLINE
-	replaceText $knownShipLine "," ""
-	getWord $knownShipLine $livePlayerFighters 3
-	getWord $knownShipLine $liveTargetFighters 8
-	pause
+setVar $knownShipLine CURRENTLINE
+replaceText $knownShipLine "," ""
+getWord $knownShipLine $livePlayerFighters 3
+getWord $knownShipLine $liveTargetFighters 8
+pause
 
 :knownShipAmount
-	killtrigger knownShipCounts
-	killtrigger knownShipAmount
-	setVar $liveRefillAmount ($targetMaxFighters - $liveTargetFighters)
-	if ($liveRefillAmount > $requestedRefillAmount)
-		setVar $liveRefillAmount $requestedRefillAmount
-	end
-	if ($liveRefillAmount > $livePlayerFighters)
-		setVar $liveRefillAmount $livePlayerFighters
-	end
-	if ($liveRefillAmount <= 0)
-		send "q q c "
-		return
-	end
-	killalltriggers
-	setTextLineTrigger knownShipTooMany :knownShipTooMany "can only carry"
-	setTextTrigger knownShipDone :knownShipDone "Corporate command ["
-	send $liveRefillAmount "* "
-	pause
+killtrigger knownShipCounts
+killtrigger knownShipAmount
+setVar $liveRefillAmount ($targetMaxFighters - $liveTargetFighters)
+if ($liveRefillAmount > $requestedRefillAmount)
+	setVar $liveRefillAmount $requestedRefillAmount
+end
+if ($liveRefillAmount > $livePlayerFighters)
+	setVar $liveRefillAmount $livePlayerFighters
+end
+if ($liveRefillAmount <= 0)
+	send "q q c "
+	return
+end
+killalltriggers
+setTextLineTrigger knownShipTooMany :knownShipTooMany "can only carry"
+setTextTrigger knownShipDone :knownShipDone "Corporate command ["
+send $liveRefillAmount "* "
+pause
 
 :knownShipTooMany
-	pause
+pause
 
 :knownShipDone
-	killalltriggers
-	send "* l " & $planet~planet & "* m * * * c "
-	return
+killalltriggers
+send "* l " & $planet~planet & "* m * * * c "
+return
 
 :sendUnknownShipRefill
-	setVar $remainingRefill $figsToRefill
-	gosub :enterUnknownShipTransfer
-	while ($remainingRefill > 0)
-		if ($remainingRefill > 1000)
-			setVar $refillAmount 1000
-		else
-			setVar $refillAmount $remainingRefill
-		end
-		gosub :sendUnknownShipChunk
-		if ($targetShipFull = TRUE)
-			goto :finishUnknownShipRefill
-		end
-		subtract $remainingRefill $refillAmount
+setVar $remainingRefill $figsToRefill
+gosub :enterUnknownShipTransfer
+while ($remainingRefill > 0)
+	if ($remainingRefill > 1000)
+		setVar $refillAmount 1000
+	else
+		setVar $refillAmount $remainingRefill
 	end
+	gosub :sendUnknownShipChunk
+	if ($targetShipFull = TRUE)
+		goto :finishUnknownShipRefill
+	end
+	subtract $remainingRefill $refillAmount
+end
 
 :finishUnknownShipRefill
-	send "* l " & $planet~planet & "* m * * * c "
-	return
+send "* l " & $planet~planet & "* m * * * c "
+return
 
 :enterUnknownShipTransfer
-	send "q q t "
-	waitFor "Corporate command ["
-	return
+send "q q t "
+waitFor "Corporate command ["
+return
 
 :sendUnknownShipChunk
-	setVar $targetShipFull FALSE
-	killalltriggers
-	setTextLineTrigger unknownShipChunkFull :unknownShipChunkFull "can only carry"
-	setTextTrigger unknownShipChunkDone :unknownShipChunkDone "Corporate command ["
-	send "f "&$targetString&" * z"&$refillAmount&"* "
-	pause
+setVar $targetShipFull FALSE
+killalltriggers
+setTextLineTrigger unknownShipChunkFull :unknownShipChunkFull "can only carry"
+setTextTrigger unknownShipChunkDone :unknownShipChunkDone "Corporate command ["
+send "f "&$targetString&" * z"&$refillAmount&"* "
+pause
 
 :unknownShipChunkFull
-	setVar $targetShipFull TRUE
-	pause
+setVar $targetShipFull TRUE
+pause
 
 :unknownShipChunkDone
-	killalltriggers
-	return
+killalltriggers
+return
 
 :findCurrentTargetTrader
-	setVar $targetStillHere FALSE
-	setVar $scanTrader 1
-	while ($scanTrader <= $realTraderCount)
-		if (($TRADERS[$scanTrader] = $targetTrader) and ($TRADERS[$scanTrader][1] = $targetTraderCorp))
-			setVar $targetTraderFighters $TRADERS[$scanTrader][3]
-			setVar $targetTraderShipType $TRADERS[$scanTrader][4]
-			setVar $targetStillHere TRUE
-			return
-		end
-		add $scanTrader 1
+setVar $targetStillHere FALSE
+setVar $scanTrader 1
+while ($scanTrader <= $realTraderCount)
+	if (($TRADERS[$scanTrader] = $targetTrader) and ($TRADERS[$scanTrader][1] = $targetTraderCorp))
+		setVar $targetTraderFighters $TRADERS[$scanTrader][3]
+		setVar $targetTraderShipType $TRADERS[$scanTrader][4]
+		setVar $targetStillHere TRUE
+		return
 	end
-	return
+	add $scanTrader 1
+end
+return
 
 :getTraders
-	getWordPos $sectorData $posTrader "[0m[33mTraders [1m:"
-	if ($posTrader > 0)
-		getText $sectorData $traderData "[0m[33mTraders [1m:" "[0m[1;32mWarps to Sector(s) [33m:"
-		setVar $traderData $STARTLINE&$traderData
-		getText $traderData $temp $STARTLINE $ENDLINE 
-		setVar $realTraderCount 0
-		setVar $player~corpieCount 0
-		while ($temp <> "")
-			getLength $STARTLINE&$temp&$ENDLINE $length
-			cutText $traderData $traderData ($length+1) 9999 
-			stripText $temp $STARTLINE
-			stripText $temp $ENDLINE
-			stripText $temp "[0m          "
-			stripText $temp "[0m[33mTraders [1m:"
-			setVar $j 1
-			setVar $isFound FALSE
-			while (($j < $ranksLength) AND ($isFound = FALSE))
-				getWordPos $temp $pos $ranks[$j]	
-				if ($pos > 0)
-					getLength $ranks[$j] $length
-					cutText $temp $temp ($pos+$length+1) 9999
-					if ($j <= 10)
-						setVar $TRADERS[($realTraderCount+1)][2] TRUE
-					else
-						setVar $TRADERS[($realTraderCount+1)][2] FALSE
-					end
-					setVar $isFound TRUE
+getWordPos $sectorData $posTrader "[0m[33mTraders [1m:"
+if ($posTrader > 0)
+	getText $sectorData $traderData "[0m[33mTraders [1m:" "[0m[1;32mWarps to Sector(s) [33m:"
+	setVar $traderData $STARTLINE&$traderData
+	getText $traderData $temp $STARTLINE $ENDLINE 
+	setVar $realTraderCount 0
+	setVar $player~corpieCount 0
+	while ($temp <> "")
+		getLength $STARTLINE&$temp&$ENDLINE $length
+		cutText $traderData $traderData ($length+1) 9999 
+		stripText $temp $STARTLINE
+		stripText $temp $ENDLINE
+		stripText $temp "[0m          "
+		stripText $temp "[0m[33mTraders [1m:"
+		setVar $j 1
+		setVar $isFound FALSE
+		while (($j < $ranksLength) AND ($isFound = FALSE))
+			getWordPos $temp $pos $ranks[$j]	
+			if ($pos > 0)
+				getLength $ranks[$j] $length
+				cutText $temp $temp ($pos+$length+1) 9999
+				if ($j <= 10)
+					setVar $TRADERS[($realTraderCount+1)][2] TRUE
+				else
+					setVar $TRADERS[($realTraderCount+1)][2] FALSE
 				end
-				add $j 1
+				setVar $isFound TRUE
 			end
-			getWordPos $temp $pos "[0;32m w/"
-			getWordPos $temp $pos2 "[0;35m[[31mOwned by[35m]"
-				if (($pos > 0) AND ($pos2 <= 0))
-					getWordPos $temp $pos "[[1;36m"
-					if ($pos > 0)
-						getText $temp $tempCorp "[[1;36m" "[0;34m]"
-						stripText $tempCorp ""
-					else
-						setVar $tempCorp 99999
-					end
-					setVar $rawTraderLine $temp
-					replaceText $temp "[0;34m" "[34m"
-					getWordPos $temp $pos "[34m"
-					cutText $temp $temp 1 $pos
-					stripText $temp ""
-					lowercase $temp
-					setVar $TRADERS[($realTraderCount+1)][3] 0
-					setVar $fighterLine $rawTraderLine
-					replacetext $fighterLine "," ""
-					getWordPos $fighterLine $fighterPos "w/"
-					if ($fighterPos > 0)
-						getText $fighterLine $TRADERS[($realTraderCount+1)][3] "w/ " " ftrs"
-						stripText $TRADERS[($realTraderCount+1)][3] "[1;36m"
-						stripText $TRADERS[($realTraderCount+1)][3] "[0;32m"
-						stripText $TRADERS[($realTraderCount+1)][3] " "
-					end
-				isNumber $fighterOk $TRADERS[($realTraderCount+1)][3]
-					if ($fighterOk <> TRUE)
-						setVar $TRADERS[($realTraderCount+1)][3] 0
-					end
-					getText $traderData $shipLine $STARTLINE $ENDLINE
-					stripText $shipLine $STARTLINE
-					stripText $shipLine $ENDLINE
-					stripText $shipLine "  "
-					setVar $tempShipType ""
-					setVar $TRADERS[($realTraderCount+1)][4] $shipLine
-					getWordPos $shipLine $shipPos " ("
-					if ($shipPos > 0)
-						getText $shipLine $tempShipType " (" ")"
-						if ($tempShipType <> "")
-							setVar $TRADERS[($realTraderCount+1)][4] $shipLine&" "&$tempShipType
-						end
-					end
-					setVar $TRADERS[($realTraderCount+1)] $temp
-				setVar $TRADERS[($realTraderCount+1)][1] $tempCorp
-				#echo "*" $traders[($realTraderCount+1)] "   " $traders[($realTraderCount+1)][1] "   " $traders[($realTraderCount+1)][2] "*"
-				add $realTraderCount 1
-				if ($tempCorp = $player~corp)
-					add $player~corpieCount 1
-				end
-			end
-			getText $traderData $temp $STARTLINE $ENDLINE 	
+			add $j 1
 		end
-	else
-		setVar $realTraderCount 0
-		setVar $player~corpieCount 0
+		getWordPos $temp $pos "[0;32m w/"
+		getWordPos $temp $pos2 "[0;35m[[31mOwned by[35m]"
+			if (($pos > 0) AND ($pos2 <= 0))
+				getWordPos $temp $pos "[[1;36m"
+				if ($pos > 0)
+					getText $temp $tempCorp "[[1;36m" "[0;34m]"
+					stripText $tempCorp ""
+				else
+					setVar $tempCorp 99999
+				end
+				setVar $rawTraderLine $temp
+				replaceText $temp "[0;34m" "[34m"
+				getWordPos $temp $pos "[34m"
+				cutText $temp $temp 1 $pos
+				stripText $temp ""
+				lowercase $temp
+				setVar $TRADERS[($realTraderCount+1)][3] 0
+				setVar $fighterLine $rawTraderLine
+				replacetext $fighterLine "," ""
+				getWordPos $fighterLine $fighterPos "w/"
+				if ($fighterPos > 0)
+					getText $fighterLine $TRADERS[($realTraderCount+1)][3] "w/ " " ftrs"
+					stripText $TRADERS[($realTraderCount+1)][3] "[1;36m"
+					stripText $TRADERS[($realTraderCount+1)][3] "[0;32m"
+					stripText $TRADERS[($realTraderCount+1)][3] " "
+				end
+			isNumber $fighterOk $TRADERS[($realTraderCount+1)][3]
+				if ($fighterOk <> TRUE)
+					setVar $TRADERS[($realTraderCount+1)][3] 0
+				end
+				getText $traderData $shipLine $STARTLINE $ENDLINE
+				stripText $shipLine $STARTLINE
+				stripText $shipLine $ENDLINE
+				stripText $shipLine "  "
+				setVar $tempShipType ""
+				setVar $TRADERS[($realTraderCount+1)][4] $shipLine
+				getWordPos $shipLine $shipPos " ("
+				if ($shipPos > 0)
+					getText $shipLine $tempShipType " (" ")"
+					if ($tempShipType <> "")
+						setVar $TRADERS[($realTraderCount+1)][4] $shipLine&" "&$tempShipType
+					end
+				end
+				setVar $TRADERS[($realTraderCount+1)] $temp
+			setVar $TRADERS[($realTraderCount+1)][1] $tempCorp
+			#echo "*" $traders[($realTraderCount+1)] "   " $traders[($realTraderCount+1)][1] "   " $traders[($realTraderCount+1)][2] "*"
+			add $realTraderCount 1
+			if ($tempCorp = $player~corp)
+				add $player~corpieCount 1
+			end
+		end
+		getText $traderData $temp $STARTLINE $ENDLINE 	
 	end
+else
+	setVar $realTraderCount 0
+	setVar $player~corpieCount 0
+end
 return
 
 
 :getEmptyShips
-	getWordPos $sectorData $posShips "[0m[33mShips   [1m:"
-	if ($posShips > 0)
-		getText $sectorData $shipData "[0m[33mShips   [1m:" "[0m[1;32mWarps to Sector(s) [33m:"
-		setVar $shipData $STARTLINE&$shipData
-		getText $shipData $temp $STARTLINE $ENDLINE 
-		setVar $emptyShipCount 0
-		while ($temp <> "")
-			getLength $STARTLINE&$temp&$ENDLINE $length
-			cutText $shipData $shipData ($length+1) 9999 
-			stripText $temp $STARTLINE
-			stripText $temp "  "
-			stripText $temp $ENDLINE
-			getWordPos $temp $pos2 "[0;35m[[31mOwned by[35m]"
-			if ($pos2 > 0)
-				cutText $temp $temp $pos2 9999
-				stripText $temp "[0;35m[[31mOwned by[35m] "
-				getWordPos $temp $pos3 ",[0;32m w/"
-				cutText $temp $temp 0 $pos3
-				getWordPos $temp $pos4 "[34m[[1;36m"
-				striptext $temp "[1;33m,"
-				if ($pos4 > 0)
-					cuttext $temp $temp $pos4 9999
-					striptext $temp "[34m[[1;36m"
-					striptext $temp "[0;34m]"
-				end
-				setVar $EMPTYSHIPS[($emptyShipCount+1)] $temp
-				add $emptyShipCount 1
+getWordPos $sectorData $posShips "[0m[33mShips   [1m:"
+if ($posShips > 0)
+	getText $sectorData $shipData "[0m[33mShips   [1m:" "[0m[1;32mWarps to Sector(s) [33m:"
+	setVar $shipData $STARTLINE&$shipData
+	getText $shipData $temp $STARTLINE $ENDLINE 
+	setVar $emptyShipCount 0
+	while ($temp <> "")
+		getLength $STARTLINE&$temp&$ENDLINE $length
+		cutText $shipData $shipData ($length+1) 9999 
+		stripText $temp $STARTLINE
+		stripText $temp "  "
+		stripText $temp $ENDLINE
+		getWordPos $temp $pos2 "[0;35m[[31mOwned by[35m]"
+		if ($pos2 > 0)
+			cutText $temp $temp $pos2 9999
+			stripText $temp "[0;35m[[31mOwned by[35m] "
+			getWordPos $temp $pos3 ",[0;32m w/"
+			cutText $temp $temp 0 $pos3
+			getWordPos $temp $pos4 "[34m[[1;36m"
+			striptext $temp "[1;33m,"
+			if ($pos4 > 0)
+				cuttext $temp $temp $pos4 9999
+				striptext $temp "[34m[[1;36m"
+				striptext $temp "[0;34m]"
 			end
-			getText $shipData $temp $STARTLINE $ENDLINE
+			setVar $EMPTYSHIPS[($emptyShipCount+1)] $temp
+			add $emptyShipCount 1
 		end
-	else
-		setVar $emptyShipCount 0
+		getText $shipData $temp $STARTLINE $ENDLINE
 	end
+else
+	setVar $emptyShipCount 0
+end
 return
 
 :getFakeTraders
-	getWordPos $sectorData $posShips "[0m[33mShips   [1m:"
-	getWordPos $sectorData $posTraders "[0m[33mTraders [1m:"
+getWordPos $sectorData $posShips "[0m[33mShips   [1m:"
+getWordPos $sectorData $posTraders "[0m[33mTraders [1m:"
 	
-	if ($posTraders > 0)
-		getText $sectorData $fakeData "[1;32mSector  [33m:" "[0m[33mTraders [1m:"
-		setVar $fakeData $STARTLINE&$fakeData
-		getText $fakeData $temp $STARTLINE $ENDLINE 
-		setVar $fakeTraderCount 0
-		while ($temp <> "")
-			getLength $STARTLINE&$temp&$ENDLINE $length
-			cutText $fakeData $fakeData ($length+1) 9999 
-			stripText $temp $STARTLINE
-			stripText $temp "  "
-			stripText $temp $ENDLINE
-			getWordPos $temp $pos "33m,[0;32m w/ "
-			if ($pos <= 0)
-				getWordPos $temp $pos "[0;32mw/ "
-			end
-			getWordPos $temp $pos2 "[33m, [0;32mwith"
-			getWordPos $temp $pos3 "[0;35m[[31mOwned by[35m]"
-			if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
-				#setVar $FAKETRADERS[($fakeTraderCount+1)] $temp
-				add $fakeTraderCount 1
-			end
-			getText $fakeData $temp $STARTLINE $ENDLINE
-			
+if ($posTraders > 0)
+	getText $sectorData $fakeData "[1;32mSector  [33m:" "[0m[33mTraders [1m:"
+	setVar $fakeData $STARTLINE&$fakeData
+	getText $fakeData $temp $STARTLINE $ENDLINE 
+	setVar $fakeTraderCount 0
+	while ($temp <> "")
+		getLength $STARTLINE&$temp&$ENDLINE $length
+		cutText $fakeData $fakeData ($length+1) 9999 
+		stripText $temp $STARTLINE
+		stripText $temp "  "
+		stripText $temp $ENDLINE
+		getWordPos $temp $pos "33m,[0;32m w/ "
+		if ($pos <= 0)
+			getWordPos $temp $pos "[0;32mw/ "
 		end
-		
-	elseif ($posShips > 0)
-		getText $sectorData $fakeData "[1;32mSector  [33m:" "[0m[33mShips   [1m:"
-		setVar $fakeData $STARTLINE&$fakeData
+		getWordPos $temp $pos2 "[33m, [0;32mwith"
+		getWordPos $temp $pos3 "[0;35m[[31mOwned by[35m]"
+		if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
+			#setVar $FAKETRADERS[($fakeTraderCount+1)] $temp
+			add $fakeTraderCount 1
+		end
 		getText $fakeData $temp $STARTLINE $ENDLINE
-		setVar $fakeTraderCount 0
-		while ($temp <> "")
-			getLength $STARTLINE&$temp&$ENDLINE $length
-			cutText $fakeData $fakeData ($length+1) 9999
-			stripText $temp $STARTLINE
-			stripText $temp "  "
-			stripText $temp $ENDLINE
-			getWordPos $temp $pos "33m,[0;32m w/ "
-			getWordPos $temp $pos2 "[33m, [0;32mwith"
-			getWordPos $temp $pos3 "[0;35m[[31mOwned by[35m]"
-			if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
-				#setVar $FAKETRADERS[($fakeTraderCount+1)] $temp
-				add $fakeTraderCount 1
-			end
-			getText $fakeData $temp $STARTLINE $ENDLINE 
-
-		end
-	else
-		getText $sectorData $fakeData "[1;32mSector  [33m:" "[0m[1;32mWarps to Sector(s) [33m:"
-		setVar $fakeData $STARTLINE&$fakeData
-		getText $fakeData $temp $STARTLINE $ENDLINE 
-		setVar $fakeTraderCount 0
-		while ($temp <> "")
-			getLength $STARTLINE&$temp&$ENDLINE $length
-			cutText $fakeData $fakeData ($length+1) 9999 
-			stripText $temp $STARTLINE
-			stripText $temp "  "
-			stripText $temp $ENDLINE
-			getWordPos $temp $pos "33m,[0;32m w/ "
-			getWordPos $temp $pos2 "[33m, [0;32mwith"
-			getWordPos $temp $pos3 "[0;35m[[31mOwned by[35m]"
-			if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
-				#setVar $FAKETRADERS[($fakeTraderCount+1)] $temp
-				add $fakeTraderCount 1
-			end
-			getText $fakeData $temp $STARTLINE $ENDLINE 
-		end
+			
 	end
+		
+elseif ($posShips > 0)
+	getText $sectorData $fakeData "[1;32mSector  [33m:" "[0m[33mShips   [1m:"
+	setVar $fakeData $STARTLINE&$fakeData
+	getText $fakeData $temp $STARTLINE $ENDLINE
+	setVar $fakeTraderCount 0
+	while ($temp <> "")
+		getLength $STARTLINE&$temp&$ENDLINE $length
+		cutText $fakeData $fakeData ($length+1) 9999
+		stripText $temp $STARTLINE
+		stripText $temp "  "
+		stripText $temp $ENDLINE
+		getWordPos $temp $pos "33m,[0;32m w/ "
+		getWordPos $temp $pos2 "[33m, [0;32mwith"
+		getWordPos $temp $pos3 "[0;35m[[31mOwned by[35m]"
+		if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
+			#setVar $FAKETRADERS[($fakeTraderCount+1)] $temp
+			add $fakeTraderCount 1
+		end
+		getText $fakeData $temp $STARTLINE $ENDLINE 
+
+	end
+else
+	getText $sectorData $fakeData "[1;32mSector  [33m:" "[0m[1;32mWarps to Sector(s) [33m:"
+	setVar $fakeData $STARTLINE&$fakeData
+	getText $fakeData $temp $STARTLINE $ENDLINE 
+	setVar $fakeTraderCount 0
+	while ($temp <> "")
+		getLength $STARTLINE&$temp&$ENDLINE $length
+		cutText $fakeData $fakeData ($length+1) 9999 
+		stripText $temp $STARTLINE
+		stripText $temp "  "
+		stripText $temp $ENDLINE
+		getWordPos $temp $pos "33m,[0;32m w/ "
+		getWordPos $temp $pos2 "[33m, [0;32mwith"
+		getWordPos $temp $pos3 "[0;35m[[31mOwned by[35m]"
+		if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
+			#setVar $FAKETRADERS[($fakeTraderCount+1)] $temp
+			add $fakeTraderCount 1
+		end
+		getText $fakeData $temp $STARTLINE $ENDLINE 
+	end
+end
 return
 
 
 
 :getSectorData
-		killalltriggers
-		gosub :player~quikstats
-		if ($player~CURRENT_PROMPT = "Citadel")
-			send "s* "
-		else
-			send "** "
-		end
-	setVar $sectorData ""
+killalltriggers
+gosub :player~quikstats
+if ($player~CURRENT_PROMPT = "Citadel")
+	send "s* "
+else
+	send "** "
+end
+setVar $sectorData ""
 	
 	:sectorsline_cit_kill
-		killTrigger getLine
-		setVar $line CURRENTANSILINE
-		setVar $line $STARTLINE&$line&$ENDLINE
-		setVar $sectorData $sectorData&$line
-		getWordPos $line $pos "Warps to Sector(s) "
-		if ($pos > 0)
-			goto :gotSectorData
-		else
-			setTextLineTrigger getLine :sectorsline_cit_kill
-		end
-		pause
+	killTrigger getLine
+	setVar $line CURRENTANSILINE
+	setVar $line $STARTLINE&$line&$ENDLINE
+	setVar $sectorData $sectorData&$line
+	getWordPos $line $pos "Warps to Sector(s) "
+	if ($pos > 0)
+		goto :gotSectorData
+	else
+		setTextLineTrigger getLine :sectorsline_cit_kill
+	end
+	pause
 
 	:gotSectorData
-		killalltriggers
-		goSub :getTraders
-		goSub :getEmptyShips
-		goSub :getFakeTraders
+	killalltriggers
+	goSub :getTraders
+	goSub :getEmptyShips
+	goSub :getFakeTraders
 return
 
 #INCLUDES:

@@ -1,22 +1,28 @@
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :FIGHTERS~DEPLOY
 # Deploy fighters to sector.  Uses the following variables which can be set:
-# $fighters~personal		Make fighters personal (TRUE/FALSE; default=corporate)
-# $fighters~toll			Drop toll fighters (default=defensive)
+# $fighters~personal	Make fighters personal (TRUE/FALSE; default=corporate)
+# $fighters~toll		Drop toll fighters (default=defensive)
 # $fighters~offensive	Drop offensive fighters (default=defensive)
 # $fighters~amount		Amount of fighters to deploy (required)
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+loadvar $map~stardock
+gosub :quikstats
 
-gosub :player~quikstats
+if (($player~current_sector  < 11) or ($player~current_sector  = $map~stardock))
+	setvar $switchboard~message "Can't deploy figs in fed*"
+	gosub :switchboard~switchboard
+	return
+end
+
 if ($bot~startingLocation = "Citadel")
 	if ($PLAYER~CURRENT_PROMPT = "Citadel")
 		send " q "
 		gosub :PLANET~getPlanetInfo
 		send " q "
-		gosub :player~quikstats
 	elseif ($PLAYER~CURRENT_PROMPT = "Planet")
+		gosub :PLANET~getPlanetInfo
 		send " q "
-		gosub :player~quikstats
 	end
 end
 if ($personal)
@@ -38,12 +44,27 @@ else
 end
 send " f"
 
-waiton "fighters available."
-getword currentline $available_fighters 3
-stripText $available_fighters ","
-stripText $available_fighters " "
+setTextLineTrigger nocontrol :nocontrol "These fighters are not under your control."
+setTextLineTrigger abletodeploy :abletodeploy "fighters available."
+setTextLineTrigger cansupport :cansupport "Your ship can support"
+pause
 
-waitOn "Your ship can support up to"
+:nocontrol
+killalltriggers
+setvar $switchboard~message "We don't control the figs in this sector!*"
+gosub :switchboard~switchboardsend
+gosub :xenter~run
+return
+
+:abletodeploy
+killtrigger nocontrol
+killtrigger abletodeploy
+getWord CURRENTLINE $available_fighters 3
+striptext $available_fighters ","
+striptext $available_fighters " "
+pause
+
+:cansupport
 getWord CURRENTLINE $ftrs_to_leave 10
 getWord CURRENTLINE $ship_fighters 7
 stripText $ftrs_to_leave ","
@@ -62,7 +83,8 @@ else
 end
 
 send " " $ftrs_to_leave " * " $owner " " $type
-gosub :player~quikstats
+
+gosub :player~currentprompt
 if ($bot~startingLocation = "Citadel")
 	if ($PLAYER~CURRENT_PROMPT = "Command")
 		gosub :PLANET~landingSub
@@ -72,9 +94,10 @@ if ($bot~startingLocation = "Citadel")
 	end
 end
 
-setVar $SWITCHBOARD~message $ftrs_to_leave&" "&$owner_label&" "&$type_label&" fighters have been deployed.*"
-gosub :SWITCHBOARD~switchboard
+#setVar $SWITCHBOARD~message $ftrs_to_leave&" "&$owner_label&" "&$type_label&" fighters have been deployed.*"
+#gosub :SWITCHBOARD~switchboard
 
 return
 
 include "source\include\planet"
+include "source\include\switchboard"

@@ -87,20 +87,20 @@ end
 
 
 :wait_for_command
-	setVar $HELP~HELP[1]  $HELP~TAB&"   PARAM - Displays sector parameters saved in game."
-	setVar $HELP~HELP[2]  $HELP~TAB&"   "
-	setVar $HELP~HELP[3]  $HELP~TAB&"   - param [sector]  "
-	setVar $HELP~HELP[4]  $HELP~TAB&"        Displays all bot sector parameters "
-	setVar $HELP~HELP[5]  $HELP~TAB&"          (FIGSEC, MINESEC, LIMPSEC, MSLSEC, BUSTED, PSECTOR)"
-	setVar $HELP~HELP[6]  $HELP~TAB&"   "
-	setVar $HELP~HELP[7]  $HELP~TAB&"   - param [param]"
-	setVar $HELP~HELP[8]  $HELP~TAB&"        Displays all sectors where that param is non-zero/non-blank"
-	setVar $HELP~HELP[9]  $HELP~TAB&"   "
-	gosub :HELP~HELPFILE
+setVar $HELP~HELP[1]  $HELP~TAB&"   PARAM - Displays sector parameters saved in game."
+setVar $HELP~HELP[2]  $HELP~TAB&"   "
+setVar $HELP~HELP[3]  $HELP~TAB&"   - param [sector]  "
+setVar $HELP~HELP[4]  $HELP~TAB&"        Displays all bot sector parameters "
+setVar $HELP~HELP[5]  $HELP~TAB&"          (FIGSEC, MINESEC, LIMPSEC, MSLSEC, BUSTED, PSECTOR)"
+setVar $HELP~HELP[6]  $HELP~TAB&"   "
+setVar $HELP~HELP[7]  $HELP~TAB&"   - param [param]"
+setVar $HELP~HELP[8]  $HELP~TAB&"        Displays all sectors where that param is non-zero/non-blank"
+setVar $HELP~HELP[9]  $HELP~TAB&"   "
+gosub :HELP~HELPFILE
 halt
 
 :killthetriggers
-    killalltriggers
+killalltriggers
 return
 
 
