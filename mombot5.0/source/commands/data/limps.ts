@@ -1,73 +1,71 @@
 logging "OFF"
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-loadvar $BOT~LIMP_COUNT_FILE
+gosub :loadvars~loadvars
+gosub :help~initialize
+loadvar $bot~limp_count_file
 
-setvar $HELP~HELP[1] $HELP~TAB&"Refreshes Deployed Limpet List"
-setvar $HELP~HELP[2] $HELP~TAB&"  - Will show difference since last command was run."
-gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&"Refreshes Deployed Limpet List"
+setvar $help~help[2] $help~tab&"  - Will show difference since last command was run."
+gosub :help~helpfile
 
-setvar $SWITCHBOARD~MESSAGE "Limpet Report starting up!*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "Limpet Report starting up!*"
+gosub :switchboard~switchboard
 
-loadvar $LIMP_COUNT_FILE
-loadvar $BOT~LIMP_FILE
-:LIMPS
+loadvar $limp_count_file
+loadvar $bot~limp_file
 
-
-
-gosub :PLAYER~CURRENTPROMPT
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-if ($STARTINGLOCATION = "Command")
-  goto :START_LIMPS
-elseif ($STARTINGLOCATION = "Citadel")
-  send "q"
-  gosub :PLANET~GETPLANETINFO
-  send "q"
-elseif ($STARTINGLOCATION = "Planet")
-  gosub :PLANET~GETPLANETINFO
-  send "q"
+:limps
+gosub :player~currentprompt
+setvar $startinglocation $player~current_prompt
+if ($startinglocation = "Command")
+	goto :start_limps
+elseif ($startinglocation = "Citadel")
+	send "q"
+	gosub :planet~getplanetinfo
+	send "q"
+elseif ($startinglocation = "Planet")
+	gosub :planet~getplanetinfo
+	send "q"
 else
-  setvar $SWITCHBOARD~MESSAGE "Unknown Prompt*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+	setvar $switchboard~message "Unknown Prompt*"
+	gosub :switchboard~switchboard
+	halt
 end
-:START_LIMPS
 
-gosub :PLAYER~TURNOFFANSI
-setvar $SWITCHBOARD~MESSAGE "Loading current limpet locations. . .*"
-gosub :SWITCHBOARD~SWITCHBOARD
-fileexists $GFILE_CHK $BOT~LIMP_COUNT_FILE
-if ($GFILE_CHK = 1)
-  read $BOT~LIMP_COUNT_FILE $PREVIOUSCOUNT 1
+:start_limps
+gosub :player~turnoffansi
+setvar $switchboard~message "Loading current limpet locations. . .*"
+gosub :switchboard~switchboard
+fileexists $gfile_chk $bot~limp_count_file
+if ($gfile_chk = 1)
+	read $bot~limp_count_file $previouscount 1
 else
-  setvar $PREVIOUSCOUNT 0
+	setvar $previouscount 0
 end
-gosub :REFRESHLIMPS
-gosub :PLAYER~TURNONANSI
-setvar $PERCENT (($COUNT * 100) / SECTORS)
-setvar $GRIDCHANGE ($COUNT - $PREVIOUSCOUNT)
-if ($GRIDCHANGE > 0)
-  setvar $GRIDCHANGE "+"&$GRIDCHANGE
+gosub :refreshlimps
+gosub :player~turnonansi
+setvar $percent (($count * 100) / sectors)
+setvar $gridchange ($count - $previouscount)
+if ($gridchange > 0)
+	setvar $gridchange "+"&$gridchange
 end
 
-
-setvar $PLAYER~LIMPETSGRIDDED TRUE
-if (($STARTINGLOCATION = "Citadel") or ($STARTINGLOCATION = "Planet"))
-  gosub :PLANET~LANDINGSUB
+setvar $player~limpetsgridded true
+if (($startinglocation = "Citadel") or ($startinglocation = "Planet"))
+	gosub :planet~landingsub
 end
-if ($SWITCHBOARD~SELF_COMMAND = FALSE)
-  setvar $SWITCHBOARD~SELF_COMMAND 2
+if ($switchboard~self_command = false)
+	setvar $switchboard~self_command 2
 end
-setvar $SWITCHBOARD~MESSAGE "          - Limpet Grid Report -*          - "&$COUNT&" sectors, "&$PERSONALCOUNT&" personal. ("&$PERCENT&"%) ("&$GRIDCHANGE&" Change)*          - Activated  Limpet  Scan*            *             Sector    Personal/Corp*            ========================*"&$LIMPETOUTPUT&"*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "          - Limpet Grid Report -*          - "&$count&" sectors, "&$personalcount&" personal. ("&$percent&"%) ("&$gridchange&" Change)*          - Activated  Limpet  Scan*            *             Sector    Personal/Corp*            ========================*"&$limpetoutput&"*"
+gosub :switchboard~switchboard
 
 halt
-:REFRESHLIMPS
-gosub :MINES~READLIMPLIST
-setvar $COUNT $MINES~COUNT
-setvar $PERSONALCOUNT $MINES~PERSONALCOUNT
-setvar $LIMPETOUTPUT $MINES~LIMPETOUTPUT
+
+:refreshlimps
+gosub :mines~readlimplist
+setvar $count $mines~count
+setvar $personalcount $mines~personalcount
+setvar $limpetoutput $mines~limpetoutput
 return
 
 # includes:

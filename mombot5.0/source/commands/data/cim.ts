@@ -1,58 +1,58 @@
 logging "OFF"
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-loadvar $PLAYER~UNLIMITEDGAME
-loadvar $GAME~PTRADESETTING
-loadvar $BOT~BOT_TURN_LIMIT
-loadvar $GAME~PORT_MAX
-loadvar $GAME~PTRADESETTING
-loadvar $BOT~MCIC_FILE
+gosub :loadvars~loadvars
+gosub :help~initialize
+loadvar $player~unlimitedgame
+loadvar $game~ptradesetting
+loadvar $bot~bot_turn_limit
+loadvar $game~port_max
+loadvar $game~ptradesetting
+loadvar $bot~mcic_file
 
-setvar $HELP~HELP[1] $HELP~TAB&"     Computer Interrogation Mode: Port Report     "
-setvar $HELP~HELP[2] $HELP~TAB&"           "
-setvar $HELP~HELP[3] $HELP~TAB&"    cim {upgrade level} {warps}   "
-setvar $HELP~HELP[4] $HELP~TAB&"                             "
-setvar $HELP~HELP[5] $HELP~TAB&"Options:"
-setvar $HELP~HELP[6] $HELP~TAB&"    {upgrade level} - Amount on port to be considered "
-setvar $HELP~HELP[7] $HELP~TAB&"                      upgraded"
-setvar $HELP~HELP[8] $HELP~TAB&"                                            "
-setvar $HELP~HELP[9] $HELP~TAB&"    {warps}         - Perform warp data instead of "
-setvar $HELP~HELP[10] $HELP~TAB&"                      port CIM"
-gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&"     Computer Interrogation Mode: Port Report     "
+setvar $help~help[2] $help~tab&"           "
+setvar $help~help[3] $help~tab&"    cim {upgrade level} {warps}   "
+setvar $help~help[4] $help~tab&"                             "
+setvar $help~help[5] $help~tab&"Options:"
+setvar $help~help[6] $help~tab&"    {upgrade level} - Amount on port to be considered "
+setvar $help~help[7] $help~tab&"                      upgraded"
+setvar $help~help[8] $help~tab&"                                            "
+setvar $help~help[9] $help~tab&"    {warps}         - Perform warp data instead of "
+setvar $help~help[10] $help~tab&"                      port CIM"
+gosub :help~helpfile
 
-setvar $SWITCHBOARD~MESSAGE "CIM starting up!*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "CIM starting up!*"
+gosub :switchboard~switchboard
 
-setvar $PLAYER~SAVE TRUE
-:CIM
+setvar $player~save true
 
-gosub :PLAYER~QUIKSTATS
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-isnumber $TEST $BOT~PARM1
-if ($TEST)
-  if ($BOT~PARM1 > 0)
-    setvar $UPGRADELIMIT $BOT~PARM1
-  else
-    setvar $UPGRADELIMIT 10000
-  end
+:cim
+gosub :player~quikstats
+setvar $startinglocation $player~current_prompt
+isnumber $test $bot~parm1
+if ($test)
+	if ($bot~parm1 > 0)
+		setvar $upgradelimit $bot~parm1
+	else
+		setvar $upgradelimit 10000
+	end
 else
-  setvar $UPGRADELIMIT 10000
+	setvar $upgradelimit 10000
 end
-setvar $SWITCHBOARD~MESSAGE "Stand By - CIMMING . . .*"
-gosub :SWITCHBOARD~SWITCHBOARD
-if (($BOT~PARM1 = "warps") or ($BOT~PARM1 = "warp"))
-  send "^iq"
-  setvar $SWITCHBOARD~MESSAGE "Warp Data CIM Complete*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+setvar $switchboard~message "Stand By - CIMMING . . .*"
+gosub :switchboard~switchboard
+if (($bot~parm1 = "warps") or ($bot~parm1 = "warp"))
+	send "^iq"
+	setvar $switchboard~message "Warp Data CIM Complete*"
+	gosub :switchboard~switchboard
+	halt
 else
-  send "^rq"
+	send "^rq"
 end
 waitfor ": ENDINTERROG"
-setarray $UPDATE~MCIC SECTORS
-setvar $UPDATE~STARTINGLOCATION $STARTINGLOCATION
-setvar $UPDATE~UPGRADELIMIT $UPGRADELIMIT
-gosub :UPDATE~MCIC_LOOPER
+setarray $update~mcic sectors
+setvar $update~startinglocation $startinglocation
+setvar $update~upgradelimit $upgradelimit
+gosub :update~mcic_looper
 halt
 
 # includes:

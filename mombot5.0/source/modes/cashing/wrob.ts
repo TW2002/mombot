@@ -1,1895 +1,1849 @@
 logging "OFF"
-loadvar $BOT_NAME
-loadvar $UNLIMITEDGAME
-loadvar $PTRADESETTING
-loadvar $BOT_TURN_LIMIT
-loadvar $USER_COMMAND_LINE
-loadvar $PARM1
-loadvar $PARM2
-loadvar $PARM3
-loadvar $PARM4
-loadvar $PARM5
-loadvar $PARM6
-loadvar $PARM7
-loadvar $PARM8
-loadvar $ATOMIC_COST
-loadvar $BEACON_COST
-loadvar $CORBO_COST
-loadvar $CLOAK_COST
-loadvar $PROBE_COST
-loadvar $PLANET_SCANNER_COST
-loadvar $LIMPET_COST
-loadvar $ARMID_COST
-loadvar $PHOTON_COST
-loadvar $HOLO_COST
-loadvar $DENSITY_COST
-loadvar $DISRUPTOR_COST
-loadvar $GENESIS_COST
-loadvar $TWARPI_COST
-loadvar $TWARPII_COST
-loadvar $PSYCHIC_COST
-loadvar $PHOTONS_ENABLED
-loadvar $PHOTON_DURATION
-loadvar $MAX_COMMANDS
-loadvar $GOLDENABLED
-loadvar $MBBS
-loadvar $MULTIPLE_PHOTONS
-loadvar $COLONIST_REGEN
-loadvar $PTRADESETTING
-loadvar $STEAL_FACTOR
-loadvar $ROB_FACTOR
-loadvar $CLEAR_BUST_DAYS
-loadvar $GAME~STEAL_FACTOR
-loadvar $GAME~ROB_FACTOR
-loadvar $GAME~CLEAR_BUST_DAYS
-loadvar $PORT_MAX
-loadvar $GAME~PORT_MAX
-loadvar $PRODUCTION_RATE
-loadvar $PRODUCTION_REGEN
-loadvar $DEBRIS_LOSS
-loadvar $RADIATION_LIFETIME
-loadvar $LIMPET_REMOVAL_COST
-loadvar $MAX_PLANETS_PER_SECTOR
+loadvar $bot_name
+loadvar $unlimitedgame
+loadvar $ptradesetting
+loadvar $bot_turn_limit
+loadvar $user_command_line
+loadvar $parm1
+loadvar $parm2
+loadvar $parm3
+loadvar $parm4
+loadvar $parm5
+loadvar $parm6
+loadvar $parm7
+loadvar $parm8
+loadvar $atomic_cost
+loadvar $beacon_cost
+loadvar $corbo_cost
+loadvar $cloak_cost
+loadvar $probe_cost
+loadvar $planet_scanner_cost
+loadvar $limpet_cost
+loadvar $armid_cost
+loadvar $photon_cost
+loadvar $holo_cost
+loadvar $density_cost
+loadvar $disruptor_cost
+loadvar $genesis_cost
+loadvar $twarpi_cost
+loadvar $twarpii_cost
+loadvar $psychic_cost
+loadvar $photons_enabled
+loadvar $photon_duration
+loadvar $max_commands
+loadvar $goldenabled
+loadvar $mbbs
+loadvar $multiple_photons
+loadvar $colonist_regen
+loadvar $ptradesetting
+loadvar $steal_factor
+loadvar $rob_factor
+loadvar $clear_bust_days
+loadvar $game~steal_factor
+loadvar $game~rob_factor
+loadvar $game~clear_bust_days
+loadvar $port_max
+loadvar $game~port_max
+loadvar $production_rate
+loadvar $production_regen
+loadvar $debris_loss
+loadvar $radiation_lifetime
+loadvar $limpet_removal_cost
+loadvar $max_planets_per_sector
 loadvar $bot~folder
-if (($PORT_MAX = 0) and ($GAME~PORT_MAX > 0))
-  setvar $PORT_MAX $GAME~PORT_MAX
-  savevar $PORT_MAX
+if (($port_max = 0) and ($game~port_max > 0))
+	setvar $port_max $game~port_max
+	savevar $port_max
 end
-if (($STEAL_FACTOR = 0) and ($GAME~STEAL_FACTOR > 0))
-  setvar $STEAL_FACTOR $GAME~STEAL_FACTOR
-  savevar $STEAL_FACTOR
+if (($steal_factor = 0) and ($game~steal_factor > 0))
+	setvar $steal_factor $game~steal_factor
+	savevar $steal_factor
 end
-if (($ROB_FACTOR = 0) and ($GAME~ROB_FACTOR > 0))
-  setvar $ROB_FACTOR $GAME~ROB_FACTOR
-  savevar $ROB_FACTOR
+if (($rob_factor = 0) and ($game~rob_factor > 0))
+	setvar $rob_factor $game~rob_factor
+	savevar $rob_factor
 end
-if (($CLEAR_BUST_DAYS = 0) and ($GAME~CLEAR_BUST_DAYS > 0))
-  setvar $CLEAR_BUST_DAYS $GAME~CLEAR_BUST_DAYS
-  savevar $CLEAR_BUST_DAYS
+if (($clear_bust_days = 0) and ($game~clear_bust_days > 0))
+	setvar $clear_bust_days $game~clear_bust_days
+	savevar $clear_bust_days
 end
-setvar $NO_CREDITS_FILE $bot~folder&"/MOM_"&GAMENAME&"_No_Credits.txt"
+setvar $no_credits_file $bot~folder&"/MOM_"&gamename&"_No_Credits.txt"
 
-
-loadvar $PASSWORD
-loadvar $NEWPROMPT
-loadvar $SURROUNDAVOIDSHIELDEDONLY
-loadvar $SURROUNDAUTOCAPTURE
-loadvar $SURROUNDAVOIDALLPLANETS
-loadvar $SURROUNDDONTAVOID
-loadvar $STARDOCK
-loadvar $BACKDOOR
-loadvar $RYLOS
-loadvar $ALPHA_CENTAURI
-loadvar $HOME_SECTOR
-loadvar $SURROUNDFIGS
-loadvar $SURROUNDLIMP
-loadvar $SURROUNDMINE
-loadvar $SURROUNDOVERWRITE
-loadvar $SURROUNDPASSIVE
-loadvar $SURROUNDNORMAL
-loadvar $USERNAME
-loadvar $LETTER
-loadvar $DEFENDERCAPPING
-loadvar $BOT_TURN_LIMIT
-loadvar $SAFE_SHIP
-loadvar $BOT_TEAM_NAME
-loadvar $SUBSPACE
-loadvar $COMMAND
-goto :WROB_START
+loadvar $password
+loadvar $newprompt
+loadvar $surroundavoidshieldedonly
+loadvar $surroundautocapture
+loadvar $surroundavoidallplanets
+loadvar $surrounddontavoid
+loadvar $stardock
+loadvar $backdoor
+loadvar $rylos
+loadvar $alpha_centauri
+loadvar $home_sector
+loadvar $surroundfigs
+loadvar $surroundlimp
+loadvar $surroundmine
+loadvar $surroundoverwrite
+loadvar $surroundpassive
+loadvar $surroundnormal
+loadvar $username
+loadvar $letter
+loadvar $defendercapping
+loadvar $bot_turn_limit
+loadvar $safe_ship
+loadvar $bot_team_name
+loadvar $subspace
+loadvar $command
+goto :wrob_start
 include "source\include\planethaggle"
 include "source\include\sector"
-:WROB_START
 
-fileexists $DOESHELPFILEEXIST "scripts\MOMBot\Help\"&$COMMAND&".txt"
-if ($DOESHELPFILEEXIST <> TRUE)
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "- wrob [minimum rob amount] {upgraded} {skipcim}            "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    Travels universe robbing ports                          "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "                                                            "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    [minimum rob amount]                                    "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "       - Amount that must be on port before attempting rob  "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    [upgraded]                                              "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "       - Will only visit upgraded ports                     "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    [skipcim]                                               "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "       - Will skip running CIM port report before running   "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    [CLEAR_EMPTY]                                           "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "       - Will delete the empty port file                    "
-  setvar $switchboard~message "Writing help file for this command in Help directory.*"
-  gosub :switchboard~switchboard
-end
-:MERCHANT
+:wrob_start
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Travels universe robbing ports."
+setvar $help~help[2] $help~tab&"       "
+setvar $help~help[3] $help~tab&"  Usage: wrob [minimum rob amount] {upgraded} {skipcim} {clear_empty}"
+setvar $help~help[4] $help~tab&"       "
+setvar $help~help[5] $help~tab&"Options:"
+setvar $help~help[6] $help~tab&"   [minimum rob amount]  Amount that must be on port before robbing."
+setvar $help~help[7] $help~tab&"   {upgraded}            Only visit upgraded ports."
+setvar $help~help[8] $help~tab&"   {skipcim}             Skip CIM port report before running."
+setvar $help~help[9] $help~tab&"   {clear_empty}         Delete the empty port file."
+gosub :help~helpfile
 
-gosub :PLAYER~QUIKSTATS
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-if ($STARTINGLOCATION <> "Citadel")
-  setvar $switchboard~message "You must run World Rob command from a Citadel prompt.*"
-  gosub :switchboard~switchboard
-  halt
+:merchant
+gosub :player~quikstats
+setvar $startinglocation $player~current_prompt
+if ($startinglocation <> "Citadel")
+	setvar $switchboard~message "You must run World Rob command from a Citadel prompt.*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-setvar $MINIMUMPORT $PARM1
-isnumber $NUMBER $MINIMUMPORT
-if ($NUMBER <> 1)
-  setvar $switchboard~message "Minimum rob amount entered is not a number!*"
-  gosub :switchboard~switchboard
-  halt
+setvar $minimumport $parm1
+isnumber $number $minimumport
+if ($number <> 1)
+	setvar $switchboard~message "Minimum rob amount entered is not a number!*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($MINIMUMPORT <= 0)
-  setvar $switchboard~message "Minimum rob amount must be greater than 0.*"
-  gosub :switchboard~switchboard
-  halt
+if ($minimumport <= 0)
+	setvar $switchboard~message "Minimum rob amount must be greater than 0.*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-getwordpos $USER_COMMAND_LINE $POS "cim"
-if ($POS > 0)
-  setvar $SKIPCIM TRUE
+getwordpos $user_command_line $pos "cim"
+if ($pos > 0)
+	setvar $skipcim true
 else
-  setvar $SKIPCIM FALSE
+	setvar $skipcim false
 end
 
-getwordpos $USER_COMMAND_LINE $POS "upgrade"
-if ($POS > 0)
-  setvar $VISITUPGRADED TRUE
+getwordpos $user_command_line $pos "upgrade"
+if ($pos > 0)
+	setvar $visitupgraded true
 else
-  setvar $VISITUPGRADED FALSE
+	setvar $visitupgraded false
 end
-:MERCHANT
 
+:merchant
 killalltriggers
-setarray $CHECKEDPORTS SECTORS
-setarray $QUE SECTORS
-setarray $CHECKED SECTORS
+setarray $checkedports sectors
+setarray $que sectors
+setarray $checked sectors
 send "q"
 waiton "Planet command (?"
-gosub :GETPLANETINFO
+gosub :getplanetinfo
 send "c"
-if ($CITADEL < 4)
-  setvar $switchboard~message "You must run World Rob from at least a level 4 planet.*"
-  gosub :switchboard~switchboard
-  halt
+if ($citadel < 4)
+	setvar $switchboard~message "You must run World Rob from at least a level 4 planet.*"
+	gosub :switchboard~switchboard
+	halt
 end
-gosub :PLAYER~QUIKSTATS
-setvar $SECTORCOUNT 10
-setvar $TOTALHOLDS 0
-setvar $SPENTCREDITS 0
-setvar $STARTINGSECTOR $PLAYER~CURRENT_SECTOR
+gosub :player~quikstats
+setvar $sectorcount 10
+setvar $totalholds 0
+setvar $spentcredits 0
+setvar $startingsector $player~current_sector
 
-if ($SKIPCIM = FALSE)
-  setvar $switchboard~message "World Rob Downloading Current Port CIM Data - Comms Off*"
-  gosub :switchboard~switchboard
-  send "^rq"
-  waitfor ": ENDINTERROG"
-  setvar $switchboard~message "World Rob CIM Port Data Complete - Comms Back On*"
-  gosub :switchboard~switchboard
+if ($skipcim = false)
+	setvar $switchboard~message "World Rob Downloading Current Port CIM Data - Comms Off*"
+	gosub :switchboard~switchboard
+	send "^rq"
+	waitfor ": ENDINTERROG"
+	setvar $switchboard~message "World Rob CIM Port Data Complete - Comms Back On*"
+	gosub :switchboard~switchboard
 end
-lowercase $PARM1
-if ($PARM1 = "clear_empty")
-  delete $NO_CREDITS_FILE
-  setvar $switchboard~message "'No Money' file for this bot has been cleared.*"
-  gosub :switchboard~switchboard
-  halt
+lowercase $parm1
+if ($parm1 = "clear_empty")
+	delete $no_credits_file
+	setvar $switchboard~message "'No Money' file for this bot has been cleared.*"
+	gosub :switchboard~switchboard
+	halt
 end
-setarray $EMPTY_GRID SECTORS
-fileexists $EXISTS $NO_CREDITS_FILE
-if ($EXISTS)
-  setvar $switchboard~message "Reading 'No Money' Ports from file..*"
-  gosub :switchboard~switchboard
-  setvar $READ_COUNT 1
-  read $NO_CREDITS_FILE $TEMP $READ_COUNT
-  while ($TEMP <> "EOF")
-    getword $TEMP $BUSTLOCATION 1
-    setvar $EMPTY_GRID[$BUSTLOCATION] TRUE
-    add $READ_COUNT 1
-    read $NO_CREDITS_FILE $TEMP $READ_COUNT
-  end
+setarray $empty_grid sectors
+fileexists $exists $no_credits_file
+if ($exists)
+	setvar $switchboard~message "Reading 'No Money' Ports from file..*"
+	gosub :switchboard~switchboard
+	setvar $read_count 1
+	read $no_credits_file $temp $read_count
+	while ($temp <> "EOF")
+		getword $temp $bustlocation 1
+		setvar $empty_grid[$bustlocation] true
+		add $read_count 1
+		read $no_credits_file $temp $read_count
+	end
 else
-  setvar $switchboard~message "No 'No Money' file, starting clean..*"
-  gosub :switchboard~switchboard
+	setvar $switchboard~message "No 'No Money' file, starting clean..*"
+	gosub :switchboard~switchboard
 end
 
-setvar $INFINITY 1000
-while (1 < $INFINITY)
-  if (($UNLIMITEDGAME = FALSE) and ($PLAYER~TURNS <= $BOT_TURN_LIMIT))
-    setvar $switchboard~message "Turns too low to continue.*"
-    gosub :switchboard~switchboard
-    goto :DONEWORLDROB
-  end
-  setvar $ISFIGGED FALSE
-  while ($ISFIGGED <> TRUE)
-    gosub :FINDNEARESTROBPORT
-    gosub :CHECKPORT
-    if ($FOUNDPORT = TRUE)
-      gosub :PWARP
-      getsectorparameter $NEARFIG "FIGSEC" $ISFIGGED
-    end
-  end
-  gosub :ROB
-  gosub :PLAYER~QUIKSTATS
+setvar $infinity 1000
+while (1 < $infinity)
+	if (($unlimitedgame = false) and ($player~turns <= $bot_turn_limit))
+		setvar $switchboard~message "Turns too low to continue.*"
+		gosub :switchboard~switchboard
+		goto :doneworldrob
+	end
+	setvar $isfigged false
+	while ($isfigged <> true)
+		gosub :findnearestrobport
+		gosub :checkport
+		if ($foundport = true)
+			gosub :pwarp
+			getsectorparameter $nearfig "FIGSEC" $isfigged
+		end
+	end
+	gosub :rob
+	gosub :player~quikstats
 end
-:DONEWORLDROB
 
-send "p"&$STARTINGSECTOR&"*y"
+:doneworldrob
+send "p"&$startingsector&"*y"
 setvar $switchboard~message "World Rob completed.*"
 gosub :switchboard~switchboard
 halt
-:CHECKPORT
 
-setvar $FOUNDPORT FALSE
-send "c r "&$NEARFIG&"*q "
-waiton "What sector is the port in? ["&$PLAYER~CURRENT_SECTOR&"] "&$NEARFIG
+:checkport
+setvar $foundport false
+send "c r "&$nearfig&"*q "
+waiton "What sector is the port in? ["&$player~current_sector&"] "&$nearfig
 killalltriggers
-settextlinetrigger CRCHECKNOTHERE :CHECKPORTTRYAGAIN "I have no information about a port in that sector."
-settextlinetrigger CRNEVERBEENTHERE :CHECKPORT2 "You have never visted sector"
-settextlinetrigger CRCLASS0 :CHECKPORTTRYAGAIN "A  Cargo holds     :"
+settextlinetrigger crchecknothere :checkporttryagain "I have no information about a port in that sector."
+settextlinetrigger crneverbeenthere :checkport2 "You have never visted sector"
+settextlinetrigger crclass0 :checkporttryagain "A  Cargo holds     :"
 waiton " Items     Status  Trading % of max OnBoard"
-:CHECKPORT2
-killalltriggers
-setvar $FOUNDPORT TRUE
-:CHECKPORTTRYAGAIN
 
+:checkport2
 killalltriggers
-if ($FOUNDPORT <> TRUE)
-  setvar $CHECKEDPORTS[$NEARFIG] TRUE
+setvar $foundport true
+
+:checkporttryagain
+killalltriggers
+if ($foundport <> true)
+	setvar $checkedports[$nearfig] true
 end
 return
-:PWARP
 
+:pwarp
 killalltriggers
-send "p"&$NEARFIG&"*y"
-settextlinetrigger WARPED :EMPTYPORT2 "-=-=-=- Planetary TransWarp Drive Engaged! -=-=-=-"
-settextlinetrigger SAME :EMPTYPORT2 "You are already in that sector!"
-settextlinetrigger DIDNOTWARP :NOFIGATLOCATION "Your own fighters must be in the destination to make a safe jump."
-settextlinetrigger NOTENOUGHFUEL :DONENOFUEL2 "You do not have enough Fuel Ore on this planet to make the jump."
+send "p"&$nearfig&"*y"
+settextlinetrigger warped :emptyport2 "-=-=-=- Planetary TransWarp Drive Engaged! -=-=-=-"
+settextlinetrigger same :emptyport2 "You are already in that sector!"
+settextlinetrigger didnotwarp :nofigatlocation "Your own fighters must be in the destination to make a safe jump."
+settextlinetrigger notenoughfuel :donenofuel2 "You do not have enough Fuel Ore on this planet to make the jump."
 pause
-:EMPTYPORT2
-setsectorparameter $NEARFIG "FIGSEC" TRUE
+
+:emptyport2
+setsectorparameter $nearfig "FIGSEC" true
 return
-:NOFIGATLOCATION
-setvar $CHECKEDPORTS[$NEARFIG] TRUE
-setsectorparameter $NEARFIG "FIGSEC" FALSE
+
+:nofigatlocation
+setvar $checkedports[$nearfig] true
+setsectorparameter $nearfig "FIGSEC" false
 return
-:DONENOFUEL2
+
+:donenofuel2
 halt
-:FINDNEARESTROBPORT
 
-
-setvar $BOTTOM 1
-setvar $TOP 1
-setarray $CHECKED SECTORS
-if ($LASTSTEAL > 0)
-  setvar $QUE[1] $LASTSTEAL
-  setvar $CHECKED[$LASTSTEAL] 1
+:findnearestrobport
+setvar $bottom 1
+setvar $top 1
+setarray $checked sectors
+if ($laststeal > 0)
+	setvar $que[1] $laststeal
+	setvar $checked[$laststeal] 1
 else
-  setvar $QUE[1] $PLAYER~CURRENT_SECTOR
-  setvar $CHECKED[$PLAYER~CURRENT_SECTOR] 1
+	setvar $que[1] $player~current_sector
+	setvar $checked[$player~current_sector] 1
 end
-:TRYAGAIN2
-while ($BOTTOM <= $TOP)
 
-  setvar $FOCUS $QUE[$BOTTOM]
+:tryagain2
+while ($bottom <= $top)
 
-  getsectorparameter $FOCUS "BUSTED" $ISBUSTED
-  if ($VISITUPGRADED)
-    setvar $ISUPPED FALSE
-    setvar $UPGRADELIMIT 10000
-    if (PORT.BUYFUEL[$FOCUS] = FALSE)
-      if (PORT.PERCENTFUEL[$FOCUS] <> 0)
-        divide $CURRENTFUEL PORT.PERCENTFUEL[$FOCUS]
-      end
-      if ($CURRENTFUEL > $UPGRADELIMIT)
-        setvar $ISUPPED TRUE
-      end
-    end
-    if (PORT.BUYORG[$FOCUS] = FALSE)
-      setvar $CURRENTORG PORT.ORG[$FOCUS]
-      multiply $CURRENTORG 100
-      if (PORT.PERCENTORG[$FOCUS] <> 0)
-        divide $CURRENTORG PORT.PERCENTORG[$FOCUS]
-      end
-      if ($CURRENTORG > $UPGRADELIMIT)
-        setvar $ISUPPED TRUE
-      end
-    end
+	setvar $focus $que[$bottom]
 
-    if (PORT.BUYEQUIP[$FOCUS] = FALSE)
-      setvar $CURRENTEQUIP PORT.EQUIP[$FOCUS]
-      multiply $CURRENTEQUIP 100
-      if (PORT.PERCENTEQUIP[$FOCUS] <> 0)
-        divide $CURRENTEQUIP PORT.PERCENTEQUIP[$FOCUS]
-      end
-      if ($CURRENTEQUIP > $UPGRADELIMIT)
-        setvar $ISUPPED TRUE
-      end
-    end
-  end
-  getsectorparameter $FOCUS "FIGSEC" $ISFIGGED
-  if (($ISFIGGED = TRUE) and ((($EMPTY_GRID[$FOCUS] <> TRUE) and ((($CHECKEDPORTS[$FOCUS] <> TRUE) and (((PORT.EXISTS[$FOCUS] = TRUE) and ((($ISBUSTED <> TRUE) and ((($FOCUS <> $PLAYER~CURRENT_SECTOR) and ((($FOCUS <> $LASTSTEAL) and (((PORT.CLASS[$FOCUS] <> 0) and (((PORT.CLASS[$FOCUS] <> 8) and ((($VISITUPGRADED = TRUE) and ($ISUPPED = TRUE)) or ($VISITUPGRADED = FALSE)))))))))))))))))))
+	getsectorparameter $focus "BUSTED" $isbusted
+	if ($visitupgraded)
+		setvar $isupped false
+		setvar $upgradelimit 10000
+		if (port.buyfuel[$focus] = false)
+			if (port.percentfuel[$focus] <> 0)
+				divide $currentfuel port.percentfuel[$focus]
+			end
+			if ($currentfuel > $upgradelimit)
+				setvar $isupped true
+			end
+		end
+		if (port.buyorg[$focus] = false)
+			setvar $currentorg port.org[$focus]
+			multiply $currentorg 100
+			if (port.percentorg[$focus] <> 0)
+				divide $currentorg port.percentorg[$focus]
+			end
+			if ($currentorg > $upgradelimit)
+				setvar $isupped true
+			end
+		end
 
-    setvar $NEARFIG $FOCUS
-    return
-  else
-    setvar $CHECKED[$FOCUS] 1
-    setvar $NEARFIG 0
-  end
+		if (port.buyequip[$focus] = false)
+			setvar $currentequip port.equip[$focus]
+			multiply $currentequip 100
+			if (port.percentequip[$focus] <> 0)
+				divide $currentequip port.percentequip[$focus]
+			end
+			if ($currentequip > $upgradelimit)
+				setvar $isupped true
+			end
+		end
+	end
+	getsectorparameter $focus "FIGSEC" $isfigged
+	if (($isfigged = true) and ((($empty_grid[$focus] <> true) and ((($checkedports[$focus] <> true) and (((port.exists[$focus] = true) and ((($isbusted <> true) and ((($focus <> $player~current_sector) and ((($focus <> $laststeal) and (((port.class[$focus] <> 0) and (((port.class[$focus] <> 8) and ((($visitupgraded = true) and ($isupped = true)) or ($visitupgraded = false)))))))))))))))))))
 
-  setvar $A 1
-  while (SECTOR.WARPS[$FOCUS][$A] > 0)
-    setvar $ADJACENT SECTOR.WARPS[$FOCUS][$A]
+		setvar $nearfig $focus
+		return
+	else
+		setvar $checked[$focus] 1
+		setvar $nearfig 0
+	end
 
-    if ($CHECKED[$ADJACENT] = 0)
+	setvar $a 1
+	while (sector.warps[$focus][$a] > 0)
+		setvar $adjacent sector.warps[$focus][$a]
 
-      setvar $CHECKED[$ADJACENT] 1
-      add $TOP 1
-      setvar $QUE[$TOP] $ADJACENT
-    end
-    add $A 1
-  end
+		if ($checked[$adjacent] = 0)
 
-  add $BOTTOM 1
+			setvar $checked[$adjacent] 1
+			add $top 1
+			setvar $que[$top] $adjacent
+		end
+		add $a 1
+	end
+
+	add $bottom 1
 end
 setvar $switchboard~message "Can't find a route to any other ports.*"
 gosub :switchboard~switchboard
 halt
 return
-:ROB
 
-
+:rob
 killalltriggers
-gosub :PLAYER~QUIKSTATS
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+gosub :player~quikstats
+setvar $startinglocation $player~current_prompt
 
-cuttext $PLAYER~ALIGNMENT $NEG_CK 1 1
+cuttext $player~alignment $neg_ck 1 1
 
-striptext $PLAYER~ALIGNMENT "-"
-if (($PLAYER~ALIGNMENT < 100) and ($NEG_CK = "-"))
-  setvar $switchboard~message "Need -100 Alignment Minimum*"
-  gosub :switchboard~switchboard
-  halt
-elseif ($NEG_CK <> "-")
-  setvar $switchboard~message "Need -100 Alignment Minimum*"
-  gosub :switchboard~switchboard
-  halt
+striptext $player~alignment "-"
+if (($player~alignment < 100) and ($neg_ck = "-"))
+	setvar $switchboard~message "Need -100 Alignment Minimum*"
+	gosub :switchboard~switchboard
+	halt
+elseif ($neg_ck <> "-")
+	setvar $switchboard~message "Need -100 Alignment Minimum*"
+	gosub :switchboard~switchboard
+	halt
 end
 send "q q pr * r"
-settextlinetrigger VALID :ROB_CONTINUE "<R> Rob this Port"
-settextlinetrigger NOTVALID :ROB_NOT_VALID "<Q> Quit, nevermind"
+settextlinetrigger valid :rob_continue "<R> Rob this Port"
+settextlinetrigger notvalid :rob_not_valid "<Q> Quit, nevermind"
 pause
-:ROB_CONTINUE
-killtrigger NOTVALID
-settextlinetrigger FAKE :ROB_FAKE "Busted!"
-settextlinetrigger MEGA :ROB_OK "port has in excess of"
-pause
-:ROB_FAKE
 
+:rob_continue
+killtrigger notvalid
+settextlinetrigger fake :rob_fake "Busted!"
+settextlinetrigger mega :rob_ok "port has in excess of"
+pause
+
+:rob_fake
 killalltriggers
-if ($STARTINGLOCATION = "Citadel")
-  gosub :LANDINGSUB
+if ($startinglocation = "Citadel")
+	gosub :landingsub
 end
-setsectorparameter $PLAYER~CURRENT_SECTOR "BUSTED" TRUE
+setsectorparameter $player~current_sector "BUSTED" true
 setvar $switchboard~message "Fake Busted*"
 gosub :switchboard~switchboard
 return
-:ROB_OK
 
+:rob_ok
 killalltriggers
 
+setvar $rob ($rob_factor * $player~experience)
+getword currentline $port_cash 11
+striptext $port_cash ","
+setvar $original_port_cash $port_cash
+multiply $port_cash 10
+divide $port_cash 9
 
-
-setvar $ROB ($ROB_FACTOR * $PLAYER~EXPERIENCE)
-getword CURRENTLINE $PORT_CASH 11
-striptext $PORT_CASH ","
-setvar $ORIGINAL_PORT_CASH $PORT_CASH
-multiply $PORT_CASH 10
-divide $PORT_CASH 9
-
-
-
-
-
-if ($PORT_CASH < $MINIMUMPORT)
-  echo "*Port has less than "&$MINIMUMPORT&" credits on it.*"
-  send "0*"
-  setvar $ROB 0
-elseif ($PORT_CASH >= $ROB)
-  send $ROB "*"
-elseif ($PORT_CASH < $ROB)
-  setvar $ROB $PORT_CASH
-  send $ROB "*"
+if ($port_cash < $minimumport)
+	echo "*Port has less than "&$minimumport&" credits on it.*"
+	send "0*"
+	setvar $rob 0
+elseif ($port_cash >= $rob)
+	send $rob "*"
+elseif ($port_cash < $rob)
+	setvar $rob $port_cash
+	send $rob "*"
 end
-if ($PORT_CASH < $MINIMUMPORT)
-  setvar $CHECKEDPORTS[$PLAYER~CURRENT_SECTOR] TRUE
-  setvar $EMPTY_GRID[$PLAYER~CURRENT_SECTOR] TRUE
-  write $NO_CREDITS_FILE $PLAYER~CURRENT_SECTOR
+if ($port_cash < $minimumport)
+	setvar $checkedports[$player~current_sector] true
+	setvar $empty_grid[$player~current_sector] true
+	write $no_credits_file $player~current_sector
 end
-settextlinetrigger PORT_EMPTY :ROB_SUC "Maybe some other day, eh?"
-settextlinetrigger MEGA_SUC :ROB_SUC "Success!"
-settextlinetrigger MEGA_BUST :ROB_BUST "Busted!"
+settextlinetrigger port_empty :rob_suc "Maybe some other day, eh?"
+settextlinetrigger mega_suc :rob_suc "Success!"
+settextlinetrigger mega_bust :rob_bust "Busted!"
 pause
-:ROB_BUST
 
+:rob_bust
 killalltriggers
-if ($STARTINGLOCATION = "Citadel")
-  gosub :LANDINGSUB
+if ($startinglocation = "Citadel")
+	gosub :landingsub
 end
-setsectorparameter $PLAYER~CURRENT_SECTOR "BUSTED" TRUE
-send "'<"&$SUBSPACE&">[Busted:"&$PLAYER~CURRENT_SECTOR&"]<"&$SUBSPACE&">* "
+setsectorparameter $player~current_sector "BUSTED" true
+send "'<"&$subspace&">[Busted:"&$player~current_sector&"]<"&$subspace&">* "
 return
-:ROB_READY_TO_MEGA
 
+:rob_ready_to_mega
 killalltriggers
 send "0*  "
-if ($STARTINGLOCATION = "Citadel")
-  gosub :LANDINGSUB
+if ($startinglocation = "Citadel")
+	gosub :landingsub
 end
 return
-:ROB_NOT_VALID
 
+:rob_not_valid
 killalltriggers
-setvar $CHECKEDPORTS[$PLAYER~CURRENT_SECTOR] TRUE
-setvar $EMPTY_GRID[$PLAYER~CURRENT_SECTOR] TRUE
-write $NO_CREDITS_FILE $PLAYER~CURRENT_SECTOR
-setvar $ROB 0
-setvar $ORIGINAL_PORT_CASH 0
-:ROB_SUC
+setvar $checkedports[$player~current_sector] true
+setvar $empty_grid[$player~current_sector] true
+write $no_credits_file $player~current_sector
+setvar $rob 0
+setvar $original_port_cash 0
+
+:rob_suc
 killalltriggers
-if ($STARTINGLOCATION = "Citadel")
-  send "l " $PLANET "* c t t " $ROB "* "
+if ($startinglocation = "Citadel")
+	send "l " $planet "* c t t " $rob "* "
 end
-if ($ROB > $ORIGINAL_PORT_CASH)
-  setvar $CHECKEDPORTS[$PLAYER~CURRENT_SECTOR] TRUE
-  setvar $EMPTY_GRID[$PLAYER~CURRENT_SECTOR] TRUE
-  write $NO_CREDITS_FILE $PLAYER~CURRENT_SECTOR
+if ($rob > $original_port_cash)
+	setvar $checkedports[$player~current_sector] true
+	setvar $empty_grid[$player~current_sector] true
+	write $no_credits_file $player~current_sector
 end
-if ($ROB > 0)
-  setvar $LASTSTEAL $PLAYER~CURRENT_SECTOR
-  setvar $switchboard~message "Success! - " $ROB " credits robbed*"
-  gosub :switchboard~switchboard
+if ($rob > 0)
+	setvar $laststeal $player~current_sector
+	setvar $switchboard~message "Success! - " $rob " credits robbed*"
+	gosub :switchboard~switchboard
 end
 return
-:LANDINGSUB
 
-
-
-send "l" $PLANET "*z  n  z  n  *  "
-setvar $SUCESSFULCITADEL FALSE
-setvar $SUCESSFULPLANET FALSE
-settextlinetrigger NOPLANET :NOPLANET "There isn't a planet in this sector."
-settextlinetrigger NO_LAND :NO_LAND "since it couldn't possibly stand"
-settextlinetrigger PLANET :PLANET "Planet #"
-settextlinetrigger WRONGONE :WRONG_NUM "That planet is not in this sector."
+:landingsub
+send "l" $planet "*z  n  z  n  *  "
+setvar $sucessfulcitadel false
+setvar $sucessfulplanet false
+settextlinetrigger noplanet :noplanet "There isn't a planet in this sector."
+settextlinetrigger no_land :no_land "since it couldn't possibly stand"
+settextlinetrigger planet :planet "Planet #"
+settextlinetrigger wrongone :wrong_num "That planet is not in this sector."
 pause
-:NOPLANET
 
-killtrigger NO_LAND
-killtrigger PLANET
-killtrigger WRONGONE
+:noplanet
+killtrigger no_land
+killtrigger planet
+killtrigger wrongone
 setvar $switchboard~message "No Planet in Sector!*"
 gosub :switchboard~switchboard
 return
-:NO_LAND
 
-killtrigger NOPLANET
-killtrigger PLANET
-killtrigger WRONGONE
+:no_land
+killtrigger noplanet
+killtrigger planet
+killtrigger wrongone
 setvar $switchboard~message "This ship cannot land!*"
 gosub :switchboard~switchboard
 return
-:PLANET
 
-getword CURRENTLINE $PNUM_CK 2
-striptext $PNUM_CK "#"
-if ($PNUM_CK <> $PLANET)
-  killtrigger NO_LAND
-  killtrigger WRONGONE
-  killtrigger NO_PLANET
-  send "q"
-  goto :WRONG_NUM
+:planet
+getword currentline $pnum_ck 2
+striptext $pnum_ck "#"
+if ($pnum_ck <> $planet)
+	killtrigger no_land
+	killtrigger wrongone
+	killtrigger no_planet
+	send "q"
+	goto :wrong_num
 end
-killtrigger NOPLANET
-killtrigger NO_LAND
-killtrigger WRONGONE
-settexttrigger WRONG_NUM :WRONG_NUM "That planet is not in this sector."
-settexttrigger PLANET :PLANET_PROMPT "Planet command"
+killtrigger noplanet
+killtrigger no_land
+killtrigger wrongone
+settexttrigger wrong_num :wrong_num "That planet is not in this sector."
+settexttrigger planet :planet_prompt "Planet command"
 pause
-:WRONG_NUM
 
-killtrigger PLANET
-send "**'{" $BOT_NAME "} - Incorrect Planet Number*"
+:wrong_num
+killtrigger planet
+send "**'{" $bot_name "} - Incorrect Planet Number*"
 return
-:PLANET_PROMPT
 
-killtrigger WRONG_NUM
-setvar $CURRENTBOTPLANET $PLANET
-savevar $CURRENTBOTPLANET
+:planet_prompt
+killtrigger wrong_num
+setvar $currentbotplanet $planet
+savevar $currentbotplanet
 send "c"
-settexttrigger BUILD_CIT :BUILD_CIT "Do you wish to construct one?"
-settexttrigger IN_CIT :IN_CIT "Citadel command"
-settexttrigger NOCITALLOWED :BUILD_CIT "Citadels are not allowed in FedSpace."
-settexttrigger CITNOTBUILTYET :BUILD_CIT "Be patient, your Citadel is not yet finished."
+settexttrigger build_cit :build_cit "Do you wish to construct one?"
+settexttrigger in_cit :in_cit "Citadel command"
+settexttrigger nocitallowed :build_cit "Citadels are not allowed in FedSpace."
+settexttrigger citnotbuiltyet :build_cit "Be patient, your Citadel is not yet finished."
 pause
-:BUILD_CIT
 
-killtrigger IN_CIT
-killtrigger NOCITALLOWED
-killtrigger BUILD_CIT
-killtrigger CITNOTBUILTYET
-setvar $SUCESSFULPLANET TRUE
+:build_cit
+killtrigger in_cit
+killtrigger nocitallowed
+killtrigger build_cit
+killtrigger citnotbuiltyet
+setvar $sucessfulplanet true
 send "n*"
-setvar $STARTINGLOCATION "Planet"
+setvar $startinglocation "Planet"
 return
-:IN_CIT
 
-killtrigger IN_CIT
-killtrigger NOCITALLOWED
-killtrigger BUILD_CIT
-killtrigger CITNOTBUILTYET
-setvar $SUCESSFULCITADEL TRUE
-setvar $STARTINGLOCATION "Citadel"
+:in_cit
+killtrigger in_cit
+killtrigger nocitallowed
+killtrigger build_cit
+killtrigger citnotbuiltyet
+setvar $sucessfulcitadel true
+setvar $startinglocation "Citadel"
 return
-:GETPLANETINFO
-gosub :PLANET~GETPLANETINFO
-setvar $PLANET $PLANET~PLANET
-setvar $PLAYER~CURRENT_SECTOR $PLANET~CURRENT_SECTOR
-setvar $PLANETFUEL $PLANET~PLANET_FUEL
-setvar $PLANETFUELMAX $PLANET~PLANET_FUEL_MAX
-setvar $PLANETORG $PLANET~PLANET_ORGANICS
-setvar $PLANETORGMAX $PLANET~PLANET_ORGANICS_MAX
-setvar $PLANETEQUIP $PLANET~PLANET_EQUIPMENT
-setvar $PLANETEQUIPMAX $PLANET~PLANET_EQUIPMENT_MAX
-setvar $PLANETFIG $PLANET~PLANET_FIGHTERS
-setvar $PLANETFIGMAX $PLANET~PLANET_FIGHTERS_MAX
-setvar $CITADEL $PLANET~CITADEL
-setvar $CITADELCREDITS $PLANET~CITADEL_CREDITS
-setvar $ACANNON $PLANET~ATMOSPHERE_CANNON
-setvar $SCANNON $PLANET~SECTOR_CANNON
+
+:getplanetinfo
+gosub :planet~getplanetinfo
+setvar $planet $planet~planet
+setvar $player~current_sector $planet~current_sector
+setvar $planetfuel $planet~planet_fuel
+setvar $planetfuelmax $planet~planet_fuel_max
+setvar $planetorg $planet~planet_organics
+setvar $planetorgmax $planet~planet_organics_max
+setvar $planetequip $planet~planet_equipment
+setvar $planetequipmax $planet~planet_equipment_max
+setvar $planetfig $planet~planet_fighters
+setvar $planetfigmax $planet~planet_fighters_max
+setvar $citadel $planet~citadel
+setvar $citadelcredits $planet~citadel_credits
+setvar $acannon $planet~atmosphere_cannon
+setvar $scannon $planet~sector_cannon
 return
-:PLANETNEG
 
+:planetneg
+setvar $output_file ""
+setvar $selldelay 0
+setvar $oremcic "-90"
+setvar $orgmcic "-75"
+setvar $equmcic "-65"
+setvar $version "3.0.0"
 
-
-
-
-
-
-
-
-setvar $OUTPUT_FILE ""
-setvar $SELLDELAY 0
-setvar $OREMCIC "-90"
-setvar $ORGMCIC "-75"
-setvar $EQUMCIC "-65"
-setvar $VERSION "3.0.0"
-:VERIFYPROMPT
-
-if (($STARTINGLOCATION <> "Citadel") and ($STARTINGLOCATION <> "Planet "))
-  setvar $EXIT_MESSAGE "Must start at Citadel or Planet Prompt for Planet Nego"
-  goto :EXITNEG
+:verifyprompt
+if (($startinglocation <> "Citadel") and ($startinglocation <> "Planet "))
+	setvar $exit_message "Must start at Citadel or Planet Prompt for Planet Nego"
+	goto :exitneg
 end
 
+setvar $_ck_ptradesetting $ptradesetting
 
-
-setvar $_CK_PTRADESETTING $PTRADESETTING
-
-if ($STARTINGLOCATION = "Citadel")
-  send "Q"
-elseif ($STARTINGLOCATION = "Planet ")
-  setvar $STARTINGLOCATION "Planet"
+if ($startinglocation = "Citadel")
+	send "Q"
+elseif ($startinglocation = "Planet ")
+	setvar $startinglocation "Planet"
 end
-gosub :GETPLANETINFO
+gosub :getplanetinfo
 send "Q"
-gosub :GETINFO
+gosub :getinfo
 send "*"
 
+send "|CR"&$player~current_sector&"*Q|"
 
-send "|CR"&$PLAYER~CURRENT_SECTOR&"*Q|"
-
-settextlinetrigger FOUNDPORT :FOUNDPORT "Items     Status  Trading % of max OnBoard"
-settextlinetrigger NOPORT :NOPORT "I have no information about a port in that sector."
-settextlinetrigger NOPORT2 :NOPORT "You have never visted sector"
-settextlinetrigger NOPORT3 :NOPORT "credits / next hold"
+settextlinetrigger foundport :foundport "Items     Status  Trading % of max OnBoard"
+settextlinetrigger noport :noport "I have no information about a port in that sector."
+settextlinetrigger noport2 :noport "You have never visted sector"
+settextlinetrigger noport3 :noport "credits / next hold"
 pause
-:NOPORT
 
+:noport
 killalltriggers
-gosub :NEGOTIATELAND
-setvar $EXIT_MESSAGE "No port to sell to"
-goto :EXITNEG
-:FOUNDPORT
+gosub :negotiateland
+setvar $exit_message "No port to sell to"
+goto :exitneg
 
+:foundport
 killalltriggers
-settextlinetrigger PORTINFO1 :PORTINFO1 "Fuel Ore "
-settextlinetrigger PORTINFO2 :PORTINFO2 "Organics"
-settextlinetrigger PORTINFO3 :PORTINFO3 "Equipment"
-settextlinetrigger GOTCR :GOTCR "Computer command [TL="
+settextlinetrigger portinfo1 :portinfo1 "Fuel Ore "
+settextlinetrigger portinfo2 :portinfo2 "Organics"
+settextlinetrigger portinfo3 :portinfo3 "Equipment"
+settextlinetrigger gotcr :gotcr "Computer command [TL="
 pause
-:PORTINFO1
 
+:portinfo1
 killalltriggers
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.OREBUYING 3
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORETRADING 4
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.OREPERCENT 5
-striptext $PLAYER~CURRENT_SECTOR.OREPERCENT "%"
-goto :FOUNDPORT
-:PORTINFO2
-killalltriggers
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGBUYING 2
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGTRADING 3
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGPERCENT 4
-striptext $PLAYER~CURRENT_SECTOR.ORGPERCENT "%"
-goto :FOUNDPORT
-:PORTINFO3
-killalltriggers
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUBUYING 2
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUTRADING 3
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUPERCENT 4
-striptext $PLAYER~CURRENT_SECTOR.EQUPERCENT "%"
-goto :FOUNDPORT
-:GOTCR
+getword currentline $player~current_sector.orebuying 3
+getword currentline $player~current_sector.oretrading 4
+getword currentline $player~current_sector.orepercent 5
+striptext $player~current_sector.orepercent "%"
+goto :foundport
 
+:portinfo2
+killalltriggers
+getword currentline $player~current_sector.orgbuying 2
+getword currentline $player~current_sector.orgtrading 3
+getword currentline $player~current_sector.orgpercent 4
+striptext $player~current_sector.orgpercent "%"
+goto :foundport
 
-setdelaytrigger JUSTASEC :JUSTASEC 500
+:portinfo3
+killalltriggers
+getword currentline $player~current_sector.equbuying 2
+getword currentline $player~current_sector.equtrading 3
+getword currentline $player~current_sector.equpercent 4
+striptext $player~current_sector.equpercent "%"
+goto :foundport
+
+:gotcr
+setdelaytrigger justasec :justasec 500
 pause
-:JUSTASEC
-:INITINFO
 
-
-if ($PLAYER~TURNS <= 0)
-  gosub :NEGOTIATELAND
-  setvar $EXIT_MESSAGE "I have no turns to negotiate this planet"
-  goto :EXITNEG
+:justasec
+:initinfo
+if ($player~turns <= 0)
+	gosub :negotiateland
+	setvar $exit_message "I have no turns to negotiate this planet"
+	goto :exitneg
 end
-if ($PLAYER~CREDITS > 900000000)
-  gosub :NEGOTIATELAND
-  setvar $EXIT_MESSAGE "I have too much cash on hand"
-  goto :EXITNEG
-end
-
-setvar $FUELTOSELL $PLANETFUEL
-if ($FUELTOSELL > $PLANETFUEL)
-  setvar $FUELTOSELL $PLANETFUEL
+if ($player~credits > 900000000)
+	gosub :negotiateland
+	setvar $exit_message "I have too much cash on hand"
+	goto :exitneg
 end
 
-if ($_CK_PNEGO_FUELTOSELL = "-1")
-  setvar $FUELTOSELL 0
+setvar $fueltosell $planetfuel
+if ($fueltosell > $planetfuel)
+	setvar $fueltosell $planetfuel
 end
 
-setvar $ORGTOSELL $PLANETORG
-if ($ORGTOSELL > $PLANETORG)
-  setvar $ORGTOSELL $PLANETORG
+if ($_ck_pnego_fueltosell = "-1")
+	setvar $fueltosell 0
 end
 
-if ($_CK_PNEGO_ORGTOSELL = "-1")
-  setvar $ORGTOSELL 0
+setvar $orgtosell $planetorg
+if ($orgtosell > $planetorg)
+	setvar $orgtosell $planetorg
 end
 
-setvar $EQUIPTOSELL $PLANETEQUIP
-if ($EQUIPTOSELL > $PLANETEQUIP)
-  setvar $EQUIPTOSELL $PLANETEQUIP
+if ($_ck_pnego_orgtosell = "-1")
+	setvar $orgtosell 0
 end
 
-if ($_CK_PNEGO_EQUIPTOSELL = "-1")
-  setvar $EQUIPTOSELL 0
+setvar $equiptosell $planetequip
+if ($equiptosell > $planetequip)
+	setvar $equiptosell $planetequip
+end
+
+if ($_ck_pnego_equiptosell = "-1")
+	setvar $equiptosell 0
 end
 
 killalltriggers
 
-if (($PLAYER~CURRENT_SECTOR.OREBUYING <> "Buying") or ($PLAYER~CURRENT_SECTOR.OREPERCENT < 15))
-  setvar $FUELTOSELL 0
+if (($player~current_sector.orebuying <> "Buying") or ($player~current_sector.orepercent < 15))
+	setvar $fueltosell 0
 end
-if (($PLAYER~CURRENT_SECTOR.ORGBUYING <> "Buying") or ($PLAYER~CURRENT_SECTOR.ORGPERCENT < 15))
-  setvar $ORGTOSELL 0
+if (($player~current_sector.orgbuying <> "Buying") or ($player~current_sector.orgpercent < 15))
+	setvar $orgtosell 0
 end
-if (($PLAYER~CURRENT_SECTOR.EQUBUYING <> "Buying") or ($PLAYER~CURRENT_SECTOR.EQUPERCENT < 15))
-  setvar $EQUIPTOSELL 0
+if (($player~current_sector.equbuying <> "Buying") or ($player~current_sector.equpercent < 15))
+	setvar $equiptosell 0
 end
-:SELLOFF
 
+:selloff
+if (($fueltosell <> 0) or ($orgtosell <> 0) or ($equiptosell <> 0))
+	setvar $ore_sell_failures 0
+	setvar $org_sell_failures 0
+	setvar $equ_sell_failures 0
+	setvar $oreselloutput ""
+	setvar $orgselloutput ""
+	setvar $equselloutput ""
+	setvar $oreprofit 0
+	setvar $orgprofit 0
+	setvar $equprofit 0
 
-if (($FUELTOSELL <> 0) or ($ORGTOSELL <> 0) or ($EQUIPTOSELL <> 0))
-  setvar $ORE_SELL_FAILURES 0
-  setvar $ORG_SELL_FAILURES 0
-  setvar $EQU_SELL_FAILURES 0
-  setvar $ORESELLOUTPUT ""
-  setvar $ORGSELLOUTPUT ""
-  setvar $EQUSELLOUTPUT ""
-  setvar $OREPROFIT 0
-  setvar $ORGPROFIT 0
-  setvar $EQUPROFIT 0
+	send "|"
+	gosub :sell
+	gosub :negotiateland
+	if ($startinglocation = "Citadel")
 
-  send "|"
-  gosub :SELL
-  gosub :NEGOTIATELAND
-  if ($STARTINGLOCATION = "Citadel")
+		if ($oreprofit <> 0)
+			send "TT"&$oreprofit&"*"
+			subtract $player~credits $oreprofit
+		end
+		if ($orgprofit <> 0)
+			send "TT"&$orgprofit&"*"
+			subtract $player~credits $orgprofit
+		end
+		if ($equprofit <> 0)
+			send "TT"&$equprofit&"*"
+			subtract $player~credits $equprofit
+		end
+	end
 
-    if ($OREPROFIT <> 0)
-      send "TT"&$OREPROFIT&"*"
-      subtract $PLAYER~CREDITS $OREPROFIT
-    end
-    if ($ORGPROFIT <> 0)
-      send "TT"&$ORGPROFIT&"*"
-      subtract $PLAYER~CREDITS $ORGPROFIT
-    end
-    if ($EQUPROFIT <> 0)
-      send "TT"&$EQUPROFIT&"*"
-      subtract $PLAYER~CREDITS $EQUPROFIT
-    end
-  end
+	send "|"
 
+	setvar $generaloutput "*Sector "&$player~current_sector&"*"
+	if ($output_file <> "")
+		write $output_file $generaloutput
+	end
 
-  send "|"
-
-
-
-
-  setvar $GENERALOUTPUT "*Sector "&$PLAYER~CURRENT_SECTOR&"*"
-  if ($OUTPUT_FILE <> "")
-    write $OUTPUT_FILE $GENERALOUTPUT
-  end
-
-  if ($ORESELLOUTPUT <> "")
-    send $ORESELLOUTPUT
-    if ($OUTPUT_FILE <> "")
-      write $OUTPUT_FILE $ORESELLOUTPUT
-    end
-  end
-  if ($ORGSELLOUTPUT <> "")
-    send $ORGSELLOUTPUT
-    if ($OUTPUT_FILE <> "")
-      write $OUTPUT_FILE $ORGSELLOUTPUT
-    end
-  end
-  if ($EQUSELLOUTPUT <> "")
-    send $EQUSELLOUTPUT
-    if ($OUTPUT_FILE <> "")
-      write $OUTPUT_FILE $EQUSELLOUTPUT
-    end
-  end
-  setvar $EXIT_MESSAGE "Done with port"
-  goto :EXITNEG
+	if ($oreselloutput <> "")
+		send $oreselloutput
+		if ($output_file <> "")
+			write $output_file $oreselloutput
+		end
+	end
+	if ($orgselloutput <> "")
+		send $orgselloutput
+		if ($output_file <> "")
+			write $output_file $orgselloutput
+		end
+	end
+	if ($equselloutput <> "")
+		send $equselloutput
+		if ($output_file <> "")
+			write $output_file $equselloutput
+		end
+	end
+	setvar $exit_message "Done with port"
+	goto :exitneg
 else
-  gosub :NEGOTIATELAND
-  setvar $EXIT_MESSAGE "Nothing to sell"
-  goto :EXITNEG
+	gosub :negotiateland
+	setvar $exit_message "Nothing to sell"
+	goto :exitneg
 end
-:SELL
-:RESELL
 
-
-
-
-
-if ($PLAYER~TURNS <= 0)
-  send "'I'm out of turns*"
-  return
+:sell
+:resell
+if ($player~turns <= 0)
+	send "'I'm out of turns*"
+	return
 end
-setvar $THISOREFAILED 0
-setvar $THISORGFAILED 0
-setvar $THISEQUFAILED 0
-send "PN"&$PLANET&"*"
-subtract $PLAYER~TURNS 1
-:GETPERCTS
-gosub :PLANETHAGGLE~GETPERCTS
-:SELLPRODUCT
+setvar $thisorefailed 0
+setvar $thisorgfailed 0
+setvar $thisequfailed 0
+send "PN"&$planet&"*"
+subtract $player~turns 1
 
+:getpercts
+gosub :planethaggle~getpercts
 
-settexttrigger SELLFUEL :SELLFUEL "How many units of Fuel Ore"
-settexttrigger SELLORG :SELLORG "How many units of Organics"
-settexttrigger SELLEQU :SELLEQU "How many units of Equipment"
-settexttrigger DONEWITHPORT :DONEWITHPORT "Command [TL="
+:sellproduct
+settexttrigger sellfuel :sellfuel "How many units of Fuel Ore"
+settexttrigger sellorg :sellorg "How many units of Organics"
+settexttrigger sellequ :sellequ "How many units of Equipment"
+settexttrigger donewithport :donewithport "Command [TL="
 pause
-:SELLFUEL
 
+:sellfuel
 killalltriggers
-if (($PLAYER~CURRENT_SECTOR.OREPERCENT >= 15) and ($FUELTOSELL > 0))
-  if ($FUELTOSELL > $PLAYER~CURRENT_SECTOR.ORETRADING)
-    setvar $FUELTOSELL $PLAYER~CURRENT_SECTOR.ORETRADING
-  end
-  setvar $PRODTOSELL "ore"
-  setvar $PORTBUYING $FUELTOSELL
-  gosub :SELLHAGGLE
-  if ($CURRENTHAGGLE = "succeeded")
-    setvar $OREHAGGLE "succeeded"
-    setvar $FUELTOSELL 0
-    subtract $OREMCIC 1
-  else
-    setvar $OREHAGGLE "failed"
-  end
+if (($player~current_sector.orepercent >= 15) and ($fueltosell > 0))
+	if ($fueltosell > $player~current_sector.oretrading)
+		setvar $fueltosell $player~current_sector.oretrading
+	end
+	setvar $prodtosell "ore"
+	setvar $portbuying $fueltosell
+	gosub :sellhaggle
+	if ($currenthaggle = "succeeded")
+		setvar $orehaggle "succeeded"
+		setvar $fueltosell 0
+		subtract $oremcic 1
+	else
+		setvar $orehaggle "failed"
+	end
 else
-  send "0*"
+	send "0*"
 end
-goto :SELLPRODUCT
-:SELLORG
+goto :sellproduct
 
+:sellorg
 killalltriggers
-if (($PLAYER~CURRENT_SECTOR.ORGPERCENT >= 15) and ($ORGTOSELL > 0))
-  if ($ORGTOSELL > $PLAYER~CURRENT_SECTOR.ORGTRADING)
-    setvar $ORGTOSELL $PLAYER~CURRENT_SECTOR.ORGTRADING
-  end
-  setvar $PRODTOSELL "org"
-  setvar $PORTBUYING $ORGTOSELL
-  gosub :SELLHAGGLE
-  if ($CURRENTHAGGLE = "succeeded")
-    setvar $ORGHAGGLE "succeeded"
-    setvar $ORGTOSELL 0
-    subtract $ORGMCIC 1
-  else
-    setvar $ORGHAGGLE "failed"
-  end
+if (($player~current_sector.orgpercent >= 15) and ($orgtosell > 0))
+	if ($orgtosell > $player~current_sector.orgtrading)
+		setvar $orgtosell $player~current_sector.orgtrading
+	end
+	setvar $prodtosell "org"
+	setvar $portbuying $orgtosell
+	gosub :sellhaggle
+	if ($currenthaggle = "succeeded")
+		setvar $orghaggle "succeeded"
+		setvar $orgtosell 0
+		subtract $orgmcic 1
+	else
+		setvar $orghaggle "failed"
+	end
 else
-  send "0*"
+	send "0*"
 end
-goto :SELLPRODUCT
-:SELLEQU
+goto :sellproduct
 
+:sellequ
 killalltriggers
-if (($PLAYER~CURRENT_SECTOR.EQUPERCENT >= 15) and ($EQUIPTOSELL > 0))
-  if ($EQUIPTOSELL > $PLAYER~CURRENT_SECTOR.EQUTRADING)
-    setvar $EQUIPTOSELL $PLAYER~CURRENT_SECTOR.EQUTRADING
-  end
-  setvar $PRODTOSELL "equ"
-  setvar $PORTBUYING $EQUIPTOSELL
-  gosub :SELLHAGGLE
-  if ($CURRENTHAGGLE = "succeeded")
-    setvar $EQUHAGGLE "succeeded"
-    setvar $EQUIPTOSELL 0
-    subtract $EQUMCIC 1
-  else
-    setvar $EQUHAGGLE "failed"
-  end
+if (($player~current_sector.equpercent >= 15) and ($equiptosell > 0))
+	if ($equiptosell > $player~current_sector.equtrading)
+		setvar $equiptosell $player~current_sector.equtrading
+	end
+	setvar $prodtosell "equ"
+	setvar $portbuying $equiptosell
+	gosub :sellhaggle
+	if ($currenthaggle = "succeeded")
+		setvar $equhaggle "succeeded"
+		setvar $equiptosell 0
+		subtract $equmcic 1
+	else
+		setvar $equhaggle "failed"
+	end
 else
-  send "0*"
+	send "0*"
 end
-goto :SELLPRODUCT
-:DONEWITHPORT
+goto :sellproduct
 
+:donewithport
 killalltriggers
-if (($ORE_SELL_FAILURES > 4) or ($ORG_SELL_FAILURES > 4) or ($EQU_SELL_FAILURES > 4))
-  setvar $SELLOUTPUT $SELLOUTPUT&"Multiple Haggle Failures - Please cut and paste this haggling session and email to Cherokee*"
-  return
-elseif (($FUELTOSELL = 0) and (($ORGTOSELL = 0) and ($EQUIPTOSELL = 0)))
-  return
+if (($ore_sell_failures > 4) or ($org_sell_failures > 4) or ($equ_sell_failures > 4))
+	setvar $selloutput $selloutput&"Multiple Haggle Failures - Please cut and paste this haggling session and email to Cherokee*"
+	return
+elseif (($fueltosell = 0) and (($orgtosell = 0) and ($equiptosell = 0)))
+	return
 else
-  goto :RESELL
+	goto :resell
 end
-:SELLHAGGLE
 
-
-
-
-settextlinetrigger SELLFIRSTOFFER :SELLFIRSTOFFER "We'll buy them for"
-send $PORTBUYING&"*"
+:sellhaggle
+settextlinetrigger sellfirstoffer :sellfirstoffer "We'll buy them for"
+send $portbuying&"*"
 pause
-:SELLFIRSTOFFER
 
+:sellfirstoffer
 killalltriggers
-getword CURRENTLINE $OFFER 5
-striptext $OFFER ","
+getword currentline $offer 5
+striptext $offer ","
 
-gosub :SWATHOFF
-if ($SWATHOFF = FALSE)
-  gosub :NEGOTIATELAND
-  setvar $EXIT_MESSAGE $SWATHOFFMESSAGE
-  goto :EXITNEG
+gosub :swathoff
+if ($swathoff = false)
+	gosub :negotiateland
+	setvar $exit_message $swathoffmessage
+	goto :exitneg
 end
 
+setvar $perunitinitoffer $offer
 
+multiply $perunitinitoffer 100
+divide $perunitinitoffer $_ck_ptradesetting
 
-setvar $PERUNITINITOFFER $OFFER
+multiply $perunitinitoffer 100
 
+divide $perunitinitoffer $portbuying
 
-multiply $PERUNITINITOFFER 100
-divide $PERUNITINITOFFER $_CK_PTRADESETTING
+setvar $portmaxinit $perunitinitoffer
 
+divide $perunitinitoffer 10
 
-multiply $PERUNITINITOFFER 100
+if ($prodtosell = "ore")
 
+	setvar $basevalue 256055800
+	setvar $basepercent 11725
+	setvar $basepercentinverse 88275
+	setvar $percentfrombase $player~current_sector.orepercent
+elseif ($prodtosell = "org")
 
-divide $PERUNITINITOFFER $PORTBUYING
+	setvar $basevalue 506276400
+	setvar $basepercent 11287
+	setvar $basepercentinverse 88713
+	setvar $percentfrombase $player~current_sector.orgpercent
+elseif ($prodtosell = "equ")
 
-
-setvar $PORTMAXINIT $PERUNITINITOFFER
-
-
-divide $PERUNITINITOFFER 10
-
-if ($PRODTOSELL = "ore")
-
-  setvar $BASEVALUE 256055800
-  setvar $BASEPERCENT 11725
-  setvar $BASEPERCENTINVERSE 88275
-  setvar $PERCENTFROMBASE $PLAYER~CURRENT_SECTOR.OREPERCENT
-elseif ($PRODTOSELL = "org")
-
-  setvar $BASEVALUE 506276400
-  setvar $BASEPERCENT 11287
-  setvar $BASEPERCENTINVERSE 88713
-  setvar $PERCENTFROMBASE $PLAYER~CURRENT_SECTOR.ORGPERCENT
-elseif ($PRODTOSELL = "equ")
-
-  setvar $BASEVALUE 906281000
-  setvar $BASEPERCENT 10989
-  setvar $BASEPERCENTINVERSE 89010
-  setvar $PERCENTFROMBASE $PLAYER~CURRENT_SECTOR.EQUPERCENT
+	setvar $basevalue 906281000
+	setvar $basepercent 10989
+	setvar $basepercentinverse 89010
+	setvar $percentfrombase $player~current_sector.equpercent
 
 end
-if ($PERCENTFROMBASE = 100)
-  echo "* 100% port*"
+if ($percentfrombase = 100)
+	echo "* 100% port*"
 
-  divide $PORTMAXINIT 10
+	divide $portmaxinit 10
 
-elseif ($PERCENTFROMBASE >= 15)
+elseif ($percentfrombase >= 15)
 
-  multiply $PORTMAXINIT 100000
+	multiply $portmaxinit 100000
 
+	subtract $portmaxinit $basevalue
 
-  subtract $PORTMAXINIT $BASEVALUE
+	multiply $percentfrombase 1000
 
+	subtract $percentfrombase $basepercent
 
-  multiply $PERCENTFROMBASE 1000
+	divide $portmaxinit $percentfrombase
 
+	multiply $portmaxinit $basepercentinverse
 
-  subtract $PERCENTFROMBASE $BASEPERCENT
+	add $portmaxinit $basevalue
 
+	divide $portmaxinit 1000000
 
-  divide $PORTMAXINIT $PERCENTFROMBASE
+elseif ($prodtosell = "ore")
+	setvar $portmaxinit 340
 
+elseif ($prodtosell = "org")
+	setvar $portmaxinit 635
 
-  multiply $PORTMAXINIT $BASEPERCENTINVERSE
-
-
-  add $PORTMAXINIT $BASEVALUE
-
-
-  divide $PORTMAXINIT 1000000
-
-elseif ($PRODTOSELL = "ore")
-  setvar $PORTMAXINIT 340
-
-elseif ($PRODTOSELL = "org")
-  setvar $PORTMAXINIT 635
-
-elseif ($PRODTOSELL = "equ")
-  setvar $PORTMAXINIT 1063
-
-
-
-
+elseif ($prodtosell = "equ")
+	setvar $portmaxinit 1063
 
 end
-if ($PRODTOSELL = "ore")
-  if ($PORTMAXINIT >= 436)
-    setvar $MCIC "-90"
-    setvar $MULTIPLE 1494
-
-  elseif ($PORTMAXINIT >= 434)
-    setvar $MCIC "-89"
-    setvar $MULTIPLE 1488
-
-  elseif ($PORTMAXINIT >= 433)
-    setvar $MCIC "-88"
-    setvar $MULTIPLE 1482
-
-  elseif ($PORTMAXINIT >= 431)
-    setvar $MCIC "-87"
-    setvar $MULTIPLE 1476
-
-  elseif ($PORTMAXINIT >= 429)
-    setvar $MCIC "-86"
-    setvar $MULTIPLE 1470
-
-  elseif ($PORTMAXINIT >= 427)
-    setvar $MCIC "-85"
-    setvar $MULTIPLE 1464
-
-  elseif ($PORTMAXINIT >= 425)
-    setvar $MCIC "-84"
-    setvar $MULTIPLE 1458
-
-  elseif ($PORTMAXINIT >= 424)
-    setvar $MCIC "-83"
-    setvar $MULTIPLE 1452
-
-  elseif ($PORTMAXINIT >= 422)
-    setvar $MCIC "-82"
-    setvar $MULTIPLE 1446
-
-  elseif ($PORTMAXINIT >= 420)
-    setvar $MCIC "-81"
-    setvar $MULTIPLE 1440
-
-  elseif ($PORTMAXINIT >= 418)
-    setvar $MCIC "-80"
-    setvar $MULTIPLE 1434
-
-  elseif ($PORTMAXINIT >= 416)
-    setvar $MCIC "-79"
-    setvar $MULTIPLE 1429
-
-  elseif ($PORTMAXINIT >= 414)
-    setvar $MCIC "-78"
-    setvar $MULTIPLE 1423
-
-  elseif ($PORTMAXINIT >= 412)
-    setvar $MCIC "-77"
-    setvar $MULTIPLE 1417
-
-  elseif ($PORTMAXINIT >= 411)
-    setvar $MCIC "-76"
-    setvar $MULTIPLE 1411
-
-  elseif ($PORTMAXINIT >= 409)
-    setvar $MCIC "-75"
-    setvar $MULTIPLE 1405
-
-  elseif ($PORTMAXINIT >= 407)
-    setvar $MCIC "-74"
-    setvar $MULTIPLE 1399
-
-  elseif ($PORTMAXINIT >= 405)
-    setvar $MCIC "-73"
-    setvar $MULTIPLE 1393
-
-  elseif ($PORTMAXINIT >= 403)
-    setvar $MCIC "-72"
-    setvar $MULTIPLE 1387
-
-  elseif ($PORTMAXINIT >= 401)
-    setvar $MCIC "-71"
-    setvar $MULTIPLE 1381
-
-  elseif ($PORTMAXINIT >= 399)
-    setvar $MCIC "-70"
-    setvar $MULTIPLE 1375
-
-  elseif ($PORTMAXINIT >= 397)
-    setvar $MCIC "-69"
-    setvar $MULTIPLE 1369
-
-  elseif ($PORTMAXINIT >= 396)
-    setvar $MCIC "-68"
-    setvar $MULTIPLE 1363
-
-  elseif ($PORTMAXINIT >= 394)
-    setvar $MCIC "-67"
-    setvar $MULTIPLE 1357
-
-  elseif ($PORTMAXINIT >= 392)
-    setvar $MCIC "-66"
-    setvar $MULTIPLE 1351
-
-  elseif ($PORTMAXINIT >= 390)
-    setvar $MCIC "-65"
-    setvar $MULTIPLE 1345
+if ($prodtosell = "ore")
+	if ($portmaxinit >= 436)
+		setvar $mcic "-90"
+		setvar $multiple 1494
+
+	elseif ($portmaxinit >= 434)
+		setvar $mcic "-89"
+		setvar $multiple 1488
+
+	elseif ($portmaxinit >= 433)
+		setvar $mcic "-88"
+		setvar $multiple 1482
+
+	elseif ($portmaxinit >= 431)
+		setvar $mcic "-87"
+		setvar $multiple 1476
+
+	elseif ($portmaxinit >= 429)
+		setvar $mcic "-86"
+		setvar $multiple 1470
+
+	elseif ($portmaxinit >= 427)
+		setvar $mcic "-85"
+		setvar $multiple 1464
+
+	elseif ($portmaxinit >= 425)
+		setvar $mcic "-84"
+		setvar $multiple 1458
+
+	elseif ($portmaxinit >= 424)
+		setvar $mcic "-83"
+		setvar $multiple 1452
+
+	elseif ($portmaxinit >= 422)
+		setvar $mcic "-82"
+		setvar $multiple 1446
+
+	elseif ($portmaxinit >= 420)
+		setvar $mcic "-81"
+		setvar $multiple 1440
+
+	elseif ($portmaxinit >= 418)
+		setvar $mcic "-80"
+		setvar $multiple 1434
+
+	elseif ($portmaxinit >= 416)
+		setvar $mcic "-79"
+		setvar $multiple 1429
+
+	elseif ($portmaxinit >= 414)
+		setvar $mcic "-78"
+		setvar $multiple 1423
+
+	elseif ($portmaxinit >= 412)
+		setvar $mcic "-77"
+		setvar $multiple 1417
+
+	elseif ($portmaxinit >= 411)
+		setvar $mcic "-76"
+		setvar $multiple 1411
+
+	elseif ($portmaxinit >= 409)
+		setvar $mcic "-75"
+		setvar $multiple 1405
+
+	elseif ($portmaxinit >= 407)
+		setvar $mcic "-74"
+		setvar $multiple 1399
+
+	elseif ($portmaxinit >= 405)
+		setvar $mcic "-73"
+		setvar $multiple 1393
+
+	elseif ($portmaxinit >= 403)
+		setvar $mcic "-72"
+		setvar $multiple 1387
+
+	elseif ($portmaxinit >= 401)
+		setvar $mcic "-71"
+		setvar $multiple 1381
+
+	elseif ($portmaxinit >= 399)
+		setvar $mcic "-70"
+		setvar $multiple 1375
+
+	elseif ($portmaxinit >= 397)
+		setvar $mcic "-69"
+		setvar $multiple 1369
+
+	elseif ($portmaxinit >= 396)
+		setvar $mcic "-68"
+		setvar $multiple 1363
+
+	elseif ($portmaxinit >= 394)
+		setvar $mcic "-67"
+		setvar $multiple 1357
+
+	elseif ($portmaxinit >= 392)
+		setvar $mcic "-66"
+		setvar $multiple 1351
+
+	elseif ($portmaxinit >= 390)
+		setvar $mcic "-65"
+		setvar $multiple 1345
 
-  elseif ($PORTMAXINIT >= 388)
-    setvar $MCIC "-64"
-    setvar $MULTIPLE 1342
+	elseif ($portmaxinit >= 388)
+		setvar $mcic "-64"
+		setvar $multiple 1342
 
-  elseif ($PORTMAXINIT >= 386)
-    setvar $MCIC "-63"
-    setvar $MULTIPLE 1336
+	elseif ($portmaxinit >= 386)
+		setvar $mcic "-63"
+		setvar $multiple 1336
 
-  elseif ($PORTMAXINIT >= 384)
-    setvar $MCIC "-62"
-    setvar $MULTIPLE 1330
+	elseif ($portmaxinit >= 384)
+		setvar $mcic "-62"
+		setvar $multiple 1330
 
-  elseif ($PORTMAXINIT >= 382)
-    setvar $MCIC "-61"
-    setvar $MULTIPLE 1324
+	elseif ($portmaxinit >= 382)
+		setvar $mcic "-61"
+		setvar $multiple 1324
 
-  elseif ($PORTMAXINIT >= 380)
-    setvar $MCIC "-60"
-    setvar $MULTIPLE 1318
+	elseif ($portmaxinit >= 380)
+		setvar $mcic "-60"
+		setvar $multiple 1318
 
-  elseif ($PORTMAXINIT >= 378)
-    setvar $MCIC "-59"
-    setvar $MULTIPLE 1312
+	elseif ($portmaxinit >= 378)
+		setvar $mcic "-59"
+		setvar $multiple 1312
 
-  elseif ($PORTMAXINIT >= 376)
-    setvar $MCIC "-58"
-    setvar $MULTIPLE 1306
+	elseif ($portmaxinit >= 376)
+		setvar $mcic "-58"
+		setvar $multiple 1306
 
-  elseif ($PORTMAXINIT >= 374)
-    setvar $MCIC "-57"
-    setvar $MULTIPLE 1300
+	elseif ($portmaxinit >= 374)
+		setvar $mcic "-57"
+		setvar $multiple 1300
 
-  elseif ($PORTMAXINIT >= 372)
-    setvar $MCIC "-56"
-    setvar $MULTIPLE 1294
+	elseif ($portmaxinit >= 372)
+		setvar $mcic "-56"
+		setvar $multiple 1294
 
-  elseif ($PORTMAXINIT >= 370)
-    setvar $MCIC "-55"
-    setvar $MULTIPLE 1291
+	elseif ($portmaxinit >= 370)
+		setvar $mcic "-55"
+		setvar $multiple 1291
 
-  elseif ($PORTMAXINIT >= 368)
-    setvar $MCIC "-54"
-    setvar $MULTIPLE 1285
+	elseif ($portmaxinit >= 368)
+		setvar $mcic "-54"
+		setvar $multiple 1285
 
-  elseif ($PORTMAXINIT >= 366)
-    setvar $MCIC "-53"
-    setvar $MULTIPLE 1279
+	elseif ($portmaxinit >= 366)
+		setvar $mcic "-53"
+		setvar $multiple 1279
 
-  elseif ($PORTMAXINIT >= 364)
-    setvar $MCIC "-52"
-    setvar $MULTIPLE 1273
+	elseif ($portmaxinit >= 364)
+		setvar $mcic "-52"
+		setvar $multiple 1273
 
-  elseif ($PORTMAXINIT >= 362)
-    setvar $MCIC "-51"
-    setvar $MULTIPLE 1267
+	elseif ($portmaxinit >= 362)
+		setvar $mcic "-51"
+		setvar $multiple 1267
 
-  elseif ($PORTMAXINIT >= 360)
-    setvar $MCIC "-50"
-    setvar $MULTIPLE 1261
+	elseif ($portmaxinit >= 360)
+		setvar $mcic "-50"
+		setvar $multiple 1261
 
-  elseif ($PORTMAXINIT >= 358)
-    setvar $MCIC "-49"
-    setvar $MULTIPLE 1255
+	elseif ($portmaxinit >= 358)
+		setvar $mcic "-49"
+		setvar $multiple 1255
 
-  elseif ($PORTMAXINIT >= 356)
-    setvar $MCIC "-48"
-    setvar $MULTIPLE 1249
+	elseif ($portmaxinit >= 356)
+		setvar $mcic "-48"
+		setvar $multiple 1249
 
-  elseif ($PORTMAXINIT >= 354)
-    setvar $MCIC "-46"
-    setvar $MULTIPLE 1246
+	elseif ($portmaxinit >= 354)
+		setvar $mcic "-46"
+		setvar $multiple 1246
 
-  elseif ($PORTMAXINIT >= 352)
-    setvar $MCIC "-46"
-    setvar $MULTIPLE 1240
+	elseif ($portmaxinit >= 352)
+		setvar $mcic "-46"
+		setvar $multiple 1240
 
-  elseif ($PORTMAXINIT >= 350)
-    setvar $MCIC "-45"
-    setvar $MULTIPLE 1234
+	elseif ($portmaxinit >= 350)
+		setvar $mcic "-45"
+		setvar $multiple 1234
 
-  elseif ($PORTMAXINIT >= 348)
-    setvar $MCIC "-44"
-    setvar $MULTIPLE 1228
+	elseif ($portmaxinit >= 348)
+		setvar $mcic "-44"
+		setvar $multiple 1228
 
-  elseif ($PORTMAXINIT >= 346)
-    setvar $MCIC "-43"
-    setvar $MULTIPLE 1222
+	elseif ($portmaxinit >= 346)
+		setvar $mcic "-43"
+		setvar $multiple 1222
 
-  elseif ($PORTMAXINIT >= 344)
-    setvar $MCIC "-42"
-    setvar $MULTIPLE 1219
+	elseif ($portmaxinit >= 344)
+		setvar $mcic "-42"
+		setvar $multiple 1219
 
-  elseif ($PORTMAXINIT >= 342)
-    setvar $MCIC "-41"
-    setvar $MULTIPLE 1209
+	elseif ($portmaxinit >= 342)
+		setvar $mcic "-41"
+		setvar $multiple 1209
 
-  elseif ($PORTMAXINIT >= 340)
-    setvar $MCIC "-40"
-    setvar $MULTIPLE 1208
+	elseif ($portmaxinit >= 340)
+		setvar $mcic "-40"
+		setvar $multiple 1208
 
-  else
-    setvar $MCIC 0
-    setvar $MULTIPLE 1208
+	else
+		setvar $mcic 0
+		setvar $multiple 1208
 
-
-  end
-elseif ($PRODTOSELL = "org")
-  if ($PORTMAXINIT >= 813)
-    setvar $MCIC "-75"
-    setvar $MULTIPLE 1405
-
-  elseif ($PORTMAXINIT >= 810)
-    setvar $MCIC "-74"
-    setvar $MULTIPLE 1399
-
-  elseif ($PORTMAXINIT >= 806)
-    setvar $MCIC "-73"
-    setvar $MULTIPLE 1393
-
-  elseif ($PORTMAXINIT >= 802)
-    setvar $MCIC "-72"
-    setvar $MULTIPLE 1387
-
-  elseif ($PORTMAXINIT >= 798)
-    setvar $MCIC "-71"
-    setvar $MULTIPLE 1381
-
-  elseif ($PORTMAXINIT >= 795)
-    setvar $MCIC "-70"
-    setvar $MULTIPLE 1375
-
-  elseif ($PORTMAXINIT >= 791)
-    setvar $MCIC "-69"
-    setvar $MULTIPLE 1369
-
-  elseif ($PORTMAXINIT >= 787)
-    setvar $MCIC "-68"
-    setvar $MULTIPLE 1363
-
-  elseif ($PORTMAXINIT >= 783)
-    setvar $MCIC "-67"
-    setvar $MULTIPLE 1357
-
-  elseif ($PORTMAXINIT >= 779)
-    setvar $MCIC "-66"
-    setvar $MULTIPLE 1351
-
-  elseif ($PORTMAXINIT >= 775)
-    setvar $MCIC "-65"
-    setvar $MULTIPLE 1345
-
-  elseif ($PORTMAXINIT >= 772)
-    setvar $MCIC "-64"
-    setvar $MULTIPLE 1339
-
-  elseif ($PORTMAXINIT >= 768)
-    setvar $MCIC "-63"
-    setvar $MULTIPLE 1336
-
-  elseif ($PORTMAXINIT >= 764)
-    setvar $MCIC "-62"
-    setvar $MULTIPLE 1330
-
-  elseif ($PORTMAXINIT >= 760)
-    setvar $MCIC "-61"
-    setvar $MULTIPLE 1324
-
-  elseif ($PORTMAXINIT >= 756)
-    setvar $MCIC "-60"
-    setvar $MULTIPLE 1318
-
-  elseif ($PORTMAXINIT >= 752)
-    setvar $MCIC "-59"
-    setvar $MULTIPLE 1312
-
-  elseif ($PORTMAXINIT >= 748)
-    setvar $MCIC "-58"
-    setvar $MULTIPLE 1306
-
-  elseif ($PORTMAXINIT >= 744)
-    setvar $MCIC "-57"
-    setvar $MULTIPLE 1300
-
-  elseif ($PORTMAXINIT >= 740)
-    setvar $MCIC "-56"
-    setvar $MULTIPLE 1294
-
-  elseif ($PORTMAXINIT >= 737)
-    setvar $MCIC "-55"
-    setvar $MULTIPLE 1291
-
-  elseif ($PORTMAXINIT >= 733)
-    setvar $MCIC "-54"
-    setvar $MULTIPLE 1285
-
-  elseif ($PORTMAXINIT >= 729)
-    setvar $MCIC "-53"
-    setvar $MULTIPLE 1279
-
-  elseif ($PORTMAXINIT >= 725)
-    setvar $MCIC "-52"
-    setvar $MULTIPLE 1273
-
-  elseif ($PORTMAXINIT >= 721)
-    setvar $MCIC "-51"
-    setvar $MULTIPLE 1267
-
-  elseif ($PORTMAXINIT >= 717)
-    setvar $MCIC "-50"
-    setvar $MULTIPLE 1261
-
-  elseif ($PORTMAXINIT >= 713)
-    setvar $MCIC "-49"
-    setvar $MULTIPLE 1255
-
-  elseif ($PORTMAXINIT >= 709)
-    setvar $MCIC "-48"
-    setvar $MULTIPLE 1252
-
-  elseif ($PORTMAXINIT >= 705)
-    setvar $MCIC "-47"
-    setvar $MULTIPLE 1246
-
-  elseif ($PORTMAXINIT >= 701)
-    setvar $MCIC "-46"
-    setvar $MULTIPLE 1236
-
-  elseif ($PORTMAXINIT >= 697)
-    setvar $MCIC "-45"
-    setvar $MULTIPLE 1233
-
-  elseif ($PORTMAXINIT >= 693)
-    setvar $MCIC "-44"
-    setvar $MULTIPLE 1227
-
-  elseif ($PORTMAXINIT >= 688)
-    setvar $MCIC "-43"
-    setvar $MULTIPLE 1224
-
-  elseif ($PORTMAXINIT >= 684)
-    setvar $MCIC "-42"
-    setvar $MULTIPLE 1214
-
-  elseif ($PORTMAXINIT >= 680)
-    setvar $MCIC "-41"
-    setvar $MULTIPLE 1213
-
-  elseif ($PORTMAXINIT >= 676)
-    setvar $MCIC "-40"
-    setvar $MULTIPLE 1203
-
-  elseif ($PORTMAXINIT >= 672)
-    setvar $MCIC "-39"
-    setvar $MULTIPLE 1200
-
-  elseif ($PORTMAXINIT >= 668)
-    setvar $MCIC "-38"
-    setvar $MULTIPLE 1194
-
-  elseif ($PORTMAXINIT >= 664)
-    setvar $MCIC "-37"
-    setvar $MULTIPLE 1191
-
-  elseif ($PORTMAXINIT >= 660)
-    setvar $MCIC "-36"
-    setvar $MULTIPLE 1181
-
-  elseif ($PORTMAXINIT >= 656)
-    setvar $MCIC "-35"
-    setvar $MULTIPLE 1178
-
-  elseif ($PORTMAXINIT >= 651)
-    setvar $MCIC "-34"
-    setvar $MULTIPLE 1172
-
-  elseif ($PORTMAXINIT >= 647)
-    setvar $MCIC "-33"
-    setvar $MULTIPLE 1166
-
-  elseif ($PORTMAXINIT >= 643)
-    setvar $MCIC "-32"
-    setvar $MULTIPLE 1160
-
-  elseif ($PORTMAXINIT >= 639)
-    setvar $MCIC "-31"
-    setvar $MULTIPLE 1157
-
-  elseif ($PORTMAXINIT >= 635)
-    setvar $MCIC "-30"
-    setvar $MULTIPLE 1154
-
-  else
-    setvar $MCIC 0
-    setvar $MULTIPLE 1154
-
-  end
-elseif ($PRODTOSELL = "equ")
-  if ($PORTMAXINIT >= 1393)
-    setvar $MCIC "-65"
-    setvar $MULTIPLE 1347
-
-  elseif ($PORTMAXINIT >= 1386)
-    setvar $MCIC "-64"
-    setvar $MULTIPLE 1341
-
-  elseif ($PORTMAXINIT >= 1379)
-    setvar $MCIC "-63"
-    setvar $MULTIPLE 1336
-
-  elseif ($PORTMAXINIT >= 1372)
-    setvar $MCIC "-62"
-    setvar $MULTIPLE 1330
-
-  elseif ($PORTMAXINIT >= 1365)
-    setvar $MCIC "-61"
-    setvar $MULTIPLE 1324
-
-  elseif ($PORTMAXINIT >= 1358)
-    setvar $MCIC "-60"
-    setvar $MULTIPLE 1319
-
-  elseif ($PORTMAXINIT >= 1351)
-    setvar $MCIC "-59"
-    setvar $MULTIPLE 1313
-
-  elseif ($PORTMAXINIT >= 1344)
-    setvar $MCIC "-58"
-    setvar $MULTIPLE 1307
-
-  elseif ($PORTMAXINIT >= 1337)
-    setvar $MCIC "-57"
-    setvar $MULTIPLE 1302
-
-  elseif ($PORTMAXINIT >= 1329)
-    setvar $MCIC "-56"
-    setvar $MULTIPLE 1296
-
-  elseif ($PORTMAXINIT >= 1323)
-    setvar $MCIC "-55"
-    setvar $MULTIPLE 1291
-
-  elseif ($PORTMAXINIT >= 1315)
-    setvar $MCIC "-54"
-    setvar $MULTIPLE 1285
-
-  elseif ($PORTMAXINIT >= 1308)
-    setvar $MCIC "-53"
-    setvar $MULTIPLE 1279
-
-  elseif ($PORTMAXINIT >= 1301)
-    setvar $MCIC "-52"
-    setvar $MULTIPLE 1274
-
-  elseif ($PORTMAXINIT >= 1294)
-    setvar $MCIC "-51"
-    setvar $MULTIPLE 1268
-
-  elseif ($PORTMAXINIT >= 1287)
-    setvar $MCIC "-50"
-    setvar $MULTIPLE 1262
-
-  elseif ($PORTMAXINIT >= 1279)
-    setvar $MCIC "-49"
-    setvar $MULTIPLE 1254
-
-  elseif ($PORTMAXINIT >= 1272)
-    setvar $MCIC "-48"
-    setvar $MULTIPLE 1247
-
-  elseif ($PORTMAXINIT >= 1265)
-    setvar $MCIC "-47"
-    setvar $MULTIPLE 1246
-
-  elseif ($PORTMAXINIT >= 1258)
-    setvar $MCIC "-46"
-    setvar $MULTIPLE 1241
-
-  elseif ($PORTMAXINIT >= 1251)
-    setvar $MCIC "-45"
-    setvar $MULTIPLE 1235
-
-  elseif ($PORTMAXINIT >= 1243)
-    setvar $MCIC "-44"
-    setvar $MULTIPLE 1229
-
-  elseif ($PORTMAXINIT >= 1236)
-    setvar $MCIC "-43"
-    setvar $MULTIPLE 1224
-
-  elseif ($PORTMAXINIT >= 1229)
-    setvar $MCIC "-42"
-    setvar $MULTIPLE 1218
-
-  elseif ($PORTMAXINIT >= 1221)
-    setvar $MCIC "-41"
-    setvar $MULTIPLE 1213
-
-  elseif ($PORTMAXINIT >= 1214)
-    setvar $MCIC "-40"
-    setvar $MULTIPLE 1208
-
-  elseif ($PORTMAXINIT >= 1206)
-    setvar $MCIC "-39"
-    setvar $MULTIPLE 1201
-
-  elseif ($PORTMAXINIT >= 1199)
-    setvar $MCIC "-38"
-    setvar $MULTIPLE 1196
-
-  elseif ($PORTMAXINIT >= 1192)
-    setvar $MCIC "-37"
-    setvar $MULTIPLE 1190
-
-  elseif ($PORTMAXINIT >= 1184)
-    setvar $MCIC "-36"
-    setvar $MULTIPLE 1185
-
-  elseif ($PORTMAXINIT >= 1177)
-    setvar $MCIC "-35"
-    setvar $MULTIPLE 1180
-
-  elseif ($PORTMAXINIT >= 1169)
-    setvar $MCIC "-34"
-    setvar $MULTIPLE 1174
-
-  elseif ($PORTMAXINIT >= 1162)
-    setvar $MCIC "-33"
-    setvar $MULTIPLE 1169
-
-  elseif ($PORTMAXINIT >= 1154)
-    setvar $MCIC "-32"
-    setvar $MULTIPLE 1164
-
-  elseif ($PORTMAXINIT >= 1147)
-    setvar $MCIC "-31"
-    setvar $MULTIPLE 1158
-
-  elseif ($PORTMAXINIT >= 1139)
-    setvar $MCIC "-30"
-    setvar $MULTIPLE 1152
-
-  elseif ($PORTMAXINIT >= 1132)
-    setvar $MCIC "-29"
-    setvar $MULTIPLE 1149
-
-  elseif ($PORTMAXINIT >= 1124)
-    setvar $MCIC "-28"
-    setvar $MULTIPLE 1144
-
-  elseif ($PORTMAXINIT >= 1116)
-    setvar $MCIC "-27"
-    setvar $MULTIPLE 1136
-
-  elseif ($PORTMAXINIT >= 1109)
-    setvar $MCIC "-26"
-    setvar $MULTIPLE 1132
-
-  elseif ($PORTMAXINIT >= 1101)
-    setvar $MCIC "-25"
-    setvar $MULTIPLE 1126
-
-  elseif ($PORTMAXINIT >= 1093)
-    setvar $MCIC "-24"
-    setvar $MULTIPLE 1122
-
-  elseif ($PORTMAXINIT >= 1086)
-    setvar $MCIC "-23"
-    setvar $MULTIPLE 1117
-
-  elseif ($PORTMAXINIT >= 1078)
-    setvar $MCIC "-22"
-    setvar $MULTIPLE 1110
-
-  elseif ($PORTMAXINIT >= 1071)
-    setvar $MCIC "-21"
-    setvar $MULTIPLE 1105
-
-  elseif ($PORTMAXINIT >= 1063)
-    setvar $MCIC "-20"
-    setvar $MULTIPLE 1102
-
-  else
-    setvar $MCIC 0
-    setvar $MULTIPLE 1102
-
-
-
-  end
+	end
+elseif ($prodtosell = "org")
+	if ($portmaxinit >= 813)
+		setvar $mcic "-75"
+		setvar $multiple 1405
+
+	elseif ($portmaxinit >= 810)
+		setvar $mcic "-74"
+		setvar $multiple 1399
+
+	elseif ($portmaxinit >= 806)
+		setvar $mcic "-73"
+		setvar $multiple 1393
+
+	elseif ($portmaxinit >= 802)
+		setvar $mcic "-72"
+		setvar $multiple 1387
+
+	elseif ($portmaxinit >= 798)
+		setvar $mcic "-71"
+		setvar $multiple 1381
+
+	elseif ($portmaxinit >= 795)
+		setvar $mcic "-70"
+		setvar $multiple 1375
+
+	elseif ($portmaxinit >= 791)
+		setvar $mcic "-69"
+		setvar $multiple 1369
+
+	elseif ($portmaxinit >= 787)
+		setvar $mcic "-68"
+		setvar $multiple 1363
+
+	elseif ($portmaxinit >= 783)
+		setvar $mcic "-67"
+		setvar $multiple 1357
+
+	elseif ($portmaxinit >= 779)
+		setvar $mcic "-66"
+		setvar $multiple 1351
+
+	elseif ($portmaxinit >= 775)
+		setvar $mcic "-65"
+		setvar $multiple 1345
+
+	elseif ($portmaxinit >= 772)
+		setvar $mcic "-64"
+		setvar $multiple 1339
+
+	elseif ($portmaxinit >= 768)
+		setvar $mcic "-63"
+		setvar $multiple 1336
+
+	elseif ($portmaxinit >= 764)
+		setvar $mcic "-62"
+		setvar $multiple 1330
+
+	elseif ($portmaxinit >= 760)
+		setvar $mcic "-61"
+		setvar $multiple 1324
+
+	elseif ($portmaxinit >= 756)
+		setvar $mcic "-60"
+		setvar $multiple 1318
+
+	elseif ($portmaxinit >= 752)
+		setvar $mcic "-59"
+		setvar $multiple 1312
+
+	elseif ($portmaxinit >= 748)
+		setvar $mcic "-58"
+		setvar $multiple 1306
+
+	elseif ($portmaxinit >= 744)
+		setvar $mcic "-57"
+		setvar $multiple 1300
+
+	elseif ($portmaxinit >= 740)
+		setvar $mcic "-56"
+		setvar $multiple 1294
+
+	elseif ($portmaxinit >= 737)
+		setvar $mcic "-55"
+		setvar $multiple 1291
+
+	elseif ($portmaxinit >= 733)
+		setvar $mcic "-54"
+		setvar $multiple 1285
+
+	elseif ($portmaxinit >= 729)
+		setvar $mcic "-53"
+		setvar $multiple 1279
+
+	elseif ($portmaxinit >= 725)
+		setvar $mcic "-52"
+		setvar $multiple 1273
+
+	elseif ($portmaxinit >= 721)
+		setvar $mcic "-51"
+		setvar $multiple 1267
+
+	elseif ($portmaxinit >= 717)
+		setvar $mcic "-50"
+		setvar $multiple 1261
+
+	elseif ($portmaxinit >= 713)
+		setvar $mcic "-49"
+		setvar $multiple 1255
+
+	elseif ($portmaxinit >= 709)
+		setvar $mcic "-48"
+		setvar $multiple 1252
+
+	elseif ($portmaxinit >= 705)
+		setvar $mcic "-47"
+		setvar $multiple 1246
+
+	elseif ($portmaxinit >= 701)
+		setvar $mcic "-46"
+		setvar $multiple 1236
+
+	elseif ($portmaxinit >= 697)
+		setvar $mcic "-45"
+		setvar $multiple 1233
+
+	elseif ($portmaxinit >= 693)
+		setvar $mcic "-44"
+		setvar $multiple 1227
+
+	elseif ($portmaxinit >= 688)
+		setvar $mcic "-43"
+		setvar $multiple 1224
+
+	elseif ($portmaxinit >= 684)
+		setvar $mcic "-42"
+		setvar $multiple 1214
+
+	elseif ($portmaxinit >= 680)
+		setvar $mcic "-41"
+		setvar $multiple 1213
+
+	elseif ($portmaxinit >= 676)
+		setvar $mcic "-40"
+		setvar $multiple 1203
+
+	elseif ($portmaxinit >= 672)
+		setvar $mcic "-39"
+		setvar $multiple 1200
+
+	elseif ($portmaxinit >= 668)
+		setvar $mcic "-38"
+		setvar $multiple 1194
+
+	elseif ($portmaxinit >= 664)
+		setvar $mcic "-37"
+		setvar $multiple 1191
+
+	elseif ($portmaxinit >= 660)
+		setvar $mcic "-36"
+		setvar $multiple 1181
+
+	elseif ($portmaxinit >= 656)
+		setvar $mcic "-35"
+		setvar $multiple 1178
+
+	elseif ($portmaxinit >= 651)
+		setvar $mcic "-34"
+		setvar $multiple 1172
+
+	elseif ($portmaxinit >= 647)
+		setvar $mcic "-33"
+		setvar $multiple 1166
+
+	elseif ($portmaxinit >= 643)
+		setvar $mcic "-32"
+		setvar $multiple 1160
+
+	elseif ($portmaxinit >= 639)
+		setvar $mcic "-31"
+		setvar $multiple 1157
+
+	elseif ($portmaxinit >= 635)
+		setvar $mcic "-30"
+		setvar $multiple 1154
+
+	else
+		setvar $mcic 0
+		setvar $multiple 1154
+
+	end
+elseif ($prodtosell = "equ")
+	if ($portmaxinit >= 1393)
+		setvar $mcic "-65"
+		setvar $multiple 1347
+
+	elseif ($portmaxinit >= 1386)
+		setvar $mcic "-64"
+		setvar $multiple 1341
+
+	elseif ($portmaxinit >= 1379)
+		setvar $mcic "-63"
+		setvar $multiple 1336
+
+	elseif ($portmaxinit >= 1372)
+		setvar $mcic "-62"
+		setvar $multiple 1330
+
+	elseif ($portmaxinit >= 1365)
+		setvar $mcic "-61"
+		setvar $multiple 1324
+
+	elseif ($portmaxinit >= 1358)
+		setvar $mcic "-60"
+		setvar $multiple 1319
+
+	elseif ($portmaxinit >= 1351)
+		setvar $mcic "-59"
+		setvar $multiple 1313
+
+	elseif ($portmaxinit >= 1344)
+		setvar $mcic "-58"
+		setvar $multiple 1307
+
+	elseif ($portmaxinit >= 1337)
+		setvar $mcic "-57"
+		setvar $multiple 1302
+
+	elseif ($portmaxinit >= 1329)
+		setvar $mcic "-56"
+		setvar $multiple 1296
+
+	elseif ($portmaxinit >= 1323)
+		setvar $mcic "-55"
+		setvar $multiple 1291
+
+	elseif ($portmaxinit >= 1315)
+		setvar $mcic "-54"
+		setvar $multiple 1285
+
+	elseif ($portmaxinit >= 1308)
+		setvar $mcic "-53"
+		setvar $multiple 1279
+
+	elseif ($portmaxinit >= 1301)
+		setvar $mcic "-52"
+		setvar $multiple 1274
+
+	elseif ($portmaxinit >= 1294)
+		setvar $mcic "-51"
+		setvar $multiple 1268
+
+	elseif ($portmaxinit >= 1287)
+		setvar $mcic "-50"
+		setvar $multiple 1262
+
+	elseif ($portmaxinit >= 1279)
+		setvar $mcic "-49"
+		setvar $multiple 1254
+
+	elseif ($portmaxinit >= 1272)
+		setvar $mcic "-48"
+		setvar $multiple 1247
+
+	elseif ($portmaxinit >= 1265)
+		setvar $mcic "-47"
+		setvar $multiple 1246
+
+	elseif ($portmaxinit >= 1258)
+		setvar $mcic "-46"
+		setvar $multiple 1241
+
+	elseif ($portmaxinit >= 1251)
+		setvar $mcic "-45"
+		setvar $multiple 1235
+
+	elseif ($portmaxinit >= 1243)
+		setvar $mcic "-44"
+		setvar $multiple 1229
+
+	elseif ($portmaxinit >= 1236)
+		setvar $mcic "-43"
+		setvar $multiple 1224
+
+	elseif ($portmaxinit >= 1229)
+		setvar $mcic "-42"
+		setvar $multiple 1218
+
+	elseif ($portmaxinit >= 1221)
+		setvar $mcic "-41"
+		setvar $multiple 1213
+
+	elseif ($portmaxinit >= 1214)
+		setvar $mcic "-40"
+		setvar $multiple 1208
+
+	elseif ($portmaxinit >= 1206)
+		setvar $mcic "-39"
+		setvar $multiple 1201
+
+	elseif ($portmaxinit >= 1199)
+		setvar $mcic "-38"
+		setvar $multiple 1196
+
+	elseif ($portmaxinit >= 1192)
+		setvar $mcic "-37"
+		setvar $multiple 1190
+
+	elseif ($portmaxinit >= 1184)
+		setvar $mcic "-36"
+		setvar $multiple 1185
+
+	elseif ($portmaxinit >= 1177)
+		setvar $mcic "-35"
+		setvar $multiple 1180
+
+	elseif ($portmaxinit >= 1169)
+		setvar $mcic "-34"
+		setvar $multiple 1174
+
+	elseif ($portmaxinit >= 1162)
+		setvar $mcic "-33"
+		setvar $multiple 1169
+
+	elseif ($portmaxinit >= 1154)
+		setvar $mcic "-32"
+		setvar $multiple 1164
+
+	elseif ($portmaxinit >= 1147)
+		setvar $mcic "-31"
+		setvar $multiple 1158
+
+	elseif ($portmaxinit >= 1139)
+		setvar $mcic "-30"
+		setvar $multiple 1152
+
+	elseif ($portmaxinit >= 1132)
+		setvar $mcic "-29"
+		setvar $multiple 1149
+
+	elseif ($portmaxinit >= 1124)
+		setvar $mcic "-28"
+		setvar $multiple 1144
+
+	elseif ($portmaxinit >= 1116)
+		setvar $mcic "-27"
+		setvar $multiple 1136
+
+	elseif ($portmaxinit >= 1109)
+		setvar $mcic "-26"
+		setvar $multiple 1132
+
+	elseif ($portmaxinit >= 1101)
+		setvar $mcic "-25"
+		setvar $multiple 1126
+
+	elseif ($portmaxinit >= 1093)
+		setvar $mcic "-24"
+		setvar $multiple 1122
+
+	elseif ($portmaxinit >= 1086)
+		setvar $mcic "-23"
+		setvar $multiple 1117
+
+	elseif ($portmaxinit >= 1078)
+		setvar $mcic "-22"
+		setvar $multiple 1110
+
+	elseif ($portmaxinit >= 1071)
+		setvar $mcic "-21"
+		setvar $multiple 1105
+
+	elseif ($portmaxinit >= 1063)
+		setvar $mcic "-20"
+		setvar $multiple 1102
+
+	else
+		setvar $mcic 0
+		setvar $multiple 1102
+
+	end
 end
-setvar $COUNTER $OFFER
-divide $COUNTER 10
-multiply $COUNTER $MULTIPLE
-divide $COUNTER 100
-send $COUNTER&"*"
-setvar $MIDHAGGLES 0
-:SELLOFFERLOOP
-settextlinetrigger SELLPRICE :SELLPRICE "We'll buy them for"
-settextlinetrigger SELLFINALOFFER :SELLFINALOFFER "Our final offer"
+setvar $counter $offer
+divide $counter 10
+multiply $counter $multiple
+divide $counter 100
+send $counter&"*"
+setvar $midhaggles 0
 
-settextlinetrigger SELLEXPERIENCE :SELLEXPERIENCE "experience point(s)"
-settextlinetrigger SELLYOUHAVE :SELLYOUHAVE "You have"
+:sellofferloop
+settextlinetrigger sellprice :sellprice "We'll buy them for"
+settextlinetrigger sellfinaloffer :sellfinaloffer "Our final offer"
 
-settextlinetrigger SELLSCREWUP1 :SELLSCREWUP "Get real ion-brain, make me a real offer."
-settextlinetrigger SELLSCREWUP2 :SELLSCREWUP "This is the big leagues Jr.  Make a real offer."
-settextlinetrigger SELLSCREWUP3 :SELLSCREWUP "My patience grows short with you."
-settextlinetrigger SELLSCREWUP4 :SELLSCREWUP "I have much better things to do than waste my time.  Try again."
-settextlinetrigger SELLSCREWUP5 :SELLSCREWUP "HA! HA, ha hahahhah hehehe hhhohhohohohh!  You choke me up!"
-settextlinetrigger SELLSCREWUP6 :SELLSCREWUP "Quit playing around, you're wasting my time!"
-settextlinetrigger SELLSCREWUP7 :SELLSCREWUP "Make a real offer or get the h"
-settextlinetrigger SELLSCREWUP8 :SELLSCREWUP "WHAT?!@!? you must be crazy!"
-settextlinetrigger SELLSCREWUP9 :SELLSCREWUP "So, you think I'm as stupid as you look? Make a real offer."
-settextlinetrigger SELLSCREWUP10 :SELLSCREWUP "What do you take me for, a fool?  Make a real offer!"
+settextlinetrigger sellexperience :sellexperience "experience point(s)"
+settextlinetrigger sellyouhave :sellyouhave "You have"
+
+settextlinetrigger sellscrewup1 :sellscrewup "Get real ion-brain, make me a real offer."
+settextlinetrigger sellscrewup2 :sellscrewup "This is the big leagues Jr.  Make a real offer."
+settextlinetrigger sellscrewup3 :sellscrewup "My patience grows short with you."
+settextlinetrigger sellscrewup4 :sellscrewup "I have much better things to do than waste my time.  Try again."
+settextlinetrigger sellscrewup5 :sellscrewup "HA! HA, ha hahahhah hehehe hhhohhohohohh!  You choke me up!"
+settextlinetrigger sellscrewup6 :sellscrewup "Quit playing around, you're wasting my time!"
+settextlinetrigger sellscrewup7 :sellscrewup "Make a real offer or get the h"
+settextlinetrigger sellscrewup8 :sellscrewup "WHAT?!@!? you must be crazy!"
+settextlinetrigger sellscrewup9 :sellscrewup "So, you think I'm as stupid as you look? Make a real offer."
+settextlinetrigger sellscrewup10 :sellscrewup "What do you take me for, a fool?  Make a real offer!"
 pause
 pause
-:SELLSCREWUP
-killalltriggers
-multiply $COUNTER 98
-divide $COUNTER 100
-send $COUNTER&"*"
-goto :SELLOFFERLOOP
-:SELLPRICE
-killalltriggers
-add $MIDHAGGLES 1
-setvar $OLD_OFFER $OFFER
-setvar $OLD_COUNTER $COUNTER
-getword CURRENTLINE $OFFER 5
-striptext $OFFER ","
 
+:sellscrewup
+killalltriggers
+multiply $counter 98
+divide $counter 100
+send $counter&"*"
+goto :sellofferloop
 
-setvar $OFFER_CHANGE $OFFER
-subtract $OFFER_CHANGE $OLD_OFFER
-if ($MCIC > "-35")
-  multiply $OFFER_CHANGE 75
-  divide $OFFER_CHANGE 100
-  subtract $COUNTER $OFFER_CHANGE
-  subtract $COUNTER 25
-elseif ($MCIC > "-55")
-  multiply $OFFER_CHANGE 65
-  divide $OFFER_CHANGE 100
-  subtract $COUNTER $OFFER_CHANGE
-  subtract $COUNTER 25
+:sellprice
+killalltriggers
+add $midhaggles 1
+setvar $old_offer $offer
+setvar $old_counter $counter
+getword currentline $offer 5
+striptext $offer ","
+
+setvar $offer_change $offer
+subtract $offer_change $old_offer
+if ($mcic > "-35")
+	multiply $offer_change 75
+	divide $offer_change 100
+	subtract $counter $offer_change
+	subtract $counter 25
+elseif ($mcic > "-55")
+	multiply $offer_change 65
+	divide $offer_change 100
+	subtract $counter $offer_change
+	subtract $counter 25
 else
-  multiply $OFFER_CHANGE 60
-  divide $OFFER_CHANGE 100
-  subtract $COUNTER $OFFER_CHANGE
-  subtract $COUNTER 10
+	multiply $offer_change 60
+	divide $offer_change 100
+	subtract $counter $offer_change
+	subtract $counter 10
 end
-send $COUNTER&"*"
-goto :SELLOFFERLOOP
-:SELLFINALOFFER
+send $counter&"*"
+goto :sellofferloop
+
+:sellfinaloffer
 killalltriggers
 
-
-
-if (($PRODTOSELL = "ore") and (($MCIC <= "-75") and (($PORTBUYING >= 25000) and (($MIDHAGGLES < 1) and ($ORE_SELL_FAILURES < 2)))))
-  setvar $FORCEFAIL 1
-  setvar $THISOREFAILED 1
-elseif (($PRODTOSELL = "org") and ((($MCIC <= "-60") and ((($PORTBUYING >= 25000) and ((($MIDHAGGLES < 2) and (($THISOREFAILED = 1) or ($ORG_SELL_FAILURES < 4)))))))))
-  setvar $FORCEFAIL 1
-  setvar $THISORGFAILED 1
-elseif (($PRODTOSELL = "org") and ((($MCIC <= "-60") and ((($PORTBUYING >= 15000) and ((($MIDHAGGLES < 1) and (($THISOREFAILED = 1) or ($ORG_SELL_FAILURES < 2)))))))))
-  setvar $FORCEFAIL 1
-  setvar $THISORGFAILED 1
-elseif (($PRODTOSELL = "equ") and ((($MCIC <= "-55") and ((($PORTBUYING >= 20000) and ((($MIDHAGGLES < 2) and (($THISOREFAILED = 1) or ($THISORGFAILED = 1) or ($EQU_SELL_FAILURES < 4)))))))))
-  setvar $FORCEFAIL 1
-  setvar $THISEQUFAILED 1
-elseif (($PRODTOSELL = "equ") and ((($MCIC <= "-55") and ((($PORTBUYING >= 12000) and ((($MIDHAGGLES < 1) and (($THISOREFAILED = 1) or ($THISORGFAILED = 1) or ($EQU_SELL_FAILURES < 2)))))))))
-  setvar $FORCEFAIL 1
-  setvar $THISEQUFAILED 1
+if (($prodtosell = "ore") and (($mcic <= "-75") and (($portbuying >= 25000) and (($midhaggles < 1) and ($ore_sell_failures < 2)))))
+	setvar $forcefail 1
+	setvar $thisorefailed 1
+elseif (($prodtosell = "org") and ((($mcic <= "-60") and ((($portbuying >= 25000) and ((($midhaggles < 2) and (($thisorefailed = 1) or ($org_sell_failures < 4)))))))))
+	setvar $forcefail 1
+	setvar $thisorgfailed 1
+elseif (($prodtosell = "org") and ((($mcic <= "-60") and ((($portbuying >= 15000) and ((($midhaggles < 1) and (($thisorefailed = 1) or ($org_sell_failures < 2)))))))))
+	setvar $forcefail 1
+	setvar $thisorgfailed 1
+elseif (($prodtosell = "equ") and ((($mcic <= "-55") and ((($portbuying >= 20000) and ((($midhaggles < 2) and (($thisorefailed = 1) or ($thisorgfailed = 1) or ($equ_sell_failures < 4)))))))))
+	setvar $forcefail 1
+	setvar $thisequfailed 1
+elseif (($prodtosell = "equ") and ((($mcic <= "-55") and ((($portbuying >= 12000) and ((($midhaggles < 1) and (($thisorefailed = 1) or ($thisorgfailed = 1) or ($equ_sell_failures < 2)))))))))
+	setvar $forcefail 1
+	setvar $thisequfailed 1
 else
-  setvar $FORCEFAIL 0
+	setvar $forcefail 0
 
 end
-if ($FORCEFAIL = 0)
-  setvar $OLD_OFFER $OFFER
-  setvar $OLD_COUNTER $COUNTER
-  getword CURRENTLINE $OFFER 5
-  striptext $OFFER ","
-  setvar $OFFER_CHANGE $OFFER
-  subtract $OFFER_CHANGE $OLD_OFFER
-  if ($PRODTOSELL = "ore")
-    multiply $OFFER_CHANGE 30
-  elseif ($PRODTOSELL = "org")
-    multiply $OFFER_CHANGE 27
-  elseif ($PRODTOSELL = "equ")
-    multiply $OFFER_CHANGE 25
-  end
-  divide $OFFER_CHANGE 10
-  subtract $COUNTER $OFFER_CHANGE
-  subtract $COUNTER 10
-  send $COUNTER&"*"
+if ($forcefail = 0)
+	setvar $old_offer $offer
+	setvar $old_counter $counter
+	getword currentline $offer 5
+	striptext $offer ","
+	setvar $offer_change $offer
+	subtract $offer_change $old_offer
+	if ($prodtosell = "ore")
+		multiply $offer_change 30
+	elseif ($prodtosell = "org")
+		multiply $offer_change 27
+	elseif ($prodtosell = "equ")
+		multiply $offer_change 25
+	end
+	divide $offer_change 10
+	subtract $counter $offer_change
+	subtract $counter 10
+	send $counter&"*"
 else
 
-  send $COUNTER&"*"
+	send $counter&"*"
 end
-goto :SELLOFFERLOOP
-:SELLNOTINTERESTED
+goto :sellofferloop
+
+:sellnotinterested
 killalltriggers
-goto :SELLHAGGLEFAILED
-:SELLEXPERIENCE
+goto :sellhagglefailed
+
+:sellexperience
 killalltriggers
-getword CURRENTLINE $EXP_BONUS 7
-add $PLAYER~EXPERIENCE $EXP_BONUS
-goto :SELLOFFERLOOP
-:SELLYOUHAVE
+getword currentline $exp_bonus 7
+add $player~experience $exp_bonus
+goto :sellofferloop
+
+:sellyouhave
 killalltriggers
-setvar $OLDCREDITS $PLAYER~CREDITS
-getword CURRENTLINE $PLAYER~CREDITS 3
-striptext $PLAYER~CREDITS ","
-if ($OLDCREDITS = $PLAYER~CREDITS)
-  setvar $CURRENTHAGGLE "failed"
-  goto :SELLHAGGLEFAILED
+setvar $oldcredits $player~credits
+getword currentline $player~credits 3
+striptext $player~credits ","
+if ($oldcredits = $player~credits)
+	setvar $currenthaggle "failed"
+	goto :sellhagglefailed
 else
-  setvar $CURRENTHAGGLE "succeeded"
-  goto :SELLHAGGLESUCCEEDED
+	setvar $currenthaggle "succeeded"
+	goto :sellhagglesucceeded
 end
-:SELLHAGGLEFAILED
-if ($PRODTOSELL = "ore")
-  add $ORE_SELL_FAILURES 1
-elseif ($PRODTOSELL = "org")
-  add $ORG_SELL_FAILURES 1
-elseif ($PRODTOSELL = "equ")
-  add $EQU_SELL_FAILURES 1
+
+:sellhagglefailed
+if ($prodtosell = "ore")
+	add $ore_sell_failures 1
+elseif ($prodtosell = "org")
+	add $org_sell_failures 1
+elseif ($prodtosell = "equ")
+	add $equ_sell_failures 1
 end
-if ($SELLDELAY > 99)
-  setdelaytrigger SELLDELAY :SELLDELAY $SELLDELAY
-  pause
-  :SELLDELAY
+if ($selldelay > 99)
+	setdelaytrigger selldelay :selldelay $selldelay
+	pause
+
+	:selldelay
 end
 return
-:SELLHAGGLESUCCEEDED
 
-setvar $PERUNIT $COUNTER
-divide $PERUNIT $PORTBUYING
+:sellhagglesucceeded
+setvar $perunit $counter
+divide $perunit $portbuying
 
-setvar $SELLOUTPUT "'"
-setvar $SELLOUTPUT $SELLOUTPUT&$PORTBUYING&" "&$PRODTOSELL&" for "&$COUNTER&" cr"
-setvar $SELLOUTPUT $SELLOUTPUT&" - "
-if ($PRODTOSELL = "ore")
-  setvar $SELLOUTPUT $SELLOUTPUT&$ORE_SELL_FAILURES
-elseif ($PRODTOSELL = "org")
-  setvar $SELLOUTPUT $SELLOUTPUT&$ORG_SELL_FAILURES
-elseif ($PRODTOSELL = "equ")
-  setvar $SELLOUTPUT $SELLOUTPUT&$EQU_SELL_FAILURES
+setvar $selloutput "'"
+setvar $selloutput $selloutput&$portbuying&" "&$prodtosell&" for "&$counter&" cr"
+setvar $selloutput $selloutput&" - "
+if ($prodtosell = "ore")
+	setvar $selloutput $selloutput&$ore_sell_failures
+elseif ($prodtosell = "org")
+	setvar $selloutput $selloutput&$org_sell_failures
+elseif ($prodtosell = "equ")
+	setvar $selloutput $selloutput&$equ_sell_failures
 end
-setvar $SELLOUTPUT $SELLOUTPUT&" fails"
-setvar $SELLOUTPUT $SELLOUTPUT&" - "&$PERUNIT&"/unit"
+setvar $selloutput $selloutput&" fails"
+setvar $selloutput $selloutput&" - "&$perunit&"/unit"
 
-
-setvar $SELLOUTPUT $SELLOUTPUT&" - MCIC "&$MCIC
-if ($PRODTOSELL = "ore")
-  setvar $SELLOUTPUT $SELLOUTPUT&"/-90*"
-  setvar $ORESELLOUTPUT $SELLOUTPUT
-  setvar $OREPROFIT $COUNTER
-elseif ($PRODTOSELL = "org")
-  setvar $SELLOUTPUT $SELLOUTPUT&"/-75*"
-  setvar $ORGSELLOUTPUT $SELLOUTPUT
-  setvar $ORGPROFIT $COUNTER
-elseif ($PRODTOSELL = "equ")
-  setvar $SELLOUTPUT $SELLOUTPUT&"/-65*"
-  setvar $EQUSELLOUTPUT $SELLOUTPUT
-  setvar $EQUPROFIT $COUNTER
+setvar $selloutput $selloutput&" - MCIC "&$mcic
+if ($prodtosell = "ore")
+	setvar $selloutput $selloutput&"/-90*"
+	setvar $oreselloutput $selloutput
+	setvar $oreprofit $counter
+elseif ($prodtosell = "org")
+	setvar $selloutput $selloutput&"/-75*"
+	setvar $orgselloutput $selloutput
+	setvar $orgprofit $counter
+elseif ($prodtosell = "equ")
+	setvar $selloutput $selloutput&"/-65*"
+	setvar $equselloutput $selloutput
+	setvar $equprofit $counter
 
 end
-if ($SELLDELAY > 99)
-  setdelaytrigger SELLDELAY :SELLDELAY2 $SELLDELAY
-  pause
-  pause
-  :SELLDELAY2
-end
-return
-:NEGOTIATELAND
+if ($selldelay > 99)
+	setdelaytrigger selldelay :selldelay2 $selldelay
+	pause
+	pause
 
-
-
-if ($STARTINGLOCATION = "Citadel")
-  send "L "&$PLANET&"* "
-  gosub :GETPLANETINFO
-  send "c "
-elseif ($STARTINGLOCATION = "Planet")
-  send "L "&$PLANET&"* "
-  gosub :GETPLANETINFO
+	:selldelay2
 end
 return
-:EXITNEG
 
-
-send "'Planet Negotiation exiting --- "&$EXIT_MESSAGE&"*"
-return
-:GETINFO
-gosub :PLAYER~GETINFO
-setvar $TRADER_NAME $PLAYER~TRADER_NAME
-setvar $CORPSTRING $PLAYER~CORPSTRING
-setvar $TURNS_PER_WARP $PLAYER~TURNS_PER_WARP
-setvar $TWARP_1_RANGE $PLAYER~TWARP_1_RANGE
-setvar $TWARP_2_RANGE $PLAYER~TWARP_2_RANGE
-setvar $EMPTY_HOLDS $PLAYER~EMPTY_HOLDS
-return
-:SWATHOFF
-
-
-
-if ($SWATHOFF = FALSE)
-  settexttrigger SWATHISON :SWATHISON "Command [TL="
-  setdelaytrigger SWATHISOFF :SWATHISOFF 2000
-  pause
-  :SWATHISON
-
-  killalltriggers
-  setvar $SWATHOFFMESSAGE "Detected SWATH Autohaggle"
-  setvar $SWATHOFF FALSE
-  return
-  :SWATHISOFF
-
-  killalltriggers
-  setvar $SWATHOFF TRUE
+:negotiateland
+if ($startinglocation = "Citadel")
+	send "L "&$planet&"* "
+	gosub :getplanetinfo
+	send "c "
+elseif ($startinglocation = "Planet")
+	send "L "&$planet&"* "
+	gosub :getplanetinfo
 end
 return
-:NOFIGATLOCATION
 
+:exitneg
+send "'Planet Negotiation exiting --- "&$exit_message&"*"
+return
 
-setsectorparameter $NEARFIG "FIGSEC" FALSE
-goto :TRYAGAIN2
-:BUYDOWNFUEL
+:getinfo
+gosub :player~getinfo
+setvar $trader_name $player~trader_name
+setvar $corpstring $player~corpstring
+setvar $turns_per_warp $player~turns_per_warp
+setvar $twarp_1_range $player~twarp_1_range
+setvar $twarp_2_range $player~twarp_2_range
+setvar $empty_holds $player~empty_holds
+return
 
-setvar $UPGRADE FALSE
+:swathoff
+if ($swathoff = false)
+	settexttrigger swathison :swathison "Command [TL="
+	setdelaytrigger swathisoff :swathisoff 2000
+	pause
+
+	:swathison
+	killalltriggers
+	setvar $swathoffmessage "Detected SWATH Autohaggle"
+	setvar $swathoff false
+	return
+
+	:swathisoff
+	killalltriggers
+	setvar $swathoff true
+end
+return
+
+:nofigatlocation
+setsectorparameter $nearfig "FIGSEC" false
+goto :tryagain2
+
+:buydownfuel
+setvar $upgrade false
 killalltriggers
-gosub :PLAYER~QUIKSTATS
+gosub :player~quikstats
 send "q"
 waiton "Planet command (?"
-gosub :GETPLANETINFO
+gosub :getplanetinfo
 send "c"
-if ($UPGRADE)
-  setvar $TOTAL_CREDS_NEEDED (300 * 7000)
-  if ($TOTAL_CREDS_NEEDED > $PLAYER~CREDITS)
-    setvar $CASHONHAND $CITADELCREDITS
-    add $CASHONHAND $PLAYER~CREDITS
-    if ($CASHONHAND > $TOTAL_CREDS_NEEDED)
-      send "T T "&$PLAYER~CREDITS&"* "
-      send "T F "&$TOTAL_CREDS_NEEDED&"* "
-      setvar $PLAYER~CREDITS $TOTAL_CREDS_NEEDED
-    end
-  end
-  send "q q *O 1"
-  waiton ", 0 to quit)"
-  getword CURRENTLINE $UPGRADEAMOUNT 9
-  striptext $UPGRADEAMOUNT "("
-  send $UPGRADEAMOUNT&"* * *CR*Q"
-  waiton "What sector is the port in? ["&$PLAYER~CURRENT_SECTOR&"]"
-  settextlinetrigger GETFUEL2 :FUELDURING "Fuel Ore"
-  pause
-  :FUELDURING
-  killalltriggers
-  getword CURRENTLINE $TOTALPORTFUEL 4
-  waiton "<Computer deactivated>"
-  gosub :PLAYER~QUIKSTATS
-else
-  send "q q *cr*q"
-  waiton "Fuel Ore"
-  getword CURRENTLINE $TOTALPORTFUEL 4
-end
-if (($PLANETFUELMAX - $PLANETFUEL) < $TOTALPORTFUEL)
-  setvar $TURNSTOEMPTY (($PLANETFUELMAX - $PLANETFUEL) / $PLAYER~TOTAL_HOLDS)
-  setvar $ISDONE TRUE
-else
-  setvar $TURNSTOEMPTY ($TOTALPORTFUEL / $PLAYER~TOTAL_HOLDS)
-end
-setvar $TOTAL_CREDS_NEEDED ($TURNSTOEMPTY * ($PLAYER~TOTAL_HOLDS * 35))
-if ($PLAYER~CREDITS < $TOTAL_CREDS_NEEDED)
-  gosub :GETFUELCASH
-end
-if ($PLAYER~CREDITS < $TOTAL_CREDS_NEEDED)
-  gosub :LANDONPLANETENTERCITADEL
-  return
-end
-setvar $CREDITSBEFORE $PLAYER~CREDITS
-if (($UNLIMITEDGAME = FALSE) and (($PLAYER~TURNS - $TURNSTOEMPTY) <= $BOT_TURN_LIMIT))
-  setvar $TURNSTOOLOW TRUE
-  gosub :LANDONPLANETENTERCITADEL
-  return
-end
-while ($TURNSTOEMPTY > 1)
-  setvar $CREDITSBEFORE $PLAYER~CREDITS
-  if ($TURBO)
-    send "P T * * l j"&#8&$PLANET&"*   t  n  l 1*  q * "
-  else
-    send "P T * * l j"&#8&$PLANET&"*   t  n  l 1*  q * /"
-  end
-  subtract $TURNSTOEMPTY 1
-  add $TOTALHOLDS $PLAYER~TOTAL_HOLDS
-  if ($TURBO <> TRUE)
-    waiton "Creds"
-  end
-end
-gosub :PLAYER~QUIKSTATS
-if (($PLAYER~TURNS < $BOT_TURN_LIMIT) and ($UNLIMITEDGAME = FALSE))
-  gosub :LANDONPLANETENTERCITADEL
-  return
-end
-add $SPENTCREDITS ($CREDITSBEFORE - $PLAYER~CREDITS)
-gosub :LANDONPLANETENTERCITADEL
-return
-:LANDONPLANETENTERCITADEL
-setvar $PLANET~PLANET $PLANET
-gosub :PLANET~LANDONPLANETENTERCITADEL
-setvar $PLANETFUEL $PLANET~PLANETFUEL
-return
-:GETFUELCASH
+if ($upgrade)
+	setvar $total_creds_needed (300 * 7000)
+	if ($total_creds_needed > $player~credits)
+		setvar $cashonhand $citadelcredits
+		add $cashonhand $player~credits
+		if ($cashonhand > $total_creds_needed)
+			send "T T "&$player~credits&"* "
+			send "T F "&$total_creds_needed&"* "
+			setvar $player~credits $total_creds_needed
+		end
+	end
+	send "q q *O 1"
+	waiton ", 0 to quit)"
+	getword currentline $upgradeamount 9
+	striptext $upgradeamount "("
+	send $upgradeamount&"* * *CR*Q"
+	waiton "What sector is the port in? ["&$player~current_sector&"]"
+	settextlinetrigger getfuel2 :fuelduring "Fuel Ore"
+	pause
 
-send "l " $PLANET "*   c t f"&$TOTAL_CREDS_NEEDED&"*qq"
-gosub :PLAYER~QUIKSTATS
+	:fuelduring
+	killalltriggers
+	getword currentline $totalportfuel 4
+	waiton "<Computer deactivated>"
+	gosub :player~quikstats
+else
+	send "q q *cr*q"
+	waiton "Fuel Ore"
+	getword currentline $totalportfuel 4
+end
+if (($planetfuelmax - $planetfuel) < $totalportfuel)
+	setvar $turnstoempty (($planetfuelmax - $planetfuel) / $player~total_holds)
+	setvar $isdone true
+else
+	setvar $turnstoempty ($totalportfuel / $player~total_holds)
+end
+setvar $total_creds_needed ($turnstoempty * ($player~total_holds * 35))
+if ($player~credits < $total_creds_needed)
+	gosub :getfuelcash
+end
+if ($player~credits < $total_creds_needed)
+	gosub :landonplanetentercitadel
+	return
+end
+setvar $creditsbefore $player~credits
+if (($unlimitedgame = false) and (($player~turns - $turnstoempty) <= $bot_turn_limit))
+	setvar $turnstoolow true
+	gosub :landonplanetentercitadel
+	return
+end
+while ($turnstoempty > 1)
+	setvar $creditsbefore $player~credits
+	if ($turbo)
+		send "P T * * l j"&#8&$planet&"*   t  n  l 1*  q * "
+	else
+		send "P T * * l j"&#8&$planet&"*   t  n  l 1*  q * /"
+	end
+	subtract $turnstoempty 1
+	add $totalholds $player~total_holds
+	if ($turbo <> true)
+		waiton "Creds"
+	end
+end
+gosub :player~quikstats
+if (($player~turns < $bot_turn_limit) and ($unlimitedgame = false))
+	gosub :landonplanetentercitadel
+	return
+end
+add $spentcredits ($creditsbefore - $player~credits)
+gosub :landonplanetentercitadel
+return
+
+:landonplanetentercitadel
+setvar $planet~planet $planet
+gosub :planet~landonplanetentercitadel
+setvar $planetfuel $planet~planetfuel
+return
+
+:getfuelcash
+send "l " $planet "*   c t f"&$total_creds_needed&"*qq"
+gosub :player~quikstats
 return
 include "source\include\switchboard.ts"
+include "source\include\loadvars"
+include "source\include\help"

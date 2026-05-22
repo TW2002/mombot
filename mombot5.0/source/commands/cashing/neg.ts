@@ -1,35 +1,34 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-loadvar $GAME~ptradesetting
+gosub :loadvars~loadvars
+gosub :help~initialize
+loadvar $game~ptradesetting
 
+setvar $help~help[1]  $help~tab&"           Planet Negotiate Trade Agrement          "
+setvar $help~help[2]  $help~tab&"           "
+setvar $help~help[3]  $help~tab&"    neg {f | o | e} {half}    "
+setvar $help~help[4]  $help~tab&"                             "
+setvar $help~help[5]  $help~tab&"Options:"
+setvar $help~help[6]  $help~tab&"         {f}   sells as much fuel as possible"
+setvar $help~help[7]  $help~tab&"         {o}   sells as much organics as possible"
+setvar $help~help[8]  $help~tab&"         {e}   sells as much equipment as possible"
+setvar $help~help[9]  $help~tab&"                                                    "
+setvar $help~help[10] $help~tab&"      {half}   sell only half of port amount      "
+setvar $help~help[11] $help~tab&"                                                    "
+setvar $help~help[12] $help~tab&"          default is to sell all org and equip"
+setvar $help~help[13] $help~tab&"          "
+setvar $help~help[14] $help~tab&"           - Originally written by Cherokee"
+gosub :help~helpfile
 
-setVar $HELP~HELP[1]  $HELP~TAB&"           Planet Negotiate Trade Agrement          "
-setVar $HELP~HELP[2]  $HELP~TAB&"           "
-setVar $HELP~HELP[3]  $HELP~TAB&"    neg {f | o | e} {half}    "
-setVar $HELP~HELP[4]  $HELP~TAB&"                             "
-setVar $HELP~HELP[5]  $HELP~TAB&"Options:"
-setVar $HELP~HELP[6]  $HELP~TAB&"         {f}   sells as much fuel as possible"
-setVar $HELP~HELP[7]  $HELP~TAB&"         {o}   sells as much organics as possible"
-setVar $HELP~HELP[8]  $HELP~TAB&"         {e}   sells as much equipment as possible"
-setVar $HELP~HELP[9]  $HELP~TAB&"                                                    "
-setVar $HELP~HELP[10] $HELP~TAB&"      {half}   sell only half of port amount      "
-setVar $HELP~HELP[11] $HELP~TAB&"                                                    "
-setVar $HELP~HELP[12] $HELP~TAB&"          default is to sell all org and equip"
-setVar $HELP~HELP[13] $HELP~TAB&"          "
-setVar $HELP~HELP[14] $HELP~TAB&"           - Originally written by Cherokee"
-gosub :HELP~HELPFILE
+setvar $switchboard~message "Planet Negotiate starting up!*"
+gosub :switchboard~switchboard
 
-setvar $SWITCHBOARD~MESSAGE "Planet Negotiate starting up!*"
-gosub :SWITCHBOARD~SWITCHBOARD
-
-loadVar $game~port_max
-loadVar $game~ptradesetting
-loadvar $bot~$MCIC_FILE
+loadvar $game~port_max
+loadvar $game~ptradesetting
+loadvar $bot~$mcic_file
 
 # ============================== START HAGGLE VARIABLES ============================
-setVar $overhagglemultiple 	147
-setVar $cyclebuffer 		1
-setVar $cyclebufferlimit 	20
+setvar $overhagglemultiple 	147
+setvar $cyclebuffer 		1
+setvar $cyclebufferlimit 	20
 # ============================== END HAGGLE VARIABLES ============================
 
 #==================================   START PLANET NEGOTIATE (NEG) SUB  ========================================
@@ -37,14 +36,13 @@ setVar $cyclebufferlimit 	20
 killtrigger 1
 killtrigger 2
 
+setvar $bot~validprompts "Citadel Planet"
+gosub :player~checkstartingprompt
+setvar $startinglocation $player~current_prompt
 
-setVar $BOT~validPrompts "Citadel Planet"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-setVar $startingLocation $player~CURRENT_PROMPT
-
-if (($startingLocation = 0) or ($startingLocation = ""))
+if (($startinglocation = 0) or ($startinglocation = ""))
 	gosub :player~quikstats
-	setVar $startingLocation $player~CURRENT_PROMPT
+	setvar $startinglocation $player~current_prompt
 end
 
 getwordpos " "&$bot~user_command_line&" " $pos " half "
@@ -55,9 +53,9 @@ else
 end
 
 if ($bot~parm1 = "")
-	setVar $planethaggle~_ck_pnego_fueltosell "-1"
-	setVar $planethaggle~_ck_pnego_orgtosell "max"
-	setVar $planethaggle~_ck_pnego_equiptosell "max"
+	setvar $planethaggle~_ck_pnego_fueltosell "-1"
+	setvar $planethaggle~_ck_pnego_orgtosell "max"
+	setvar $planethaggle~_ck_pnego_equiptosell "max"
 else
 	setvar $amount "max"
 	if ($half = true)
@@ -68,22 +66,22 @@ else
 	end
 	getwordpos " "&$bot~user_command_line&" " $pos " f "
 	if ($pos > 0)
-		setVar $planethaggle~_ck_pnego_fueltosell $amount
+		setvar $planethaggle~_ck_pnego_fueltosell $amount
 	else
-		setVar $planethaggle~_ck_pnego_fueltosell "-1"
+		setvar $planethaggle~_ck_pnego_fueltosell "-1"
 	end
 
 	getwordpos " "&$bot~user_command_line&" " $pos " o "
 	if ($pos > 0)
-		setVar $planethaggle~_ck_pnego_orgtosell $amount
+		setvar $planethaggle~_ck_pnego_orgtosell $amount
 	else
-		setVar $planethaggle~_ck_pnego_orgtosell "-1"
+		setvar $planethaggle~_ck_pnego_orgtosell "-1"
 	end
 	getwordpos " "&$bot~user_command_line&" " $pos " e "
 	if ($pos > 0)
-		setVar $planethaggle~_ck_pnego_equiptosell $amount
+		setvar $planethaggle~_ck_pnego_equiptosell $amount
 	else
-		setVar $planethaggle~_ck_pnego_equiptosell "-1"
+		setvar $planethaggle~_ck_pnego_equiptosell "-1"
 	end
 end
 
@@ -93,8 +91,7 @@ if (($planethaggle~_ck_pnego_fueltosell = "-1") and ($planethaggle~_ck_pnego_org
 	halt
 end
 
-
-gosub :planethaggle~planetNeg
+gosub :planethaggle~planetneg
 
 setvar $switchboard~message $planethaggle~exit_message&"*"
 gosub :switchboard~switchboard

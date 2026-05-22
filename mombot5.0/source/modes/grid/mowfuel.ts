@@ -1,338 +1,335 @@
 logging "OFF"
-loadvar $BOT_NAME
-loadvar $UNLIMITEDGAME
-loadvar $BOT_TURN_LIMIT
-loadvar $USER_COMMAND_LINE
-loadvar $PARM1
-loadvar $PARM2
-loadvar $PARM3
-loadvar $PARM4
-loadvar $PARM5
-loadvar $PARM6
-loadvar $PARM7
-loadvar $PARM8
-loadvar $STARDOCK
-loadvar $BACKDOOR
-loadvar $RYLOS
-loadvar $ALPHA_CENTAURI
-loadvar $COMMAND
-fileexists $DOESHELPFILEEXIST "scripts\MOMBot\Help\"&$COMMAND&".txt"
-if ($DOESHELPFILEEXIST <> TRUE)
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "- "&$COMMAND&"                                              "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    Mows to unfigged upgraded fuel ports in grid.           "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    Does not do so safely.                                  "
-  setvar $switchboard~message "Writing help file for this command in Help directory.*"
-  gosub :switchboard~switchboard
-end
+loadvar $bot_name
+loadvar $unlimitedgame
+loadvar $bot_turn_limit
+loadvar $user_command_line
+loadvar $parm1
+loadvar $parm2
+loadvar $parm3
+loadvar $parm4
+loadvar $parm5
+loadvar $parm6
+loadvar $parm7
+loadvar $parm8
+loadvar $stardock
+loadvar $backdoor
+loadvar $rylos
+loadvar $alpha_centauri
+loadvar $command
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Mows to unfigged upgraded fuel ports in grid."
+setvar $help~help[2] $help~tab&"Does not do so safely."
+setvar $help~help[3] $help~tab&"       "
+setvar $help~help[4] $help~tab&"  Usage: mowfuel"
+gosub :help~helpfile
 window "MOWWINDOW" 250 80 "Sectors Gridded" "ONTOP"
-setarray $COURSE 80
-gosub :PLAYER~QUIKSTATS
-if ($PLAYER~CURRENT_PROMPT <> "Citadel")
-  setvar $switchboard~message "You must run this script from the Citadel prompt.*"
-  gosub :switchboard~switchboard
-  halt
+setarray $course 80
+gosub :player~quikstats
+if ($player~current_prompt <> "Citadel")
+	setvar $switchboard~message "You must run this script from the Citadel prompt.*"
+	gosub :switchboard~switchboard
+	halt
 end
-setvar $LOCATION $PLAYER~CURRENT_PROMPT
-setvar $HOMESECTOR $PLAYER~CURRENT_SECTOR
-setvar $LASTDESTINATION 1
+setvar $location $player~current_prompt
+setvar $homesector $player~current_sector
+setvar $lastdestination 1
 send "c;q"
 waiton "Max Figs Per Attack:"
-getword CURRENTLINE $MAXFIGATTACK2 5
-:GETPLANETNUM
+getword currentline $maxfigattack2 5
+
+:getplanetnum
 send "qD"
 waiton "Planet #"
-getword CURRENTLINE $PLANET 2
-striptext $PLANET "#"
+getword currentline $planet 2
+striptext $planet "#"
 send "tnl1*tnl2*tnl3*snl1*snl2*snl3*tnt1*mnt*qjy"
 
-setwindowcontents "MOWWINDOW" "Sectors Figged: "&$COUNT&" out of "&SECTORS&"*"
-gosub :LANDONPLANETENTERCITADEL
-gosub :GETTARGETS
-:DOAGAIN
-getrnd $RANDOM 1 $DATABASECOUNT
-getword $RANDOMSECTORS $DESTINATION $RANDOM
-if ($DESTINATION = 0)
-  setvar $switchboard~message " Database Cleared - Refresh Figs and Restart.*"
-  gosub :switchboard~switchboard
-  halt
-end
-if ($DESTINATION <> $HOMESECTOR)
-  gosub :GETCOURSES
-  if ($VALID)
-    getdistance $DISTANCETHERE $DESTINATION $LASTDESTINATION
-    if ($DISTANCETHERE < 0)
-      send "/"
-      waiton #179
-      echo ANSI_14 "Updating database...*" ANSI_7
-      send "^f"&$DESTINATION&"*"&$LASTDESTINATION&"*q"
-      waiton "ENDINTERROG"
-      getdistance $DISTANCETHERE $DESTINATION $LASTDESTINATION
-    end
-    getdistance $DISTANCEBACK $LASTDESTINATION $DESTINATION
-    if ($DISTANCEBACK < 0)
-      send "/"
-      waiton #179
-      echo ANSI_14 "Updating database...*" ANSI_7
-      send "^f"&$LASTDESTINATION&"*"&$DESTINATION&"*q"
-      waiton "ENDINTERROG"
-      getdistance $DISTANCEBACK $LASTDESTINATION $DESTINATION
-    end
-    if (($DISTANCETHERE >= 5) and ($DISTANCEBACK >= 5))
-      setvar $TEMP " "&$DESTINATION&" "
-      replacetext $RANDOMSECTORS $TEMP " "
-      subtract $DATABASECOUNT 1
-      send "qm***t n t 1* q"
-      gosub :MOW
-      setvar $WINDOWDATA "Sectors Figged: "&$COUNT&" out of "&SECTORS&"*Current Target: "&$DESTINATION&"*Target Status: Attempting To Mow*"&$DATABASECOUNT&" sectors left in database*"
-      setwindowcontents "MOWWINDOW" $WINDOWDATA
-      setvar $LASTDESTINATION $DESTINATION
-    else
-      setvar $WINDOWDATA "Sectors Figged: "&$COUNT&" out of "&SECTORS&"*Current Target: "&$DESTINATION&"*Target Status: Sector Too Close To Last Target*"&$DATABASECOUNT&" sectors left in database*"
-      setwindowcontents "MOWWINDOW" $WINDOWDATA
-    end
+setwindowcontents "MOWWINDOW" "Sectors Figged: "&$count&" out of "&sectors&"*"
+gosub :landonplanetentercitadel
+gosub :gettargets
 
-
-  else
-    setvar $TEMP " "&$DESTINATION&" "
-    replacetext $RANDOMSECTORS $TEMP " "
-    subtract $DATABASECOUNT 1
-  end
+:doagain
+getrnd $random 1 $databasecount
+getword $randomsectors $destination $random
+if ($destination = 0)
+	setvar $switchboard~message " Database Cleared - Refresh Figs and Restart.*"
+	gosub :switchboard~switchboard
+	halt
 end
-goto :DOAGAIN
-:MOW
+if ($destination <> $homesector)
+	gosub :getcourses
+	if ($valid)
+		getdistance $distancethere $destination $lastdestination
+		if ($distancethere < 0)
+			send "/"
+			waiton #179
+			echo ansi_14 "Updating database...*" ansi_7
+			send "^f"&$destination&"*"&$lastdestination&"*q"
+			waiton "ENDINTERROG"
+			getdistance $distancethere $destination $lastdestination
+		end
+		getdistance $distanceback $lastdestination $destination
+		if ($distanceback < 0)
+			send "/"
+			waiton #179
+			echo ansi_14 "Updating database...*" ansi_7
+			send "^f"&$lastdestination&"*"&$destination&"*q"
+			waiton "ENDINTERROG"
+			getdistance $distanceback $lastdestination $destination
+		end
+		if (($distancethere >= 5) and ($distanceback >= 5))
+			setvar $temp " "&$destination&" "
+			replacetext $randomsectors $temp " "
+			subtract $databasecount 1
+			send "qm***t n t 1* q"
+			gosub :mow
+			setvar $windowdata "Sectors Figged: "&$count&" out of "&sectors&"*Current Target: "&$destination&"*Target Status: Attempting To Mow*"&$databasecount&" sectors left in database*"
+			setwindowcontents "MOWWINDOW" $windowdata
+			setvar $lastdestination $destination
+		else
+			setvar $windowdata "Sectors Figged: "&$count&" out of "&sectors&"*Current Target: "&$destination&"*Target Status: Sector Too Close To Last Target*"&$databasecount&" sectors left in database*"
+			setwindowcontents "MOWWINDOW" $windowdata
+		end
 
+	else
+		setvar $temp " "&$destination&" "
+		replacetext $randomsectors $temp " "
+		subtract $databasecount 1
+	end
+end
+goto :doagain
 
-gosub :PLAYER~QUIKSTATS
-if ($MAXFIGATTACK2 > $PLAYER~FIGHTERS)
-  setvar $MAXFIGATTACK2 9999
+:mow
+gosub :player~quikstats
+if ($maxfigattack2 > $player~fighters)
+	setvar $maxfigattack2 9999
 end
-setvar $J 2
-setvar $RESULT ""
-while ($J <= $COURSELENGTH)
-  setvar $RESULT $RESULT&"m  "&$COURSE[$J]&"* "
-  if (($COURSE[$J] > 10) and ($COURSE[$J] <> STARDOCK))
-    setvar $RESULT $RESULT&"za"&$MAXFIGATTACK2&"* z * "
-  end
-  if (($COURSE[$J] > 10) and (($COURSE[$J] <> $STARDOCK) and ($J > 2)))
-    setvar $RESULT $RESULT&"f 1 * c d "
-  end
-  add $J 1
+setvar $j 2
+setvar $result ""
+while ($j <= $courselength)
+	setvar $result $result&"m  "&$course[$j]&"* "
+	if (($course[$j] > 10) and ($course[$j] <> stardock))
+		setvar $result $result&"za"&$maxfigattack2&"* z * "
+	end
+	if (($course[$j] > 10) and (($course[$j] <> $stardock) and ($j > 2)))
+		setvar $result $result&"f 1 * c d "
+	end
+	add $j 1
 end
-send $RESULT&"zr* "
-gosub :PLAYER~QUIKSTATS
-if ($PLAYER~CURRENT_SECTOR <> $DESTINATION)
-  setvar $WINDOWDATA "Sectors Figged: "&$COUNT&" out of "&SECTORS&"*Current Target: "&$DESTINATION&"*Target Status: DANGER - Call Save Me Activated!"
-  setwindowcontents "MOWWINDOW" $WINDOWDATA
-  gosub :CALLSAVEME
+send $result&"zr* "
+gosub :player~quikstats
+if ($player~current_sector <> $destination)
+	setvar $windowdata "Sectors Figged: "&$count&" out of "&sectors&"*Current Target: "&$destination&"*Target Status: DANGER - Call Save Me Activated!"
+	setwindowcontents "MOWWINDOW" $windowdata
+	gosub :callsaveme
 
 else
-  send "f 1* c d  mz "&$HOMESECTOR&"*y  y    *    "
-  gosub :PLAYER~QUIKSTATS
-  if ($PLAYER~CURRENT_SECTOR <> $HOMESECTOR)
-    gosub :CALLSAVEME
-  end
-  setvar $WINDOWDATA "Sectors Figged: "&$COUNT&" out of "&SECTORS&"*Current Target: "&$DESTINATION&"*Target Status: Returned Home Safely*"&$DATABASECOUNT&" sectors left in database*"
-  setwindowcontents "MOWWINDOW" $WINDOWDATA
-  gosub :LANDONPLANETENTERCITADEL
+	send "f 1* c d  mz "&$homesector&"*y  y    *    "
+	gosub :player~quikstats
+	if ($player~current_sector <> $homesector)
+		gosub :callsaveme
+	end
+	setvar $windowdata "Sectors Figged: "&$count&" out of "&sectors&"*Current Target: "&$destination&"*Target Status: Returned Home Safely*"&$databasecount&" sectors left in database*"
+	setwindowcontents "MOWWINDOW" $windowdata
+	gosub :landonplanetentercitadel
 end
 return
-:GETCOURSES
 
+:getcourses
 killalltriggers
-setarray $COURSE 80
-setvar $SECTORS ""
-settextlinetrigger SECTORLINETRIG :SECTORSLINE " > "
-send "^f*"&$DESTINATION&"*q"
+setarray $course 80
+setvar $sectors ""
+settextlinetrigger sectorlinetrig :sectorsline " > "
+send "^f*"&$destination&"*q"
 pause
-:SECTORSLINE
 
-
+:sectorsline
 killalltriggers
-setvar $LINE CURRENTLINE
-replacetext $LINE ">" " "
-striptext $LINE "("
-striptext $LINE ")"
-setvar $LINE $LINE&" "
-getwordpos $LINE $POS "So what's the point?"
-getwordpos $LINE $POS2 ": ENDINTERROG"
-if (($POS > 0) or ($POS2 > 0))
-  goto :NOPATH
+setvar $line currentline
+replacetext $line ">" " "
+striptext $line "("
+striptext $line ")"
+setvar $line $line&" "
+getwordpos $line $pos "So what's the point?"
+getwordpos $line $pos2 ": ENDINTERROG"
+if (($pos > 0) or ($pos2 > 0))
+	goto :nopath
 end
-getwordpos $LINE $POS " sector "
-getwordpos $LINE $POS2 "TO"
-if (($POS <= 0) and ($POS2 <= 0))
-  setvar $SECTORS $SECTORS&" "&$LINE
+getwordpos $line $pos " sector "
+getwordpos $line $pos2 "TO"
+if (($pos <= 0) and ($pos2 <= 0))
+	setvar $sectors $sectors&" "&$line
 end
-getwordpos $LINE $POS " "&$DESTINATION&" "
-getwordpos $LINE $POS2 "("&$DESTINATION&")"
-getwordpos $LINE $POS3 "TO"
-if ((($POS > 0) or ($POS2 > 0)) and ($POS3 <= 0))
-  goto :GOTSECTORS
+getwordpos $line $pos " "&$destination&" "
+getwordpos $line $pos2 "("&$destination&")"
+getwordpos $line $pos3 "TO"
+if ((($pos > 0) or ($pos2 > 0)) and ($pos3 <= 0))
+	goto :gotsectors
 else
-  settextlinetrigger SECTORLINETRIG :SECTORSLINE " > "
-  settextlinetrigger SECTORLINETRIG2 :SECTORSLINE " "&$DESTINATION&" "
-  settextlinetrigger SECTORLINETRIG3 :SECTORSLINE " "&$DESTINATION
-  settextlinetrigger SECTORLINETRIG4 :SECTORSLINE "("&$DESTINATION&")"
-  settextlinetrigger DONEPATH :SECTORSLINE "So what's the point?"
-  settextlinetrigger DONEPATH2 :SECTORSLINE ": ENDINTERROG"
+	settextlinetrigger sectorlinetrig :sectorsline " > "
+	settextlinetrigger sectorlinetrig2 :sectorsline " "&$destination&" "
+	settextlinetrigger sectorlinetrig3 :sectorsline " "&$destination
+	settextlinetrigger sectorlinetrig4 :sectorsline "("&$destination&")"
+	settextlinetrigger donepath :sectorsline "So what's the point?"
+	settextlinetrigger donepath2 :sectorsline ": ENDINTERROG"
 end
 pause
-:GOTSECTORS
 
+:gotsectors
 killalltriggers
-setvar $SECTORS $SECTORS&" :::"
-setvar $COURSELENGTH 0
-setvar $INDEX 1
-setvar $VALID FALSE
-:KEEPGOING
-getword $SECTORS $COURSE[$INDEX] $INDEX
-while ($COURSE[$INDEX] <> ":::")
-  add $COURSELENGTH 1
-  add $INDEX 1
-  getword $SECTORS $COURSE[$INDEX] $INDEX
-  if ($COURSE[$INDEX] <> ":::")
-    setvar $VALID TRUE
-  end
+setvar $sectors $sectors&" :::"
+setvar $courselength 0
+setvar $index 1
+setvar $valid false
+
+:keepgoing
+getword $sectors $course[$index] $index
+while ($course[$index] <> ":::")
+	add $courselength 1
+	add $index 1
+	getword $sectors $course[$index] $index
+	if ($course[$index] <> ":::")
+		setvar $valid true
+	end
 end
-if ($VALID)
-  setvar $WINDOWDATA "Sectors Figged: "&$COUNT&" out of "&SECTORS&"*Current Target: "&$DESTINATION&"*Target Status: Attempting To Mow*"&$DATABASECOUNT&" sectors left in database*"
+if ($valid)
+	setvar $windowdata "Sectors Figged: "&$count&" out of "&sectors&"*Current Target: "&$destination&"*Target Status: Attempting To Mow*"&$databasecount&" sectors left in database*"
 else
-  setvar $WINDOWDATA "Sectors Figged: "&$COUNT&" out of "&SECTORS&"*Current Target: "&$DESTINATION&"*Target Status: Path Already Figged*"&$DATABASECOUNT&" sectors left in database*"
+	setvar $windowdata "Sectors Figged: "&$count&" out of "&sectors&"*Current Target: "&$destination&"*Target Status: Path Already Figged*"&$databasecount&" sectors left in database*"
 end
 
-setwindowcontents "MOWWINDOW" $WINDOWDATA
-:NOPATH
+setwindowcontents "MOWWINDOW" $windowdata
 
+:nopath
 killalltriggers
 return
-:GETTARGETS
 
-
-setvar $DATABASECOUNT 0
-setvar $RANDOMSECTORS "  "
-setvar $I 11
-while ($I <= SECTORS)
-  getsectorparameter $I "FIGSEC" $ISFIGGED
-  if (($I > 10) and ((PORT.BUYFUEL[$I] = FALSE) and ((PORT.EXISTS[$I] = TRUE) and ($ISFIGGED <> TRUE))))
-    setvar $CURRENTFUEL PORT.FUEL[$I]
-    multiply $CURRENTFUEL 100
-    if (PORT.PERCENTFUEL[$I] <> 0)
-      divide $CURRENTFUEL PORT.PERCENTFUEL[$I]
-    end
-    if ($CURRENTFUEL > 5000)
-      setvar $RANDOMSECTORS $RANDOMSECTORS&$I&"  "
-      add $DATABASECOUNT 1
-    end
-  end
-  add $I 1
+:gettargets
+setvar $databasecount 0
+setvar $randomsectors "  "
+setvar $i 11
+while ($i <= sectors)
+	getsectorparameter $i "FIGSEC" $isfigged
+	if (($i > 10) and ((port.buyfuel[$i] = false) and ((port.exists[$i] = true) and ($isfigged <> true))))
+		setvar $currentfuel port.fuel[$i]
+		multiply $currentfuel 100
+		if (port.percentfuel[$i] <> 0)
+			divide $currentfuel port.percentfuel[$i]
+		end
+		if ($currentfuel > 5000)
+			setvar $randomsectors $randomsectors&$i&"  "
+			add $databasecount 1
+		end
+	end
+	add $i 1
 end
 return
 include "source\include\player"
-:CALLSAVEME
 
-
-
+:callsaveme
 killalltriggers
 send "*"
 waitfor "(?="
-getword CURRENTLINE $PROMPT 1
-if ($PROMPT = "Citadel")
-  echo "**Had to halt script, check ship to see if it is valid.**"
-  halt
+getword currentline $prompt 1
+if ($prompt = "Citadel")
+	echo "**Had to halt script, check ship to see if it is valid.**"
+	halt
 end
-if (($PROMPT = "Computer") or ($PROMPT = "Corporate") or ($PROMPT = "NavPoint"))
-  send "q"
-  waitfor "Command [TL"
+if (($prompt = "Computer") or ($prompt = "Corporate") or ($prompt = "NavPoint"))
+	send "q"
+	waitfor "Command [TL"
 end
-gosub :PLAYER~QUIKSTATS
-setvar $FIGSTODEPLOY 1
-gosub :DEPLOYFIGS
-setvar $SAVETARGET $PLAYER~CURRENT_SECTOR
-if ($SAVETARGET < 10)
-  setvar $SAVETARGET 0000&$SAVETARGET
-elseif ($SAVETARGET < 100)
-  setvar $SAVETARGET 000&$SAVETARGET
-elseif ($SAVETARGET < 1000)
-  setvar $SAVETARGET 00&$SAVETARGET
-elseif ($SAVETARGET < 10000)
-  setvar $SAVETARGET 0&$SAVETARGET
+gosub :player~quikstats
+setvar $figstodeploy 1
+gosub :deployfigs
+setvar $savetarget $player~current_sector
+if ($savetarget < 10)
+	setvar $savetarget 0000&$savetarget
+elseif ($savetarget < 100)
+	setvar $savetarget 000&$savetarget
+elseif ($savetarget < 1000)
+	setvar $savetarget 00&$savetarget
+elseif ($savetarget < 10000)
+	setvar $savetarget 0&$savetarget
 
 end
-send "'"&$SAVETARGET&"=saveme*"
-send "'pickup "&$PLAYER~CURRENT_SECTOR&" ::*"
-:WAITFORHELP
+send "'"&$savetarget&"=saveme*"
+send "'pickup "&$player~current_sector&" ::*"
 
-
-settextlinetrigger FRIENDLYTWARP :FRIENDLYTWARP "appears in a brilliant flash of warp energies!"
-settextlinetrigger FRIENDLYPLANET :FRIENDLYPLANET "Saveme script activated - Planet "
-settextlinetrigger TOWLOCKED :TOWLOCKED "locks a tractor beam on your ship."
-setdelaytrigger TIMEOUT :TIMEOUT 30000
+:waitforhelp
+settextlinetrigger friendlytwarp :friendlytwarp "appears in a brilliant flash of warp energies!"
+settextlinetrigger friendlyplanet :friendlyplanet "Saveme script activated - Planet "
+settextlinetrigger towlocked :towlocked "locks a tractor beam on your ship."
+setdelaytrigger timeout :timeout 30000
 pause
-:TIMEOUT
 
+:timeout
 killalltriggers
 send "'30 seconds after save call, script halted.*"
 halt
-:FRIENDLYTWARP
 
+:friendlytwarp
 killalltriggers
-setvar $FIGSTODEPLOY "ALL"
-gosub :DEPLOYFIGS
-goto :WAITFORHELP
-:FRIENDLYPLANET
+setvar $figstodeploy "ALL"
+gosub :deployfigs
+goto :waitforhelp
 
+:friendlyplanet
 killalltriggers
-gettext CURRENTLINE $PLANET "Saveme script activated - Planet " " to "
-send "L "&$PLANET&"* C 'I landed on planet "&$PLANET&"*"
+gettext currentline $planet "Saveme script activated - Planet " " to "
+send "L "&$planet&"* C 'I landed on planet "&$planet&"*"
 halt
-:TOWLOCKED
 
+:towlocked
 killalltriggers
-setvar $FIGSTODEPLOY 1
-gosub :DEPLOYFIGS
+setvar $figstodeploy 1
+gosub :deployfigs
 send "'Tow locked, get us out of here!*"
 halt
-:DEPLOYFIGS
 
-
-if ($FIGSTODEPLOY = 0)
-  setvar $FIGSTODEPLOY 1
+:deployfigs
+if ($figstodeploy = 0)
+	setvar $figstodeploy 1
 end
-if (($PLAYER~CURRENT_SECTOR < 11) or ($PLAYER~CURRENT_SECTOR = STARDOCK))
-  send "'Can't deploy figs in fed*"
-  return
+if (($player~current_sector < 11) or ($player~current_sector = stardock))
+	send "'Can't deploy figs in fed*"
+	return
 end
 send "F"
-settextlinetrigger NOCONTROL :NOCONTROL "These fighters are not under your control."
-settextlinetrigger ABLETODEPLOY :ABLETODEPLOY "fighters available."
+settextlinetrigger nocontrol :nocontrol "These fighters are not under your control."
+settextlinetrigger abletodeploy :abletodeploy "fighters available."
 pause
-:NOCONTROL
 
+:nocontrol
 killalltriggers
 send "'We don't control the figs in this sector!*"
 halt
-:ABLETODEPLOY
 
+:abletodeploy
 killalltriggers
-getword CURRENTLINE $FIGSAVAILABLE 3
-striptext $FIGSAVAILABLE ","
-if ($FIGSTODEPLOY = "ALL")
-  setvar $FIGSTODEPLOY $FIGSAVAILABLE
+getword currentline $figsavailable 3
+striptext $figsavailable ","
+if ($figstodeploy = "ALL")
+	setvar $figstodeploy $figsavailable
 end
-if ($FIGSAVAILABLE = 0)
-  send "0* ZC D* 'I have no figs to deploy!*"
+if ($figsavailable = 0)
+	send "0* ZC D* 'I have no figs to deploy!*"
 else
-  send $FIGSTODEPLOY&"* ZC D* '"&$FIGSTODEPLOY&" figs deployed*"
+	send $figstodeploy&"* ZC D* '"&$figstodeploy&" figs deployed*"
 end
 return
-:LANDONPLANETENTERCITADEL
 
-send "l " $PLANET "* c"
+:landonplanetentercitadel
+send "l " $planet "* c"
 waiton "<Enter Citadel>"
 return
-:LEAVECITADELANDPLANET
+
+:leavecitadelandplanet
 send "q q"
 waiton "Blasting off from"
 waiton "Command [TL"
 return
 include "source\include\switchboard.ts"
+include "source\include\loadvars"
+include "source\include\help"

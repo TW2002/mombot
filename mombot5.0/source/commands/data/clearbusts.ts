@@ -1,21 +1,21 @@
 logging off
-gosub :HELP~INITIALIZE
-setVar $HELP~HELP[1] $HELP~TAB&"clearbusts"
-setVar $HELP~HELP[2] $HELP~TAB&"  - Will clear all busts in database."
-gosub :HELP~HELPFILE
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"clearbusts"
+setvar $help~help[2] $help~tab&"  - Will clear all busts in database."
+gosub :help~helpfile
 
-setvar $SWITCHBOARD~MESSAGE "Bust Clearer starting up!*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "Bust Clearer starting up!*"
+gosub :switchboard~switchboard
 
 :clearbusts
-setVar $i 11
-while ($i <= SECTORS)
-	setSectorParameter $i "BUSTED" ""
-	setSectorParameter $i "FAKEBUST" ""
+setvar $i 11
+while ($i <= sectors)
+	setsectorparameter $i "BUSTED" ""
+	setsectorparameter $i "FAKEBUST" ""
 	add $i 1
 end
-setVar $SWITCHBOARD~message "Bust data for this bot has been cleared.*"
-gosub :SWITCHBOARD~switchboard
+setvar $switchboard~message "Bust data for this bot has been cleared.*"
+gosub :switchboard~switchboard
 halt
 
 #INCLUDES:

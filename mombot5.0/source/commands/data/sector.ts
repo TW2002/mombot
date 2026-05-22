@@ -1,33 +1,27 @@
-	gosub :LOADVARS~LOADVARS
-	
+gosub :loadvars~loadvars
 
-	setVar $i $bot~parm1
-	isNumber $test $i
-	if ($test <> TRUE)
-		setVar $i currentsector
-	end
-	if (($i > SECTORS) OR ($i < 1))
-		setVar $i currentsector
-	end
-	setVar $MAP~displaySector $i
-	gosub :MAP~displaySector
-	setVar $SWITCHBOARD~message $MAP~output
-	listSectorParameters $i $bot~parms
-	setvar $j 1
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"     *  "
-	while ($j <= $bot~parms)
-		getSectorParameter $i $bot~parms[$j] $check
-		setVar $SWITCHBOARD~message $SWITCHBOARD~message&"    "&$bot~parms[$j]&": "&$check&"*"
-		add $j 1
-	end
+setvar $i $bot~parm1
+isnumber $test $i
+if ($test <> true)
+	setvar $i currentsector
+end
+if (($i > sectors) or ($i < 1))
+	setvar $i currentsector
+end
+setvar $map~displaysector $i
+gosub :map~displaysector
+setvar $switchboard~message $map~output
+listsectorparameters $i $bot~parms
+setvar $j 1
+setvar $switchboard~message $switchboard~message&"     *  "
+while ($j <= $bot~parms)
+	getsectorparameter $i $bot~parms[$j] $check
+	setvar $switchboard~message $switchboard~message&"    "&$bot~parms[$j]&": "&$check&"*"
+	add $j 1
+end
 
-	gosub :SWITCHBOARD~switchboard
+gosub :switchboard~switchboard
 halt
-
-
-
-
-
 
 # includes:
 include "source\include\map"

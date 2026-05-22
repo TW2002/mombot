@@ -1,252 +1,247 @@
-loadvar $USER_COMMAND_LINE
-loadvar $PARM1
-loadvar $PARM2
-loadvar $PARM3
-loadvar $PARM4
-loadvar $PARM5
-loadvar $PARM6
-loadvar $PARM7
-loadvar $PARM8
-loadvar $BOT_NAME
-:START
+loadvar $user_command_line
+loadvar $parm1
+loadvar $parm2
+loadvar $parm3
+loadvar $parm4
+loadvar $parm5
+loadvar $parm6
+loadvar $parm7
+loadvar $parm8
+loadvar $bot_name
 
-
-gosub :PLAYER~QUIKSTATS
-setvar $LOCATION $PLAYER~CURRENT_PROMPT
-if (($LOCATION <> "Command") and ($LOCATION <> "Citadel"))
-  setvar $switchboard~message "T-warp Saveme must be run from the Command or Citadel Prompt*"
-  gosub :switchboard~switchboard
-  halt
-end
-:TYPE
-if ($LOCATION = "Command")
-  setvar $TYPE "TWarp"
-  setvar $SECTOR $PLAYER~CURRENT_SECTOR
-elseif ($LOCATION = "Citadel")
-  setvar $TYPE "BWarp"
-  send "qd"
-  waitfor "Planet #"
-  getword CURRENTLINE $PLANET 2
-  striptext $PLANET "#"
-  send " t n l 1* t n l 2* t n l 3* s n l 1* s n l 2* s n l 3* t n t 1* c s* "
-  setvar $SECTOR $PLAYER~CURRENT_SECTOR
+:start
+gosub :player~quikstats
+setvar $location $player~current_prompt
+if (($location <> "Command") and ($location <> "Citadel"))
+	setvar $switchboard~message "T-warp Saveme must be run from the Command or Citadel Prompt*"
+	gosub :switchboard~switchboard
+	halt
 end
 
+:type
+if ($location = "Command")
+	setvar $type "TWarp"
+	setvar $sector $player~current_sector
+elseif ($location = "Citadel")
+	setvar $type "BWarp"
+	send "qd"
+	waitfor "Planet #"
+	getword currentline $planet 2
+	striptext $planet "#"
+	send " t n l 1* t n l 2* t n l 3* s n l 1* s n l 2* s n l 3* t n t 1* c s* "
+	setvar $sector $player~current_sector
+end
 
-setvar $TSAVEME_SCRUB $PARM1
+setvar $tsaveme_scrub $parm1
 
-
-isnumber $NUMBER $TSAVEME_SCRUB
-if (($NUMBER < 1) or ($TSAVEME_SCRUB = "") or ($TSAVEME_SCRUB = 0))
-  setvar $SCRUB $SECTOR
+isnumber $number $tsaveme_scrub
+if (($number < 1) or ($tsaveme_scrub = "") or ($tsaveme_scrub = 0))
+	setvar $scrub $sector
 else
-  setvar $SCRUB $TSAVEME_SCRUB
+	setvar $scrub $tsaveme_scrub
 end
 
-setvar $switchboard~message "" $TYPE " Saveme Active - Awaiting Distress Call. Returns to: "&$SCRUB&"*"
+setvar $switchboard~message "" $type " Saveme Active - Awaiting Distress Call. Returns to: "&$scrub&"*"
 gosub :switchboard~switchboard
-:MAIN
 
-settextlinetrigger TRIGGER :TRIGGER "=saveme"
+:main
+settextlinetrigger trigger :trigger "=saveme"
 pause
-:TRIGGER
 
-cuttext CURRENTLINE $SPOOF 1 1
-if ($SPOOF <> "R")
-  goto :MAIN
+:trigger
+cuttext currentline $spoof 1 1
+if ($spoof <> "R")
+	goto :main
 end
-gettext CURRENTLINE $LINE "R" "=saveme"
-cuttext $LINE $CORPY 2 6
-striptext $LINE $CORPY
-striptext $LINE "R"
-striptext $LINE "=saveme"
-striptext $LINE " "
-setvar $SAVESEC $LINE
-setvar $POS1 5
-:POS_LOOP
-cuttext $CORPY $BLANK_CK $POS1 1
-if ($BLANK_CK = " ")
-  cuttext $CORPY $CORPY 1 $POS1
-  subtract $POS1 1
-  setvar $CHECK2 1
-  goto :POS_LOOP
-end
-if ($CHECK2 = 1)
-  cuttext $CORPY $CORPY 1 $POS1
-end
-:CUT_ZERO
+gettext currentline $line "R" "=saveme"
+cuttext $line $corpy 2 6
+striptext $line $corpy
+striptext $line "R"
+striptext $line "=saveme"
+striptext $line " "
+setvar $savesec $line
+setvar $pos1 5
 
-striptext $SAVESEC " "
-cuttext $SAVESEC $ZERO_CK 1 1
-if ($ZERO_CK = 0)
-  cuttext $SAVESEC $SAVESEC 2 5
-  goto :CUT_ZERO
+:pos_loop
+cuttext $corpy $blank_ck $pos1 1
+if ($blank_ck = " ")
+	cuttext $corpy $corpy 1 $pos1
+	subtract $pos1 1
+	setvar $check2 1
+	goto :pos_loop
 end
-:SAVE_EM
+if ($check2 = 1)
+	cuttext $corpy $corpy 1 $pos1
+end
 
-if ($TYPE = "TWarp")
-  setvar $TWARP_SECTOR $SAVESEC
-  setvar $GO 1
-  goto :TWARP
-elseif ($TYPE = "BWarp")
-  setvar $BWARP_SECTOR $SAVESEC
-  setvar $GO 1
-  goto :BWARP
+:cut_zero
+striptext $savesec " "
+cuttext $savesec $zero_ck 1 1
+if ($zero_ck = 0)
+	cuttext $savesec $savesec 2 5
+	goto :cut_zero
 end
-:GO1
+
+:save_em
+if ($type = "TWarp")
+	setvar $twarp_sector $savesec
+	setvar $go 1
+	goto :twarp
+elseif ($type = "BWarp")
+	setvar $bwarp_sector $savesec
+	setvar $go 1
+	goto :bwarp
+end
+
+:go1
 send "f"
-settextlinetrigger TOTAL_FIGS :TOTAL_FIGS "fighters available."
-settextlinetrigger SEC_FIGS :SEC_FIGS "Your ship can support up to"
+settextlinetrigger total_figs :total_figs "fighters available."
+settextlinetrigger sec_figs :sec_figs "Your ship can support up to"
 pause
-:TOTAL_FIGS
 
-getword CURRENTLINE $TOTAL_FIGS 3
-striptext $TOTAL_FIGS ","
+:total_figs
+getword currentline $total_figs 3
+striptext $total_figs ","
 pause
-:SEC_FIGS
 
-getword CURRENTLINE $SEC_FIGS 10
-striptext $SEC_FIGS ","
-if ($TOTAL_FIGS <= 50000)
-  send $TOTAL_FIGS "*cdzn"
+:sec_figs
+getword currentline $sec_figs 10
+striptext $sec_figs ","
+if ($total_figs <= 50000)
+	send $total_figs "*cdzn"
 else
-  send "50000*cd*"
+	send "50000*cd*"
 end
 send "tfyf"
-settextlinetrigger CORPY_FIGS :CORPY_FIGS "fighters, and"
+settextlinetrigger corpy_figs :corpy_figs "fighters, and"
 pause
-:CORPY_FIGS
 
-setvar $CURRENT_LINE CURRENTLINE
+:corpy_figs
+setvar $current_line currentline
 
-setvar $KEY_IDX 1
-while ($KEY_IDX <= 20)
-  getword $CURRENT_LINE $WORDY $KEY_IDX
-  if ($WORDY = "has")
-    setvar $FTR_WORD ($KEY_IDX + 1)
-    goto :GOT_WORD_NUM
-  end
-  add $KEY_IDX 1
+setvar $key_idx 1
+while ($key_idx <= 20)
+	getword $current_line $wordy $key_idx
+	if ($wordy = "has")
+		setvar $ftr_word ($key_idx + 1)
+		goto :got_word_num
+	end
+	add $key_idx 1
 end
-:GOT_WORD_NUM
 
-getword $CURRENT_LINE $CORPY_FIGS $FTR_WORD
-striptext $CORPY_FIGS "."
-striptext $CORPY_FIGS ","
+:got_word_num
+getword $current_line $corpy_figs $ftr_word
+striptext $corpy_figs "."
+striptext $corpy_figs ","
 
-send $CORPY_FIGS "*qzn"
-send "wy" $CORPY "*y*zn"
-send "tfyt" $CORPY_FIGS "*qzn"
+send $corpy_figs "*qzn"
+send "wy" $corpy "*y*zn"
+send "tfyt" $corpy_figs "*qzn"
 send "f"
-if ($SEC_FIGS > 1)
-  send $SEC_FIGS
+if ($sec_figs > 1)
+	send $sec_figs
 else
-  send 1
+	send 1
 end
 send "*c d z n "
-:GO_SCRUB
 
-setvar $TWARP_SECTOR $SCRUB
-setvar $GO 2
-goto :TWARP
-:TWARP
+:go_scrub
+setvar $twarp_sector $scrub
+setvar $go 2
+goto :twarp
 
-
-
-send "m" $TWARP_SECTOR "*y"
+:twarp
+send "m" $twarp_sector "*y"
 waitfor "To which Sector"
-settextlinetrigger TWARP_LOCK :TWARP_LOCK "TransWarp Locked"
-settextlinetrigger NO_TWRP_LOCK :NO_TWARP_LOCK "No locating beam found"
-settextlinetrigger TWARP_ADJ :TWARP_ADJ "<Set NavPoint>"
-settextlinetrigger NO_ORE :NO_ORE "You do not have enough Fuel Ore"
+settextlinetrigger twarp_lock :twarp_lock "TransWarp Locked"
+settextlinetrigger no_twrp_lock :no_twarp_lock "No locating beam found"
+settextlinetrigger twarp_adj :twarp_adj "<Set NavPoint>"
+settextlinetrigger no_ore :no_ore "You do not have enough Fuel Ore"
 pause
-:NO_ORE
 
-
-send "'OZ " $TYPE " Saveme - No ore!!*"
+:no_ore
+send "'OZ " $type " Saveme - No ore!!*"
 halt
-:TWARP_ADJ
 
-
+:twarp_adj
 send "**"
 killalltriggers
-if ($GO = 1)
-  goto :GO1
-elseif ($GO = 2)
-  goto :GO2
+if ($go = 1)
+	goto :go1
+elseif ($go = 2)
+	goto :go2
 end
-:TWARP_LOCK
 
+:twarp_lock
 killalltriggers
 send "y*"
 waitfor "Warps to Sector(s)"
-if ($GO = 1)
-  goto :GO1
-elseif ($GO = 2)
-  goto :GO2
+if ($go = 1)
+	goto :go1
+elseif ($go = 2)
+	goto :go2
 end
-:NO_TWARP_LOCK
 
+:no_twarp_lock
 killalltriggers
 send "n*"
-send "'OZ " $TYPE " Saveme - Can't Get Lock! - Fig and Call Save!*"
-goto :MAIN
-:BWARP
+send "'OZ " $type " Saveme - Can't Get Lock! - Fig and Call Save!*"
+goto :main
 
-
-send "b" $BWARP_SECTOR "*"
-settextlinetrigger BEAM_LOCK :BEAM_LOCK "TransWarp Locked"
-settextlinetrigger NO_BEAM_LOCK :NO_BEAM_LOCK "No locating beam found"
+:bwarp
+send "b" $bwarp_sector "*"
+settextlinetrigger beam_lock :beam_lock "TransWarp Locked"
+settextlinetrigger no_beam_lock :no_beam_lock "No locating beam found"
 pause
-:BEAM_LOCK
+
+:beam_lock
 killalltriggers
 send "y*"
 waitfor "Warps to Sector(s)"
-if ($GO = 1)
-  goto :GO1
-elseif ($GO = 2)
-  goto :GO2
+if ($go = 1)
+	goto :go1
+elseif ($go = 2)
+	goto :go2
 end
-:NO_BEAM_LOCK
 
+:no_beam_lock
 killalltriggers
 send "n*"
-setvar $switchboard~message "" $TYPE " Saveme - Can't Get Lock! - Fig and Call Save!*"
+setvar $switchboard~message "" $type " Saveme - Can't Get Lock! - Fig and Call Save!*"
 gosub :switchboard~switchboard
-goto :MAIN
-:GO2
+goto :main
 
-
+:go2
 send " w * * z q n z q n "
-gosub :PLAYER~QUIKSTATS
-if ($TYPE = "BWarp")
-  settextlinetrigger NOT_AT_HOME :EXIT_COMPLETELY "That planet is not in this sector."
-  send " l "&$PLANET&"*"
-  waitfor "Landing sequence engaged..."
-  send " t n l 1* t n l 2* t n l 3* s n l 1* s n l 2* s n l 3* t n t 1* c s* "
-  if ($PLAYER~CURRENT_SECTOR = $SECTOR)
-    setvar $switchboard~message "" $TYPE " Saveme - Arrived at Return Sector. Ready for another save.*"
-    gosub :switchboard~switchboard
-  end
-  goto :MAIN
+gosub :player~quikstats
+if ($type = "BWarp")
+	settextlinetrigger not_at_home :exit_completely "That planet is not in this sector."
+	send " l "&$planet&"*"
+	waitfor "Landing sequence engaged..."
+	send " t n l 1* t n l 2* t n l 3* s n l 1* s n l 2* s n l 3* t n t 1* c s* "
+	if ($player~current_sector = $sector)
+		setvar $switchboard~message "" $type " Saveme - Arrived at Return Sector. Ready for another save.*"
+		gosub :switchboard~switchboard
+	end
+	goto :main
 else
-  if ($TSAVEME_SCRUB = $PLAYER~CURRENT_SECTOR)
-    setvar $switchboard~message "" $TYPE " Saveme - Arrived at Scrub Sector.*"
-    gosub :switchboard~switchboard
-    setvar $switchboard~message "" $TYPE " Saveme - Please Exit/Enter to Remove Limpet.*"
-    gosub :switchboard~switchboard
-  end
-  setvar $switchboard~message "" $TYPE " Saveme - Powering Down...*"
-  gosub :switchboard~switchboard
-  send "**"
-  halt
+	if ($tsaveme_scrub = $player~current_sector)
+		setvar $switchboard~message "" $type " Saveme - Arrived at Scrub Sector.*"
+		gosub :switchboard~switchboard
+		setvar $switchboard~message "" $type " Saveme - Please Exit/Enter to Remove Limpet.*"
+		gosub :switchboard~switchboard
+	end
+	setvar $switchboard~message "" $type " Saveme - Powering Down...*"
+	gosub :switchboard~switchboard
+	send "**"
+	halt
 end
 halt
-:EXIT_COMPLETELY
 
-setvar $switchboard~message "" $TYPE " Saveme - Arrived at Scrub Sector.*"
+:exit_completely
+setvar $switchboard~message "" $type " Saveme - Arrived at Scrub Sector.*"
 gosub :switchboard~switchboard
-setvar $switchboard~message "" $TYPE " Saveme - Please Exit/Enter to Remove Limpet.*"
+setvar $switchboard~message "" $type " Saveme - Please Exit/Enter to Remove Limpet.*"
 gosub :switchboard~switchboard
 setvar $switchboard~message "Saveme - Powering Down...*"
 gosub :switchboard~switchboard

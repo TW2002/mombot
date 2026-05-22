@@ -1,378 +1,378 @@
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:SEARCH~FIND
-:SEARCH~NEAR
+:search~find
+:search~near
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-loadvar $BOT~PARM1
-loadvar $BOT~PARM2
+loadvar $bot~parm1
+loadvar $bot~parm2
 
-setvar $SEARCH~NEAR $BOT~PARM1
-setvar $SEARCH~SOURCE $BOT~PARM2
+setvar $search~near $bot~parm1
+setvar $search~source $bot~parm2
 
-isnumber $SEARCH~NUMBER $SEARCH~SOURCE
-if ($SEARCH~NUMBER = TRUE)
-  if ($SEARCH~SOURCE <= 0)
-    setvar $SEARCH~SOURCE CURRENTSECTOR
-  end
-  if ($SEARCH~SOURCE > SECTORS)
-    setvar $SWITCHBOARD~MESSAGE "That sector is out of bounds (Must be between 1-"&SECTORS&")*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
+isnumber $search~number $search~source
+if ($search~number = true)
+	if ($search~source <= 0)
+		setvar $search~source currentsector
+	end
+	if ($search~source > sectors)
+		setvar $switchboard~message "That sector is out of bounds (Must be between 1-"&sectors&")*"
+		gosub :switchboard~switchboard
+		halt
+	end
 else
-  setvar $SEARCH~PORT_TYPE $BOT~PARM2
-  setvar $SEARCH~SOURCE CURRENTSECTOR
+	setvar $search~port_type $bot~parm2
+	setvar $search~source currentsector
 end
 
-setvar $SEARCH~CHECK_SECTOR $SEARCH~SOURCE
-gosub :SEARCH~LOAD_FIG_STATE
-setvar $SEARCH~ISFIGGED $SEARCH~CHECK_FIGGED
+setvar $search~check_sector $search~source
+gosub :search~load_fig_state
+setvar $search~isfigged $search~check_figged
 
-if ($SEARCH~ISFIGGED = "")
-  setvar $SWITCHBOARD~MESSAGE "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+if ($search~isfigged = "")
+	setvar $switchboard~message "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-if (($SEARCH~NEAR <> "owner") and (($SEARCH~NEAR <> "ufde") and (($SEARCH~NEAR <> "f") and (($SEARCH~NEAR <> "nf") and (($SEARCH~NEAR <> "fde") and (($SEARCH~NEAR <> "uf") and (($SEARCH~NEAR <> "fp") and (($SEARCH~NEAR <> "nfup") and (($SEARCH~NEAR <> "fup") and (($SEARCH~NEAR <> "p") and (($SEARCH~NEAR <> "de") and (($SEARCH~NEAR <> "fig") and (($SEARCH~NEAR <> "nofig") and (($SEARCH~NEAR <> "figport") and (($SEARCH~NEAR <> "port") and ($SEARCH~NEAR <> "deadend"))))))))))))))))
-  setvar $SWITCHBOARD~MESSAGE "Please use - [type] [sector] format*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+if (($search~near <> "owner") and (($search~near <> "ufde") and (($search~near <> "f") and (($search~near <> "nf") and (($search~near <> "fde") and (($search~near <> "uf") and (($search~near <> "fp") and (($search~near <> "nfup") and (($search~near <> "fup") and (($search~near <> "p") and (($search~near <> "de") and (($search~near <> "fig") and (($search~near <> "nofig") and (($search~near <> "figport") and (($search~near <> "port") and ($search~near <> "deadend"))))))))))))))))
+	setvar $switchboard~message "Please use - [type] [sector] format*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-if (($SEARCH~NEAR = "fp") or ($SEARCH~NEAR = "port") or ($SEARCH~NEAR = "p") or ($SEARCH~NEAR = "nfup") or ($SEARCH~NEAR = "fup"))
-  getlength $SEARCH~PORT_TYPE $SEARCH~PLENGTH
-  if (($SEARCH~SOURCE = 0) or ($SEARCH~PLENGTH <> 3))
-    setvar $SEARCH~PORT_TYPE "xxx"
-  end
-  setvar $SEARCH~INVALID FALSE
-  cuttext $SEARCH~PORT_TYPE $SEARCH~PFUEL 1 1
-  if (($SEARCH~PFUEL <> "s") and (($SEARCH~PFUEL <> "b") and ($SEARCH~PFUEL <> "x")))
-    setvar $SEARCH~INVALID TRUE
-  end
-  cuttext $SEARCH~PORT_TYPE $SEARCH~PORG 2 1
-  if (($SEARCH~PORG <> "s") and (($SEARCH~PORG <> "b") and ($SEARCH~PORG <> "x")))
-    setvar $SEARCH~INVALID TRUE
-  end
-  cuttext $SEARCH~PORT_TYPE $SEARCH~PEQUIP 3 1
-  if (($SEARCH~PEQUIP <> "s") and (($SEARCH~PEQUIP <> "b") and ($SEARCH~PEQUIP <> "x")))
-    setvar $SEARCH~INVALID TRUE
-  end
-  if ($SEARCH~INVALID)
-    setvar $SWITCHBOARD~MESSAGE "Please use - [fp/p] [sector] [port type] format."
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
-  setvar $SEARCH~PTYPE $SEARCH~PORT_TYPE
-  uppercase $SEARCH~PTYPE
+if (($search~near = "fp") or ($search~near = "port") or ($search~near = "p") or ($search~near = "nfup") or ($search~near = "fup"))
+	getlength $search~port_type $search~plength
+	if (($search~source = 0) or ($search~plength <> 3))
+		setvar $search~port_type "xxx"
+	end
+	setvar $search~invalid false
+	cuttext $search~port_type $search~pfuel 1 1
+	if (($search~pfuel <> "s") and (($search~pfuel <> "b") and ($search~pfuel <> "x")))
+		setvar $search~invalid true
+	end
+	cuttext $search~port_type $search~porg 2 1
+	if (($search~porg <> "s") and (($search~porg <> "b") and ($search~porg <> "x")))
+		setvar $search~invalid true
+	end
+	cuttext $search~port_type $search~pequip 3 1
+	if (($search~pequip <> "s") and (($search~pequip <> "b") and ($search~pequip <> "x")))
+		setvar $search~invalid true
+	end
+	if ($search~invalid)
+		setvar $switchboard~message "Please use - [fp/p] [sector] [port type] format."
+		gosub :switchboard~switchboard
+		halt
+	end
+	setvar $search~ptype $search~port_type
+	uppercase $search~ptype
 end
 
-setvar $SEARCH~CHECK_SECTOR $SEARCH~SOURCE
-gosub :SEARCH~LOAD_FIG_STATE
-setvar $SEARCH~ISFIGGED $SEARCH~CHECK_FIGGED
-getword SECTOR.FIGS.OWNER[$SEARCH~SOURCE] $SEARCH~FIGOWNER 3
-setvar $SEARCH~SOURCE_MESSAGE ""
+setvar $search~check_sector $search~source
+gosub :search~load_fig_state
+setvar $search~isfigged $search~check_figged
+getword sector.figs.owner[$search~source] $search~figowner 3
+setvar $search~source_message ""
 
-if (($SEARCH~NEAR = "f") and ($SEARCH~ISFIGGED = TRUE))
-  setvar $SEARCH~SOURCE_MESSAGE "appears to be fig'd."
-elseif (($SEARCH~NEAR = "owner") and (($SEARCH~ISFIGGED <> TRUE) and ($SEARCH~FIGOWNER = "Corp#"&$SEARCH~TARGET_CORP&",")))
-  setvar $SEARCH~SOURCE_MESSAGE "appears to be fig'd by corp #"&$SEARCH~TARGET_CORP&"."
-elseif ((($SEARCH~NEAR = "nf") or ($SEARCH~NEAR = "uf")) and ($SEARCH~ISFIGGED <> TRUE))
-  setvar $SEARCH~SOURCE_MESSAGE "is not figged."
+if (($search~near = "f") and ($search~isfigged = true))
+	setvar $search~source_message "appears to be fig'd."
+elseif (($search~near = "owner") and (($search~isfigged <> true) and ($search~figowner = "Corp#"&$search~target_corp&",")))
+	setvar $search~source_message "appears to be fig'd by corp #"&$search~target_corp&"."
+elseif ((($search~near = "nf") or ($search~near = "uf")) and ($search~isfigged <> true))
+	setvar $search~source_message "is not figged."
 else
-  setvar $SEARCH~CHECK_SECTOR $SEARCH~SOURCE
-  gosub :SEARCH~LOAD_DEADEND_STATE
+	setvar $search~check_sector $search~source
+	gosub :search~load_deadend_state
 end
 
-if (($SEARCH~NEAR = "ufde") and (($SEARCH~ISFIGGED = FALSE) and ($SEARCH~CHECK_DEADEND = TRUE)))
-  setvar $SEARCH~SOURCE_MESSAGE "appears to be an unfigged dead-end."
-elseif (($SEARCH~NEAR = "fde") and (($SEARCH~ISFIGGED = TRUE) and ($SEARCH~CHECK_DEADEND = TRUE)))
-  setvar $SEARCH~SOURCE_MESSAGE "appears to be a figged dead-end."
-elseif (($SEARCH~NEAR = "de") and ($SEARCH~CHECK_DEADEND = TRUE))
-  setvar $SEARCH~SOURCE_MESSAGE "appears to be a dead-end."
-elseif (($SEARCH~NEAR = "fp") and (($SEARCH~ISFIGGED = TRUE) and ((PORT.CLASS[$SEARCH~SOURCE] > 0) and (PORT.CLASS[$SEARCH~SOURCE] < 9))))
-  if (((($SEARCH~PFUEL = "b") and (PORT.BUYFUEL[$SEARCH~SOURCE] = 1)) or (($SEARCH~PFUEL = "s") and (PORT.BUYFUEL[$SEARCH~SOURCE] = 0))) or ($SEARCH~PFUEL = "x"))
-    if (((($SEARCH~PORG = "b") and (PORT.BUYORG[$SEARCH~SOURCE] = 1)) or (($SEARCH~PORG = "s") and (PORT.BUYORG[$SEARCH~SOURCE] = 0))) or ($SEARCH~PORG = "x"))
-      if (((($SEARCH~PEQUIP = "b") and (PORT.BUYEQUIP[$SEARCH~SOURCE] = 1)) or (($SEARCH~PEQUIP = "s") and (PORT.BUYEQUIP[$SEARCH~SOURCE] = 0))) or ($SEARCH~PEQUIP = "x"))
-        setvar $SEARCH~SOURCE_MESSAGE " has a "&$SEARCH~PTYPE&" port that's figged."
-      end
-    end
-  end
-elseif ((($SEARCH~NEAR = "port") or ($SEARCH~NEAR = "p")) and ((PORT.CLASS[$SEARCH~SOURCE] > 0) and (PORT.CLASS[$SEARCH~SOURCE] < 9)))
-  if (((($SEARCH~PFUEL = "b") and (PORT.BUYFUEL[$SEARCH~SOURCE] = 1)) or (($SEARCH~PFUEL = "s") and (PORT.BUYFUEL[$SEARCH~SOURCE] = 0))) or ($SEARCH~PFUEL = "x"))
-    if (((($SEARCH~PORG = "b") and (PORT.BUYORG[$SEARCH~SOURCE] = 1)) or (($SEARCH~PORG = "s") and (PORT.BUYORG[$SEARCH~SOURCE] = 0))) or ($SEARCH~PORG = "x"))
-      if (((($SEARCH~PEQUIP = "b") and (PORT.BUYEQUIP[$SEARCH~SOURCE] = 1)) or (($SEARCH~PEQUIP = "s") and (PORT.BUYEQUIP[$SEARCH~SOURCE] = 0))) or ($SEARCH~PEQUIP = "x"))
-        setvar $SEARCH~SOURCE_MESSAGE " has a "&$SEARCH~PTYPE&" port."
-      end
-    end
-  end
-elseif (((($SEARCH~NEAR = "fup") and ($SEARCH~ISFIGGED = TRUE)) or (($SEARCH~NEAR = "nfup") and ($SEARCH~ISFIGGED <> TRUE))) and ((PORT.CLASS[$SEARCH~SOURCE] > 0) and (PORT.CLASS[$SEARCH~SOURCE] < 9)))
-  setvar $SEARCH~FOUNDFUELPORT FALSE
-  setvar $SEARCH~FOUNDORGPORT FALSE
-  setvar $SEARCH~FOUNDEQUIPPORT FALSE
-  if ((((($SEARCH~PFUEL = "b") and (PORT.BUYFUEL[$SEARCH~SOURCE] = 1)) and (PORT.FUEL[$SEARCH~SOURCE] >= 10000)) or ((($SEARCH~PFUEL = "s") and (PORT.BUYFUEL[$SEARCH~SOURCE] = 0)) and (PORT.FUEL[$SEARCH~SOURCE] >= 10000))))
-    setvar $SEARCH~FOUNDFUELPORT TRUE
-  end
-  if ((((($SEARCH~PORG = "b") and (PORT.BUYORG[$SEARCH~SOURCE] = 1)) and (PORT.ORG[$SEARCH~SOURCE] >= 10000)) or ((($SEARCH~PORG = "s") and (PORT.BUYORG[$SEARCH~SOURCE] = 0)) and (PORT.ORG[$SEARCH~SOURCE] >= 10000))))
-    setvar $SEARCH~FOUNDORGPORT TRUE
-  end
-  if ((((($SEARCH~PEQUIP = "b") and (PORT.BUYEQUIP[$SEARCH~SOURCE] = 1)) and (PORT.EQUIP[$SEARCH~SOURCE] >= 10000)) or ((($SEARCH~PEQUIP = "s") and (PORT.BUYEQUIP[$SEARCH~SOURCE] = 0)) and (PORT.EQUIP[$SEARCH~SOURCE] >= 10000))))
-    setvar $SEARCH~FOUNDEQUIPPORT TRUE
-  end
-  if (($SEARCH~PFUEL = "x") and (($SEARCH~PORG = "x") and ($SEARCH~PEQUIP = "x")))
-    if (((($SEARCH~PFUEL = "x") and (PORT.FUEL[$SEARCH~SOURCE] >= 10000)) or (($SEARCH~PORG = "x") and (PORT.ORG[$SEARCH~SOURCE] >= 10000))) or (($SEARCH~PEQUIP = "x") and (PORT.EQUIP[$SEARCH~SOURCE] >= 10000)))
-      setvar $SEARCH~FOUNDFUELPORT TRUE
-      setvar $SEARCH~FOUNDORGPORT TRUE
-      setvar $SEARCH~FOUNDEQUIPPORT TRUE
-    end
-  else
-    if ($SEARCH~PFUEL = "x")
-      setvar $SEARCH~FOUNDFUELPORT TRUE
-    end
-    if ($SEARCH~PORG = "x")
-      setvar $SEARCH~FOUNDORGPORT TRUE
-    end
-    if ($SEARCH~PEQUIP = "x")
-      setvar $SEARCH~FOUNDEQUIPPORT TRUE
-    end
-  end
-  if (($SEARCH~FOUNDFUELPORT = TRUE) and (($SEARCH~FOUNDORGPORT = TRUE) and ($SEARCH~FOUNDEQUIPPORT = TRUE)))
-    if ($SEARCH~NEAR = "fup")
-      setvar $SEARCH~SOURCE_MESSAGE " has an upped "&$SEARCH~PTYPE&" port that's figged."
-    else
-      setvar $SEARCH~SOURCE_MESSAGE " has an upped "&$SEARCH~PTYPE&" port that's not figged."
-    end
-  end
+if (($search~near = "ufde") and (($search~isfigged = false) and ($search~check_deadend = true)))
+	setvar $search~source_message "appears to be an unfigged dead-end."
+elseif (($search~near = "fde") and (($search~isfigged = true) and ($search~check_deadend = true)))
+	setvar $search~source_message "appears to be a figged dead-end."
+elseif (($search~near = "de") and ($search~check_deadend = true))
+	setvar $search~source_message "appears to be a dead-end."
+elseif (($search~near = "fp") and (($search~isfigged = true) and ((port.class[$search~source] > 0) and (port.class[$search~source] < 9))))
+	if (((($search~pfuel = "b") and (port.buyfuel[$search~source] = 1)) or (($search~pfuel = "s") and (port.buyfuel[$search~source] = 0))) or ($search~pfuel = "x"))
+		if (((($search~porg = "b") and (port.buyorg[$search~source] = 1)) or (($search~porg = "s") and (port.buyorg[$search~source] = 0))) or ($search~porg = "x"))
+			if (((($search~pequip = "b") and (port.buyequip[$search~source] = 1)) or (($search~pequip = "s") and (port.buyequip[$search~source] = 0))) or ($search~pequip = "x"))
+				setvar $search~source_message " has a "&$search~ptype&" port that's figged."
+			end
+		end
+	end
+elseif ((($search~near = "port") or ($search~near = "p")) and ((port.class[$search~source] > 0) and (port.class[$search~source] < 9)))
+	if (((($search~pfuel = "b") and (port.buyfuel[$search~source] = 1)) or (($search~pfuel = "s") and (port.buyfuel[$search~source] = 0))) or ($search~pfuel = "x"))
+		if (((($search~porg = "b") and (port.buyorg[$search~source] = 1)) or (($search~porg = "s") and (port.buyorg[$search~source] = 0))) or ($search~porg = "x"))
+			if (((($search~pequip = "b") and (port.buyequip[$search~source] = 1)) or (($search~pequip = "s") and (port.buyequip[$search~source] = 0))) or ($search~pequip = "x"))
+				setvar $search~source_message " has a "&$search~ptype&" port."
+			end
+		end
+	end
+elseif (((($search~near = "fup") and ($search~isfigged = true)) or (($search~near = "nfup") and ($search~isfigged <> true))) and ((port.class[$search~source] > 0) and (port.class[$search~source] < 9)))
+	setvar $search~foundfuelport false
+	setvar $search~foundorgport false
+	setvar $search~foundequipport false
+	if ((((($search~pfuel = "b") and (port.buyfuel[$search~source] = 1)) and (port.fuel[$search~source] >= 10000)) or ((($search~pfuel = "s") and (port.buyfuel[$search~source] = 0)) and (port.fuel[$search~source] >= 10000))))
+		setvar $search~foundfuelport true
+	end
+	if ((((($search~porg = "b") and (port.buyorg[$search~source] = 1)) and (port.org[$search~source] >= 10000)) or ((($search~porg = "s") and (port.buyorg[$search~source] = 0)) and (port.org[$search~source] >= 10000))))
+		setvar $search~foundorgport true
+	end
+	if ((((($search~pequip = "b") and (port.buyequip[$search~source] = 1)) and (port.equip[$search~source] >= 10000)) or ((($search~pequip = "s") and (port.buyequip[$search~source] = 0)) and (port.equip[$search~source] >= 10000))))
+		setvar $search~foundequipport true
+	end
+	if (($search~pfuel = "x") and (($search~porg = "x") and ($search~pequip = "x")))
+		if (((($search~pfuel = "x") and (port.fuel[$search~source] >= 10000)) or (($search~porg = "x") and (port.org[$search~source] >= 10000))) or (($search~pequip = "x") and (port.equip[$search~source] >= 10000)))
+			setvar $search~foundfuelport true
+			setvar $search~foundorgport true
+			setvar $search~foundequipport true
+		end
+	else
+		if ($search~pfuel = "x")
+			setvar $search~foundfuelport true
+		end
+		if ($search~porg = "x")
+			setvar $search~foundorgport true
+		end
+		if ($search~pequip = "x")
+			setvar $search~foundequipport true
+		end
+	end
+	if (($search~foundfuelport = true) and (($search~foundorgport = true) and ($search~foundequipport = true)))
+		if ($search~near = "fup")
+			setvar $search~source_message " has an upped "&$search~ptype&" port that's figged."
+		else
+			setvar $search~source_message " has an upped "&$search~ptype&" port that's not figged."
+		end
+	end
 end
 
-gosub :BREADTH_SEARCH
+gosub :breadth_search
 
-if ($SEARCH~RETURN_DATA <> "")
-  setvar $SWITCHBOARD~MESSAGE $SEARCH~RETURN_DATA
-  if ($SEARCH~SOURCE_MESSAGE <> "")
-    setvar $SEARCH~CHECK_SECTOR $SEARCH~SOURCE
-    gosub :SEARCH~LOAD_FIG_STATE
-    setvar $SEARCH~ISFIGGED3 $SEARCH~CHECK_FIGGED
-    getsectorparameter $SEARCH~SOURCE "MINESEC" $SEARCH~ISMINED3
-    getsectorparameter $SEARCH~SOURCE "LIMPSEC" $SEARCH~ISLIMPD3
-    if (($SEARCH~ISLIMPD3 = TRUE) and ($SEARCH~ISMINED3 = TRUE))
-      setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~MESSAGE&"*   *   Note: "&$SEARCH~SOURCE&"LA, "&$SEARCH~SOURCE_MESSAGE
-    else
-      if ($SEARCH~ISLIMPD3 = TRUE)
-        setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~MESSAGE&"*   *   Note: "&$SEARCH~SOURCE&"L, "&$SEARCH~SOURCE_MESSAGE
-      elseif ($SEARCH~ISMINED3 = TRUE)
-        setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~MESSAGE&"*   *   Note: "&$SEARCH~SOURCE&"A, "&$SEARCH~SOURCE_MESSAGE
-      else
-        setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~MESSAGE&"*   *   Note: "&$SEARCH~SOURCE&", "&$SEARCH~SOURCE_MESSAGE
-      end
-    end
-    if ($SEARCH~ISFIGGED3 = TRUE)
-      setvar $SEARCH~DIRECTIONS " "&$SEARCH~SOURCE&"F"&$SEARCH~DIRECTIONS
-    else
-      setvar $SEARCH~DIRECTIONS " "&$SEARCH~SOURCE&$SEARCH~DIRECTIONS
-    end
-  end
-  setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~MESSAGE&"*"
-  if (($SWITCHBOARD~SELF_COMMAND <> TRUE) or ($BOT~SILENT_MODE <> TRUE))
-    setvar $SWITCHBOARD~SELF_COMMAND 2
-  end
-  gosub :SWITCHBOARD~SWITCHBOARD
+if ($search~return_data <> "")
+	setvar $switchboard~message $search~return_data
+	if ($search~source_message <> "")
+		setvar $search~check_sector $search~source
+		gosub :search~load_fig_state
+		setvar $search~isfigged3 $search~check_figged
+		getsectorparameter $search~source "MINESEC" $search~ismined3
+		getsectorparameter $search~source "LIMPSEC" $search~islimpd3
+		if (($search~islimpd3 = true) and ($search~ismined3 = true))
+			setvar $switchboard~message $switchboard~message&"*   *   Note: "&$search~source&"LA, "&$search~source_message
+		else
+			if ($search~islimpd3 = true)
+				setvar $switchboard~message $switchboard~message&"*   *   Note: "&$search~source&"L, "&$search~source_message
+			elseif ($search~ismined3 = true)
+				setvar $switchboard~message $switchboard~message&"*   *   Note: "&$search~source&"A, "&$search~source_message
+			else
+				setvar $switchboard~message $switchboard~message&"*   *   Note: "&$search~source&", "&$search~source_message
+			end
+		end
+		if ($search~isfigged3 = true)
+			setvar $search~directions " "&$search~source&"F"&$search~directions
+		else
+			setvar $search~directions " "&$search~source&$search~directions
+		end
+	end
+	setvar $switchboard~message $switchboard~message&"*"
+	if (($switchboard~self_command <> true) or ($bot~silent_mode <> true))
+		setvar $switchboard~self_command 2
+	end
+	gosub :switchboard~switchboard
 end
 return
 
-:SEARCH~BREADTH_SEARCH
-setvar $SEARCH~I 1
-setvar $SEARCH~LOOP_DATA 1
-getnearestwarps $SEARCH~NEARARRAY $SEARCH~SOURCE
-while ($SEARCH~I <= $SEARCH~NEARARRAY)
-  setvar $SEARCH~FOCUS $SEARCH~NEARARRAY[$SEARCH~I]
-  setvar $SEARCH~CHECK_SECTOR $SEARCH~FOCUS
-  gosub :SEARCH~LOAD_FIG_STATE
-  setvar $SEARCH~ISFIGGED2 $SEARCH~CHECK_FIGGED
-  gosub :SEARCH~LOAD_DEADEND_STATE
-  getword SECTOR.FIGS.OWNER[$SEARCH~FOCUS] $SEARCH~FIGOWNER 3
-  if ((($SEARCH~SOURCE <> $SEARCH~FOCUS) and (($SEARCH~FOCUS > 10) and ($SEARCH~FOCUS <> $MAP~STARDOCK))) and (((($SEARCH~NEAR = "de") and ($SEARCH~CHECK_DEADEND = TRUE))) or ((($SEARCH~ISFIGGED2 = FALSE) and (($SEARCH~NEAR = "uf") or ($SEARCH~NEAR = "nf") or (($SEARCH~NEAR = "owner") and ($SEARCH~FIGOWNER = "Corp#"&$SEARCH~TARGET_CORP&",")) or (($SEARCH~NEAR = "ufde") and ($SEARCH~CHECK_DEADEND = TRUE)))) or (($SEARCH~ISFIGGED2 = TRUE) and (($SEARCH~NEAR = "f") or (($SEARCH~NEAR = "fde") and ($SEARCH~CHECK_DEADEND = TRUE)))))))
-    getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
-    setvar $SEARCH~HOPS $SEARCH~COURSE
-    if ($SEARCH~HOPS > 0)
-      setvar $SEARCH~COURSELENGTH ($SEARCH~COURSE + 1)
-    else
-      setvar $SEARCH~COURSELENGTH 0
-    end
-    setvar $SEARCH~I 1
-    setvar $SEARCH~FCOUNT 0
-    setvar $SEARCH~DIRECTIONS ""
-    if ($SEARCH~NEAR = "f")
-      setvar $SWITCHBOARD~MESSAGE "Nearest Fig"
-    elseif (($SEARCH~NEAR = "uf") or ($SEARCH~NEAR = "nf"))
-      setvar $SWITCHBOARD~MESSAGE "Nearest Non-Fig"
-    elseif ($SEARCH~NEAR = "owner")
-      setvar $SWITCHBOARD~MESSAGE "Nearest Corp #"&$SEARCH~TARGET_CORP&" Fig"
-    elseif ($SEARCH~NEAR = "de")
-      setvar $SWITCHBOARD~MESSAGE "Nearest DE"
-    elseif ($SEARCH~NEAR = "ufde")
-      setvar $SWITCHBOARD~MESSAGE "Nearest Non-Fig DE"
-    elseif ($SEARCH~NEAR = "fde")
-      setvar $SWITCHBOARD~MESSAGE "Nearest Fig'd DE"
-    end
-    if ($SEARCH~COURSE = 1)
-      while (SECTOR.WARPS[$SEARCH~SOURCE][$SEARCH~I] > 0)
-        setvar $SEARCH~TEMPCHECK SECTOR.WARPS[$SEARCH~SOURCE][$SEARCH~I]
-        setvar $SEARCH~CHECK_SECTOR $SEARCH~TEMPCHECK
-        gosub :SEARCH~LOAD_FIG_STATE
-        setvar $SEARCH~ISFIGGED3 $SEARCH~CHECK_FIGGED
-        gosub :SEARCH~LOAD_DEADEND_STATE
-        getsectorparameter $SEARCH~TEMPCHECK "MINESEC" $SEARCH~ISMINED3
-        getsectorparameter $SEARCH~TEMPCHECK "LIMPSEC" $SEARCH~ISLIMPD3
+:search~breadth_search
+setvar $search~i 1
+setvar $search~loop_data 1
+getnearestwarps $search~neararray $search~source
+while ($search~i <= $search~neararray)
+	setvar $search~focus $search~neararray[$search~i]
+	setvar $search~check_sector $search~focus
+	gosub :search~load_fig_state
+	setvar $search~isfigged2 $search~check_figged
+	gosub :search~load_deadend_state
+	getword sector.figs.owner[$search~focus] $search~figowner 3
+	if ((($search~source <> $search~focus) and (($search~focus > 10) and ($search~focus <> $map~stardock))) and (((($search~near = "de") and ($search~check_deadend = true))) or ((($search~isfigged2 = false) and (($search~near = "uf") or ($search~near = "nf") or (($search~near = "owner") and ($search~figowner = "Corp#"&$search~target_corp&",")) or (($search~near = "ufde") and ($search~check_deadend = true)))) or (($search~isfigged2 = true) and (($search~near = "f") or (($search~near = "fde") and ($search~check_deadend = true)))))))
+		getcourse $search~course $search~source $search~focus
+		setvar $search~hops $search~course
+		if ($search~hops > 0)
+			setvar $search~courselength ($search~course + 1)
+		else
+			setvar $search~courselength 0
+		end
+		setvar $search~i 1
+		setvar $search~fcount 0
+		setvar $search~directions ""
+		if ($search~near = "f")
+			setvar $switchboard~message "Nearest Fig"
+		elseif (($search~near = "uf") or ($search~near = "nf"))
+			setvar $switchboard~message "Nearest Non-Fig"
+		elseif ($search~near = "owner")
+			setvar $switchboard~message "Nearest Corp #"&$search~target_corp&" Fig"
+		elseif ($search~near = "de")
+			setvar $switchboard~message "Nearest DE"
+		elseif ($search~near = "ufde")
+			setvar $switchboard~message "Nearest Non-Fig DE"
+		elseif ($search~near = "fde")
+			setvar $switchboard~message "Nearest Fig'd DE"
+		end
+		if ($search~course = 1)
+			while (sector.warps[$search~source][$search~i] > 0)
+				setvar $search~tempcheck sector.warps[$search~source][$search~i]
+				setvar $search~check_sector $search~tempcheck
+				gosub :search~load_fig_state
+				setvar $search~isfigged3 $search~check_figged
+				gosub :search~load_deadend_state
+				getsectorparameter $search~tempcheck "MINESEC" $search~ismined3
+				getsectorparameter $search~tempcheck "LIMPSEC" $search~islimpd3
 
-        getword SECTOR.FIGS.OWNER[$SEARCH~TEMPCHECK] $SEARCH~FIGOWNER2 3
-        if (((($SEARCH~NEAR = "de") and ($SEARCH~CHECK_DEADEND = TRUE))) or ((($SEARCH~ISFIGGED3 = TRUE) and (($SEARCH~NEAR = "f") or (($SEARCH~NEAR = "fde") and ($SEARCH~CHECK_DEADEND = TRUE)))) or (($SEARCH~ISFIGGED3 = FALSE) and ((($SEARCH~NEAR = "owner") and ($SEARCH~FIGOWNER2 = "Corp#"&$SEARCH~TARGET_CORP&",")) or ($SEARCH~NEAR = "uf") or ($SEARCH~NEAR = "nf") or (($SEARCH~NEAR = "ufde") and ($SEARCH~CHECK_DEADEND = TRUE))))))
-          setvar $SEARCH~DIRECTIONS $SEARCH~DIRECTIONS&$SEARCH~TEMPCHECK
-          if (($SEARCH~ISMINED3 = TRUE) and ($SEARCH~ISLIMPD3 = TRUE))
-            setvar $SEARCH~DIRECTIONS $SEARCH~DIRECTIONS&"LA"
-          else
-            if ($SEARCH~ISMINED3 = TRUE)
-              setvar $SEARCH~DIRECTIONS $SEARCH~DIRECTIONS&"A"
-            elseif ($SEARCH~ISLIMPD3 = TRUE)
-              setvar $SEARCH~DIRECTIONS $SEARCH~DIRECTIONS&"L"
-            end
-          end
-          setvar $SEARCH~DIRECTIONS $SEARCH~DIRECTIONS&" "
-          add $SEARCH~FCOUNT 1
-        end
-        add $SEARCH~I 1
-      end
-      if ($SEARCH~FCOUNT > 1)
-        setvar $SEARCH~RETURN_DATA $SWITCHBOARD~MESSAGE&"s adjacent to "&$SEARCH~SOURCE&" are*    [ "&$SEARCH~DIRECTIONS&"]"
-      else
-        setvar $SEARCH~RETURN_DATA $SWITCHBOARD~MESSAGE&" adjacent to "&$SEARCH~SOURCE&" is*    [ "&$SEARCH~DIRECTIONS&"]"
-      end
-    else
-      while ($SEARCH~I <= $SEARCH~COURSELENGTH)
-        setvar $SEARCH~CHECK_SECTOR $SEARCH~COURSE[$SEARCH~I]
-        gosub :SEARCH~LOAD_FIG_STATE
-        setvar $SEARCH~ISFIGGED3 $SEARCH~CHECK_FIGGED
-        getsectorparameter $SEARCH~COURSE[$SEARCH~I] "MINESEC" $SEARCH~ISMINED3
-        getsectorparameter $SEARCH~COURSE[$SEARCH~I] "LIMPSEC" $SEARCH~ISLIMPD3
-        if (($SEARCH~ISMINED3 = TRUE) and ($SEARCH~ISLIMPD3 = TRUE))
-          setvar $SEARCH~DIRECTIONS "LA"&$SEARCH~DIRECTIONS
-        else
-          if ($SEARCH~ISMINED3 = TRUE)
-            setvar $SEARCH~DIRECTIONS "A"&$SEARCH~DIRECTIONS
-          end
-          if ($SEARCH~ISLIMPD3 = TRUE)
-            setvar $SEARCH~DIRECTIONS "L"&$SEARCH~DIRECTIONS
-          end
-        end
-        if ($SEARCH~ISFIGGED3 = TRUE)
-          setvar $SEARCH~DIRECTIONS " "&$SEARCH~COURSE[$SEARCH~I]&"F"&$SEARCH~DIRECTIONS
-        else
-          setvar $SEARCH~DIRECTIONS " "&$SEARCH~COURSE[$SEARCH~I]&$SEARCH~DIRECTIONS
-        end
+				getword sector.figs.owner[$search~tempcheck] $search~figowner2 3
+				if (((($search~near = "de") and ($search~check_deadend = true))) or ((($search~isfigged3 = true) and (($search~near = "f") or (($search~near = "fde") and ($search~check_deadend = true)))) or (($search~isfigged3 = false) and ((($search~near = "owner") and ($search~figowner2 = "Corp#"&$search~target_corp&",")) or ($search~near = "uf") or ($search~near = "nf") or (($search~near = "ufde") and ($search~check_deadend = true))))))
+					setvar $search~directions $search~directions&$search~tempcheck
+					if (($search~ismined3 = true) and ($search~islimpd3 = true))
+						setvar $search~directions $search~directions&"LA"
+					else
+						if ($search~ismined3 = true)
+							setvar $search~directions $search~directions&"A"
+						elseif ($search~islimpd3 = true)
+							setvar $search~directions $search~directions&"L"
+						end
+					end
+					setvar $search~directions $search~directions&" "
+					add $search~fcount 1
+				end
+				add $search~i 1
+			end
+			if ($search~fcount > 1)
+				setvar $search~return_data $switchboard~message&"s adjacent to "&$search~source&" are*    [ "&$search~directions&"]"
+			else
+				setvar $search~return_data $switchboard~message&" adjacent to "&$search~source&" is*    [ "&$search~directions&"]"
+			end
+		else
+			while ($search~i <= $search~courselength)
+				setvar $search~check_sector $search~course[$search~i]
+				gosub :search~load_fig_state
+				setvar $search~isfigged3 $search~check_figged
+				getsectorparameter $search~course[$search~i] "MINESEC" $search~ismined3
+				getsectorparameter $search~course[$search~i] "LIMPSEC" $search~islimpd3
+				if (($search~ismined3 = true) and ($search~islimpd3 = true))
+					setvar $search~directions "LA"&$search~directions
+				else
+					if ($search~ismined3 = true)
+						setvar $search~directions "A"&$search~directions
+					end
+					if ($search~islimpd3 = true)
+						setvar $search~directions "L"&$search~directions
+					end
+				end
+				if ($search~isfigged3 = true)
+					setvar $search~directions " "&$search~course[$search~i]&"F"&$search~directions
+				else
+					setvar $search~directions " "&$search~course[$search~i]&$search~directions
+				end
 
-        add $SEARCH~I 1
-      end
-      setvar $SEARCH~RETURN_DATA $SWITCHBOARD~MESSAGE&" to "&$SEARCH~SOURCE&" is "&$SEARCH~FOCUS&" ("&$SEARCH~HOPS&" hops)*  <<"&$SEARCH~DIRECTIONS&" >>*                L: Limpet A: Armid F:Fighter  "
-    end
-    return
-  elseif ((($SEARCH~NEAR = "nfup") and ($SEARCH~ISFIGGED2 = FALSE)) or (($SEARCH~NEAR = "fup") and ($SEARCH~ISFIGGED2 = TRUE)))
-    setvar $SEARCH~FOUNDFUELPORT FALSE
-    setvar $SEARCH~FOUNDORGPORT FALSE
-    setvar $SEARCH~FOUNDEQUIPPORT FALSE
-    if (((PORT.CLASS[$SEARCH~FOCUS] > 0) and (PORT.CLASS[$SEARCH~FOCUS] < 9)) and ($SEARCH~FOCUS <> $SEARCH~SOURCE))
-      if ((((($SEARCH~PFUEL = "b") and (PORT.BUYFUEL[$SEARCH~FOCUS] = 1)) and (PORT.FUEL[$SEARCH~FOCUS] >= 10000)) or ((($SEARCH~PFUEL = "s") and (PORT.BUYFUEL[$SEARCH~FOCUS] = 0)) and (PORT.FUEL[$SEARCH~FOCUS] >= 10000))))
-        setvar $SEARCH~FOUNDFUELPORT TRUE
-      end
-      if ((((($SEARCH~PORG = "b") and (PORT.BUYORG[$SEARCH~FOCUS] = 1)) and (PORT.ORG[$SEARCH~FOCUS] >= 10000)) or ((($SEARCH~PORG = "s") and (PORT.BUYORG[$SEARCH~FOCUS] = 0)) and (PORT.ORG[$SEARCH~FOCUS] >= 10000))))
-        setvar $SEARCH~FOUNDORGPORT TRUE
-      end
-      if ((((($SEARCH~PEQUIP = "b") and (PORT.BUYEQUIP[$SEARCH~FOCUS] = 1)) and (PORT.EQUIP[$SEARCH~FOCUS] >= 10000)) or ((($SEARCH~PEQUIP = "s") and (PORT.BUYEQUIP[$SEARCH~FOCUS] = 0)) and (PORT.EQUIP[$SEARCH~FOCUS] >= 10000))))
-        setvar $SEARCH~FOUNDEQUIPPORT TRUE
-      end
-      if (($SEARCH~PFUEL = "x") and (($SEARCH~PORG = "x") and ($SEARCH~PEQUIP = "x")))
-        if (((($SEARCH~PFUEL = "x") and (PORT.FUEL[$SEARCH~FOCUS] >= 10000)) or (($SEARCH~PORG = "x") and (PORT.ORG[$SEARCH~FOCUS] >= 10000))) or (($SEARCH~PEQUIP = "x") and (PORT.EQUIP[$SEARCH~FOCUS] >= 10000)))
-          setvar $SEARCH~FOUNDFUELPORT TRUE
-          setvar $SEARCH~FOUNDORGPORT TRUE
-          setvar $SEARCH~FOUNDEQUIPPORT TRUE
-        end
-      else
-        if ($SEARCH~PFUEL = "x")
-          setvar $SEARCH~FOUNDFUELPORT TRUE
-        end
-        if ($SEARCH~PORG = "x")
-          setvar $SEARCH~FOUNDORGPORT TRUE
-        end
-        if ($SEARCH~PEQUIP = "x")
-          setvar $SEARCH~FOUNDEQUIPPORT TRUE
-        end
-      end
-      if (($SEARCH~FOUNDFUELPORT = TRUE) and (($SEARCH~FOUNDORGPORT = TRUE) and ($SEARCH~FOUNDEQUIPPORT = TRUE)))
-        if ($SEARCH~LOOP_DATA = 1)
-          getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
-          setvar $SEARCH~HOPS $SEARCH~COURSE
-          setvar $SEARCH~RETURN_DATA "Nearest Figged upgraded "&$SEARCH~PTYPE&" port(s) to "&$SEARCH~SOURCE&": "&$SEARCH~FOCUS&" ("&$SEARCH~HOPS&" hops)"
-        elseif ($SEARCH~LOOP_DATA = 2)
-          getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
-          setvar $SEARCH~HOPS $SEARCH~COURSE
-          setvar $SEARCH~RETURN_DATA $SEARCH~RETURN_DATA&", "&$SEARCH~FOCUS&" ("&$SEARCH~HOPS&" hops)"
-        else
-          getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
-          setvar $SEARCH~HOPS $SEARCH~COURSE
-          setvar $SEARCH~RETURN_DATA $SEARCH~RETURN_DATA&", and "&$SEARCH~FOCUS&" ("&$SEARCH~HOPS&" hops)"
-          setvar $SEARCH~LOOP_DATA 1
-          return
-        end
-        add $SEARCH~LOOP_DATA 1
-      end
-    end
-  elseif ((($SEARCH~NEAR = "port") or ($SEARCH~NEAR = "p")) or (($SEARCH~NEAR = "fp") and ($SEARCH~ISFIGGED2 = TRUE)))
-    if (((PORT.CLASS[$SEARCH~FOCUS] > 0) and (PORT.CLASS[$SEARCH~FOCUS] < 9)) and ($SEARCH~FOCUS <> $SEARCH~SOURCE))
-      if (((($SEARCH~PFUEL = "b") and (PORT.BUYFUEL[$SEARCH~FOCUS] = 1)) or (($SEARCH~PFUEL = "s") and (PORT.BUYFUEL[$SEARCH~FOCUS] = 0))) or ($SEARCH~PFUEL = "x"))
-        if (((($SEARCH~PORG = "b") and (PORT.BUYORG[$SEARCH~FOCUS] = 1)) or (($SEARCH~PORG = "s") and (PORT.BUYORG[$SEARCH~FOCUS] = 0))) or ($SEARCH~PORG = "x"))
-          if (((($SEARCH~PEQUIP = "b") and (PORT.BUYEQUIP[$SEARCH~FOCUS] = 1)) or (($SEARCH~PEQUIP = "s") and (PORT.BUYEQUIP[$SEARCH~FOCUS] = 0))) or ($SEARCH~PEQUIP = "x"))
-            if ($SEARCH~LOOP_DATA = 1)
-              getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
-              setvar $SEARCH~HOPS $SEARCH~COURSE
-              setvar $SEARCH~RETURN_DATA "Nearest Figged "&$SEARCH~PTYPE&" port(s) to "&$SEARCH~SOURCE&": "&$SEARCH~FOCUS&" ("&$SEARCH~HOPS&" hops)"
-            elseif ($SEARCH~LOOP_DATA = 2)
-              getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
-              setvar $SEARCH~HOPS $SEARCH~COURSE
-              setvar $SEARCH~RETURN_DATA $SEARCH~RETURN_DATA&", "&$SEARCH~FOCUS&" ("&$SEARCH~HOPS&" hops)"
-            else
-              getcourse $SEARCH~COURSE $SEARCH~SOURCE $SEARCH~FOCUS
-              setvar $SEARCH~HOPS $SEARCH~COURSE
-              setvar $SEARCH~RETURN_DATA $SEARCH~RETURN_DATA&", and "&$SEARCH~FOCUS&" ("&$SEARCH~HOPS&" hops)"
-              setvar $SEARCH~LOOP_DATA 1
-              return
-            end
-            add $SEARCH~LOOP_DATA 1
-          end
-        end
-      end
-    end
-  end
-  add $SEARCH~I 1
+				add $search~i 1
+			end
+			setvar $search~return_data $switchboard~message&" to "&$search~source&" is "&$search~focus&" ("&$search~hops&" hops)*  <<"&$search~directions&" >>*                L: Limpet A: Armid F:Fighter  "
+		end
+		return
+	elseif ((($search~near = "nfup") and ($search~isfigged2 = false)) or (($search~near = "fup") and ($search~isfigged2 = true)))
+		setvar $search~foundfuelport false
+		setvar $search~foundorgport false
+		setvar $search~foundequipport false
+		if (((port.class[$search~focus] > 0) and (port.class[$search~focus] < 9)) and ($search~focus <> $search~source))
+			if ((((($search~pfuel = "b") and (port.buyfuel[$search~focus] = 1)) and (port.fuel[$search~focus] >= 10000)) or ((($search~pfuel = "s") and (port.buyfuel[$search~focus] = 0)) and (port.fuel[$search~focus] >= 10000))))
+				setvar $search~foundfuelport true
+			end
+			if ((((($search~porg = "b") and (port.buyorg[$search~focus] = 1)) and (port.org[$search~focus] >= 10000)) or ((($search~porg = "s") and (port.buyorg[$search~focus] = 0)) and (port.org[$search~focus] >= 10000))))
+				setvar $search~foundorgport true
+			end
+			if ((((($search~pequip = "b") and (port.buyequip[$search~focus] = 1)) and (port.equip[$search~focus] >= 10000)) or ((($search~pequip = "s") and (port.buyequip[$search~focus] = 0)) and (port.equip[$search~focus] >= 10000))))
+				setvar $search~foundequipport true
+			end
+			if (($search~pfuel = "x") and (($search~porg = "x") and ($search~pequip = "x")))
+				if (((($search~pfuel = "x") and (port.fuel[$search~focus] >= 10000)) or (($search~porg = "x") and (port.org[$search~focus] >= 10000))) or (($search~pequip = "x") and (port.equip[$search~focus] >= 10000)))
+					setvar $search~foundfuelport true
+					setvar $search~foundorgport true
+					setvar $search~foundequipport true
+				end
+			else
+				if ($search~pfuel = "x")
+					setvar $search~foundfuelport true
+				end
+				if ($search~porg = "x")
+					setvar $search~foundorgport true
+				end
+				if ($search~pequip = "x")
+					setvar $search~foundequipport true
+				end
+			end
+			if (($search~foundfuelport = true) and (($search~foundorgport = true) and ($search~foundequipport = true)))
+				if ($search~loop_data = 1)
+					getcourse $search~course $search~source $search~focus
+					setvar $search~hops $search~course
+					setvar $search~return_data "Nearest Figged upgraded "&$search~ptype&" port(s) to "&$search~source&": "&$search~focus&" ("&$search~hops&" hops)"
+				elseif ($search~loop_data = 2)
+					getcourse $search~course $search~source $search~focus
+					setvar $search~hops $search~course
+					setvar $search~return_data $search~return_data&", "&$search~focus&" ("&$search~hops&" hops)"
+				else
+					getcourse $search~course $search~source $search~focus
+					setvar $search~hops $search~course
+					setvar $search~return_data $search~return_data&", and "&$search~focus&" ("&$search~hops&" hops)"
+					setvar $search~loop_data 1
+					return
+				end
+				add $search~loop_data 1
+			end
+		end
+	elseif ((($search~near = "port") or ($search~near = "p")) or (($search~near = "fp") and ($search~isfigged2 = true)))
+		if (((port.class[$search~focus] > 0) and (port.class[$search~focus] < 9)) and ($search~focus <> $search~source))
+			if (((($search~pfuel = "b") and (port.buyfuel[$search~focus] = 1)) or (($search~pfuel = "s") and (port.buyfuel[$search~focus] = 0))) or ($search~pfuel = "x"))
+				if (((($search~porg = "b") and (port.buyorg[$search~focus] = 1)) or (($search~porg = "s") and (port.buyorg[$search~focus] = 0))) or ($search~porg = "x"))
+					if (((($search~pequip = "b") and (port.buyequip[$search~focus] = 1)) or (($search~pequip = "s") and (port.buyequip[$search~focus] = 0))) or ($search~pequip = "x"))
+						if ($search~loop_data = 1)
+							getcourse $search~course $search~source $search~focus
+							setvar $search~hops $search~course
+							setvar $search~return_data "Nearest Figged "&$search~ptype&" port(s) to "&$search~source&": "&$search~focus&" ("&$search~hops&" hops)"
+						elseif ($search~loop_data = 2)
+							getcourse $search~course $search~source $search~focus
+							setvar $search~hops $search~course
+							setvar $search~return_data $search~return_data&", "&$search~focus&" ("&$search~hops&" hops)"
+						else
+							getcourse $search~course $search~source $search~focus
+							setvar $search~hops $search~course
+							setvar $search~return_data $search~return_data&", and "&$search~focus&" ("&$search~hops&" hops)"
+							setvar $search~loop_data 1
+							return
+						end
+						add $search~loop_data 1
+					end
+				end
+			end
+		end
+	end
+	add $search~i 1
 end
 
-setvar $SEARCH~RETURN_DATA "Nothing found for that search."
+setvar $search~return_data "Nothing found for that search."
 return
 
-:SEARCH~LOAD_FIG_STATE
-getsectorparameter $SEARCH~CHECK_SECTOR "FIGSEC" $SEARCH~CHECK_FIGGED
+:search~load_fig_state
+getsectorparameter $search~check_sector "FIGSEC" $search~check_figged
 return
 
-:SEARCH~LOAD_DEADEND_STATE
-setvar $SEARCH~CHECK_DEADEND FALSE
-setvar $SEARCH~KNOWN_WARPS 0
-setvar $SEARCH~DE_IDX 1
-while (($SEARCH~DE_IDX <= 6) and (SECTOR.WARPS[$SEARCH~CHECK_SECTOR][$SEARCH~DE_IDX] > 0))
-  add $SEARCH~KNOWN_WARPS 1
-  add $SEARCH~DE_IDX 1
+:search~load_deadend_state
+setvar $search~check_deadend false
+setvar $search~known_warps 0
+setvar $search~de_idx 1
+while (($search~de_idx <= 6) and (sector.warps[$search~check_sector][$search~de_idx] > 0))
+	add $search~known_warps 1
+	add $search~de_idx 1
 end
 
-if ($SEARCH~KNOWN_WARPS = 1)
-  if (SECTOR.WARPCOUNT[$SEARCH~CHECK_SECTOR] = 1)
-    setvar $SEARCH~CHECK_DEADEND TRUE
-  end
+if ($search~known_warps = 1)
+	if (sector.warpcount[$search~check_sector] = 1)
+		setvar $search~check_deadend true
+	end
 end
 return
 

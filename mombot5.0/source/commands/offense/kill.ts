@@ -1,85 +1,82 @@
 logging "OFF"
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-loadvar $SHIP~CAP_FILE
-gosub :COMBAT~INIT
+gosub :loadvars~loadvars
+gosub :help~initialize
+loadvar $ship~cap_file
+gosub :combat~init
 
+setvar $bot~command "kill"
+setvar $help~help[1] $help~tab&"kill   "
+setvar $help~help[2] $help~tab&"    Kills any enemy players.   "
+gosub :help~helpfile
 
+:kill
+:autokill
+loadvar $player~targetingperson
+loadvar $player~targetingcorp
+loadvar $player~cappingaliens
+loadvar $player~target
+loadvar $map~stardock
+loadvar $in_kill_routine
 
-setvar $BOT~COMMAND "kill"
-setvar $HELP~HELP[1] $HELP~TAB&"kill   "
-setvar $HELP~HELP[2] $HELP~TAB&"    Kills any enemy players.   "
-gosub :HELP~HELPFILE
-:KILL
-:AUTOKILL
-
-
-
-loadvar $PLAYER~TARGETINGPERSON
-loadvar $PLAYER~TARGETINGCORP
-loadvar $PLAYER~CAPPINGALIENS
-loadvar $PLAYER~TARGET
-loadvar $MAP~STARDOCK
-loadvar $IN_KILL_ROUTINE
-
-if ($IN_KILL_ROUTINE = TRUE)
-  echo "[Kill routine already running.]*"
+if ($in_kill_routine = true)
+	echo "[Kill routine already running.]*"
 else
-  if ($BOT~PARM1 = "furb")
-    setvar $FURB TRUE
-  end
+	if ($bot~parm1 = "furb")
+		setvar $furb true
+	end
 
-  gosub :PLAYER~CURRENTPROMPT
-  setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-  if ($PLAYER~STARTINGLOCATION <> "Command")
-    if ($PLAYER~STARTINGLOCATION = "Citadel")
-      loadvar $BOT~MODE
-      if ($BOT~MODE <> "Citkill")
-        setvar $BOT~COMMAND "citkill"
-        setvar $BOT~USER_COMMAND_LINE " citkill on "
-        setvar $BOT~PARM1 "on"
-        savevar $BOT~PARM1
-        savevar $BOT~COMMAND
-        savevar $BOT~USER_COMMAND_LINE
-        setvar $BOT~MODE "Citkill"
-        savevar $BOT~MODE
-        load "scripts\mombot\modes\offense\citkill.cts"
-      else
-        setvar $BOT~MODE "General"
-        savevar $BOT~MODE
-        stop "scripts\mombot\modes\offense\citkill.cts"
-        setvar $SWITCHBOARD~MESSAGE "Citkill off.*"
-        gosub :SWITCHBOARD~SWITCHBOARD
-      end
-      halt
-    end
-    setvar $SWITCHBOARD~MESSAGE "Wrong prompt for auto kill.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
-  loadvar $SHIP~SHIP_MAX_ATTACK
-  loadvar $SHIP~SHIP_FIGHTERS_MAX
-  loadvar $SHIP~SHIP_OFFENSIVE_ODDS
-  if ($SHIP~SHIP_MAX_ATTACK <= 0)
-    gosub :SHIP~GETSHIPSTATS
-  end
-  setvar $PLAYER~ISFOUND FALSE
-  gosub :SECTOR~GETSECTORDATA
-  gosub :COMBAT~FASTATTACK
-  if ((($PLAYER~CURRENT_SECTOR = 1) or ($PLAYER~CURRENT_SECTOR = $MAP~STARDOCK)) and ($FURB = TRUE))
-    if ($PLAYER~ISFOUND)
-      load "scripts\mombot\commands\resource\refurb.cts"
-      seteventtrigger 1 :REFURBENDED "SCRIPT STOPPED" "scripts\mombot\commands\resource\refurb.cts"
-      pause
-      :REFURBENDED
-      gosub :SECTOR~GETSECTORDATA
-      gosub :COMBAT~FASTATTACK
-    end
-  end
-  setvar $IN_KILL_ROUTINE FALSE
-  savevar $IN_KILL_ROUTINE
+	gosub :player~currentprompt
+	setvar $player~startinglocation $player~current_prompt
+	if ($player~startinglocation <> "Command")
+		if ($player~startinglocation = "Citadel")
+			loadvar $bot~mode
+			if ($bot~mode <> "Citkill")
+				setvar $bot~command "citkill"
+				setvar $bot~user_command_line " citkill on "
+				setvar $bot~parm1 "on"
+				savevar $bot~parm1
+				savevar $bot~command
+				savevar $bot~user_command_line
+				setvar $bot~mode "Citkill"
+				savevar $bot~mode
+				load "scripts\mombot\modes\offense\citkill.cts"
+			else
+				setvar $bot~mode "General"
+				savevar $bot~mode
+				stop "scripts\mombot\modes\offense\citkill.cts"
+				setvar $switchboard~message "Citkill off.*"
+				gosub :switchboard~switchboard
+			end
+			halt
+		end
+		setvar $switchboard~message "Wrong prompt for auto kill.*"
+		gosub :switchboard~switchboard
+		halt
+	end
+	loadvar $ship~ship_max_attack
+	loadvar $ship~ship_fighters_max
+	loadvar $ship~ship_offensive_odds
+	if ($ship~ship_max_attack <= 0)
+		gosub :ship~getshipstats
+	end
+	setvar $player~isfound false
+	gosub :sector~getsectordata
+	gosub :combat~fastattack
+	if ((($player~current_sector = 1) or ($player~current_sector = $map~stardock)) and ($furb = true))
+		if ($player~isfound)
+			load "scripts\mombot\commands\resource\refurb.cts"
+			seteventtrigger 1 :refurbended "SCRIPT STOPPED" "scripts\mombot\commands\resource\refurb.cts"
+			pause
+
+			:refurbended
+			gosub :sector~getsectordata
+			gosub :combat~fastattack
+		end
+	end
+	setvar $in_kill_routine false
+	savevar $in_kill_routine
 end
-gosub :PLAYER~QUIKSTATS
+gosub :player~quikstats
 halt
 
 # includes:

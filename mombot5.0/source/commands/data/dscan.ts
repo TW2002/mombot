@@ -1,200 +1,206 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-
-	setVar $HELP~HELP[1]  $HELP~TAB&"dscan "
-	setVar $HELP~HELP[2]  $HELP~TAB&"  Sends density scan to subspace"
-	gosub :HELP~HELPFILE
-
+setvar $help~help[1]  $help~tab&"dscan "
+setvar $help~help[2]  $help~tab&"  Sends density scan to subspace"
+gosub :help~helpfile
 
 #=============================== SS SCANNING =============================================
 :dscan
-setVar $scan_macro " sd"
+setvar $scan_macro " sd"
 goto :start_scan
+
 :start_scan
-gosub :PLAYER~quikstats
-if ($PLAYER~unlimitedGame <> TRUE)
-		if (($scan_macro = " sh") and (($PLAYER~TURNS <= $bot_turn_limit) or ($PLAYER~TURNS = 0)))
-				 goto :no_turns_available1
-		end
+gosub :player~quikstats
+if ($player~unlimitedgame <> true)
+	if (($scan_macro = " sh") and (($player~turns <= $bot_turn_limit) or ($player~turns = 0)))
+		goto :no_turns_available1
+	end
 end
-if (($scan_macro = " sh") and (($PLAYER~SCAN_TYPE = "None") OR ($PLAYER~SCAN_TYPE = "Density")))
-		goto :no_scanner_available1
+if (($scan_macro = " sh") and (($player~scan_type = "None") or ($player~scan_type = "Density")))
+	goto :no_scanner_available1
 end
-gosub  :player~currentPrompt
-setArray $scan_array 1000
-setVar $bot~startingLocation $PLAYER~CURRENT_PROMPT
-if ($scan_macro = "") OR ($scan_macro = 0)
-setVar $scan_macro " sd* "
+gosub  :player~currentprompt
+setarray $scan_array 1000
+setvar $bot~startinglocation $player~current_prompt
+if ($scan_macro = "") or ($scan_macro = 0)
+	setvar $scan_macro " sd* "
 end
-setVar $bot~validPrompts "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-if ($PLAYER~startingLocation = "Citadel")
-if ($scan_macro = "d")
-	setVar $scan_macro "s"
-else
-	send " q "
-	gosub :PLANET~getPlanetInfo
-	send " q "
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
+if ($player~startinglocation = "Citadel")
+	if ($scan_macro = "d")
+		setvar $scan_macro "s"
+	else
+		send " q "
+		gosub :planet~getplanetinfo
+		send " q "
+	end
 end
-end
-setVar $idx 0
-setTextLineTrigger noscanner_1 :no_scanner_available1 "You don't have a long range scanner."
+setvar $idx 0
+settextlinetrigger noscanner_1 :no_scanner_available1 "You don't have a long range scanner."
 send $scan_macro
 if ($scan_macro = "d")
-waitOn "<Re-Display>"
+	waiton "<Re-Display>"
 elseif ($scan_macro = "s")
-waitOn "<Scan Sector>"
+	waiton "<Scan Sector>"
 elseif ($scan_macro = " sd")
-setTextLineTrigger noScanner_2 :no_scanner_available2 "Relative Density Scan"
-waiton "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] D"
-killTrigger noScanner_1
-killTrigger noScanner_2
+	settextlinetrigger noscanner_2 :no_scanner_available2 "Relative Density Scan"
+	waiton "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] D"
+	killtrigger noscanner_1
+	killtrigger noscanner_2
 elseif ($scan_macro = "x** * ")
-waitOn "Ship  Sect Name                  Fighters Shields Hops Type"
-waitOn "--------------------------------------------------------------------------"
+	waiton "Ship  Sect Name                  Fighters Shields Hops Type"
+	waiton "--------------------------------------------------------------------------"
 else
-waitOn "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
+	waiton "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
 end
 if ($scan_macro = "s")
-setTextTrigger end_of_line2 :end_of_lines "Citadel command (?=help)"
-setTextTrigger end_of_line3 :end_of_lines "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
+	settexttrigger end_of_line2 :end_of_lines "Citadel command (?=help)"
+	settexttrigger end_of_line3 :end_of_lines "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
 elseif ($scan_macro = "x** * ")
-setTextTrigger end_of_line4 :end_of_lines "<I> Ship details"
-add $idx 1
-setVar $scan_array[$idx] "                 --<  Available Ship Scan  >--"
-add $idx 1
-setVar $scan_array[$idx] "Ship  Sect Name                  Fighters Shields Hops Type"
-add $idx 1
-setVar $scan_array[$idx] "----------------------------------------------------------------------"
+	settexttrigger end_of_line4 :end_of_lines "<I> Ship details"
+	add $idx 1
+	setvar $scan_array[$idx] "                 --<  Available Ship Scan  >--"
+	add $idx 1
+	setvar $scan_array[$idx] "Ship  Sect Name                  Fighters Shields Hops Type"
+	add $idx 1
+	setvar $scan_array[$idx] "----------------------------------------------------------------------"
 else
-setTextTrigger end_of_line1 :end_of_lines "Command [TL="
+	settexttrigger end_of_line1 :end_of_lines "Command [TL="
 end
 
-setTextLineTrigger line_trig :parse_scan_line
+settextlinetrigger line_trig :parse_scan_line
 pause
-	:parse_scan_line
-	setVar $current_line CURRENTLINE
-	if ($idx >= 1000)
-			goto :end_of_lines
+
+:parse_scan_line
+setvar $current_line currentline
+if ($idx >= 1000)
+	goto :end_of_lines
+end
+if ($scan_macro = "s") or ($scan_macro = "d")
+	if ($idx = 0)
+		setvar $current_line "-=-=-=-=-=-=-=-=-=-=-=-=-=| Display |=-=-=-=-=-=-=-=-=-=-=-=-=-"
 	end
-	if ($scan_macro = "s") OR ($scan_macro = "d")
-		if ($idx = 0)
-			setVar $current_line "-=-=-=-=-=-=-=-=-=-=-=-=-=| Display |=-=-=-=-=-=-=-=-=-=-=-=-=-"
-		end
-		getWordPos $current_line $pos1 "Citadel treasury contains"
-		getWordPos $current_line $pos2 "(?=Help)? :"
-		getWordPos $current_line $pos3 "<Re-Display>"
-		if ($pos1 < 1) AND ($pos2 < 1) AND ($pos3 < 1)
-				 if ($current_line = "") OR ($current_line = 0)
-			 elseif ($idx >= 5000)
-					 else
-							add $idx 1
-						replaceText $current_line "Warps to Sector(s) :  " "Warps To: "
-						replaceText $current_line "Warps to Sector(s) : " "Warps To: "
-						setVar $scan_array[$idx] $current_line
-				 end
-		end
-	elseif ($scan_macro = "x** * ")
-		getWordPos $current_line $em_end "(?=Help)? :"
-		if ($em_end > 0)
-				goto :end_of_lines
-		end
-		getWordPos $current_line $em_end "<I> Ship details"
-		if ($em_end > 0)
-			goto :end_of_lines
-		end
-		getLength $current_line $length
-		if ($length > 70)
-			cutText $current_line $current_line 1 70
-		end
-		if ($current_line <> "")
-			add $idx 1
-			setVar $scan_array[$idx] $current_line
-		end
-	else
-		getWordPos $current_line $em_end "(?=Help)? :"
-		if ($em_end > 0)
-			goto :end_of_lines
-		end
-			getWordPos $current_line $pos "One turn deducted,"
-			if ($pos > 0)
-			   setVar $current_line "-=-=-=-=-=-=-=-=-=-=-=-=-| Holo Scan |-=-=-=-=-=-=-=-=-=-=-=-=-"
-			end
-			getWordPos $current_line $pos "Relative Density Scan"
-			if ($pos > 0)
-				setVar $current_line "-=-=-=-=-=-=-=-=-=-| Relative Density Scan |-=-=-=-=-=-=-=-=-=-"
-			end
-			if ($current_line = "") OR ($current_line = 0)
-				goto :bogus
-			end
-			getWordPos $current_line $pos "Sector  :"
-			if ($pos > 0)
-				add $idx 1
-				setVar $scan_array[$idx] "    "
-			end
-			getWordPos $current_line $pos1 "-------"
-			getWordPos $current_line $pos2 "Long Range Scan"
-			getWordPos $current_line $pos3 "Select (H)olo Scan or (D)ensity Scan or (Q)uit?"
-			getWordPos $current_line $pos4 "<Mine Control>"
-			getWordPos $current_line $pos5 "(?=Help)? :"
-			if ($pos1 < 1) AND ($pos2 < 1) AND ($pos3 < 1) AND ($pos4 < 1) AND ($pos5 < 1)
-				replaceText $current_line "Warps to Sector(s) :  " "Warps To: "
-				replaceText $current_line "Warps to Sector(s) : " "Warps To: "
-				replaceText $current_line " ==>    " " => "
-				replaceText $current_line "  Warps : " "  Warps: "
-				replaceText $current_line "   NavHaz :   " " Haz: "
-				replaceText $current_line "  Anom : " " Anom: "
-				add $idx 1
-				setVar $scan_array[$idx] $current_line
-			end
-				:bogus
-		end
-		setTextLineTrigger line_trig :parse_scan_line
-		pause
-	:end_of_lines
-	killalltriggers
-	if ($PLAYER~startingLocation = "Citadel")
-		if ($scan_macro = "d") OR ($scan_macro = "s")
-			send "* "
+	getwordpos $current_line $pos1 "Citadel treasury contains"
+	getwordpos $current_line $pos2 "(?=Help)? :"
+	getwordpos $current_line $pos3 "<Re-Display>"
+	if ($pos1 < 1) and ($pos2 < 1) and ($pos3 < 1)
+		if ($current_line = "") or ($current_line = 0)
+		elseif ($idx >= 5000)
 		else
-			send " l " & $planet~planet & "* c s* "
+			add $idx 1
+			replacetext $current_line "Warps to Sector(s) :  " "Warps To: "
+			replacetext $current_line "Warps to Sector(s) : " "Warps To: "
+			setvar $scan_array[$idx] $current_line
 		end
 	end
-	gosub :spitItOut
-	halt
-	:no_turns_available1
-	setvar $switchboard~message "No turns available.** "
-	gosub :switchboard~switchboard
-	halt
-  :no_scanner_available1
+elseif ($scan_macro = "x** * ")
+	getwordpos $current_line $em_end "(?=Help)? :"
+	if ($em_end > 0)
+		goto :end_of_lines
+	end
+	getwordpos $current_line $em_end "<I> Ship details"
+	if ($em_end > 0)
+		goto :end_of_lines
+	end
+	getlength $current_line $length
+	if ($length > 70)
+		cuttext $current_line $current_line 1 70
+	end
+	if ($current_line <> "")
+		add $idx 1
+		setvar $scan_array[$idx] $current_line
+	end
+else
+	getwordpos $current_line $em_end "(?=Help)? :"
+	if ($em_end > 0)
+		goto :end_of_lines
+	end
+	getwordpos $current_line $pos "One turn deducted,"
+	if ($pos > 0)
+		setvar $current_line "-=-=-=-=-=-=-=-=-=-=-=-=-| Holo Scan |-=-=-=-=-=-=-=-=-=-=-=-=-"
+	end
+	getwordpos $current_line $pos "Relative Density Scan"
+	if ($pos > 0)
+		setvar $current_line "-=-=-=-=-=-=-=-=-=-| Relative Density Scan |-=-=-=-=-=-=-=-=-=-"
+	end
+	if ($current_line = "") or ($current_line = 0)
+		goto :bogus
+	end
+	getwordpos $current_line $pos "Sector  :"
+	if ($pos > 0)
+		add $idx 1
+		setvar $scan_array[$idx] "    "
+	end
+	getwordpos $current_line $pos1 "-------"
+	getwordpos $current_line $pos2 "Long Range Scan"
+	getwordpos $current_line $pos3 "Select (H)olo Scan or (D)ensity Scan or (Q)uit?"
+	getwordpos $current_line $pos4 "<Mine Control>"
+	getwordpos $current_line $pos5 "(?=Help)? :"
+	if ($pos1 < 1) and ($pos2 < 1) and ($pos3 < 1) and ($pos4 < 1) and ($pos5 < 1)
+		replacetext $current_line "Warps to Sector(s) :  " "Warps To: "
+		replacetext $current_line "Warps to Sector(s) : " "Warps To: "
+		replacetext $current_line " ==>    " " => "
+		replacetext $current_line "  Warps : " "  Warps: "
+		replacetext $current_line "   NavHaz :   " " Haz: "
+		replacetext $current_line "  Anom : " " Anom: "
+		add $idx 1
+		setvar $scan_array[$idx] $current_line
+	end
+
+	:bogus
+end
+settextlinetrigger line_trig :parse_scan_line
+pause
+
+:end_of_lines
+killalltriggers
+if ($player~startinglocation = "Citadel")
+	if ($scan_macro = "d") or ($scan_macro = "s")
+		send "* "
+	else
+		send " l " & $planet~planet & "* c s* "
+	end
+end
+gosub :spititout
+halt
+
+:no_turns_available1
+setvar $switchboard~message "No turns available.** "
+gosub :switchboard~switchboard
+halt
+
+:no_scanner_available1
 setvar $switchboard~message "No scanner available.** "
 gosub :switchboard~switchboard
 halt
-	:no_scanner_available2
-	setVar $current_line "-=-=-=-=-=-=-=-=-=-| Relative Density Scan |-=-=-=-=-=-=-=-=-=-"
-	add $idx 1
-	setVar $scan_array[$idx] $current_line
-	setTextLineTrigger line_trig :parse_scan_line
-	pause
 
-	:handle_mines
-	send "*"
-	goto :end_of_lines
+:no_scanner_available2
+setvar $current_line "-=-=-=-=-=-=-=-=-=-| Relative Density Scan |-=-=-=-=-=-=-=-=-=-"
+add $idx 1
+setvar $scan_array[$idx] $current_line
+settextlinetrigger line_trig :parse_scan_line
+pause
 
-:SpitItOut
+:handle_mines
+send "*"
+goto :end_of_lines
+
+:spititout
 setvar $switchboard~message ""
 setvar $i 1
 while ($i <= $idx)
 	if ($scan_array[$i] <> "0")
-			setvar $switchboard~message $switchboard~message & $scan_array[$i] & "*"
+		setvar $switchboard~message $switchboard~message & $scan_array[$i] & "*"
 	end
 	add $i 1
 end
 gosub :switchboard~switchboard
-	:continuecommpscan2
+
+:continuecommpscan2
 return
-#================================ END SS SCANNER =======================================    
+#================================ END SS SCANNER =======================================
 
 # includes:
 include "source\include\planet"

@@ -1,642 +1,644 @@
 logging "OFF"
 reqrecording
-loadvar $BOT_NAME
-loadvar $UNLIMITEDGAME
-loadvar $BOT_TURN_LIMIT
-loadvar $USER_COMMAND_LINE
-loadvar $PARM1
-loadvar $PARM2
-loadvar $PARM3
-loadvar $PARM4
-loadvar $PARM5
-loadvar $PARM6
-loadvar $PARM7
-loadvar $PARM8
-loadvar $STARDOCK
-loadvar $COMMAND
+loadvar $bot_name
+loadvar $unlimitedgame
+loadvar $bot_turn_limit
+loadvar $user_command_line
+loadvar $parm1
+loadvar $parm2
+loadvar $parm3
+loadvar $parm4
+loadvar $parm5
+loadvar $parm6
+loadvar $parm7
+loadvar $parm8
+loadvar $stardock
+loadvar $command
 
+gosub :player~quikstats
 
-gosub :PLAYER~QUIKSTATS
-:LOAD
-fileexists $DOESHELPFILEEXIST "scripts\MOMBot\Help\"&$COMMAND&".txt"
-if ($DOESHELPFILEEXIST <> TRUE)
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "- tbust [Experience] {safe} {2fer} {max} {override} {delay} {makered}"
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "  Traitors Planet Buster Modified for M()M Bot Use "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "                                                            "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [Experience]   = Desired Experience"
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [safe]         = Create and Destroy one at a time"
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [2fer]         = Create and Destroy two at a time"
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [max]          = Create and Destroy the max amount"
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [override]     = Override Turns low Limit"
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [delay]        = Random delay for each bust"
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [bank]         = Corpie will pass credits through bank"
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "   - [red]          = Will Attempt negative align"
-  setvar $switchboard~message "Writing help file for this command in Help directory.*"
-  gosub :switchboard~switchboard
+:load
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Traitors Planet Buster modified for M()M Bot use."
+setvar $help~help[2] $help~tab&"       "
+setvar $help~help[3] $help~tab&"  Usage: tbust [experience] {safe} {2fer} {max} {override}"
+setvar $help~help[4] $help~tab&"               {delay} {bank} {red}"
+setvar $help~help[5] $help~tab&"       "
+setvar $help~help[6] $help~tab&"Options:"
+setvar $help~help[7] $help~tab&"   [experience]  Desired experience."
+setvar $help~help[8] $help~tab&"   {safe}        Create and destroy one at a time."
+setvar $help~help[9] $help~tab&"   {2fer}        Create and destroy two at a time."
+setvar $help~help[10] $help~tab&"   {max}         Create and destroy the max amount."
+setvar $help~help[11] $help~tab&"   {override}    Override turns low limit."
+setvar $help~help[12] $help~tab&"   {delay}       Random delay for each bust."
+setvar $help~help[13] $help~tab&"   {bank}        Corpie will pass credits through bank."
+setvar $help~help[14] $help~tab&"   {red}         Attempt negative alignment."
+gosub :help~helpfile
+if ($player~total_holds < 10)
+	setvar $switchboard~message "You need at least 10 Holds to create a planet.*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($PLAYER~TOTAL_HOLDS < 10)
-  setvar $switchboard~message "You need at least 10 Holds to create a planet.*"
-  gosub :switchboard~switchboard
-  halt
-end
-isnumber $TEST $PARM1
-if ($TEST)
-  if ($PARM1 < 1)
-    setvar $switchboard~message "Must enter Experience to Achiece*"
-    gosub :switchboard~switchboard
-    halt
-  end
+isnumber $test $parm1
+if ($test)
+	if ($parm1 < 1)
+		setvar $switchboard~message "Must enter Experience to Achiece*"
+		gosub :switchboard~switchboard
+		halt
+	end
 else
-  setvar $switchboard~message "Invalid Experience amount entered. *"
-  gosub :switchboard~switchboard
-  halt
+	setvar $switchboard~message "Invalid Experience amount entered. *"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($PLAYER~CURRENT_PROMPT = "Command")
-  send "p ss ys *q"
+if ($player~current_prompt = "Command")
+	send "p ss ys *q"
 end
-if (($PLAYER~CURRENT_PROMPT <> "<StarDock>") and ($PLAYER~CURRENT_PROMPT <> "Command"))
-  setvar $switchboard~message "Must start from StarDock or Command Prompt*"
-  gosub :switchboard~switchboard
-  halt
+if (($player~current_prompt <> "<StarDock>") and ($player~current_prompt <> "Command"))
+	setvar $switchboard~message "Must start from StarDock or Command Prompt*"
+	gosub :switchboard~switchboard
+	halt
 end
-getwordpos $USER_COMMAND_LINE $POS "safe"
-if ($POS > 0)
-  setvar $BUSTMODE "safe"
+getwordpos $user_command_line $pos "safe"
+if ($pos > 0)
+	setvar $bustmode "safe"
 end
-getwordpos $USER_COMMAND_LINE $POS "2fer"
-if ($POS > 0)
-  setvar $BUSTMODE "2fer"
+getwordpos $user_command_line $pos "2fer"
+if ($pos > 0)
+	setvar $bustmode "2fer"
 end
-getwordpos $USER_COMMAND_LINE $POS "max"
-if ($POS > 0)
-  setvar $BUSTMODE "max"
+getwordpos $user_command_line $pos "max"
+if ($pos > 0)
+	setvar $bustmode "max"
 end
-getwordpos $USER_COMMAND_LINE $POS "override"
-if ($POS > 0)
-  setvar $OVVERIDE TRUE
+getwordpos $user_command_line $pos "override"
+if ($pos > 0)
+	setvar $ovveride true
 end
-getwordpos $USER_COMMAND_LINE $POS "delay"
-if ($POS > 0)
-  setvar $RANDOMDELAY TRUE
+getwordpos $user_command_line $pos "delay"
+if ($pos > 0)
+	setvar $randomdelay true
 end
-getwordpos $USER_COMMAND_LINE $POS "bank"
-if ($POS > 0)
-  setvar $CORPIEBANKER TRUE
+getwordpos $user_command_line $pos "bank"
+if ($pos > 0)
+	setvar $corpiebanker true
 end
-getwordpos $USER_COMMAND_LINE $POS "red"
-if ($POS > 0)
-  setvar $MAKERED "true"
+getwordpos $user_command_line $pos "red"
+if ($pos > 0)
+	setvar $makered "true"
 end
-if ($PARM1 < $PLAYER~EXPERIENCE)
-  setvar $switchboard~message "Already at or Above Desired Experience*"
-  gosub :switchboard~switchboard
-  halt
+if ($parm1 < $player~experience)
+	setvar $switchboard~message "Already at or Above Desired Experience*"
+	gosub :switchboard~switchboard
+	halt
 end
-setvar $NEEDEDCYCLES ($PARM1 / 75)
-:CHECK_CORP
+setvar $neededcycles ($parm1 / 75)
 
-if ($PLAYER~CORP > 0)
-  gosub :SILENCEMESSAGES
-  goto :CHECKAUTOFLEE
+:check_corp
+if ($player~corp > 0)
+	gosub :silencemessages
+	goto :checkautoflee
 else
-  setvar $switchboard~message "Must be on a Corp to Continue*"
-  gosub :switchboard~switchboard
-  halt
+	setvar $switchboard~message "Must be on a Corp to Continue*"
+	gosub :switchboard~switchboard
+	halt
 end
-:CHECKAUTOFLEE
 
+:checkautoflee
 send "\"
-settextlinetrigger CHECKFLEE :CHECKFLEE "Online Auto Flee is"
+settextlinetrigger checkflee :checkflee "Online Auto Flee is"
 pause
-:CHECKFLEE
 
-killtrigger CHECKFLEE
-getword CURRENTLINE $AUTOFLEE 5
-striptext $AUTOFLEE "."
-if ($AUTOFLEE = "enabled")
-  send "\"
+:checkflee
+killtrigger checkflee
+getword currentline $autoflee 5
+striptext $autoflee "."
+if ($autoflee = "enabled")
+	send "\"
 end
-goto :CHECKCN2
-:CHECKCN2
+goto :checkcn2
 
+:checkcn2
 waitfor "<StarDock>"
 send "c"
-settextlinetrigger CN2OFF :CN2OFF "Sorry, only Traders with ANSI"
-settexttrigger CN2ON :CN2ON "Select(1-5,Q)"
+settextlinetrigger cn2off :cn2off "Sorry, only Traders with ANSI"
+settexttrigger cn2on :cn2on "Select(1-5,Q)"
 pause
-:CN2OFF
 
-killtrigger CN2OFF
-killtrigger CN2ON
-goto :CHECKCN9
-:CN2ON
+:cn2off
+killtrigger cn2off
+killtrigger cn2on
+goto :checkcn9
 
-killtrigger CN2OFF
-killtrigger CN2ON
+:cn2on
+killtrigger cn2off
+killtrigger cn2on
 send "q"
 waitfor "<StarDock> Where to?"
 send " q  c  n  2  q  q  p  s"
 waitfor "<StarDock> Where to?"
-if ($UNLIMITEDGAME <> 1)
-  subtract $PLAYER~TURNS 1
+if ($unlimitedgame <> 1)
+	subtract $player~turns 1
 end
-goto :CHECKCN9
-:CHECKCN9
+goto :checkcn9
 
+:checkcn9
 send "ge"
-settextlinetrigger CN9SPACE :CN9SPACE "You enter the most"
-settextlinetrigger CN9ALL :CN9ALL "<Galactic Bank>"
+settextlinetrigger cn9space :cn9space "You enter the most"
+settextlinetrigger cn9all :cn9all "<Galactic Bank>"
 pause
-:CN9SPACE
 
-killtrigger CN9SPACE
-killtrigger CN9ALL
-setvar $CN9 "space"
-settextlinetrigger CHECKBANKACCT :CHECKBANKACCT "credits in your account."
+:cn9space
+killtrigger cn9space
+killtrigger cn9all
+setvar $cn9 "space"
+settextlinetrigger checkbankacct :checkbankacct "credits in your account."
 pause
-:CN9ALL
 
-killtrigger CN9SPACE
-killtrigger CN9ALL
-setvar $CN9 "all"
-settextlinetrigger CHECKBANKACCT :CHECKBANKACCT "credits in your account."
+:cn9all
+killtrigger cn9space
+killtrigger cn9all
+setvar $cn9 "all"
+settextlinetrigger checkbankacct :checkbankacct "credits in your account."
 pause
-:CHECKBANKACCT
 
-killtrigger CHECKBANKACCT
-getword CURRENTLINE $BANKCREDS 3
-striptext $BANKCREDS ","
+:checkbankacct
+killtrigger checkbankacct
+getword currentline $bankcreds 3
+striptext $bankcreds ","
 send "q"
 waitfor "<StarDock> Where to?"
-goto :GETPRICING
-:GETPRICING
+goto :getpricing
 
+:getpricing
 send "ha"
-settextlinetrigger GETDETCOST :GETDETCOST "We sell them for"
+settextlinetrigger getdetcost :getdetcost "We sell them for"
 pause
-:GETDETCOST
 
-killtrigger GETDETCOST
-getword CURRENTLINE $DETCOST 5
-striptext $DETCOST ","
-settexttrigger HOWMANYDETS :HOWMANYDETS "How many Atomic Detonators do you want"
+:getdetcost
+killtrigger getdetcost
+getword currentline $detcost 5
+striptext $detcost ","
+settexttrigger howmanydets :howmanydets "How many Atomic Detonators do you want"
 pause
-:HOWMANYDETS
 
-killtrigger HOWMANYDETS
-getword CURRENTLINE $MAXDETS 9
-striptext $MAXDETS ")"
-setvar $MAXDETS ($MAXDETS + $PLAYER~ATOMIC)
+:howmanydets
+killtrigger howmanydets
+getword currentline $maxdets 9
+striptext $maxdets ")"
+setvar $maxdets ($maxdets + $player~atomic)
 send "0*t"
-settextlinetrigger GETGTORPCOST :GETGTORPCOST "Aldus Genesis Torpedo."
+settextlinetrigger getgtorpcost :getgtorpcost "Aldus Genesis Torpedo."
 pause
-:GETGTORPCOST
 
-killtrigger GETGTORPCOST
-getword CURRENTLINE $GTORPCOST 6
-striptext $GTORPCOST ","
-settexttrigger HOWMANYGTORPS :HOWMANYGTORPS "How many Genesis Torpedoes do you want"
+:getgtorpcost
+killtrigger getgtorpcost
+getword currentline $gtorpcost 6
+striptext $gtorpcost ","
+settexttrigger howmanygtorps :howmanygtorps "How many Genesis Torpedoes do you want"
 pause
-:HOWMANYGTORPS
 
-killtrigger HOWMANYGTORPS
-getword CURRENTLINE $MAXGTORPS 9
-striptext $MAXGTORPS ")"
-setvar $MAXGTORPS ($MAXGTORPS + $PLAYER~GENESIS)
+:howmanygtorps
+killtrigger howmanygtorps
+getword currentline $maxgtorps 9
+striptext $maxgtorps ")"
+setvar $maxgtorps ($maxgtorps + $player~genesis)
 send "0*q"
 waitfor "See you later."
-:REDCHECK
 
-if ($MAKERED = "true")
-  gosub :FIXALIGN
+:redcheck
+if ($makered = "true")
+	gosub :fixalign
 end
-:CHECKFORPROBLEMS
 
-if ($UNLIMITEDGAME = 1)
-  goto :FIXCN9
-elseif (($PLAYER~TURNS = 0) and ($UNLIMITEDGAME <> 1))
-  setvar $switchboard~message "Turns to low to Run TBust! *"
-  gosub :switchboard~switchboard
-  gosub :HEARMESSAGES
-  halt
-elseif (($PLAYER~TURNS < 50) and ($OVERRIDE = TRUE))
-  goto :FIXCN9
-elseif ($PLAYER~TURNS < 50)
-  gosub :HEARMESSAGES
-  setvar $switchboard~message "Turns to low to Run TBust!*"
-  gosub :switchboard~switchboard
-  halt
+:checkforproblems
+if ($unlimitedgame = 1)
+	goto :fixcn9
+elseif (($player~turns = 0) and ($unlimitedgame <> 1))
+	setvar $switchboard~message "Turns to low to Run TBust! *"
+	gosub :switchboard~switchboard
+	gosub :hearmessages
+	halt
+elseif (($player~turns < 50) and ($override = true))
+	goto :fixcn9
+elseif ($player~turns < 50)
+	gosub :hearmessages
+	setvar $switchboard~message "Turns to low to Run TBust!*"
+	gosub :switchboard~switchboard
+	halt
 end
-:FIXCN9
 
-if ($CN9 = "all")
-  send "qcn9  q  q  p  s"
-  setvar $CN9 "space"
-  waitfor "Landing on Federation StarDock."
-  if ($UNLIMITEDGAME <> 1)
-    subtract $PLAYER~TURNS 1
-  end
+:fixcn9
+if ($cn9 = "all")
+	send "qcn9  q  q  p  s"
+	setvar $cn9 "space"
+	waitfor "Landing on Federation StarDock."
+	if ($unlimitedgame <> 1)
+		subtract $player~turns 1
+	end
 end
-:GETUSERINPUT
 
-if (($MAXDETS = $MAXGTORPS) or ($MAXDETS < $MAXGTORPS))
-  setvar $MAXPERCYCLE $MAXDETS
+:getuserinput
+if (($maxdets = $maxgtorps) or ($maxdets < $maxgtorps))
+	setvar $maxpercycle $maxdets
 else
-  setvar $MAXPERCYCLE $MAXGTORPS
+	setvar $maxpercycle $maxgtorps
 end
-setvar $TOTALINITIALCREDS ($PLAYER~CREDITS + $BANKCREDS)
-setvar $TOTALCYCLES (((($PLAYER~CREDITS + $BANKCREDS) / ($GTORPCOST + $DETCOST)) - 1) + $PLAYER~ATOMIC)
-if ($PLAYER~CREDITS < ($GTORPCOST + $DETCOST))
-  setvar $switchboard~message "Need more Credits to bust.*"
-  gosub :switchboard~switchboard
-  halt
+setvar $totalinitialcreds ($player~credits + $bankcreds)
+setvar $totalcycles (((($player~credits + $bankcreds) / ($gtorpcost + $detcost)) - 1) + $player~atomic)
+if ($player~credits < ($gtorpcost + $detcost))
+	setvar $switchboard~message "Need more Credits to bust.*"
+	gosub :switchboard~switchboard
+	halt
 else
-  setvar $TOTALCYCLES ((($PLAYER~CREDITS / ($GTORPCOST + $DETCOST)) - 1) + $PLAYER~ATOMIC)
+	setvar $totalcycles ((($player~credits / ($gtorpcost + $detcost)) - 1) + $player~atomic)
 end
-:FINALPREPBEFOREBUSTING
 
-setvar $WTF 0
-if ($BUSTMODE = "safe")
-  setvar $MAXPERCYCLE 1
-elseif ($BUSTMODE = "2fer")
-  setvar $MAXPERCYCLE 2
-elseif ($BUSTMODE = "max")
-  setvar $MAXPERCYCLE $MAXGTORPS
+:finalprepbeforebusting
+setvar $wtf 0
+if ($bustmode = "safe")
+	setvar $maxpercycle 1
+elseif ($bustmode = "2fer")
+	setvar $maxpercycle 2
+elseif ($bustmode = "max")
+	setvar $maxpercycle $maxgtorps
 end
 send "@"
 waitfor "hundredths"
-gosub :PLAYER~QUIKSTATS
-gosub :CHECKSTATUS
-if ($PLAYER~TURNS < (($NEEDEDCYCLES / $MAXPERCYCLE) + 2))
-  if ($UNLIMITEDGAME <> 1)
-    gosub :HEARMESSAGES
-    setvar $switchboard~message "Not Enough Turns*"
-    gosub :switchboard~switchboard
-    halt
-  end
+gosub :player~quikstats
+gosub :checkstatus
+if ($player~turns < (($neededcycles / $maxpercycle) + 2))
+	if ($unlimitedgame <> 1)
+		gosub :hearmessages
+		setvar $switchboard~message "Not Enough Turns*"
+		gosub :switchboard~switchboard
+		halt
+	end
 end
-if ($PLAYER~ATOMIC < $MAXPERCYCLE)
-  send "h  a  " ($MAXPERCYCLE - $PLAYER~ATOMIC) "*q"
-  waitfor "See you later"
+if ($player~atomic < $maxpercycle)
+	send "h  a  " ($maxpercycle - $player~atomic) "*q"
+	waitfor "See you later"
 end
-if ($PLAYER~GENESIS < $MAXPERCYCLE)
-  send "h  t  " ($MAXPERCYCLE - $PLAYER~GENESIS) "*q"
-  waitfor "See you later"
+if ($player~genesis < $maxpercycle)
+	send "h  t  " ($maxpercycle - $player~genesis) "*q"
+	waitfor "See you later"
 end
-:STARTBUSTCYCLE
 
-setvar $COUNT 1
-setvar $BUSTSTRING "q  "
-setvar $TEMPCYCLES $MAXPERCYCLE
-if ($NEEDEDCYCLES < $TEMPCYCLES)
-  setvar $TEMPCYCLES $NEEDEDCYCLES
+:startbustcycle
+setvar $count 1
+setvar $buststring "q  "
+setvar $tempcycles $maxpercycle
+if ($neededcycles < $tempcycles)
+	setvar $tempcycles $neededcycles
 end
-if ($TEMPCYCLES < 1)
-  setvar $TEMPCYCLES 1
-  add $WTF 1
+if ($tempcycles < 1)
+	setvar $tempcycles 1
+	add $wtf 1
 end
-while ($COUNT <= $TEMPCYCLES)
-  setvar $BUSTSTRING $BUSTSTRING&"u  y  n  .*cl  *  z  d  y  "
-  add $COUNT 1
+while ($count <= $tempcycles)
+	setvar $buststring $buststring&"u  y  n  .*cl  *  z  d  y  "
+	add $count 1
 end
-setvar $BUSTSTRING $BUSTSTRING&"p  s "
-subtract $NEEDEDCYCLES $TEMPCYCLES
-send $BUSTSTRING
+setvar $buststring $buststring&"p  s "
+subtract $neededcycles $tempcycles
+send $buststring
 waitfor "Command"
-settextlinetrigger INVALIDREGNUM :INVALIDREGNUM "Invalid registry number"
-settexttrigger BUSTOK :BUSTOK "<StarDock>"
+settextlinetrigger invalidregnum :invalidregnum "Invalid registry number"
+settexttrigger bustok :bustok "<StarDock>"
 pause
-:BUSTOK
 
-killtrigger INVALIDREGNUM
-killtrigger BUSTOK
+:bustok
+killtrigger invalidregnum
+killtrigger bustok
 send "@"
 waitfor "hundredths"
-gosub :PLAYER~QUIKSTATS
-gosub :CHECKSTATUS
-if (($PLAYER~ATOMIC >= $TEMPCYCLES) and ($PLAYER~GENESIS >= $TEMPCYCLES))
-  setvar $BUYDETQTY 0
-  setvar $BUYTORPQTY 0
+gosub :player~quikstats
+gosub :checkstatus
+if (($player~atomic >= $tempcycles) and ($player~genesis >= $tempcycles))
+	setvar $buydetqty 0
+	setvar $buytorpqty 0
 else
-  setvar $BUYDETQTY ($TEMPCYCLES - $PLAYER~ATOMIC)
-  setvar $BUYTORPQTY ($TEMPCYCLES - $PLAYER~GENESIS)
+	setvar $buydetqty ($tempcycles - $player~atomic)
+	setvar $buytorpqty ($tempcycles - $player~genesis)
 end
-send "h  a  " $BUYDETQTY "*  t  " $BUYTORPQTY "*  q"
-if ($RANDOMDELAY = "TRUE")
-  gosub :RANDOMDELAY
+send "h  a  " $buydetqty "*  t  " $buytorpqty "*  q"
+if ($randomdelay = "TRUE")
+	gosub :randomdelay
 end
-goto :STARTBUSTCYCLE
-:INVALIDREGNUM
+goto :startbustcycle
 
-killtrigger BUSTOK
-killtrigger INVALIDREGNUM
-setvar $PLANETNUMS ""
+:invalidregnum
+killtrigger bustok
+killtrigger invalidregnum
+setvar $planetnums ""
 send "@"
 waitfor "hundredths"
-gosub :PLAYER~QUIKSTATS
-gosub :CHECKSTATUS
+gosub :player~quikstats
+gosub :checkstatus
 send "h  t  1*  q"
 waitfor "<StarDock>"
 send "q  u  y  n  .*cl*  z  d  y  p  s "
 waitfor "Command"
-settexttrigger GETPLANNUM :GETPLANNUM "Registry#"
-settexttrigger ONDOCK :ONDOCK "<StarDock>"
+settexttrigger getplannum :getplannum "Registry#"
+settexttrigger ondock :ondock "<StarDock>"
 pause
-:GETPLANNUM
 
-killtrigger GETPLANNUM
-settextlinetrigger PLANNUM :PLANNUM "   <"
+:getplannum
+killtrigger getplannum
+settextlinetrigger plannum :plannum "   <"
 pause
-:PLANNUM
 
-killtrigger PLANNUM
-add $EXTRAPLANETS 1
-getword CURRENTLINE $TEMPPLANETNUM 2
-striptext $TEMPPLANETNUM ">"
-setvar $PLANETNUMS $PLANETNUMS&" "&$TEMPPLANETNUM
-settexttrigger PLANNUM :PLANNUM "   <"
+:plannum
+killtrigger plannum
+add $extraplanets 1
+getword currentline $tempplanetnum 2
+striptext $tempplanetnum ">"
+setvar $planetnums $planetnums&" "&$tempplanetnum
+settexttrigger plannum :plannum "   <"
 pause
-:ONDOCK
 
-killtrigger GETPLANNUM
-killtrigger PLANNUM
-killtrigger ONDOCK
-getword CURRENTLINE $SPOOFPLANETNAME 1
-if ($SPOOFPLANETNAME <> "<StarDock>")
-  settexttrigger ONDOCK :ONDOCK "<StarDock>"
-  settexttrigger PLANNUM :PLANNUM "   <"
-  pause
+:ondock
+killtrigger getplannum
+killtrigger plannum
+killtrigger ondock
+getword currentline $spoofplanetname 1
+if ($spoofplanetname <> "<StarDock>")
+	settexttrigger ondock :ondock "<StarDock>"
+	settexttrigger plannum :plannum "   <"
+	pause
 end
-setarray $RANDOMPLANNUM $EXTRAPLANETS
-setvar $C 1
-setvar $RNDPLANETNUMS ""
-:PLANETNUMBERRANDOMIZER
+setarray $randomplannum $extraplanets
+setvar $c 1
+setvar $rndplanetnums ""
 
-while ($C <= $EXTRAPLANETS)
-  getrnd $RANDOM 1 $EXTRAPLANETS
-  if ($RANDOMPLANNUM[$RANDOM] = 1)
-    goto :PLANETNUMBERRANDOMIZER
-  else
-    getword $PLANETNUMS $TEMPPLANETNUM $RANDOM
-    setvar $RNDPLANETNUMS $RNDPLANETNUMS&" "&$TEMPPLANETNUM
-    add $C 1
-    setvar $RANDOMPLANNUM[$RANDOM] 1
-  end
+:planetnumberrandomizer
+while ($c <= $extraplanets)
+	getrnd $random 1 $extraplanets
+	if ($randomplannum[$random] = 1)
+		goto :planetnumberrandomizer
+	else
+		getword $planetnums $tempplanetnum $random
+		setvar $rndplanetnums $rndplanetnums&" "&$tempplanetnum
+		add $c 1
+		setvar $randomplannum[$random] 1
+	end
 end
-:MULTIPLANETS
 
+:multiplanets
 send "@"
 waitfor "hundredths"
-gosub :PLAYER~QUIKSTATS
-gosub :CHECKSTATUS
-if ($EXTRAPLANETS >= 1)
-  send "h  a  1*  q"
-  waitfor "<StarDock>"
-  getword $RNDPLANETNUMS $TEMPPLANETNUM $EXTRAPLANETS
-  send "q  l  "&#8&#8&$TEMPPLANETNUM "*  n  z  n  d  y  *  p  s "
-  settexttrigger BACKONDOCK :BACKONDOCK "<StarDock>"
-  settexttrigger PLANETNUMGONE :PLANETNUMGONE "That planet is not in this sector."
-  settexttrigger TRIEDTOMOVE :TRIEDTOMOVE "<Move>"
-  pause
+gosub :player~quikstats
+gosub :checkstatus
+if ($extraplanets >= 1)
+	send "h  a  1*  q"
+	waitfor "<StarDock>"
+	getword $rndplanetnums $tempplanetnum $extraplanets
+	send "q  l  "&#8&#8&$tempplanetnum "*  n  z  n  d  y  *  p  s "
+	settexttrigger backondock :backondock "<StarDock>"
+	settexttrigger planetnumgone :planetnumgone "That planet is not in this sector."
+	settexttrigger triedtomove :triedtomove "<Move>"
+	pause
 else
-  send "@"
-  waitfor "hundredths"
-  goto :BUSTOK
+	send "@"
+	waitfor "hundredths"
+	goto :bustok
 end
-:BACKONDOCK
 
-killtrigger BACKONDOCK
-killtrigger PLANETNUMGONE
-killtrigger TRIEDTOMOVE
-getword CURRENTLINE $SPOOFPLANETNAME 1
-if ($SPOOFPLANETNAME <> "<StarDock>")
-  settexttrigger BACKONDOCK :BACKONDOCK "<StarDock>"
-  settexttrigger PLANETNUMGONE :PLANETNUMGONE "That planet is not in this sector."
-  settexttrigger TRIEDTOMOVE :TRIEDTOMOVE "<Move>"
-  pause
+:backondock
+killtrigger backondock
+killtrigger planetnumgone
+killtrigger triedtomove
+getword currentline $spoofplanetname 1
+if ($spoofplanetname <> "<StarDock>")
+	settexttrigger backondock :backondock "<StarDock>"
+	settexttrigger planetnumgone :planetnumgone "That planet is not in this sector."
+	settexttrigger triedtomove :triedtomove "<Move>"
+	pause
 end
-subtract $EXTRAPLANETS 1
-goto :MULTIPLANETS
-:PLANETNUMGONE
+subtract $extraplanets 1
+goto :multiplanets
 
-killtrigger BACKONDOCK
-killtrigger PLANETNUMGONE
-killtrigger TRIEDTOMOVE
-goto :INVALIDREGNUM
-:TRIEDTOMOVE
+:planetnumgone
+killtrigger backondock
+killtrigger planetnumgone
+killtrigger triedtomove
+goto :invalidregnum
 
-killtrigger BACKONDOCK
-killtrigger PLANETNUMGONE
-killtrigger TRIEDTOMOVE
-goto :BUSTOK
-:CHECKSTATUS
+:triedtomove
+killtrigger backondock
+killtrigger planetnumgone
+killtrigger triedtomove
+goto :bustok
 
-if ($PLAYER~CURRENT_PROMPT <> "<StarDock>")
-  gosub :HEARMESSAGES
-  send "p  s  t"
-  setvar $switchboard~message "Houston, we have a problem...*"
-  gosub :switchboard~switchboard
-  halt
+:checkstatus
+if ($player~current_prompt <> "<StarDock>")
+	gosub :hearmessages
+	send "p  s  t"
+	setvar $switchboard~message "Houston, we have a problem...*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($PLAYER~EXPERIENCE >= $PARM1)
-  gosub :HEARMESSAGES
-  setvar $switchboard~message "Target Exp Reached!*"
-  gosub :switchboard~switchboard
-  halt
+if ($player~experience >= $parm1)
+	gosub :hearmessages
+	setvar $switchboard~message "Target Exp Reached!*"
+	gosub :switchboard~switchboard
+	halt
 end
-if (($PLAYER~TURNS < 10) and ($UNLIMITEDGAME <> 1))
-  gosub :HEARMESSAGES
-  setvar $switchboard~message "Not Enough Turns to Continue!*"
-  gosub :switchboard~switchboard
-  halt
+if (($player~turns < 10) and ($unlimitedgame <> 1))
+	gosub :hearmessages
+	setvar $switchboard~message "Not Enough Turns to Continue!*"
+	gosub :switchboard~switchboard
+	halt
 end
-:RESUME
 
-if ($PLAYER~CREDITS < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
-  if ($CORPIEBANKER = TRUE)
-    send "ge"
-    settextlinetrigger VIEWBANKACCT :VIEWBANKACCT "credits in your account."
-    pause
-    :VIEWBANKACCT
+:resume
+if ($player~credits < (($gtorpcost + $detcost) * $maxpercycle))
+	if ($corpiebanker = true)
+		send "ge"
+		settextlinetrigger viewbankacct :viewbankacct "credits in your account."
+		pause
 
-    killtrigger VIEWBANKACCT
-    getword CURRENTLINE $BANKCREDS 3
-    striptext $BANKCREDS ","
-    send "q"
-    waitfor "<StarDock> Where to?"
-    if (($PLAYER~CREDITS + $BANKCREDS) < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
-      if ($CORPIEBANKER = TRUE)
-        gosub :HEARMESSAGES
-        setvar $switchboard~message "Need Creds in bank to continue. Waiting on Transfer*"
-        gosub :switchboard~switchboard
-        settextlinetrigger WAITFORCREDS :WAITFORCREDS "credits to your Galactic bank account."
-        pause
-        :WAITFORCREDS
+		:viewbankacct
+		killtrigger viewbankacct
+		getword currentline $bankcreds 3
+		striptext $bankcreds ","
+		send "q"
+		waitfor "<StarDock> Where to?"
+		if (($player~credits + $bankcreds) < (($gtorpcost + $detcost) * $maxpercycle))
+			if ($corpiebanker = true)
+				gosub :hearmessages
+				setvar $switchboard~message "Need Creds in bank to continue. Waiting on Transfer*"
+				gosub :switchboard~switchboard
+				settextlinetrigger waitforcreds :waitforcreds "credits to your Galactic bank account."
+				pause
 
-        killtrigger WAITFORCREDS
-        send "ge"
-        settextlinetrigger VERIFYBANKACCT :VERIFYBANKACCT "credits in your account."
-        pause
-        :VERIFYBANKACCT
+				:waitforcreds
+				killtrigger waitforcreds
+				send "ge"
+				settextlinetrigger verifybankacct :verifybankacct "credits in your account."
+				pause
 
-        killtrigger VERIFYBANKACCT
-        getword CURRENTLINE $BANKCREDS 3
-        striptext $BANKCREDS ","
-        send "q"
-        waitfor "<StarDock> Where to?"
-        if (($PLAYER~CREDITS + $BANKCREDS) < (($GTORPCOST + $DETCOST) * $MAXPERCYCLE))
-          setvar $switchboard~message "Not enough Creds in bank*"
-          gosub :switchboard~switchboard
-          settextlinetrigger WAITFORCREDS :WAITFORCREDS "your Galactic bank account."
-          pause
-        else
-          subtract $BANKCREDS (($GTORPCOST + $DETCOST) * $MAXPERCYCLE)
-          send "g  w" ((($GTORPCOST + $DETCOST) * $MAXPERCYCLE) - $PLAYER~CREDITS) "*  q"
-          gosub :SILENCEMESSAGES
-          waitfor "<StarDock>"
-        end
-      end
-    else
-      subtract $BANKCREDS (($GTORPCOST + $DETCOST) * $MAXPERCYCLE)
-      send "g  w" ((($GTORPCOST + $DETCOST) * $MAXPERCYCLE) - $PLAYER~CREDITS) "*  q"
-      waitfor "<StarDock>"
-    end
-  end
+				:verifybankacct
+				killtrigger verifybankacct
+				getword currentline $bankcreds 3
+				striptext $bankcreds ","
+				send "q"
+				waitfor "<StarDock> Where to?"
+				if (($player~credits + $bankcreds) < (($gtorpcost + $detcost) * $maxpercycle))
+					setvar $switchboard~message "Not enough Creds in bank*"
+					gosub :switchboard~switchboard
+					settextlinetrigger waitforcreds :waitforcreds "your Galactic bank account."
+					pause
+				else
+					subtract $bankcreds (($gtorpcost + $detcost) * $maxpercycle)
+					send "g  w" ((($gtorpcost + $detcost) * $maxpercycle) - $player~credits) "*  q"
+					gosub :silencemessages
+					waitfor "<StarDock>"
+				end
+			end
+		else
+			subtract $bankcreds (($gtorpcost + $detcost) * $maxpercycle)
+			send "g  w" ((($gtorpcost + $detcost) * $maxpercycle) - $player~credits) "*  q"
+			waitfor "<StarDock>"
+		end
+	end
 end
-if ($WTF > 10)
-  gosub :HEARMESSAGES
-  pause
+if ($wtf > 10)
+	gosub :hearmessages
+	pause
 end
 return
-:RANDOMDELAY
 
-getrnd $RNDNUM 50 2000
-setdelaytrigger DELAY :DELAY $RNDNUM
+:randomdelay
+getrnd $rndnum 50 2000
+setdelaytrigger delay :delay $rndnum
 pause
-:DELAY
 
-killtrigger DELAY
+:delay
+killtrigger delay
 return
-:SILENCEMESSAGES
 
+:silencemessages
 send "|"
-setvar $HEARMESSAGES "no"
-settextlinetrigger MESSAGE :MESSAGE "all messages."
+setvar $hearmessages "no"
+settextlinetrigger message :message "all messages."
 pause
-:HEARMESSAGES
 
+:hearmessages
 send "|"
-setvar $HEARMESSAGES "yes"
-settextlinetrigger MESSAGE :MESSAGE "all messages."
+setvar $hearmessages "yes"
+settextlinetrigger message :message "all messages."
 pause
-:MESSAGE
 
-killtrigger MESSAGE
-getword CURRENTLINE $MSGSTAT 1
-if (($MSGSTAT = "Displaying") and ($HEARMESSAGES = "yes"))
-  return
-elseif (($MSGSTAT = "Displaying") and ($HEARMESSAGES = "no"))
-  send "|"
-  return
-elseif (($MSGSTAT = "Silencing") and ($HEARMESSAGES = "no"))
-  return
+:message
+killtrigger message
+getword currentline $msgstat 1
+if (($msgstat = "Displaying") and ($hearmessages = "yes"))
+	return
+elseif (($msgstat = "Displaying") and ($hearmessages = "no"))
+	send "|"
+	return
+elseif (($msgstat = "Silencing") and ($hearmessages = "no"))
+	return
 else
-  send "|"
-  return
+	send "|"
+	return
 end
-:FIXALIGN
 
-if (($PLAYER~ALIGNMENT > 0) and ($PLAYER~ALIGNMENT < 200))
-  send "ttmafia*y"
-  settexttrigger GETMAFIAPWPRICE :GETMAFIAPWPRICE "will ye pay?"
-  pause
-  :GETMAFIAPWPRICE
+:fixalign
+if (($player~alignment > 0) and ($player~alignment < 200))
+	send "ttmafia*y"
+	settexttrigger getmafiapwprice :getmafiapwprice "will ye pay?"
+	pause
 
+	:getmafiapwprice
+	killtrigger getmafiapwprice
+	getword currentline $mafiapwprice 6
+	striptext $mafiapwprice ","
+	send "n*q"
+	waitfor "You make a hasty exit from the Tavern."
+	setvar $fixalign $player~alignment
+	setvar $fixaligncreds (($fixalign * 250) + $mafiapwprice)
+	setvar $newmafiapw "use mombot more"
+	goto :getmafiapw
 
-  killtrigger GETMAFIAPWPRICE
-  getword CURRENTLINE $MAFIAPWPRICE 6
-  striptext $MAFIAPWPRICE ","
-  send "n*q"
-  waitfor "You make a hasty exit from the Tavern."
-  setvar $FIXALIGN $PLAYER~ALIGNMENT
-  setvar $FIXALIGNCREDS (($FIXALIGN * 250) + $MAFIAPWPRICE)
-  setvar $NEWMAFIAPW "use mombot more"
-  goto :GETMAFIAPW
-
-elseif ($YOURALIGN > 199)
-  setvar $switchboard~message "Cant Get a Negative Alignement.  Continuing for Experience*"
-  gosub :switchboard~switchboard
-  goto :FIXALIGNRETURN
+elseif ($youralign > 199)
+	setvar $switchboard~message "Cant Get a Negative Alignement.  Continuing for Experience*"
+	gosub :switchboard~switchboard
+	goto :fixalignreturn
 end
-:GETMAFIAPW
 
+:getmafiapw
 send "ttmafia*yy"
-settextlinetrigger MAFIAPW :MAFIAPW "The password today is"
+settextlinetrigger mafiapw :mafiapw "The password today is"
 pause
-:MAFIAPW
 
-killtrigger MAFIAPW
-gettext CURRENTLINE $TEMPMAFIAPW "today is "&#34 ""
-getlength $TEMPMAFIAPW $MAFIAPWLENGTH
-cuttext $TEMPMAFIAPW $MAFIAPW 1 ($MAFIAPWLENGTH - 1)
+:mafiapw
+killtrigger mafiapw
+gettext currentline $tempmafiapw "today is "&#34 ""
+getlength $tempmafiapw $mafiapwlength
+cuttext $tempmafiapw $mafiapw 1 ($mafiapwlength - 1)
 send "*q"
 waitfor "<StarDock>"
-goto :UNDERGROUND
-:UNDERGROUND
+goto :underground
 
+:underground
 send "u"
 waitfor "Your reply :"
-send $MAFIAPW "*"
-settexttrigger PWWORKS :PWWORKS "The magnetic shielding goes down and the door opens."
-settexttrigger PWFAILS :PWFAILS "<StarDock> Where to? (?=Help)"
+send $mafiapw "*"
+settexttrigger pwworks :pwworks "The magnetic shielding goes down and the door opens."
+settexttrigger pwfails :pwfails "<StarDock> Where to? (?=Help)"
 pause
-:PWFAILS
 
-killtrigger PWWORKS
-killtrigger PWFAILS
+:pwfails
+killtrigger pwworks
+killtrigger pwfails
 setvar $switchboard~message "Underground PW failed. You will have to fix manually.  Halting Script*"
 gosub :switchboard~switchboard
 halt
-:PWWORKS
 
-killtrigger PWWORKS
-killtrigger PWFAILS
-send "y" $NEWMAFIAPW "*"
-:PLACECONTRACT
+:pwworks
+killtrigger pwworks
+killtrigger pwfails
+send "y" $newmafiapw "*"
 
-setvar $LETTERS "e t a o i n s r h l d c u m f p g w y b v k x j q z"
-setvar $COUNT 1
-:PICKTRADER4CONTRACT
+:placecontract
+setvar $letters "e t a o i n s r h l d c u m f p g w y b v k x j q z"
+setvar $count 1
 
-if ($COUNT <= 26)
-  getword $LETTERS $TEMP $COUNT
-  send "p" $TEMP "*"
-  settexttrigger KNOWNTRADER :KNOWNTRADER "Do you mean"
-  settexttrigger UNKNOWNTRADER :UNKNOWNTRADER "Unknown Trader!"
-  pause
+:picktrader4contract
+if ($count <= 26)
+	getword $letters $temp $count
+	send "p" $temp "*"
+	settexttrigger knowntrader :knowntrader "Do you mean"
+	settexttrigger unknowntrader :unknowntrader "Unknown Trader!"
+	pause
 else
-  gosub :HEARMESSAGES
-  setvar $switchboard~message "Problems placing a Bounty. - HALTING*"
-  gosub :switchboard~switchboard
-  halt
+	gosub :hearmessages
+	setvar $switchboard~message "Problems placing a Bounty. - HALTING*"
+	gosub :switchboard~switchboard
+	halt
 end
-:UNKNOWNTRADER
 
-killtrigger KNOWNTRADER
-killtrigger UNKNOWNTRADER
-add $COUNT 1
-goto :PICKTRADER4CONTRACT
-:KNOWNTRADER
+:unknowntrader
+killtrigger knowntrader
+killtrigger unknowntrader
+add $count 1
+goto :picktrader4contract
 
-killtrigger KNOWNTRADER
-killtrigger UNKNOWNTRADER
-send "y" ($FIXALIGN * 250) "*q"
+:knowntrader
+killtrigger knowntrader
+killtrigger unknowntrader
+send "y" ($fixalign * 250) "*q"
 waitfor "<StarDock>"
 send "@"
 waitfor "hundredths"
-gosub :PLAYER~QUIKSTATS
-:FIXALIGNRETURN
+gosub :player~quikstats
 
+:fixalignreturn
 return
 include "source\include\player"
 include "source\include\switchboard.ts"
+include "source\include\loadvars"
+include "source\include\help"

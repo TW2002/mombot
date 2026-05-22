@@ -1,109 +1,111 @@
-	reqrecording
+reqrecording
 
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-	loadVar $GAME~GENESIS_COST
-	loadVar $GAME~ATOMIC_COST
-	loadVar $MAP~STARDOCK 
-	loadvar $bot~folder
-	loadvar $game~MAX_PLANETS_PER_SECTOR
-	loadvar $planet~planet_file
-	loadVar $BOT~botIsDeaf
-	loadVar $BOT~silent_running
-	loadvar $game~steal_factor
+loadvar $game~genesis_cost
+loadvar $game~atomic_cost
+loadvar $map~stardock
+loadvar $bot~folder
+loadvar $game~max_planets_per_sector
+loadvar $planet~planet_file
+loadvar $bot~botisdeaf
+loadvar $bot~silent_running
+loadvar $game~steal_factor
 
-	setVar $BOT~command "wsst"
+setvar $bot~command "wsst"
 
-	setVar $HELP~HELP[1]   $HELP~TAB&"World Sell-Steal-Transport "
-	setVar $HELP~HELP[2]   $HELP~TAB&" - wsst [ship2] {cash dropoff} {f} {s} {safe|passive} {furbpoint} "
-	setVar $HELP~HELP[3]   $HELP~TAB&"   Options: "
-	setVar $HELP~HELP[4]   $HELP~TAB&"     {cash dropoff} - if started from planet citadel  "
-	setVar $HELP~HELP[5]   $HELP~TAB&"     {f}            - buy fighters"
-	setVar $HELP~HELP[6]   $HELP~TAB&"     {s}            - buy shields "
-	setVar $HELP~HELP[7]   $HELP~TAB&"     {safe}         - Will not mow to locations, scans and moves"
-	setVar $HELP~HELP[8]   $HELP~TAB&"     {passive}      - Will be safe, as well as avoid any enemy fighters "
-	setVar $HELP~HELP[9]   $HELP~TAB&"     {furbpoint}    - Terra, Dock (default), Alpha, Rylos "
-	setVar $HELP~HELP[10]  $HELP~TAB&"     {limp}         - Will lay 3 limps/sector if Furbing at Dock. "
-	setVar $HELP~HELP[11]  $HELP~TAB&"     {armid}        - Will lay 3 armids/sector if Furbing at Dock. "
-	setVar $HELP~HELP[12]  $HELP~TAB&"     {quiet}        - Will not braodcast BUSTED msg's on SubSpace  "
-	setVar $HELP~HELP[13]  $HELP~TAB&"     {x100}         - Will Drop 100 Fighters per sector "
+setvar $help~help[1]   $help~tab&"World Sell-Steal-Transport "
+setvar $help~help[2]   $help~tab&" - wsst [ship2] {cash dropoff} {f} {s} {safe|passive} {furbpoint} "
+setvar $help~help[3]   $help~tab&"   Options: "
+setvar $help~help[4]   $help~tab&"     {cash dropoff} - if started from planet citadel  "
+setvar $help~help[5]   $help~tab&"     {f}            - buy fighters"
+setvar $help~help[6]   $help~tab&"     {s}            - buy shields "
+setvar $help~help[7]   $help~tab&"     {safe}         - Will not mow to locations, scans and moves"
+setvar $help~help[8]   $help~tab&"     {passive}      - Will be safe, as well as avoid any enemy fighters "
+setvar $help~help[9]   $help~tab&"     {furbpoint}    - Terra, Dock (default), Alpha, Rylos "
+setvar $help~help[10]  $help~tab&"     {limp}         - Will lay 3 limps/sector if Furbing at Dock. "
+setvar $help~help[11]  $help~tab&"     {armid}        - Will lay 3 armids/sector if Furbing at Dock. "
+setvar $help~help[12]  $help~tab&"     {quiet}        - Will not braodcast BUSTED msg's on SubSpace  "
+setvar $help~help[13]  $help~tab&"     {x100}         - Will Drop 100 Fighters per sector "
 
-	gosub :HELP~HELPFILE
+gosub :help~helpfile
 
-	setvar $player~save true
+setvar $player~save true
 
-	goto :Starting
-	
+goto :starting
+
 :transport
-if ($inShip1)
-	send ("x     "&$psst_Ship2&"* q * ")
+if ($inship1)
+	send ("x     "&$psst_ship2&"* q * ")
 	setvar $player~ship_number $psst_ship2
 else
-	send ("x     "&$psst_Ship1&"* q * ")
+	send ("x     "&$psst_ship1&"* q * ")
 	setvar $player~ship_number $psst_ship1
 end
 savevar $player~ship_number
 killtrigger 1
 killtrigger 2
 killtrigger 3
-setTextLineTrigger 1 :transported "Security code accepted"
-setTextLineTrigger 2 :noneAvailable "That is not an available ship."
-setTextLineTrigger 3 :outOfRange "only has a transport range of"
+settextlinetrigger 1 :transported "Security code accepted"
+settextlinetrigger 2 :noneavailable "That is not an available ship."
+settextlinetrigger 3 :outofrange "only has a transport range of"
 pause
-	:outOfRange
-	:noneAvailable
-	killtrigger 1
-	killtrigger 2
-	killtrigger 3
-	halt
-	goto :transport
-	:transported
-	killtrigger 1
-	killtrigger 2
-	killtrigger 3
-	if ($inShip1)
-		setVar $inShip1 FALSE
-	else
-		setVar $inShip1 TRUE
-	end
-	setVar $player~turns ($player~turns-1)
-	savevar $player~turns
-	return
 
-:GoGo
-window cash 300 170 ("World SST - " & GAMENAME) ONTOP
-gosub :displayCredits
-while (TRUE)
-	if (($player~unlimitedGame = FALSE) AND ($player~turns <= $bot~bot_turn_limit))
-		goto :endSST
+:outofrange
+:noneavailable
+killtrigger 1
+killtrigger 2
+killtrigger 3
+halt
+goto :transport
+
+:transported
+killtrigger 1
+killtrigger 2
+killtrigger 3
+if ($inship1)
+	setvar $inship1 false
+else
+	setvar $inship1 true
+end
+setvar $player~turns ($player~turns-1)
+savevar $player~turns
+return
+
+:gogo
+window cash 300 170 ("World SST - " & gamename) ontop
+gosub :displaycredits
+while (true)
+	if (($player~unlimitedgame = false) and ($player~turns <= $bot~bot_turn_limit))
+		goto :endsst
 	end
-	gosub :findSSTPorts
-	setVar $busted FALSE
-	while ($busted = FALSE)
-		if (($player~unlimitedGame = FALSE) AND ($player~turns <= $bot~bot_turn_limit))
-			goto :endSST
+	gosub :findsstports
+	setvar $busted false
+	while ($busted = false)
+		if (($player~unlimitedgame = false) and ($player~turns <= $bot~bot_turn_limit))
+			goto :endsst
 		end
 		gosub :steal
 	end
 	send "#"
 	gosub :player~quikstats
-	loadVar $bot~alarm_list
-	if (($alarm_active) AND ($bot~alarm_list <> ""))
-		loadVar $bot~who_is_online
+	loadvar $bot~alarm_list
+	if (($alarm_active) and ($bot~alarm_list <> ""))
+		loadvar $bot~who_is_online
 		lowercase $bot~alarm_list
 		lowercase $bot~who_is_online
-		getWordPos $bot~alarm_list $pos ","
+		getwordpos $bot~alarm_list $pos ","
 		if ($pos > 0)
-			splitText $bot~alarm_list $alarm ","
+			splittext $bot~alarm_list $alarm ","
 		else
-			setArray $alarm 1
-			setVar $alarm[1] $bot~alarm_list
-			setVar $alarm 1
+			setarray $alarm 1
+			setvar $alarm[1] $bot~alarm_list
+			setvar $alarm 1
 		end
-		setVar $i 1
+		setvar $i 1
 		while ($i <= $alarm)
-			getWordPos $bot~who_is_online $pos " "&$alarm[$i]&" "
+			getwordpos $bot~who_is_online $pos " "&$alarm[$i]&" "
 			if ($pos > 0)
 				send "'Alarm triggered by "&$alarm[$i]&", contingency plan engaged.*"
 				send "'"&$bot~bot_name&" x x*"
@@ -112,74 +114,74 @@ while (TRUE)
 			add $i 1
 		end
 	end
-	setVar $minRefurb ($player~experience / $game~steal_factor - 1)
-	if ($minRefurb > 255)
-		setVar $minRefurb 255
+	setvar $minrefurb ($player~experience / $game~steal_factor - 1)
+	if ($minrefurb > 255)
+		setvar $minrefurb 255
 	end
-	setVar $minRefurb (($minRefurb * 7) / 8)
-	if (($ship1TotalHolds < $minRefurb) OR ($ship2TotalHolds < $minRefurb))
+	setvar $minrefurb (($minrefurb * 7) / 8)
+	if (($ship1totalholds < $minrefurb) or ($ship2totalholds < $minrefurb))
 		gosub :refurb
 	end
-	if (($dropCashAtBase = TRUE) AND ($player~credits > $dropCashLimit))
-		gosub :dropCashAtBase
+	if (($dropcashatbase = true) and ($player~credits > $dropcashlimit))
+		gosub :dropcashatbase
 	end
 end
-goto :endSST
+goto :endsst
 
-
-:checkSSTShips
-setVar $foundShip2 FALSE
+:checksstships
+setvar $foundship2 false
 killalltriggers
 send "wn*"
-setTextLineTrigger other :shipline " "&$player~current_sector&" "
-setTextLineTrigger noShips :shipDone "You do not own any other ships in this sector!"
+settextlinetrigger other :shipline " "&$player~current_sector&" "
+settextlinetrigger noships :shipdone "You do not own any other ships in this sector!"
 pause
 
-	:shipline
-	killalltriggers
-	add $shipCount 1
-	getWord CURRENTLINE $tempID 1
-	if ($tempID = $psst_Ship2)
-		setVar $foundShip2 TRUE
-	end
-	setTextLineTrigger other :shipline " "&$player~current_sector&" "
-	setTextLineTrigger noMore :shipDone "Choose which ship to tow "
-	pause
-	:shipDone
-	killalltriggers
-	return
+:shipline
+killalltriggers
+add $shipcount 1
+getword currentline $tempid 1
+if ($tempid = $psst_ship2)
+	setvar $foundship2 true
+end
+settextlinetrigger other :shipline " "&$player~current_sector&" "
+settextlinetrigger nomore :shipdone "Choose which ship to tow "
+pause
 
-:moveIntoSector
-setVar $result ""
-setVar $dropFigs TRUE
-setVar $result $result&"m "&$moveIntoSector&"*"
-if (($moveIntoSector > 10) AND ($moveIntoSector <> $map~stardock))
+:shipdone
+killalltriggers
+return
+
+:moveintosector
+setvar $result ""
+setvar $dropfigs true
+setvar $result $result&"m "&$moveintosector&"*"
+if (($moveintosector > 10) and ($moveintosector <> $map~stardock))
 	if ($player~fighters > $ship~ship_max_attack)
-		setVar $result $result&"za"&$ship~ship_max_attack&"* * "
+		setvar $result $result&"za"&$ship~ship_max_attack&"* * "
 	else
-		setVar $result $result&"za"&$player~fighters&"* * "
+		setvar $result $result&"za"&$player~fighters&"* * "
 	end
 end
-if (($dropFigs = TRUE) AND ($moveIntoSector > 10) AND ($moveIntoSector <> $map~stardock) AND ($j > 2))
-	setVar $FIG_DROP 1
+if (($dropfigs = true) and ($moveintosector > 10) and ($moveintosector <> $map~stardock) and ($j > 2))
+	setvar $fig_drop 1
 	if ($x100)
 		if ($player~fighters > 1000)
-			setVar $FIG_DROP 100
+			setvar $fig_drop 100
 			setvar $player~fighters ($player~fighters - 100)
 		end
 	elseif ($x1000)
 		if ($player~fighters > 10000)
-			setVar $FIG_DROP 1000
+			setvar $fig_drop 1000
 			setvar $player~fighters ($player~fighters - 1000)
 		end
 	end
-	setVar $result $result&"f  z  "&$FIG_DROP&"* z  c  d  *  "
+	setvar $result $result&"f  z  "&$fig_drop&"* z  c  d  *  "
 end
-if ($DROPLIMPS)
-	setVar $result $result&"  H  2  Z  3*  Z C  *  "
+if ($droplimps)
+	setvar $result $result&"  H  2  Z  3*  Z C  *  "
 end
-if ($DROPARMIDS)
-	setVar $Result $result&"  H  1  Z  3*  Z C  *  "
+if ($droparmids)
+	setvar $result $result&"  H  1  Z  3*  Z C  *  "
 end
 send $result
 #waitOn "["&$moveIntoSector&"]"
@@ -187,540 +189,541 @@ send $result
 #	waitOn "<Drop/Take Fighters>"
 #end
 send "  sdsh"
-waitOn "Long Range Scan"
+waiton "Long Range Scan"
 waiton "Warps to Sector(s) :"
 return
 
-:findSSTPorts
-
-while ($ship1NeedsPort = TRUE)
-	if ($inShip1 <> TRUE)
-		goSub :transport
-	end
-		:tryNewRouteShip1
-		setVar $destination 0
-		while ($destination = 0)
-			gosub :getRandomCourse
-			gosub :player~quikstats
-		end
-		setVar $j 3
-		while (($j <= $courseLength) AND ($ship1NeedsPort = TRUE))
-			setVar $moveIntoSector $COURSE[$j]
-			setVar $containsShieldedPlanet FALSE
-			setVar $p 1
-			#echo "**["&$moveintosector&"]**["&$sectors&"]*"
-			while ($p <= SECTOR.PLANETCOUNT[$moveIntoSector])
-				getWord SECTOR.PLANETS[$moveIntoSector][$p] $test 1
-				if ($test = "<<<<")
-					setVar $containsShieldedPlanet TRUE
-				end
-				add $p 1
-			end
-        		if ($containsShieldedPlanet)
-				echo "*Avoiding shielded planet*"
-				goto :tryNewRouteShip1
-			end
-			setVar $figOwner  SECTOR.FIGS.OWNER[$moveIntoSector]
-			setVar $mineOwner SECTOR.MINES.OWNER[$moveIntoSector]
-			setVar $limpOwner SECTOR.LIMPETS.OWNER[$moveIntoSector]
-			setVar $figCount  SECTOR.FIGS.QUANTITY[$moveIntoSector]
-			if (($figCount > $safeFighterLevel) AND (($figOwner <> "belong to your Corp") AND ($figOwner <> "yours")))
-				echo "*Avoiding too many enemy fighters*"
-				goto :tryNewRouteShip1
-			end
-				gosub :moveIntoSector
-				getSectorParameter $moveIntoSector "BUSTED" $isBusted
-				setVar $testSector $moveIntoSector
-				gosub :isUsableSSTPortCandidate
-				if (($candidatePortValid = TRUE) AND ($isBusted <> TRUE) AND ($moveIntoSector <> $ship2Sector))
-					gosub :player~quikstats
-					setVar $ship1NeedsPort FALSE
-					setVar $ship1Sector $COURSE[$j]
-					setVar $testSector $COURSE[$j]
-					gosub :getSSTPortInfo
-					if ($portInfoValid)
-						setVar $ship1TotalHolds $player~total_holds
-						setVar $ship1Equipment $player~equipment_holds
-						gosub :displayCredits
-					else
-						setVar $ship1NeedsPort TRUE
-						goto :tryNewRouteShip1
-					end
-				else
-				setVar $k 1
-				setVar $isFound FALSE
-				while ((SECTOR.WARPS[$COURSE[$j]][$k] > 0) AND ($isFound = FALSE))
-					setVar $checkingNeighbor SECTOR.WARPS[$COURSE[$j]][$k]
-					getSectorParameter $checkingNeighbor "BUSTED" $isBusted
-					setVar $containsShieldedPlanet FALSE
-					setVar $p 1
-					while ($p <= SECTOR.PLANETCOUNT[$checkingNeighbor])
-						getWord SECTOR.PLANETS[$checkingNeighbor][$p] $test 1
-						if ($test = "<<<<")
-							setVar $containsShieldedPlanet TRUE
-						end
-						add $p 1
-					end
-					setVar $figOwner  SECTOR.FIGS.OWNER[$checkingNeighbor]
-					setVar $mineOwner SECTOR.MINES.OWNER[$checkingNeighbor]
-					setVar $limpOwner SECTOR.LIMPETS.OWNER[$checkingNeighbor]
-					setVar $figCount  SECTOR.FIGS.QUANTITY[$checkingNeighbor]
-						setVar $testSector $checkingNeighbor
-						gosub :isUsableSSTPortCandidate
-						if (($candidatePortValid = TRUE) AND ($isBusted <> TRUE) AND ($checkingNeighbor <> $ship2Sector) AND ($containsShieldedPlanet = FALSE) AND (($figCount <= $safeFighterLevel) AND (($figOwner = "belong to your Corp") OR ($figOwner = "yours"))))
-							setVar $moveIntoSector $checkingNeighbor
-							gosub :moveIntoSector
-							setVar $ship1NeedsPort FALSE
-							setVar $ship1Sector $checkingNeighbor
-							gosub :player~quikstats
-							setVar $testSector $checkingNeighbor
-							gosub :getSSTPortInfo
-							if ($portInfoValid)
-								setVar $ship1TotalHolds $player~total_holds
-								setVar $ship1Equipment $player~equipment_holds
-								gosub :displayCredits
-								setVar $isFound TRUE
-							else
-								setVar $ship1NeedsPort TRUE
-								goto :tryNewRouteShip1
-							end
-						end
-					add $k 1
-				end
-			end
-			add $j 1
-		end
+:findsstports
+while ($ship1needsport = true)
+	if ($inship1 <> true)
+		gosub :transport
 	end
 
-	while ($ship2NeedsPort = TRUE)
-		if ($inShip1)
-			goSub :transport
-		end
-		:tryNewRouteShip2
-		setVar $destination 0
-		while ($destination = 0)
-			gosub :getRandomCourse
-			gosub :player~quikstats
-		end
-		setVar $j 3
-		while (($j <= $courseLength) AND ($ship2NeedsPort = TRUE))
-			setVar $moveIntoSector $COURSE[$j]
-			setVar $containsShieldedPlanet FALSE
-			setVar $p 1
-			#echo "**["&$moveintosector&"]**["&$sectors&"]*"
-			while ($p <= SECTOR.PLANETCOUNT[$moveIntoSector])
-				getWord SECTOR.PLANETS[$moveIntoSector][$p] $test 1
-				if ($test = "<<<<")
-					setVar $containsShieldedPlanet TRUE
-				end
-				add $p 1
-			end
-			if ($containsShieldedPlanet)
-				goto :tryNewRouteShip2
-			end
-			setVar $figOwner  SECTOR.FIGS.OWNER[$moveIntoSector]
-			setVar $mineOwner SECTOR.MINES.OWNER[$moveIntoSector]
-			setVar $limpOwner SECTOR.LIMPETS.OWNER[$moveIntoSector]
-			setVar $figCount  SECTOR.FIGS.QUANTITY[$moveIntoSector]
-			if (($figCount > $safeFighterLevel) AND (($figOwner <> "belong to your Corp") AND ($figOwner <> "yours")))
-				echo "*Avoiding too many enemy fighters*"
-				goto :tryNewRouteShip2
-			end
-				gosub :moveIntoSector
-				getSectorParameter $COURSE[$j] "BUSTED" $isBusted
-				setVar $testSector $COURSE[$j]
-				gosub :isUsableSSTPortCandidate
-				if (($candidatePortValid = TRUE) AND ($isBusted <> TRUE) AND ($COURSE[$j] <> $ship1Sector))
-					setVar $ship2NeedsPort FALSE
-					setVar $ship2Sector $COURSE[$j]
-					gosub :player~quikstats
-					setVar $testSector $COURSE[$j]
-					gosub :getSSTPortInfo
-					if ($portInfoValid)
-						setVar $ship2TotalHolds $player~total_holds
-						setVar $ship2Equipment $player~equipment_holds
-						gosub :displayCredits
-					else
-						setVar $ship2NeedsPort TRUE
-						goto :tryNewRouteShip2
-					end
-				else
-				setVar $k 1
-				setVar $isFound FALSE
-				while ((SECTOR.WARPS[$COURSE[$j]][$k] > 0) AND ($isFound = FALSE))
-					setVar $checkingNeighbor SECTOR.WARPS[$COURSE[$j]][$k]
-					setVar $containsShieldedPlanet FALSE
-					setVar $p 1
-					while ($p <= SECTOR.PLANETCOUNT[$checkingNeighbor])
-						getWord SECTOR.PLANETS[$checkingNeighbor][$p] $test 1
-						if ($test = "<<<<")
-							setVar $containsShieldedPlanet TRUE
-						end
-						add $p 1
-					end
-					setVar $figOwner  SECTOR.FIGS.OWNER[$checkingNeighbor]
-					setVar $mineOwner SECTOR.MINES.OWNER[$checkingNeighbor]
-					setVar $limpOwner SECTOR.LIMPETS.OWNER[$checkingNeighbor]
-					setVar $figCount  SECTOR.FIGS.QUANTITY[$checkingNeighbor]
-					getSectorParameter $checkingNeighbor "BUSTED" $isBusted
-						setVar $testSector $checkingNeighbor
-						gosub :isUsableSSTPortCandidate
-						if (($candidatePortValid = TRUE) AND ($isBusted <> TRUE) AND ($checkingNeighbor <> $ship1Sector) AND ($containsShieldedPlanet = FALSE) AND (($figCount <= $safeFighterLevel) AND (($figOwner = "belong to your Corp") OR ($figOwner = "yours"))))
-							setVar $moveIntoSector $checkingNeighbor
-							gosub :moveIntoSector
-							setVar $ship2NeedsPort FALSE
-							setVar $ship2Sector $checkingNeighbor
-							gosub :player~quikstats
-							setVar $testSector $checkingNeighbor
-							gosub :getSSTPortInfo
-							if ($portInfoValid)
-								setVar $ship2TotalHolds $player~total_holds
-								setVar $ship2Equipment $player~equipment_holds
-								gosub :displayCredits
-								setVar $isFound TRUE
-							else
-								setVar $ship2NeedsPort TRUE
-								goto :tryNewRouteShip2
-							end
-						end
-					add $k 1
-				end
-			end
-			add $j 1
-		end
-	end
-
-	gosub :FindShip
-
-	if (($dist1 > $transportRange) OR ($dist2 > $transportRange))
-		if ($inship1)
-			setVar $ship1NeedsPort TRUE
-		else
-			setVar $ship2NeedsPort TRUE
-		end
-    	gosub :getCourse
-		setVar $j 2
-		setVar $result ""
-		while ($j <= ($courseLength - 1))
-			setVar $result $result&" m "&$COURSE[$j]&"* "
-			if (($COURSE[$j] > 10) AND ($COURSE[$j] <> STARDOCK))
-				setVar $result $result & " z a " & $ship~ship_max_attack & "* * "
-			end
-			if (($COURSE[$j] > 10) AND ($COURSE[$j] <> STARDOCK) AND ($j > 2))
-				setVar $result $result&" f 1 * c d "
-				setSectorParameter $Course[$j] "FIGSEC" TRUE
-
-			end
-			add $j 1
-		end
-		send $result & " ** "
+	:trynewrouteship1
+	setvar $destination 0
+	while ($destination = 0)
+		gosub :getrandomcourse
 		gosub :player~quikstats
-		goto :findSSTPorts
 	end
-	return
+	setvar $j 3
+	while (($j <= $courselength) and ($ship1needsport = true))
+		setvar $moveintosector $course[$j]
+		setvar $containsshieldedplanet false
+		setvar $p 1
+		#echo "**["&$moveintosector&"]**["&$sectors&"]*"
+		while ($p <= sector.planetcount[$moveintosector])
+			getword sector.planets[$moveintosector][$p] $test 1
+			if ($test = "<<<<")
+				setvar $containsshieldedplanet true
+			end
+			add $p 1
+		end
+		if ($containsshieldedplanet)
+			echo "*Avoiding shielded planet*"
+			goto :trynewrouteship1
+		end
+		setvar $figowner  sector.figs.owner[$moveintosector]
+		setvar $mineowner sector.mines.owner[$moveintosector]
+		setvar $limpowner sector.limpets.owner[$moveintosector]
+		setvar $figcount  sector.figs.quantity[$moveintosector]
+		if (($figcount > $safefighterlevel) and (($figowner <> "belong to your Corp") and ($figowner <> "yours")))
+			echo "*Avoiding too many enemy fighters*"
+			goto :trynewrouteship1
+		end
+		gosub :moveintosector
+		getsectorparameter $moveintosector "BUSTED" $isbusted
+		setvar $testsector $moveintosector
+		gosub :isusablesstportcandidate
+		if (($candidateportvalid = true) and ($isbusted <> true) and ($moveintosector <> $ship2sector))
+			gosub :player~quikstats
+			setvar $ship1needsport false
+			setvar $ship1sector $course[$j]
+			setvar $testsector $course[$j]
+			gosub :getsstportinfo
+			if ($portinfovalid)
+				setvar $ship1totalholds $player~total_holds
+				setvar $ship1equipment $player~equipment_holds
+				gosub :displaycredits
+			else
+				setvar $ship1needsport true
+				goto :trynewrouteship1
+			end
+		else
+			setvar $k 1
+			setvar $isfound false
+			while ((sector.warps[$course[$j]][$k] > 0) and ($isfound = false))
+				setvar $checkingneighbor sector.warps[$course[$j]][$k]
+				getsectorparameter $checkingneighbor "BUSTED" $isbusted
+				setvar $containsshieldedplanet false
+				setvar $p 1
+				while ($p <= sector.planetcount[$checkingneighbor])
+					getword sector.planets[$checkingneighbor][$p] $test 1
+					if ($test = "<<<<")
+						setvar $containsshieldedplanet true
+					end
+					add $p 1
+				end
+				setvar $figowner  sector.figs.owner[$checkingneighbor]
+				setvar $mineowner sector.mines.owner[$checkingneighbor]
+				setvar $limpowner sector.limpets.owner[$checkingneighbor]
+				setvar $figcount  sector.figs.quantity[$checkingneighbor]
+				setvar $testsector $checkingneighbor
+				gosub :isusablesstportcandidate
+				if (($candidateportvalid = true) and ($isbusted <> true) and ($checkingneighbor <> $ship2sector) and ($containsshieldedplanet = false) and (($figcount <= $safefighterlevel) and (($figowner = "belong to your Corp") or ($figowner = "yours"))))
+					setvar $moveintosector $checkingneighbor
+					gosub :moveintosector
+					setvar $ship1needsport false
+					setvar $ship1sector $checkingneighbor
+					gosub :player~quikstats
+					setvar $testsector $checkingneighbor
+					gosub :getsstportinfo
+					if ($portinfovalid)
+						setvar $ship1totalholds $player~total_holds
+						setvar $ship1equipment $player~equipment_holds
+						gosub :displaycredits
+						setvar $isfound true
+					else
+						setvar $ship1needsport true
+						goto :trynewrouteship1
+					end
+				end
+				add $k 1
+			end
+		end
+		add $j 1
+	end
+end
 
-:getRandomCourse
+while ($ship2needsport = true)
+	if ($inship1)
+		gosub :transport
+	end
+
+	:trynewrouteship2
+	setvar $destination 0
+	while ($destination = 0)
+		gosub :getrandomcourse
+		gosub :player~quikstats
+	end
+	setvar $j 3
+	while (($j <= $courselength) and ($ship2needsport = true))
+		setvar $moveintosector $course[$j]
+		setvar $containsshieldedplanet false
+		setvar $p 1
+		#echo "**["&$moveintosector&"]**["&$sectors&"]*"
+		while ($p <= sector.planetcount[$moveintosector])
+			getword sector.planets[$moveintosector][$p] $test 1
+			if ($test = "<<<<")
+				setvar $containsshieldedplanet true
+			end
+			add $p 1
+		end
+		if ($containsshieldedplanet)
+			goto :trynewrouteship2
+		end
+		setvar $figowner  sector.figs.owner[$moveintosector]
+		setvar $mineowner sector.mines.owner[$moveintosector]
+		setvar $limpowner sector.limpets.owner[$moveintosector]
+		setvar $figcount  sector.figs.quantity[$moveintosector]
+		if (($figcount > $safefighterlevel) and (($figowner <> "belong to your Corp") and ($figowner <> "yours")))
+			echo "*Avoiding too many enemy fighters*"
+			goto :trynewrouteship2
+		end
+		gosub :moveintosector
+		getsectorparameter $course[$j] "BUSTED" $isbusted
+		setvar $testsector $course[$j]
+		gosub :isusablesstportcandidate
+		if (($candidateportvalid = true) and ($isbusted <> true) and ($course[$j] <> $ship1sector))
+			setvar $ship2needsport false
+			setvar $ship2sector $course[$j]
+			gosub :player~quikstats
+			setvar $testsector $course[$j]
+			gosub :getsstportinfo
+			if ($portinfovalid)
+				setvar $ship2totalholds $player~total_holds
+				setvar $ship2equipment $player~equipment_holds
+				gosub :displaycredits
+			else
+				setvar $ship2needsport true
+				goto :trynewrouteship2
+			end
+		else
+			setvar $k 1
+			setvar $isfound false
+			while ((sector.warps[$course[$j]][$k] > 0) and ($isfound = false))
+				setvar $checkingneighbor sector.warps[$course[$j]][$k]
+				setvar $containsshieldedplanet false
+				setvar $p 1
+				while ($p <= sector.planetcount[$checkingneighbor])
+					getword sector.planets[$checkingneighbor][$p] $test 1
+					if ($test = "<<<<")
+						setvar $containsshieldedplanet true
+					end
+					add $p 1
+				end
+				setvar $figowner  sector.figs.owner[$checkingneighbor]
+				setvar $mineowner sector.mines.owner[$checkingneighbor]
+				setvar $limpowner sector.limpets.owner[$checkingneighbor]
+				setvar $figcount  sector.figs.quantity[$checkingneighbor]
+				getsectorparameter $checkingneighbor "BUSTED" $isbusted
+				setvar $testsector $checkingneighbor
+				gosub :isusablesstportcandidate
+				if (($candidateportvalid = true) and ($isbusted <> true) and ($checkingneighbor <> $ship1sector) and ($containsshieldedplanet = false) and (($figcount <= $safefighterlevel) and (($figowner = "belong to your Corp") or ($figowner = "yours"))))
+					setvar $moveintosector $checkingneighbor
+					gosub :moveintosector
+					setvar $ship2needsport false
+					setvar $ship2sector $checkingneighbor
+					gosub :player~quikstats
+					setvar $testsector $checkingneighbor
+					gosub :getsstportinfo
+					if ($portinfovalid)
+						setvar $ship2totalholds $player~total_holds
+						setvar $ship2equipment $player~equipment_holds
+						gosub :displaycredits
+						setvar $isfound true
+					else
+						setvar $ship2needsport true
+						goto :trynewrouteship2
+					end
+				end
+				add $k 1
+			end
+		end
+		add $j 1
+	end
+end
+
+gosub :findship
+
+if (($dist1 > $transportrange) or ($dist2 > $transportrange))
+	if ($inship1)
+		setvar $ship1needsport true
+	else
+		setvar $ship2needsport true
+	end
+	gosub :getcourse
+	setvar $j 2
+	setvar $result ""
+	while ($j <= ($courselength - 1))
+		setvar $result $result&" m "&$course[$j]&"* "
+		if (($course[$j] > 10) and ($course[$j] <> stardock))
+			setvar $result $result & " z a " & $ship~ship_max_attack & "* * "
+		end
+		if (($course[$j] > 10) and ($course[$j] <> stardock) and ($j > 2))
+			setvar $result $result&" f 1 * c d "
+			setsectorparameter $course[$j] "FIGSEC" true
+
+		end
+		add $j 1
+	end
+	send $result & " ** "
+	gosub :player~quikstats
+	goto :findsstports
+end
+return
+
+:getrandomcourse
 #Does Random Course Calculation
 killalltriggers
-setArray $COURSE 80
-setVar $courseLength 0
-setVar $sectors ""
-setTextLineTrigger sectorlinetrig :sectorsline " > "
-getRnd $destination 11 SECTORS
+setarray $course 80
+setvar $courselength 0
+setvar $sectors ""
+settextlinetrigger sectorlinetrig :sectorsline " > "
+getrnd $destination 11 sectors
 send "^f*"&$destination&"**q"
 pause
 
-:getCourse
+:getcourse
 #Does Specific Course Calculation
 killalltriggers
-setVar $courseLength 0
-setArray $COURSE 80
-setVar $sectors ""
-setTextLineTrigger sectorlinetrig :sectorsline " > "
+setvar $courselength 0
+setarray $course 80
+setvar $sectors ""
+settextlinetrigger sectorlinetrig :sectorsline " > "
 send "^f*"&$destination&"**q"
 pause
 
-
 :sectorsline
-killAllTriggers
-setVar $line CURRENTLINE
+killalltriggers
+setvar $line currentline
 replacetext $line ">" " "
 striptext $line "("
 striptext $line ")"
-setVar $line $line&" "
-getWordPos $line $pos "So what's the point?"
-getWordPos $line $pos2 ": ENDINTERROG"
-getWordPos $line $pos3 "*** Error - No route within"
-if (($pos > 0) OR ($pos2 > 0) OR ($pos3 > 0))
-	goto :noPath
+setvar $line $line&" "
+getwordpos $line $pos "So what's the point?"
+getwordpos $line $pos2 ": ENDINTERROG"
+getwordpos $line $pos3 "*** Error - No route within"
+if (($pos > 0) or ($pos2 > 0) or ($pos3 > 0))
+	goto :nopath
 end
-getWordPos $line $pos " sector "
-getWordPos $line $pos2 "TO"
-if (($pos <= 0) AND ($pos2 <= 0))
-	setVar $sectors $sectors & " " & $line
+getwordpos $line $pos " sector "
+getwordpos $line $pos2 "TO"
+if (($pos <= 0) and ($pos2 <= 0))
+	setvar $sectors $sectors & " " & $line
 end
-getWordPos $line&" " $pos " "&$destination&" "
-getWordPos $line $pos2 "("&$destination&")"
-getWordPos $line $pos3 "TO"
-if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
-	goto :gotSectors
+getwordpos $line&" " $pos " "&$destination&" "
+getwordpos $line $pos2 "("&$destination&")"
+getwordpos $line $pos3 "TO"
+if ((($pos > 0) or ($pos2 > 0)) and ($pos3 <= 0))
+	goto :gotsectors
 else
-	setTextLineTrigger sectorlinetrig :sectorsline " > "
-	setTextLineTrigger sectorlinetrig2 :sectorsline " "&$destination&" "
-	setTextLineTrigger sectorlinetrig3 :sectorsline " "&$destination
-	setTextLineTrigger sectorlinetrig4 :sectorsline "("&$destination&")"
-	setTextLineTrigger donePath :sectorsline "So what's the point?"
-	setTextLineTrigger donePath2 :sectorsline ": ENDINTERROG"
+	settextlinetrigger sectorlinetrig :sectorsline " > "
+	settextlinetrigger sectorlinetrig2 :sectorsline " "&$destination&" "
+	settextlinetrigger sectorlinetrig3 :sectorsline " "&$destination
+	settextlinetrigger sectorlinetrig4 :sectorsline "("&$destination&")"
+	settextlinetrigger donepath :sectorsline "So what's the point?"
+	settextlinetrigger donepath2 :sectorsline ": ENDINTERROG"
 end
 pause
 
-:gotSectors
-killAllTriggers
-setVar $sectors $sectors&" :::"
-setVar $courseLength 0
-setVar $index 1
-	:keepGoing
-	getWord $sectors $COURSE[$index] $index
-	while ($COURSE[$index] <> ":::")
-		add $courseLength 1
-		add $index 1
-		getWord $sectors $COURSE[$index] $index
-	end
+:gotsectors
+killalltriggers
+setvar $sectors $sectors&" :::"
+setvar $courselength 0
+setvar $index 1
 
-:noPath
-if ($courseLength <= 0)
-	setVar $destination 0
+:keepgoing
+getword $sectors $course[$index] $index
+while ($course[$index] <> ":::")
+	add $courselength 1
+	add $index 1
+	getword $sectors $course[$index] $index
 end
-killAllTriggers
+
+:nopath
+if ($courselength <= 0)
+	setvar $destination 0
+end
+killalltriggers
 return
 
 :steal
-	
-getSectorParameter $ship1Sector "BUSTED" $isBusted1
-getSectorParameter $ship2Sector "BUSTED" $isBusted2
-if (($isBusted1 <> TRUE) AND ($isBusted2 <> TRUE))
-	setVar $maxSteal ($player~experience / $game~steal_factor - 1)
-	setVar $send ""
-		if ($inShip1)
-			if ($ship1Equipment > 0)
-				if (HAGGLE)
-					setVar $wsstSellProduct "Equipment"
-					gosub :sellCurrentCargo
-					gosub :player~quikstats
-					if ($player~equipment_holds > 0)
-						setVar $SWITCHBOARD~message "Unable to finish selling Equipment before next steal.*"
-						gosub :SWITCHBOARD~switchboard
-						halt
-					end
-					setVar $ship1Equipment 0
-				else
-					# sell off existing equipment
-					setVar $send $send & "p t * * 0* 0* "
-					setVar $ship1Equipment 0
-					add $equipAtPort[$ship1Sector] $ship1Equipment
+getsectorparameter $ship1sector "BUSTED" $isbusted1
+getsectorparameter $ship2sector "BUSTED" $isbusted2
+if (($isbusted1 <> true) and ($isbusted2 <> true))
+	setvar $maxsteal ($player~experience / $game~steal_factor - 1)
+	setvar $send ""
+	if ($inship1)
+		if ($ship1equipment > 0)
+			if (haggle)
+				setvar $wsstsellproduct "Equipment"
+				gosub :sellcurrentcargo
+				gosub :player~quikstats
+				if ($player~equipment_holds > 0)
+					setvar $switchboard~message "Unable to finish selling Equipment before next steal.*"
+					gosub :switchboard~switchboard
+					halt
 				end
-			end
-			# steal as much as we are able to on this ship
-			if ($ship1TotalHolds < $maxSteal)
-				setVar $steal $ship1TotalHolds
+				setvar $ship1equipment 0
 			else
-				setVar $steal $maxSteal
+				# sell off existing equipment
+				setvar $send $send & "p t * * 0* 0* "
+				setvar $ship1equipment 0
+				add $equipatport[$ship1sector] $ship1equipment
 			end
-
-			while ($equipAtPort[$ship1Sector] < ($steal + 20))
-				setVar $upgrade ($steal - $equipAtPort[$ship1Sector])
-				divide $upgrade 10
-				add $upgrade 4
-				setVar $send $send & "o 3" & $upgrade & "* * "
-				add $equipAtPort[$ship1Sector] ($upgrade * 10)
-			end
-			setVar $send $send & "p r * s z 3 " & $steal & "* x    "
-			setVar $ship1Equipment $steal
+		end
+		# steal as much as we are able to on this ship
+		if ($ship1totalholds < $maxsteal)
+			setvar $steal $ship1totalholds
 		else
-			if ($ship2Equipment > 0)
-				if (HAGGLE)
-					setVar $wsstSellProduct "Equipment"
-					gosub :sellCurrentCargo
-					gosub :player~quikstats
-					if ($player~equipment_holds > 0)
-						setVar $SWITCHBOARD~message "Unable to finish selling Equipment before next steal.*"
-						gosub :SWITCHBOARD~switchboard
-						halt
-					end
-  						setVar $ship2Equipment 0
-				else
-					# sell off existing equipment
-					setVar $send $send & "p t * * 0* 0* "
-  						setVar $ship2Equipment 0
-					add $equipAtPort[$ship2Sector] $ship2Equipment
-				end
-			end
-			# steal as much as we are able to on this ship
-			if ($ship2TotalHolds < $maxSteal)
-				setVar $steal $ship2TotalHolds
-			else
-				setVar $steal $maxSteal
-			end
-
-			while ($equipAtPort[$ship2Sector] < ($steal + 20))
-				setVar $upgrade ($steal - $equipAtPort[$ship2Sector])
-				divide $upgrade 10
-				add $upgrade 4
-				setVar $send $send & "o 3" & $upgrade & "* * "
-				add $equipAtPort[$ship2Sector] ($upgrade * 10)
-			end
-				setVar $send $send & "p r* s   z3  " & $steal & "*  x    "
-			setVar $ship2Equipment $steal
+			setvar $steal $maxsteal
 		end
 
-		if ($inShip1)
-			send $send & $psst_Ship2 & "*  * "
-			setVar $inShip1 FALSE
-		else
-  				send $send & $psst_Ship1 & "*  * "
-			setVar $inShip1 TRUE
+		while ($equipatport[$ship1sector] < ($steal + 20))
+			setvar $upgrade ($steal - $equipatport[$ship1sector])
+			divide $upgrade 10
+			add $upgrade 4
+			setvar $send $send & "o 3" & $upgrade & "* * "
+			add $equipatport[$ship1sector] ($upgrade * 10)
 		end
-		setVar $player~turns ($player~turns-2)
-		savevar $player~turns
-
-  			if ($inShip1)
-			setVar $LastSteal $ship1Sector
-		else
-			setVar $LastSteal $ship2Sector
-		end
-	end
-
-		# calculate experience gain or hold loss
-		setVar $stake ($steal - 1) / 11
-
-		waitOn "(R)ob this port, (S)teal product"
-		killtrigger 1
-		killtrigger 2
-		killtrigger 3
-		killtrigger 4			
-		setTextLineTrigger 1 :success "Success!"
-		setTextLineTrigger 2 :busted "Suddenly you're Busted!"
-		setTextLineTrigger 3 :busted "There aren't that many holds of Equipment at this port!"
-		setTextLineTrigger 4 :busted "Do you want instructions (Y/N) [N]?"
-		pause
-
-			:success
-			add $player~experience $stake
-			savevar $player~experience
-			if ($inShip1)
-				setVar $ship2Equipment 1
-				setVar $lastStealRobSector $ship2Sector
-				saveVar $lastStealRobSector
-			else
-				setVar $ship1Equipment 1
-				setVar $lastStealRobSector $ship1Sector
-				saveVar $lastStealRobSector
-			end
-			goto :continue
-
-			:busted
-    		# calculate holds lost and flag this sector as busted
-			if ($inShip1)
-				subtract $ship2TotalHolds $stake
-				setSectorParameter $ship2Sector "BUSTED" TRUE
-				setVar $lastBustSector $ship2Sector
-				saveVar $lastBustSector
-				setVar $ship2Equipment 0
-  				else
-				subtract $ship1TotalHolds $stake
-				setSectorParameter $ship1Sector "BUSTED" TRUE
-				setVar $lastBustSector $ship1Sector
-				saveVar $lastBustSector
-				setVar $ship1Equipment 0
-			end
-			add $numberbusted 1
-			setVar $busted 1
-			gosub :transport
-			if ($inShip1)
-				setVar $ship1NeedsPort TRUE
-			else
-				setVar $ship2NeedsPort TRUE
-			end
-			if ($QUIET = 0)
-				send "'<"&$bot~subspace&">[Busted:"&$lastBustSector&"]<"&$bot~subspace&">* "
-			end
-
-			:continue
-			killtrigger 1
-			killtrigger 2
-			killtrigger 3
-			killtrigger 4			
-return
-
-:sellCurrentCargo
-setVar $wsstPortActive 0
-setVar $wsstSoldCargo FALSE
-send "pt"
-	:wsstSellWait
-	setTextLineTrigger WSSTSELLSTART1 :wsstSellProgress "<Port>"
-	setTextLineTrigger WSSTSELLSTART2 :wsstSellProgress "Docking..."
-	setTextTrigger WSSTSELLSTART3 :wsstSellProgress "Your offer ["
-	setTextTrigger WSSTSELLSTART4 :wsstSellProgress "Our final offer"
-	setTextTrigger WSSTSELLSTART5 :wsstSellProgress "Agreed,"
-	setTextTrigger WSSTSELLQTY :wsstSellQty "How many holds of "
-	if ($wsstPortActive = 1)
-		setTextTrigger WSSTSELLDONE1 :wsstSellDone "Command [TL="
-		setTextTrigger WSSTSELLDONE2 :wsstSellDone "Citadel command"
-	end
-	pause
-
-:wsstSellProgress
-killalltriggers
-setVar $wsstPortActive 1
-goto :wsstSellWait
-
-:wsstSellQty
-killalltriggers
-setVar $wsstPortActive 1
-setVar $wsstLine CURRENTLINE
-gosub :handleSellCargoQty
-goto :wsstSellWait
-
-:wsstSellDone
-killalltriggers
-return
-
-:handleSellCargoQty
-setVar $wsstTradeProduct "None"
-setVar $wsstIsBuy 0
-setVar $wsstIsSell 0
-
-getWordPos $wsstLine $wsstX " do you want to buy "
-if ($wsstX > 0)
-	setVar $wsstIsBuy 1
-else
-	setVar $wsstIsSell 1
-end
-
-getWordPos $wsstLine $wsstX "Fuel"
-if ($wsstX > 0)
-	setVar $wsstTradeProduct "Fuel"
-else
-	getWordPos $wsstLine $wsstX "Organics"
-	if ($wsstX > 0)
-		setVar $wsstTradeProduct "Organics"
+		setvar $send $send & "p r * s z 3 " & $steal & "* x    "
+		setvar $ship1equipment $steal
 	else
-		getWordPos $wsstLine $wsstX "Equipment"
-		if ($wsstX > 0)
-			setVar $wsstTradeProduct "Equipment"
+		if ($ship2equipment > 0)
+			if (haggle)
+				setvar $wsstsellproduct "Equipment"
+				gosub :sellcurrentcargo
+				gosub :player~quikstats
+				if ($player~equipment_holds > 0)
+					setvar $switchboard~message "Unable to finish selling Equipment before next steal.*"
+					gosub :switchboard~switchboard
+					halt
+				end
+				setvar $ship2equipment 0
+			else
+				# sell off existing equipment
+				setvar $send $send & "p t * * 0* 0* "
+				setvar $ship2equipment 0
+				add $equipatport[$ship2sector] $ship2equipment
+			end
+		end
+		# steal as much as we are able to on this ship
+		if ($ship2totalholds < $maxsteal)
+			setvar $steal $ship2totalholds
+		else
+			setvar $steal $maxsteal
+		end
+
+		while ($equipatport[$ship2sector] < ($steal + 20))
+			setvar $upgrade ($steal - $equipatport[$ship2sector])
+			divide $upgrade 10
+			add $upgrade 4
+			setvar $send $send & "o 3" & $upgrade & "* * "
+			add $equipatport[$ship2sector] ($upgrade * 10)
+		end
+		setvar $send $send & "p r* s   z3  " & $steal & "*  x    "
+		setvar $ship2equipment $steal
+	end
+
+	if ($inship1)
+		send $send & $psst_ship2 & "*  * "
+		setvar $inship1 false
+	else
+		send $send & $psst_ship1 & "*  * "
+		setvar $inship1 true
+	end
+	setvar $player~turns ($player~turns-2)
+	savevar $player~turns
+
+	if ($inship1)
+		setvar $laststeal $ship1sector
+	else
+		setvar $laststeal $ship2sector
+	end
+end
+
+# calculate experience gain or hold loss
+setvar $stake ($steal - 1) / 11
+
+waiton "(R)ob this port, (S)teal product"
+killtrigger 1
+killtrigger 2
+killtrigger 3
+killtrigger 4
+settextlinetrigger 1 :success "Success!"
+settextlinetrigger 2 :busted "Suddenly you're Busted!"
+settextlinetrigger 3 :busted "There aren't that many holds of Equipment at this port!"
+settextlinetrigger 4 :busted "Do you want instructions (Y/N) [N]?"
+pause
+
+:success
+add $player~experience $stake
+savevar $player~experience
+if ($inship1)
+	setvar $ship2equipment 1
+	setvar $laststealrobsector $ship2sector
+	savevar $laststealrobsector
+else
+	setvar $ship1equipment 1
+	setvar $laststealrobsector $ship1sector
+	savevar $laststealrobsector
+end
+goto :continue
+
+:busted
+# calculate holds lost and flag this sector as busted
+if ($inship1)
+	subtract $ship2totalholds $stake
+	setsectorparameter $ship2sector "BUSTED" true
+	setvar $lastbustsector $ship2sector
+	savevar $lastbustsector
+	setvar $ship2equipment 0
+else
+	subtract $ship1totalholds $stake
+	setsectorparameter $ship1sector "BUSTED" true
+	setvar $lastbustsector $ship1sector
+	savevar $lastbustsector
+	setvar $ship1equipment 0
+end
+add $numberbusted 1
+setvar $busted 1
+gosub :transport
+if ($inship1)
+	setvar $ship1needsport true
+else
+	setvar $ship2needsport true
+end
+if ($quiet = 0)
+	send "'<"&$bot~subspace&">[Busted:"&$lastbustsector&"]<"&$bot~subspace&">* "
+end
+
+:continue
+killtrigger 1
+killtrigger 2
+killtrigger 3
+killtrigger 4
+return
+
+:sellcurrentcargo
+setvar $wsstportactive 0
+setvar $wsstsoldcargo false
+send "pt"
+
+:wsstsellwait
+settextlinetrigger wsstsellstart1 :wsstsellprogress "<Port>"
+settextlinetrigger wsstsellstart2 :wsstsellprogress "Docking..."
+settexttrigger wsstsellstart3 :wsstsellprogress "Your offer ["
+settexttrigger wsstsellstart4 :wsstsellprogress "Our final offer"
+settexttrigger wsstsellstart5 :wsstsellprogress "Agreed,"
+settexttrigger wsstsellqty :wsstsellqty "How many holds of "
+if ($wsstportactive = 1)
+	settexttrigger wsstselldone1 :wsstselldone "Command [TL="
+	settexttrigger wsstselldone2 :wsstselldone "Citadel command"
+end
+pause
+
+:wsstsellprogress
+killalltriggers
+setvar $wsstportactive 1
+goto :wsstsellwait
+
+:wsstsellqty
+killalltriggers
+setvar $wsstportactive 1
+setvar $wsstline currentline
+gosub :handlesellcargoqty
+goto :wsstsellwait
+
+:wsstselldone
+killalltriggers
+return
+
+:handlesellcargoqty
+setvar $wssttradeproduct "None"
+setvar $wsstisbuy 0
+setvar $wsstissell 0
+
+getwordpos $wsstline $wsstx " do you want to buy "
+if ($wsstx > 0)
+	setvar $wsstisbuy 1
+else
+	setvar $wsstissell 1
+end
+
+getwordpos $wsstline $wsstx "Fuel"
+if ($wsstx > 0)
+	setvar $wssttradeproduct "Fuel"
+else
+	getwordpos $wsstline $wsstx "Organics"
+	if ($wsstx > 0)
+		setvar $wssttradeproduct "Organics"
+	else
+		getwordpos $wsstline $wsstx "Equipment"
+		if ($wsstx > 0)
+			setvar $wssttradeproduct "Equipment"
 		end
 	end
 end
 
-if ($wsstIsSell = 1)
-	if (($wsstTradeProduct = "None") and ($wsstSellProduct <> "None"))
-		setVar $wsstTradeProduct $wsstSellProduct
+if ($wsstissell = 1)
+	if (($wssttradeproduct = "None") and ($wsstsellproduct <> "None"))
+		setvar $wssttradeproduct $wsstsellproduct
 	end
 
-	if ($wsstTradeProduct = $wsstSellProduct)
+	if ($wssttradeproduct = $wsstsellproduct)
 		send "*"
-		setVar $wsstSoldCargo TRUE
-		setVar $wsstSellProduct "None"
+		setvar $wsstsoldcargo true
+		setvar $wsstsellproduct "None"
 	else
 		send "0*"
 	end
@@ -730,686 +733,687 @@ end
 send "0*"
 return
 
-:getSSTPortInfo
-setVar $portInfoValid TRUE
+:getsstportinfo
+setvar $portinfovalid true
 send "* cr*q"
-waitOn "What sector is the port in? ["
-	:portInfo
-	killtrigger 1
-	killtrigger 2
-	setTextLineTrigger 1 :getPortEquip "Equipment  Buying"
-	setTextLineTrigger 2  :noEquipHere "I have no information about a port in that sector."
-	pause
+waiton "What sector is the port in? ["
 
-		:noEquipHere
-		killalltriggers
-		setVar $equipBuy 0
-		setVar $equipPerc 0
-		setVar $portInfoValid FALSE
-		goto :gotAllPortInfo
+:portinfo
+killtrigger 1
+killtrigger 2
+settextlinetrigger 1 :getportequip "Equipment  Buying"
+settextlinetrigger 2  :noequiphere "I have no information about a port in that sector."
+pause
 
-		:getPortEquip
-		killAllTriggers
-		getWord CURRENTLINE $equipBuy 3
-		getWord CURRENTLINE $equipPerc 4
-		stripText $equipPerc "%"
-		setVar $x 10000
-		if (($equipPerc = 0) OR ($equipBuy <= 0))
-			setVar $portInfoValid FALSE
-				setVar $equipAtPort[$TestSector] ($player~total_holds + 50)
-		else
-			divide $x $equipPerc
-			multiply $x $equipBuy
-			divide $x 100
-			subtract $x 1
-			subtract $x $equipBuy
+:noequiphere
+killalltriggers
+setvar $equipbuy 0
+setvar $equipperc 0
+setvar $portinfovalid false
+goto :gotallportinfo
 
-			if ($x < 0)
-				setVar $equipAtPort[$TestSector] 0
-			else
-				setVar $equipAtPort[$TestSector] $x
-			end
-		end
-		setVar $portName PORT.NAME[$TestSector]
-		lowercase $portName
-		if (($portName = "build") OR (PORT.BUILDTIME[$TestSector] > 0) OR (PORT.CLASS[$TestSector] = 9))
-			setVar $portInfoValid FALSE
-			setVar $equipAtPort[$TestSector] ($player~total_holds + 50)
-		end
-		:gotallportinfo
-		killtrigger 1
-		killtrigger 2
+:getportequip
+killalltriggers
+getword currentline $equipbuy 3
+getword currentline $equipperc 4
+striptext $equipperc "%"
+setvar $x 10000
+if (($equipperc = 0) or ($equipbuy <= 0))
+	setvar $portinfovalid false
+	setvar $equipatport[$testsector] ($player~total_holds + 50)
+else
+	divide $x $equipperc
+	multiply $x $equipbuy
+	divide $x 100
+	subtract $x 1
+	subtract $x $equipbuy
 
-  return
+	if ($x < 0)
+		setvar $equipatport[$testsector] 0
+	else
+		setvar $equipatport[$testsector] $x
+	end
+end
+setvar $portname port.name[$testsector]
+lowercase $portname
+if (($portname = "build") or (port.buildtime[$testsector] > 0) or (port.class[$testsector] = 9))
+	setvar $portinfovalid false
+	setvar $equipatport[$testsector] ($player~total_holds + 50)
+end
 
-:isUsableSSTPortCandidate
-setVar $candidatePortValid TRUE
-if (PORT.BUYEQUIP[$TestSector] <> TRUE)
-	setVar $candidatePortValid FALSE
+:gotallportinfo
+killtrigger 1
+killtrigger 2
+
+return
+
+:isusablesstportcandidate
+setvar $candidateportvalid true
+if (port.buyequip[$testsector] <> true)
+	setvar $candidateportvalid false
 	return
 end
-setVar $portName PORT.NAME[$TestSector]
-lowercase $portName
-if (($portName = "build") OR (PORT.BUILDTIME[$TestSector] > 0) OR (PORT.CLASS[$TestSector] = 9))
-	setVar $candidatePortValid FALSE
+setvar $portname port.name[$testsector]
+lowercase $portname
+if (($portname = "build") or (port.buildtime[$testsector] > 0) or (port.class[$testsector] = 9))
+	setvar $candidateportvalid false
 end
 return
-:refurb
 
+:refurb
 setvar $twarp_refurb_success false
-setVar $refurbPort $FURBING
-gosub :ChooseNearbyClass0Refurb
-if ($nearClass0Port > 0)
-	setVar $refurbPort $nearClass0Port
+setvar $refurbport $furbing
+gosub :choosenearbyclass0refurb
+if ($nearclass0port > 0)
+	setvar $refurbport $nearclass0port
 end
-if (($player~twarp_type <> "No") and ($refurbPort = $map~stardock))
+if (($player~twarp_type <> "No") and ($refurbport = $map~stardock))
 
 	gosub :twarprefurb
 	gosub :player~quikstats
 
 end
 if ($twarp_refurb_success <> true)
-	if ($refurbPort <> 0)
-		setVar $mowIntoSector $refurbPort
+	if ($refurbport <> 0)
+		setvar $mowintosector $refurbport
 	else
-		setVar $mowIntoSector $refurbPort
+		setvar $mowintosector $refurbport
 	end
-	if ($ultraSafe)
-			:trySafeMowAgainRefurb
-			gosub :safemowIntoSector
-			if ($isSafe = FALSE)
-				goto :trySafeMowAgainRefurb
-			end
-		else
-			gosub :mowIntoSector
+	if ($ultrasafe)
+
+		:trysafemowagainrefurb
+		gosub :safemowintosector
+		if ($issafe = false)
+			goto :trysafemowagainrefurb
 		end
-		gosub :player~quikstats
-			if ($player~current_sector = $refurbPort)
-			if ($refurbPort <> $map~stardock)
-				send "p ty"
-				waitOn "A  Cargo holds     :"
-			getWord CURRENTLINE $holdsprice 5
-			getWord CURRENTLINE $holdsToBuy 10
-			setVar $beforeFurbCredits $player~credits
-			setVar $player~credits ($player~credits-($holdsprice * $holdsToBuy))
-			if ($player~credits > $CASH_TO_HOLD_ONTO)
-				if ($refurbFighters)
-					waitOn "B  Fighters        :"
-					getWord CURRENTLINE $figprice 4
-					getWord CURRENTLINE $figsToBuy 8
+	else
+		gosub :mowintosector
+	end
+	gosub :player~quikstats
+	if ($player~current_sector = $refurbport)
+		if ($refurbport <> $map~stardock)
+			send "p ty"
+			waiton "A  Cargo holds     :"
+			getword currentline $holdsprice 5
+			getword currentline $holdstobuy 10
+			setvar $beforefurbcredits $player~credits
+			setvar $player~credits ($player~credits-($holdsprice * $holdstobuy))
+			if ($player~credits > $cash_to_hold_onto)
+				if ($refurbfighters)
+					waiton "B  Fighters        :"
+					getword currentline $figprice 4
+					getword currentline $figstobuy 8
 				else
-					setVar $figsToBuy 0
+					setvar $figstobuy 0
 				end
-				if ($refurbShields)
-					waitOn "C  Shield Points   :"
-					getWord CURRENTLINE $shieldprice 5
-					getWord CURRENTLINE $player~shieldsToBuy 9
+				if ($refurbshields)
+					waiton "C  Shield Points   :"
+					getword currentline $shieldprice 5
+					getword currentline $player~shieldstobuy 9
 				else
-					setVar $player~shieldsToBuy 0
+					setvar $player~shieldstobuy 0
 				end
-				if ($figsToBuy > 0)
-					if (($figprice * $figsToBuy) > ($player~credits-$CASH_TO_HOLD_ONTO))
-						setVar $figsToBuy (($player~credits-$CASH_TO_HOLD_ONTO)/$figprice)
+				if ($figstobuy > 0)
+					if (($figprice * $figstobuy) > ($player~credits-$cash_to_hold_onto))
+						setvar $figstobuy (($player~credits-$cash_to_hold_onto)/$figprice)
 					end
-					setVar $player~credits ($player~credits-($figprice * $figsToBuy))
+					setvar $player~credits ($player~credits-($figprice * $figstobuy))
 				end
-				if ($player~shieldsToBuy > 0)
-					if (($shieldprice * $player~shieldsToBuy) > ($player~credits-$CASH_TO_HOLD_ONTO))
-						setVar $player~shieldsToBuy (($player~credits-$CASH_TO_HOLD_ONTO)/$shieldprice)
+				if ($player~shieldstobuy > 0)
+					if (($shieldprice * $player~shieldstobuy) > ($player~credits-$cash_to_hold_onto))
+						setvar $player~shieldstobuy (($player~credits-$cash_to_hold_onto)/$shieldprice)
 					end
-					setVar $player~credits ($player~credits-($shieldprice * $player~shieldsToBuy))
+					setvar $player~credits ($player~credits-($shieldprice * $player~shieldstobuy))
 				end
 			else
-				setVar $figsToBuy 0
-				setVar $player~shieldsToBuy 0
+				setvar $figstobuy 0
+				setvar $player~shieldstobuy 0
 			end
-			send "a "&$holdsToBuy&"* y b "&$figsToBuy&"* c "&$player~shieldsToBuy&"* q q q z n * "
+			send "a "&$holdstobuy&"* y b "&$figstobuy&"* c "&$player~shieldstobuy&"* q q q z n * "
 			return
-			else
-				send "p s g y g q "
-			end
-			end
-	end
-
-		if ($player~current_sector = $refurbPort)
-		killAllTriggers
-		send " s p"
-		waitOn "A  Cargo holds     :"
-		getWord CURRENTLINE $holdsprice 5
-		getWord CURRENTLINE $holdsToBuy 10
-		setVar $beforeFurbCredits $player~credits
-		if ($player~credits > $CASH_TO_HOLD_ONTO)
-			if ($refurbFighters)
-			waitOn "B  Fighters        :"
-			getWord CURRENTLINE $figprice 4
-			getWord CURRENTLINE $figsToBuy 8
-			else
-			setVar $figsToBuy 0
-			end
-			if ($refurbShields)
-			waitOn "C  Shield Points   :"
-			getWord CURRENTLINE $shieldprice 5
-			getWord CURRENTLINE $player~shieldsToBuy 9
-			else
-			setVar $player~shieldsToBuy 0
-			end
-			if ($holdsToBuy > 0)
-			if (($holdsprice * $holdsToBuy) > ($player~credits-$CASH_TO_HOLD_ONTO))
-				setVar $holdsToBuy (($player~credits-$CASH_TO_HOLD_ONTO)/$holdsprice)
-			end
-			setVar $player~credits ($player~credits-($holdsprice * $holdsToBuy))
-			end
-			if ($figsToBuy > 0)
-			if (($figprice * $figsToBuy) > ($player~credits-$CASH_TO_HOLD_ONTO))
-				setVar $figsToBuy (($player~credits-$CASH_TO_HOLD_ONTO)/$figprice)
-			end
-			setVar $player~credits ($player~credits-($figprice * $figsToBuy))
-			end
-			if ($player~shieldsToBuy > 0)
-			if (($shieldprice * $player~shieldsToBuy) > ($player~credits-$CASH_TO_HOLD_ONTO))
-				setVar $player~shieldsToBuy (($player~credits-$CASH_TO_HOLD_ONTO)/$shieldprice)
-			end
-			setVar $player~credits ($player~credits-($shieldprice * $player~shieldsToBuy))
-			end
 		else
-			setVar $figsToBuy 0
-			setVar $player~shieldsToBuy 0
-			setvar $holdsToBuy 0
+			send "p s g y g q "
 		end
-			send "a "&$holdsToBuy&"* y b "&$figsToBuy&"* c "&$player~shieldsToBuy&"* q q h "
-			waitfor "<Hardware Emporium>"
-			if ($DROPLIMPS)
-			send "L"
-			waitfor "How many mines do you want"
-			getText CURRENTLINE $Buy "(Max" ") ["
-			striptext $buy " "
-			send $buy & "*"
-			waitfor "<Hardware Emporium>"
-			end
-			if ($DROPARMIDS)
-			send "M"
-			waitfor "How many mines do you want"
-			getText CURRENTLINE $Buy "(Max" ") ["
-			striptext $buy " "
-			send $buy & "*"
-			waitfor "<Hardware Emporium>"
-			end
-
-			send "/"
-			waitfor #179 & "Figs"
-			getText CURRENTLINE $player~credits (#179 & "Creds") (#179 & "Figs")
-			striptext $player~credits " "
-			stripText $player~credits ","
-
-		setVar $spentCredits ($spentCredits+($beforeFurbCredits-$player~credits))
-		setVar $player~fightersPurchased ($player~fightersPurchased+$figsToBuy)
-		setVar $player~shieldsPurchased ($player~shieldsPurchased+$player~shieldsToBuy)
-	else
-		send "'Something bad happened on refurb, I am probably in big trouble. [Temp error message until saveme implemented]*"
 	end
-	if ($twarp_refurb_success = true)
-		send "Q Q Q Q Z N M " & $START_SECTOR & "* Y  Y  Y  * *"
-		gosub :PLAYER~quikstats
-		if (player~current_sector = $MAP~stardock)
-			setvar $switchboard~message "Twarp Error, Should be Hiding on Dock!*"
-			gosub :switchboard~switchboard
-			send "*"
-			halt
-		end
-		send "jy*"
+end
 
+if ($player~current_sector = $refurbport)
+	killalltriggers
+	send " s p"
+	waiton "A  Cargo holds     :"
+	getword currentline $holdsprice 5
+	getword currentline $holdstobuy 10
+	setvar $beforefurbcredits $player~credits
+	if ($player~credits > $cash_to_hold_onto)
+		if ($refurbfighters)
+			waiton "B  Fighters        :"
+			getword currentline $figprice 4
+			getword currentline $figstobuy 8
+		else
+			setvar $figstobuy 0
+		end
+		if ($refurbshields)
+			waiton "C  Shield Points   :"
+			getword currentline $shieldprice 5
+			getword currentline $player~shieldstobuy 9
+		else
+			setvar $player~shieldstobuy 0
+		end
+		if ($holdstobuy > 0)
+			if (($holdsprice * $holdstobuy) > ($player~credits-$cash_to_hold_onto))
+				setvar $holdstobuy (($player~credits-$cash_to_hold_onto)/$holdsprice)
+			end
+			setvar $player~credits ($player~credits-($holdsprice * $holdstobuy))
+		end
+		if ($figstobuy > 0)
+			if (($figprice * $figstobuy) > ($player~credits-$cash_to_hold_onto))
+				setvar $figstobuy (($player~credits-$cash_to_hold_onto)/$figprice)
+			end
+			setvar $player~credits ($player~credits-($figprice * $figstobuy))
+		end
+		if ($player~shieldstobuy > 0)
+			if (($shieldprice * $player~shieldstobuy) > ($player~credits-$cash_to_hold_onto))
+				setvar $player~shieldstobuy (($player~credits-$cash_to_hold_onto)/$shieldprice)
+			end
+			setvar $player~credits ($player~credits-($shieldprice * $player~shieldstobuy))
+		end
 	else
-		:donenormalfurb
-		setvar $twarp_refurb_success false
-		send " Q Q "
-	end	
+		setvar $figstobuy 0
+		setvar $player~shieldstobuy 0
+		setvar $holdstobuy 0
+	end
+	send "a "&$holdstobuy&"* y b "&$figstobuy&"* c "&$player~shieldstobuy&"* q q h "
+	waitfor "<Hardware Emporium>"
+	if ($droplimps)
+		send "L"
+		waitfor "How many mines do you want"
+		gettext currentline $buy "(Max" ") ["
+		striptext $buy " "
+		send $buy & "*"
+		waitfor "<Hardware Emporium>"
+	end
+	if ($droparmids)
+		send "M"
+		waitfor "How many mines do you want"
+		gettext currentline $buy "(Max" ") ["
+		striptext $buy " "
+		send $buy & "*"
+		waitfor "<Hardware Emporium>"
+	end
+
+	send "/"
+	waitfor #179 & "Figs"
+	gettext currentline $player~credits (#179 & "Creds") (#179 & "Figs")
+	striptext $player~credits " "
+	striptext $player~credits ","
+
+	setvar $spentcredits ($spentcredits+($beforefurbcredits-$player~credits))
+	setvar $player~fighterspurchased ($player~fighterspurchased+$figstobuy)
+	setvar $player~shieldspurchased ($player~shieldspurchased+$player~shieldstobuy)
+else
+	send "'Something bad happened on refurb, I am probably in big trouble. [Temp error message until saveme implemented]*"
+end
+if ($twarp_refurb_success = true)
+	send "Q Q Q Q Z N M " & $start_sector & "* Y  Y  Y  * *"
+	gosub :player~quikstats
+	if (player~current_sector = $map~stardock)
+		setvar $switchboard~message "Twarp Error, Should be Hiding on Dock!*"
+		gosub :switchboard~switchboard
+		send "*"
+		halt
+	end
+	send "jy*"
+
+else
+
+	:donenormalfurb
+	setvar $twarp_refurb_success false
+	send " Q Q "
+end
 return
 
 :old_refurb
-
-if ($FURBING <> 0)
-	setVar $mowIntoSector $FURBING
-	setVar $refurbPort $FURBING
+if ($furbing <> 0)
+	setvar $mowintosector $furbing
+	setvar $refurbport $furbing
 else
-	setVar $mowIntoSector $refurbPort
+	setvar $mowintosector $refurbport
 end
-if ($ultraSafe)
-		:trySafeMowAgainRefurb
-		gosub :safemowIntoSector
-		if ($isSafe = FALSE)
-			goto :trySafeMowAgainRefurb
+if ($ultrasafe)
+
+	:trysafemowagainrefurb
+	gosub :safemowintosector
+	if ($issafe = false)
+		goto :trysafemowagainrefurb
+	end
+else
+	gosub :mowintosector
+end
+gosub :player~quikstats
+
+if ($player~current_sector = $refurbport)
+	killalltriggers
+	if ($furbing <> $map~stardock)
+		send "p ty"
+	else
+		send "p s g y g q s p"
+	end
+	waiton "A  Cargo holds     :"
+	getword currentline $holdsprice 5
+	getword currentline $holdstobuy 10
+	setvar $beforefurbcredits $player~credits
+	setvar $player~credits ($player~credits-($holdsprice * $holdstobuy))
+	if ($player~credits > $cash_to_hold_onto)
+		if ($refurbfighters)
+			waiton "B  Fighters        :"
+			getword currentline $figprice 4
+			getword currentline $figstobuy 8
+		else
+			setvar $figstobuy 0
+		end
+		if ($refurbshields)
+			waiton "C  Shield Points   :"
+			getword currentline $shieldprice 5
+			getword currentline $player~shieldstobuy 9
+		else
+			setvar $player~shieldstobuy 0
+		end
+		if ($figstobuy > 0)
+			if (($figprice * $figstobuy) > ($player~credits-$cash_to_hold_onto))
+				setvar $figstobuy (($player~credits-$cash_to_hold_onto)/$figprice)
+			end
+			setvar $player~credits ($player~credits-($figprice * $figstobuy))
+		end
+		if ($player~shieldstobuy > 0)
+			if (($shieldprice * $player~shieldstobuy) > ($player~credits-$cash_to_hold_onto))
+				setvar $player~shieldstobuy (($player~credits-$cash_to_hold_onto)/$shieldprice)
+			end
+			setvar $player~credits ($player~credits-($shieldprice * $player~shieldstobuy))
 		end
 	else
-		gosub :mowIntoSector
+		setvar $figstobuy 0
+		setvar $player~shieldstobuy 0
 	end
-	gosub :player~quikstats
-
-	if ($player~current_sector = $refurbPort)
-		killAllTriggers
-		if ($FURBING <> $map~stardock)
-		send "p ty"
-		else
-		send "p s g y g q s p"
-		end
-		waitOn "A  Cargo holds     :"
-		getWord CURRENTLINE $holdsprice 5
-		getWord CURRENTLINE $holdsToBuy 10
-		setVar $beforeFurbCredits $player~credits
-		setVar $player~credits ($player~credits-($holdsprice * $holdsToBuy))
-		if ($player~credits > $CASH_TO_HOLD_ONTO)
-		if ($refurbFighters)
-			waitOn "B  Fighters        :"
-			getWord CURRENTLINE $figprice 4
-			getWord CURRENTLINE $figsToBuy 8
-		else
-			setVar $figsToBuy 0
-		end
-		if ($refurbShields)
-			waitOn "C  Shield Points   :"
-			getWord CURRENTLINE $shieldprice 5
-			getWord CURRENTLINE $player~shieldsToBuy 9
-		else
-			setVar $player~shieldsToBuy 0
-		end
-		if ($figsToBuy > 0)
-			if (($figprice * $figsToBuy) > ($player~credits-$CASH_TO_HOLD_ONTO))
-				setVar $figsToBuy (($player~credits-$CASH_TO_HOLD_ONTO)/$figprice)
-			end
-			setVar $player~credits ($player~credits-($figprice * $figsToBuy))
-		end
-		if ($player~shieldsToBuy > 0)
-			if (($shieldprice * $player~shieldsToBuy) > ($player~credits-$CASH_TO_HOLD_ONTO))
-				setVar $player~shieldsToBuy (($player~credits-$CASH_TO_HOLD_ONTO)/$shieldprice)
-			end
-			setVar $player~credits ($player~credits-($shieldprice * $player~shieldsToBuy))
-		end
-		else
-		setVar $figsToBuy 0
-		setVar $player~shieldsToBuy 0
-		end
-		if ($refurbPort <> $map~stardock)
-			send "a "&$holdsToBuy&"* y b "&$figsToBuy&"* c "&$player~shieldsToBuy&"* q q q z n * "
-		elseif (($refurbPort = $map~stardock) AND (($DROPLIMPS) OR ($DROPARMIDS)) AND ($player~credits > ($CASH_TO_HOLD_ONTO + 2000000)))
-			send "a "&$holdsToBuy&"* y b "&$figsToBuy&"* c "&$player~shieldsToBuy&"* q q h "
+	if ($refurbport <> $map~stardock)
+		send "a "&$holdstobuy&"* y b "&$figstobuy&"* c "&$player~shieldstobuy&"* q q q z n * "
+	elseif (($refurbport = $map~stardock) and (($droplimps) or ($droparmids)) and ($player~credits > ($cash_to_hold_onto + 2000000)))
+		send "a "&$holdstobuy&"* y b "&$figstobuy&"* c "&$player~shieldstobuy&"* q q h "
 		waitfor "<Hardware Emporium>"
-		if ($DROPLIMPS)
+		if ($droplimps)
 			send "L"
 			waitfor "How many mines do you want"
-			getText CURRENTLINE $Buy "(Max" ") ["
+			gettext currentline $buy "(Max" ") ["
 			striptext $buy " "
 			send $buy & "*"
 			waitfor "<Hardware Emporium>"
 		end
-		if ($DROPARMIDS)
+		if ($droparmids)
 			send "M"
 			waitfor "How many mines do you want"
-			getText CURRENTLINE $Buy "(Max" ") ["
+			gettext currentline $buy "(Max" ") ["
 			striptext $buy " "
 			send $buy & "*"
 			waitfor "<Hardware Emporium>"
 		end
 		send "/"
 		waitfor #179 & "Figs"
-		getText CURRENTLINE $player~credits (#179 & "Creds") (#179 & "Figs")
+		gettext currentline $player~credits (#179 & "Creds") (#179 & "Figs")
 		striptext $player~credits " "
-		stripText $player~credits ","
+		striptext $player~credits ","
 		send " Q Q "
-		else
-		send "a "&$holdsToBuy&"* y b "&$figsToBuy&"* c "&$player~shieldsToBuy&"* q q q z n * "
-		end
-
-		setVar $spentCredits ($spentCredits+($beforeFurbCredits-$player~credits))
-		setVar $player~fightersPurchased ($player~fightersPurchased+$figsToBuy)
-		setVar $player~shieldsPurchased ($player~shieldsPurchased+$player~shieldsToBuy)
 	else
-		send "'Something bad happened on mow, I am probably in big trouble. [Temp error message until saveme implemented]*"
+		send "a "&$holdstobuy&"* y b "&$figstobuy&"* c "&$player~shieldstobuy&"* q q q z n * "
 	end
+
+	setvar $spentcredits ($spentcredits+($beforefurbcredits-$player~credits))
+	setvar $player~fighterspurchased ($player~fighterspurchased+$figstobuy)
+	setvar $player~shieldspurchased ($player~shieldspurchased+$player~shieldstobuy)
+else
+	send "'Something bad happened on mow, I am probably in big trouble. [Temp error message until saveme implemented]*"
+end
 
 return
 
-:safemowIntoSector
-setVar $isSafe TRUE
-setVar $destination $mowIntoSector
-gosub :getCourse
-setVar $j 2
-setVar $result ""
-while (($j <= $courseLength) AND ($isSafe))
-	setVar $nextSafeSector $Course[$j]
+:safemowintosector
+setvar $issafe true
+setvar $destination $mowintosector
+gosub :getcourse
+setvar $j 2
+setvar $result ""
+while (($j <= $courselength) and ($issafe))
+	setvar $nextsafesector $course[$j]
 	send "sdsh"
-	waitOn "Long Range Scan"
+	waiton "Long Range Scan"
 	waiton "Warps to Sector(s) :"
 	#gosub :player~quikstats
-	setVar $minesafe TRUE
-	setVar $figsSafe  ((SECTOR.FIGS.QUANTITY[$nextSafeSector] <= 0) OR (((SECTOR.FIGS.OWNER[$nextSafeSector] = "yours") OR (SECTOR.FIGS.OWNER[$nextSafeSector] = "belong to your Corp"))))
-	setVar $planet~planetSafe ((SECTOR.PLANETCOUNT[$nextSafeSector] <= 0) OR (($nextSafeSector = $map~stardock) OR ($nextSafeSector <= 10)))
-	setVar $navHazSafe TRUE
-	setVar $densitySafe TRUE
-	setVar $player~limpetsafe TRUE
-	if ($densitySafe OR ($player~limpetsSafe AND $figsSafe AND $minesSafe AND $navHazSafe AND $planet~planetSafe))
-		setVar $result ($result & "m "&$Course[$j]&"* ")
-		if (($COURSE[$j] > 10) AND ($COURSE[$j] <> STARDOCK))
-			setVar $result ($result & "za"&$ship~ship_max_attack&"* * ")
+	setvar $minesafe true
+	setvar $figssafe  ((sector.figs.quantity[$nextsafesector] <= 0) or (((sector.figs.owner[$nextsafesector] = "yours") or (sector.figs.owner[$nextsafesector] = "belong to your Corp"))))
+	setvar $planet~planetsafe ((sector.planetcount[$nextsafesector] <= 0) or (($nextsafesector = $map~stardock) or ($nextsafesector <= 10)))
+	setvar $navhazsafe true
+	setvar $densitysafe true
+	setvar $player~limpetsafe true
+	if ($densitysafe or ($player~limpetssafe and $figssafe and $minessafe and $navhazsafe and $planet~planetsafe))
+		setvar $result ($result & "m "&$course[$j]&"* ")
+		if (($course[$j] > 10) and ($course[$j] <> stardock))
+			setvar $result ($result & "za"&$ship~ship_max_attack&"* * ")
 		end
 	else
-		setVar $result ($result & "c v"&$nextSafeSector&"*q ")
-		setVar $isSafe FALSE
+		setvar $result ($result & "c v"&$nextsafesector&"*q ")
+		setvar $issafe false
 		send $result
 		return
 	end
-	if (($Course[$j] > 10) AND ($Course[$j] <> STARDOCK) AND ($j > 2))
-		setVar $result ($result & "f z 1* z c d * ")
-		setSectorParameter $Course[$j] "FIGSEC" TRUE
-       	if ($DROPLIMPS)
-			setVar $result $result&"  H  2  Z  3*  Z C  *  "
+	if (($course[$j] > 10) and ($course[$j] <> stardock) and ($j > 2))
+		setvar $result ($result & "f z 1* z c d * ")
+		setsectorparameter $course[$j] "FIGSEC" true
+		if ($droplimps)
+			setvar $result $result&"  H  2  Z  3*  Z C  *  "
 		end
-		if ($DROPARMIDS)
-			setVar $Result $result&"  H  1  Z  3*  Z C  *  "
+		if ($droparmids)
+			setvar $result $result&"  H  1  Z  3*  Z C  *  "
 		end
 	end
-	setVar $result ($result & "  /")
+	setvar $result ($result & "  /")
 	send $result
 	waitfor (#179 & "Turns")
 	add $j 1
 end
 return
 
-:mowIntoSector
-setVar $destination $mowIntoSector
-gosub :getCourse
-setVar $j 2
-setVar $result ""
-while ($j <= $courseLength)
-	setVar $result $result&"m"&$COURSE[$j]&"* "
-	if (($COURSE[$j] > 10) AND ($COURSE[$j] <> STARDOCK))
-		setVar $result $result&"za"&$ship~ship_max_attack&"* * "
+:mowintosector
+setvar $destination $mowintosector
+gosub :getcourse
+setvar $j 2
+setvar $result ""
+while ($j <= $courselength)
+	setvar $result $result&"m"&$course[$j]&"* "
+	if (($course[$j] > 10) and ($course[$j] <> stardock))
+		setvar $result $result&"za"&$ship~ship_max_attack&"* * "
 	end
-	if (($dropFigs = TRUE) AND ($COURSE[$j] > 10) AND ($COURSE[$j] <> STARDOCK) AND ($j > 2))
-		setVar $FIG_DROP 1
+	if (($dropfigs = true) and ($course[$j] > 10) and ($course[$j] <> stardock) and ($j > 2))
+		setvar $fig_drop 1
 		if ($x100)
 			if ($player~fighters > 1000)
-				setVar $FIG_DROP 100
+				setvar $fig_drop 100
 				setvar $player~fighters ($player~fighters - 100)
 			end
 		elseif ($x1000)
 			if ($player~fighters > 10000)
-				setVar $FIG_DROP 1000
+				setvar $fig_drop 1000
 				setvar $player~fighters ($player~fighters - 1000)
 			end
 		end
-		setVar $result $result&"f  z  "&$FIG_DROP&"* z  c  d  *  "
-		setSectorParameter $Course[$j] "FIGSEC" TRUE
+		setvar $result $result&"f  z  "&$fig_drop&"* z  c  d  *  "
+		setsectorparameter $course[$j] "FIGSEC" true
 	end
 
-   	if ($DROPLIMPS)
-		setVar $result $result&"  H  2  Z  3*  Z C  *  "
-		setSectorParameter $Course[$j] "LIMPSEC" TRUE
+	if ($droplimps)
+		setvar $result $result&"  H  2  Z  3*  Z C  *  "
+		setsectorparameter $course[$j] "LIMPSEC" true
 	end
-	if ($DROPARMIDS)
-		setVar $Result $result&"  H  1  Z  3*  Z C  *  "
-		setSectorParameter $Course[$j] "MINESEC" TRUE
+	if ($droparmids)
+		setvar $result $result&"  H  1  Z  3*  Z C  *  "
+		setsectorparameter $course[$j] "MINESEC" true
 	end
 
 	add $j 1
 end
 send $result
 return
-:dropCashAtBase
-if ($player~credits > $dropCashLimit)
-	setVar $mowIntoSector $cashDropSector
-	if ($ultraSafe)
-			:trySafeMowAgain
-			gosub :safemowIntoSector
-			if ($isSafe = FALSE)
-				goto :trySafeMowAgain
-			end
-		else
-			gosub :mowIntoSector
+
+:dropcashatbase
+if ($player~credits > $dropcashlimit)
+	setvar $mowintosector $cashdropsector
+	if ($ultrasafe)
+
+		:trysafemowagain
+		gosub :safemowintosector
+		if ($issafe = false)
+			goto :trysafemowagain
 		end
-		gosub :player~quikstats
-		if ($player~current_sector = $cashDropSector)
-			send "l "&$cashDropPlanet &"* c t t "&($player~credits-1000000)&"* qq* "
-			#send "l "&$cashDropPlanet &"* m n l "&($player~fighters/2)&"*  c t t "&($player~credits-1000000)&"* qq* "
-			add $cashDeposited ($player~credits-1000000)
-			setVar $player~credits 1000000
-			gosub :displayCredits
-		else
-			send "'Something bad happened on mow, I am probably in big trouble. [Temp error message until saveme implemented]*"
-		end
+	else
+		gosub :mowintosector
 	end
+	gosub :player~quikstats
+	if ($player~current_sector = $cashdropsector)
+		send "l "&$cashdropplanet &"* c t t "&($player~credits-1000000)&"* qq* "
+		#send "l "&$cashDropPlanet &"* m n l "&($player~fighters/2)&"*  c t t "&($player~credits-1000000)&"* qq* "
+		add $cashdeposited ($player~credits-1000000)
+		setvar $player~credits 1000000
+		gosub :displaycredits
+	else
+		send "'Something bad happened on mow, I am probably in big trouble. [Temp error message until saveme implemented]*"
+	end
+end
 return
-:displayCredits
-	
-setVar $formattedDepositedCredits ""
-setVar $spentCredits2 $cashDeposited
-getLength $spentCredits2 $length
-while ($length > 3)
-	cutText $spentCredits2 $snippet $length-2 9999
-	cutText $spentCredits2 $spentCredits2 1 $length-3
-	getLength $spentCredits2 $length
-	setVar $formattedDepositedCredits ","&$snippet&$formattedDepositedCredits
-end
-setVar $formattedDepositedCredits $spentCredits2&$formattedDepositedCredits
 
-setVar $formattedOnHandCredits ""
-setVar $spentCredits2 $player~credits
-getLength $spentCredits2 $length
+:displaycredits
+setvar $formatteddepositedcredits ""
+setvar $spentcredits2 $cashdeposited
+getlength $spentcredits2 $length
 while ($length > 3)
-	cutText $spentCredits2 $snippet $length-2 9999
-	cutText $spentCredits2 $spentCredits2 1 $length-3
-	getLength $spentCredits2 $length
-	setVar $formattedOnHandCredits ","&$snippet&$formattedOnHandCredits
+	cuttext $spentcredits2 $snippet $length-2 9999
+	cuttext $spentcredits2 $spentcredits2 1 $length-3
+	getlength $spentcredits2 $length
+	setvar $formatteddepositedcredits ","&$snippet&$formatteddepositedcredits
 end
-setVar $formattedOnHandCredits $spentCredits2&$formattedOnHandCredits
+setvar $formatteddepositedcredits $spentcredits2&$formatteddepositedcredits
 
-setVar $formattedSpentCredits ""
-setVar $spentCredits2 $spentCredits
-getLength $spentCredits2 $length
+setvar $formattedonhandcredits ""
+setvar $spentcredits2 $player~credits
+getlength $spentcredits2 $length
 while ($length > 3)
-	cutText $spentCredits2 $snippet $length-2 9999
-	cutText $spentCredits2 $spentCredits2 1 $length-3
-	getLength $spentCredits2 $length
-	setVar $formattedSpentCredits ","&$snippet&$formattedSpentCredits
+	cuttext $spentcredits2 $snippet $length-2 9999
+	cuttext $spentcredits2 $spentcredits2 1 $length-3
+	getlength $spentcredits2 $length
+	setvar $formattedonhandcredits ","&$snippet&$formattedonhandcredits
 end
-setVar $formattedSpentCredits $spentCredits2&$formattedSpentCredits
+setvar $formattedonhandcredits $spentcredits2&$formattedonhandcredits
 
-setVar $formattedFighters ""
-setVar $spentCredits2 $player~fightersPurchased
-getLength $spentCredits2 $length
+setvar $formattedspentcredits ""
+setvar $spentcredits2 $spentcredits
+getlength $spentcredits2 $length
 while ($length > 3)
-	cutText $spentCredits2 $snippet $length-2 9999
-	cutText $spentCredits2 $spentCredits2 1 $length-3
-	getLength $spentCredits2 $length
-	setVar $formattedFighters ","&$snippet&$formattedFighters
+	cuttext $spentcredits2 $snippet $length-2 9999
+	cuttext $spentcredits2 $spentcredits2 1 $length-3
+	getlength $spentcredits2 $length
+	setvar $formattedspentcredits ","&$snippet&$formattedspentcredits
 end
-setVar $formattedFighters $spentCredits2&$formattedFighters
+setvar $formattedspentcredits $spentcredits2&$formattedspentcredits
 
-setVar $formattedShields ""
-setVar $spentCredits2 $player~shieldsPurchased
-getLength $spentCredits2 $length
+setvar $formattedfighters ""
+setvar $spentcredits2 $player~fighterspurchased
+getlength $spentcredits2 $length
 while ($length > 3)
-	cutText $spentCredits2 $snippet $length-2 9999
-	cutText $spentCredits2 $spentCredits2 1 $length-3
-	getLength $spentCredits2 $length
-	setVar $formattedShields ","&$snippet&$formattedShields
+	cuttext $spentcredits2 $snippet $length-2 9999
+	cuttext $spentcredits2 $spentcredits2 1 $length-3
+	getlength $spentcredits2 $length
+	setvar $formattedfighters ","&$snippet&$formattedfighters
 end
-setVar $formattedShields $spentCredits2&$formattedShields
+setvar $formattedfighters $spentcredits2&$formattedfighters
 
-add $portaverage $cashDeposited
+setvar $formattedshields ""
+setvar $spentcredits2 $player~shieldspurchased
+getlength $spentcredits2 $length
+while ($length > 3)
+	cuttext $spentcredits2 $snippet $length-2 9999
+	cuttext $spentcredits2 $spentcredits2 1 $length-3
+	getlength $spentcredits2 $length
+	setvar $formattedshields ","&$snippet&$formattedshields
+end
+setvar $formattedshields $spentcredits2&$formattedshields
+
+add $portaverage $cashdeposited
 add $portaverage $player~credits
-add $portaverage $spentCredits
+add $portaverage $spentcredits
 subtract $portaverage $startcash
 if ($numberbusted = 0)
 	setvar $numberbusted 1
 end
 divide $portaverage $numberbusted
 
-setVar $formattedPortAverage ""
-setVar $spentCredits2 $portaverage
-getLength $spentCredits2 $length
+setvar $formattedportaverage ""
+setvar $spentcredits2 $portaverage
+getlength $spentcredits2 $length
 while ($length > 3)
-	cutText $spentCredits2 $snippet $length-2 9999
-	cutText $spentCredits2 $spentCredits2 1 $length-3
-	getLength $spentCredits2 $length
-	setVar $formattedPortAverage ","&$snippet&$formattedPortAverage
+	cuttext $spentcredits2 $snippet $length-2 9999
+	cuttext $spentcredits2 $spentcredits2 1 $length-3
+	getlength $spentcredits2 $length
+	setvar $formattedportaverage ","&$snippet&$formattedportaverage
 end
-setVar $formattedPortAverage $spentCredits2&$formattedPortAverage
+setvar $formattedportaverage $spentcredits2&$formattedportaverage
 
-setvar $window_content "*    Cash Deposited: "&$formattedDepositedCredits&"*  Busted xxB Ports: "&$numberbusted&"*  Credits per Port: "&$formattedPortAverage&"*   Fighters bought: "&$formattedFighters&"*    Shields bought: "&$formattedShields&"*"
+setvar $window_content "*    Cash Deposited: "&$formatteddepositedcredits&"*  Busted xxB Ports: "&$numberbusted&"*  Credits per Port: "&$formattedportaverage&"*   Fighters bought: "&$formattedfighters&"*    Shields bought: "&$formattedshields&"*"
 
-setWindowContents cash $window_content
+setwindowcontents cash $window_content
 replacetext $window_content "*" "[][]"
 savevar $window_content
 
 return
 
-:endSST
+:endsst
 killalltriggers
 send "q q q q  * * * "
 setvar $switchboard~message "World SST has completed, make sure you pick up the bot and its ships.*"
 gosub :switchboard~switchboard
 halt
 
-
-
-
-:FindShip
-setVar $Found1 0
-setVar $Found2 0
+:findship
+setvar $found1 0
+setvar $found2 0
 send "czq"
-waitOn "---------------------------------"
-	:nextShip
-	setTextLineTrigger		Ships	:Ships
-	pause
-	:Ships
-	getWord CURRENTLINE $shipNum 1
-	isNumber $tst $shipNum
-	if ($tst <> 0)
-		if ($shipnum = $psst_Ship2)
-			setVar $Found2 CURRENTLINE
-			replaceText $Found2 "+" " "
-			getWord $Found2 $Found2 2
-		elseif ($shipNum = $psst_Ship1)
-			setVar $Found1 CURRENTLINE
-			replaceText $Found1 "+" " "
-			getWord $Found1 $Found1 2
-		end
-		goto :NextShip
+waiton "---------------------------------"
+
+:nextship
+settextlinetrigger		ships	:ships
+pause
+
+:ships
+getword currentline $shipnum 1
+isnumber $tst $shipnum
+if ($tst <> 0)
+	if ($shipnum = $psst_ship2)
+		setvar $found2 currentline
+		replacetext $found2 "+" " "
+		getword $found2 $found2 2
+	elseif ($shipnum = $psst_ship1)
+		setvar $found1 currentline
+		replacetext $found1 "+" " "
+		getword $found1 $found1 2
 	end
-	if ($inShip1)
-		setVar $destination $Found2
-	else
-		setVar $destination $Found1
-	end
-	gosub :player~quikstats
+	goto :nextship
+end
+if ($inship1)
+	setvar $destination $found2
+else
+	setvar $destination $found1
+end
+gosub :player~quikstats
 
-	getDistance $dist1 $player~current_sector $destination
-	#if (($dist1 = "-1") or ($dist1 > $transportRange))
-	if ($dist1 = "-1")
-		send "cf" & $player~current_sector & "*" & $destination & "*q"
-		waitOn "What is the starting sector"
-		waitOn "Command [TL="
-		getDistance $dist1 $player~current_sector $destination
-	end
-	getDistance $dist2 $destination $player~current_sector
-	#if (($dist2 = "-1") or ($dist2 > $transportRange))
-	if ($dist2 = "-1")
-		send "cf" & $destination & "*" & $player~current_sector & "*q"
-		waitOn "What is the starting sector"
-		waitOn "Command [TL="
-		getDistance $dist2 $destination $player~current_sector
-	end
-	return
+getdistance $dist1 $player~current_sector $destination
+#if (($dist1 = "-1") or ($dist1 > $transportRange))
+if ($dist1 = "-1")
+	send "cf" & $player~current_sector & "*" & $destination & "*q"
+	waiton "What is the starting sector"
+	waiton "Command [TL="
+	getdistance $dist1 $player~current_sector $destination
+end
+getdistance $dist2 $destination $player~current_sector
+#if (($dist2 = "-1") or ($dist2 > $transportRange))
+if ($dist2 = "-1")
+	send "cf" & $destination & "*" & $player~current_sector & "*q"
+	waiton "What is the starting sector"
+	waiton "Command [TL="
+	getdistance $dist2 $destination $player~current_sector
+end
+return
 
-:Starting
-loadVar $game~steal_factor
-loadVar $player~unlimitedGame
-loadVar $bot~bot_turn_limit
-loadVar $bot~user_command_line
-loadVar $bot~parm1
-loadVar $bot~parm2
-loadVar $bot~parm3
-loadVar $bot~parm4
-loadVar $bot~parm5
-loadVar $bot~parm6
-loadVar $bot~parm7
-loadVar $bot~parm8
-loadVar $bot~bot_name
-loadVar $map~stardock
-loadVar $map~rylos
-loadVar $map~alpha_centauri
-loadVar $bot~subspace
-loadVar $bot~safe_ship
-setVar $CASH_TO_HOLD_ONTO 1000000
-
-
-
+:starting
+loadvar $game~steal_factor
+loadvar $player~unlimitedgame
+loadvar $bot~bot_turn_limit
+loadvar $bot~user_command_line
+loadvar $bot~parm1
+loadvar $bot~parm2
+loadvar $bot~parm3
+loadvar $bot~parm4
+loadvar $bot~parm5
+loadvar $bot~parm6
+loadvar $bot~parm7
+loadvar $bot~parm8
+loadvar $bot~bot_name
+loadvar $map~stardock
+loadvar $map~rylos
+loadvar $map~alpha_centauri
+loadvar $bot~subspace
+loadvar $bot~safe_ship
+setvar $cash_to_hold_onto 1000000
 
 gosub :player~quikstats
-	
-setVar $DROPLIMPS (" " & $bot~user_command_line & " ")
-lowercase $DROPLIMPS
-getWordPos $DROPLIMPS $pos " limp "
+
+setvar $droplimps (" " & $bot~user_command_line & " ")
+lowercase $droplimps
+getwordpos $droplimps $pos " limp "
 if ($pos = 0)
-	setVar $DROPLIMPS FALSE
+	setvar $droplimps false
 else
-	setVar $DROPLIMPS TRUE
+	setvar $droplimps true
 end
 
-setVar $DROPARMIDS (" " & $bot~user_command_line & " ")
-lowercase $DROPARMIDS
-getWordPos $DROPARMIDS $pos " armid "
+setvar $droparmids (" " & $bot~user_command_line & " ")
+lowercase $droparmids
+getwordpos $droparmids $pos " armid "
 if ($pos = 0)
-	setVar $DROPARMIDS FALSE
+	setvar $droparmids false
 else
-	setVar $DROPARMIDS TRUE
+	setvar $droparmids true
 end
 
-setVar $QUIET (" " & $bot~user_command_line & " ")
-lowercase $QUIET
-getWordPos $QUIET $pos " quiet "
+setvar $quiet (" " & $bot~user_command_line & " ")
+lowercase $quiet
+getwordpos $quiet $pos " quiet "
 if ($pos = 0)
-	setVar $QUIET FALSE
+	setvar $quiet false
 else
-	setVar $QUIET TRUE
+	setvar $quiet true
 end
 
-setVar $x100 (" " & $bot~user_command_line & " ")
+setvar $x100 (" " & $bot~user_command_line & " ")
 lowercase $x100
-getWordPos $x100 $pos " x100 "
+getwordpos $x100 $pos " x100 "
 if ($pos = 0)
-	setVar $x100 FALSE
+	setvar $x100 false
 else
-	setVar $x100 TRUE
+	setvar $x100 true
 end
 
-setVar $x1000 (" " & $bot~user_command_line & " ")
+setvar $x1000 (" " & $bot~user_command_line & " ")
 lowercase $x1000
-getWordPos $x1000 $pos " x1000 "
+getwordpos $x1000 $pos " x1000 "
 if ($pos = 0)
-	setVar $x1000 FALSE
+	setvar $x1000 false
 else
-	setVar $x1000 TRUE
-	setvar $x100 FALSE
+	setvar $x1000 true
+	setvar $x100 false
 end
 
+setvar $startinglocation $player~current_prompt
+isnumber $isparamonenumber   $bot~parm1
+isnumber $isparamtwonumber   $bot~parm2
+isnumber $isparamthreenumber $bot~parm3
 
-setVar $startingLocation $player~current_prompt
-isNumber $isParamOneNumber   $bot~parm1
-isNumber $isParamTwoNumber   $bot~parm2
-isNumber $isParamThreeNumber $bot~parm3
-
-if (($startingLocation <> "Citadel") AND ($startingLocation <> "Command"))
+if (($startinglocation <> "Citadel") and ($startinglocation <> "Command"))
 	setvar $switchboard~message "World SST must be run from command or citadel prompt*"
 	gosub :switchboard~switchboard
 	halt
 end
 gosub :ship~getshipstats
 
-lowerCase $bot~parm1
-if ($isParamOneNumber = TRUE)
-	setVar $psst_Ship2 $bot~parm1
-	if ($isParamTwoNumber = TRUE)
-		setVar $dropCashLimit $bot~parm2
+lowercase $bot~parm1
+if ($isparamonenumber = true)
+	setvar $psst_ship2 $bot~parm1
+	if ($isparamtwonumber = true)
+		setvar $dropcashlimit $bot~parm2
 	end
 else
 	setvar $switchboard~message "Please use wsst [ship2#] format.*"
@@ -1426,9 +1430,9 @@ if ($player~credits < 200000)
 	gosub :switchboard~switchboard
 	halt
 end
-cutText $player~alignment $neg_ck 1 1
+cuttext $player~alignment $neg_ck 1 1
 
-stripText $player~alignment "-"
+striptext $player~alignment "-"
 if ($player~alignment < 100) and ($neg_ck = "-")
 	setvar $switchboard~message "Need -100 Alignment Minimum to run World SST.*"
 	gosub :switchboard~switchboard
@@ -1438,123 +1442,123 @@ elseif ($neg_ck <> "-")
 	gosub :switchboard~switchboard
 	halt
 end
-getWordPos " "&$bot~user_command_line&" " $pos " f "
+getwordpos " "&$bot~user_command_line&" " $pos " f "
 if ($pos > 0)
-	setVar $refurbFighters TRUE
+	setvar $refurbfighters true
 else
-	setVar $refurbFighters FALSE
+	setvar $refurbfighters false
 end
 
-getWordPos " "&$bot~user_command_line&" " $pos " s "
+getwordpos " "&$bot~user_command_line&" " $pos " s "
 if ($pos > 0)
-	setVar $refurbShields TRUE
+	setvar $refurbshields true
 else
-	setVar $refurbShields FALSE
+	setvar $refurbshields false
 end
-setVar $safeFighterLevel 5000
-getWordPos " "&$bot~user_command_line&" " $pos " safe "
+setvar $safefighterlevel 5000
+getwordpos " "&$bot~user_command_line&" " $pos " safe "
 if ($pos > 0)
-	setVar $ultrasafe TRUE
-	setVar $safeFighterLevel 100
+	setvar $ultrasafe true
+	setvar $safefighterlevel 100
 else
-	setVar $ultrasafe FALSE
+	setvar $ultrasafe false
 end
 
-getWordPos " "&$bot~user_command_line&" " $pos " passive "
+getwordpos " "&$bot~user_command_line&" " $pos " passive "
 if ($pos > 0)
-	setVar $passive TRUE
-	setVar $safeFighterLevel 0
+	setvar $passive true
+	setvar $safefighterlevel 0
 else
-	setVar $passive FALSE
+	setvar $passive false
 end
 
-setVar $FURBING $map~stardock
+setvar $furbing $map~stardock
 
-setVar $Temp ("  " & $bot~user_command_line & "  ")
-getwordpos $Temp $pos " alpha "
-if (($pos <> 0) AND ($map~alpha_centauri <> 0))
-	setVar $FURBING $map~alpha_centauri
+setvar $temp ("  " & $bot~user_command_line & "  ")
+getwordpos $temp $pos " alpha "
+if (($pos <> 0) and ($map~alpha_centauri <> 0))
+	setvar $furbing $map~alpha_centauri
 end
-getWordpos $Temp $pos " rylos "
-if (($pos <> 0) AND ($map~rylos <> 0))
-	setVar $FURBING $map~rylos
+getwordpos $temp $pos " rylos "
+if (($pos <> 0) and ($map~rylos <> 0))
+	setvar $furbing $map~rylos
 end
-getWordPos $Temp $pos " dock "
-if (($pos <> 0) AND ($map~stardock <> 0))
-	setVar $FURBING $map~stardock
-end
-
-getWordPos $Temp $pos " terra "
-if (($pos <> 0) AND ($map~stardock <> 0))
-	setVar $FURBING 1
+getwordpos $temp $pos " dock "
+if (($pos <> 0) and ($map~stardock <> 0))
+	setvar $furbing $map~stardock
 end
 
-setVar $portaverage 1
+getwordpos $temp $pos " terra "
+if (($pos <> 0) and ($map~stardock <> 0))
+	setvar $furbing 1
+end
+
+setvar $portaverage 1
 send "jy*"
-setVar $cashDeposited 0
-goSub :player~quikstats
+setvar $cashdeposited 0
+gosub :player~quikstats
 setvar $startcash $player~credits
-setVar $psst_Ship1 $player~ship_number
-setVar $startingLocation $player~current_prompt
-if ($startingLocation = "Citadel")
-        send "q"
-            gosub :planet~getplanetinfo
-            send "q* "
-	setVar $cashDropPlanet $planet~planet
-            setVar $cashDropSector $player~current_sector
-	else
-        setVar $cashDropPlanet 0
-            setVar $cashDropSector 0
-
-    end
-if ($dropCashLimit <= 10000000)
-	setVar $dropCashLimit 10000000
-end
-if (($cashDropSector = 0) OR ($cashDropPlanet = 0))
-	setVar $dropCashAtBase FALSE
+setvar $psst_ship1 $player~ship_number
+setvar $startinglocation $player~current_prompt
+if ($startinglocation = "Citadel")
+	send "q"
+	gosub :planet~getplanetinfo
+	send "q* "
+	setvar $cashdropplanet $planet~planet
+	setvar $cashdropsector $player~current_sector
 else
-	setVar $dropCashAtBase TRUE
+	setvar $cashdropplanet 0
+	setvar $cashdropsector 0
+
+end
+if ($dropcashlimit <= 10000000)
+	setvar $dropcashlimit 10000000
+end
+if (($cashdropsector = 0) or ($cashdropplanet = 0))
+	setvar $dropcashatbase false
+else
+	setvar $dropcashatbase true
 end
 
-if (($psst_Ship2 <= 0) OR ($game~steal_factor <= 0))
+if (($psst_ship2 <= 0) or ($game~steal_factor <= 0))
 	send "'This module should be run from the MOM Bot.*"
-	setVar $bot~mode "General"
-	saveVar $bot~mode
+	setvar $bot~mode "General"
+	savevar $bot~mode
 	halt
 end
 
-setVar $alarm_check (" " & $bot~user_command_line & " ")
+setvar $alarm_check (" " & $bot~user_command_line & " ")
 lowercase $alarm_check
-getWordPos $alarm_check $pos " alarm "
+getwordpos $alarm_check $pos " alarm "
 if ($pos = 0)
-	setVar $alarm_active FALSE
+	setvar $alarm_active false
 else
-	setVar $alarm_active TRUE
+	setvar $alarm_active true
 	if ($bot~safe_ship <= 0)
 		send "'You can't run alarm without safe ship variable set.*"
 		halt
 	end
-	if (($bot~safe_ship = $psst_ship1) OR ($bot~safe_ship = $psst_ship2))
+	if (($bot~safe_ship = $psst_ship1) or ($bot~safe_ship = $psst_ship2))
 		send "'You can't run alarm and use your safe ship to WSST.*"
 		halt
 	end
 end
 
-setVar $startingSector $player~current_sector
-setVar $inShip1 TRUE
+setvar $startingsector $player~current_sector
+setvar $inship1 true
 setvar $p1chk 3
 setvar $p2chk 3
 if ($map~rylos > 10)
-	setVar $refurbPort $map~rylos
+	setvar $refurbport $map~rylos
 elseif ($map~alpha_centauri > 10)
-	setVar $refurbPort $map~alpha_centauri
+	setvar $refurbport $map~alpha_centauri
 else
-	setVar $refurbPort 1
+	setvar $refurbport 1
 end
 
-gosub :checkSSTShips
+gosub :checksstships
 
-if ($foundShip2 <> TRUE)
+if ($foundship2 <> true)
 	setvar $switchboard~message "Ship #2 entered for Planet SST was not valid for this sector.*"
 	gosub :switchboard~switchboard
 	halt
@@ -1562,51 +1566,49 @@ end
 setvar $switchboard~message "World SST Powering Up!*"
 gosub :switchboard~switchboard
 send "c;qjy "
-waitOn "Transport Range:"
-getWord CURRENTLINE $transportRange1 6
-getWord CURRENTLINE $maxHolds1 3
+waiton "Transport Range:"
+getword currentline $transportrange1 6
+getword currentline $maxholds1 3
 gosub :transport
 send "c;qjy "
-waitOn "Transport Range:"
-getWord CURRENTLINE $transportRange2 6
-getWord CURRENTLINE $maxHolds2 3
+waiton "Transport Range:"
+getword currentline $transportrange2 6
+getword currentline $maxholds2 3
 gosub :transport
-if ($transportRange1 <= $transportRange2)
-	setVar $transportRange $transportRange1
+if ($transportrange1 <= $transportrange2)
+	setvar $transportrange $transportrange1
 else
-	setVar $transportRange $transportRange2
+	setvar $transportrange $transportrange2
 end
-setvar $switchboard~message "Minimum transport range of these two ships is "&$transportRange&".*"
+setvar $switchboard~message "Minimum transport range of these two ships is "&$transportrange&".*"
 gosub :switchboard~switchboard
 
-setVar $ship1Sector $player~current_sector
-setVar $ship2Sector $player~current_sector
-setVar $ship1NeedsPort TRUE
-setVar $ship2NeedsPort TRUE
-setVar $i 1
-setVar $yes TRUE
-setVar $busted FALSE
-setArray $equipAtPort SECTORS
-setArray $fuelAtPort SECTORS
-goto :GoGo
-
+setvar $ship1sector $player~current_sector
+setvar $ship2sector $player~current_sector
+setvar $ship1needsport true
+setvar $ship2needsport true
+setvar $i 1
+setvar $yes true
+setvar $busted false
+setarray $equipatport sectors
+setarray $fuelatport sectors
+goto :gogo
 
 :twarprefurb
-
 # check adj's for Dock.. if present, then we don't need a jump sector.
-setVar $i 1
-setVar $START_SECTOR $player~current_sector
-setVar $WeAreAdjDock FALSE
-while ($i <= SECTOR.WARPCOUNT[$START_SECTOR])
-	setVar $adj_start SECTOR.WARPS[$START_SECTOR][$i]
-	if ($adj_start = $MAP~stardock)
-		setVar $WeAreAdjDock TRUE
+setvar $i 1
+setvar $start_sector $player~current_sector
+setvar $weareadjdock false
+while ($i <= sector.warpcount[$start_sector])
+	setvar $adj_start sector.warps[$start_sector][$i]
+	if ($adj_start = $map~stardock)
+		setvar $weareadjdock true
 	end
 	add $i 1
 end
 
-Echo "**" & ANSI_14 & "Please Stand By" & ANSI_15 & " - Calculating Distances...**"
-getdistance $dist1 $START_SECTOR $MAP~stardock
+echo "**" & ansi_14 & "Please Stand By" & ansi_15 & " - Calculating Distances...**"
+getdistance $dist1 $start_sector $map~stardock
 
 if ($dist1 <= 0)
 	setvar $switchboard~message "Insufficient Warp Data Plotting Course to Dock*"
@@ -1615,7 +1617,7 @@ if ($dist1 <= 0)
 	halt
 end
 
-getdistance $dist2 $MAP~stardock $START_SECTOR
+getdistance $dist2 $map~stardock $start_sector
 if ($dist2 <= 0)
 	setvar $switchboard~message "Insufficient Warp Data Plotting Return Course From Dock*"
 	gosub :switchboard~switchboard
@@ -1623,446 +1625,445 @@ if ($dist2 <= 0)
 	halt
 end
 
-setVar $ore_req (($dist1 + $dist2) * 3)
+setvar $ore_req (($dist1 + $dist2) * 3)
 
-if ($PLAYER~ORE_HOLDS < $ore_req)
+if ($player~ore_holds < $ore_req)
 	#setvar $switchboard~message "Not Enough ORE In Holds To Make Round Trip.  Needs "&$ore_req&".*"
 	#gosub :switchboard~switchboard
 	send "*"
 	gosub :getsomefuel
 end
 
-
-if (($player~alignment < 1000) AND ($WeAreAdjDock = FALSE))
-	setVar $RED_adj 0
-	gosub :FindJumpSector
-	if ($RED_adj = 0)
-		gosub :ChooseClass0FigFallback
-		if ($class0FallbackPort > 0)
-			setVar $refurbPort $class0FallbackPort
+if (($player~alignment < 1000) and ($weareadjdock = false))
+	setvar $red_adj 0
+	gosub :findjumpsector
+	if ($red_adj = 0)
+		gosub :chooseclass0figfallback
+		if ($class0fallbackport > 0)
+			setvar $refurbport $class0fallbackport
 			return
 		end
 		waitfor "Command [TL="
-#			setvar $switchboard~message "Cannot Find Jump Sector Adjacent Dock*"
-#			gosub :switchboard~switchboard
+		#			setvar $switchboard~message "Cannot Find Jump Sector Adjacent Dock*"
+		#			gosub :switchboard~switchboard
 		send "*"
 		return
 	end
 end
 
 if ($player~alignment >= 1000)
-	if ($WeAreAdjDock)
-		send "^F" & $MAP~stardock & "*" & $START_SECTOR & "*Q/ "
+	if ($weareadjdock)
+		send "^F" & $map~stardock & "*" & $start_sector & "*Q/ "
 	else
-		send "^F" & $START_SECTOR & "*" & $MAP~stardock & "*F" & $MAP~stardock & "*" & $START_SECTOR & "*Q/ "
+		send "^F" & $start_sector & "*" & $map~stardock & "*F" & $map~stardock & "*" & $start_sector & "*Q/ "
 	end
 else
-	if ($WeAreAdjDock)
-		send "^F" & $MAP~stardock & "*" & $START_SECTOR & "*Q/ "
+	if ($weareadjdock)
+		send "^F" & $map~stardock & "*" & $start_sector & "*Q/ "
 	else
-		send "^F" & $START_SECTOR & "*" & $RED_adj & "*F" & $MAP~stardock & "*" & $START_SECTOR & "*Q/ "
+		send "^F" & $start_sector & "*" & $red_adj & "*F" & $map~stardock & "*" & $start_sector & "*Q/ "
 	end
 end
-setTextLineTrigger noJoy :noJoy "*** Error - No route within"
-setTextLineTrigger cont :cont ": ENDINTERROG"
+settextlinetrigger nojoy :nojoy "*** Error - No route within"
+settextlinetrigger cont :cont ": ENDINTERROG"
 pause
 
-	:noJoy
-	killAllTriggers
-	setvar $switchboard~message "Cannot Find Path to StarDock!*"
+:nojoy
+killalltriggers
+setvar $switchboard~message "Cannot Find Path to StarDock!*"
+gosub :switchboard~switchboard
+send "*"
+halt
+
+:cont
+killalltriggers
+settexttrigger routenavprompt       :routenavprompt "Choose NavPoint (?=Help)"
+settexttrigger routecmdprompt       :routecmdprompt "Command [TL="
+setdelaytrigger routepromptdelay    :routepromptdelay 1000
+pause
+
+:routenavprompt
+killalltriggers
+send "q"
+waitfor "Command [TL="
+goto :latency_delay
+
+:routecmdprompt
+killalltriggers
+goto :latency_delay
+
+:routepromptdelay
+killalltriggers
+waitfor "Command [TL="
+
+:latency_delay
+if ($player~twarp_type = "No")
+	setvar $switchboard~message "Must Have Twarp 1 or 2*"
 	gosub :switchboard~switchboard
 	send "*"
 	halt
-	:cont
-	killAllTriggers
-	setTextTrigger RouteNavPrompt       :RouteNavPrompt "Choose NavPoint (?=Help)"
-	setTextTrigger RouteCmdPrompt       :RouteCmdPrompt "Command [TL="
-	setDelayTrigger RoutePromptDelay    :RoutePromptDelay 1000
-	pause
+end
 
-		:RouteNavPrompt
-		killAllTriggers
-		send "q"
-		waitfor "Command [TL="
-		goto :Latency_Delay
-
-		:RouteCmdPrompt
-		killAllTriggers
-		goto :Latency_Delay
-
-		:RoutePromptDelay
-		killAllTriggers
-		waitfor "Command [TL="
-
-		:Latency_Delay
-
-
-		if ($PLAYER~TWARP_TYPE = "No")
-			setvar $switchboard~message "Must Have Twarp 1 or 2*"
+if ($player~unlimitedgame = 0)
+	gosub :turnsrequired
+	if ($turnsrequired > currentturns)
+		setvar $switchboard~message "Not Enough Turns. "&$turnsrequired&", Required*"
+		gosub :switchboard~switchboard
+		send "*"
+		halt
+	elseif ($turnsrequired <= currentturns)
+		setvar $tmp (currentturns - $turnsrequired)
+		if ($tmp <= $bot~bot_turn_limit)
+			setvar $switchboard~message "Proceeding Will Leave Fewer Than " & $bot~bot_turn_limit & " Turns!*"
 			gosub :switchboard~switchboard
 			send "*"
 			halt
 		end
+	end
+end
 
-		if ($PLAYER~unlimitedGame = 0)
-			gosub :TurnsRequired
-			if ($turnsRequired > currentturns)
-				setvar $switchboard~message "Not Enough Turns. "&$turnsRequired&", Required*"
-				gosub :switchboard~switchboard
-				send "*"
-				halt
-			elseif ($turnsRequired <= currentturns)
-				setVar $tmp (currentturns - $turnsRequired)
-				if ($tmp <= $bot~bot_turn_limit)
-					setvar $switchboard~message "Proceeding Will Leave Fewer Than " & $bot~bot_turn_limit & " Turns!*"
-					gosub :switchboard~switchboard
-					send "*"
-					halt
-				end
-			end
-		end
+send " C R " & $map~stardock & "*Q "
+settextlinetrigger itsalive :itsalive "Items     Status  Trading % of max OnBoard"
+settextlinetrigger nosoupforme :nosoupforme "I have no information about a port in that sector"
+pause
 
-	send " C R " & $MAP~stardock & "*Q "
-	setTextLineTrigger itsalive :itsalive "Items     Status  Trading % of max OnBoard"
-	setTextLineTrigger nosoupforme :nosoupforme "I have no information about a port in that sector"
-	pause
-	:nosoupforme
-	killAllTriggers
-	setvar $switchboard~message "StarDock appears to have been Blown Up!*"
+:nosoupforme
+killalltriggers
+setvar $switchboard~message "StarDock appears to have been Blown Up!*"
+gosub :switchboard~switchboard
+send "*"
+halt
+
+:itsalive
+killalltriggers
+waitfor "(?="
+setvar $msg ""
+if ((currentalignment >= 1000) and ($weareadjdock = false))
+	setvar $warpto $map~stardock
+	gosub :dotwarp
+elseif (($weareadjdock = false) and ($red_adj <> 0))
+	setvar $warpto $red_adj
+	gosub :dotwarp
+else
+	send "q q *  m " & $map~stardock & "*  *  P  S G Y G Q "
+end
+if ($msg = "")
+	waitfor "You leave the Galactic Bank."
+else
+	setvar $switchboard~message "Unknown Problem Detected. Check TA!*"
 	gosub :switchboard~switchboard
 	send "*"
 	halt
-	:itsalive
-	killAllTriggers
-	waitfor "(?="
-	setVar $msg ""
-	if ((currentalignment >= 1000) AND ($WeAreAdjDock = FALSE))
-		setVar $warpto $MAP~stardock
-		gosub :DoTwarp
-	elseif (($WeAreAdjDock = FALSE) AND ($RED_adj <> 0))
-		setVar $warpto $RED_adj
-		gosub :DoTwarp
-	else
-		send "q q *  m " & $MAP~stardock & "*  *  P  S G Y G Q "
-	end
-	if ($msg = "")
-		waitfor "You leave the Galactic Bank."
-	else
-		setvar $switchboard~message "Unknown Problem Detected. Check TA!*"
-		gosub :switchboard~switchboard
-		send "*"
-		halt
-	end
-	gosub :PLAYER~quikstats
-
+end
+gosub :player~quikstats
 
 return
-
 
 :getsomefuel
 gosub :player~quikstats
-setVar $bottom 1
-setVar $top 1
-setArray $checked SECTORS
-setVar $que[1] $player~current_sector
-setVar $checked[$player~current_sector] 1
+setvar $bottom 1
+setvar $top 1
+setarray $checked sectors
+setvar $que[1] $player~current_sector
+setvar $checked[$player~current_sector] 1
 setvar $a 1
-	:try_again
-	while ($bottom <= $top)
-		# Now, pull out the next sector in the queue, and make it our focus
-		setVar $focus $que[$bottom]
-		getsectorparameter $focus "FIGSEC" $isFigged
-		getsectorparameter $focus "BUSTED" $isBusted
 
-		send " C R " & $focus & "*Q "
-		gosub :player~quikstats
-		if ((PORT.BUYFUEL[$focus] <> true) and (PORT.FUEL[$focus] > $player~total_holds) and ($isBusted <> true))
-			setVar $mowintosector $focus
-			gosub :mowIntoSector
-			if (((PORT.BUYORG[$focus]) and ($player~organic_holds > 0)) OR ((PORT.BUYEQUIP[$focus]) and ($player~equipment_holds > 0)))
-				send "p t * * * * * * "
-			else
-				send "j y p t * * 0 * 0 * "
-			end
-			return
-		end
-		# That wasn't it, so let's add all the adjacents to the queue for future testing.
-		setVar $a 1
-		while (SECTOR.WARPS[$focus][$a] > 0)
-			setVar $adjacent SECTOR.WARPS[$focus][$a]
-			# But only add them if they haven't been added previously
-			if ($checked[$adjacent] = 0)
-				# Okay, this one hasn't been checked, so tag it and que it.
-				setVar $checked[$adjacent] 1
-				add $top 1
-				setVar $que[$top] $adjacent
-			end
-			add $a 1
-		end
-		# The adjacents of $focus were all queued, now on to the next one.
-		add $bottom 1
-	end	
-	setVar $SWITCHBOARD~message "Can't find a route to fuel.  Halting*"
-	gosub :SWITCHBOARD~switchboard
-	halt
+:try_again
+while ($bottom <= $top)
+	# Now, pull out the next sector in the queue, and make it our focus
+	setvar $focus $que[$bottom]
+	getsectorparameter $focus "FIGSEC" $isfigged
+	getsectorparameter $focus "BUSTED" $isbusted
 
-return
-
-
-:FindJumpSector
-setVar $i 1
-setVar $RED_adj 0
-send "qq*"
-while (SECTOR.WARPSIN[$MAP~stardock][$i] > 0)
-	setVar $RED_adj SECTOR.WARPSIN[$MAP~stardock][$i]
-	setVar $checkSector $RED_adj
-	gosub :VerifySectorAdjDock
-	if ($sectorAdjDock = FALSE)
-		goto :TryingNextAdj
-	end
-	send "m " & $RED_adj & "* y"
-	setTextTrigger TwarpBlind 			:TwarpBlind "Do you want to make this jump blind? "
-	setTextTrigger TwarpLocked			:TwarpLocked "All Systems Ready, shall we engage? "
-	setTextLineTrigger TwarpVoided			:TwarpVoided "Danger Warning Overridden"
-	setTextLineTrigger TwarpAdj			:TwarpAdj "<Set NavPoint>"
-	settextlinetrigger twarpempty	:twarpempty "You do not have enough Fuel Ore to make the jump"
-	pause
-		:TwarpAdj
-		killAllTriggers
-		send " * "
-		return
-
-		:TwarpVoided
-		killAllTriggers
-		send " N N "
-		goto :TryingNextAdj
-
-		:TwarpLocked
-		killAllTriggers
-		send " N "
-
-		goto :SectorLocked
-
-		:TwarpBlind
-		killAllTriggers
-		send " N "
-
-		:twarpempty
-		killAllTriggers
-		
-		:TryingNextAdj
-    	add $i 1
-	end
-
-		:NoAdjsFound
-		setVar $RED_adj 0
-		return
-
-		:SectorLocked
-		return
-
-:ChooseNearbyClass0Refurb
-setVar $nearClass0Port 0
-setVar $nearClass0Dist 100000
-setVar $class0Candidate 0
-setVar $class0Candidate $map~rylos
-gosub :ConsiderNearbyClass0
-setVar $class0Candidate $map~alpha_centauri
-gosub :ConsiderNearbyClass0
-setVar $class0Candidate 1
-gosub :ConsiderNearbyClass0
-return
-
-:ConsiderNearbyClass0
-if ($class0Candidate <= 0)
-	return
-end
-getdistance $class0Dist $player~current_sector $class0Candidate
-if (($class0Dist > 0) AND ($class0Dist <= 3) AND ($class0Dist < $nearClass0Dist))
-	setVar $nearClass0Port $class0Candidate
-	setVar $nearClass0Dist $class0Dist
-end
-return
-
-:ChooseClass0FigFallback
-setVar $class0FallbackPort 0
-setVar $class0FallbackDist 100000
-setVar $class0Candidate 0
-setVar $class0Candidate $map~rylos
-gosub :ConsiderClass0FigFallback
-setVar $class0Candidate $map~alpha_centauri
-gosub :ConsiderClass0FigFallback
-setVar $class0Candidate 1
-gosub :ConsiderClass0FigFallback
-return
-
-:ConsiderClass0FigFallback
-if ($class0Candidate <= 0)
-	return
-end
-setVar $class0HasFigAdj FALSE
-setVar $class0AdjIdx 1
-while (SECTOR.WARPSIN[$class0Candidate][$class0AdjIdx] > 0)
-	setVar $class0Adj SECTOR.WARPSIN[$class0Candidate][$class0AdjIdx]
-	getSectorParameter $class0Adj "FIGSEC" $class0IsFigged
-	if ($class0IsFigged)
-		setVar $class0HasFigAdj TRUE
-	end
-	add $class0AdjIdx 1
-end
-if ($class0HasFigAdj)
-	getdistance $class0Dist $player~current_sector $class0Candidate
-	if (($class0Dist > 0) AND ($class0Dist < $class0FallbackDist))
-		setVar $class0FallbackPort $class0Candidate
-		setVar $class0FallbackDist $class0Dist
-	end
-end
-return
-
-
-:VerifySectorAdjDock
-setVar $sectorAdjDock FALSE
-if (($checkSector <= 0) OR ($MAP~stardock <= 0))
-	return
-end
-setVar $checkWarpIdx 1
-while (SECTOR.WARPS[$checkSector][$checkWarpIdx] > 0)
-	if (SECTOR.WARPS[$checkSector][$checkWarpIdx] = $MAP~stardock)
-		setVar $sectorAdjDock TRUE
-	end
-	add $checkWarpIdx 1
-end
-return
-
-
-:TurnsRequired
-send "i"
-setTextLineTrigger TurnsRequired_TPW	:TurnsRequired_TPW "Turns to Warp  : "
-pause
-
-	:TurnsRequired_TPW
-	killAllTriggers
-	getWord CURRENTLINE $turnsRequired_TPW 5
-
-	if ($RED_adj > 0)
-		# twarp to jmp sector, then into SD sect, then twarp home
-		setVar $turnsRequired_temp ($turnsRequired_TPW * 3)
-		if ($_Tow > 0)
-			# 2 Turns for exporting into other ship and back again
-			add $turnsRequired_temp_temp 2
-			# 3 Turns for initial Port then x into other ship, port & shop, then x and report
-			#   b4 heading home
-			add $turnsRequired_temp 3
+	send " C R " & $focus & "*Q "
+	gosub :player~quikstats
+	if ((port.buyfuel[$focus] <> true) and (port.fuel[$focus] > $player~total_holds) and ($isbusted <> true))
+		setvar $mowintosector $focus
+		gosub :mowintosector
+		if (((port.buyorg[$focus]) and ($player~organic_holds > 0)) or ((port.buyequip[$focus]) and ($player~equipment_holds > 0)))
+			send "p t * * * * * * "
 		else
-			add $turnsRequired_temp 1
+			send "j y p t * * 0 * 0 * "
 		end
-	else
-		setVar $turnsRequired_temp ($turnsRequired_TPW * 2)
-		# 1 Turn to port at dock
-		add $turnsRequired_temp 1
+		return
 	end
-
-	setVar $turnsRequired $turnsRequired_temp
-	return
-
-
-:callSaveMe
-send "q q q q * '"&$SWITCHBOARD~bot_name&" call*"
+	# That wasn't it, so let's add all the adjacents to the queue for future testing.
+	setvar $a 1
+	while (sector.warps[$focus][$a] > 0)
+		setvar $adjacent sector.warps[$focus][$a]
+		# But only add them if they haven't been added previously
+		if ($checked[$adjacent] = 0)
+			# Okay, this one hasn't been checked, so tag it and que it.
+			setvar $checked[$adjacent] 1
+			add $top 1
+			setvar $que[$top] $adjacent
+		end
+		add $a 1
+	end
+	# The adjacents of $focus were all queued, now on to the next one.
+	add $bottom 1
+end
+setvar $switchboard~message "Can't find a route to fuel.  Halting*"
+gosub :switchboard~switchboard
 halt
 
-:DoTwarp
-setVar $msg ""
-if ($warpto > 0)
-	send "q q * * mz" & $warpto "*"
-	setTextTrigger there        :adj_warp "You are already in that sector!"
-	setTextLineTrigger adj_warp :adj_warp "Sector  : " & $warpto & " "
-	setTextTrigger locking      :locking "Do you want to engage the TransWarp drive?"
-	setTextTrigger igd          :twarpIgd "An Interdictor Generator in this sector holds you fast!"
-	setTextTrigger noturns      :twarpPhotoned "Your ship was hit by a Photon and has been disabled"
-	setTextTrigger noroute      :twarpNoRoute "Do you really want to warp there? (Y/N)"
-	pause
-		:adj_warp
-		killAllTriggers
-		send "z*"
-		goto :twarp_adj
-		:locking
-		killAllTriggers
-		send "y"
-		setTextLineTrigger twarp_lock 		:twarp_lock "TransWarp Locked"
-		setTextLineTrigger no_twrp_lock 	:no_twarp_lock "No locating beam found"
-		setTextLineTrigger twarp_adj 		:twarp_adj "<Set NavPoint>"
-		setTextLineTrigger no_fuel 		:twarpNoFuel "You do not have enough Fuel Ore"
-		pause
-		:twarpNoFuel
-		killAllTriggers
-		setVar $msg "Not enough fuel for T-warp."
-		goto :twarpDone
+return
 
-		:twarp_adj
-		killAllTriggers
-		send " * p s"
-		goto :twarpDone
-
-		:twarpNoRoute
-		killAllTriggers
-		send "n* z* "
-		setVar $msg "No route available!"
-		goto :twarpDone
-
-		:no_twarp_lock
-		killAllTriggers
-		send "n*zn"
-		send "l " & #8 & $PLANET~PLANET "*c"
-		setSectorParameter $warpto "FIGSEC" FALSE
-		setvar $msg "no twarp lock"
-		return
-
-		:twarpIgd
-		killAllTriggers
-		setVar $msg "My ship is being held by Interdictor!"
-		goto :twarpDone
-
-		:twarpPhotoned
-		killAllTriggers
-		setVar $msg "I have been photoned and can not T-warp!"
-		goto :twarpDone
-
-		:twarp_lock
-		KillAlltriggers
-		if (currentalignment >= 1000)
-			setVar $str "y * * p s g y g q " 
-			send $str
-		else
-			setVar $str "y  *  *  m " & $MAP~stardock & " *  *  p s g y g q "
-			send $str
-		end
-		setvar $twarp_refurb_success true
-		:twarpDone
-		if ($msg <> "")
-			setvar $switchboard~message "Twarp Error - " & $msg & "*"
-			gosub :switchboard~switchboard
-			send "*"
-		end
+:findjumpsector
+setvar $i 1
+setvar $red_adj 0
+send "qq*"
+while (sector.warpsin[$map~stardock][$i] > 0)
+	setvar $red_adj sector.warpsin[$map~stardock][$i]
+	setvar $checksector $red_adj
+	gosub :verifysectoradjdock
+	if ($sectoradjdock = false)
+		goto :tryingnextadj
 	end
+	send "m " & $red_adj & "* y"
+	settexttrigger twarpblind 			:twarpblind "Do you want to make this jump blind? "
+	settexttrigger twarplocked			:twarplocked "All Systems Ready, shall we engage? "
+	settextlinetrigger twarpvoided			:twarpvoided "Danger Warning Overridden"
+	settextlinetrigger twarpadj			:twarpadj "<Set NavPoint>"
+	settextlinetrigger twarpempty	:twarpempty "You do not have enough Fuel Ore to make the jump"
+	pause
+
+	:twarpadj
+	killalltriggers
+	send " * "
 	return
 
-:bwarp
+	:twarpvoided
+	killalltriggers
+	send " N N "
+	goto :tryingnextadj
 
-killAllTriggers
+	:twarplocked
+	killalltriggers
+	send " N "
+
+	goto :sectorlocked
+
+	:twarpblind
+	killalltriggers
+	send " N "
+
+	:twarpempty
+	killalltriggers
+
+	:tryingnextadj
+	add $i 1
+end
+
+:noadjsfound
+setvar $red_adj 0
+return
+
+:sectorlocked
+return
+
+:choosenearbyclass0refurb
+setvar $nearclass0port 0
+setvar $nearclass0dist 100000
+setvar $class0candidate 0
+setvar $class0candidate $map~rylos
+gosub :considernearbyclass0
+setvar $class0candidate $map~alpha_centauri
+gosub :considernearbyclass0
+setvar $class0candidate 1
+gosub :considernearbyclass0
+return
+
+:considernearbyclass0
+if ($class0candidate <= 0)
+	return
+end
+getdistance $class0dist $player~current_sector $class0candidate
+if (($class0dist > 0) and ($class0dist <= 3) and ($class0dist < $nearclass0dist))
+	setvar $nearclass0port $class0candidate
+	setvar $nearclass0dist $class0dist
+end
+return
+
+:chooseclass0figfallback
+setvar $class0fallbackport 0
+setvar $class0fallbackdist 100000
+setvar $class0candidate 0
+setvar $class0candidate $map~rylos
+gosub :considerclass0figfallback
+setvar $class0candidate $map~alpha_centauri
+gosub :considerclass0figfallback
+setvar $class0candidate 1
+gosub :considerclass0figfallback
+return
+
+:considerclass0figfallback
+if ($class0candidate <= 0)
+	return
+end
+setvar $class0hasfigadj false
+setvar $class0adjidx 1
+while (sector.warpsin[$class0candidate][$class0adjidx] > 0)
+	setvar $class0adj sector.warpsin[$class0candidate][$class0adjidx]
+	getsectorparameter $class0adj "FIGSEC" $class0isfigged
+	if ($class0isfigged)
+		setvar $class0hasfigadj true
+	end
+	add $class0adjidx 1
+end
+if ($class0hasfigadj)
+	getdistance $class0dist $player~current_sector $class0candidate
+	if (($class0dist > 0) and ($class0dist < $class0fallbackdist))
+		setvar $class0fallbackport $class0candidate
+		setvar $class0fallbackdist $class0dist
+	end
+end
+return
+
+:verifysectoradjdock
+setvar $sectoradjdock false
+if (($checksector <= 0) or ($map~stardock <= 0))
+	return
+end
+setvar $checkwarpidx 1
+while (sector.warps[$checksector][$checkwarpidx] > 0)
+	if (sector.warps[$checksector][$checkwarpidx] = $map~stardock)
+		setvar $sectoradjdock true
+	end
+	add $checkwarpidx 1
+end
+return
+
+:turnsrequired
+send "i"
+settextlinetrigger turnsrequired_tpw	:turnsrequired_tpw "Turns to Warp  : "
+pause
+
+:turnsrequired_tpw
+killalltriggers
+getword currentline $turnsrequired_tpw 5
+
+if ($red_adj > 0)
+	# twarp to jmp sector, then into SD sect, then twarp home
+	setvar $turnsrequired_temp ($turnsrequired_tpw * 3)
+	if ($_tow > 0)
+		# 2 Turns for exporting into other ship and back again
+		add $turnsrequired_temp_temp 2
+		# 3 Turns for initial Port then x into other ship, port & shop, then x and report
+		#   b4 heading home
+		add $turnsrequired_temp 3
+	else
+		add $turnsrequired_temp 1
+	end
+else
+	setvar $turnsrequired_temp ($turnsrequired_tpw * 2)
+	# 1 Turn to port at dock
+	add $turnsrequired_temp 1
+end
+
+setvar $turnsrequired $turnsrequired_temp
+return
+
+:callsaveme
+send "q q q q * '"&$switchboard~bot_name&" call*"
+halt
+
+:dotwarp
+setvar $msg ""
+if ($warpto > 0)
+	send "q q * * mz" & $warpto "*"
+	settexttrigger there        :adj_warp "You are already in that sector!"
+	settextlinetrigger adj_warp :adj_warp "Sector  : " & $warpto & " "
+	settexttrigger locking      :locking "Do you want to engage the TransWarp drive?"
+	settexttrigger igd          :twarpigd "An Interdictor Generator in this sector holds you fast!"
+	settexttrigger noturns      :twarpphotoned "Your ship was hit by a Photon and has been disabled"
+	settexttrigger noroute      :twarpnoroute "Do you really want to warp there? (Y/N)"
+	pause
+
+	:adj_warp
+	killalltriggers
+	send "z*"
+	goto :twarp_adj
+
+	:locking
+	killalltriggers
+	send "y"
+	settextlinetrigger twarp_lock 		:twarp_lock "TransWarp Locked"
+	settextlinetrigger no_twrp_lock 	:no_twarp_lock "No locating beam found"
+	settextlinetrigger twarp_adj 		:twarp_adj "<Set NavPoint>"
+	settextlinetrigger no_fuel 		:twarpnofuel "You do not have enough Fuel Ore"
+	pause
+
+	:twarpnofuel
+	killalltriggers
+	setvar $msg "Not enough fuel for T-warp."
+	goto :twarpdone
+
+	:twarp_adj
+	killalltriggers
+	send " * p s"
+	goto :twarpdone
+
+	:twarpnoroute
+	killalltriggers
+	send "n* z* "
+	setvar $msg "No route available!"
+	goto :twarpdone
+
+	:no_twarp_lock
+	killalltriggers
+	send "n*zn"
+	send "l " & #8 & $planet~planet "*c"
+	setsectorparameter $warpto "FIGSEC" false
+	setvar $msg "no twarp lock"
+	return
+
+	:twarpigd
+	killalltriggers
+	setvar $msg "My ship is being held by Interdictor!"
+	goto :twarpdone
+
+	:twarpphotoned
+	killalltriggers
+	setvar $msg "I have been photoned and can not T-warp!"
+	goto :twarpdone
+
+	:twarp_lock
+	killalltriggers
+	if (currentalignment >= 1000)
+		setvar $str "y * * p s g y g q "
+		send $str
+	else
+		setvar $str "y  *  *  m " & $map~stardock & " *  *  p s g y g q "
+		send $str
+	end
+	setvar $twarp_refurb_success true
+
+	:twarpdone
+	if ($msg <> "")
+		setvar $switchboard~message "Twarp Error - " & $msg & "*"
+		gosub :switchboard~switchboard
+		send "*"
+	end
+end
+return
+
+:bwarp
+killalltriggers
 send "b" $warpto "*"
-setTextTrigger go :go5 "TransWarp Locked"
-setTextTrigger no :no5 "No locating beam found"
+settexttrigger go :go5 "TransWarp Locked"
+settexttrigger no :no5 "No locating beam found"
 #goSub :delayTrigger
 pause
 
 :no5
-killAllTriggers
+killalltriggers
 send "n "
 waitfor "Transporter shutting down."
 return
 
 :go5
-killAllTriggers
+killalltriggers
 send "y z * "
 return
 

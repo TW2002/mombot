@@ -1,165 +1,165 @@
 systemscript
-gosub :BOT~loadVars
-								
+gosub :bot~loadvars
 
-setVar $BOT~help[1] $BOT~tab&"Chat helper to send chat as a macro to avoid problems with scripts."
+setvar $bot~help[1] $bot~tab&"Chat helper to send chat as a macro to avoid problems with scripts."
 gosub :bot~helpfile
 
-setVar $BOT~script_title "Chat"
-gosub :BOT~banner
+setvar $bot~script_title "Chat"
+gosub :bot~banner
 
 :start
 killtrigger fed
 killtrigger ss
-killTrigger text
+killtrigger text
 killtrigger reecho
 setvar $type ""
-setTextOutTrigger fed :fed "`" 
-setTextOutTrigger ss :ss "'" 
+settextouttrigger fed :fed "`"
+settextouttrigger ss :ss "'"
 pause
 
-	:ss
-	setVar $prompt ANSI_10&#27&"[255D"&#27&"[255B"&#27&"[K"&ANSI_4&"{"&ANSI_14&"Subspace chat"&ANSI_4&"}"&ANSI_15&" "&$SWITCHBOARD~bot_name&ANSI_2&">"&ANSI_7
-	setvar $type "ss"
-	goto :doprompt
-	
-	:fed
-	setvar $type "fed"
-	setVar $prompt ANSI_10&#27&"[255D"&#27&"[255B"&#27&"[K"&ANSI_4&"{"&ANSI_14&"Fedspace chat"&ANSI_4&"}"&ANSI_15&" "&$SWITCHBOARD~bot_name&ANSI_2&">"&ANSI_7
+:ss
+setvar $prompt ansi_10&#27&"[255D"&#27&"[255B"&#27&"[K"&ansi_4&"{"&ansi_14&"Subspace chat"&ansi_4&"}"&ansi_15&" "&$switchboard~bot_name&ansi_2&">"&ansi_7
+setvar $type "ss"
+goto :doprompt
 
-	:doprompt
-	echo $prompt
-	:getInput
-		setVar $promptOutput ""
-		setVar $charCount 0
-		setVar $charPos 0
-		killTrigger             text
-		killtrigger             reecho
-		killtrigger fed
-		killtrigger ss
-		setTextOutTrigger       text                    :getCharacter
-		settexttrigger          reecho                  :reEcho
-		pause
-	:getCharacter
-		getOutText $character
-		setvar $found_enter_key false
-		if ($character = #13)
+:fed
+setvar $type "fed"
+setvar $prompt ansi_10&#27&"[255D"&#27&"[255B"&#27&"[K"&ansi_4&"{"&ansi_14&"Fedspace chat"&ansi_4&"}"&ansi_15&" "&$switchboard~bot_name&ansi_2&">"&ansi_7
+
+:doprompt
+echo $prompt
+
+:getinput
+setvar $promptoutput ""
+setvar $charcount 0
+setvar $charpos 0
+killtrigger             text
+killtrigger             reecho
+killtrigger fed
+killtrigger ss
+settextouttrigger       text                    :getcharacter
+settexttrigger          reecho                  :reecho
+pause
+
+:getcharacter
+getouttext $character
+setvar $found_enter_key false
+if ($character = #13)
+	gosub :do_enter_key
+	goto :start
+else
+	getlength $character $characterlength
+	if (($characterlength > 1) or ($character = #8))
+		if ($character = #8)
+			if ($charcount <= 0)
+				setvar $charcount 0
+				setvar $charpos 0
+			else
+				if ($charpos >= $charcount)
+					setvar $frontmacro $promptoutput
+					setvar $tailmacro ""
+				else
+					cuttext $promptoutput $tailmacro ($charpos+1) 9999
+					cuttext $promptoutput  $frontmacro 1 ($charpos)
+				end
+				getlength $frontmacro $frontlength
+				if ($frontlength > 1)
+					cuttext $frontmacro $frontmacro 1 ($frontlength - 1)
+				else
+					setvar $frontmacro ""
+				end
+				setvar $promptoutput $frontmacro & $tailmacro
+				getlength $promptoutput $charcount
+				subtract $charpos 1
+				if ($charpos <= 0)
+					setvar $charpos 0
+				end
+				if (($charcount-$charpos) > 0)
+					echo $prompt $promptoutput #27 "[" ($charcount-($charpos)) "D"
+				else
+					echo $prompt $promptoutput
+				end
+			end
+		elseif (($character = #27&"[A") or ($character = #28))
+		elseif (($character = #27&"[B") or ($character = #29))
+		elseif (($character = #27&"[D") or ($character = #31))
+			if ($charpos > 0)
+				subtract $charpos 1
+				echo ansi_10 $character
+			end
+		elseif (($character = #27&"[C") or ($character = #30))
+			if ($charpos <= $charcount)
+				add $charpos 1
+				echo ansi_10 $character
+			end
+		else
+			getwordpos $character $pos #13
+			if ($pos > 0)
+				setvar $found_enter_key true
+			end
+			striptext $character #27&"[A"
+			striptext $character #27&"[B"
+			striptext $character #27&"[C"
+			striptext $character #27&"[D"
+			striptext $character #8
+			striptext $character #13
+			getlength $character $characterlength
+			goto :treatasusual
+		end
+	else
+
+		:treatasusual
+		if ($charpos >= $charcount)
+			setvar $frontmacro $promptoutput
+			setvar $tailmacro ""&$character&""
+		else
+			cuttext $promptoutput $frontmacro 1 ($charpos)
+			cuttext $promptoutput $tailmacro  ($charpos+1) ($charcount - ($charpos-1))
+			setvar $frontmacro $frontmacro&$character
+		end
+		setvar $promptoutput $frontmacro&$tailmacro
+		getlength $promptoutput $charcount
+		add $charpos $characterlength
+		if (($charcount-$charpos) > 0)
+			echo $prompt $promptoutput #27 "[" ($charcount-$charpos+1) "D"
+		else
+			echo $prompt $promptoutput
+		end
+		if ($found_enter_key)
 			gosub :do_enter_key
 			goto :start
-		else
-			getLength $character $characterLength
-			if (($characterLength > 1) or ($character = #8))
-				if ($character = #8)
-					if ($charCount <= 0)
-						setVar $charCount 0
-						setVar $charPos 0
-					else
-						if ($charPos >= $charCount)
-							setvar $frontMacro $promptOutput
-							setvar $tailMacro ""
-						else
-							cuttext $promptOutput $tailMacro ($charPos+1) 9999
-							cuttext $promptOutput  $frontMacro 1 ($charPos)
-						end
-						getlength $frontMacro $frontLength
-						if ($frontLength > 1)
-							cuttext $frontMacro $frontMacro 1 ($frontLength - 1)
-						else
-							setVar $frontMacro ""
-						end
-						setvar $promptOutput $frontMacro & $tailMacro
-						getlength $promptOutput $charCount
-						subtract $charPos 1
-						if ($charPos <= 0)
-							setvar $charPos 0
-						end
-						if (($charCount-$charPos) > 0)
-							echo $prompt $promptOutput #27 "[" ($charCount-($charPos)) "D"
-						else
-							echo $prompt $promptOutput
-						end
-					end
-				elseif (($character = #27&"[A") OR ($character = #28))
-				elseif (($character = #27&"[B") OR ($character = #29))
-				elseif (($character = #27&"[D") OR ($character = #31))
-					if ($charPos > 0)
-						subtract $charPos 1
-						echo ANSI_10 $character
-					end
-				elseif (($character = #27&"[C") OR ($character = #30))
-					if ($charPos <= $charCount)
-						add $charPos 1
-						echo ANSI_10 $character
-					end
-				else
-					getwordpos $character $pos #13
-					if ($pos > 0)
-						setvar $found_enter_key true
-					end
-					striptext $character #27&"[A"
-					striptext $character #27&"[B"
-					striptext $character #27&"[C"
-					striptext $character #27&"[D"
-					striptext $character #8
-					striptext $character #13
-					getLength $character $characterLength
-					goto :treatAsUsual
-				end
-			else
-				:treatAsUsual
-					if ($charPos >= $charCount)
-						setvar $frontMacro $promptOutput
-						setvar $tailMacro ""&$character&""
-					else
-						cuttext $promptOutput $frontMacro 1 ($charPos)
-						cuttext $promptOutput $tailMacro  ($charPos+1) ($charCount - ($charPos-1))
-						setVar $frontMacro $frontMacro&$character
-					end
-					setvar $promptOutput $frontMacro&$tailMacro
-					getlength $promptOutput $charCount
-					add $charPos $characterLength
-					if (($charCount-$charPos) > 0)
-						echo $prompt $promptOutput #27 "[" ($charCount-$charPos+1) "D"
-					else
-						echo $prompt $promptOutput
-					end
-					if ($found_enter_key)
-						gosub :do_enter_key
-						goto :start
-					end
-			end
 		end
-	setTextOutTrigger text :getCharacter
-	pause
+	end
+end
+settextouttrigger text :getcharacter
+pause
 
-	:reecho
-		if (($charCount-$charPos) > 0)
-			echo $prompt&$promptOutput&#27&"["&($charCount-$charPos+1)&"D"
-		else
-			echo $prompt&$promptOutput
-		end
-		killtrigger reecho
-		settexttrigger reEcho :reEcho
-		pause
-
+:reecho
+if (($charcount-$charpos) > 0)
+	echo $prompt&$promptoutput&#27&"["&($charcount-$charpos+1)&"D"
+else
+	echo $prompt&$promptoutput
+end
+killtrigger reecho
+settexttrigger reecho :reecho
+pause
 
 goto :start
 
 :do_enter_key
-	echo #27&"[255D"&#27&"[255B"&#27&"[K"
-	setVar $message $promptOutput
-	if ($type = "ss")
-		if ($message <> "")
-			send "'"&$message&"*"
-		end
+echo #27&"[255D"&#27&"[255B"&#27&"[K"
+setvar $message $promptoutput
+if ($type = "ss")
+	if ($message <> "")
+		send "'"&$message&"*"
 	end
-	if ($type = "fed")
-		if ($message <> "")
-			send "`"&$message&"*"
-		end
+end
+if ($type = "fed")
+	if ($message <> "")
+		send "`"&$message&"*"
 	end
+end
 return
-
 
 #INCLUDES:
 include "source\module_includes\bot\loadvars\bot"

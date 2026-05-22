@@ -1,95 +1,92 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-	setVar $HELP~HELP[1] $HELP~TAB&"PLIST - Displays Sector planet scan on subspace "
-	gosub :HELP~HELPFILE
-
+setvar $help~help[1] $help~tab&"PLIST - Displays Sector planet scan on subspace "
+gosub :help~helpfile
 
 # ============================== START PLANET LIST (PLIST)  ==============================
 :plist
 killalltriggers
-setVar $planet~planet 0
-gosub :PLAYER~quikstats
-setVar $planet~planetOutput ""
-setVar $startingLocation $PLAYER~CURRENT_PROMPT
-setVar $bot~startingLocation $PLAYER~CURRENT_PROMPT
-setVar $bot~validPrompts "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
+setvar $planet~planet 0
+gosub :player~quikstats
+setvar $planet~planetoutput ""
+setvar $startinglocation $player~current_prompt
+setvar $bot~startinglocation $player~current_prompt
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
 
-:Planet_Listing_Start
-if ($startingLocation = "Citadel")
+:planet_listing_start
+if ($startinglocation = "Citadel")
 	send "S* Q"
-	gosub :PLANET~getPlanetInfo
+	gosub :planet~getplanetinfo
 	send "Q"
 else
 	send "** "
 end
-if ((SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR] <= 1) AND ($player~planet_SCANNER = "No"))
-			setVar $SWITCHBOARD~message "Must be more than one planet in sector if bot doesn't have planet scanner*"
-	gosub :SWITCHBOARD~switchboard
-	if ($startingLocation = "Citadel")
-		gosub :PLANET~landingSub
+if ((sector.planetcount[$player~current_sector] <= 1) and ($player~planet_scanner = "No"))
+	setvar $switchboard~message "Must be more than one planet in sector if bot doesn't have planet scanner*"
+	gosub :switchboard~switchboard
+	if ($startinglocation = "Citadel")
+		gosub :planet~landingsub
 	end
 	halt
 end
-	send "L"
-setTextTrigger beginscan :Planet_Listing_beginscan "Atmospheric maneuvering system engaged"
+send "L"
+settexttrigger beginscan :planet_listing_beginscan "Atmospheric maneuvering system engaged"
 pause
-:Planet_Listing_beginscan
+
+:planet_listing_beginscan
 killalltriggers
-setTextLineTrigger nothing2do :Planet_Listing_nothing2do "You can create one with a Genesis Torpedo"
-setTextTrigger pscandone :Planet_Listing_pscandone "Land on which planet"
-setTextLineTrigger line_trig :Planet_Listing_parse_scan_line
+settextlinetrigger nothing2do :planet_listing_nothing2do "You can create one with a Genesis Torpedo"
+settexttrigger pscandone :planet_listing_pscandone "Land on which planet"
+settextlinetrigger line_trig :planet_listing_parse_scan_line
 pause
-:Planet_Listing_nothing2do
+
+:planet_listing_nothing2do
 killalltriggers
-waitOn "(?="
-	setVar $SWITCHBOARD~message "No Planets In Sector!*"
-gosub :SWITCHBOARD~switchboard
+waiton "(?="
+setvar $switchboard~message "No Planets In Sector!*"
+gosub :switchboard~switchboard
 halt
-:Planet_Listing_parse_scan_line
-killTrigger line_trig
-setVar $s CURRENTLINE
-if (($s = "") OR ($s = 0))
-	setVar $s "          "
+
+:planet_listing_parse_scan_line
+killtrigger line_trig
+setvar $s currentline
+if (($s = "") or ($s = 0))
+	setvar $s "          "
 end
-replaceText $s "        Level" "Lvl"
-replaceText $s "-----------------------------------------------" "-------------------------------------------"
-replaceText $s "        Citadel" "Citadel"
-replaceText $s "l Fighters Q" "l  Figs Q"
-getLength $s $length
+replacetext $s "        Level" "Lvl"
+replacetext $s "-----------------------------------------------" "-------------------------------------------"
+replacetext $s "        Citadel" "Citadel"
+replacetext $s "l Fighters Q" "l  Figs Q"
+getlength $s $length
 if ($length > 70)
-	cutText $s $s 1 70
+	cuttext $s $s 1 70
 end
-setVar $planet~planetOutput $planet~planetOutput&$s&"*"
+setvar $planet~planetoutput $planet~planetoutput&$s&"*"
 killalltriggers
-goto :Planet_Listing_beginscan
-:Planet_Listing_pscandone
-setVar $strlocal ""
+goto :planet_listing_beginscan
+
+:planet_listing_pscandone
+setvar $strlocal ""
 killalltriggers
-setVar $idx 1
-if (($planet~planet <> 0) AND ($PLAYER~CURRENT_SECTOR <> 1))
+setvar $idx 1
+if (($planet~planet <> 0) and ($player~current_sector <> 1))
 	send $planet~planet & "* c "
-	setVar $SWITCHBOARD~message "On Planet #" & $planet~planet & "*"
+	setvar $switchboard~message "On Planet #" & $planet~planet & "*"
 else
 	send " * "
-	setVar $SWITCHBOARD~message ""
+	setvar $switchboard~message ""
 end
-waitOn "(?="
+waiton "(?="
 send "'*"
-waitOn "Comm-link open on sub-space band"
-send $planet~planetOutput
+waiton "Comm-link open on sub-space band"
+send $planet~planetoutput
 send "**"
-waitOn "Sub-space comm-link terminated"
-gosub :SWITCHBOARD~switchboard
+waiton "Sub-space comm-link terminated"
+gosub :switchboard~switchboard
 halt
 # ============================== END PLANET LIST (PLIST) Sub ==============================
-
-
-
-
-
-
 
 # includes:
 include "source\include\planet"

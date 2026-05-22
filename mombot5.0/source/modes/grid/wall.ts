@@ -1,689 +1,687 @@
 #Look at making mow holo more efficent
-#turn limit or reporting? 
-loadVar $switchboard~bot_name
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-clearAllAvoids
+#turn limit or reporting?
+loadvar $switchboard~bot_name
+gosub :loadvars~loadvars
+gosub :help~initialize
+clearallavoids
 #HELP FILE
-setVar $HELP~HELP[1]  $HELP~TAB&"   The Wall"
-setVar $HELP~HELP[2]  $HELP~TAB&"  "
-setVar $HELP~HELP[3]  $HELP~TAB&"   wall [Origin] [Distance] {holo} {limit:n}"
-setVar $HELP~HELP[4]  $HELP~TAB&"         "
-setVar $HELP~HELP[5]  $HELP~TAB&"   Plots courses to find all sectors Distance from Origin"
-setVar $HELP~HELP[6]  $HELP~TAB&"         "
-setVar $HELP~HELP[7]  $HELP~TAB&"   holo - Will holo all unexplored sectors."
-setVar $HELP~HELP[8]  $HELP~TAB&"   limit:n - will only mow N plots"
-setVar $HELP~HELP[9]  $HELP~TAB&"  designed for day 1 use with no ZTM."
+setvar $help~help[1]  $help~tab&"   The Wall"
+setvar $help~help[2]  $help~tab&"  "
+setvar $help~help[3]  $help~tab&"   wall [Origin] [Distance] {holo} {limit:n}"
+setvar $help~help[4]  $help~tab&"         "
+setvar $help~help[5]  $help~tab&"   Plots courses to find all sectors Distance from Origin"
+setvar $help~help[6]  $help~tab&"         "
+setvar $help~help[7]  $help~tab&"   holo - Will holo all unexplored sectors."
+setvar $help~help[8]  $help~tab&"   limit:n - will only mow N plots"
+setvar $help~help[9]  $help~tab&"  designed for day 1 use with no ZTM."
 
-gosub :HELP~HELPFILE
+gosub :help~helpfile
 
+gosub :player~quikstats
+setvar $location $player~current_prompt
 
-gosub :PLAYER~quikstats
-setVar $location $PLAYER~CURRENT_PROMPT
+setvar $doholo 0
+setvar $origin 0
+setvar $distance 0
 
-setVar $doholo 0
-setVar $origin 0
-setVar $distance 0
-
-setVar $minFigs 100
-setVar $restockTerra 0
-setVar $endFigsOnly 0
+setvar $minfigs 100
+setvar $restockterra 0
+setvar $endfigsonly 0
 
 # do the first block - to set WALLBLOCK
-setVar $block 0
+setvar $block 0
 # use the block
-setVar $useblock 0
+setvar $useblock 0
 
+setarray $blocks sectors
 
-setArray $blocks SECTORS
+if ($bot~parm1 = 0)
+	setvar $bot~parm1 ""
+end
 
-    if ($bot~parm1 = 0)
-        setVar $bot~parm1 ""
-    end
-
-    isNumber $test $bot~parm1
-	if ($test)
-        if ($bot~parm1 <= SECTORS)
-		    setvar $switchboard~message "Using Origin Sector: " & $bot~parm1 & "*"
-		    gosub :switchboard~switchboard
-            setVar $origin $bot~parm1
-        else
-            setvar $switchboard~message "Origin should be from 1 to  " & SECTORS & "*"
-		    gosub :switchboard~switchboard
-            halt
-        end
+isnumber $test $bot~parm1
+if ($test)
+	if ($bot~parm1 <= sectors)
+		setvar $switchboard~message "Using Origin Sector: " & $bot~parm1 & "*"
+		gosub :switchboard~switchboard
+		setvar $origin $bot~parm1
 	else
-		setvar $switchboard~message "Origin should be from 1 to  " & SECTORS & "*"
+		setvar $switchboard~message "Origin should be from 1 to  " & sectors & "*"
 		gosub :switchboard~switchboard
 		halt
 	end
+else
+	setvar $switchboard~message "Origin should be from 1 to  " & sectors & "*"
+	gosub :switchboard~switchboard
+	halt
+end
 
-    if ($bot~parm2 = 0)
-        setVar $bot~parm2 ""
-    end
+if ($bot~parm2 = 0)
+	setvar $bot~parm2 ""
+end
 
-    isNumber $test $bot~parm2
-	if ($test)
-        if ($bot~parm2 <= 12) and ($bot~parm2 >= 2)
-		    setvar $switchboard~message "Putting up fig wall " & $bot~parm2 & " warps from origin.*"
-		    gosub :switchboard~switchboard
-            setVar $distance $bot~parm2
-        else
-            setvar $switchboard~message "Distance should be 2 to 12 warps from origin.*"
-		    gosub :switchboard~switchboard
-            halt
-        end
+isnumber $test $bot~parm2
+if ($test)
+	if ($bot~parm2 <= 12) and ($bot~parm2 >= 2)
+		setvar $switchboard~message "Putting up fig wall " & $bot~parm2 & " warps from origin.*"
+		gosub :switchboard~switchboard
+		setvar $distance $bot~parm2
 	else
 		setvar $switchboard~message "Distance should be 2 to 12 warps from origin.*"
 		gosub :switchboard~switchboard
 		halt
 	end
-    
-    send "v"
-    setTextLineTrigger getBackDockCrazy :getBackDockCrazy "The StarDock is located in sector"
-    pause
-    :getBackDockCrazy
-    killalltriggers
-    getWord CURRENTLINE $stardock 7
-    STRIPTEXT $stardock "."
+else
+	setvar $switchboard~message "Distance should be 2 to 12 warps from origin.*"
+	gosub :switchboard~switchboard
+	halt
+end
 
-    if (($player~current_sector = $origin) or ($player~current_sector < 11) or ($player~current_sector = $stardock))
-    setvar $switchboard~message "Can not start from origin or fed space.*"
+send "v"
+settextlinetrigger getbackdockcrazy :getbackdockcrazy "The StarDock is located in sector"
+pause
+
+:getbackdockcrazy
+killalltriggers
+getword currentline $stardock 7
+striptext $stardock "."
+
+if (($player~current_sector = $origin) or ($player~current_sector < 11) or ($player~current_sector = $stardock))
+	setvar $switchboard~message "Can not start from origin or fed space.*"
 	gosub :switchboard~switchboard
 	halt
 
-    end
-   
-   
+end
 
-    getWordPos $bot~user_command_line $pos "limit:"
-    if ($pos > 0)
-    setVar $cline $bot~user_command_line & " " 
-    getText $cline $limitResults "limit:" " "
-    setVar $SWITCHBOARD~message "Limiting to " & $limitResults & " results.*"
-    gosub :switchboard~switchboard
-    end
+getwordpos $bot~user_command_line $pos "limit:"
+if ($pos > 0)
+	setvar $cline $bot~user_command_line & " "
+	gettext $cline $limitresults "limit:" " "
+	setvar $switchboard~message "Limiting to " & $limitresults & " results.*"
+	gosub :switchboard~switchboard
+end
 
-	if ($location <> "Command")
-	setVar $SWITCHBOARD~message "Please start from the command prompt"
-    gosub :switchboard~switchboard
-    halt
-	end
+if ($location <> "Command")
+	setvar $switchboard~message "Please start from the command prompt"
+	gosub :switchboard~switchboard
+	halt
+end
 
+getwordpos $bot~user_command_line $pos "holo"
+if ($pos > 0)
+	setvar $doholo 1
+end
 
-    getWordPos $bot~user_command_line $pos "holo"
+# do the first block - to set WALLBLOCK
+setvar $block 0
+# use the block
+setvar $useblock 0
+
+getwordpos $bot~user_command_line $pos "useblock"
+if ($pos > 0)
+	setvar $useblock 1
+	send "'Using useblock routine in wall*"
+else
+	getwordpos $bot~user_command_line $pos "block"
 	if ($pos > 0)
-	setVar $doholo 1
+		setvar $block 1
+		send "'Using block routine in wall*"
 	end
-	
+end
 
-    # do the first block - to set WALLBLOCK
-    setVar $block 0
-    # use the block
-    setVar $useblock 0
+send "cv0*yyq"
+setarray $destsectors 10
+setarray $destsectorsok 10
+setvar $i 1
+while ($i <= 10)
+	setvar $destsectorsok[$i] 1
+	add $i 1
+end
 
-    getWordPos $bot~user_command_line $pos "useblock"
-    if ($pos > 0)
-    setVar $useblock 1
-    send "'Using useblock routine in wall*"
-    else
-     getWordPos $bot~user_command_line $pos "block"
-    if ($pos > 0)
-        setVar $block 1
-    send "'Using block routine in wall*"
-    end
-    end
+if ($useblock = 1)
+	setvar $i 11
+	while ($i <= sectors)
+		getsectorparameter $i "WALLBLOCK" $res
+		if ($res = 1)
+			echo "Adding " $i "*"
+			setvar $blocks[$i] 1
+		end
+		add $i 1
+	end
+end
+setvar $targetsectors 0
+setvar $targetsectorsi 0
+setvar $badcourse 0
+setvar $badcoursereq 0
+setarray $sectorused sectors
 
-    
-    send "cv0*yyq"
-    setArray $destSectors 10
-    setArray $destSectorsOk 10
-    setVar $i 1
-    while ($i <= 10)
-    setVar $destSectorsOk[$i] 1
-    add $i 1
-    end
-
-    if ($useblock = 1)
-    setVar $i 11
-    while ($i <= SECTORS)
-        getSectorParameter $i "WALLBLOCK" $res
-        if ($res = 1)
-    echo "Adding " $i "*"
-            setVar $blocks[$i] 1
-        end
-        add $i 1
-    end
-    end
-    setVar $targetSectors 0
-    setVar $targetSectorsi 0
-    setVar $badCourse 0
-    setVar $badCourseReq 0
-    setArray $sectorUsed SECTORS
-
-    goSub :setDestSectors
+gosub :setdestsectors
 echo "DEST DESCTORS*"
-    setVar $i 1
-    while ($i <= 10)
-    echo "DestSEctor:" $i " " $destSectors[$i] "*"
-    if ($destSectors[$i] = 0)
-        setVar $destSectorsOk[$i] 0
-    else
-        add $badCourseReq 1
-    end
-    add $i 1
-    end
+setvar $i 1
+while ($i <= 10)
+	echo "DestSEctor:" $i " " $destsectors[$i] "*"
+	if ($destsectors[$i] = 0)
+		setvar $destsectorsok[$i] 0
+	else
+		add $badcoursereq 1
+	end
+	add $i 1
+end
 
-    
-    goSub :addExistingKnowledge
-    if ($limitResults > 0)
-    if ($targetSectorsi >= $limitResults)
-        setVar $badCourse 99
-    end
-    end
-echo "BAD COURSES REQUIRED:" $badCourseReq "*"
-echo "BAD COURSES REQUIRED:" $badCourseReq "*"
-echo "BAD COURSES REQUIRED:" $badCourseReq "*"
+gosub :addexistingknowledge
+if ($limitresults > 0)
+	if ($targetsectorsi >= $limitresults)
+		setvar $badcourse 99
+	end
+end
+echo "BAD COURSES REQUIRED:" $badcoursereq "*"
+echo "BAD COURSES REQUIRED:" $badcoursereq "*"
+echo "BAD COURSES REQUIRED:" $badcoursereq "*"
 
-    while ($badCourse < $badCourseReq)
-    goSub :sendPlots
-    if ($limitResults > 0)
-        if ($targetSectorsi >= $limitResults)
-            setVar $badCourse 99
-        end
-    end
-    end
+while ($badcourse < $badcoursereq)
+	gosub :sendplots
+	if ($limitresults > 0)
+		if ($targetsectorsi >= $limitresults)
+			setvar $badcourse 99
+		end
+	end
+end
 
-    send "cv0*yyq"
-    if ($block = 1)
-    setVar $i 11
-    while ($i <= SECTORS)
-        setSectorParameter $i "WALLBLOCK" ""
-        add $i 1
-    end
-        
-    setVar $i 1
-    while ($i <= $targetSectorsi)
-        setSectorParameter $targetSectors[$i] "WALLBLOCK" "1"
-        add $i 1
-    end
-    setvar $switchboard~message "Wall Completed Block Routine*"
+send "cv0*yyq"
+if ($block = 1)
+	setvar $i 11
+	while ($i <= sectors)
+		setsectorparameter $i "WALLBLOCK" ""
+		add $i 1
+	end
+
+	setvar $i 1
+	while ($i <= $targetsectorsi)
+		setsectorparameter $targetsectors[$i] "WALLBLOCK" "1"
+		add $i 1
+	end
+	setvar $switchboard~message "Wall Completed Block Routine*"
 	gosub :switchboard~switchboard
 	halt
-    halt
-    end
-    
-    
-    if ($useblock = 1)
-    setVar $sectorListi 0
-    setVar $sectorList 0
-echo "BLOCKING WALLBLOCK SECTORS*"
-echo "BLOCKING WALLBLOCK SECTORS*"
+	halt
+end
 
-    send "c"
-    waitfor "<Computer activated>"
-    setVar $i 11
-    while ($i <= SECTORS)
+if ($useblock = 1)
+	setvar $sectorlisti 0
+	setvar $sectorlist 0
+	echo "BLOCKING WALLBLOCK SECTORS*"
+	echo "BLOCKING WALLBLOCK SECTORS*"
 
-        if ($blocks[$i] = 1)
-            send "v" $i "*"
-        end
-        add $i 1
-    end
-    send "q"
-    waitfor "<Computer deactivated>"
-    send "c"
-    setVar $i 1
-    while ($i <= $targetSectorsi)
-        send "f" $stardock "*" $targetSectors[$i] "**"
-        add $i 1
-    end
-    send "^q"
-    send "q"
-        :checkDockAgain
+	send "c"
+	waitfor "<Computer activated>"
+	setvar $i 11
+	while ($i <= sectors)
 
-        setTextLineTrigger checkdockcheckPath :checkdockcheckPath "The shortest path" 
-        setTextLineTrigger checkdocknoCheckPath :checkdocknoCheckPath "Error - No route within"
-        setTextLineTrigger checkdockcheckPathInt :checkdockcheckPathInt ": ENDINTERROG"
-        pause
-        :checkdockcheckPath
-        killalltriggers
-            goto :checkDockAgain
-        :checkdocknoCheckPath
-        killalltriggers
-            getword CURRENTLINE $gsec 14
-            add $sectorListi 1
-            setVar $sectorList[$sectorListi] $gsec
-echo "Confirmed SD OK PAth:" $gsec "*"
-            goto :checkDockAgain
-        :checkdockcheckPathInt
-        killalltriggers
-            
+		if ($blocks[$i] = 1)
+			send "v" $i "*"
+		end
+		add $i 1
+	end
+	send "q"
+	waitfor "<Computer deactivated>"
+	send "c"
+	setvar $i 1
+	while ($i <= $targetsectorsi)
+		send "f" $stardock "*" $targetsectors[$i] "**"
+		add $i 1
+	end
+	send "^q"
+	send "q"
 
-        echo "**Unsorted Sectors " $sectorListi " targets*"
-    
-    else
+	:checkdockagain
+	settextlinetrigger checkdockcheckpath :checkdockcheckpath "The shortest path"
+	settextlinetrigger checkdocknocheckpath :checkdocknocheckpath "Error - No route within"
+	settextlinetrigger checkdockcheckpathint :checkdockcheckpathint ": ENDINTERROG"
+	pause
 
-        
-    echo "**Unsorted Sector List " $targetSectorsi " targets*"
-        setVar $sectorListi $targetSectorsi
-        setVar $sectorList 0
-        setVar $i 1
-        while ($i <= $targetSectorsi)
-    echo $i " " $targetSectors[$i] "*"
-        setVar $sectorList[$i] $targetSectors[$i]
-        add $i 1
-        end
+	:checkdockcheckpath
+	killalltriggers
+	goto :checkdockagain
 
-    end
+	:checkdocknocheckpath
+	killalltriggers
+	getword currentline $gsec 14
+	add $sectorlisti 1
+	setvar $sectorlist[$sectorlisti] $gsec
+	echo "Confirmed SD OK PAth:" $gsec "*"
+	goto :checkdockagain
 
+	:checkdockcheckpathint
+	killalltriggers
+
+	echo "**Unsorted Sectors " $sectorlisti " targets*"
+
+else
+
+	echo "**Unsorted Sector List " $targetsectorsi " targets*"
+	setvar $sectorlisti $targetsectorsi
+	setvar $sectorlist 0
+	setvar $i 1
+	while ($i <= $targetsectorsi)
+		echo $i " " $targetsectors[$i] "*"
+		setvar $sectorlist[$i] $targetsectors[$i]
+		add $i 1
+	end
+
+end
 
 #SORTING BROKE
- #   goSub :sortSectors
-  #  setVar $SWITCHBOARD~message "Courses plotted, " & $targetSectorsi & " targets, covering approximately " & $temp_TotalDist & " moves*"
-  #  gosub :switchboard~switchboard
+#   goSub :sortSectors
+#  setVar $SWITCHBOARD~message "Courses plotted, " & $targetSectorsi & " targets, covering approximately " & $temp_TotalDist & " moves*"
+#  gosub :switchboard~switchboard
 #setVar $i 1
 
-
- #   while ($i <= $sectorListi)
-  #      echo $i " " $sectorCourse[$i] "*"
-   #     add $i 1
-   # end
+#   while ($i <= $sectorListi)
+#      echo $i " " $sectorCourse[$i] "*"
+#     add $i 1
+# end
 #echo "now sectorListi " $sectorListi "*"
 #halt
-    setVar $doneVoids 0
-    goSub :checkDoVoids
+setvar $donevoids 0
+gosub :checkdovoids
 
-    setVar $i 1
-    while ($i <= $sectorListi)
-        setVar $target $sectorList[$i]
-echo $target " xxx *"
-        
-        getSectorParameter $target "FIGSEC" $hasFig
-        if ($hasFig = 0) and ($player~CURRENT_SECTOR <> $target)
-            
-        gosub :PLAYER~quikstats
-        if ($player~FIGHTERS < $minFigs)
-            setVar $SWITCHBOARD~message "Fighters are low, stopping...*"
-            gosub :switchboard~switchboard
-            halt
-        end
-        setVar $BOT~command "mow"
-        if ($endFigsOnly = 0)
-            setVar $BOT~user_command_line " mow "& $target & " 1 "
-        else
-            setVar $BOT~user_command_line " mow "& $target & " 0 "
-        end
-        setVar $BOT~parm1 $target
-            
-        if ($endFigsOnly = 0)
-            setVar $BOT~parm2 1
-        else
-            setVar $BOT~parm2 0
-        end
-        if ($doholo)
-            setVar $BOT~user_command_line  $BOT~user_command_line & " holo "
-            setVar $BOT~parm3 "holo"
-        else
-            setVar $BOT~parm3 ""
-        end
+setvar $i 1
+while ($i <= $sectorlisti)
+	setvar $target $sectorlist[$i]
+	echo $target " xxx *"
 
-        saveVar $BOT~parm1
-        saveVar $BOT~parm2
-        saveVar $BOT~parm3
-        saveVar $BOT~command
-        saveVar $BOT~user_command_line
-        load "scripts\"&$bot~mombot_directory&"\modes\grid\mow.cts"
-        setEventTrigger		mowended		:mowended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\grid\mow.cts"
-        pause
-            :mowended
-            if ($doholo)
-                setVar $holook 0
-                setVar $y 1
-                while ($y <= SECTOR.WARPCOUNT[$target])
-                    if (SECTOR.EXPLORED[SECTOR.WARPS[$target][$y]] <> "YES")
-                        setVar $holook 1
-                    end
-                    add $y 1
-                end
-                if ($holook = 1)
-                    send "sh*"
-                    waitfor "Long Range Scan"
-                    waitfor "Command ["
-                end
-            end
-            send "f1*cd"
-            setSectorParameter  $target "FIGSEC" TRUE
-            goSub :checkDoVoids
-        end
-        add $i 1
-    end
-    send "cv0*yyq"
+	getsectorparameter $target "FIGSEC" $hasfig
+	if ($hasfig = 0) and ($player~current_sector <> $target)
 
-    setVar $SWITCHBOARD~message "Unvoiding sectors and finishing up.. Done!*"
-    gosub :switchboard~switchboard
-    halt
-    halt
+		gosub :player~quikstats
+		if ($player~fighters < $minfigs)
+			setvar $switchboard~message "Fighters are low, stopping...*"
+			gosub :switchboard~switchboard
+			halt
+		end
+		setvar $bot~command "mow"
+		if ($endfigsonly = 0)
+			setvar $bot~user_command_line " mow "& $target & " 1 "
+		else
+			setvar $bot~user_command_line " mow "& $target & " 0 "
+		end
+		setvar $bot~parm1 $target
 
-    :sendPlots
-    setVar $desti 1
-    send "c"
-    waitfor "<Computer activated>"
-    while ($desti <= 10)
-        if ($destSectorsOk[$desti] = 1)
-            if ($destSectors[$desti] > 0)
-                echo $destSectors[$desti] "*"
-                send "f" $origin "*" $destSectors[$desti] "**"
-            end
-                
-        end
-        add $desti 1
-    end 
-    send "^q"
-    goSub :checkcourse
-    send "q"
-    return
+		if ($endfigsonly = 0)
+			setvar $bot~parm2 1
+		else
+			setvar $bot~parm2 0
+		end
+		if ($doholo)
+			setvar $bot~user_command_line  $bot~user_command_line & " holo "
+			setvar $bot~parm3 "holo"
+		else
+			setvar $bot~parm3 ""
+		end
 
-    
-    halt
-    
-    :checkcourse
-    killalltriggers
-        
-        :checkCourseMorePaths
-        setVar $course ""
-        setTextLineTrigger checkPath :checkPath "The shortest path" 
-        setTextLineTrigger noCheckPath :noCheckPath "Error - No route within"
-        setTextLineTrigger checkPathInt :checkPathInt ": ENDINTERROG"
-        pause
-        :checkPathInt
-        killalltriggers
-        return
-        :noCheckPath
-        killalltriggers
-        getword CURRENTLINE $destFail 14
-echo "Fail Dest: " $destFail "*"
-            
-        setVar $d 1
-        while ($d <=10)
-            if ($destSectors[$d] = $destFail)
-                setVAr $destSectorsOk[$d] 0
-                setVar $d 99
-            end
-            add $d 1
-        end
-        add $badCourse 1
-        goto :checkCourseMorePaths
+		savevar $bot~parm1
+		savevar $bot~parm2
+		savevar $bot~parm3
+		savevar $bot~command
+		savevar $bot~user_command_line
+		load "scripts\"&$bot~mombot_directory&"\modes\grid\mow.cts"
+		seteventtrigger		mowended		:mowended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\grid\mow.cts"
+		pause
 
-        :checkPath
-        killalltriggers
-        getWord CURRENTLINE $courselen 4
-        STRIPTEXT $courselen "("
-        if ($courselen <= $distance)
-echo "# DIDNT THINK PLOT COULT GET SMALLER?*"
-echo "# DIDNT THINK PLOT COULT GET SMALLER?*"
-echo "# DIDNT THINK PLOT COULT GET SMALLER?*"
-echo "# DIDNT THINK PLOT COULT GET SMALLER?*"
-#if this occurs, void it and move on
+		:mowended
+		if ($doholo)
+			setvar $holook 0
+			setvar $y 1
+			while ($y <= sector.warpcount[$target])
+				if (sector.explored[sector.warps[$target][$y]] <> "YES")
+					setvar $holook 1
+				end
+				add $y 1
+			end
+			if ($holook = 1)
+				send "sh*"
+				waitfor "Long Range Scan"
+				waitfor "Command ["
+			end
+		end
+		send "f1*cd"
+		setsectorparameter  $target "FIGSEC" true
+		gosub :checkdovoids
+	end
+	add $i 1
+end
+send "cv0*yyq"
+
+setvar $switchboard~message "Unvoiding sectors and finishing up.. Done!*"
+gosub :switchboard~switchboard
 halt
-        end
-            :keepadding2
-            setTextLineTrigger addCourse2 :addCourse2 ">"
-            setTextTrigger endCourse2 :endCourse2 "Computer command [" 
-            pause
-            :addCourse2
-            killalltriggers
-            setVar $course $course & " " & CURRENTLINE
-            goto :keepadding2
-            :endCourse2
-            killalltriggers
-            #5749 > (2496) > (7072) > (322) > (799) > (6950) > (5933) > 7113 > 609 > 1 
-            setVar $prevwarp ""
-            setVar $y 1
-            setVar $countC 0
-            setVar $go 1
-             echo "$Course: " $course  "*"    
-            while ($go = 1)
-               
-                getWord $course $warp $y
-                if ($warp <> ">")
-                    add $countC 1
-                    if ($countC = ($distance + 1))
-                        stripText $warp "("
-                        stripText $warp ")"
-                        if ($sectorUsed[$warp] = 0)
-                            if ($useblock = 1)
-                                if ($blocks[$warp] = 1)
-    echo "Found $warp" $warp " But skipped as target it's a blocked target!!"
-                                else
-                                    add $targetSectorsi 1
-                                    setVar $targetSectors[$targetSectorsi] $warp
-                                    setVar $sectorUsed[$warp] 1
-                            echo "Found $warp: " $warp " To list " & $targetSectorsi "*"
-                                end
-                            else
-                                add $targetSectorsi 1
-                                setVar $targetSectors[$targetSectorsi] $warp
-                                setVar $sectorUsed[$warp] 1
-                            echo "Found $warp: " $warp " To list " & $targetSectorsi "*"
-                            end
-    
-                        end   
-                        send "v" $warp "*"
-    
-                            
-                    end
-                        
-                end
-                add $y 1
-                if ($y > 50)
-                    setVar $go 0
-                end
-            end
-            killalltriggers
-            goto :checkCourseMorePaths
-    return
+halt
 
-    :addExistingKnowledge
+:sendplots
+setvar $desti 1
+send "c"
+waitfor "<Computer activated>"
+while ($desti <= 10)
+	if ($destsectorsok[$desti] = 1)
+		if ($destsectors[$desti] > 0)
+			echo $destsectors[$desti] "*"
+			send "f" $origin "*" $destsectors[$desti] "**"
+		end
 
-    getAllCourses $allCourses $origin
-    send "c"
-    setVar $i 1
-    while ($i <= SECTORS)
-        if ($allCourses[$i] = $distance)
-            echo $i " "  $useblock " " $blocks[$i] "*"
-            send "v" $i "*"
-            if ($useblock = 1)
-                if ($blocks[$i] = 1)
-                    echo "Found $warp" $warp " But skipped as target it's a blocked target!!"
-                else
-                    add $targetSectorsi 1
-                    setVar $targetSectors[$targetSectorsi] $i
-                    setVar $sectorUsed[$i] 1
-                end
-            else
-                add $targetSectorsi 1
-                setVar $targetSectors[$targetSectorsi] $i
-                setVar $sectorUsed[$i] 1
-            end
-            if ($limitResults > 0)
-                if ($targetSectorsi >= $limitResults)
-                    setVar $i 99999
-                end
-            end
-        end
-        add $i 1
-    end
-    send "q"
-    waitfor "<Computer deactivated>"
-    return
+	end
+	add $desti 1
+end
+send "^q"
+gosub :checkcourse
+send "q"
+return
 
-    :setDestSectors
-    setVar $successSectors 0
-    setVar $successAttemp 11
-    # are goingt o stop at 10 Success Plots where we add them or not.
-    # if we are plotting out of a dead end or low warp area, we may not have 10
-    # and we dont' want double ups.
+halt
 
-    setVar $successPlots 0
-    send "c"
-    while ($successPlots < 10)
+:checkcourse
+killalltriggers
 
-        setVar $i 1
-        while ($i < 18)
-                
-            if ($successAttemp = $origin)
-                add $successAttemp 1
-            end
-            send "f" $origin "*" $successAttemp "**"
-            add $successAttemp 1
-            add $i 1
-        end
-        send "^Q"
-            
-            :setDestWaitForMore
-            setVar $course ""
-            setTextLineTrigger destPath :destPath "The shortest path" 
-            setTextLineTrigger noPath :noPath "Error - No route within"
-            setTextLineTrigger setDestPlotsDone :setDestPlotsDone ": ENDINTERROG"
-            pause
-            :noPath
-            killalltriggers
-            goto :setDestWaitForMore
-            :destPath
-            killalltriggers
-            getWord CURRENTLINE $courselen 4
-            STRIPTEXT $courselen "("
-            if ($courselen <= $distance)
-                goto :setDestWaitForMore
-            end
-                :keepadding
-                setTextLineTrigger addCourse :addCourse ">"
-                setTextTrigger endCourse :endCourse "Computer command [" 
-                pause
-                :addCourse
-                killalltriggers
-                setVar $course $course & " " & CURRENTLINE
-                goto :keepadding
-                :endCourse
-                killalltriggers
-                #5749 > (2496) > (7072) > (322) > (799) > (6950) > (5933) > 7113 > 609 > 1 
-                setVar $prevwarp ""
-                setVar $y 1
-                setVar $countC 0
-                setVar $go 1
-                while ($go = 1)
-                        
-                    getWord $course $warp $y
-                    if ($warp <> ">")
-                        add $countC 1
-                        if ($countC = ($distance + 2))
-                            stripText $warp "("
-                            stripText $warp ")"
-                            echo "Found $warp: " $warp " checking not in list and adding*"
-                                
-                            setVar $c 1
-                            setVar $okToAdd 1
-                            while ($c <= $successSectors)
-                                if ($destSectors[$c] = $warp)
-                                    setVar $okToAdd 0
-                                end
-                                add $c 1
-                            end
-                                
-                            if ($okToAdd = 1)
-                                echo "Added $warp: " $warp " To list*"
-                                add $successSectors 1
-                                setVar $destSectors[$successSectors] $warp
-                            end
-                            add $successPlots 1
-                            if ($successPlots = 10)
-                                send "q"
-                                waitfor ": ENDINTERROG"
-                                return
-                            end
+:checkcoursemorepaths
+setvar $course ""
+settextlinetrigger checkpath :checkpath "The shortest path"
+settextlinetrigger nocheckpath :nocheckpath "Error - No route within"
+settextlinetrigger checkpathint :checkpathint ": ENDINTERROG"
+pause
 
-                        end
-                            
-                    end
-                    add $y 1
-                    if ($y > 50)
-                        setVar $go 0
-                    end
-                end
-                goto :setDestWaitForMore
-            :setDestPlotsDone
-            killalltriggers
-            
-        end
-        send "q"
-    return
+:checkpathint
+killalltriggers
+return
 
+:nocheckpath
+killalltriggers
+getword currentline $destfail 14
+echo "Fail Dest: " $destfail "*"
 
+setvar $d 1
+while ($d <=10)
+	if ($destsectors[$d] = $destfail)
+		setvar $destsectorsok[$d] 0
+		setvar $d 99
+	end
+	add $d 1
+end
+add $badcourse 1
+goto :checkcoursemorepaths
 
-:checkDoVoids
-# just void the origin and adjacent sectors 
-
-if ($doneVoids = 1)
-    Return
+:checkpath
+killalltriggers
+getword currentline $courselen 4
+striptext $courselen "("
+if ($courselen <= $distance)
+	echo "# DIDNT THINK PLOT COULT GET SMALLER?*"
+	echo "# DIDNT THINK PLOT COULT GET SMALLER?*"
+	echo "# DIDNT THINK PLOT COULT GET SMALLER?*"
+	echo "# DIDNT THINK PLOT COULT GET SMALLER?*"
+	#if this occurs, void it and move on
+	halt
 end
 
-gosub :PLAYER~quikstats
-if ($player~CURRENT_SECTOR = $origin)
-    return
+:keepadding2
+settextlinetrigger addcourse2 :addcourse2 ">"
+settexttrigger endcourse2 :endcourse2 "Computer command ["
+pause
+
+:addcourse2
+killalltriggers
+setvar $course $course & " " & currentline
+goto :keepadding2
+
+:endcourse2
+killalltriggers
+#5749 > (2496) > (7072) > (322) > (799) > (6950) > (5933) > 7113 > 609 > 1
+setvar $prevwarp ""
+setvar $y 1
+setvar $countc 0
+setvar $go 1
+echo "$Course: " $course  "*"
+while ($go = 1)
+
+	getword $course $warp $y
+	if ($warp <> ">")
+		add $countc 1
+		if ($countc = ($distance + 1))
+			striptext $warp "("
+			striptext $warp ")"
+			if ($sectorused[$warp] = 0)
+				if ($useblock = 1)
+					if ($blocks[$warp] = 1)
+						echo "Found $warp" $warp " But skipped as target it's a blocked target!!"
+					else
+						add $targetsectorsi 1
+						setvar $targetsectors[$targetsectorsi] $warp
+						setvar $sectorused[$warp] 1
+						echo "Found $warp: " $warp " To list " & $targetsectorsi "*"
+					end
+				else
+					add $targetsectorsi 1
+					setvar $targetsectors[$targetsectorsi] $warp
+					setvar $sectorused[$warp] 1
+					echo "Found $warp: " $warp " To list " & $targetsectorsi "*"
+				end
+
+			end
+			send "v" $warp "*"
+
+		end
+
+	end
+	add $y 1
+	if ($y > 50)
+		setvar $go 0
+	end
+end
+killalltriggers
+goto :checkcoursemorepaths
+return
+
+:addexistingknowledge
+getallcourses $allcourses $origin
+send "c"
+setvar $i 1
+while ($i <= sectors)
+	if ($allcourses[$i] = $distance)
+		echo $i " "  $useblock " " $blocks[$i] "*"
+		send "v" $i "*"
+		if ($useblock = 1)
+			if ($blocks[$i] = 1)
+				echo "Found $warp" $warp " But skipped as target it's a blocked target!!"
+			else
+				add $targetsectorsi 1
+				setvar $targetsectors[$targetsectorsi] $i
+				setvar $sectorused[$i] 1
+			end
+		else
+			add $targetsectorsi 1
+			setvar $targetsectors[$targetsectorsi] $i
+			setvar $sectorused[$i] 1
+		end
+		if ($limitresults > 0)
+			if ($targetsectorsi >= $limitresults)
+				setvar $i 99999
+			end
+		end
+	end
+	add $i 1
+end
+send "q"
+waitfor "<Computer deactivated>"
+return
+
+:setdestsectors
+setvar $successsectors 0
+setvar $successattemp 11
+# are goingt o stop at 10 Success Plots where we add them or not.
+# if we are plotting out of a dead end or low warp area, we may not have 10
+# and we dont' want double ups.
+
+setvar $successplots 0
+send "c"
+while ($successplots < 10)
+
+	setvar $i 1
+	while ($i < 18)
+
+		if ($successattemp = $origin)
+			add $successattemp 1
+		end
+		send "f" $origin "*" $successattemp "**"
+		add $successattemp 1
+		add $i 1
+	end
+	send "^Q"
+
+	:setdestwaitformore
+	setvar $course ""
+	settextlinetrigger destpath :destpath "The shortest path"
+	settextlinetrigger nopath :nopath "Error - No route within"
+	settextlinetrigger setdestplotsdone :setdestplotsdone ": ENDINTERROG"
+	pause
+
+	:nopath
+	killalltriggers
+	goto :setdestwaitformore
+
+	:destpath
+	killalltriggers
+	getword currentline $courselen 4
+	striptext $courselen "("
+	if ($courselen <= $distance)
+		goto :setdestwaitformore
+	end
+
+	:keepadding
+	settextlinetrigger addcourse :addcourse ">"
+	settexttrigger endcourse :endcourse "Computer command ["
+	pause
+
+	:addcourse
+	killalltriggers
+	setvar $course $course & " " & currentline
+	goto :keepadding
+
+	:endcourse
+	killalltriggers
+	#5749 > (2496) > (7072) > (322) > (799) > (6950) > (5933) > 7113 > 609 > 1
+	setvar $prevwarp ""
+	setvar $y 1
+	setvar $countc 0
+	setvar $go 1
+	while ($go = 1)
+
+		getword $course $warp $y
+		if ($warp <> ">")
+			add $countc 1
+			if ($countc = ($distance + 2))
+				striptext $warp "("
+				striptext $warp ")"
+				echo "Found $warp: " $warp " checking not in list and adding*"
+
+				setvar $c 1
+				setvar $oktoadd 1
+				while ($c <= $successsectors)
+					if ($destsectors[$c] = $warp)
+						setvar $oktoadd 0
+					end
+					add $c 1
+				end
+
+				if ($oktoadd = 1)
+					echo "Added $warp: " $warp " To list*"
+					add $successsectors 1
+					setvar $destsectors[$successsectors] $warp
+				end
+				add $successplots 1
+				if ($successplots = 10)
+					send "q"
+					waitfor ": ENDINTERROG"
+					return
+				end
+
+			end
+
+		end
+		add $y 1
+		if ($y > 50)
+			setvar $go 0
+		end
+	end
+	goto :setdestwaitformore
+
+	:setdestplotsdone
+	killalltriggers
+
+end
+send "q"
+return
+
+:checkdovoids
+# just void the origin and adjacent sectors
+
+if ($donevoids = 1)
+	return
 end
 
-setVar $i 1
-while ($i <= SECTOR.WARPCOUNT[$origin])
-    if ($player~CURRENT_SECTOR = SECTOR.WARPS[$origin][$i])
-        return
-    end
-    add $i 1
+gosub :player~quikstats
+if ($player~current_sector = $origin)
+	return
 end
-    
+
+setvar $i 1
+while ($i <= sector.warpcount[$origin])
+	if ($player~current_sector = sector.warps[$origin][$i])
+		return
+	end
+	add $i 1
+end
+
 if ($origin <> $stardock)
-     send "cv" $stardock "*"
-    setVar $i 1
-    while ($i <= SECTOR.WARPINCOUNT[$stardock])
-        send "v" SECTOR.WARPSIN[$stardock][$i] "*"
-        add $i 1
-    end
-        
-    setVar $i 1
-    while ($i <= SECTOR.WARPCOUNT[$stardock])
-        send "v" SECTOR.WARPS[$stardock][$i] "*"
-        add $i 1
-    end
-    send "q"
-    waitfor "<Computer deactivated>"
+	send "cv" $stardock "*"
+	setvar $i 1
+	while ($i <= sector.warpincount[$stardock])
+		send "v" sector.warpsin[$stardock][$i] "*"
+		add $i 1
+	end
+
+	setvar $i 1
+	while ($i <= sector.warpcount[$stardock])
+		send "v" sector.warps[$stardock][$i] "*"
+		add $i 1
+	end
+	send "q"
+	waitfor "<Computer deactivated>"
 
 end
 send "cv" $origin "*"
-setVar $i 1
-while ($i <= SECTOR.WARPINCOUNT[$origin])
-    send "v" SECTOR.WARPSIN[$origin][$i] "*"
-    add $i 1
+setvar $i 1
+while ($i <= sector.warpincount[$origin])
+	send "v" sector.warpsin[$origin][$i] "*"
+	add $i 1
 end
 
-setVar $i 1
-while ($i <= SECTOR.WARPCOUNT[$origin])
-    send "v" SECTOR.WARPS[$origin][$i] "*"
-    add $i 1
+setvar $i 1
+while ($i <= sector.warpcount[$origin])
+	send "v" sector.warps[$origin][$i] "*"
+	add $i 1
 end
 send "q"
 waitfor "<Computer deactivated>"
-    
+
 send "c"
-setVar $i 1
+setvar $i 1
 while ($i <= 10)
-    send "v" $i "*"
-    add $i 1
+	send "v" $i "*"
+	add $i 1
 end
 
 send "q"
 waitfor "<Computer deactivated>"
 
-setVar $doneVoids 1
+setvar $donevoids 1
 return
 
 ############ SORTING MOVE TO INCLUDE ONE DAY
@@ -692,90 +690,86 @@ return
 # Takes $sectorListi - Length of that array
 # Returns $sectorCourse
 #  Future: add a param option, which would find sectors with param, then call this function
+:sortsectors
+setvar $searchsectors 0
+setvar $sectorsleft 0
+setvar $totalsectors $sectorlisti
+setvar $sectorcourse 0
+setvar $nextdistance 0
+setvar $nextindex 2
+setvar $sectorcourse[1] $sectorlist[1]
+setvar $nextdistance[1] $sectorlist[1]
 
+setvar $temp_totaldist 0
 
-
-:sortSectors
-
-setVar $searchsectors 0
-setVar $sectorsLeft 0
-setVar $totalSectors $sectorListi
-setVar $sectorCourse 0
-setVar $nextDistance 0
-setVar $nextIndex 2
-setVar $sectorCourse[1] $sectorList[1]
-setVar $nextDistance[1] $sectorList[1]
-
-setVar $temp_TotalDist 0
-
-setVar $i 1
-while ($i <= $sectorListi)
-    setVar $searchsectors[$i] $sectorList[$i]
-	setVar $sectorsLeft[$i] $sectorList[$i]  
-    add $i 1
+setvar $i 1
+while ($i <= $sectorlisti)
+	setvar $searchsectors[$i] $sectorlist[$i]
+	setvar $sectorsleft[$i] $sectorlist[$i]
+	add $i 1
 end
 
-setVar $x 1
-setVar $sectorsLeft[1] "-1"
-setVar $fromSector $searchsectors[1]
+setvar $x 1
+setvar $sectorsleft[1] "-1"
+setvar $fromsector $searchsectors[1]
 
-setVar $badDist 0
-setVar $badDistLog ""
+setvar $baddist 0
+setvar $baddistlog ""
 
-while ($x < $totalSectors)
+while ($x < $totalsectors)
 
-    setVar $y 1
-    setVar $closestSector 99999
-    setVar $closestDistance 99
-    setVar $badDist 0
-    while ($y <= $totalSectors)
-        setVar $toSector $sectorsLeft[$y]
-        if ($toSector <> "-1")
-#echo " from:"  $fromSector " to: " $toSector "*"
-            getDistance $dist $fromSector $toSector
-            if ($dist = "-1")
-                    
-                setVar $dist 25
-                setVar $badDist 1
-                    
-            end
-            if ($dist <> "-1")
-                if ($dist < $closestDistance)
-                    setVar $closestSector $toSector
-                    setVar $closestDistance $dist
-                end
-            end
-        end
-        add $y 1
-    end
-    if ($badDist = 1)
-        setVar $badDistLog $badDistLog & " " & $fromSector 
- 
-    end
+	setvar $y 1
+	setvar $closestsector 99999
+	setvar $closestdistance 99
+	setvar $baddist 0
+	while ($y <= $totalsectors)
+		setvar $tosector $sectorsleft[$y]
+		if ($tosector <> "-1")
+			#echo " from:"  $fromSector " to: " $toSector "*"
+			getdistance $dist $fromsector $tosector
+			if ($dist = "-1")
 
-    setVar $sectorCourse[$nextIndex] $closestSector
-    setVar $nextDistance[$nextIndex] $closestDistance
-    add $temp_TotalDist $closestDistance
+				setvar $dist 25
+				setvar $baddist 1
 
-    setVar $y 1
-    while ($y < $totalSectors)
-        if ($sectorsLeft[$y] = $closestSector)
-            setVar $sectorsLeft[$y] "-1"
-        end
-        add $y 1
-    end
-        
-    if ($closestSector < 30001)
-        setVar $fromSector $closestSector
-    end
+			end
+			if ($dist <> "-1")
+				if ($dist < $closestdistance)
+					setvar $closestsector $tosector
+					setvar $closestdistance $dist
+				end
+			end
+		end
+		add $y 1
+	end
+	if ($baddist = 1)
+		setvar $baddistlog $baddistlog & " " & $fromsector
 
-    Gosub :sleep
-    add $nextIndex 1
-    add $x 1
+	end
+
+	setvar $sectorcourse[$nextindex] $closestsector
+	setvar $nextdistance[$nextindex] $closestdistance
+	add $temp_totaldist $closestdistance
+
+	setvar $y 1
+	while ($y < $totalsectors)
+		if ($sectorsleft[$y] = $closestsector)
+			setvar $sectorsleft[$y] "-1"
+		end
+		add $y 1
+	end
+
+	if ($closestsector < 30001)
+		setvar $fromsector $closestsector
+	end
+
+	gosub :sleep
+	add $nextindex 1
+	add $x 1
 end
-if ($badDisLog <> "")
-    setVar $SWITCHBOARD~message $badDistLog & "*"
-    gosub :switchboard~switchboard
+if ($baddislog <> "")
+	setvar $switchboard~message $baddistlog & "*"
+	gosub :switchboard~switchboard
 end
 return
 
@@ -784,15 +778,15 @@ return
 # use the $SX twx command to halt if necessary.
 setdelaytrigger wake :wake 10
 pause
-	:wake
-	killalltriggers
-	return
+
+:wake
+killalltriggers
+return
 
 ##########
-	#INCLUDES:
+#INCLUDES:
 include "source\include\player"
 include "source\include\loadvars"
-
 
 include "source\include\help"
 include "source\include\switchboard.ts"

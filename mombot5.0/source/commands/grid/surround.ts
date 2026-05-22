@@ -1,64 +1,64 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-setvar $BOT~COMMAND "surround"
-setvar $PLAYER~SAVE TRUE
-loadvar $PLAYER~SURROUNDOVERWRITE
-loadvar $PLAYER~SURROUNDAVOIDALLPLANETS
-loadvar $PLAYER~SURROUNDAVOIDSHIELDEDONLY
-loadvar $PLAYER~SURROUNDPASSIVE
-loadvar $PLAYER~SURROUNDLIMP
-loadvar $PLAYER~SURROUNDMINE
-loadvar $PLAYER~SURROUNDFIGS
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $bot~command "surround"
+setvar $player~save true
+loadvar $player~surroundoverwrite
+loadvar $player~surroundavoidallplanets
+loadvar $player~surroundavoidshieldedonly
+loadvar $player~surroundpassive
+loadvar $player~surroundlimp
+loadvar $player~surroundmine
+loadvar $player~surroundfigs
 
-loadvar $SHIPPHOTONCHECK
+loadvar $shipphotoncheck
 
-setvar $HELP~HELP[1] $HELP~TAB&"surround   "
-setvar $HELP~HELP[2] $HELP~TAB&"      Surrounds sector with fighters, armids, or limpets.  "
-setvar $HELP~HELP[3] $HELP~TAB&"      "
-setvar $HELP~HELP[4] $HELP~TAB&"    - Options for surround can be found in the"
-setvar $HELP~HELP[5] $HELP~TAB&"      preferences menu in bot"
-gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&"surround   "
+setvar $help~help[2] $help~tab&"      Surrounds sector with fighters, armids, or limpets.  "
+setvar $help~help[3] $help~tab&"      "
+setvar $help~help[4] $help~tab&"    - Options for surround can be found in the"
+setvar $help~help[5] $help~tab&"      preferences menu in bot"
+gosub :help~helpfile
 
-gosub :PLAYER~QUIKSTATS
-if (($PLAYER~TURNS <= $BOT~BOT_TURN_LIMIT) and ($PLAYER~UNLIMITEDGAME <> TRUE))
-  setvar $SWITCHBOARD~MESSAGE "Turns Exceed Bot Turn Limit.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+gosub :player~quikstats
+if (($player~turns <= $bot~bot_turn_limit) and ($player~unlimitedgame <> true))
+	setvar $switchboard~message "Turns Exceed Bot Turn Limit.*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($PLAYER~PHOTONS > 0)
-  if ($SHIPPHOTONCHECK = $PLAYER~SHIP_NUMBER)
+if ($player~photons > 0)
+	if ($shipphotoncheck = $player~ship_number)
 
-  else
-    setvar $SHIPPHOTONCHECK $PLAYER~SHIP_NUMBER
-    savevar $SHIPPHOTONCHECK
-    echo "*"&ANSI_14&"You are carrying photons. *If you wish to surround anyway, press TAB-S again.*"&ANSI_7
-    halt
-  end
+	else
+		setvar $shipphotoncheck $player~ship_number
+		savevar $shipphotoncheck
+		echo "*"&ansi_14&"You are carrying photons. *If you wish to surround anyway, press TAB-S again.*"&ansi_7
+		halt
+	end
 end
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-if ($STARTINGLOCATION = "Command")
-elseif ($STARTINGLOCATION = "Citadel")
-  send "q "
-  gosub :PLANET~GETPLANETINFO
-  send "q "
-elseif ($STARTINGLOCATION = "Planet")
-  gosub :PLANET~GETPLANETINFO
-  send "q "
+setvar $startinglocation $player~current_prompt
+if ($startinglocation = "Command")
+elseif ($startinglocation = "Citadel")
+	send "q "
+	gosub :planet~getplanetinfo
+	send "q "
+elseif ($startinglocation = "Planet")
+	gosub :planet~getplanetinfo
+	send "q "
 else
-  echo "*Wrong prompt for surround command.*"
-  halt
+	echo "*Wrong prompt for surround command.*"
+	halt
 
 end
-gosub :GRID~SURROUND
+gosub :grid~surround
 
-if (($STARTINGLOCATION = "Citadel") or ($STARTINGLOCATION = "Planet"))
-  gosub :PLANET~LANDINGSUB
+if (($startinglocation = "Citadel") or ($startinglocation = "Planet"))
+	gosub :planet~landingsub
 else
-  gosub :PLAYER~QUIKSTATS
+	gosub :player~quikstats
 end
-setvar $SWITCHBOARD~MESSAGE "Surrounded sector "&$PLAYER~CURRENT_SECTOR&".*"
-gosub :SWITCHBOARD~SWITCHBOARD
-echo "*"&ANSI_14&$PLAYER~SURROUNDOUTPUT&"*"&ANSI_7
+setvar $switchboard~message "Surrounded sector "&$player~current_sector&".*"
+gosub :switchboard~switchboard
+echo "*"&ansi_14&$player~surroundoutput&"*"&ansi_7
 halt
 
 # includes:

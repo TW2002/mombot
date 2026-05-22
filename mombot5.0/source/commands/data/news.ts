@@ -1,1587 +1,1602 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-setVar $HELP~HELP[1]  $HELP~TAB&"Reads and reports daily game news."
-setVar $HELP~HELP[2]  $HELP~TAB&" "
-setVar $HELP~HELP[3]  $HELP~TAB&"news [category] {r|yest}"
-setVar $HELP~HELP[4]  $HELP~TAB&" "
-setVar $HELP~HELP[5]  $HELP~TAB&"Categories:"
-setVar $HELP~HELP[6]  $HELP~TAB&"        {rep}    Overall reporting of events in the Log"
-setVar $HELP~HELP[7]  $HELP~TAB&"      {foton}    Lists fotons fired"
-setVar $HELP~HELP[8]  $HELP~TAB&"        {tow}    Who was towed"
-setVar $HELP~HELP[9]  $HELP~TAB&"      {ports}    Port activity"
-setVar $HELP~HELP[10] $HELP~TAB&"    {planets}    Who popped planet(s) and how many"
-setVar $HELP~HELP[11] $HELP~TAB&"       {corp}    Corporate news"
-setVar $HELP~HELP[12] $HELP~TAB&"        {fed}    Commish awards and bounties"
-setVar $HELP~HELP[13] $HELP~TAB&"       {pods}    Itemized list of who podded"
-setVar $HELP~HELP[14] $HELP~TAB&"  {overloads}    Sectors with overloaded planets"
-setVar $HELP~HELP[15] $HELP~TAB&"   {announce}    Announcements made"
-setVar $HELP~HELP[16] $HELP~TAB&" "
-setVar $HELP~HELP[17] $HELP~TAB&"Refresh:"
-setVar $HELP~HELP[18] $HELP~TAB&"          {r}    Refreshes using current game date"
-setVar $HELP~HELP[19] $HELP~TAB&"       {yest}    Refreshes previous day game date data"
-gosub :HELP~HELPFILE
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1]  $help~tab&"Reads and reports daily game news."
+setvar $help~help[2]  $help~tab&" "
+setvar $help~help[3]  $help~tab&"news [category] {r|yest}"
+setvar $help~help[4]  $help~tab&" "
+setvar $help~help[5]  $help~tab&"Categories:"
+setvar $help~help[6]  $help~tab&"        {rep}    Overall reporting of events in the Log"
+setvar $help~help[7]  $help~tab&"      {foton}    Lists fotons fired"
+setvar $help~help[8]  $help~tab&"        {tow}    Who was towed"
+setvar $help~help[9]  $help~tab&"      {ports}    Port activity"
+setvar $help~help[10] $help~tab&"    {planets}    Who popped planet(s) and how many"
+setvar $help~help[11] $help~tab&"       {corp}    Corporate news"
+setvar $help~help[12] $help~tab&"        {fed}    Commish awards and bounties"
+setvar $help~help[13] $help~tab&"       {pods}    Itemized list of who podded"
+setvar $help~help[14] $help~tab&"  {overloads}    Sectors with overloaded planets"
+setvar $help~help[15] $help~tab&"   {announce}    Announcements made"
+setvar $help~help[16] $help~tab&" "
+setvar $help~help[17] $help~tab&"Refresh:"
+setvar $help~help[18] $help~tab&"          {r}    Refreshes using current game date"
+setvar $help~help[19] $help~tab&"       {yest}    Refreshes previous day game date data"
+gosub :help~helpfile
 
-loadvar $BOT_NAME
-loadvar $USER_COMMAND_LINE
-loadvar $PARM1
-loadvar $PARM2
-loadvar $PARM3
-loadvar $PARM4
-loadvar $PARM5
-loadvar $PARM6
-loadvar $PARM7
-loadvar $PARM8
+loadvar $bot_name
+loadvar $user_command_line
+loadvar $parm1
+loadvar $parm2
+loadvar $parm3
+loadvar $parm4
+loadvar $parm5
+loadvar $parm6
+loadvar $parm7
+loadvar $parm8
 loadvar $bot~folder
 
-getword $USER_COMMAND_LINE $PARM1 1
-getword $USER_COMMAND_LINE $PARM2 2
-getword $USER_COMMAND_LINE $PARM3 3
-getword $USER_COMMAND_LINE $PARM4 4
-getword $USER_COMMAND_LINE $PARM5 5
-getword $USER_COMMAND_LINE $PARM6 6
-getword $USER_COMMAND_LINE $PARM7 7
-getword $USER_COMMAND_LINE $PARM8 8
+getword $user_command_line $parm1 1
+getword $user_command_line $parm2 2
+getword $user_command_line $parm3 3
+getword $user_command_line $parm4 4
+getword $user_command_line $parm5 5
+getword $user_command_line $parm6 6
+getword $user_command_line $parm7 7
+getword $user_command_line $parm8 8
 
-:READ_NEWS_PAPER
+:read_news_paper
+setvar $news_param1 $parm1
+setvar $news_param2 $parm2
 
-setvar $NEWS_PARAM1 $PARM1
-setvar $NEWS_PARAM2 $PARM2
+setvar $news_version "v2.0"
 
+setvar $under_construction "    *    Feature Currently Not Implemented*     *"
+setvar $news_header "-------------=[Lonestar's M()M Dailies News Reader "&$news_version&"]=-------------*"
+setvar $universal_file_err "    *    Problem Reading Data File*    *    "
+setvar $unexpected_eof "** '{"&$bot_name&"} - Unexpected End Of Array. Halting.*"
+setvar $news_empty "[32mNo log entries today."
 
-setvar $NEWS_VERSION "v2.0"
+setvar $news_validated false
+setvar $news_footer ""
+setvar $news_file $bot~folder&"/_MOM_"&gamename&".news"
 
-setvar $UNDER_CONSTRUCTION "    *    Feature Currently Not Implemented*     *"
-setvar $NEWS_HEADER "-------------=[Lonestar's M()M Dailies News Reader "&$NEWS_VERSION&"]=-------------*"
-setvar $UNIVERSAL_FILE_ERR "    *    Problem Reading Data File*    *    "
-setvar $UNEXPECTED_EOF "** '{"&$BOT_NAME&"} - Unexpected End Of Array. Halting.*"
-setvar $NEWS_EMPTY "[32mNo log entries today."
+setvar $file_header ""
+setvar $news_read false
+loadvar $news_yest
 
-setvar $NEWS_VALIDATED FALSE
-setvar $NEWS_FOOTER ""
-setvar $NEWS_FILE $bot~folder&"/_MOM_"&GAMENAME&".news"
+setvar $actuallines 0
 
-setvar $FILE_HEADER ""
-setvar $NEWS_READ FALSE
-loadvar $NEWS_YEST
+gosub :player~quikstats
+setvar $startinglocal $player~current_prompt
 
-setvar $ACTUALLINES 0
-
-gosub :PLAYER~QUIKSTATS
-setvar $STARTINGLOCAL $PLAYER~CURRENT_PROMPT
-
-if (($STARTINGLOCAL <> "Citadel") and ($STARTINGLOCAL <> "Command"))
-  setvar $switchboard~message "Must start at citadel or command prompt*"
-  gosub :switchboard~switchboard
-  halt
+if (($startinglocal <> "Citadel") and ($startinglocal <> "Command"))
+	setvar $switchboard~message "Must start at citadel or command prompt*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-
-if (($NEWS_PARAM1 = "yest") or ($NEWS_PARAM2 = "yest"))
-  setvar $NEWS_YEST TRUE
-  gosub :LOG_2_FILE
-elseif (($NEWS_PARAM1 = "r") or ($NEWS_PARAM2 = "r"))
-  setvar $NEWS_YEST FALSE
-  gosub :LOG_2_FILE
+if (($news_param1 = "yest") or ($news_param2 = "yest"))
+	setvar $news_yest true
+	gosub :log_2_file
+elseif (($news_param1 = "r") or ($news_param2 = "r"))
+	setvar $news_yest false
+	gosub :log_2_file
 else
-  fileexists $NEWS_FILE_CHK $NEWS_FILE
-  if ($NEWS_FILE_CHK = FALSE)
-    gosub :LOG_2_FILE
-  end
+	fileexists $news_file_chk $news_file
+	if ($news_file_chk = false)
+		gosub :log_2_file
+	end
 
 end
-gosub :FILE_2_ARRAY
-gosub :FORMAT_FOOTER
-gosub :VALIDATE
+gosub :file_2_array
+gosub :format_footer
+gosub :validate
 
 send "'*"
 waitfor "Comm-link open on sub-space band"
 
-send $NEWS_HEADER
+send $news_header
 
-if ($NEWS_VALIDATED = FALSE)
-  send "     *      No News To Report*     *     *"
-elseif (($NEWS_PARAM1 = "rep") or ($NEWS_PARAM1 = 0) or ($NEWS_PARAM1 = "r") or ($NEWS_PARAM1 = "yest"))
-  gosub :OVERLOAD
-  send $UMASS_RESULTS&"    *"
-  gosub :TOW_DETAIL
-  send $TOWRESULTS&"       *"
-  gosub :PORT_AUTHORITY
-  send $PORTRESULTS&"      *"
-  gosub :PLANETS_POPPED
-  send $POPPEDRESULTS&"     *"
-  gosub :PHOTONS_FIRED
-  send $LAUNCHEDRESULTS&"    *"
-  gosub :PODINGSS
-  send $PODRESULTS&"        *"
-  gosub :ANNOUNCED
-  send $ANNONRESULTS&"      *"
-  gosub :CORPORATE
-  send $CORPRESULTS&"       *"
-  gosub :FED
-  send $FEDRESULTS&"        *"
-elseif ($NEWS_PARAM1 = "foton")
-  gosub :PHOTONS_LIST
-  send $PHOTONRESULTS
-elseif ($NEWS_PARAM1 = "tow")
-  gosub :TOW_DETAIL
-  send $TOWRESULTS&"       *"
-elseif ($NEWS_PARAM1 = "ports")
-  gosub :PORT_AUTHORITY
-  send $PORTRESULTS&"      *"
-elseif ($NEWS_PARAM1 = "planets")
-  gosub :PLANETS_POPPED
-  send $POPPEDRESULTS&"    *"
-elseif ($NEWS_PARAM1 = "obits")
-  send $UNDER_CONSTRUCTION
-elseif ($NEWS_PARAM1 = "pods")
-  gosub :PODINGSS
-  send $PODRESULTS&"        *"
-elseif ($NEWS_PARAM1 = "corp")
-  gosub :CORPORATE
-  send $CORPRESULTS&"       *"
-elseif ($NEWS_PARAM1 = "invasions")
-  send $UNDER_CONSTRUCTION
-elseif ($NEWS_PARAM1 = "overload")
-  gosub :OVERLOAD
-  send $UMASS_RESULTS&"    *"
-elseif ($NEWS_PARAM1 = "announce")
-  gosub :ANNOUNCED
-  send $ANNONRESULTS&"     *"
-elseif ($NEWS_PARAM1 = "fed")
-  gosub :FED
-  send $FEDRESULTS&"        *"
+if ($news_validated = false)
+	send "     *      No News To Report*     *     *"
+elseif (($news_param1 = "rep") or ($news_param1 = 0) or ($news_param1 = "r") or ($news_param1 = "yest"))
+	gosub :overload
+	send $umass_results&"    *"
+	gosub :tow_detail
+	send $towresults&"       *"
+	gosub :port_authority
+	send $portresults&"      *"
+	gosub :planets_popped
+	send $poppedresults&"     *"
+	gosub :photons_fired
+	send $launchedresults&"    *"
+	gosub :podingss
+	send $podresults&"        *"
+	gosub :announced
+	send $annonresults&"      *"
+	gosub :corporate
+	send $corpresults&"       *"
+	gosub :fed
+	send $fedresults&"        *"
+elseif ($news_param1 = "foton")
+	gosub :photons_list
+	send $photonresults
+elseif ($news_param1 = "tow")
+	gosub :tow_detail
+	send $towresults&"       *"
+elseif ($news_param1 = "ports")
+	gosub :port_authority
+	send $portresults&"      *"
+elseif ($news_param1 = "planets")
+	gosub :planets_popped
+	send $poppedresults&"    *"
+elseif ($news_param1 = "obits")
+	send $under_construction
+elseif ($news_param1 = "pods")
+	gosub :podingss
+	send $podresults&"        *"
+elseif ($news_param1 = "corp")
+	gosub :corporate
+	send $corpresults&"       *"
+elseif ($news_param1 = "invasions")
+	send $under_construction
+elseif ($news_param1 = "overload")
+	gosub :overload
+	send $umass_results&"    *"
+elseif ($news_param1 = "announce")
+	gosub :announced
+	send $annonresults&"     *"
+elseif ($news_param1 = "fed")
+	gosub :fed
+	send $fedresults&"        *"
 else
-  send "    *    SYNTAX ERROR!*      *"
-
+	send "    *    SYNTAX ERROR!*      *"
 
 end
-send $NEWS_FOOTER&"** "
+send $news_footer&"** "
 halt
-:PODINGSS
 
-setvar $IDX 1
-setvar $PODRESULTS ""
-setvar $PODSIZE 20
-setvar $PODDINGS 10
+:podingss
+setvar $idx 1
+setvar $podresults ""
+setvar $podsize 20
+setvar $poddings 10
 
-setarray $PODS $PODSIZE $PODDINGS
-setvar $PODCNT 0
-if ($NEWS_READ and ($LINES <> 0))
-  while ($IDX <= $LINES)
-    setvar $CURRENTLINE $NEWS_ARRAY[$IDX]
-    if ($CURRENTLINE = "EOF")
-      send $UNEXPECTED_EOF
-      halt
-    else
-      getwordpos $CURRENTLINE $POS "[0;32m was on the pl"
-      if ($POS <> 0)
-        setvar $I 1
-        setvar $TRDERRESP " N/A  "
-        add $PODCNT 1
-        gosub :TIME_DECODE
-        gettext $CURRENTLINE $TRADER "[1;36m" "[0;32m was"
+setarray $pods $podsize $poddings
+setvar $podcnt 0
+if ($news_read and ($lines <> 0))
+	while ($idx <= $lines)
+		setvar $currentline $news_array[$idx]
+		if ($currentline = "EOF")
+			send $unexpected_eof
+			halt
+		else
+			getwordpos $currentline $pos "[0;32m was on the pl"
+			if ($pos <> 0)
+				setvar $i 1
+				setvar $trderresp " N/A  "
+				add $podcnt 1
+				gosub :time_decode
+				gettext $currentline $trader "[1;36m" "[0;32m was"
 
-        while ($I <= "($IDX+10")
-          setvar $CTLINE $NEWS_ARRAY[$I]
-          getwordpos $CLINE $POS "DESTROYED[32m the planet"
-          if ($POS <> 0)
-            gettext $CLINE $TRADERRESP "[1;36m" "[5;31m"
-            goto :RESP_SRCH_DONE
-          end
-          add $I 1
-        end
-        :RESP_SRCH_DONE
-        setvar $I 1
-        while ($I <= $POSSIZE)
-          if ($PODS[$I] = $TRADER)
-            setvar $II 1
-            while ($II <= $PODDINGS)
-              if ($PODS[$I][$II] = 0)
-                setvar $PODS[$I][$II] $TIMECODE&" Was on a planet Blown-up by: "&$TRADERRESP
-                goto :NEXT_PODDING
-              end
-              add $II 1
-            end
-          elseif ($PODS[$I] = 0)
-            setvar $PODS[$I] $TRADER
-            setvar $PODS[$I][1] $TIMECODE&" Was on a planet Blown-up by: "&$TRADERRESP
-            goto :NEXT_PODDING
-          end
-        end
-      end
+				while ($i <= "($IDX+10")
+					setvar $ctline $news_array[$i]
+					getwordpos $cline $pos "DESTROYED[32m the planet"
+					if ($pos <> 0)
+						gettext $cline $traderresp "[1;36m" "[5;31m"
+						goto :resp_srch_done
+					end
+					add $i 1
+				end
 
-      getwordpos $CURRENTLINE $POS "[31mGOT BLOWN UP TOO!"
-      if ($POS <> 0)
-        setvar $I 1
-        add $PODCNT 1
-        gosub :TIME_DECODE
-        gettext $CURRENTLINE $TRADER "[1;36m" " [31mGOT"
-        while ($I <= $PODSIZE)
-          if ($PODS[$I] = $TRADER)
-            setvar $II 1
-            while ($II <= $PODDINGS)
-              if ($PODS[$I][$II] = 0)
-                setvar $PODS[$I][$II] $TIMECODE&" Destroyed a Planet and got blown up too!"
-                goto :NEXT_PODDING
-              end
-              add $II 1
-            end
-          elseif ($PODS[$I] = 0)
-            setvar $PODS[$I] $TRADER
-            setvar $PODS[$I][1] $TIMECODE&" Destroyed a Planet and got blown up too!"
-            goto :NEXT_PODDING
-          end
-          add $I 1
-        end
-      end
+				:resp_srch_done
+				setvar $i 1
+				while ($i <= $possize)
+					if ($pods[$i] = $trader)
+						setvar $ii 1
+						while ($ii <= $poddings)
+							if ($pods[$i][$ii] = 0)
+								setvar $pods[$i][$ii] $timecode&" Was on a planet Blown-up by: "&$traderresp
+								goto :next_podding
+							end
+							add $ii 1
+						end
+					elseif ($pods[$i] = 0)
+						setvar $pods[$i] $trader
+						setvar $pods[$i][1] $timecode&" Was on a planet Blown-up by: "&$traderresp
+						goto :next_podding
+					end
+				end
+			end
 
-      getwordpos $CURRENTLINE $POS "[32m by collision with a Nav"
-      if ($POS <> 0)
-        setvar $I 1
-        add $PODCNT 1
-        gosub :TIME_DECODE
-        gettext $CURRENTLINE $TRADER "[1;36m" "'s ["
-        while ($I <= $PODSIZE)
-          if ($PODS[$I] = $TRADER)
-            setvar $II 1
-            while ($II <= $PODDINGS)
-              if ($PODS[$I][$II] = 0)
-                setvar $PODS[$I][$II] $TIMECODE&" Collided with a Navigational Hazard!"
-                goto :NEXT_PODDING
-              end
-              add $II 1
-            end
-          elseif ($PODS[$I] = 0)
-            setvar $PODS[$I] $TRADER
-            setvar $PODS[$I][1] $TIMECODE&" Collided with a Navigational Hazard!"
-            goto :NEXT_PODDING
-          end
-          add $I 1
-        end
-      end
+			getwordpos $currentline $pos "[31mGOT BLOWN UP TOO!"
+			if ($pos <> 0)
+				setvar $i 1
+				add $podcnt 1
+				gosub :time_decode
+				gettext $currentline $trader "[1;36m" " [31mGOT"
+				while ($i <= $podsize)
+					if ($pods[$i] = $trader)
+						setvar $ii 1
+						while ($ii <= $poddings)
+							if ($pods[$i][$ii] = 0)
+								setvar $pods[$i][$ii] $timecode&" Destroyed a Planet and got blown up too!"
+								goto :next_podding
+							end
+							add $ii 1
+						end
+					elseif ($pods[$i] = 0)
+						setvar $pods[$i] $trader
+						setvar $pods[$i][1] $timecode&" Destroyed a Planet and got blown up too!"
+						goto :next_podding
+					end
+					add $i 1
+				end
+			end
 
-      getwordpos $CURRENTLINE $POS "[32m by a Corbomite Reaction!"
-      if ($POS <> 0)
-        setvar $I 1
-        add $PODCNT 1
-        gosub :TIME_DECODE
-        gettext $CURRENTLINE $TRADER "[1;36m" "'s "
-        while ($I <= $PODSIZE)
-          if ($PODS[$I] = $TRADER)
-            setvar $II 1
-            while ($II <= $PODDINGS)
-              if ($PODS[$I][$II] = 0)
-                setvar $PODS[$I][$II] $TIMECODE&" Ship was Destroyed by a Corbomite Reaction!"
-                goto :NEXT_PODDING
-              end
-              add $II 1
-            end
-          elseif ($PODS[$I] = 0)
-            setvar $PODS[$I] $TRADER
-            setvar $PODS[$I][1] $TIMECODE&" Ship was Destroyed by a Corbomite Reaction!"
-            goto :NEXT_PODDING
-          end
-          add $I 1
-        end
-      end
+			getwordpos $currentline $pos "[32m by collision with a Nav"
+			if ($pos <> 0)
+				setvar $i 1
+				add $podcnt 1
+				gosub :time_decode
+				gettext $currentline $trader "[1;36m" "'s ["
+				while ($i <= $podsize)
+					if ($pods[$i] = $trader)
+						setvar $ii 1
+						while ($ii <= $poddings)
+							if ($pods[$i][$ii] = 0)
+								setvar $pods[$i][$ii] $timecode&" Collided with a Navigational Hazard!"
+								goto :next_podding
+							end
+							add $ii 1
+						end
+					elseif ($pods[$i] = 0)
+						setvar $pods[$i] $trader
+						setvar $pods[$i][1] $timecode&" Collided with a Navigational Hazard!"
+						goto :next_podding
+					end
+					add $i 1
+				end
+			end
 
-      getwordpos $CURRENTLINE $POS "[32m while invading [1;36m"
-      if ($POS <> 0)
-        setvar $I 1
-        add $PODCNT 1
-        gosub :TIME_DECODE
-        gettext $CURRENTLINE $TRADER "[1;36m" "'s [0"
-        gettext $CURRENTLINE $PLANETOID "invading [1;36m" "[0;32m!"
-        while ($I <= $PODSIZE)
-          if ($PODS[$I] = $TRADER)
-            setvar $II 1
-            while ($II <= $PODDINGS)
-              if ($PODS[$I][$II] = 0)
-                setvar $PODS[$I][$II] $TIMECODE&" Ship was Destroyed Invading "&$PLANETOID&"!"
-                goto :NEXT_PODDING
-              end
-              add $II 1
-            end
-          elseif ($PODS[$I] = 0)
-            setvar $PODS[$I] $TRADER
-            setvar $PODS[$I][1] $TIMECODE&" Ship was Destroyed Invading "&$PLANETOID&"!"
-            goto :NEXT_PODDING
-          end
-          add $I 1
-        end
-      end
+			getwordpos $currentline $pos "[32m by a Corbomite Reaction!"
+			if ($pos <> 0)
+				setvar $i 1
+				add $podcnt 1
+				gosub :time_decode
+				gettext $currentline $trader "[1;36m" "'s "
+				while ($i <= $podsize)
+					if ($pods[$i] = $trader)
+						setvar $ii 1
+						while ($ii <= $poddings)
+							if ($pods[$i][$ii] = 0)
+								setvar $pods[$i][$ii] $timecode&" Ship was Destroyed by a Corbomite Reaction!"
+								goto :next_podding
+							end
+							add $ii 1
+						end
+					elseif ($pods[$i] = 0)
+						setvar $pods[$i] $trader
+						setvar $pods[$i][1] $timecode&" Ship was Destroyed by a Corbomite Reaction!"
+						goto :next_podding
+					end
+					add $i 1
+				end
+			end
 
-      getwordpos $CURRENTLINE $POS "destroyed[32m by a Quasar"
-      if ($POS <> 0)
-        setvar $I 1
-        add $PODCNT 1
-        gosub :TIME_DECODE
-        gettext $CURRENTLINE $TRADER "[1;36m" "'s ["
-        while ($I <= $PODSIZE)
-          if ($PODS[$I] = $TRADER)
-            setvar $II 1
-            while ($II <= $PODDINGS)
-              if ($PODS[$I][$II] = 0)
-                setvar $PODS[$I][$II] $TIMECODE&" Ship was Destroyed by a Quasar Cannon!"
-                goto :NEXT_PODDING
-              end
-              add $II 1
-            end
-          elseif ($PODS[$I] = 0)
-            setvar $PODS[$I] $TRADER
-            setvar $PODS[$I][1] $TIMECODE&" Ship was Destroyed by a Quasar Cannon!"
-            goto :NEXT_PODDING
-          end
-          add $I 1
-        end
-      end
+			getwordpos $currentline $pos "[32m while invading [1;36m"
+			if ($pos <> 0)
+				setvar $i 1
+				add $podcnt 1
+				gosub :time_decode
+				gettext $currentline $trader "[1;36m" "'s [0"
+				gettext $currentline $planetoid "invading [1;36m" "[0;32m!"
+				while ($i <= $podsize)
+					if ($pods[$i] = $trader)
+						setvar $ii 1
+						while ($ii <= $poddings)
+							if ($pods[$i][$ii] = 0)
+								setvar $pods[$i][$ii] $timecode&" Ship was Destroyed Invading "&$planetoid&"!"
+								goto :next_podding
+							end
+							add $ii 1
+						end
+					elseif ($pods[$i] = 0)
+						setvar $pods[$i] $trader
+						setvar $pods[$i][1] $timecode&" Ship was Destroyed Invading "&$planetoid&"!"
+						goto :next_podding
+					end
+					add $i 1
+				end
+			end
 
-      getwordpos $CURRENTLINE $POS "[0;32m's fighters!"
-      if ($POS <> 0)
-        setvar $I 1
-        add $PODCNT 1
-        gosub :TIME_DECODE
-        gettext $CURRENTLINE $TRADER "[1;36m" "'s ["
-        while ($I <= $PODSIZE)
-          if ($PODS[$I] = $TRADER)
-            setvar $II 1
-            while ($II <= $PODDINGS)
-              if ($PODS[$I][$II] = 0)
-                setvar $PODS[$I][$II] $TIMECODE&" was destroyed by fighters!"
-                goto :NEXT_PODDING
-              end
-              add $II 1
-            end
-          elseif ($PODS[$I] = 0)
-            setvar $PODS[$I] $TRADER
-            setvar $PODS[$I][1] $TIMECODE&" was destroyed by fighters!"
-            goto :NEXT_PODDING
-          end
-          add $I 1
-        end
-      end
+			getwordpos $currentline $pos "destroyed[32m by a Quasar"
+			if ($pos <> 0)
+				setvar $i 1
+				add $podcnt 1
+				gosub :time_decode
+				gettext $currentline $trader "[1;36m" "'s ["
+				while ($i <= $podsize)
+					if ($pods[$i] = $trader)
+						setvar $ii 1
+						while ($ii <= $poddings)
+							if ($pods[$i][$ii] = 0)
+								setvar $pods[$i][$ii] $timecode&" Ship was Destroyed by a Quasar Cannon!"
+								goto :next_podding
+							end
+							add $ii 1
+						end
+					elseif ($pods[$i] = 0)
+						setvar $pods[$i] $trader
+						setvar $pods[$i][1] $timecode&" Ship was Destroyed by a Quasar Cannon!"
+						goto :next_podding
+					end
+					add $i 1
+				end
+			end
 
-      getwordpos $CURRENTLINE $POS "[5;31m DESTROYED [1;36m"
-      if ($POS <> 0)
-        getwordpos $CURRENTLINE $POS "[1;36mCorp #[33m"
-        if ($POS <> 0)
+			getwordpos $currentline $pos "[0;32m's fighters!"
+			if ($pos <> 0)
+				setvar $i 1
+				add $podcnt 1
+				gosub :time_decode
+				gettext $currentline $trader "[1;36m" "'s ["
+				while ($i <= $podsize)
+					if ($pods[$i] = $trader)
+						setvar $ii 1
+						while ($ii <= $poddings)
+							if ($pods[$i][$ii] = 0)
+								setvar $pods[$i][$ii] $timecode&" was destroyed by fighters!"
+								goto :next_podding
+							end
+							add $ii 1
+						end
+					elseif ($pods[$i] = 0)
+						setvar $pods[$i] $trader
+						setvar $pods[$i][1] $timecode&" was destroyed by fighters!"
+						goto :next_podding
+					end
+					add $i 1
+				end
+			end
 
-          goto :NEXT_PODDING
-        end
-        setvar $I 1
-        add $PODCNT 1
-        gosub :TIME_DECODE
-        gettext $CURRENTLINE $TRADER "DESTROYED [1;36m" "'s "
-        gettext $CURRENTLINE $PODDER "[1;36m" "[5;31m"
-        while ($I <= $PODSIZE)
-          if ($PODS[$I] = $TRADER)
-            setvar $II 1
-            while ($II <= $PODDINGS)
-              if ($PODS[$I][$II] = 0)
-                setvar $PODS[$I][$II] $TIMECODE&" Ship Destroyed by "&$PODDER
-                goto :NEXT_PODDING
-              end
-              add $II 1
-            end
-          elseif ($PODS[$I] = 0)
-            setvar $PODS[$I] $TRADER
-            setvar $PODS[$I][1] $TIMECODE&" Ship Destroyed by "&$PODDER
-            goto :NEXT_PODDING
-          end
-          add $I 1
-        end
-      end
+			getwordpos $currentline $pos "[5;31m DESTROYED [1;36m"
+			if ($pos <> 0)
+				getwordpos $currentline $pos "[1;36mCorp #[33m"
+				if ($pos <> 0)
 
-      getwordpos $CURRENTLINE $POS " [0;32msurrendered a"
-      if ($POS <> 0)
-        setvar $I 1
-        add $PODCNT 1
-        gosub :TIME_DECODE
+					goto :next_podding
+				end
+				setvar $i 1
+				add $podcnt 1
+				gosub :time_decode
+				gettext $currentline $trader "DESTROYED [1;36m" "'s "
+				gettext $currentline $podder "[1;36m" "[5;31m"
+				while ($i <= $podsize)
+					if ($pods[$i] = $trader)
+						setvar $ii 1
+						while ($ii <= $poddings)
+							if ($pods[$i][$ii] = 0)
+								setvar $pods[$i][$ii] $timecode&" Ship Destroyed by "&$podder
+								goto :next_podding
+							end
+							add $ii 1
+						end
+					elseif ($pods[$i] = 0)
+						setvar $pods[$i] $trader
+						setvar $pods[$i][1] $timecode&" Ship Destroyed by "&$podder
+						goto :next_podding
+					end
+					add $i 1
+				end
+			end
 
-        gettext $CURRENTLINE $TRADER "[1;36m" " [0;32msurrendered a"
-        while ($I <= $PODSIZE)
-          if ($PODS[$I] = $TRADER)
-            setvar $II 1
-            while ($II <= $PODDINGS)
-              if ($PODS[$I][$II] = 0)
-                setvar $PODS[$I][$II] $TIMECODE&" surrendered a ship!"
-                goto :NEXT_PODDING
-              end
-              add $II 1
-            end
-          elseif ($PODS[$I] = 0)
-            setvar $PODS[$I] $TRADER
-            setvar $PODS[$I][1] $TIMECODE&" "&$SPEACIAL
-            goto :NEXT_PODDING
-          end
-          add $I 1
-        end
-      end
+			getwordpos $currentline $pos " [0;32msurrendered a"
+			if ($pos <> 0)
+				setvar $i 1
+				add $podcnt 1
+				gosub :time_decode
 
-      getwordpos $CURRENTLINE $POS "[32m by atomic fusion!"
-      if ($POS <> 0)
-        setvar $I 1
-        add $PODCNT 1
-        gosub :TIME_DECODE
-        gettext $CURRENTLINE $TRADER "[1;36m" "'s ["
-        while ($I <= $PODSIZE)
-          if ($PODS[$I] = $TRADER)
-            setvar $II 1
-            while ($II <= $PODDINGS)
-              if ($PODS[$I][$II] = 0)
-                setvar $PODS[$I][$II] $TIMECODE&" Ship was Destroyed by atomic fusion"
-                goto :NEXT_PODDING
-              end
-              add $II 1
-            end
-          elseif ($PODS[$I] = 0)
-            setvar $PODS[$I] $TRADER
-            setvar $PODS[$I][1] $TIMECODE&" Ship was Destroyed by atomic fusion!"
-            goto :NEXT_PODDING
-          end
-          add $I 1
-        end
-      end
+				gettext $currentline $trader "[1;36m" " [0;32msurrendered a"
+				while ($i <= $podsize)
+					if ($pods[$i] = $trader)
+						setvar $ii 1
+						while ($ii <= $poddings)
+							if ($pods[$i][$ii] = 0)
+								setvar $pods[$i][$ii] $timecode&" surrendered a ship!"
+								goto :next_podding
+							end
+							add $ii 1
+						end
+					elseif ($pods[$i] = 0)
+						setvar $pods[$i] $trader
+						setvar $pods[$i][1] $timecode&" "&$speacial
+						goto :next_podding
+					end
+					add $i 1
+				end
+			end
 
-      getwordpos $CURRENTLINE $POS "by [1;36mCaptain Zyrain"
-      if ($POS <> 0)
-        setvar $I 1
-        add $PODCNT 1
-        gosub :TIME_DECODE
-        gettext $CURRENTLINE $TRADER "[1;36m" "'s ["
-        while ($I <= $PODSIZE)
-          if ($PODS[$I] = $TRADER)
-            setvar $II 1
-            while ($II <= $PODDINGS)
-              if ($PODS[$I][$II] = 0)
-                setvar $PODS[$I][$II] $TIMECODE&" Ship was Destroyed by Captain Zyrain!"
-                goto :NEXT_PODDING
-              end
-              add $II 1
-            end
-          elseif ($PODS[$I] = 0)
-            setvar $PODS[$I] $TRADER
-            setvar $PODS[$I][1] $TIMECODE&" Ship was Destroyed by Captain Zyrain!"
-            goto :NEXT_PODDING
-          end
-          add $I 1
-        end
-      end
-    end
-    :NEXT_PODDING
-    add $IDX 1
-  end
+			getwordpos $currentline $pos "[32m by atomic fusion!"
+			if ($pos <> 0)
+				setvar $i 1
+				add $podcnt 1
+				gosub :time_decode
+				gettext $currentline $trader "[1;36m" "'s ["
+				while ($i <= $podsize)
+					if ($pods[$i] = $trader)
+						setvar $ii 1
+						while ($ii <= $poddings)
+							if ($pods[$i][$ii] = 0)
+								setvar $pods[$i][$ii] $timecode&" Ship was Destroyed by atomic fusion"
+								goto :next_podding
+							end
+							add $ii 1
+						end
+					elseif ($pods[$i] = 0)
+						setvar $pods[$i] $trader
+						setvar $pods[$i][1] $timecode&" Ship was Destroyed by atomic fusion!"
+						goto :next_podding
+					end
+					add $i 1
+				end
+			end
 
-  setvar $PODRESULTS "Possible Poddings:*"
-  setvar $I 1
+			getwordpos $currentline $pos "by [1;36mCaptain Zyrain"
+			if ($pos <> 0)
+				setvar $i 1
+				add $podcnt 1
+				gosub :time_decode
+				gettext $currentline $trader "[1;36m" "'s ["
+				while ($i <= $podsize)
+					if ($pods[$i] = $trader)
+						setvar $ii 1
+						while ($ii <= $poddings)
+							if ($pods[$i][$ii] = 0)
+								setvar $pods[$i][$ii] $timecode&" Ship was Destroyed by Captain Zyrain!"
+								goto :next_podding
+							end
+							add $ii 1
+						end
+					elseif ($pods[$i] = 0)
+						setvar $pods[$i] $trader
+						setvar $pods[$i][1] $timecode&" Ship was Destroyed by Captain Zyrain!"
+						goto :next_podding
+					end
+					add $i 1
+				end
+			end
+		end
 
-  while ($I <= $PODSIZE)
-    if ($PODS[$I] <> 0)
-      setvar $II 1
-      setvar $PODRESULTS $PODRESULTS&"           "&$PODS[$I]&"*"
-      while ($II <= 10)
-        if ($PODS[$I][$II] <> 0)
-          setvar $PODRESULTS $PODRESULTS&"              "&$PODS[$I][$II]&"*"
-        end
-        add $II 1
-      end
-    end
-    add $I 1
-  end
+		:next_podding
+		add $idx 1
+	end
+
+	setvar $podresults "Possible Poddings:*"
+	setvar $i 1
+
+	while ($i <= $podsize)
+		if ($pods[$i] <> 0)
+			setvar $ii 1
+			setvar $podresults $podresults&"           "&$pods[$i]&"*"
+			while ($ii <= 10)
+				if ($pods[$i][$ii] <> 0)
+					setvar $podresults $podresults&"              "&$pods[$i][$ii]&"*"
+				end
+				add $ii 1
+			end
+		end
+		add $i 1
+	end
 
 else
-  setvar $PODRESULTS $UNIVERSAL_FILE_ERR
+	setvar $podresults $universal_file_err
 end
 
 return
-:FED
-setvar $IDX 1
-setvar $FEDRESULTS ""
-setvar $BOUNTYSIZE 50
-setarray $BOUNTIES $BOUNTYSIZE
-setvar $BOUNTYCNT 0
-setvar $COMMISHSIZE 50
-setarray $COMMISH $COMMISHSIZE
-setvar $COMMISHCNT 0
 
-if ($NEWS_READ and ($LINES <> 0))
-  while ($IDX <= $LINES)
-    setvar $CURRENTLINE $NEWS_ARRAY[$IDX]
-    if ($CURRENTLINE = "EOF")
-      send $UNEXPECTED_EOF
-      halt
-    else
-      getwordpos $CURRENTLINE $POS "[33mThe Federation hereby posts"
-      if ($POS <> 0)
-        add $BOUNTYCNT 1
-        gettext $CURRENTLINE $AMOUNT "of [1m" "[0;33m credits"
-        setvar $I ($IDX + 1)
-        while ($I <= $LINES)
-          setvar $TRADERSEARCH $NEWS_ARRAY[$I]
-          getwordpos $TRADERSEARCH $POS "[33m  for the destruction of"
-          if ($POS <> 0)
-            gettext $TRADERSEARCH $TRADER "of [1;36m" " [0;33mship!"
-            goto :GOT_TRADER
-          end
-          add $I 1
-        end
-        setvar $TRADER "-- Not Known --"
-        :GOT_TRADER
-        setvar $I 1
-        while ($I <= $BOUNTYSIZE)
-          if ($BOUNTIES[$I] <> 0)
-            setvar $BOUNTIES[$I] $TRADER&" for "&$AMOUNT
-            goto :NEXT_FED_ITEM
-          end
-          add $I 1
-        end
-      end
+:fed
+setvar $idx 1
+setvar $fedresults ""
+setvar $bountysize 50
+setarray $bounties $bountysize
+setvar $bountycnt 0
+setvar $commishsize 50
+setarray $commish $commishsize
+setvar $commishcnt 0
 
-      getwordpos $CURRENTLINE $POS "[31m was awarded a Federal"
-      if ($POS <> 0)
-        add $COMMISHCNT 1
-        gosub :TIME_DECODE
-        gettext $CURRENTLINE $TRADER "[1;32m" "[31m was"
-        setvar $I 1
-        while ($I <= $COMMISHSIZE)
-          if ($COMMISH[$I] <> 0)
-            setvar $COMMISH[$I] $TIMECODE&" - "&$TRADER
-            goto :NEXT_FED_ITEM
-          end
-          add $I 1
-        end
-      end
-    end
-    :NEXT_FED_ITEM
-    add $IDX 1
-  end
+if ($news_read and ($lines <> 0))
+	while ($idx <= $lines)
+		setvar $currentline $news_array[$idx]
+		if ($currentline = "EOF")
+			send $unexpected_eof
+			halt
+		else
+			getwordpos $currentline $pos "[33mThe Federation hereby posts"
+			if ($pos <> 0)
+				add $bountycnt 1
+				gettext $currentline $amount "of [1m" "[0;33m credits"
+				setvar $i ($idx + 1)
+				while ($i <= $lines)
+					setvar $tradersearch $news_array[$i]
+					getwordpos $tradersearch $pos "[33m  for the destruction of"
+					if ($pos <> 0)
+						gettext $tradersearch $trader "of [1;36m" " [0;33mship!"
+						goto :got_trader
+					end
+					add $i 1
+				end
+				setvar $trader "-- Not Known --"
 
-  if ($BOUNTYCNT > 0)
-    setvar $FEDRESULTS $BOUNTYCNT&" Federal Bounties Posted:*"
-    setvar $I 1
-    while ($I <= $BOUNTYSIZE)
-      if ($BOUNTIES[$I] <> 0)
-        setvar $FEDRESULTS $FEDRESULTS&"                               "&$BOUNTIES[$I]&"*"
-      end
-      add $I 1
-    end
-    setvar $FEDRESULTS $FEDRESULTS&"         *"
-  else
-    setvar $FEDRESULTS "Federal Bounties Posted:        None*     *"
-  end
-  if ($COMMISHCNT > 0)
-    setvar $FEDRESULTS $FEDRESULTS&$COMMISHCNT&" Federal Commissions Issued:*"
-    setvar $I 1
-    while ($I <= $COMMISHSIZE)
-      if ($COMMISH[$I] <> 0)
-        setvar $FEDRESULTS $FEDRESULTS&"                               "&$COMMISH[$I]&"*"
-      end
-      add $I 1
-    end
-  else
-    setvar $FEDRESULTS $FEDRESULTS&"Federal Commissions Issued:     None*"
-  end
+				:got_trader
+				setvar $i 1
+				while ($i <= $bountysize)
+					if ($bounties[$i] <> 0)
+						setvar $bounties[$i] $trader&" for "&$amount
+						goto :next_fed_item
+					end
+					add $i 1
+				end
+			end
+
+			getwordpos $currentline $pos "[31m was awarded a Federal"
+			if ($pos <> 0)
+				add $commishcnt 1
+				gosub :time_decode
+				gettext $currentline $trader "[1;32m" "[31m was"
+				setvar $i 1
+				while ($i <= $commishsize)
+					if ($commish[$i] <> 0)
+						setvar $commish[$i] $timecode&" - "&$trader
+						goto :next_fed_item
+					end
+					add $i 1
+				end
+			end
+		end
+
+		:next_fed_item
+		add $idx 1
+	end
+
+	if ($bountycnt > 0)
+		setvar $fedresults $bountycnt&" Federal Bounties Posted:*"
+		setvar $i 1
+		while ($i <= $bountysize)
+			if ($bounties[$i] <> 0)
+				setvar $fedresults $fedresults&"                               "&$bounties[$i]&"*"
+			end
+			add $i 1
+		end
+		setvar $fedresults $fedresults&"         *"
+	else
+		setvar $fedresults "Federal Bounties Posted:        None*     *"
+	end
+	if ($commishcnt > 0)
+		setvar $fedresults $fedresults&$commishcnt&" Federal Commissions Issued:*"
+		setvar $i 1
+		while ($i <= $commishsize)
+			if ($commish[$i] <> 0)
+				setvar $fedresults $fedresults&"                               "&$commish[$i]&"*"
+			end
+			add $i 1
+		end
+	else
+		setvar $fedresults $fedresults&"Federal Commissions Issued:     None*"
+	end
 else
-  setvar $FEDRESULTS $UNIVERSAL_FILE_ERR
+	setvar $fedresults $universal_file_err
 end
 return
-:CORPORATE
 
-setvar $IDX 1
-setvar $CORPRESULTS ""
-setvar $CORPS_NEW 0
-setvar $CORPARRAYSIZE 5
-setvar $CORPMEMBERSIZE 5
-setarray $CORPORATIONS $CORPARRAYSIZE $CORPMEMBERSIZE
-setvar $FIREDSIZE 20
-setarray $FIRED $FIREDSIZE
-setvar $FIREDCNT 0
+:corporate
+setvar $idx 1
+setvar $corpresults ""
+setvar $corps_new 0
+setvar $corparraysize 5
+setvar $corpmembersize 5
+setarray $corporations $corparraysize $corpmembersize
+setvar $firedsize 20
+setarray $fired $firedsize
+setvar $firedcnt 0
 
-if ($NEWS_READ and ($LINES <> 0))
-  while ($IDX <= $LINES)
-    setvar $CURRENTLINE $NEWS_ARRAY[$IDX]
-    if ($CURRENTLINE = "EOF")
-      send $UNEXPECTED_EOF
-      halt
-    else
-      getwordpos $CURRENTLINE $POS "name of [1;33m"
-      if ($POS <> 0)
-        add $CORPS_NEW 1
-        setvar $I 1
-        gosub :TIME_DECODE
-        while ($I <= $CORPARRAYSIZE)
-          if ($CORPORATIONS[$I] = 0)
-            gettext $CURRENTLINE $TRADER "[1;36m" "[0;32m created"
-            gettext $CURRENTLINE $CORPNAME "of [1;33m" "[0;32m."
-            setvar $CORPORATIONS[$I] $CORPNAME
-            setvar $CORPORATIONS[$I][1] $TIMECODE&" "&$TRADER&" Created Corp"
-            goto :NEXT_CORPITEM
-          end
-          add $I 1
-        end
-        goto :NEXT_CORPITEM
-      end
+if ($news_read and ($lines <> 0))
+	while ($idx <= $lines)
+		setvar $currentline $news_array[$idx]
+		if ($currentline = "EOF")
+			send $unexpected_eof
+			halt
+		else
+			getwordpos $currentline $pos "name of [1;33m"
+			if ($pos <> 0)
+				add $corps_new 1
+				setvar $i 1
+				gosub :time_decode
+				while ($i <= $corparraysize)
+					if ($corporations[$i] = 0)
+						gettext $currentline $trader "[1;36m" "[0;32m created"
+						gettext $currentline $corpname "of [1;33m" "[0;32m."
+						setvar $corporations[$i] $corpname
+						setvar $corporations[$i][1] $timecode&" "&$trader&" Created Corp"
+						goto :next_corpitem
+					end
+					add $i 1
+				end
+				goto :next_corpitem
+			end
 
-      getwordpos $CURRENTLINE $POS "[0;32m joined up with"
-      if ($POS <> 0)
-        gettext $CURRENTLINE $CORPNAME "with [1;33m" "[0;32m."
-        gettext $CURRENTLINE $TRADER "[1;36m" "[0;32m joined"
-        gosub :TIME_DECODE
-        setvar $I 1
-        while ($I <= $CORPARRAYSIZE)
-          if ($CORPNAME = $CORPORATIONS[$I])
-            setvar $II 1
-            while ($II <= $CORPMEMBERSIZE)
-              if ($CORPORATIONS[$I][$II] = 0)
-                setvar $CORPORATIONS[$I][$II] $TIMECODE&" "&$TRADER&" joined corp"
-                goto :NEXT_CORPITEM
-              end
-              add $II 1
-            end
-          elseif ($CORPORATIONS[$I] = 0)
-            setvar $CORPORATIONS[$I] $CORPNAME
-            setvar $CORPORATIONS[$I][1] $TIMECODE&" "&$TRADER&" joined corp"
-            goto :NEXT_CORPITEM
-          end
-          add $I 1
-        end
-        goto :NEXT_CORPITEM
-      end
+			getwordpos $currentline $pos "[0;32m joined up with"
+			if ($pos <> 0)
+				gettext $currentline $corpname "with [1;33m" "[0;32m."
+				gettext $currentline $trader "[1;36m" "[0;32m joined"
+				gosub :time_decode
+				setvar $i 1
+				while ($i <= $corparraysize)
+					if ($corpname = $corporations[$i])
+						setvar $ii 1
+						while ($ii <= $corpmembersize)
+							if ($corporations[$i][$ii] = 0)
+								setvar $corporations[$i][$ii] $timecode&" "&$trader&" joined corp"
+								goto :next_corpitem
+							end
+							add $ii 1
+						end
+					elseif ($corporations[$i] = 0)
+						setvar $corporations[$i] $corpname
+						setvar $corporations[$i][1] $timecode&" "&$trader&" joined corp"
+						goto :next_corpitem
+					end
+					add $i 1
+				end
+				goto :next_corpitem
+			end
 
-      getwordpos $CURRENTLINE $POS "[0;32m tried to"
-      if ($POS <> 0)
-        gettext $CURRENTLINE $CORPNAME "Corp: [1;33m" "[0;32m!"
-        setvar $I 1
-        gosub :TIME_DECODE
-        gettext $CURRENTLINE $TRADER "[1;36m" "[0;32m tried"
-        while ($I <= $CORPARRAYSIZE)
-          if ($CORPNAME = $CORPORATIONS[$I])
-            setvar $II 1
-            while ($II <= $CORPMEMBERSIZE)
-              if ($CORPORATIONS[$I][$II] = 0)
-                setvar $CORPORATIONS[$I][$II] $TIMECODE&" "&$TRADER&" Attempted a B&E"
-                goto :NEXT_CORPITEM
-              end
-              add $II 1
-            end
-          elseif ($CORPORATIONS[$I] = 0)
-            setvar $CORPORATIONS[$I] $CORPNAME
-            setvar $CORPORATIONS[$I][1] $TIMECODE&" "&$TRADER&" Attempted a B&E"
-            goto :NEXT_CORPITEM
-          end
-          add $I 1
-        end
-        goto :NEXT_CORPITEM
-      end
+			getwordpos $currentline $pos "[0;32m tried to"
+			if ($pos <> 0)
+				gettext $currentline $corpname "Corp: [1;33m" "[0;32m!"
+				setvar $i 1
+				gosub :time_decode
+				gettext $currentline $trader "[1;36m" "[0;32m tried"
+				while ($i <= $corparraysize)
+					if ($corpname = $corporations[$i])
+						setvar $ii 1
+						while ($ii <= $corpmembersize)
+							if ($corporations[$i][$ii] = 0)
+								setvar $corporations[$i][$ii] $timecode&" "&$trader&" Attempted a B&E"
+								goto :next_corpitem
+							end
+							add $ii 1
+						end
+					elseif ($corporations[$i] = 0)
+						setvar $corporations[$i] $corpname
+						setvar $corporations[$i][1] $timecode&" "&$trader&" Attempted a B&E"
+						goto :next_corpitem
+					end
+					add $i 1
+				end
+				goto :next_corpitem
+			end
 
-      getwordpos $CURRENTLINE $POS "[0;32m disbanded Corp"
-      if ($POS <> 0)
-        gettext $CURRENTLINE $CORPNAME "Corp [1;33m" "[0;32m."
-        gettext $CURRENTLINE $TRADER "[1;36m" "[0;32m disbanded"
-        setvar $I 1
-        gosub :TIME_DECODE
-        while ($I <= $CORPARRAYSIZE)
-          if ($CORPNAME = $CORPORATIONS[$I])
-            setvar $II 1
-            while ($II <= $CORPMEMBERSIZE)
-              if ($CORPORATIONS[$I][$II] = 0)
-                setvar $CORPORATIONS[$I][$II] $TIMECODE&" "&$TRADER&" Disbanded Corp"
-                goto :NEXT_CORPITEM
-              end
-              add $II 1
-            end
-          elseif ($CORPORATIONS[$I] = 0)
-            setvar $CORPORATIONS[$I] $CORPNAME
-            setvar $CORPORATIONS[$I][1] $TIMECODE&" "&$TRADER&" Disbanded Corp"
-            goto :NEXT_CORPITEM
-          end
-          add $I 1
-        end
-        goto :NEXT_CORPITEM
-      end
+			getwordpos $currentline $pos "[0;32m disbanded Corp"
+			if ($pos <> 0)
+				gettext $currentline $corpname "Corp [1;33m" "[0;32m."
+				gettext $currentline $trader "[1;36m" "[0;32m disbanded"
+				setvar $i 1
+				gosub :time_decode
+				while ($i <= $corparraysize)
+					if ($corpname = $corporations[$i])
+						setvar $ii 1
+						while ($ii <= $corpmembersize)
+							if ($corporations[$i][$ii] = 0)
+								setvar $corporations[$i][$ii] $timecode&" "&$trader&" Disbanded Corp"
+								goto :next_corpitem
+							end
+							add $ii 1
+						end
+					elseif ($corporations[$i] = 0)
+						setvar $corporations[$i] $corpname
+						setvar $corporations[$i][1] $timecode&" "&$trader&" Disbanded Corp"
+						goto :next_corpitem
+					end
+					add $i 1
+				end
+				goto :next_corpitem
+			end
 
-      getwordpos $CURRENTLINE $POS "[0;32m deserted"
-      if ($POS <> 0)
-        gettext $CURRENTLINE $CORPNAME "Corp [1;33m" "[0;32m."
-        gettext $CURRENTLINE $TRADER "[1;36m" "[0;32m deserted"
-        gosub :TIME_DECODE
-        setvar $I 1
-        while ($I <= $CORPARRAYSIZE)
-          if ($CORPNAME = $CORPORATIONS[$I])
-            setvar $II 1
-            while ($II <= $CORPMEMBERSIZE)
-              if ($CORPORATIONS[$I][$II] = 0)
-                setvar $CORPORATIONS[$I][$II] $TIMECODE&" "&$TRADER&" Deserted Corp"
-                goto :NEXT_CORPITEM
-              end
-              add $II 1
-            end
-          elseif ($CORPORATIONS[$I] = 0)
-            setvar $CORPORATIONS[$I] $CORPNAME
-            setvar $CORPORATIONS[$I][1] $TIMECODE&" "&$TRADER&" Deserted Corp"
-            goto :NEXT_CORPITEM
-          end
-          add $I 1
-        end
-      end
+			getwordpos $currentline $pos "[0;32m deserted"
+			if ($pos <> 0)
+				gettext $currentline $corpname "Corp [1;33m" "[0;32m."
+				gettext $currentline $trader "[1;36m" "[0;32m deserted"
+				gosub :time_decode
+				setvar $i 1
+				while ($i <= $corparraysize)
+					if ($corpname = $corporations[$i])
+						setvar $ii 1
+						while ($ii <= $corpmembersize)
+							if ($corporations[$i][$ii] = 0)
+								setvar $corporations[$i][$ii] $timecode&" "&$trader&" Deserted Corp"
+								goto :next_corpitem
+							end
+							add $ii 1
+						end
+					elseif ($corporations[$i] = 0)
+						setvar $corporations[$i] $corpname
+						setvar $corporations[$i][1] $timecode&" "&$trader&" Deserted Corp"
+						goto :next_corpitem
+					end
+					add $i 1
+				end
+			end
 
-      getwordpos $CURRENTLINE $POS "[0;32m removed [1;33m"
-      if ($POS <> 0)
-        add $FIREDCNT 1
-        setvar $I 0
-        while ($I <= $FIREDSIZE)
-          if ($FIRED[$I] = 0)
-            gettext $CURRENTLINE $TRADER "[1;36m" "[0;32m removed"
-            gettext $CURRENTLINE $PLAYER~CORPNUMBER "Corp#[1;33m" "[0;32m."
-            gosub :TIME_DECODE
-            setvar $FIRED[$I] $TIMECODE&" "&$TRADER&" removed from Corp #"&$PLAYER~CORPNUMBER
-            goto :NEXT_CORPITEM
-          end
-          add $I 1
-        end
-      end
-    end
-    :NEXT_CORPITEM
-    add $IDX 1
-  end
+			getwordpos $currentline $pos "[0;32m removed [1;33m"
+			if ($pos <> 0)
+				add $firedcnt 1
+				setvar $i 0
+				while ($i <= $firedsize)
+					if ($fired[$i] = 0)
+						gettext $currentline $trader "[1;36m" "[0;32m removed"
+						gettext $currentline $player~corpnumber "Corp#[1;33m" "[0;32m."
+						gosub :time_decode
+						setvar $fired[$i] $timecode&" "&$trader&" removed from Corp #"&$player~corpnumber
+						goto :next_corpitem
+					end
+					add $i 1
+				end
+			end
+		end
 
-  setvar $CORPRESULTS "Corporate Happenings:*            *"
+		:next_corpitem
+		add $idx 1
+	end
 
-  if ($CORPORATIONS[1] <> 0)
-    setvar $I 1
-    while ($I <= $CORPARRAYSIZE)
-      if ($CORPORATIONS[$I] <> 0)
-        setvar $CURRENTCORP $CORPORATIONS[$I]
-        setvar $CORPRESULTS $CORPRESULTS&"        "&$CURRENTCORP&"*"
-        setvar $II 1
-        while ($II <= $CORPMEMBERSIZE)
-          if ($CORPORATIONS[$I][$II] <> 0)
-            setvar $CORPRESULTS $CORPRESULTS&"           "&$CORPORATIONS[$I][$II]&"*"
-          end
-          add $II 1
-        end
-      end
-      add $I 1
-    end
-    return
-    if ($FIREDCNT <> 0)
-      setvar $I 1
-      while ($I <= $FIREDSIZE)
-        if ($FIRED[$I] <> 0)
-          setvar $CORPRESULTS $CORPRESULTS&"           "&$FIRED[$I]&"*"
-        end
-        add $I 1
-      end
-    end
-  else
-    setvar $CORPRESULTS "Corporate Happenings:           None*"
-  end
+	setvar $corpresults "Corporate Happenings:*            *"
+
+	if ($corporations[1] <> 0)
+		setvar $i 1
+		while ($i <= $corparraysize)
+			if ($corporations[$i] <> 0)
+				setvar $currentcorp $corporations[$i]
+				setvar $corpresults $corpresults&"        "&$currentcorp&"*"
+				setvar $ii 1
+				while ($ii <= $corpmembersize)
+					if ($corporations[$i][$ii] <> 0)
+						setvar $corpresults $corpresults&"           "&$corporations[$i][$ii]&"*"
+					end
+					add $ii 1
+				end
+			end
+			add $i 1
+		end
+		return
+		if ($firedcnt <> 0)
+			setvar $i 1
+			while ($i <= $firedsize)
+				if ($fired[$i] <> 0)
+					setvar $corpresults $corpresults&"           "&$fired[$i]&"*"
+				end
+				add $i 1
+			end
+		end
+	else
+		setvar $corpresults "Corporate Happenings:           None*"
+	end
 else
-  setvar $CORPRESULTS $UNIVERSAL_FILE_ERR
+	setvar $corpresults $universal_file_err
 end
 return
-:ANNOUNCED
 
-setvar $IDX 1
-setvar $ANNONCNT 0
-setvar $ANNONRESULTS ""
-setvar $ANNONSIZE 50
-setarray $ANNON $ANNONSIZE
+:announced
+setvar $idx 1
+setvar $annoncnt 0
+setvar $annonresults ""
+setvar $annonsize 50
+setarray $annon $annonsize
 
-if ($NEWS_READ and ($LINES <> 0))
-  while ($IDX <= $LINES)
-    setvar $CURRENTLINE $NEWS_ARRAY[$IDX]
-    if ($CURRENTLINE = "EOF")
-      send $UNEXPECTED_EOF
-      halt
-    else
-      getwordpos $CURRENTLINE $POS "[0;32mposted this"
-      if (($POS <> 0) and ($ANNONCNT < $ANNONSIZE))
-        add $ANNONCNT 1
-        gettext $CURRENTLINE $TRADER "[1;36m" " [0;32mposted"
-        gosub :TIME_DECODE
-        setvar $CURRENTLINE $NEWS_ARRAY[($IDX + 1)]
-        striptext $CURRENTLINE "0m[1;34m"
-        striptext $CURRENTLINE "[1;34m"
-        setvar $TEMP $TIMECODE&"::"&$TRADER&"::"&$CURRENTLINE
-        getlength $TEMP $LENGTH
-        if ($LENGTH > 70)
-          cuttext $TEMP $TEMP1 1 70
-          if ($LENGTH > 127)
-            setvar $TEMP3 ""
-            setvar $TEMP2 ""
-            striptext $TEMP $TEMP1
-            cuttext $TEMP $TEMP2 1 57
-            striptext $TEMP $TEMP2
-            cuttext $TEMP $TEMP3 1 9999
-            setvar $TEMP $TEMP1&"*             "&$TEMP2&"*             "&$TEMP3
-          else
-            striptext $TEMP $TEMP1
-            cuttext $TEMP $TEMP2 1 9999
-            setvar $TEMP $TEMP1&"*             "&$TEMP2
-          end
-        end
-        setvar $ANNON[$ANNONCNT] $TEMP
-      end
-    end
-    add $IDX 1
-  end
+if ($news_read and ($lines <> 0))
+	while ($idx <= $lines)
+		setvar $currentline $news_array[$idx]
+		if ($currentline = "EOF")
+			send $unexpected_eof
+			halt
+		else
+			getwordpos $currentline $pos "[0;32mposted this"
+			if (($pos <> 0) and ($annoncnt < $annonsize))
+				add $annoncnt 1
+				gettext $currentline $trader "[1;36m" " [0;32mposted"
+				gosub :time_decode
+				setvar $currentline $news_array[($idx + 1)]
+				striptext $currentline "0m[1;34m"
+				striptext $currentline "[1;34m"
+				setvar $temp $timecode&"::"&$trader&"::"&$currentline
+				getlength $temp $length
+				if ($length > 70)
+					cuttext $temp $temp1 1 70
+					if ($length > 127)
+						setvar $temp3 ""
+						setvar $temp2 ""
+						striptext $temp $temp1
+						cuttext $temp $temp2 1 57
+						striptext $temp $temp2
+						cuttext $temp $temp3 1 9999
+						setvar $temp $temp1&"*             "&$temp2&"*             "&$temp3
+					else
+						striptext $temp $temp1
+						cuttext $temp $temp2 1 9999
+						setvar $temp $temp1&"*             "&$temp2
+					end
+				end
+				setvar $annon[$annoncnt] $temp
+			end
+		end
+		add $idx 1
+	end
 
-  if ($ANNONCNT <> 0)
-    setvar $ANNONRESULTS "    *"&$ANNONCNT&" Public Addresses Made:*     *"
-    setvar $I 1
-    while ($I <= $ANNONCNT)
-      setvar $ANNONRESULTS $ANNONRESULTS&$ANNON[$I]&"*"
-      add $I 1
-    end
-  else
-    setvar $ANNONRESULTS "   *"&"Public Addresses Made:  None*"
-  end
+	if ($annoncnt <> 0)
+		setvar $annonresults "    *"&$annoncnt&" Public Addresses Made:*     *"
+		setvar $i 1
+		while ($i <= $annoncnt)
+			setvar $annonresults $annonresults&$annon[$i]&"*"
+			add $i 1
+		end
+	else
+		setvar $annonresults "   *"&"Public Addresses Made:  None*"
+	end
 else
-  setvar $ANNONRESULTS $UNIVERSAL_FILE_ERR
+	setvar $annonresults $universal_file_err
 end
 return
-:PLANETS_POPPED
 
-setvar $IDX 1
-setvar $POPPEDRESULTS ""
-setvar $POPPED 0
-setvar $POPPERSIZE 50
-setarray $POPPERS $POPPERSIZE 2
-setvar $POPPINGTRADERS 0
+:planets_popped
+setvar $idx 1
+setvar $poppedresults ""
+setvar $popped 0
+setvar $poppersize 50
+setarray $poppers $poppersize 2
+setvar $poppingtraders 0
 
-if ($NEWS_READ and ($LINES <> 0))
-  while ($IDX <= $LINES)
-    setvar $CURRENTLINE $NEWS_ARRAY[$IDX]
-    if ($CURRENTLINE = "EOF")
-      send $UNEXPECTED_EOF
-      halt
-    else
-      getwordpos $CURRENTLINE $POS "[5;31m DESTROYED[32m the planet"
-      getwordpos $CURRENTLINE $POZ "[1;36m"
-      if (($POS <> 0) and ($POZ = 1))
-        add $POPPED 1
-        gettext $CURRENTLINE $TRADER "[1;36m" "[5;31m DESTROYED"
-        setvar $I 1
-        if ($I <= $POPPERSIZE)
-          if ($POPPERS[$I][1] = $TRADER)
-            setvar $TEMP $POPPERS[$I][2]
-            striptext $TEMP " "
-            add $TEMP 1
-            if ($TEMP < 10)
-              setvar $POPPERS[$I][2] "   "&$TEMP
-            elseif ($TEMP < 100)
-              setvar $POPPERS[$I][2] "  "&$TEMP
-            elseif ($TEMP < 1000)
-              setvar $POPPERS[$I][2] " "&$TEMP
-            else
-              setvar $POPPERS[$I][2] $TEMP
-            end
-            goto :DONE_POPPER
-          elseif ($POPPERS[$I][2] = 0)
-            setvar $POPPERS[$I][1] $TRADER
-            setvar $POPPERS[$I][2] "   1"
-            goto :DONE_POPPER
-          end
-          add $I 1
-        end
-      end
-    end
-    :DONE_POPPER
-    add $IDX 1
-  end
-  if ($POPPED <> 0)
-    setvar $POPPEDRESULTS $POPPED&" Planet(s) Popped:*"
-    setvar $I 1
-    while ($I <= $POPPERSIZE)
-      if ($POPPERS[$I][1] <> 0)
-        setvar $POPPEDRESULTS $POPPEDRESULTS&"                       "&$POPPERS[$I][2]&" by "&$POPPERS[$I][1]&"*"
-      end
-      add $I 1
-    end
-  else
-    setvar $POPPEDRESULTS "Planet(s) Popped:*"
-    setvar $POPPEDRESULTS $POPPEDRESULTS&"                       None*"
-  end
+if ($news_read and ($lines <> 0))
+	while ($idx <= $lines)
+		setvar $currentline $news_array[$idx]
+		if ($currentline = "EOF")
+			send $unexpected_eof
+			halt
+		else
+			getwordpos $currentline $pos "[5;31m DESTROYED[32m the planet"
+			getwordpos $currentline $poz "[1;36m"
+			if (($pos <> 0) and ($poz = 1))
+				add $popped 1
+				gettext $currentline $trader "[1;36m" "[5;31m DESTROYED"
+				setvar $i 1
+				if ($i <= $poppersize)
+					if ($poppers[$i][1] = $trader)
+						setvar $temp $poppers[$i][2]
+						striptext $temp " "
+						add $temp 1
+						if ($temp < 10)
+							setvar $poppers[$i][2] "   "&$temp
+						elseif ($temp < 100)
+							setvar $poppers[$i][2] "  "&$temp
+						elseif ($temp < 1000)
+							setvar $poppers[$i][2] " "&$temp
+						else
+							setvar $poppers[$i][2] $temp
+						end
+						goto :done_popper
+					elseif ($poppers[$i][2] = 0)
+						setvar $poppers[$i][1] $trader
+						setvar $poppers[$i][2] "   1"
+						goto :done_popper
+					end
+					add $i 1
+				end
+			end
+		end
+
+		:done_popper
+		add $idx 1
+	end
+	if ($popped <> 0)
+		setvar $poppedresults $popped&" Planet(s) Popped:*"
+		setvar $i 1
+		while ($i <= $poppersize)
+			if ($poppers[$i][1] <> 0)
+				setvar $poppedresults $poppedresults&"                       "&$poppers[$i][2]&" by "&$poppers[$i][1]&"*"
+			end
+			add $i 1
+		end
+	else
+		setvar $poppedresults "Planet(s) Popped:*"
+		setvar $poppedresults $poppedresults&"                       None*"
+	end
 else
-  setvar $POPPEDRESULTS $UNIVERSAL_FILE_ERR
+	setvar $poppedresults $universal_file_err
 end
 return
-:PORT_AUTHORITY
 
-setvar $IDX 1
-setvar $PORTRESULTS ""
-setvar $BLOWNCNT 0
-setvar $PORTARRAYSIZE 75
-setarray $PORTBLOWN $PORTARRAYSIZE 52
-setarray $NEWPORTS 75
-setvar $NEWPORTIDX 0
-setarray $OPENED 75
-setvar $OPENEDIDX 0
-setarray $ADVANCED 75
-setvar $ADVANCEDIDX 0
-setarray $NADVANCED 75
-setvar $NADVANCEDIDX 0
-setvar $PORTOFFSIZE 75
-setarray $PORTOFF $PORTOFFSIZE
-setvar $PORTOFFCNT 0
+:port_authority
+setvar $idx 1
+setvar $portresults ""
+setvar $blowncnt 0
+setvar $portarraysize 75
+setarray $portblown $portarraysize 52
+setarray $newports 75
+setvar $newportidx 0
+setarray $opened 75
+setvar $openedidx 0
+setarray $advanced 75
+setvar $advancedidx 0
+setarray $nadvanced 75
+setvar $nadvancedidx 0
+setvar $portoffsize 75
+setarray $portoff $portoffsize
+setvar $portoffcnt 0
 
-if ($NEWS_READ and ($LINES <> 0))
-  while ($IDX <= $LINES)
-    setvar $CURRENTLINE $NEWS_ARRAY[$IDX]
-    if ($CURRENTLINE = "EOF")
-      send $UNEXPECTED_EOF
-      halt
-    else
-      getwordpos $CURRENTLINE $POS "[0;32m began construction!"
-      if ($POS <> 0)
-        add $NEWPORTIDX 1
-        gettext $CURRENTLINE $CURRENTLINE "[1;36m" "[0;32m began"
-        setvar $NEWPORTS[$NEWPORTIDX] $CURRENTLINE
-        goto :NEXT_PORT
-      end
+if ($news_read and ($lines <> 0))
+	while ($idx <= $lines)
+		setvar $currentline $news_array[$idx]
+		if ($currentline = "EOF")
+			send $unexpected_eof
+			halt
+		else
+			getwordpos $currentline $pos "[0;32m began construction!"
+			if ($pos <> 0)
+				add $newportidx 1
+				gettext $currentline $currentline "[1;36m" "[0;32m began"
+				setvar $newports[$newportidx] $currentline
+				goto :next_port
+			end
 
-      getwordpos $CURRENTLINE $POS "[0;32m opened"
-      if ($POS <> 0)
-        add $OPENEDIDX 1
-        striptext $CURRENTLINE "[0;32m opened for business today. ("&$NEWS_DATE&")"
-        striptext $CURRENTLINE "[32mPort [1;36m"
-        gosub :TIME_DECODE
-        setvar $OPENED[$OPENEDIDX] $CURRENTLINE&" at "&$TIMECODE
-        goto :NEXT_PORT
-      end
+			getwordpos $currentline $pos "[0;32m opened"
+			if ($pos <> 0)
+				add $openedidx 1
+				striptext $currentline "[0;32m opened for business today. ("&$news_date&")"
+				striptext $currentline "[32mPort [1;36m"
+				gosub :time_decode
+				setvar $opened[$openedidx] $currentline&" at "&$timecode
+				goto :next_port
+			end
 
-      getwordpos $CURRENTLINE $POS "[0;32m construction advanced."
-      if ($POS <> 0)
-        add $ADVANCEDIDX 1
-        striptext $CURRENTLINE "[1;36m"
-        striptext $CURRENTLINE "[0;32m construction advanced."
-        setvar $ADVANCED[$ADVANCEDIDX] $CURRENTLINE
-        goto :NEXT_PORT
-      end
+			getwordpos $currentline $pos "[0;32m construction advanced."
+			if ($pos <> 0)
+				add $advancedidx 1
+				striptext $currentline "[1;36m"
+				striptext $currentline "[0;32m construction advanced."
+				setvar $advanced[$advancedidx] $currentline
+				goto :next_port
+			end
 
-      getwordpos $CURRENTLINE $POS "[5;31m construction did not"
-      if ($POS <> 0)
-        add $NADVANCEDIDX 1
-        striptext $CURRENTLINE "[32mPort [1;36m"
-        striptext $CURRENTLINE "[5;31m construction did not advance."
-        setvar $NADVANCED[$NADVANCEDIDX] $CURRENTLINE
-        goto :NEXT_PORT
-      end
+			getwordpos $currentline $pos "[5;31m construction did not"
+			if ($pos <> 0)
+				add $nadvancedidx 1
+				striptext $currentline "[32mPort [1;36m"
+				striptext $currentline "[5;31m construction did not advance."
+				setvar $nadvanced[$nadvancedidx] $currentline
+				goto :next_port
+			end
 
-      getwordpos $CURRENTLINE $POS "by Star Port [35m"
-      if ($POS <> 0)
-        add $PORTOFFCNT 1
-        gettext $CURRENTLINE $TRADER "[1;36m" "[0;32m was"
-        gettext $CURRENTLINE $PORTNAME "Port [35m" "[32m!"
-        gosub :TIME_DECODE
-        while ($I <= $PORTOFFSIZE)
-          if ($I <> 0)
-            if ($PORTOFF[$I] <> 0)
-              setvar $PORTOFF[$I] $TIMECODE&" "&$TRADER&" attacked by Port "&$PORTNAME
-              goto :NEXT_PORT
-            end
-          end
-          add $I 1
-        end
-      end
+			getwordpos $currentline $pos "by Star Port [35m"
+			if ($pos <> 0)
+				add $portoffcnt 1
+				gettext $currentline $trader "[1;36m" "[0;32m was"
+				gettext $currentline $portname "Port [35m" "[32m!"
+				gosub :time_decode
+				while ($i <= $portoffsize)
+					if ($i <> 0)
+						if ($portoff[$i] <> 0)
+							setvar $portoff[$i] $timecode&" "&$trader&" attacked by Port "&$portname
+							goto :next_port
+						end
+					end
+					add $i 1
+				end
+			end
 
-      getwordpos $CURRENTLINE $POS "[5;31m DESTROYED [32mthe Star Port in sector"
-      if ($POS <> 0)
-        add $BLOWNCNT 1
-        gettext $CURRENTLINE $TRADER "[1;36m" "[5;31m DESTROYED"
-        gettext $CURRENTLINE $PORT_ADDY "sector [1;33m" "[0;32m!"
-        setvar $I 1
-        if ($I <= $PORTARRAYSIZE)
-          if ($PORTBLOWN[$I][1] = $TRADER)
-            setvar $TEMP $PORTBLOWN[$I][2]
-            striptext $TEMP " "
-            gosub :TIME_DECODE
-            add $TEMP 1
-            if ($TEMP < 10)
-              setvar $PORTBLOWN[$I][2] "   "&$TEMP
-            elseif ($TEMP < 100)
-              setvar $PORTBLOWN[$I][2] "  "&$TEMP
-            elseif ($TEMP < 1000)
-              setvar $PORTBLOWN[$I][2] " "&$TEMP
-            else
-              setvar $PORTBLOWN[$I][2] $TEMP
-            end
-            setvar $PORTBLOWN[$I][($TEMP + 2)] $PORT_ADDY&" at "&$TIMECODE
-            goto :NEXT_PORT
-          else
-            gosub :TIME_DECODE
-            setvar $PORTBLOWN[$I][1] $TRADER
-            setvar $PORTBLOWN[$I][2] "   1"
-            setvar $PORTBLOWN[$I][3] $PORT_ADDY&" at "&$TIMECODE
-            goto :NEXT_PORT
-          end
-          add $I 1
-        end
-      end
-    end
-    :NEXT_PORT
-    add $IDX 1
+			getwordpos $currentline $pos "[5;31m DESTROYED [32mthe Star Port in sector"
+			if ($pos <> 0)
+				add $blowncnt 1
+				gettext $currentline $trader "[1;36m" "[5;31m DESTROYED"
+				gettext $currentline $port_addy "sector [1;33m" "[0;32m!"
+				setvar $i 1
+				if ($i <= $portarraysize)
+					if ($portblown[$i][1] = $trader)
+						setvar $temp $portblown[$i][2]
+						striptext $temp " "
+						gosub :time_decode
+						add $temp 1
+						if ($temp < 10)
+							setvar $portblown[$i][2] "   "&$temp
+						elseif ($temp < 100)
+							setvar $portblown[$i][2] "  "&$temp
+						elseif ($temp < 1000)
+							setvar $portblown[$i][2] " "&$temp
+						else
+							setvar $portblown[$i][2] $temp
+						end
+						setvar $portblown[$i][($temp + 2)] $port_addy&" at "&$timecode
+						goto :next_port
+					else
+						gosub :time_decode
+						setvar $portblown[$i][1] $trader
+						setvar $portblown[$i][2] "   1"
+						setvar $portblown[$i][3] $port_addy&" at "&$timecode
+						goto :next_port
+					end
+					add $i 1
+				end
+			end
+		end
 
-  end
-  if ($NEWPORTIDX <> 0)
-    setvar $PORTRESULTS $PORTRESULTS&"       *"
-    setvar $PORTRESULTS $NEWPORTIDX&" New Ports:*"
-    setvar $I 1
-    while ($I <= $NEWPORTIDX)
-      setvar $PORTRESULTS $PORTRESULTS&"                       "&$NEWPORTS[$I]&"*"
-      add $I 1
-    end
-  else
-    setvar $PORTRESULTS $PORTRESULTS&"       *"
-    setvar $PORTRESULTS $PORTRESULTS&"New Ports:                    None*"
-  end
-  if ($OPENEDIDX <> 0)
-    setvar $PORTRESULTS $PORTRESULTS&"       *"
-    setvar $PORTRESULTS $PORTRESULTS&$OPENEDIDX&" Ports Opened Today:*"
-    setvar $I 1
-    while ($I <= $OPENEDIDX)
-      setvar $PORTRESULTS $PORTRESULTS&"                       "&$OPENED[$I]&"*"
-      add $I 1
-    end
-  else
-    setvar $PORTRESULTS $PORTRESULTS&"       *"
-    setvar $PORTRESULTS $PORTRESULTS&"Opened Today:                 None*"
-  end
+		:next_port
+		add $idx 1
 
-  if ($ADVANCEDIDX <> 0)
-    setvar $PORTRESULTS $PORTRESULTS&"       *"
-    setvar $PORTRESULTS $PORTRESULTS&$ADVANCEDIDX&" Ports Construction Advanced:*"
-    setvar $I 1
-    while ($I <= $ADVANCEDIDX)
-      setvar $PORTRESULTS $PORTRESULTS&"                              "&$ADVANCED[$I]&"*"
-      add $I 1
-    end
-  else
-    setvar $PORTRESULTS $PORTRESULTS&"       *"
-    setvar $PORTRESULTS $PORTRESULTS&"Port Construction Advanced:   None*"
-  end
+	end
+	if ($newportidx <> 0)
+		setvar $portresults $portresults&"       *"
+		setvar $portresults $newportidx&" New Ports:*"
+		setvar $i 1
+		while ($i <= $newportidx)
+			setvar $portresults $portresults&"                       "&$newports[$i]&"*"
+			add $i 1
+		end
+	else
+		setvar $portresults $portresults&"       *"
+		setvar $portresults $portresults&"New Ports:                    None*"
+	end
+	if ($openedidx <> 0)
+		setvar $portresults $portresults&"       *"
+		setvar $portresults $portresults&$openedidx&" Ports Opened Today:*"
+		setvar $i 1
+		while ($i <= $openedidx)
+			setvar $portresults $portresults&"                       "&$opened[$i]&"*"
+			add $i 1
+		end
+	else
+		setvar $portresults $portresults&"       *"
+		setvar $portresults $portresults&"Opened Today:                 None*"
+	end
 
-  if ($NADVANCEDIDX <> 0)
-    setvar $PORTRESULTS $PORTRESULTS&"       *"
-    setvar $PORTRESULTS $PORTRESULTS&$NADVANCEDIDX&" Ports Construction Stalled:*"
-    setvar $I 1
-    while ($I <= $NADVANCEDIDX)
-      setvar $PORTRESULTS $PORTRESULTS&"                              "&$NADVANCED[$I]&"*"
-      add $I 1
-    end
-  else
-    setvar $PORTRESULTS $PORTRESULTS&"       *"
-    setvar $PORTRESULTS $PORTRESULTS&"Port Construction Stalled:    None*"
-  end
+	if ($advancedidx <> 0)
+		setvar $portresults $portresults&"       *"
+		setvar $portresults $portresults&$advancedidx&" Ports Construction Advanced:*"
+		setvar $i 1
+		while ($i <= $advancedidx)
+			setvar $portresults $portresults&"                              "&$advanced[$i]&"*"
+			add $i 1
+		end
+	else
+		setvar $portresults $portresults&"       *"
+		setvar $portresults $portresults&"Port Construction Advanced:   None*"
+	end
 
-  if ($BLOWNCNT <> 0)
-    setvar $PORTRESULTS $PORTRESULTS&"       *"
-    setvar $PORTRESULTS $PORTRESULTS&$BLOWNCNT&" Ports Blown Up:*"
-    setvar $I 1
-    while ($I <= $PORTARRAYSIZE)
-      if ($PORTBLOWN[$I][1] <> 0)
-        setvar $PORTRESULTS $PORTRESULTS&"                       "&$PORTBLOWN[$I][2]&" by "&$PORTBLOWN[$I][1]&"*"
-        setvar $II 3
-        while ($PORTBLOWN[$I][$II] <> 0)
-          setvar $PORTRESULTS $PORTRESULTS&"                                Sector "&$PORTBLOWN[$I][$II]&"*"
-          add $II 1
-        end
-      end
-      add $I 1
-    end
-  else
-    setvar $PORTRESULTS $PORTRESULTS&"       *"
-    setvar $PORTRESULTS $PORTRESULTS&"Ports Blown Up:               None*"
-  end
+	if ($nadvancedidx <> 0)
+		setvar $portresults $portresults&"       *"
+		setvar $portresults $portresults&$nadvancedidx&" Ports Construction Stalled:*"
+		setvar $i 1
+		while ($i <= $nadvancedidx)
+			setvar $portresults $portresults&"                              "&$nadvanced[$i]&"*"
+			add $i 1
+		end
+	else
+		setvar $portresults $portresults&"       *"
+		setvar $portresults $portresults&"Port Construction Stalled:    None*"
+	end
 
-  if ($PORTOFFCNT <> 0)
-    setvar $PORTRESULTS $PORTRESULTS&"       *"
-    setvar $PORTRESULTS $PORTRESULTS&$PORTOFFCNT&" Port Attacks:*"
-    setvar $I 1
-    while ($I <= $PORTOFFSIZE)
-      if ($PORTOFF[$I] <> 0)
-        setvar $PORTRESULTS $PORTRESULTS&"                       "&$PORTOFF[$I]&"*"
-      end
-      add $I 1
-    end
-  end
-  setvar $PORTRESULTS $PORTRESULTS&"       *"
+	if ($blowncnt <> 0)
+		setvar $portresults $portresults&"       *"
+		setvar $portresults $portresults&$blowncnt&" Ports Blown Up:*"
+		setvar $i 1
+		while ($i <= $portarraysize)
+			if ($portblown[$i][1] <> 0)
+				setvar $portresults $portresults&"                       "&$portblown[$i][2]&" by "&$portblown[$i][1]&"*"
+				setvar $ii 3
+				while ($portblown[$i][$ii] <> 0)
+					setvar $portresults $portresults&"                                Sector "&$portblown[$i][$ii]&"*"
+					add $ii 1
+				end
+			end
+			add $i 1
+		end
+	else
+		setvar $portresults $portresults&"       *"
+		setvar $portresults $portresults&"Ports Blown Up:               None*"
+	end
+
+	if ($portoffcnt <> 0)
+		setvar $portresults $portresults&"       *"
+		setvar $portresults $portresults&$portoffcnt&" Port Attacks:*"
+		setvar $i 1
+		while ($i <= $portoffsize)
+			if ($portoff[$i] <> 0)
+				setvar $portresults $portresults&"                       "&$portoff[$i]&"*"
+			end
+			add $i 1
+		end
+	end
+	setvar $portresults $portresults&"       *"
 else
-  setvar $PORTRESULTS $UNIVERSAL_FILE_ERR
+	setvar $portresults $universal_file_err
 end
 return
-:OVERLOAD
 
-setvar $IDX 1
-setvar $UMASS_RESULTS "Unstable Planetary Masses: Non Detected*"
-setvar $UMASS 0
-setvar $COLLIDEDSIZE 50
-setarray $COLLIDED $COLLIDEDSIZE
+:overload
+setvar $idx 1
+setvar $umass_results "Unstable Planetary Masses: Non Detected*"
+setvar $umass 0
+setvar $collidedsize 50
+setarray $collided $collidedsize
 
-if ($NEWS_READ and ($LINES <> 0))
-  while ($IDX <= $LINES)
-    setvar $CURRENTLINE $NEWS_ARRAY[$IDX]
-    if ($CURRENTLINE = "EOF")
-      send $UNEXPECTED_EOF
-      halt
-    else
-      getwordpos $CURRENTLINE $POS "[32mAn unstable "
-      if ($POS <> 0)
-        add $UMASS 1
-        gettext $CURRENTLINE $UMASSADDY "sector [1;33m" ""
-        setvar $CURRENTLINE $NEWS_ARRAY[($IDX + 1)]
-        getwordpos $CURRENTLINE $POS "[31m collided!"
-        if ($POS <> 0)
-          gettext $CURRENTLINE $TEMP1 "Planets [36m" " [31mand"
-          gettext $CURRENTLINE $TEMP2 "and [36m" "[31m collided"
-          setvar $UMASSADDY "Sector: "&$UMASSADDY&", Planets "&$TEMP1&" and "&$TEMP2
-        else
-          setvar $UMASSADDY "Sector: "&$UMASSADDY&", Planet Name Unkown"
-        end
-        setvar $COLLIDED[$UMASS] $UMASSADDY
-      else
-        getwordpos $CURRENTLINE $POS "[33mEnd Daily Journal [34m"
-        if ($POS <> 0)
-          if ($UMASS <> 0)
-            setvar $UMASS_RESULTS $UMASS&" Unstable Planetary Masses:*"
-            setvar $I 1
-            while ($I <= $UMASS)
-              setvar $UMASS_RESULTS $UMASS_RESULTS&"                      "&$COLLIDED[$I]&"*"
-              add $I 1
-            end
-          end
-          return
-        end
-      end
-    end
-    add $IDX 1
-  end
+if ($news_read and ($lines <> 0))
+	while ($idx <= $lines)
+		setvar $currentline $news_array[$idx]
+		if ($currentline = "EOF")
+			send $unexpected_eof
+			halt
+		else
+			getwordpos $currentline $pos "[32mAn unstable "
+			if ($pos <> 0)
+				add $umass 1
+				gettext $currentline $umassaddy "sector [1;33m" ""
+				setvar $currentline $news_array[($idx + 1)]
+				getwordpos $currentline $pos "[31m collided!"
+				if ($pos <> 0)
+					gettext $currentline $temp1 "Planets [36m" " [31mand"
+					gettext $currentline $temp2 "and [36m" "[31m collided"
+					setvar $umassaddy "Sector: "&$umassaddy&", Planets "&$temp1&" and "&$temp2
+				else
+					setvar $umassaddy "Sector: "&$umassaddy&", Planet Name Unkown"
+				end
+				setvar $collided[$umass] $umassaddy
+			else
+				getwordpos $currentline $pos "[33mEnd Daily Journal [34m"
+				if ($pos <> 0)
+					if ($umass <> 0)
+						setvar $umass_results $umass&" Unstable Planetary Masses:*"
+						setvar $i 1
+						while ($i <= $umass)
+							setvar $umass_results $umass_results&"                      "&$collided[$i]&"*"
+							add $i 1
+						end
+					end
+					return
+				end
+			end
+		end
+		add $idx 1
+	end
 else
-  setvar $UMASS_RESULTS $UNIVERSAL_FILE_ERR
+	setvar $umass_results $universal_file_err
 end
 return
-:PHOTONS_FIRED
 
-setvar $IDX 1
-setvar $LAUNCHEDRESULTS ""
-setvar $LAUNCHED 0
-setvar $LAUNCHEDSIZE 50
-setarray $LAUNCHERS $LAUNCHEDSIZE 52
+:photons_fired
+setvar $idx 1
+setvar $launchedresults ""
+setvar $launched 0
+setvar $launchedsize 50
+setarray $launchers $launchedsize 52
 
-if ($NEWS_READ and ($LINES <> 0))
-  while ($IDX <= $LINES)
-    setvar $CURRENTLINE $NEWS_ARRAY[$IDX]
-    if ($CURRENTLINE = "EOF")
-      send $UNEXPECTED_EOF
-      halt
-    else
-      getwordpos $CURRENTLINE $POS "[0;32m launched a"
-      if ($POS <> 0)
-        add $LAUNCHED 1
-        setvar $TRADER $CURRENTLINE
-        striptext $TRADER "[1;36m"
-        striptext $TRADER "[0;32m launched a Photon Missile somewhere!"
-        setvar $I 1
-        if ($I <= $LAUNCHEDSIZE)
-          if ($LAUNCHERS[$I][1] = $TRADER)
-            setvar $TEMP $LAUNCHERS[$I][2]
-            striptext $TEMP " "
-            gosub :TIME_DECODE
-            add $TEMP 1
-            if ($TEMP < 10)
-              setvar $LAUNCHERS[$I][2] "   "&$TEMP
-            elseif ($TEMP < 100)
-              setvar $LAUNCHERS[$I][2] "  "&$TEMP
-            elseif ($TEMP < 1000)
-              setvar $LAUNCHERS[$I][2] " "&$TEMP
-            else
-              setvar $LAUNCHERS[$I][2] $TEMP
-            end
-            setvar $LAUNCHERS[$I][($TEMP + 2)] $TIMECODE
-            goto :DONE_TORPER
-          elseif ($LAUNCHERS[$I][1] = 0)
-            gosub :TIME_DECODE
-            setvar $LAUNCHERS[$I][1] $TRADER
-            setvar $LAUNCHERS[$I][2] "   1"
-            setvar $LAUNCHERS[$I][3] $TIMECODE
-            goto :DONE_TORPER
-          end
-          add $I 1
-        end
-      end
-    end
-    :DONE_TORPER
-    add $IDX 1
+if ($news_read and ($lines <> 0))
+	while ($idx <= $lines)
+		setvar $currentline $news_array[$idx]
+		if ($currentline = "EOF")
+			send $unexpected_eof
+			halt
+		else
+			getwordpos $currentline $pos "[0;32m launched a"
+			if ($pos <> 0)
+				add $launched 1
+				setvar $trader $currentline
+				striptext $trader "[1;36m"
+				striptext $trader "[0;32m launched a Photon Missile somewhere!"
+				setvar $i 1
+				if ($i <= $launchedsize)
+					if ($launchers[$i][1] = $trader)
+						setvar $temp $launchers[$i][2]
+						striptext $temp " "
+						gosub :time_decode
+						add $temp 1
+						if ($temp < 10)
+							setvar $launchers[$i][2] "   "&$temp
+						elseif ($temp < 100)
+							setvar $launchers[$i][2] "  "&$temp
+						elseif ($temp < 1000)
+							setvar $launchers[$i][2] " "&$temp
+						else
+							setvar $launchers[$i][2] $temp
+						end
+						setvar $launchers[$i][($temp + 2)] $timecode
+						goto :done_torper
+					elseif ($launchers[$i][1] = 0)
+						gosub :time_decode
+						setvar $launchers[$i][1] $trader
+						setvar $launchers[$i][2] "   1"
+						setvar $launchers[$i][3] $timecode
+						goto :done_torper
+					end
+					add $i 1
+				end
+			end
+		end
 
-  end
-  if ($LAUNCHED <> 0)
-    setvar $LAUNCHEDRESULTS $LAUNCHED&" Photons Launched:*"
-    setvar $I 1
-    while ($I <= $LAUNCHEDSIZE)
-      if ($LAUNCHERS[$I][1] <> 0)
-        setvar $LAUNCHEDRESULTS $LAUNCHEDRESULTS&"                       "&$LAUNCHERS[$I][2]&" by "&$LAUNCHERS[$I][1]&"*"
-        if ($LAUNCHERS[$I][2] > 4)
+		:done_torper
+		add $idx 1
 
-          setvar $MATH4DUMMIES ($LAUNCHERS[$I][2] - 4)
-          setvar $II ($MATH4DUMMIES + 3)
-        else
-          setvar $II 3
-        end
-        while ($LAUNCHERS[$I][$II] <> 0)
-          setvar $LAUNCHEDRESULTS $LAUNCHEDRESULTS&"                                  "&$LAUNCHERS[$I][$II]&"*"
-          add $II 1
-        end
-      end
-      add $I 1
-    end
-  else
-    setvar $LAUNCHEDRESULTS "Photons Launched:*"
-    setvar $LAUNCHEDRESULTS $LAUNCHEDRESULTS&"                       None Were Found In Log*"
-  end
+	end
+	if ($launched <> 0)
+		setvar $launchedresults $launched&" Photons Launched:*"
+		setvar $i 1
+		while ($i <= $launchedsize)
+			if ($launchers[$i][1] <> 0)
+				setvar $launchedresults $launchedresults&"                       "&$launchers[$i][2]&" by "&$launchers[$i][1]&"*"
+				if ($launchers[$i][2] > 4)
+
+					setvar $math4dummies ($launchers[$i][2] - 4)
+					setvar $ii ($math4dummies + 3)
+				else
+					setvar $ii 3
+				end
+				while ($launchers[$i][$ii] <> 0)
+					setvar $launchedresults $launchedresults&"                                  "&$launchers[$i][$ii]&"*"
+					add $ii 1
+				end
+			end
+			add $i 1
+		end
+	else
+		setvar $launchedresults "Photons Launched:*"
+		setvar $launchedresults $launchedresults&"                       None Were Found In Log*"
+	end
 else
-  setvar $LAUNCHEDRESULTS $UNIVERSAL_FILE_ERR
+	setvar $launchedresults $universal_file_err
 end
 return
-:PHOTONS_LIST
 
-setvar $IDX 1
-setvar $PHOTONRESULTS ""
-setvar $TOTALFIRED 0
+:photons_list
+setvar $idx 1
+setvar $photonresults ""
+setvar $totalfired 0
 
-if ($NEWS_READ and ($LINES <> 0))
-  while ($IDX <= $LINES)
-    setvar $CURRENTLINE $NEWS_ARRAY[$IDX]
-    if ($CURRENTLINE = "EOF")
-      send $UNEXPECTED_EOF
-      halt
-    else
-      getwordpos $CURRENTLINE $POS "[0;32m launched a Photon Missile somewhere!"
-      if ($POS <> 0)
-        add $TOTALFIRED 1
-        gosub :TIME_DECODE
-        striptext $CURRENTLINE " somewhere!"
-        striptext $CURRENTLINE "[1;36m"
-        striptext $CURRENTLINE "[0;32m"
-        setvar $PHOTONRESULTS $PHOTONRESULTS&$TIMECODE&" - "&$CURRENTLINE&"*"
-      end
-    end
-    add $IDX 1
-  end
+if ($news_read and ($lines <> 0))
+	while ($idx <= $lines)
+		setvar $currentline $news_array[$idx]
+		if ($currentline = "EOF")
+			send $unexpected_eof
+			halt
+		else
+			getwordpos $currentline $pos "[0;32m launched a Photon Missile somewhere!"
+			if ($pos <> 0)
+				add $totalfired 1
+				gosub :time_decode
+				striptext $currentline " somewhere!"
+				striptext $currentline "[1;36m"
+				striptext $currentline "[0;32m"
+				setvar $photonresults $photonresults&$timecode&" - "&$currentline&"*"
+			end
+		end
+		add $idx 1
+	end
 
-  if ($TOTALFIRED <> 0)
-    setvar $PHOTONRESULTS $PHOTONRESULTS&"------------*"&"Total Fired: "&$TOTALFIRED&"*"
-  else
-    setvar $PHOTONRESULTS "   *    No Photons Fired*    *"
-  end
+	if ($totalfired <> 0)
+		setvar $photonresults $photonresults&"------------*"&"Total Fired: "&$totalfired&"*"
+	else
+		setvar $photonresults "   *    No Photons Fired*    *"
+	end
 else
-  setvar $PHOTONRESULTS $UNIVERSAL_FILE_ERR
+	setvar $photonresults $universal_file_err
 end
 
 return
-:TIME_DECODE
 
-setvar $TIMEIDX ($IDX - 1)
-while ($TIMEIDX > 0)
-  getwordpos $NEWS_ARRAY[$TIMEIDX] $POS $FILTER
-  if ($POS <> 0)
-    setvar $TIMECODE $NEWS_ARRAY[$TIMEIDX]
-    striptext $TIMECODE $FILTER&" [0;35m"
-    striptext $TIMECODE "[1;31m-- [0;35m"
-    striptext $TIMECODE "[1;31m --"
-    return
-  end
-  subtract $TIMEIDX 1
+:time_decode
+setvar $timeidx ($idx - 1)
+while ($timeidx > 0)
+	getwordpos $news_array[$timeidx] $pos $filter
+	if ($pos <> 0)
+		setvar $timecode $news_array[$timeidx]
+		striptext $timecode $filter&" [0;35m"
+		striptext $timecode "[1;31m-- [0;35m"
+		striptext $timecode "[1;31m --"
+		return
+	end
+	subtract $timeidx 1
 end
-setvar $TIMECODE "  UnKnown  "
+setvar $timecode "  UnKnown  "
 return
-:TOW_DETAIL
 
-setvar $IDX 1
-setvar $TOWRESULTS ""
-setvar $ARRAYSIZE 20
-setarray $TOWED $ARRAYSIZE
-setvar $HITS 0
+:tow_detail
+setvar $idx 1
+setvar $towresults ""
+setvar $arraysize 20
+setarray $towed $arraysize
+setvar $hits 0
 
-if ($NEWS_READ and ($LINES <> 0))
-  while ($IDX <= $LINES)
-    setvar $CURRENTLINE $NEWS_ARRAY[$IDX]
-    if ($CURRENTLINE = "EOF")
-      send $UNEXPECTED_EOF
-      halt
-    else
-      getwordpos $CURRENTLINE $POS "[0;33m was towed"
-      if ($POS <> 0)
-        add $HITS 1
-        striptext $CURRENTLINE "[0;33m was towed out of FedSpace"
-        setvar $II $IDX
-        while ($II <= $LINES)
-          setvar $SEARCH $NEWS_ARRAY[$II]
-          getwordpos $SEARCH $POS $CURRENTLINE
-          if ($POS = 1)
-            striptext $CURRENTLINE "[1;36m"
-            setvar $TOWRESULTS $TOWRESULTS&"                      "&$CURRENTLINE&" - Has Been Online*"
-            goto :SEARCH_COMPLETE
-          end
-          add $II 1
-        end
-        striptext $CURRENTLINE "[1;36m"
-        setvar $TOWRESULTS $TOWRESULTS&"                      "&$CURRENTLINE&"*"
-        :SEARCH_COMPLETE
-      else
-        getwordpos $CURRENTLINE $POS "[33mEnd Daily Journal [34m"
-        if ($POS <> 0)
-          if ($HITS = 0)
-            setvar $TOWRESULTS "Towed From Fed Space: No One*"
-          else
-            setvar $TOWRESULTS "Towed From Fed Space:*"&$TOWRESULTS
-          end
-          return
-        end
-      end
-    end
-    add $IDX 1
-  end
+if ($news_read and ($lines <> 0))
+	while ($idx <= $lines)
+		setvar $currentline $news_array[$idx]
+		if ($currentline = "EOF")
+			send $unexpected_eof
+			halt
+		else
+			getwordpos $currentline $pos "[0;33m was towed"
+			if ($pos <> 0)
+				add $hits 1
+				striptext $currentline "[0;33m was towed out of FedSpace"
+				setvar $ii $idx
+				while ($ii <= $lines)
+					setvar $search $news_array[$ii]
+					getwordpos $search $pos $currentline
+					if ($pos = 1)
+						striptext $currentline "[1;36m"
+						setvar $towresults $towresults&"                      "&$currentline&" - Has Been Online*"
+						goto :search_complete
+					end
+					add $ii 1
+				end
+				striptext $currentline "[1;36m"
+				setvar $towresults $towresults&"                      "&$currentline&"*"
+
+				:search_complete
+			else
+				getwordpos $currentline $pos "[33mEnd Daily Journal [34m"
+				if ($pos <> 0)
+					if ($hits = 0)
+						setvar $towresults "Towed From Fed Space: No One*"
+					else
+						setvar $towresults "Towed From Fed Space:*"&$towresults
+					end
+					return
+				end
+			end
+		end
+		add $idx 1
+	end
 else
-  setvar $TOWRESULTS $UNIVERSAL_FILE_ERR
+	setvar $towresults $universal_file_err
 end
 return
-:FORMAT_FOOTER
 
-setvar $IDX 1
-loadvar $NEWS_DATE
-setvar $FILTER "[1;31m-- [0;35m"&$NEWS_DATE&"[1;31m --"
+:format_footer
+setvar $idx 1
+loadvar $news_date
+setvar $filter "[1;31m-- [0;35m"&$news_date&"[1;31m --"
 
-if ($NEWS_READ and ($LINES > 0))
-  while ($IDX <= $LINES)
-    setvar $CURRENTLINE $NEWS_ARRAY[$IDX]
-    if ($CURRENTLINE = "EOF")
-      send $UNEXPECTED_EOF
-      halt
-    end
-    getwordpos $CURRENTLINE $POS $FILTER
-    if ($POS = 0)
-      add $ACTUALLINES 1
-    end
-    add $IDX 1
-  end
+if ($news_read and ($lines > 0))
+	while ($idx <= $lines)
+		setvar $currentline $news_array[$idx]
+		if ($currentline = "EOF")
+			send $unexpected_eof
+			halt
+		end
+		getwordpos $currentline $pos $filter
+		if ($pos = 0)
+			add $actuallines 1
+		end
+		add $idx 1
+	end
 
-  setvar $NEWS_FOOTER "---={Lines In Log: "&$ACTUALLINES
-  if ($NEWS_YEST)
-    setvar $NEWS_FOOTER $NEWS_FOOTER&" - Yesturday's Log Data."
-  end
-  setvar $NEWS_FOOTER $NEWS_FOOTER&"*---={Last Updated: "&$NEWS_ARRAY[1]&"*"
+	setvar $news_footer "---={Lines In Log: "&$actuallines
+	if ($news_yest)
+		setvar $news_footer $news_footer&" - Yesturday's Log Data."
+	end
+	setvar $news_footer $news_footer&"*---={Last Updated: "&$news_array[1]&"*"
 else
-  setvar $NEWS_FOOTER "---------------- ERROR - DATA CORRUPTION -------------------"
+	setvar $news_footer "---------------- ERROR - DATA CORRUPTION -------------------"
 end
 return
-:FILE_2_ARRAY
 
-setvar $NEWS_READ TRUE
-read $NEWS_FILE $FILE_HEADER 1
-readtoarray $NEWS_FILE $NEWS_ARRAY
-setvar $LINES $NEWS_ARRAY
+:file_2_array
+setvar $news_read true
+read $news_file $file_header 1
+readtoarray $news_file $news_array
+setvar $lines $news_array
 
-if (($FILE_HEADER = "EOF") or ($LINES <= 0))
-  setvar $switchboard~message "Problem Reading File. Try A Refresh. Halting*"
-  gosub :switchboard~switchboard
-  halt
+if (($file_header = "EOF") or ($lines <= 0))
+	setvar $switchboard~message "Problem Reading File. Try A Refresh. Halting*"
+	gosub :switchboard~switchboard
+	halt
 else
-  setvar $switchboard~message "Loading NEWS::AS OF "&$FILE_HEADER&"*"
-  gosub :switchboard~switchboard
-  waitfor "(?="
+	setvar $switchboard~message "Loading NEWS::AS OF "&$file_header&"*"
+	gosub :switchboard~switchboard
+	waitfor "(?="
 end
 return
-:VALIDATE
 
-setvar $IDX 1
-setvar $LIMITOR 35
+:validate
+setvar $idx 1
+setvar $limitor 35
 
-if ($NEWS_READ and ($LINES <> 0))
-  if ($LINES < $LIMITOR)
-    setvar $LIMITOR $LINES
-  end
-  while ($IDX <= $LIMITOR)
-    setvar $CURRENTLINE $NEWS_ARRAY[$IDX]
-    if ($CURRENTLINE = "EOF")
-      send $UNEXPECTED_EOF
-      halt
-    else
-      getwordpos $CURRENTLINE $POS $NEWS_EMPTY
-      if ($POS <> 0)
-        setvar $NEWS_VALIDATED FALSE
-        return
-      end
-    end
-    add $IDX 1
-  end
-  setvar $NEWS_VALIDATED TRUE
+if ($news_read and ($lines <> 0))
+	if ($lines < $limitor)
+		setvar $limitor $lines
+	end
+	while ($idx <= $limitor)
+		setvar $currentline $news_array[$idx]
+		if ($currentline = "EOF")
+			send $unexpected_eof
+			halt
+		else
+			getwordpos $currentline $pos $news_empty
+			if ($pos <> 0)
+				setvar $news_validated false
+				return
+			end
+		end
+		add $idx 1
+	end
+	setvar $news_validated true
 else
-  setvar $NEWS_VALIDATED FALSE
+	setvar $news_validated false
 end
 
 return
-:LOG_2_FILE
 
-delete $NEWS_FILE
-setvar $STOP_DATE ""
-savevar $NEWS_YEST
-send "'{"&$BOT_NAME&"} - Reading Log To File... Comms will be off during this...*| C D"
-setvar $S TIME&"-"&DATE
-gettime $S "h:nna/p - d/m/yyy"
-write $NEWS_FILE $S
-:GETDATE_SPOOF
-settexttrigger GETDATE :GETDATE "Enter the beginning date you wish to read from. Today is"
+:log_2_file
+delete $news_file
+setvar $stop_date ""
+savevar $news_yest
+send "'{"&$bot_name&"} - Reading Log To File... Comms will be off during this...*| C D"
+setvar $s time&"-"&date
+gettime $s "h:nna/p - d/m/yyy"
+write $news_file $s
+
+:getdate_spoof
+settexttrigger getdate :getdate "Enter the beginning date you wish to read from. Today is"
 pause
-:GETDATE
-killtrigger GETDATE
-setvar $ANSI CURRENTANSILINE
-striptext $ANSI "[0m"
-striptext $ANSI #10
-striptext $ANSI #13
 
-getwordpos $ANSI $POS "is [1;33m"
-if ($POS <> 0)
-  gettext $ANSI $NEWS_DATE "is [1;33m" ""
+:getdate
+killtrigger getdate
+setvar $ansi currentansiline
+striptext $ansi "[0m"
+striptext $ansi #10
+striptext $ansi #13
 
-  if ($NEWS_YEST)
+getwordpos $ansi $pos "is [1;33m"
+if ($pos <> 0)
+	gettext $ansi $news_date "is [1;33m" ""
 
-    setvar $STOP_DATE $NEWS_DATE
-    replacetext $NEWS_DATE "/" " "
-    getword $NEWS_DATE $NEWS_MONTH 1
-    getword $NEWS_DATE $NEWS_DAY 2
-    getword $NEWS_DATE $NEWS_YEAR 3
+	if ($news_yest)
 
-    if (($NEWS_MONTH = 12) and ($NEWS_DAY = 01))
-      setvar $NEWS_MONTH 11
-      setvar $NEWS_DAY 30
-    elseif (($NEWS_MONTH = 11) and ($NEWS_DAY = 1))
-      setvar $NEWS_MONTH 10
-      setvar $NEWS_DAY 31
-    elseif (($NEWS_MONTH = 10) and ($NEWS_DAY = 1))
-      setvar $NEWS_MONTH 9
-      setvar $NEWS_DAY 30
-    elseif (($NEWS_MONTH = 9) and ($NEWS_DAY = 1))
-      setvar $NEWS_MONTH 8
-      setvar $NEWS_DAY 31
-    elseif (($NEWS_MONTH = 8) and ($NEWS_DAY = 1))
-      setvar $NEWS_MONTH 7
-      setvar $NEWS_DAY 31
-    elseif (($NEWS_MONTH = 7) and ($NEWS_DAY = 1))
-      setvar $NEWS_MONTH 6
-      setvar $NEWS_DAY 30
-    elseif (($NEWS_MONTH = 6) and ($NEWS_DAY = 1))
-      setvar $NEWS_MONTH 5
-      setvar $NEWS_DAY 31
-    elseif (($NEWS_MONTH = 5) and ($NEWS_DAY = 1))
-      setvar $NEWS_MONTH 4
-      setvar $NEWS_DAY 30
-    elseif (($NEWS_MONTH = 4) and ($NEWS_DAY = 1))
-      setvar $NEWS_MONTH 3
-      setvar $NEWS_DAY 31
-    elseif (($NEWS_MONTH = 3) and ($NEWS_DAY = 1))
+		setvar $stop_date $news_date
+		replacetext $news_date "/" " "
+		getword $news_date $news_month 1
+		getword $news_date $news_day 2
+		getword $news_date $news_year 3
 
-      setvar $NEWS_MONTH 2
-      setvar $NEWS_DAY 28
-    elseif (($NEWS_MONTH = 2) and ($NEWS_DAY = 1))
-      setvar $NEWS_MONTH 1
-      setvar $NEWS_DAY 31
-    elseif (($NEWS_MONTH = 1) and ($NEWS_DAY = 1))
-      setvar $NEWS_MONTH 12
-      setvar $NEWS_DAY 30
-    else
-      subtract $NEWS_DAY 1
+		if (($news_month = 12) and ($news_day = 01))
+			setvar $news_month 11
+			setvar $news_day 30
+		elseif (($news_month = 11) and ($news_day = 1))
+			setvar $news_month 10
+			setvar $news_day 31
+		elseif (($news_month = 10) and ($news_day = 1))
+			setvar $news_month 9
+			setvar $news_day 30
+		elseif (($news_month = 9) and ($news_day = 1))
+			setvar $news_month 8
+			setvar $news_day 31
+		elseif (($news_month = 8) and ($news_day = 1))
+			setvar $news_month 7
+			setvar $news_day 31
+		elseif (($news_month = 7) and ($news_day = 1))
+			setvar $news_month 6
+			setvar $news_day 30
+		elseif (($news_month = 6) and ($news_day = 1))
+			setvar $news_month 5
+			setvar $news_day 31
+		elseif (($news_month = 5) and ($news_day = 1))
+			setvar $news_month 4
+			setvar $news_day 30
+		elseif (($news_month = 4) and ($news_day = 1))
+			setvar $news_month 3
+			setvar $news_day 31
+		elseif (($news_month = 3) and ($news_day = 1))
 
-    end
-    setvar $NEWS_DATE $NEWS_MONTH&"/"&$NEWS_DAY&"/"&$NEWS_YEAR
-  end
-  savevar $NEWS_DATE
+			setvar $news_month 2
+			setvar $news_day 28
+		elseif (($news_month = 2) and ($news_day = 1))
+			setvar $news_month 1
+			setvar $news_day 31
+		elseif (($news_month = 1) and ($news_day = 1))
+			setvar $news_month 12
+			setvar $news_day 30
+		else
+			subtract $news_day 1
+
+		end
+		setvar $news_date $news_month&"/"&$news_day&"/"&$news_year
+	end
+	savevar $news_date
 else
-  goto :GETDATE_SPOOF
+	goto :getdate_spoof
 end
-:INDATE_SPOOF
-settexttrigger INDATE :INDATE "Input search date"
+
+:indate_spoof
+settexttrigger indate :indate "Input search date"
 pause
-:INDATE
-killtrigger INDATE
-getwordpos CURRENTANSILINE $POS "[35mInput"
-if ($POS <> 0)
-  send $NEWS_DATE&"*y*"
-else
-  goto :INDATE_SPOOF
-end
-:TOPOFLOG_SPOOF
 
-settexttrigger TOPOFLOG :TOPOFLOG "-=-=-=-=-=-=-=-=-=- Trade Wars 2002"
+:indate
+killtrigger indate
+getwordpos currentansiline $pos "[35mInput"
+if ($pos <> 0)
+	send $news_date&"*y*"
+else
+	goto :indate_spoof
+end
+
+:topoflog_spoof
+settexttrigger topoflog :topoflog "-=-=-=-=-=-=-=-=-=- Trade Wars 2002"
 pause
-:TOPOFLOG
 
-killtrigger TOPOFLOG
-getwordpos CURRENTANSILINE $POS "[1;34m  -="
-if ($POS <> 0)
+:topoflog
+killtrigger topoflog
+getwordpos currentansiline $pos "[1;34m  -="
+if ($pos <> 0)
 else
-  goto :TOPOFLOG_SPOOF
+	goto :topoflog_spoof
 end
-:END_OF_LINES_SPOOF
-if ($NEWS_YEST)
-  settextlinetrigger END_OF_LINES1 :END_OF_LINES "S.D. "&$STOP_DATE
+
+:end_of_lines_spoof
+if ($news_yest)
+	settextlinetrigger end_of_lines1 :end_of_lines "S.D. "&$stop_date
 else
-  settexttrigger END_OF_LINES2 :END_OF_LINES "command [TL="
+	settexttrigger end_of_lines2 :end_of_lines "command [TL="
 end
-settextlinetrigger NOTHING_2_DO :NOTHING_2_DO "No log entries today."
-:RESET_LINE_TRIGGER
-settextlinetrigger LINE_TRIG :PARSE_SCAN_LINE
+settextlinetrigger nothing_2_do :nothing_2_do "No log entries today."
+
+:reset_line_trigger
+settextlinetrigger line_trig :parse_scan_line
 pause
-:PARSE_SCAN_LINE
-killtrigger :LINE_TRIG
-setvar $ANSI CURRENTANSILINE
-striptext $ANSI "[0m"
-striptext $ANSI #13
-striptext $ANSI #16
 
+:parse_scan_line
+killtrigger :line_trig
+setvar $ansi currentansiline
+striptext $ansi "[0m"
+striptext $ansi #13
+striptext $ansi #16
 
-getwordpos $ANSI $POS "[Pause]"
-if ($POS <> 0)
-  send "*"
-  goto :RESET_LINE_TRIGGER
+getwordpos $ansi $pos "[Pause]"
+if ($pos <> 0)
+	send "*"
+	goto :reset_line_trigger
 end
-if (($ANSI = "") or ($ANSI = 0))
-  goto :RESET_LINE_TRIGGER
+if (($ansi = "") or ($ansi = 0))
+	goto :reset_line_trigger
 end
-write $NEWS_FILE $ANSI
-goto :RESET_LINE_TRIGGER
-:NOTHING_2_DO
+write $news_file $ansi
+goto :reset_line_trigger
+
+:nothing_2_do
 killalltriggers
-setvar $ANSI CURRENTANSILINE
-getwordpos $ANSI $POS $NEWS_EMPTY
-if ($POS <> 0)
-  write $NEWS_FILE $NEWS_EMPTY
-  send "***  Q|"
-  goto :DONE_READING_NEWS
+setvar $ansi currentansiline
+getwordpos $ansi $pos $news_empty
+if ($pos <> 0)
+	write $news_file $news_empty
+	send "***  Q|"
+	goto :done_reading_news
 else
-  goto :END_OF_LINES_SPOOF
+	goto :end_of_lines_spoof
 end
-:END_OF_LINES
-killtrigger END_OF_LINES
-killtrigger LINE_TRIG
 
-if ($NEWS_YEST)
-  getwordpos CURRENTANSILINE $POS "[1;34m-="
-  if ($POS <> 0)
-    send "*  *   *  ** Q|"
-  else
-    goto :END_OF_LINES_SPOOF
-  end
+:end_of_lines
+killtrigger end_of_lines
+killtrigger line_trig
+
+if ($news_yest)
+	getwordpos currentansiline $pos "[1;34m-="
+	if ($pos <> 0)
+		send "*  *   *  ** Q|"
+	else
+		goto :end_of_lines_spoof
+	end
 else
-  getwordpos CURRENTANSILINE $POS "[1;33mTL"
-  if ($POS <> 0)
-    send " Q|"
-  else
-    goto :END_OF_LINES_SPOOF
-  end
+	getwordpos currentansiline $pos "[1;33mTL"
+	if ($pos <> 0)
+		send " Q|"
+	else
+		goto :end_of_lines_spoof
+	end
 end
-:DONE_READING_NEWS
-setvar $NEWS_READ TRUE
+
+:done_reading_news
+setvar $news_read true
 waiton "<Computer deactivated>"
 return
 include "source\include\loadvars"

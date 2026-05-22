@@ -1,53 +1,52 @@
-:XENTER~RUN
-:XENTER~XENTER
+:xenter~run
+:xenter~xenter
+gosub :player~quikstats
+loadvar $game~game_menu_prompt
 
-gosub :PLAYER~QUIKSTATS
-loadvar $GAME~GAME_MENU_PROMPT
-
-setvar $XENTER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $BOT~VALIDPROMPTS "Command Citadel"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-if ($XENTER~STARTINGLOCATION = "Citadel")
-  send "q m n t *"
-  gosub :PLANET~GETPLANETINFO
-  send "c "
+setvar $xenter~startinglocation $player~current_prompt
+setvar $bot~validprompts "Command Citadel"
+gosub :player~checkstartingprompt
+if ($xenter~startinglocation = "Citadel")
+	send "q m n t *"
+	gosub :planet~getplanetinfo
+	send "c "
 end
 
-:XENTER~EXIT_XENTER
-if ($XENTER~STARTINGLOCATION = "Command")
-  setvar $XENTER~EXIT_MAC "q y * "
-  setvar $XENTER~EXIT_ENTER " t* * *"&$BOT~PASSWORD&"*    *    *       za9999*   z*   /"
+:xenter~exit_xenter
+if ($xenter~startinglocation = "Command")
+	setvar $xenter~exit_mac "q y * "
+	setvar $xenter~exit_enter " t* * *"&$bot~password&"*    *    *       za9999*   z*   /"
 else
-  setvar $XENTER~EXIT_MAC "r   y   * * "
-  setvar $XENTER~EXIT_ENTER " t* * *"&$BOT~PASSWORD&"*    *    *    m * * *   q  *    *    *     za9999*   z*   f z1* z c d *  l j"&#8&$PLANET~PLANET&"* c  /"
+	setvar $xenter~exit_mac "r   y   * * "
+	setvar $xenter~exit_enter " t* * *"&$bot~password&"*    *    *    m * * *   q  *    *    *     za9999*   z*   f z1* z c d *  l j"&#8&$planet~planet&"* c  /"
 end
 
 killtrigger 1
 killtrigger 2
 killtrigger 3
-send $XENTER~EXIT_MAC
-settexttrigger 1 :PICKGAME "Selection (? for menu)"
-settexttrigger 2 :ENTER_CHOICE_XENTER "Enter your choice:"
-settexttrigger 3 :PICKGAME $GAME~GAME_MENU_PROMPT
+send $xenter~exit_mac
+settexttrigger 1 :pickgame "Selection (? for menu)"
+settexttrigger 2 :enter_choice_xenter "Enter your choice:"
+settexttrigger 3 :pickgame $game~game_menu_prompt
 pause
 
-:XENTER~ENTER_CHOICE_XENTER
+:xenter~enter_choice_xenter
 killtrigger 1
 killtrigger 2
 killtrigger 3
-send $XENTER~EXIT_ENTER
+send $xenter~exit_enter
 waiton #179
 
-:PICKGAME
+:pickgame
 killtrigger 1
 killtrigger 2
 killtrigger 3
-send $BOT~letter&"  *  "
+send $bot~letter&"  *  "
 waiton "[Pause]"
 send " * "
-goto :XENTER~ENTER_CHOICE_XENTER
+goto :xenter~enter_choice_xenter
 
-:XENTER~XENTERENDED
+:xenter~xenterended
 return
 
 include "source\include\player"

@@ -1,282 +1,283 @@
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
-	loadvar $game~port_max
+gosub :loadvars~loadvars
+gosub :help~initialize
+loadvar $game~port_max
 
-	setVar $HELP~HELP[1]   $HELP~TAB&"  deploy/put/lay/place {number} {type} {pers | corp} "
-	setVar $HELP~HELP[2]   $HELP~TAB&"     "
-	setVar $HELP~HELP[3]   $HELP~TAB&"  Command to replace old climp/plimp/mines/cmine/pmine "
-	setVar $HELP~HELP[4]   $HELP~TAB&"  commands.  Old syntax still works but can also use new"
-	setVar $HELP~HELP[5]   $HELP~TAB&"  options"
-	setVar $HELP~HELP[6]   $HELP~TAB&"     "
-	setVar $HELP~HELP[7]   $HELP~TAB&"   [topoff] - will fill ship up with fighters from sector "
-	setVar $HELP~HELP[8]   $HELP~TAB&"              Example:"
-	setVar $HELP~HELP[9]   $HELP~TAB&"                    >topoff"
-	setVar $HELP~HELP[10]  $HELP~TAB&"     "
-	setVar $HELP~HELP[11]  $HELP~TAB&"   [plimp | climp | cmine | pmine] - drops mines (default 1)"
-	setVar $HELP~HELP[12]  $HELP~TAB&"              Examples: "
-	setVar $HELP~HELP[13]  $HELP~TAB&"                    >plimp "
-	setVar $HELP~HELP[14]  $HELP~TAB&"                    >place 100 limp"
-	setVar $HELP~HELP[15]  $HELP~TAB&"                    >put p limp"
-	setVar $HELP~HELP[16]  $HELP~TAB&"                    >lay 250 corp mine"
-	setVar $HELP~HELP[17]  $HELP~TAB&"                    >deploy l p "
-	setVar $HELP~HELP[18]  $HELP~TAB&"                    >plimp 3 "
-	setVar $HELP~HELP[19]  $HELP~TAB&"      "
-	setVar $HELP~HELP[20]  $HELP~TAB&"    [mines] - drops both mine types (default 3) "
-	setVar $HELP~HELP[21]  $HELP~TAB&"              Examples:   "
-	setVar $HELP~HELP[22]  $HELP~TAB&"                    >lay 250 mines"
-	setVar $HELP~HELP[23]  $HELP~TAB&"                    >mines"
-	setVar $HELP~HELP[24]  $HELP~TAB&"   "
-	setVar $HELP~HELP[25]  $HELP~TAB&"   [deploy] - puts fighter into sector (default)"
-	setVar $HELP~HELP[26]  $HELP~TAB&"              Examples: "
-	setVar $HELP~HELP[27]  $HELP~TAB&"                    >deploy 10000 figs"
-	setVar $HELP~HELP[28]  $HELP~TAB&"                    >deploy 100000"
-	setVar $HELP~HELP[29]  $HELP~TAB&"                    >put 100 personal"
-	gosub :HELP~HELPFILE
+setvar $help~help[1]   $help~tab&"  deploy/put/lay/place {number} {type} {pers | corp} "
+setvar $help~help[2]   $help~tab&"     "
+setvar $help~help[3]   $help~tab&"  Command to replace old climp/plimp/mines/cmine/pmine "
+setvar $help~help[4]   $help~tab&"  commands.  Old syntax still works but can also use new"
+setvar $help~help[5]   $help~tab&"  options"
+setvar $help~help[6]   $help~tab&"     "
+setvar $help~help[7]   $help~tab&"   [topoff] - will fill ship up with fighters from sector "
+setvar $help~help[8]   $help~tab&"              Example:"
+setvar $help~help[9]   $help~tab&"                    >topoff"
+setvar $help~help[10]  $help~tab&"     "
+setvar $help~help[11]  $help~tab&"   [plimp | climp | cmine | pmine] - drops mines (default 1)"
+setvar $help~help[12]  $help~tab&"              Examples: "
+setvar $help~help[13]  $help~tab&"                    >plimp "
+setvar $help~help[14]  $help~tab&"                    >place 100 limp"
+setvar $help~help[15]  $help~tab&"                    >put p limp"
+setvar $help~help[16]  $help~tab&"                    >lay 250 corp mine"
+setvar $help~help[17]  $help~tab&"                    >deploy l p "
+setvar $help~help[18]  $help~tab&"                    >plimp 3 "
+setvar $help~help[19]  $help~tab&"      "
+setvar $help~help[20]  $help~tab&"    [mines] - drops both mine types (default 3) "
+setvar $help~help[21]  $help~tab&"              Examples:   "
+setvar $help~help[22]  $help~tab&"                    >lay 250 mines"
+setvar $help~help[23]  $help~tab&"                    >mines"
+setvar $help~help[24]  $help~tab&"   "
+setvar $help~help[25]  $help~tab&"   [deploy] - puts fighter into sector (default)"
+setvar $help~help[26]  $help~tab&"              Examples: "
+setvar $help~help[27]  $help~tab&"                    >deploy 10000 figs"
+setvar $help~help[28]  $help~tab&"                    >deploy 100000"
+setvar $help~help[29]  $help~tab&"                    >put 100 personal"
+gosub :help~helpfile
 
-	setVar $bot~bot_name $SWITCHBOARD~bot_name
-	
-	gosub :PLAYER~quikstats
-	setVar $startingLocation $PLAYER~CURRENT_PROMPT
-	setVar $bot~startingLocation $PLAYER~CURRENT_PROMPT
-	if (($startingLocation <> "Citadel") AND ($startingLocation <> "Command"))
-		setVar $SWITCHBOARD~message "You must run deploy from command or citadel prompt.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
-	loadVar $planet~planet
-	
-	setvar $i 1
-	setvar $line $bot~user_command_line
-	setvar $bot~user_command_line ""
-	setvar $nothing "<>!<>junk<>!<>!"
-	getword $line $word 1 $nothing
+setvar $bot~bot_name $switchboard~bot_name
 
-	while ($word <> $nothing)
-		getword $line $word $i $nothing
-		if ($word <> $nothing)
-			setvar $bot~user_command_line $bot~user_command_line&" "&$word
-		end
-		add $i 1
-	end
+gosub :player~quikstats
+setvar $startinglocation $player~current_prompt
+setvar $bot~startinglocation $player~current_prompt
+if (($startinglocation <> "Citadel") and ($startinglocation <> "Command"))
+	setvar $switchboard~message "You must run deploy from command or citadel prompt.*"
+	gosub :switchboard~switchboard
+	halt
+end
+loadvar $planet~planet
 
-	# Old mine commands can be routed into deploy; use the original command
-	# name to preserve their default mine/corp settings.
-	setvar $legacy_deploy_command $bot~command_typed
-	if ($legacy_deploy_command = "")
-		setvar $legacy_deploy_command $bot~command
-	end
-	lowercase $legacy_deploy_command
-	if ($legacy_deploy_command = "plimp")
-		setvar $bot~user_command_line $bot~user_command_line&" personal limp "
-	elseif ($legacy_deploy_command = "pmine")
-		setvar $bot~user_command_line $bot~user_command_line&" personal mine "
-	elseif ($legacy_deploy_command = "climp")
-		setvar $bot~user_command_line $bot~user_command_line&" corporate limp "
-	elseif ($legacy_deploy_command = "cmine")
-		setvar $bot~user_command_line $bot~user_command_line&" corporate mine "
-	elseif ($legacy_deploy_command = "mines")
-		setvar $bot~user_command_line $bot~user_command_line&" mines "
-	end
+setvar $i 1
+setvar $line $bot~user_command_line
+setvar $bot~user_command_line ""
+setvar $nothing "<>!<>junk<>!<>!"
+getword $line $word 1 $nothing
 
-	isNumber $isnumber $bot~parm1
-	setvar $default false
-	if ($isnumber = true)
-		setvar $deploy_amount $bot~parm1
-	else
-		setvar $deploy_amount 1
-		setvar $default true
+while ($word <> $nothing)
+	getword $line $word $i $nothing
+	if ($word <> $nothing)
+		setvar $bot~user_command_line $bot~user_command_line&" "&$word
 	end
-	setvar $deploy_corp true
-	setvar $deploy "defensive"
+	add $i 1
+end
 
-	getwordpos " "&$bot~user_command_line&" " $pos " f"
-	if ($pos > 0)
-		setvar $fighter true
-	else
-		setvar $fighter false
-	end
+# Old mine commands can be routed into deploy; use the original command
+# name to preserve their default mine/corp settings.
+setvar $legacy_deploy_command $bot~command_typed
+if ($legacy_deploy_command = "")
+	setvar $legacy_deploy_command $bot~command
+end
+lowercase $legacy_deploy_command
+if ($legacy_deploy_command = "plimp")
+	setvar $bot~user_command_line $bot~user_command_line&" personal limp "
+elseif ($legacy_deploy_command = "pmine")
+	setvar $bot~user_command_line $bot~user_command_line&" personal mine "
+elseif ($legacy_deploy_command = "climp")
+	setvar $bot~user_command_line $bot~user_command_line&" corporate limp "
+elseif ($legacy_deploy_command = "cmine")
+	setvar $bot~user_command_line $bot~user_command_line&" corporate mine "
+elseif ($legacy_deploy_command = "mines")
+	setvar $bot~user_command_line $bot~user_command_line&" mines "
+end
 
-	getwordpos " "&$bot~user_command_line&" " $pos " l"
-	getwordpos " "&$bot~user_command_line&" " $pos2 "limp"
-	if (($pos > 0) or ($pos2 > 0))
-		setvar $limpet true
-	else
-		setvar $limpet false
-	end
+isnumber $isnumber $bot~parm1
+setvar $default false
+if ($isnumber = true)
+	setvar $deploy_amount $bot~parm1
+else
+	setvar $deploy_amount 1
+	setvar $default true
+end
+setvar $deploy_corp true
+setvar $deploy "defensive"
 
-	getwordpos " "&$bot~user_command_line&" " $pos " a"
-	getwordpos " "&$bot~user_command_line&" " $pos2 "mine"
-	if (($pos > 0) or ($pos2 > 0))
-		setvar $armid true
-	else
-		setvar $armid false
-	end
+getwordpos " "&$bot~user_command_line&" " $pos " f"
+if ($pos > 0)
+	setvar $fighter true
+else
+	setvar $fighter false
+end
 
-	getwordpos " "&$bot~user_command_line&" " $pos " o"
-	if ($pos > 0)
-		setvar $offensive true
-		setvar $defensive false
-		setvar $toll false
-	else
-		setvar $offensive false
-	end
+getwordpos " "&$bot~user_command_line&" " $pos " l"
+getwordpos " "&$bot~user_command_line&" " $pos2 "limp"
+if (($pos > 0) or ($pos2 > 0))
+	setvar $limpet true
+else
+	setvar $limpet false
+end
 
-	getwordpos " "&$bot~user_command_line&" " $pos " d"
-	if ($pos > 0)
-		setvar $defensive true
-		setvar $toll false
-		setvar $offensive false
-	else
-		setvar $defensive false
-	end
+getwordpos " "&$bot~user_command_line&" " $pos " a"
+getwordpos " "&$bot~user_command_line&" " $pos2 "mine"
+if (($pos > 0) or ($pos2 > 0))
+	setvar $armid true
+else
+	setvar $armid false
+end
 
-	getwordpos " "&$bot~user_command_line&" " $pos " t"
-	if ($pos > 0)
-		setvar $toll true
-		setvar $defensive false
-		setvar $offensive false
-	else
-		setvar $toll false
-	end
+getwordpos " "&$bot~user_command_line&" " $pos " o"
+if ($pos > 0)
+	setvar $offensive true
+	setvar $defensive false
+	setvar $toll false
+else
+	setvar $offensive false
+end
 
-	getwordpos " "&$bot~user_command_line&" " $pos " p"
-	if ($pos > 0)
-		setvar $personal true
-		setvar $corporate false
-	else
-		setvar $personal false
-	end
+getwordpos " "&$bot~user_command_line&" " $pos " d"
+if ($pos > 0)
+	setvar $defensive true
+	setvar $toll false
+	setvar $offensive false
+else
+	setvar $defensive false
+end
 
-	getwordpos " "&$bot~user_command_line&" " $pos " c"
-	if ($pos > 0)
-		setvar $corporate true
-		setvar $personal false
-	else
-		setvar $corporate false
-	end
+getwordpos " "&$bot~user_command_line&" " $pos " t"
+if ($pos > 0)
+	setvar $toll true
+	setvar $defensive false
+	setvar $offensive false
+else
+	setvar $toll false
+end
 
-	getwordpos " "&$bot~user_command_line&" " $pos " mines "
-	if ($pos > 0)
-		setvar $limpet true
-		setvar $armid true
-	end
+getwordpos " "&$bot~user_command_line&" " $pos " p"
+if ($pos > 0)
+	setvar $personal true
+	setvar $corporate false
+else
+	setvar $personal false
+end
 
-	getwordpos " "&$bot~user_command_line&" " $pos " topoff "
-	if ($pos > 0)
-		setvar $topoff true
-		setvar $fighter true
-		setvar $armid false
-		setvar $limpet false
-	end
+getwordpos " "&$bot~user_command_line&" " $pos " c"
+if ($pos > 0)
+	setvar $corporate true
+	setvar $personal false
+else
+	setvar $corporate false
+end
 
-	if (($fighter <> true) and ($limpet <> true) and ($armid <> true))
-		setvar $fighter true
-	end
-	if (($offensive <> true) and ($defensive <> true) and ($toll <> true))
-		if ((CURRENTSECTOR > 0) AND (CURRENTSECTOR <= SECTORS))
-			setVar $type SECTOR.FIGS.TYPE[CURRENTSECTOR]
-			if ($type = "Offensive")
-				setvar $offensive true
-			elseif ($type = "Defensive")
-				setvar $defensive true
-			elseif ($type = "Toll")
-				setvar $toll true
-			else
-				setvar $defensive true
-			end
+getwordpos " "&$bot~user_command_line&" " $pos " mines "
+if ($pos > 0)
+	setvar $limpet true
+	setvar $armid true
+end
+
+getwordpos " "&$bot~user_command_line&" " $pos " topoff "
+if ($pos > 0)
+	setvar $topoff true
+	setvar $fighter true
+	setvar $armid false
+	setvar $limpet false
+end
+
+if (($fighter <> true) and ($limpet <> true) and ($armid <> true))
+	setvar $fighter true
+end
+if (($offensive <> true) and ($defensive <> true) and ($toll <> true))
+	if ((currentsector > 0) and (currentsector <= sectors))
+		setvar $type sector.figs.type[currentsector]
+		if ($type = "Offensive")
+			setvar $offensive true
+		elseif ($type = "Defensive")
+			setvar $defensive true
+		elseif ($type = "Toll")
+			setvar $toll true
 		else
 			setvar $defensive true
 		end
+	else
+		setvar $defensive true
 	end
-	if (($corporate <> true) and ($personal <> true))
-		setvar $corporate true
-	end
+end
+if (($corporate <> true) and ($personal <> true))
+	setvar $corporate true
+end
 
-	if ($fighter)
-		if ($topoff)
-			gosub :TOPOFF
-		else
-			setvar $fighters~offensive $offensive
-			setvar $fighters~defensive $defensive
-			setvar $fighters~toll $toll
-			setvar $fighters~corporate $corporate
-			setvar $fighters~personal $personal
-			setvar $fighters~amount $deploy_amount
-			gosub :fighters~deploy
-		end
-	elseif (($limpet) and ($armid))
-		setvar $mines~personal $personal
-		if ($default)
-			setvar $deploy_amount 3
-		end
-		setvar $mines~amount $deploy_amount
-		gosub :mines~deploy
-	elseif ($limpet)
-		setvar $mines~personal $personal
-		setvar $mines~amount $deploy_amount
-		gosub :mines~deployLimp
-	elseif ($armid)
-		setvar $mines~personal $personal
-		setvar $mines~amount $deploy_amount
-		gosub :mines~deployArmid
+if ($fighter)
+	if ($topoff)
+		gosub :topoff
+	else
+		setvar $fighters~offensive $offensive
+		setvar $fighters~defensive $defensive
+		setvar $fighters~toll $toll
+		setvar $fighters~corporate $corporate
+		setvar $fighters~personal $personal
+		setvar $fighters~amount $deploy_amount
+		gosub :fighters~deploy
 	end
+elseif (($limpet) and ($armid))
+	setvar $mines~personal $personal
+	if ($default)
+		setvar $deploy_amount 3
+	end
+	setvar $mines~amount $deploy_amount
+	gosub :mines~deploy
+elseif ($limpet)
+	setvar $mines~personal $personal
+	setvar $mines~amount $deploy_amount
+	gosub :mines~deploylimp
+elseif ($armid)
+	setvar $mines~personal $personal
+	setvar $mines~amount $deploy_amount
+	gosub :mines~deployarmid
+end
 
-:TOPOFF
+:topoff
 killalltriggers
-gosub  :player~currentPrompt
-setVar $bot~startingLocation $PLAYER~current_prompt
-setVar $bot~validPrompts "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-if ($bot~startingLocation = "Citadel")
+gosub  :player~currentprompt
+setvar $bot~startinglocation $player~current_prompt
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
+if ($bot~startinglocation = "Citadel")
 	send " q "
-	gosub :PLANET~getPlanetInfo
+	gosub :planet~getplanetinfo
 	send " q "
 end
-if ($bot~parm1 <> "o") AND ($bot~parm1 <> "t") AND ($bot~parm1 <> "d")
-	setVar $type "d"
-	isNumber $test CURRENTSECTOR
-	if ($test = TRUE)
-		if ((CURRENTSECTOR > 0) AND (CURRENTSECTOR <= SECTORS))
-			setVar $type SECTOR.FIGS.TYPE[CURRENTSECTOR]
+if ($bot~parm1 <> "o") and ($bot~parm1 <> "t") and ($bot~parm1 <> "d")
+	setvar $type "d"
+	isnumber $test currentsector
+	if ($test = true)
+		if ((currentsector > 0) and (currentsector <= sectors))
+			setvar $type sector.figs.type[currentsector]
 			if ($type = "Offensive")
-				setVar $type "o"
+				setvar $type "o"
 			elseif ($type = "Defensive")
-				setVar $type "d"
+				setvar $type "d"
 			elseif ($type = "Toll")
-				setVar $type "t"
+				setvar $type "t"
 			else
-				setVar $type "d"
+				setvar $type "d"
 			end
 		end
 	end
-	setVar $bot~parm1 $type
+	setvar $bot~parm1 $type
 end
-setVar $to_drop $bot~parm1
-gosub :DO_TOPOFF
-if ($bot~startingLocation = "Citadel")
-	gosub :PLANET~landingSub
+setvar $to_drop $bot~parm1
+gosub :do_topoff
+if ($bot~startinglocation = "Citadel")
+	gosub :planet~landingsub
 end
-setVar $SWITCHBOARD~message "TopOff complete Left "&$ftrs_to_leave&" fighters.*"
-gosub :SWITCHBOARD~switchboard
+setvar $switchboard~message "TopOff complete Left "&$ftrs_to_leave&" fighters.*"
+gosub :switchboard~switchboard
 return
 
-:DO_TOPOFF
-	:DO_TOPOFF_AGAIN
-	killalltriggers
-	send " F"
-	waitOn "Your ship can support up to"
-	getWord CURRENTLINE $ftrs_to_leave 10
-	stripText $ftrs_to_leave ","
-	stripText $ftrs_to_leave " "
-	if ($ftrs_to_leave < 1)
-		setVar $ftrs_to_leave 1
-	end
-	send " " & $ftrs_to_leave & " * C " & $to_drop
-	setTextLineTrigger DEPLOY_TOPOFF_SUCCESS :TOPOFF_SUCCESS "Done. You have "
-	setTextLineTrigger DEPLOY_TOPOFF_FAILURE1 :DO_TOPOFF_AGAIN "You don't have that many fighters available."
-	setTextLineTrigger DEPLOY_TOPOFF_FAILURE2 :DO_TOPOFF_AGAIN "Too many fighters in your fleet!  You are limited to"
-	pause
-	:TOPOFF_SUCCESS
+:do_topoff
+:do_topoff_again
+killalltriggers
+send " F"
+waiton "Your ship can support up to"
+getword currentline $ftrs_to_leave 10
+striptext $ftrs_to_leave ","
+striptext $ftrs_to_leave " "
+if ($ftrs_to_leave < 1)
+	setvar $ftrs_to_leave 1
+end
+send " " & $ftrs_to_leave & " * C " & $to_drop
+settextlinetrigger deploy_topoff_success :topoff_success "Done. You have "
+settextlinetrigger deploy_topoff_failure1 :do_topoff_again "You don't have that many fighters available."
+settextlinetrigger deploy_topoff_failure2 :do_topoff_again "Too many fighters in your fleet!  You are limited to"
+pause
+
+:topoff_success
 return
 
 halt

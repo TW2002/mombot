@@ -1,980 +1,1018 @@
-gosub :LOADVARS~LOADVARS
+gosub :loadvars~loadvars
 loadvar $bot~folder
 
 #=============================================  DOCK SHOPPER MENU  ==================================================
 :dock_shopper
- # ============================ START DOCK SHOPPER VARIABLES ==========================
-setVar $LSD_CURENT_VERSION "4.0"
-setVar $LSD_TagLineB "LSDv" & $LSD_CURENT_VERSION
-setVar $LSD_ShipData_Valid      FALSE
-setVar $LSD_Ships_Names         "][LSD]["
-setVar $LSD_Ships_File          $bot~folder&"/LSD_" & GAMENAME & ".ships"
-setVar $LSD_ShipListMax         50
-setVar $LSD_BOTTING         $bot~bot_name
-setVar $LSD__PAD            "@"
-setArray $LSD_ShipList          $LSD_ShipListMax 3
+# ============================ START DOCK SHOPPER VARIABLES ==========================
+setvar $lsd_curent_version "4.0"
+setvar $lsd_taglineb "LSDv" & $lsd_curent_version
+setvar $lsd_shipdata_valid      false
+setvar $lsd_ships_names         "][LSD]["
+setvar $lsd_ships_file          $bot~folder&"/LSD_" & gamename & ".ships"
+setvar $lsd_shiplistmax         50
+setvar $lsd_botting         $bot~bot_name
+setvar $lsd__pad            "@"
+setarray $lsd_shiplist          $lsd_shiplistmax 3
 # ============================ END DOCK SHOPPER VARIABLES ==========================
 
+setvar $isdockshopper true
+setvar $lsd__atomics ""
+setvar $lsd__beacons ""
+setvar $lsd__corbo ""
+setvar $lsd__cloak ""
+setvar $lsd__probe ""
+setvar $lsd__pscan ""
+setvar $lsd__limps ""
+setvar $lsd__mines ""
+setvar $lsd__photon ""
+setvar $lsd__lrscan ""
+setvar $lsd__disrupt ""
+setvar $lsd__gentorp ""
+setvar $lsd__t2twarp ""
+setvar $lsd__holds ""
+setvar $lsd__figs ""
+setvar $lsd__shields ""
+setvar $lsd__trickster ""
+setvar $lsd_numberofship ""
+setvar $lsd__total 0
+setvar $lsd_tow 0
+setvar $lsd_order ""
+setvar $switchboard~bot_name $bot~bot_name
+setvar $switchboard~self_command $self_command
+gosub :player~quikstats
+setvar $startinglocation $player~current_prompt
+setvar $bot~validprompts "Command Citadel"
+setvar $bot~startinglocation $startinglocation
+gosub :player~checkstartingprompt
+if ($startinglocation = "Citadel")
+	send " Q DC  "
+	waitfor "Planet #"
+	getword currentline $planet~planet 2
+	striptext $planet~planet "#"
+	isnumber $lsd_tst $planet~planet
+	if ($lsd_tst = 0)
+		setvar $planet~planet 0
+	end
+end
+gosub :loadshipdata
+gosub :getclass0costs
+gosub :checkcosts
 
-setVar $isDockShopper TRUE
-setVar $LSD__Atomics ""
-setVar $LSD__Beacons ""
-setVar $LSD__Corbo ""
-setVar $LSD__Cloak ""
-setVar $LSD__Probe ""
-setVar $LSD__PScan ""
-setVar $LSD__Limps ""
-setVar $LSD__Mines ""
-setVar $LSD__Photon ""
-setVar $LSD__LRScan ""
-setVar $LSD__Disrupt ""
-setVar $LSD__GenTorp ""
-setVar $LSD__T2Twarp ""
-setVar $LSD__Holds ""
-setVar $LSD__Figs ""
-setVar $LSD__Shields ""
-setVar $LSD__Trickster ""
-setVar $LSD_NumberOfShip ""
-setVar $LSD__TOTAL 0
-setVar $LSD_Tow 0
-setVar $LSD_Order ""
-setVar $SWITCHBOARD~bot_name $bot~bot_name
-setVar $SWITCHBOARD~self_command $self_command
-gosub :PLAYER~quikstats
-setVar $startingLocation $PLAYER~CURRENT_PROMPT
-setVar $bot~validPrompts "Command Citadel"
-setVar $bot~startingLocation $startingLocation
-gosub :PLAYER~CHECKSTARTINGPROMPT
-if ($startingLocation = "Citadel")
-send " Q DC  "
-waitfor "Planet #"
-getword CURRENTLINE $planet~planet 2
-stripText $planet~planet "#"
-isNumber $LSD_tst $planet~planet
-if ($LSD_tst = 0)
-    setVar $planet~planet 0
-end
-end
-gosub :LoadShipData
-gosub :GetClass0Costs
-gosub :CheckCosts
 :start
-:TopOfMenu
+:topofmenu
 echo #27 & "[2J"
-:TopOfMenu_NoClear
-gosub :SetMenuEchos
+
+:topofmenu_noclear
+gosub :setmenuechos
 echo "***"
-echo ("     "&ANSI_15&#196&#196&ANSI_7&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_7&#196&ANSI_15&#196&#196)
-echo ANSI_14 & "*        LoneStar's StarDock Shopper"
-echo ANSI_9 & "*         Mind ()ver Matter Edition"
-echo ANSI_15 & "*          Emporium Daily Specials"
-echo ANSI_14 & "*                Version " & $LSD_CURENT_VERSION & "*"
-Echo ("     "&ANSI_15&#196&#196&ANSI_7&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_7&#196&ANSI_15&#196&#196)
+echo ("     "&ansi_15&#196&#196&ansi_7&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_7&#196&ansi_15&#196&#196)
+echo ansi_14 & "*        LoneStar's StarDock Shopper"
+echo ansi_9 & "*         Mind ()ver Matter Edition"
+echo ansi_15 & "*          Emporium Daily Specials"
+echo ansi_14 & "*                Version " & $lsd_curent_version & "*"
+echo ("     "&ansi_15&#196&#196&ansi_7&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_7&#196&ansi_15&#196&#196)
 echo "*"
-setVar $LSD_PadThisCost $GAME~LSD_ATOMICCOST
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "A" & ANSI_5 & ">" & ANSI_9 & " Atomic Detonators      " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_Atomics
-setVar $LSD_PadThisCost $GAME~LSD_BEACON
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "B" & ANSI_5 & ">" & ANSI_9 & " Marker Beacons         " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_Beacons
-setVar $LSD_PadThisCost $GAME~LSD_CORBOCOST
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "C" & ANSI_5 & ">" & ANSI_9 & " Corbomite Devices      " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_Corbo
-setVar $LSD_PadThisCost $GAME~LSD_CLOAKCOST
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "D" & ANSI_5 & ">" & ANSI_9 & " Cloaking Devices       " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_Cloak
-setVar $LSD_PadThisCost $GAME~LSD_EPROBE
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "E" & ANSI_5 & ">" & ANSI_9 & " SubSpace Ether Probes  " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_Probe
-setVar $LSD_PadThisCost $GAME~LSD_PSCAN
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "F" & ANSI_5 & ">" & ANSI_9 & " Planet Scanners        " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_PScan
-setVar $LSD_PadThisCost $GAME~LSD_LIMPCOST
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "L" & ANSI_5 & ">" & ANSI_9 & " Limpet Tracking Mines  " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_Limps
-setVar $LSD_PadThisCost $GAME~LSD_ARMIDCOST
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "M" & ANSI_5 & ">" & ANSI_9 & " Space Mines            " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_Mines
-setVar $LSD_PadThisCost $GAME~LSD_PHOTONCOST
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "P" & ANSI_5 & ">" & ANSI_9 & " Photon Missiles        " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_Photon
-setVar $LSD_PadThisCost $GAME~LSD_HOLOCOST
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "R" & ANSI_5 & ">" & ANSI_9 & " Long Range Scanners    " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_LRScan
-setVar $LSD_PadThisCost $GAME~LSD_DISRUPTCOST
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "S" & ANSI_5 & ">" & ANSI_9 & " Mine Disruptors        " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_Disrupt
-setVar $LSD_PadThisCost $GAME~LSD_GENCOST
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "T" & ANSI_5 & ">" & ANSI_9 & " Genesis Torpedoes      " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_GenTorp
-setVar $LSD_PadThisCost $GAME~LSD_TWARPIICOST
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "W" & ANSI_5 & ">" & ANSI_9 & " T2 TransWarp Drives    " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_T2Twarp
-setVar $LSD_PadThisCost $LSD_HoldCost
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "1" & ANSI_5 & ">" & ANSI_9 & " Holds                  " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_Holds
-setVar $LSD_PadThisCost $LSD_FighterCost
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "2" & ANSI_5 & ">" & ANSI_9 & " Figs                   " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_Figs
-setVar $LSD_PadThisCost $LSD_Shield
-gosub :PadItemCosts
-echo ANSI_5 & "*    <" & ANSI_2 & "3" & ANSI_5 & ">" & ANSI_9 & " Shields                " & $LSD_PadThisCost & ANSI_14 & ": " & $LSD_Echo_Shields
-if ($LSD__TOTAL <> 0)
-setVar $LSD_CashAmount $LSD__TOTAL
-gosub :CommaSize
-echo "*                                 " & ANSI_15 & " TOTAL (" & ANSI_7 & "$" & $LSD_CashAmount & ANSI_15 & ")"
-setVar $LSD__TOTAL 0
+setvar $lsd_padthiscost $game~lsd_atomiccost
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "A" & ansi_5 & ">" & ansi_9 & " Atomic Detonators      " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_atomics
+setvar $lsd_padthiscost $game~lsd_beacon
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "B" & ansi_5 & ">" & ansi_9 & " Marker Beacons         " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_beacons
+setvar $lsd_padthiscost $game~lsd_corbocost
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "C" & ansi_5 & ">" & ansi_9 & " Corbomite Devices      " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_corbo
+setvar $lsd_padthiscost $game~lsd_cloakcost
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "D" & ansi_5 & ">" & ansi_9 & " Cloaking Devices       " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_cloak
+setvar $lsd_padthiscost $game~lsd_eprobe
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "E" & ansi_5 & ">" & ansi_9 & " SubSpace Ether Probes  " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_probe
+setvar $lsd_padthiscost $game~lsd_pscan
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "F" & ansi_5 & ">" & ansi_9 & " Planet Scanners        " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_pscan
+setvar $lsd_padthiscost $game~lsd_limpcost
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "L" & ansi_5 & ">" & ansi_9 & " Limpet Tracking Mines  " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_limps
+setvar $lsd_padthiscost $game~lsd_armidcost
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "M" & ansi_5 & ">" & ansi_9 & " Space Mines            " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_mines
+setvar $lsd_padthiscost $game~lsd_photoncost
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "P" & ansi_5 & ">" & ansi_9 & " Photon Missiles        " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_photon
+setvar $lsd_padthiscost $game~lsd_holocost
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "R" & ansi_5 & ">" & ansi_9 & " Long Range Scanners    " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_lrscan
+setvar $lsd_padthiscost $game~lsd_disruptcost
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "S" & ansi_5 & ">" & ansi_9 & " Mine Disruptors        " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_disrupt
+setvar $lsd_padthiscost $game~lsd_gencost
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "T" & ansi_5 & ">" & ansi_9 & " Genesis Torpedoes      " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_gentorp
+setvar $lsd_padthiscost $game~lsd_twarpiicost
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "W" & ansi_5 & ">" & ansi_9 & " T2 TransWarp Drives    " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_t2twarp
+setvar $lsd_padthiscost $lsd_holdcost
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "1" & ansi_5 & ">" & ansi_9 & " Holds                  " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_holds
+setvar $lsd_padthiscost $lsd_fightercost
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "2" & ansi_5 & ">" & ansi_9 & " Figs                   " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_figs
+setvar $lsd_padthiscost $lsd_shield
+gosub :paditemcosts
+echo ansi_5 & "*    <" & ansi_2 & "3" & ansi_5 & ">" & ansi_9 & " Shields                " & $lsd_padthiscost & ansi_14 & ": " & $lsd_echo_shields
+if ($lsd__total <> 0)
+	setvar $lsd_cashamount $lsd__total
+	gosub :commasize
+	echo "*                                 " & ansi_15 & " TOTAL (" & ansi_7 & "$" & $lsd_cashamount & ansi_15 & ")"
+	setvar $lsd__total 0
 end
-echo "*    " #27 "[1m" ANSI_4 #196 #196 #196 #196 #196 #196  #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196
-if ($LSD_ShipData_Valid)
-echo ANSI_5 & "*    <" & ANSI_8 & "G" & ANSI_5 & ">" & ANSI_5 & " Buy Ship(s): " & ANSI_8 & $LSD_Echo_Trickster
+echo "*    " #27 "[1m" ansi_4 #196 #196 #196 #196 #196 #196  #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196
+if ($lsd_shipdata_valid)
+	echo ansi_5 & "*    <" & ansi_8 & "G" & ansi_5 & ">" & ansi_5 & " Buy Ship(s): " & ansi_8 & $lsd_echo_trickster
 else
-echo ANSI_5 & "*    <" & ANSI_8 & "G" & ANSI_5 & ">" & ANSI_5 & " Buy Ship(s): " & ANSI_8 & "Must Run StandAlone Version"
-setVar $LSD__Trickster ""
+	echo ansi_5 & "*    <" & ansi_8 & "G" & ansi_5 & ">" & ansi_5 & " Buy Ship(s): " & ansi_8 & "Must Run StandAlone Version"
+	setvar $lsd__trickster ""
 end
-if ($LSD__Trickster = "")
-echo ANSI_5 & "*    <" & ANSI_8 & "Y" & ANSI_5 & ">" & ANSI_5 & " Tow & Outfit Another Ship   "  & ANSI_8
-if ($LSD_Tow > 0)
-    echo ANSI_15 & "#" & $LSD_Tow
-end
+if ($lsd__trickster = "")
+	echo ansi_5 & "*    <" & ansi_8 & "Y" & ansi_5 & ">" & ansi_5 & " Tow & Outfit Another Ship   "  & ansi_8
+	if ($lsd_tow > 0)
+		echo ansi_15 & "#" & $lsd_tow
+	end
 else
-setVar $LSD_Tow 0
+	setvar $lsd_tow 0
 end
-echo ANSI_5 & "*    <" & ANSI_8 & "Z" & ANSI_5 & ">" & ANSI_5 & " Max Out Ship On Everything!"
-echo ANSI_5 & "*    <" & ANSI_15 & "V" & ANSI_5 & ">" & ANSI_5 & " Name Of Bot To Command " & ANSI_14&": "
-if ($LSD_BOTTING = "") OR ($LSD_BOTTING = "0")
-setVar $LSD_BOTTING $bot~bot_name
+echo ansi_5 & "*    <" & ansi_8 & "Z" & ansi_5 & ">" & ansi_5 & " Max Out Ship On Everything!"
+echo ansi_5 & "*    <" & ansi_15 & "V" & ansi_5 & ">" & ansi_5 & " Name Of Bot To Command " & ansi_14&": "
+if ($lsd_botting = "") or ($lsd_botting = "0")
+	setvar $lsd_botting $bot~bot_name
 end
-echo ANSI_15 & $LSD_BOTTING
-echo "*        " #27 "[1m" ANSI_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196
-echo "*        " & ANSI_14 & "X" & ANSI_15 & " - Execute    " & ANSI_14 & "Q" & ANSI_15 & " - Quit**"
-getConsoleInput $LSD_selection SINGLEKEY
-upperCase $LSD_selection
-setVar $yes_no FALSE
-setVar $item_max 1000
-if ($LSD_selection = "Q")
-echo "**" & ANSI_12 "  Script Halted" & ANSI_15 & "**"
-halt
-elseif ($LSD_selection = "A")
-setVar $item_name "Atomics"
-setVar $item_max 100
-gosub :getItemInput
-setVar $LSD__Atomics $LSD_Selection
-elseif ($LSD_selection = "B")
-setVar $item_name "Marker Beacons"
-setVar $item_max 100
-gosub :getItemInput
-setVar $LSD__Beacons $LSD_Selection
-elseif ($LSD_selection = "C")
-setVar $item_name "Coromite Devices"
-setVar $item_max 100000
-gosub :getItemInput
-setVar $LSD__Corbo $LSD_Selection
-elseif ($LSD_selection = "D")
-setVar $item_name "Cloaking Devices"
-gosub :getItemInput
-setVar $LSD__Cloak $LSD_Selection
-elseif ($LSD_selection = "E")
-setVar $item_name "SubSpace Ether Probe Devices"
-gosub :getItemInput
-setVar $LSD__Probe $LSD_Selection
-elseif ($LSD_selection = "F")
-setVar $item_name "Install Planet Scanner (Y/N)?"
-setVar $yes_no TRUE
-gosub :getItemInput
-setVar $LSD__PScan $LSD_Selection
-elseif ($LSD_selection = "L")
-setVar $item_name "Limpet Tracking Devices"
-gosub :getItemInput
-setVar $LSD__Limps $LSD_Selection
-elseif ($LSD_selection = "M")
-setVar $item_name "Armid Mines To Buy"
-gosub :getItemInput
-setVar $LSD__Mines $LSD_Selection
-elseif ($LSD_selection = "P")
-setVar $item_name "Photon Devices To Buy"
-gosub :getItemInput
-setVar $LSD__Photon $LSD_Selection
-elseif ($LSD_selection = "R")
-setVar $item_name "Holo Scanner (Y/N)?"
-setVar $yes_no TRUE
-gosub :getItemInput
-setVar $LSD__LRScan $LSD_Selection
-elseif ($LSD_selection = "S")
-setVar $item_name "Mine Disruptors"
-gosub :getItemInput
-setVar $LSD__Disrupt $LSD_Selection
-elseif ($LSD_selection = "T")
-setVar $item_name "Genesis Torpedoes"
-gosub :getItemInput
-setVar $LSD__GenTorp $LSD_Selection
-elseif ($LSD_selection = "W")
-setVar $item_name "Install Trans Warp 2 Drive (Y/N)?"
-setVar $yes_no TRUE
-gosub :getItemInput
-setVar $LSD__T2Twarp $LSD_Selection
-elseif ($LSD_Selection = "Y")
-#-------------------------------------------- Tow a Ship
-if ($player~TWARP_TYPE = 2)
-    getInput $LSD_selection ANSI_15 & #27 & "[1A" & #27 & "[K" & ANSI_14 & "*Tow and Outfit a Ship (0 to Cancel)?"
-    isNumber $LSD_tst $LSD_selection
-    if ($LSD_tst <> 0)
-        if (($LSD_selection < 0) or ($LSD_selection > 250))
-            setVar $LSD_Tow 0
-        else
-            setVar $LSD_Tow $LSD_selection
-        end
-    else
-        setVar $LSD_Tow 0
-    end
-end
-elseif ($LSD_selection = "Z")
-#-------------------------------------------- Buy Max ship on everything
-setVar $LSD__Photon "Max"
-:buyphotonenthoughthereshaz2
-setVar $LSD__TOTAL 0
-setVar $LSD__Atomics "Max"
-setVar $LSD__Beacons "Max"
-setVar $LSD__Corbo "Max"
-setVar $LSD__Cloak "Max"
-setVar $LSD__Probe "Max"
-setVar $LSD__PScan "Yes"
-setVar $LSD__Limps "Max"
-setVar $LSD__Mines "Max"
-setVar $LSD__LRScan "Yes"
-setVar $LSD__Disrupt "Max"
-setVar $LSD__GenTorp "Max"
-setVar $LSD__T2Twarp "Yes"
-setVar $LSD__Holds "Max"
-setVar $LSD__Figs "Max"
-setVar $LSD__Shields "Max"
-elseif ($LSD_selection = "V")
-getInput $LSD_BOTTING ("  " & ANSI_5 & "Enter the Bot Name To Issue LSD Command Too? ")
-if ($LSD_BOTTING = $LSD__PAD)
-    setVar $LSD_BOTTING $bot~bot_name
-end
-elseif ($LSD_selection = "1")
-setVar $item_name "Cargo Holds"
-setVar $item_max 255
-gosub :getItemInput
-setVar $LSD__Holds $LSD_Selection
-elseif ($LSD_selection = "2")
-setVar $item_name "Fighters"
-setVar $item_max 400000
-gosub :getItemInput
-setVar $LSD__Figs $LSD_Selection
-elseif ($LSD_selection = "3")
-setVar $item_name "Shields"
-setVar $item_max 16000
-gosub :getItemInput
-setVar $LSD__Shields $LSD_Selection
-elseif (($LSD_selection = "G") AND ($LSD_ShipData_Valid))
-gosub :DisplayMenu
-elseif ($LSD_selection = "X")
-if (($LSD__Atomics = "") AND ($LSD__Beacons = "") AND ($LSD__Corbo = "") AND ($LSD__Cloak = "") AND ($LSD__Probe = "") AND ($LSD__PScan = "") AND   ($LSD__Limps = "") AND ($LSD__Mines = "") AND ($LSD__Photon = "") AND ($LSD__LRScan = "") AND ($LSD__Disrupt = "") AND  ($LSD__GenTorp = "") AND ($LSD__T2Twarp = "") AND ($LSD__Buffers = "") AND ($LSD__Holds = "") AND ($LSD__Figs = "") AND ($LSD__Shields = ""))
-    if ($LSD__Trickster = "")
-        echo "**" & ANSI_14 & $LSD_TagLineB & ANSI_15 & " - Nothing Was Selected From The Menu**"
-        goto :TopOfMenu_NoClear
-    end
-end
-if (($LSD_BOTTING = "") or ($LSD_BOTTING = $LSD__PAD))
-        echo "****" & ANSI_14 & $LSD_TagLineB & ANSI_15 & " - Please specify name of Bot to address!"
-    goto :TopOfMenu_NoClear
-end
-echo "**" ANSI_15
-setVar $item_type $LSD__Atomics
-gosub :prepareOrder
-setVar $item_type $LSD__Beacons
-gosub :prepareOrder
-setVar $item_type $LSD__Corbo
-gosub :prepareOrder
-setVar $item_type $LSD__Cloak
-gosub :prepareOrder
-setVar $item_type $LSD__Probe
-gosub :prepareOrder
-setVar $item_type $LSD__PScan
-setVar $yes_no TRUE
-gosub :prepareOrder
-setVar $item_type $LSD__Limps
-gosub :prepareOrder
-setVar $item_type $LSD__Mines
-gosub :prepareOrder
-setVar $item_type $LSD__Photon
-gosub :prepareOrder
-setVar $item_type $LSD__LRScan
-setVar $yes_no TRUE
-gosub :prepareOrder
-setVar $item_type $LSD__Disrupt
-gosub :prepareOrder
-setVar $item_type $LSD__GenTorp
-gosub :prepareOrder
-setVar $item_type $LSD__T2Twarp
-setVar $yes_no TRUE
-gosub :prepareOrder
-setVar $item_type $LSD__Holds
-gosub :prepareOrder
-setVar $item_type $LSD__Figs
-gosub :prepareOrder
-setVar $item_type $LSD__Shields
-gosub :prepareOrder
+echo ansi_15 & $lsd_botting
+echo "*        " #27 "[1m" ansi_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196
+echo "*        " & ansi_14 & "X" & ansi_15 & " - Execute    " & ansi_14 & "Q" & ansi_15 & " - Quit**"
+getconsoleinput $lsd_selection singlekey
+uppercase $lsd_selection
+setvar $yes_no false
+setvar $item_max 1000
+if ($lsd_selection = "Q")
+	echo "**" & ansi_12 "  Script Halted" & ansi_15 & "**"
+	halt
+elseif ($lsd_selection = "A")
+	setvar $item_name "Atomics"
+	setvar $item_max 100
+	gosub :getiteminput
+	setvar $lsd__atomics $lsd_selection
+elseif ($lsd_selection = "B")
+	setvar $item_name "Marker Beacons"
+	setvar $item_max 100
+	gosub :getiteminput
+	setvar $lsd__beacons $lsd_selection
+elseif ($lsd_selection = "C")
+	setvar $item_name "Coromite Devices"
+	setvar $item_max 100000
+	gosub :getiteminput
+	setvar $lsd__corbo $lsd_selection
+elseif ($lsd_selection = "D")
+	setvar $item_name "Cloaking Devices"
+	gosub :getiteminput
+	setvar $lsd__cloak $lsd_selection
+elseif ($lsd_selection = "E")
+	setvar $item_name "SubSpace Ether Probe Devices"
+	gosub :getiteminput
+	setvar $lsd__probe $lsd_selection
+elseif ($lsd_selection = "F")
+	setvar $item_name "Install Planet Scanner (Y/N)?"
+	setvar $yes_no true
+	gosub :getiteminput
+	setvar $lsd__pscan $lsd_selection
+elseif ($lsd_selection = "L")
+	setvar $item_name "Limpet Tracking Devices"
+	gosub :getiteminput
+	setvar $lsd__limps $lsd_selection
+elseif ($lsd_selection = "M")
+	setvar $item_name "Armid Mines To Buy"
+	gosub :getiteminput
+	setvar $lsd__mines $lsd_selection
+elseif ($lsd_selection = "P")
+	setvar $item_name "Photon Devices To Buy"
+	gosub :getiteminput
+	setvar $lsd__photon $lsd_selection
+elseif ($lsd_selection = "R")
+	setvar $item_name "Holo Scanner (Y/N)?"
+	setvar $yes_no true
+	gosub :getiteminput
+	setvar $lsd__lrscan $lsd_selection
+elseif ($lsd_selection = "S")
+	setvar $item_name "Mine Disruptors"
+	gosub :getiteminput
+	setvar $lsd__disrupt $lsd_selection
+elseif ($lsd_selection = "T")
+	setvar $item_name "Genesis Torpedoes"
+	gosub :getiteminput
+	setvar $lsd__gentorp $lsd_selection
+elseif ($lsd_selection = "W")
+	setvar $item_name "Install Trans Warp 2 Drive (Y/N)?"
+	setvar $yes_no true
+	gosub :getiteminput
+	setvar $lsd__t2twarp $lsd_selection
+elseif ($lsd_selection = "Y")
+	#-------------------------------------------- Tow a Ship
+	if ($player~twarp_type = 2)
+		getinput $lsd_selection ansi_15 & #27 & "[1A" & #27 & "[K" & ansi_14 & "*Tow and Outfit a Ship (0 to Cancel)?"
+		isnumber $lsd_tst $lsd_selection
+		if ($lsd_tst <> 0)
+			if (($lsd_selection < 0) or ($lsd_selection > 250))
+				setvar $lsd_tow 0
+			else
+				setvar $lsd_tow $lsd_selection
+			end
+		else
+			setvar $lsd_tow 0
+		end
+	end
+elseif ($lsd_selection = "Z")
+	#-------------------------------------------- Buy Max ship on everything
+	setvar $lsd__photon "Max"
 
-if (($LSD_Tow <> "") and ($LSD_Tow <> 0))
-    setVar $LSD_Order ($LSD_Order & $LSD_Tow)
-else
-    setVar $LSD_Order ($LSD_Order & 0)
+	:buyphotonenthoughthereshaz2
+	setvar $lsd__total 0
+	setvar $lsd__atomics "Max"
+	setvar $lsd__beacons "Max"
+	setvar $lsd__corbo "Max"
+	setvar $lsd__cloak "Max"
+	setvar $lsd__probe "Max"
+	setvar $lsd__pscan "Yes"
+	setvar $lsd__limps "Max"
+	setvar $lsd__mines "Max"
+	setvar $lsd__lrscan "Yes"
+	setvar $lsd__disrupt "Max"
+	setvar $lsd__gentorp "Max"
+	setvar $lsd__t2twarp "Yes"
+	setvar $lsd__holds "Max"
+	setvar $lsd__figs "Max"
+	setvar $lsd__shields "Max"
+elseif ($lsd_selection = "V")
+	getinput $lsd_botting ("  " & ansi_5 & "Enter the Bot Name To Issue LSD Command Too? ")
+	if ($lsd_botting = $lsd__pad)
+		setvar $lsd_botting $bot~bot_name
+	end
+elseif ($lsd_selection = "1")
+	setvar $item_name "Cargo Holds"
+	setvar $item_max 255
+	gosub :getiteminput
+	setvar $lsd__holds $lsd_selection
+elseif ($lsd_selection = "2")
+	setvar $item_name "Fighters"
+	setvar $item_max 400000
+	gosub :getiteminput
+	setvar $lsd__figs $lsd_selection
+elseif ($lsd_selection = "3")
+	setvar $item_name "Shields"
+	setvar $item_max 16000
+	gosub :getiteminput
+	setvar $lsd__shields $lsd_selection
+elseif (($lsd_selection = "G") and ($lsd_shipdata_valid))
+	gosub :displaymenu
+elseif ($lsd_selection = "X")
+	if (($lsd__atomics = "") and ($lsd__beacons = "") and ($lsd__corbo = "") and ($lsd__cloak = "") and ($lsd__probe = "") and ($lsd__pscan = "") and   ($lsd__limps = "") and ($lsd__mines = "") and ($lsd__photon = "") and ($lsd__lrscan = "") and ($lsd__disrupt = "") and  ($lsd__gentorp = "") and ($lsd__t2twarp = "") and ($lsd__buffers = "") and ($lsd__holds = "") and ($lsd__figs = "") and ($lsd__shields = ""))
+		if ($lsd__trickster = "")
+			echo "**" & ansi_14 & $lsd_taglineb & ansi_15 & " - Nothing Was Selected From The Menu**"
+			goto :topofmenu_noclear
+		end
+	end
+	if (($lsd_botting = "") or ($lsd_botting = $lsd__pad))
+		echo "****" & ansi_14 & $lsd_taglineb & ansi_15 & " - Please specify name of Bot to address!"
+		goto :topofmenu_noclear
+	end
+	echo "**" ansi_15
+	setvar $item_type $lsd__atomics
+	gosub :prepareorder
+	setvar $item_type $lsd__beacons
+	gosub :prepareorder
+	setvar $item_type $lsd__corbo
+	gosub :prepareorder
+	setvar $item_type $lsd__cloak
+	gosub :prepareorder
+	setvar $item_type $lsd__probe
+	gosub :prepareorder
+	setvar $item_type $lsd__pscan
+	setvar $yes_no true
+	gosub :prepareorder
+	setvar $item_type $lsd__limps
+	gosub :prepareorder
+	setvar $item_type $lsd__mines
+	gosub :prepareorder
+	setvar $item_type $lsd__photon
+	gosub :prepareorder
+	setvar $item_type $lsd__lrscan
+	setvar $yes_no true
+	gosub :prepareorder
+	setvar $item_type $lsd__disrupt
+	gosub :prepareorder
+	setvar $item_type $lsd__gentorp
+	gosub :prepareorder
+	setvar $item_type $lsd__t2twarp
+	setvar $yes_no true
+	gosub :prepareorder
+	setvar $item_type $lsd__holds
+	gosub :prepareorder
+	setvar $item_type $lsd__figs
+	gosub :prepareorder
+	setvar $item_type $lsd__shields
+	gosub :prepareorder
+
+	if (($lsd_tow <> "") and ($lsd_tow <> 0))
+		setvar $lsd_order ($lsd_order & $lsd_tow)
+	else
+		setvar $lsd_order ($lsd_order & 0)
+	end
+	setvar $lsd_order ($lsd_order & $lsd__pad)
+	if ($lsd__trickster <> "")
+		getwordpos $lsd__trickster $lsd_pos "^^"
+		cuttext $lsd__trickster $lsd__trickster 1 ($lsd_pos - 1)
+		striptext $lsd__trickster " "
+		striptext $lsd__trickster "^"
+	end
+	if ($lsd__trickster <> "")
+		setvar $lsd_order ($lsd_order & $lsd__trickster)
+	else
+		setvar $lsd_order ($lsd_order & 0)
+	end
+	setvar $lsd_order ($lsd_order & $lsd__pad)
+	if ($lsd_numberofship <> "")
+		setvar $lsd_order ($lsd_order & $lsd_numberofship)
+	else
+		setvar $lsd_order ($lsd_order & 0)
+	end
+	setvar $lsd_order ($lsd_order & $lsd__pad)
+	if ($lsd_customshipname <> "")
+		setvar $lsd_order ($lsd_order & $lsd_customshipname)
+	else
+		setvar $lsd_order ($lsd_order & $lsd_ships_names)
+	end
+	if ($lsd_botting = $bot~bot_name)
+		setvar $lsd_order ($lsd_order & "              ")
+		setvar $bot~user_command_line "lsd " & $lsd_order
+		gosub :doaddhistory
+	end
+	setvar $lsd_attempt 1
+
+	:lsd_login_loop
+	killalltriggers
+	settextlinetrigger  needtologin     :needtologin    "Send a corporate memo to login."
+	settextlinetrigger  botsbusy        :botsbusy       "- Time Left   = "
+	settextlinetrigger  botsnotbusy     :botsnotbusy    "Bot Mode :"
+	settextlinetrigger  botsnotbusy3    :botsnotbusy    "Bot Mode :General"
+	setdelaytrigger     botnotthere     :botnotthere    4000
+	send ("'" & $lsd_botting & " Status*")
+	pause
+
+	:botnotthere
+	killalltriggers
+	echo "**" & ansi_14 & $lsd_taglineb & ansi_15 & " - " & $lsd_botting & "-bot Is Not Responding**"
+	halt
+
+	:needtologin
+	killalltriggers
+	if ($lsd_attempt <= 3)
+		if ($startinglocation = "Command")
+			send " T T Login***"
+		elseif ($startinglocation = "Citadel")
+			send " X T Login***"
+		else
+			echo "**" & ansi_14 & $lsd_taglineb & ansi_15 & " - Please Login to Bots!**"
+			halt
+		end
+		setdelaytrigger     areweloggedin   :areweloggedin  4000
+		settextlinetrigger  weloggedin1     :weloggedin     "- User Verified -"
+		settextlinetrigger  weloggedin2     :weloggedin     "- You are logged into this bot"
+		echo "**" & ansi_14 & $lsd_taglineb & ansi_15 & " - Waiting For Response (Attempt #"&$lsd_attempt&") ...**"
+		pause
+
+		:areweloggedin
+		killalltriggers
+		add $lsd_attempt 1
+		goto :lsd_login_loop
+
+		:weloggedin
+		killalltriggers
+		#Looping Back to get bot's status
+		goto :lsd_login_loop
+	else
+		echo "**" & ansi_14 & $lsd_taglineb & ansi_15 & " - Unable To Login to Bot!!**"
+		halt
+	end
+
+	:botsbusy
+	killalltriggers
+	echo "**" & ansi_14 & $lsd_taglineb & ansi_15 & " - Bot must be in General Mode**"
+	halt
+
+	:botsnotbusy
+	killalltriggers
+	if ($lsd_botting = $bot~bot_name)
+		goto :mode_reset
+	end
+	settextlinetrigger  mode_reset  :mode_reset "All non-system scripts and modules killed, and modes reset."
+	setdelaytrigger     mode_issue  :mode_issue 4000
+	echo "**" & ansi_14 & $lsd_taglineb & ansi_15 & " - Waiting 4 Seconds For Response...**"
+	send ("'" & $lsd_botting & " StopAll*")
+	pause
+
+	:mode_issue
+	killalltriggers
+	echo "**" & ansi_14 & $lsd_taglineb & ansi_15 & " - StopAll Timed Out. Please Try Again!**"
+	halt
+
+	:mode_reset
+	killalltriggers
+	send ("'" & $lsd_botting & " LSD " & $lsd_order & "*")
+	halt
 end
-setVar $LSD_Order ($LSD_Order & $LSD__PAD)
-if ($LSD__Trickster <> "")
-    getWordPos $LSD__Trickster $LSD_Pos "^^"
-    cuttext $LSD__Trickster $LSD__Trickster 1 ($LSD_pos - 1)
-    stripText $LSD__Trickster " "
-    stripText $LSD__Trickster "^"
-end
-if ($LSD__Trickster <> "")
-    setVar $LSD_Order ($LSD_Order & $LSD__Trickster)
-else
-    setVar $LSD_Order ($LSD_Order & 0)
-end
-setVar $LSD_Order ($LSD_Order & $LSD__PAD)
-if ($LSD_NumberOfShip <> "")
-    setVar $LSD_Order ($LSD_Order & $LSD_NumberOfShip)
-else
-    setVar $LSD_Order ($LSD_Order & 0)
-end
-setVar $LSD_Order ($LSD_Order & $LSD__PAD)
-if ($LSD_CustomShipName <> "")
-    setVar $LSD_Order ($LSD_Order & $LSD_CustomShipName)
-else
-    setVar $LSD_Order ($LSD_Order & $LSD_Ships_Names)
-end
-if ($LSD_BOTTING = $bot~bot_name)
-    setVar $LSD_Order ($LSD_Order & "              ")
-    setVar $bot~user_command_line "lsd " & $LSD_Order
-    gosub :doAddHistory
-end
-setVar $LSD_Attempt 1
-:LSD_Login_Loop
-killalltriggers
-setTextLineTrigger  NeedtoLogin     :NeedtoLogin    "Send a corporate memo to login."
-setTextLineTrigger  BotsBusy        :BotsBusy       "- Time Left   = "
-setTextLineTrigger  BotsNotBusy     :BotsNotBusy    "Bot Mode :"
-setTextLineTrigger  BotsNotBusy3    :BotsNotBusy    "Bot Mode :General"
-setDelayTrigger     BotNotThere     :BotNotThere    4000
-send ("'" & $LSD_BOTTING & " Status*")
-pause
-:BotNotThere
-killalltriggers
-Echo "**" & ANSI_14 & $LSD_TagLineB & ANSI_15 & " - " & $LSD_BOTTING & "-bot Is Not Responding**"
-halt
-    :NeedtoLogin
-    killalltriggers
-    if ($LSD_Attempt <= 3)
-    if ($startingLocation = "Command")
-        send " T T Login***"
-    elseif ($startingLocation = "Citadel")
-        send " X T Login***"
-    else
-        Echo "**" & ANSI_14 & $LSD_TagLineB & ANSI_15 & " - Please Login to Bots!**"
-        halt
-    end
-    setDelayTrigger     AreWeLoggedIn   :AreWeLoggedIn  4000
-    setTextLineTrigger  WeLoggedIn1     :WeLoggedIn     "- User Verified -"
-    setTextLineTrigger  WeLoggedIn2     :WeLoggedIn     "- You are logged into this bot"
-    Echo "**" & ANSI_14 & $LSD_TagLineB & ANSI_15 & " - Waiting For Response (Attempt #"&$LSD_Attempt&") ...**"
-    pause
-        :AreWeLoggedIn
-        killalltriggers
-        add $LSD_Attempt 1
-        goto :LSD_Login_Loop
-        :WeLoggedIn
-        killalltriggers
-        #Looping Back to get bot's status
-        goto :LSD_Login_Loop
-    else
-        Echo "**" & ANSI_14 & $LSD_TagLineB & ANSI_15 & " - Unable To Login to Bot!!**"
-        halt
-    end
-:BotsBusy
-killalltriggers
-Echo "**" & ANSI_14 & $LSD_TagLineB & ANSI_15 & " - Bot must be in General Mode**"
-halt
-:BotsNotBusy
-killalltriggers
-if ($LSD_BOTTING = $bot~bot_name)
-    goto :MODE_RESET
-end
-setTextLineTrigger  MODE_RESET  :MODE_RESET "All non-system scripts and modules killed, and modes reset."
-setDelayTrigger     MODE_ISSUE  :MODE_ISSUE 4000
-Echo "**" & ANSI_14 & $LSD_TagLineB & ANSI_15 & " - Waiting 4 Seconds For Response...**"
-send ("'" & $LSD_BOTTING & " StopAll*")
-pause
-    :MODE_ISSUE
-    killalltriggers
-    Echo "**" & ANSI_14 & $LSD_TagLineB & ANSI_15 & " - StopAll Timed Out. Please Try Again!**"
-    halt
-    :MODE_RESET
-    killalltriggers
-    send ("'" & $LSD_BOTTING & " LSD " & $LSD_Order & "*")
-    halt
-end
-goto :TopOfMenu
+goto :topofmenu
+
 :pad_this
-if ($LSD_str_pad < 10)
-setVar $LSD_str_pad "     " & $LSD_str_pad
-elseif ($LSD_str_pad < 100)
-setVar $LSD_str_pad "    " & $LSD_str_pad
-elseif ($LSD_str_pad < 1000)
-setVar $LSD_str_pad "   " & $LSD_str_pad
-elseif ($LSD_str_pad < 10000)
-setVar $LSD_str_pad "  " & $LSD_str_pad
-elseif ($LSD_str_pad < 100000)
-setVar $LSD_str_pad " " & $LSD_str_pad
+if ($lsd_str_pad < 10)
+	setvar $lsd_str_pad "     " & $lsd_str_pad
+elseif ($lsd_str_pad < 100)
+	setvar $lsd_str_pad "    " & $lsd_str_pad
+elseif ($lsd_str_pad < 1000)
+	setvar $lsd_str_pad "   " & $lsd_str_pad
+elseif ($lsd_str_pad < 10000)
+	setvar $lsd_str_pad "  " & $lsd_str_pad
+elseif ($lsd_str_pad < 100000)
+	setvar $lsd_str_pad " " & $lsd_str_pad
 end
 return
-:CommaSize
-if ($LSD_CashAmount < 1000)
-elseif ($LSD_CashAmount < 1000000)
-    getLength $LSD_CashAmount $LSD_len
-setVar $LSD_len ($LSD_len - 3)
-cutText $LSD_CashAmount $LSD_tmp 1 $LSD_len
-cutText $LSD_CashAMount $LSD_tmp1 ($LSD_len + 1) 999
-setVar $LSD_tmp $LSD_tmp & "," & $LSD_tmp1
-setVar $LSD_CashAmount $LSD_tmp
-elseif ($LSD_CashAmount <= 999999999)
-getLength $LSD_CashAmount $LSD_len
-setVar $LSD_len ($LSD_len - 6)
-cutText $LSD_CashAmount $LSD_tmp 1 $LSD_len
-setVar $LSD_tmp $LSD_tmp & ","
-cutText $LSD_CashAmount $LSD_tmp1 ($LSD_len + 1) 3
-setVar $LSD_tmp $LSD_tmp & $LSD_tmp1 & ","
-cutText $LSD_CashAmount $LSD_tmp1 ($LSD_len + 4) 999
-setVar $LSD_tmp $LSD_tmp & $LSD_tmp1
-setVar $LSD_CashAmount $LSD_tmp
+
+:commasize
+if ($lsd_cashamount < 1000)
+elseif ($lsd_cashamount < 1000000)
+	getlength $lsd_cashamount $lsd_len
+	setvar $lsd_len ($lsd_len - 3)
+	cuttext $lsd_cashamount $lsd_tmp 1 $lsd_len
+	cuttext $lsd_cashamount $lsd_tmp1 ($lsd_len + 1) 999
+	setvar $lsd_tmp $lsd_tmp & "," & $lsd_tmp1
+	setvar $lsd_cashamount $lsd_tmp
+elseif ($lsd_cashamount <= 999999999)
+	getlength $lsd_cashamount $lsd_len
+	setvar $lsd_len ($lsd_len - 6)
+	cuttext $lsd_cashamount $lsd_tmp 1 $lsd_len
+	setvar $lsd_tmp $lsd_tmp & ","
+	cuttext $lsd_cashamount $lsd_tmp1 ($lsd_len + 1) 3
+	setvar $lsd_tmp $lsd_tmp & $lsd_tmp1 & ","
+	cuttext $lsd_cashamount $lsd_tmp1 ($lsd_len + 4) 999
+	setvar $lsd_tmp $lsd_tmp & $lsd_tmp1
+	setvar $lsd_cashamount $lsd_tmp
 end
 return
-:getItemInput
+
+:getiteminput
 if ($yes_no)
-Echo #27 & "[1A" & #27 & "[K" & ANSI_14 & "*" & $item_name & "                         *"
-getConsoleInput $LSD_selection SINGLEKEY
+	echo #27 & "[1A" & #27 & "[K" & ansi_14 & "*" & $item_name & "                         *"
+	getconsoleinput $lsd_selection singlekey
 else
-getInput $LSD_selection ANSI_15 & #27 & "[1A" & #27 & "[K" & ANSI_14 & "*" & $item_name & " To Buy (M for Maximum)?"
+	getinput $lsd_selection ansi_15 & #27 & "[1A" & #27 & "[K" & ansi_14 & "*" & $item_name & " To Buy (M for Maximum)?"
 end
-uppercase $LSD_selection
-if ($LSD_selection = "M")
-setVar $LSD_Selection "Max"
-elseif ($LSD_selection = "Y")
-setVar $LSD_Selection "Yes"
-elseif ($LSD_selection = "N")
-setVar $LSD_Selection ""
+uppercase $lsd_selection
+if ($lsd_selection = "M")
+	setvar $lsd_selection "Max"
+elseif ($lsd_selection = "Y")
+	setvar $lsd_selection "Yes"
+elseif ($lsd_selection = "N")
+	setvar $lsd_selection ""
 else
+	if ($yes_no)
+		setvar $lsd_selection ""
+	else
+		isnumber $lsd_tst $lsd_selection
+		if ($lsd_tst <> 0)
+			if ($lsd_selection = 0)
+				setvar $lsd_selection ""
+			elseif ($lsd_selection > $item_max)
+				setvar $lsd_selection $item_max
+			else
+				setvar $lsd_selection $lsd_selection
+			end
+		end
+	end
+end
+return
+
+:prepareorder
 if ($yes_no)
-    setVar $LSD_Selection ""
+	if ($item_type <> "")
+		setvar $lsd_order ($lsd_order & "Y")
+	else
+		setvar $lsd_order ($lsd_order & "N")
+	end
 else
-    isNumber $LSD_tst $LSD_selection
-    if ($LSD_tst <> 0)
-        if ($LSD_selection = 0)
-            setVar $LSD_Selection ""
-        elseif ($LSD_selection > $item_max)
-            setVar $LSD_Selection $item_max
-        else
-            setVar $LSD_Selection $LSD_selection
-        end
-    end
+	if ($item_type <> "")
+		if ($item_type = "Max")
+			setvar $lsd_order ($lsd_order & "M")
+		else
+			setvar $lsd_order ($lsd_order & $item_type)
+		end
+	else
+		setvar $lsd_order ($lsd_order & 0)
+	end
 end
+setvar $lsd_order ($lsd_order & $lsd__pad)
+setvar $yes_no false
+return
+
+:checkcosts
+setvar $lsd_costsaregood true
+loadvar $game~lsd_limpremovalcost
+loadvar $game~lsd_gencost
+loadvar $game~lsd_armidcost
+loadvar $game~lsd_limpcost
+loadvar $game~lsd_beacon
+loadvar $game~lsd_twarpicost
+loadvar $game~lsd_twarpiicost
+loadvar $game~lsd_twarpupcost
+loadvar $game~lsd_pscan
+loadvar $game~lsd_atomiccost
+loadvar $game~lsd_corbocost
+loadvar $game~lsd_eprobe
+loadvar $game~lsd_photoncost
+loadvar $game~lsd_cloakcost
+loadvar $game~lsd_disruptcost
+loadvar $game~lsd_holocost
+loadvar $game~lsd_dscancost
+loadvar $game~lsd_reregistercost
+if (($game~lsd_limpremovalcost = 0) or ($game~lsd_gencost = 0) or ($game~lsd_armidcost = 0) or ($game~lsd_limpcost = 0) or ($game~lsd_beacon = 0) or ($game~lsd_twarpicost = 0) or ($game~lsd_twarpiicost = 0) or ($game~lsd_twarpupcost = 0) or ($game~lsd_pscan = 0) or ($game~lsd_atomiccost = 0) or ($game~lsd_corbocost = 0) or ($game~lsd_eprobe = 0) or ($game~lsd_photoncost = 0) or ($game~lsd_cloakcost = 0) or ($game~lsd_disruptcost = 0) or ($game~lsd_holocost = 0) or ($game~lsd_dscancost = 0) or ($game~lsd_reregistercost = 0))
+	gosub :game~gamestats
 end
 return
-:prepareOrder
-if ($yes_no)
-if ($item_type <> "")
-    setVar $LSD_Order ($LSD_Order & "Y")
-else
-    setVar $LSD_Order ($LSD_Order & "N")
-end
-else
-if ($item_type <> "")
-    if ($item_type = "Max")
-        setVar $LSD_Order ($LSD_Order & "M")
-    else
-        setVar $LSD_Order ($LSD_Order & $item_type)
-    end
-else
-    setVar $LSD_Order ($LSD_Order & 0)
-end
-end
-setVar $LSD_Order ($LSD_Order & $LSD__PAD)
-setVar $yes_no FALSE
-return
-:CheckCosts
-setVar $LSD_CostsAreGood TRUE
-loadVar $GAME~LSD_LIMPREMOVALCOST
-loadVar $GAME~LSD_GENCOST
-loadVar $GAME~LSD_ARMIDCOST
-loadVar $GAME~LSD_LIMPCOST
-loadVar $GAME~LSD_BEACON
-loadVar $GAME~LSD_TWARPICOST
-loadVar $GAME~LSD_TWARPIICOST
-loadVar $GAME~LSD_TWARPUPCOST
-loadVar $GAME~LSD_PSCAN
-loadVar $GAME~LSD_ATOMICCOST
-loadVar $GAME~LSD_CORBOCOST
-loadVar $GAME~LSD_EPROBE
-loadVar $GAME~LSD_PHOTONCOST
-loadVar $GAME~LSD_CLOAKCOST
-loadVar $GAME~LSD_DISRUPTCOST
-loadVar $GAME~LSD_HOLOCOST
-loadVar $GAME~LSD_DSCANCOST
-loadVar $GAME~LSD_ReRegisterCost
-if (($GAME~LSD_LIMPREMOVALCOST = 0) OR ($GAME~LSD_GENCOST = 0) OR ($GAME~LSD_ARMIDCOST = 0) OR ($GAME~LSD_LIMPCOST = 0) OR ($GAME~LSD_BEACON = 0) OR ($GAME~LSD_TWARPICOST = 0) OR ($GAME~LSD_TWARPIICOST = 0) OR ($GAME~LSD_TWARPUPCOST = 0) OR ($GAME~LSD_PSCAN = 0) OR ($GAME~LSD_ATOMICCOST = 0) OR ($GAME~LSD_CORBOCOST = 0) OR ($GAME~LSD_EPROBE = 0) OR ($GAME~LSD_PHOTONCOST = 0) OR ($GAME~LSD_CLOAKCOST = 0) OR ($GAME~LSD_DISRUPTCOST = 0) OR ($GAME~LSD_HOLOCOST = 0) OR ($GAME~LSD_DSCANCOST = 0) OR ($GAME~LSD_ReRegisterCost = 0))
-gosub :GAME~gamestats
-end
-return
-:PadItemCosts
-getLength $LSD_PadThisCost $LSD_len
-if ($LSD_len = 1)
-setVar $LSD_PadThisCost "      " & $LSD_PadThisCost
-elseif ($LSD_len = 2)
-setVar $LSD_PadThisCost "     " & $LSD_PadThisCost
-elseif ($LSD_len = 3)
-setVar $LSD_PadThisCost "    " & $LSD_PadThisCost
-elseif ($LSD_len = 4)
-setVar $LSD_PadThisCost "   " & $LSD_PadThisCost
-elseif ($LSD_len = 5)
-setVar $LSD_PadThisCost "  " & $LSD_PadThisCost
-elseif ($LSD_len = 6)
-setVar $LSD_PadThisCost " " & $LSD_PadThisCost
+
+:paditemcosts
+getlength $lsd_padthiscost $lsd_len
+if ($lsd_len = 1)
+	setvar $lsd_padthiscost "      " & $lsd_padthiscost
+elseif ($lsd_len = 2)
+	setvar $lsd_padthiscost "     " & $lsd_padthiscost
+elseif ($lsd_len = 3)
+	setvar $lsd_padthiscost "    " & $lsd_padthiscost
+elseif ($lsd_len = 4)
+	setvar $lsd_padthiscost "   " & $lsd_padthiscost
+elseif ($lsd_len = 5)
+	setvar $lsd_padthiscost "  " & $lsd_padthiscost
+elseif ($lsd_len = 6)
+	setvar $lsd_padthiscost " " & $lsd_padthiscost
 else
 
 end
 return
-:GetClass0Costs
+
+:getclass0costs
 send "CR1*Q  "
 waitfor "Commerce report for:"
-setTextLineTrigger LSD_CargoHolds   :LSD_CargoHolds "A  Cargo holds     : "
-setTextLineTrigger LSD_Fighters     :LSD_Fighters "B  Fighters        : "
-setTextLineTrigger LSD_Shields      :LSD_Shields "C  Shield Points   : "
-setTextTrigger LSD_Fini1        :LSD_Fini "Command [TL="
-setTextTrigger LSD_Fini2        :LSD_Fini "Citadel command (?"
+settextlinetrigger lsd_cargoholds   :lsd_cargoholds "A  Cargo holds     : "
+settextlinetrigger lsd_fighters     :lsd_fighters "B  Fighters        : "
+settextlinetrigger lsd_shields      :lsd_shields "C  Shield Points   : "
+settexttrigger lsd_fini1        :lsd_fini "Command [TL="
+settexttrigger lsd_fini2        :lsd_fini "Citadel command (?"
 pause
-:LSD_CargoHolds
-killTrigger LSD_CargoHolds
-getWord CURRENTLINE $LSD_HoldCost 5
-isNumber $LSD_tst $LSD_HoldCost
-if ($LSD_tst = 0)
-    setVar $LSD_HoldCost 0
+
+:lsd_cargoholds
+killtrigger lsd_cargoholds
+getword currentline $lsd_holdcost 5
+isnumber $lsd_tst $lsd_holdcost
+if ($lsd_tst = 0)
+	setvar $lsd_holdcost 0
 end
 pause
-:LSD_Fighters
-killTrigger LSD_Fighters
-getWord CURRENTLINE $LSD_FighterCost 4
-isNumber $LSD_tst $LSD_FighterCost
-if ($LSD_tst = 0)
-    setVar $LSD_FighterCost 0
+
+:lsd_fighters
+killtrigger lsd_fighters
+getword currentline $lsd_fightercost 4
+isnumber $lsd_tst $lsd_fightercost
+if ($lsd_tst = 0)
+	setvar $lsd_fightercost 0
 end
 pause
-:LSD_Shields
-killTrigger LSD_Shields
-getWord CURRENTLINE $LSD_Shield 5
-isNumber $LSD_tst $LSD_Shield
-if ($LSD_tst = 0)
-    setVar $LSD_Shield 0
+
+:lsd_shields
+killtrigger lsd_shields
+getword currentline $lsd_shield 5
+isnumber $lsd_tst $lsd_shield
+if ($lsd_tst = 0)
+	setvar $lsd_shield 0
 end
 pause
-:LSD_Fini
+
+:lsd_fini
 killalltriggers
-setVar $LSD_CashAmount $LSD_HoldCost
-gosub :CommaSize
-setVar $LSD_LSD_HoldCost $LSD_CashAmount
-setVar $LSD_CashAmount $LSD_FighterCost
-gosub :CommaSize
-setVar $LSD_FighterCost $LSD_CashAmount
-setVar $LSD_CashAmount $LSD_Shield
-gosub :CommaSize
-setVar $LSD_Shield  $LSD_CashAmount
+setvar $lsd_cashamount $lsd_holdcost
+gosub :commasize
+setvar $lsd_lsd_holdcost $lsd_cashamount
+setvar $lsd_cashamount $lsd_fightercost
+gosub :commasize
+setvar $lsd_fightercost $lsd_cashamount
+setvar $lsd_cashamount $lsd_shield
+gosub :commasize
+setvar $lsd_shield  $lsd_cashamount
 return
-:SetMenuEchos
-isNumber $LSD_tst $LSD_NumberOfShip
-if ($LSD_tst <> 0)
-if ($LSD_NumberOfShip > 0)
-    getText $LSD__Trickster $LSD_Cost "^^" "@@"
-    stripText $LSD_Cost ","
-    stripText $LSD_Cost "."
-    stripText $LSD_Cost " "
-    getText $LSD__Trickster $LSD_temp "@@" "!!"
-    stripText $LSD_ReRegisterCost ","
-    stripText $LSD_ReRegisterCost "."
-    setVar $LSD_Cost ($LSD_Cost + $LSD_ReRegisterCost)
-    setVar $LSD_MathOut ($LSD_NumberOfShip * $LSD_Cost)
-    setVar $LSD__TOTAL ($LSD__TOTAL + $LSD_Mathout)
-    setVar $LSD_CashAmount $LSD_Mathout
-    gosub :CommaSize
-        setVar $LSD_Echo_Trickster ANSI_15 & $LSD_NumberOfShip & " " & $LSD_temp & ANSI_7 & "  ($" & $LSD_CashAmount & ")"
-    else
-    setVar $LSD_Echo_Trickster ""
-end
+
+:setmenuechos
+isnumber $lsd_tst $lsd_numberofship
+if ($lsd_tst <> 0)
+	if ($lsd_numberofship > 0)
+		gettext $lsd__trickster $lsd_cost "^^" "@@"
+		striptext $lsd_cost ","
+		striptext $lsd_cost "."
+		striptext $lsd_cost " "
+		gettext $lsd__trickster $lsd_temp "@@" "!!"
+		striptext $lsd_reregistercost ","
+		striptext $lsd_reregistercost "."
+		setvar $lsd_cost ($lsd_cost + $lsd_reregistercost)
+		setvar $lsd_mathout ($lsd_numberofship * $lsd_cost)
+		setvar $lsd__total ($lsd__total + $lsd_mathout)
+		setvar $lsd_cashamount $lsd_mathout
+		gosub :commasize
+		setvar $lsd_echo_trickster ansi_15 & $lsd_numberofship & " " & $lsd_temp & ansi_7 & "  ($" & $lsd_cashamount & ")"
+	else
+		setvar $lsd_echo_trickster ""
+	end
 else
-setVar $LSD_Echo_Trickster ""
+	setvar $lsd_echo_trickster ""
 end
-setVar $item_number $LSD__Atomics
-setVar $LSD_Cost $GAME~LSD_ATOMICCOST
-gosub :doSetMenuEcho
-setVar $LSD_Echo_Atomics $item_echo 
-setVar $item_number $LSD__Beacons
-setVar $LSD_Cost $GAME~LSD_BEACON
-gosub :doSetMenuEcho
-setVar $LSD_Echo_Beacons $item_echo 
-setVar $item_number $LSD__Corbo
-setVar $LSD_Cost $GAME~LSD_CORBOCOST
-gosub :doSetMenuEcho
-setVar $LSD_Echo_Corbo $item_echo 
-setVar $item_number $LSD__Cloak
-setVar $LSD_Cost $GAME~LSD_CLOAKCOST
-gosub :doSetMenuEcho
-setVar $LSD_Echo_Cloak $item_echo 
-setVar $item_number $LSD__Probe
-setVar $LSD_Cost $GAME~LSD_EPROBE
-gosub :doSetMenuEcho
-setVar $LSD_Echo_Probe $item_echo 
-if ($LSD__PScan = "Yes")
-setVar $LSD_Cost $GAME~LSD_PSCAN
-stripText $LSD_Cost ","
-stripText $LSD_Cost "."
-setVar $LSD_MathOut $LSD_Cost
-isNumber $LSD_tst $LSD_NumberOfShip
-if ($LSD_tst <> 0)
-    setVar $LSD_MathOut ($LSD_MathOut * $LSD_NumberOfShip)
-    setVar $LSD_Multiplier ANSI_8 & "(X" & $LSD_NumberOfShip & ")"
+setvar $item_number $lsd__atomics
+setvar $lsd_cost $game~lsd_atomiccost
+gosub :dosetmenuecho
+setvar $lsd_echo_atomics $item_echo
+setvar $item_number $lsd__beacons
+setvar $lsd_cost $game~lsd_beacon
+gosub :dosetmenuecho
+setvar $lsd_echo_beacons $item_echo
+setvar $item_number $lsd__corbo
+setvar $lsd_cost $game~lsd_corbocost
+gosub :dosetmenuecho
+setvar $lsd_echo_corbo $item_echo
+setvar $item_number $lsd__cloak
+setvar $lsd_cost $game~lsd_cloakcost
+gosub :dosetmenuecho
+setvar $lsd_echo_cloak $item_echo
+setvar $item_number $lsd__probe
+setvar $lsd_cost $game~lsd_eprobe
+gosub :dosetmenuecho
+setvar $lsd_echo_probe $item_echo
+if ($lsd__pscan = "Yes")
+	setvar $lsd_cost $game~lsd_pscan
+	striptext $lsd_cost ","
+	striptext $lsd_cost "."
+	setvar $lsd_mathout $lsd_cost
+	isnumber $lsd_tst $lsd_numberofship
+	if ($lsd_tst <> 0)
+		setvar $lsd_mathout ($lsd_mathout * $lsd_numberofship)
+		setvar $lsd_multiplier ansi_8 & "(X" & $lsd_numberofship & ")"
+	else
+		setvar $lsd_multiplier ""
+	end
+	setvar $lsd__total ($lsd__total + $lsd_mathout)
+	setvar $lsd_cashamount $lsd_mathout
+	gosub :commasize
+	setvar $lsd_echo_pscan ansi_15 & $lsd__pscan & "  " & $lsd_multiplier & ansi_7 & "($" & $lsd_cashamount & ")"
 else
-    setVar $LSD_Multiplier ""
+	setvar $lsd_echo_pscan ""
 end
-setVar $LSD__TOTAL ($LSD__TOTAL + $LSD_MathOut)
-setVar $LSD_CashAmount $LSD_MathOut
-gosub :CommaSize
-setVar $LSD_Echo_PScan ANSI_15 & $LSD__PScan & "  " & $LSD_Multiplier & ANSI_7 & "($" & $LSD_CashAmount & ")"
+setvar $item_number $lsd__limps
+setvar $lsd_cost $game~lsd_limpcost
+gosub :dosetmenuecho
+setvar $lsd_echo_limps $item_echo
+setvar $item_number $lsd__mines
+setvar $lsd_cost $game~lsd_armidcost
+gosub :dosetmenuecho
+setvar $lsd_echo_mines $item_echo
+setvar $item_number $lsd__photon
+setvar $lsd_cost $game~lsd_photoncost
+gosub :dosetmenuecho
+setvar $lsd_echo_photon $item_echo
+if ($lsd__lrscan = "Yes")
+	setvar $lsd_cost $game~lsd_holocost
+	striptext $lsd_cost ","
+	striptext $lsd_cost "."
+	setvar $lsd_mathout $lsd_cost
+	isnumber $lsd_tst $lsd_numberofship
+	if ($lsd_tst <> 0)
+		setvar $lsd_mathout ($lsd_mathout * $lsd_numberofship)
+		setvar $lsd_multiplier ansi_8 & "(X" & $lsd_numberofship & ")"
+	else
+		setvar $lsd_multiplier ""
+	end
+	setvar $lsd__total ($lsd__total + $lsd_mathout)
+	setvar $lsd_cashamount $lsd_mathout
+	gosub :commasize
+	setvar $lsd_echo_lrscan ansi_15 & $lsd__lrscan & "  " & $lsd_multiplier & ansi_7 & "($" & $lsd_cashamount & ")"
 else
-setVar $LSD_Echo_PScan ""
+	setvar $lsd_echo_lrscan ""
 end
-setVar $item_number $LSD__Limps
-setVar $LSD_Cost $GAME~LSD_LIMPCOST
-gosub :doSetMenuEcho
-setVar $LSD_Echo_Limps $item_echo 
-setVar $item_number $LSD__Mines
-setVar $LSD_Cost $GAME~LSD_ARMIDCOST
-gosub :doSetMenuEcho
-setVar $LSD_Echo_Mines $item_echo 
-setVar $item_number $LSD__Photon
-setVar $LSD_Cost $GAME~LSD_PHOTONCOST
-gosub :doSetMenuEcho
-setVar $LSD_Echo_Photon $item_echo 
-if ($LSD__LRScan = "Yes")
-setVar $LSD_Cost $GAME~LSD_HOLOCOST
-stripText $LSD_Cost ","
-stripText $LSD_Cost "."
-setVar $LSD_MathOut $LSD_Cost
-isNumber $LSD_tst $LSD_NumberOfShip
-if ($LSD_tst <> 0)
-    setVar $LSD_MathOut ($LSD_MathOut * $LSD_NumberOfShip)
-    setVar $LSD_Multiplier ANSI_8 & "(X" & $LSD_NumberOfShip & ")"
+setvar $item_number $lsd__disrupt
+setvar $lsd_cost $game~lsd_disruptcost
+gosub :dosetmenuecho
+setvar $lsd_echo_disrupt $item_echo
+setvar $item_number $lsd__gentorp
+setvar $lsd_cost $game~lsd_gencost
+gosub :dosetmenuecho
+setvar $lsd_echo_gentorp $item_echo
+if ($lsd__t2twarp = "Yes")
+	setvar $lsd_cost $game~lsd_twarpiicost
+	striptext $lsd_cost ","
+	striptext $lsd_cost "."
+	setvar $lsd_mathout $lsd_cost
+	isnumber $lsd_tst $lsd_numberofship
+	if ($lsd_tst <> 0)
+		setvar $lsd_mathout ($lsd_mathout * $lsd_numberofship)
+		setvar $lsd_multiplier ansi_8 & "(X" & $lsd_numberofship & ")"
+	else
+		setvar $lsd_multiplier ""
+	end
+	setvar $lsd__total ($lsd__total + $lsd_mathout)
+	setvar $lsd_cashamount $lsd_mathout
+	gosub :commasize
+	setvar $lsd_echo_t2twarp ansi_15 & $lsd__t2twarp & "  " & $lsd_multiplier & ansi_7 & "($" & $lsd_cashamount & ")"
 else
-    setVar $LSD_Multiplier ""
+	setvar $lsd_echo_t2twarp ""
 end
-setVar $LSD__TOTAL ($LSD__TOTAL + $LSD_MathOut)
-setVar $LSD_CashAmount $LSD_MathOut
-gosub :CommaSize
-setVar $LSD_Echo_LRScan ANSI_15 & $LSD__LRScan & "  " & $LSD_Multiplier & ANSI_7 & "($" & $LSD_CashAmount & ")"
-else
-setVar $LSD_Echo_LRScan ""
-end
-setVar $item_number $LSD__Disrupt
-setVar $LSD_Cost $GAME~LSD_DISRUPTCOST
-gosub :doSetMenuEcho
-setVar $LSD_Echo_Disrupt $item_echo 
-setVar $item_number $LSD__GenTorp
-setVar $LSD_Cost $GAME~LSD_GENCOST
-gosub :doSetMenuEcho
-setVar $LSD_Echo_GenTorp $item_echo 
-if ($LSD__T2Twarp = "Yes")
-setVar $LSD_Cost $GAME~LSD_TWARPIICOST
-stripText $LSD_Cost ","
-stripText $LSD_Cost "."
-setVar $LSD_MathOut $LSD_Cost
-isNumber $LSD_tst $LSD_NumberOfShip
-if ($LSD_tst <> 0)
-    setVar $LSD_MathOut ($LSD_MathOut * $LSD_NumberOfShip)
-    setVar $LSD_Multiplier ANSI_8 & "(X" & $LSD_NumberOfShip & ")"
-else
-    setVar $LSD_Multiplier ""
-end
-setVar $LSD__TOTAL ($LSD__TOTAL + $LSD_MathOut)
-setVar $LSD_CashAmount $LSD_MathOut
-gosub :CommaSize
-setVar $LSD_Echo_T2Twarp ANSI_15 & $LSD__T2Twarp & "  " & $LSD_Multiplier & ANSI_7 & "($" & $LSD_CashAmount & ")"
-else
-setVar $LSD_Echo_T2Twarp ""
-end
-setVar $item_number $LSD__Holds
-setVar $LSD_Cost $LSD_HOLDCOST
-gosub :doSetMenuEcho
-setVar $LSD_Echo_Holds $item_echo 
-setVar $item_number $LSD__Figs
-setVar $LSD_Cost $GAME~LSD_FIGHTERCOST
-gosub :doSetMenuEcho
-setVar $LSD_Echo_Figs $item_echo 
-setVar $item_number $LSD__Shields
-setVar $LSD_Cost $GAME~LSD_SHIELD
-gosub :doSetMenuEcho
-setVar $LSD_Echo_Shields $item_echo 
+setvar $item_number $lsd__holds
+setvar $lsd_cost $lsd_holdcost
+gosub :dosetmenuecho
+setvar $lsd_echo_holds $item_echo
+setvar $item_number $lsd__figs
+setvar $lsd_cost $game~lsd_fightercost
+gosub :dosetmenuecho
+setvar $lsd_echo_figs $item_echo
+setvar $item_number $lsd__shields
+setvar $lsd_cost $game~lsd_shield
+gosub :dosetmenuecho
+setvar $lsd_echo_shields $item_echo
 return
-:doSetMenuEcho
-isNumber $LSD_tst $item_number
-if ($LSD_tst <> 0)
-stripText $LSD_Cost ","
-stripText $LSD_Cost "."
-setVar $LSD_MathOut ($item_number * $LSD_Cost)
-isNumber $LSD_tst $LSD_NumberOfShip
-if ($LSD_tst <> 0)
-    setVar $LSD_MathOut ($LSD_MathOut * $LSD_NumberOfShip)
-    setVar $LSD_Multiplier ANSI_8 & "(X" & $LSD_NumberOfShip & ")"
-else
-    setVar $LSD_Multiplier ""
-end
-setVar $LSD__TOTAL ($LSD__TOTAL + $LSD_MathOut)
-setVar $LSD_CashAmount $LSD_MathOut
-gosub :CommaSize
-setVar $item_echo ANSI_15 & $item_number & "  " & $LSD_Multiplier & ANSI_7 & "($" & $LSD_CashAmount & ")"
+
+:dosetmenuecho
+isnumber $lsd_tst $item_number
+if ($lsd_tst <> 0)
+	striptext $lsd_cost ","
+	striptext $lsd_cost "."
+	setvar $lsd_mathout ($item_number * $lsd_cost)
+	isnumber $lsd_tst $lsd_numberofship
+	if ($lsd_tst <> 0)
+		setvar $lsd_mathout ($lsd_mathout * $lsd_numberofship)
+		setvar $lsd_multiplier ansi_8 & "(X" & $lsd_numberofship & ")"
+	else
+		setvar $lsd_multiplier ""
+	end
+	setvar $lsd__total ($lsd__total + $lsd_mathout)
+	setvar $lsd_cashamount $lsd_mathout
+	gosub :commasize
+	setvar $item_echo ansi_15 & $item_number & "  " & $lsd_multiplier & ansi_7 & "($" & $lsd_cashamount & ")"
 elseif ($item_number  = "Max")
-setVar $item_echo "Max"
+	setvar $item_echo "Max"
 else
-setVar $item_echo ""
+	setvar $item_echo ""
 end
 return
-:LoadShipData
-fileExists $LSD_test $LSD_Ships_File
-if ($LSD_test)
-setVar $LSD_i 1
-read $LSD_Ships_File $LSD_Line $LSD_i
-while (($LSD_Line <> EOF) AND ($LSD_i <= $LSD_ShipListMax))
-    getWordPos $LSD_Line $LSD_pos #9
-    if ($LSD_pos <> 2)
-        setVar $LSD_ShipData_Valid FALSE
-        return
-    end
-    cutText $LSD_Line $LSD_temp 1 1
-    setVar $LSD_ShipList[$LSD_i] $LSD_temp
-    cutText $LSD_Line $LSD_Line2 3 999
-    SetVar $LSD_Line $LSD_line2
-    getWordPos $LSD_Line $LSD_pos #9
-    if ($LSD_pos = 0)
-        setVar $LSD_ShipData_Valid FALSE
-        return
-    end
-    cutText $LSD_Line $LSD_temp1 1 ($LSD_pos - 1)
-    setVar $LSD_ShipList[$LSD_i][1] $LSD_temp1
-    stripText $LSD_Line $LSD_temp1 & #9
-    getWordPos $LSD_Line $LSD_pos #9
-    if ($LSD_pos = 0)
-        setVar $LSD_ShipData_Valid FALSE
-        return
-    end
-    cutText $LSD_Line $LSD_temp2 1 ($LSD_pos - 1)
-    setVar $LSD_ShipList[$LSD_i][2] $LSD_temp2
-    stripText $LSD_Line $LSD_temp2 & #9
-    setVar $LSD_ShipList[$LSD_i][3] $LSD_Line
-    :NextRealLine
-    add $LSD_i 1
-    read $LSD_Ships_File $LSD_Line $LSD_i
-    end
-    setVar $LSD_ShipData_Valid TRUE
+
+:loadshipdata
+fileexists $lsd_test $lsd_ships_file
+if ($lsd_test)
+	setvar $lsd_i 1
+	read $lsd_ships_file $lsd_line $lsd_i
+	while (($lsd_line <> eof) and ($lsd_i <= $lsd_shiplistmax))
+		getwordpos $lsd_line $lsd_pos #9
+		if ($lsd_pos <> 2)
+			setvar $lsd_shipdata_valid false
+			return
+		end
+		cuttext $lsd_line $lsd_temp 1 1
+		setvar $lsd_shiplist[$lsd_i] $lsd_temp
+		cuttext $lsd_line $lsd_line2 3 999
+		setvar $lsd_line $lsd_line2
+		getwordpos $lsd_line $lsd_pos #9
+		if ($lsd_pos = 0)
+			setvar $lsd_shipdata_valid false
+			return
+		end
+		cuttext $lsd_line $lsd_temp1 1 ($lsd_pos - 1)
+		setvar $lsd_shiplist[$lsd_i][1] $lsd_temp1
+		striptext $lsd_line $lsd_temp1 & #9
+		getwordpos $lsd_line $lsd_pos #9
+		if ($lsd_pos = 0)
+			setvar $lsd_shipdata_valid false
+			return
+		end
+		cuttext $lsd_line $lsd_temp2 1 ($lsd_pos - 1)
+		setvar $lsd_shiplist[$lsd_i][2] $lsd_temp2
+		striptext $lsd_line $lsd_temp2 & #9
+		setvar $lsd_shiplist[$lsd_i][3] $lsd_line
+
+		:nextrealline
+		add $lsd_i 1
+		read $lsd_ships_file $lsd_line $lsd_i
+	end
+	setvar $lsd_shipdata_valid true
 else
-setVar $LSD_ShipData_Valid FALSE
+	setvar $lsd_shipdata_valid false
 end
 return
-:ParseShipData
-delete $LSD_Ships_File
-setVar $LSD_i 0
+
+:parseshipdata
+delete $lsd_ships_file
+setvar $lsd_i 0
 send "S B N Y ?"
 waitfor "Which ship are you interested in "
-setTextLineTrigger NextPage     :NextPage "<+> Next Page"
-:NextPageReset
-setTextLineTrigger Quit2Leave   :Quit2Leave "<Q> To Leave"
-:LineTrigNext
-setTextLineTrigger LineTrig     :LineTrig
+settextlinetrigger nextpage     :nextpage "<+> Next Page"
+
+:nextpagereset
+settextlinetrigger quit2leave   :quit2leave "<Q> To Leave"
+
+:linetrignext
+settextlinetrigger linetrig     :linetrig
 pause
-:NextPage
+
+:nextpage
 killalltriggers
-add $LSD_i 1
-setVar $LSD_ShipList[$LSD_i] "+"
-setVar $LSD_ShipList[$LSD_i][1] "This Inidcates"
-setVar $LSD_ShipList[$LSD_i][2] "Another"
-setVar $LSD_ShipList[$LSD_i][3] "Page is availble for display"
+add $lsd_i 1
+setvar $lsd_shiplist[$lsd_i] "+"
+setvar $lsd_shiplist[$lsd_i][1] "This Inidcates"
+setvar $lsd_shiplist[$lsd_i][2] "Another"
+setvar $lsd_shiplist[$lsd_i][3] "Page is availble for display"
 send "+"
 waitfor "Which ship are you interested in "
-setTextLineTrigger LineTrig     :LineTrig
-setTextLineTrigger NextPage     :Quit2Leave "<+> Next Page"
-setTextLineTrigger Quit2Leave   :Quit2Leave "<Q> To Leave"
+settextlinetrigger linetrig     :linetrig
+settextlinetrigger nextpage     :quit2leave "<+> Next Page"
+settextlinetrigger quit2leave   :quit2leave "<Q> To Leave"
 pause
-:Quit2Leave
+
+:quit2leave
 killalltriggers
 send " Q Q "
 waitfor "<StarDock> Where to? (?="
-delete $LSD_tstFile
-setVar $LSD_ii 1
-while ($LSD_ii <= $LSD_i)
-    write $LSD_Ships_File $LSD_ShipList[$LSD_ii] & #9 & $LSD_ShipList[$LSD_ii][1] & #9 & $LSD_ShipList[$LSD_ii][2] & #9 & $LSD_ShipList[$LSD_ii][3]
-    add $LSD_ii 1
+delete $lsd_tstfile
+setvar $lsd_ii 1
+while ($lsd_ii <= $lsd_i)
+	write $lsd_ships_file $lsd_shiplist[$lsd_ii] & #9 & $lsd_shiplist[$lsd_ii][1] & #9 & $lsd_shiplist[$lsd_ii][2] & #9 & $lsd_shiplist[$lsd_ii][3]
+	add $lsd_ii 1
 end
 return
-:LineTrig
-setVar $LSD_temp CURRENTLINE & "@@@"
-if ($LSD_temp <> "@@@")
-    getWordPos $LSD_temp $LSD_pos "<"
-    if ($LSD_pos = 1)
-        getWordPos $LSD_temp $LSD_pos "<Q>"
-        if ($LSD_pos = 0)
-            add $LSD_i 1
-            GetText $LSD_temp $LSD_ShipList[$LSD_i] "<" ">"
-            GetText $LSD_temp $LSD_ShipList[$LSD_i][1] "> " "   "
-            GetText $LSD_temp $LSD_ShipList[$LSD_i][2] "   " "@@@"
-            stripText $LSD_ShipList[$LSD_i][2] " "
-            if ($LSD_ShipList[$LSD_i][2] = "")
-                setvar $LSD_ShipList[$LSD_i][2] "999,999,999"
-            end
-            GetText CURRENTANSILINE  $LSD_ShipList[$LSD_i][3] "[35m> " "    "
-        end
-    end
+
+:linetrig
+setvar $lsd_temp currentline & "@@@"
+if ($lsd_temp <> "@@@")
+	getwordpos $lsd_temp $lsd_pos "<"
+	if ($lsd_pos = 1)
+		getwordpos $lsd_temp $lsd_pos "<Q>"
+		if ($lsd_pos = 0)
+			add $lsd_i 1
+			gettext $lsd_temp $lsd_shiplist[$lsd_i] "<" ">"
+			gettext $lsd_temp $lsd_shiplist[$lsd_i][1] "> " "   "
+			gettext $lsd_temp $lsd_shiplist[$lsd_i][2] "   " "@@@"
+			striptext $lsd_shiplist[$lsd_i][2] " "
+			if ($lsd_shiplist[$lsd_i][2] = "")
+				setvar $lsd_shiplist[$lsd_i][2] "999,999,999"
+			end
+			gettext currentansiline  $lsd_shiplist[$lsd_i][3] "[35m> " "    "
+		end
+	end
 end
-goto :LineTrigNext
-:DisplayMenu
-setVar $LSD_LineWidthMax 45
-setVar $LSD_PAGES_EXIST FALSE
-setVar $LSD_NumberOfShip ""
-setVar $LSD_i 1
-:NextPagePlease
-Echo #27 & "[2J"
-Echo "***"
-if ($isDockShopper)
-    Echo ("     "&ANSI_15&#196&#196&ANSI_7&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_7&#196&ANSI_15&#196&#196)
-    echo ANSI_14 & "*        LoneStar's StarDock Shopper"
-    echo ANSI_9 & "*         Mind ()ver Matter Edition"
-    echo ANSI_15 & "*          Emporium Daily Specials"
-    echo ANSI_8 & "*                Version " & $LSD_CURENT_VERSION & "*"
-    Echo ("     "&ANSI_15&#196&#196&ANSI_7&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_8&#196&ANSI_7&#196&ANSI_15&#196&#196)
-    echo "*"
+goto :linetrignext
+
+:displaymenu
+setvar $lsd_linewidthmax 45
+setvar $lsd_pages_exist false
+setvar $lsd_numberofship ""
+setvar $lsd_i 1
+
+:nextpageplease
+echo #27 & "[2J"
+echo "***"
+if ($isdockshopper)
+	echo ("     "&ansi_15&#196&#196&ansi_7&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_7&#196&ansi_15&#196&#196)
+	echo ansi_14 & "*        LoneStar's StarDock Shopper"
+	echo ansi_9 & "*         Mind ()ver Matter Edition"
+	echo ansi_15 & "*          Emporium Daily Specials"
+	echo ansi_8 & "*                Version " & $lsd_curent_version & "*"
+	echo ("     "&ansi_15&#196&#196&ansi_7&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_8&#196&ansi_7&#196&ansi_15&#196&#196)
+	echo "*"
 end
-setArray $LSD_MenuSelections $LSD_ShipListMax
-while ($LSD_ShipList[$LSD_i] <> 0)
-    if ($LSD_ShipList[$LSD_i] <> "+")
-        setVar $LSD_Spaces $LSD_LineWidthMax
-        setVar $LSD_ANSI_Line "  " & ANSI_5 & "<" & ANSI_6 & $LSD_ShipList[$LSD_i] & ANSI_5 & "> "
-        setVar $LSD_temp $LSD_ShipList[$LSD_i][2]
-        stripText $LSD_temp ","
-        stripText $LSD_temp "."
-        stripText $LSD_temp " "
-        getLength $LSD_ShipList[$LSD_i][1] $LSD_len
-        if ($LSD_len > ($LSD_LineWidthMax - 10))
-            subtract $LSD_len 10
-            cutText $LSD_ShipList[$LSD_i][3] $LSD_temp 1 $LSD_len
-        else
-            setVar $LSD_temp $LSD_ShipList[$LSD_i][3]
-        end
-        setVar $LSD_ANSI_Line $LSD_ANSI_Line & $LSD_temp
-        subtract $LSD_Spaces $LSD_len
-        getLength $LSD_ShipList[$LSD_i][2] $LSD_len
-        subtract $LSD_Spaces $LSD_len
-        setVar $LSD_Spacer ""
-        while ($LSD_Spaces > 0)
-            setVar $LSD_Spacer $LSD_Spacer & " "
-            subtract $LSD_Spaces 1
-        end
-        setVar $LSD_ANSI_Line $LSD_ANSI_Line & $LSD_Spacer & ANSI_14 & $LSD_ShipList[$LSD_i][2] & "*"
-        setVar $LSD_MenuSelections[$LSD_i] $LSD_ShipList[$LSD_i]
-        echo $LSD_ANSI_Line
-    else
-        setVar $LSD_PAGES_EXIST TRUE
-        SetVar $LSD_PageIDX $LSD_i
-        goto :PageDone
-    end
-    add $LSD_i 1
+setarray $lsd_menuselections $lsd_shiplistmax
+while ($lsd_shiplist[$lsd_i] <> 0)
+	if ($lsd_shiplist[$lsd_i] <> "+")
+		setvar $lsd_spaces $lsd_linewidthmax
+		setvar $lsd_ansi_line "  " & ansi_5 & "<" & ansi_6 & $lsd_shiplist[$lsd_i] & ansi_5 & "> "
+		setvar $lsd_temp $lsd_shiplist[$lsd_i][2]
+		striptext $lsd_temp ","
+		striptext $lsd_temp "."
+		striptext $lsd_temp " "
+		getlength $lsd_shiplist[$lsd_i][1] $lsd_len
+		if ($lsd_len > ($lsd_linewidthmax - 10))
+			subtract $lsd_len 10
+			cuttext $lsd_shiplist[$lsd_i][3] $lsd_temp 1 $lsd_len
+		else
+			setvar $lsd_temp $lsd_shiplist[$lsd_i][3]
+		end
+		setvar $lsd_ansi_line $lsd_ansi_line & $lsd_temp
+		subtract $lsd_spaces $lsd_len
+		getlength $lsd_shiplist[$lsd_i][2] $lsd_len
+		subtract $lsd_spaces $lsd_len
+		setvar $lsd_spacer ""
+		while ($lsd_spaces > 0)
+			setvar $lsd_spacer $lsd_spacer & " "
+			subtract $lsd_spaces 1
+		end
+		setvar $lsd_ansi_line $lsd_ansi_line & $lsd_spacer & ansi_14 & $lsd_shiplist[$lsd_i][2] & "*"
+		setvar $lsd_menuselections[$lsd_i] $lsd_shiplist[$lsd_i]
+		echo $lsd_ansi_line
+	else
+		setvar $lsd_pages_exist true
+		setvar $lsd_pageidx $lsd_i
+		goto :pagedone
+	end
+	add $lsd_i 1
 end
-:PageDone
-echo "   " #27 "[1m" ANSI_4 #196 #196 #196 #196 #196 #196  #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196
+
+:pagedone
+echo "   " #27 "[1m" ansi_4 #196 #196 #196 #196 #196 #196  #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196
 echo "*"
-if ($LSD_PAGES_EXIST)
-    Echo "  " & ANSI_5 & "<" & ANSI_6 & "+" & ANSI_5 & ">" & ANSI_6 & " NextPage*"
+if ($lsd_pages_exist)
+	echo "  " & ansi_5 & "<" & ansi_6 & "+" & ansi_5 & ">" & ansi_6 & " NextPage*"
 end
-echo "  " & ANSI_5 & "<" & ANSI_6 & "Q" & ANSI_5 & ">" & ANSI_6 & " To Leave*"
+echo "  " & ansi_5 & "<" & ansi_6 & "Q" & ansi_5 & ">" & ansi_6 & " To Leave*"
 echo "*"
-:MakingAnotherSlection
-echo "  " & ANSI_5 & "Which ship are you interested in? "
-getConsoleInput $LSD_selection SINGLEKEY
-upperCase $LSD_selection
-if ($LSD_selection = "Q")
-    return
-elseif (($LSD_PAGES_EXIST) AND ($LSD_selection = "+"))
-if ($LSD_i = $LSD_PageIDX)
-    setVar $LSD_PageTwoSelected TRUE
-    add $LSD_i 1
+
+:makinganotherslection
+echo "  " & ansi_5 & "Which ship are you interested in? "
+getconsoleinput $lsd_selection singlekey
+uppercase $lsd_selection
+if ($lsd_selection = "Q")
+	return
+elseif (($lsd_pages_exist) and ($lsd_selection = "+"))
+	if ($lsd_i = $lsd_pageidx)
+		setvar $lsd_pagetwoselected true
+		add $lsd_i 1
+	else
+		setvar $lsd_pagetwoselected false
+		setvar $lsd_i 1
+	end
+	goto :nextpageplease
 else
-    setVar $LSD_PageTwoSelected FALSE
-    setVar $LSD_i 1
-end
-goto :NextPagePlease
-else
-setVar $LSD_ptr 1
-while ($LSD_ptr <= $LSD_ShipListMax)
-    if ($LSD_MenuSelections[$LSD_ptr] <> 0)
-        if ($LSD_MenuSelections[$LSD_ptr] = $LSD_selection)
-            setPrecision 0
-            setVar $LSD_NumberOfShip ""
-            :InputAnotherAmount
-            getInput $LSD_NumberOfShip "  " & ANSI_5 & "How Many " & $LSD_ShipList[$LSD_ptr][1] & "'s ?"
-            isNumber $LSD_test $LSD_NumberOfShip
-            if ($LSD_test = 0)
-                goto :InputAnotherAmount
-            end
-            if (($LSD_NumberOfShip < 0))
-                setVar $LSD_NumberOfShip 0
-                setVar $LSD__Trickster ""
-                goto :InputAnotherAmount
-            end
-            if ($LSD_NumberOfShip = 0)
-                setVar $LSD__Trickster ""
-            else
-                if ($LSD_PageTwoSelected)
-                    setVar $LSD__Trickster "+" & $LSD_selection & "^^" & $LSD_ShipList[$LSD_ptr][2] & "@@" & $LSD_ShipList[$LSD_ptr][3] & "!!"
-                else
-                    setVar $LSD__Trickster $LSD_selection & "^^" & $LSD_ShipList[$LSD_ptr][2] & "@@" & $LSD_ShipList[$LSD_ptr][3] & "!!"
-                end
-                getInput $LSD_CustomShipName "  " & ANSI_5 & "What do you want to name this ship? (30 chars) "
-                if ($LSD_CustomShipName = "")
-                    setVar $LSD_CustomShipName $LSD_Ships_Names
-                else
-                    setVar $LSD_CustomShipNameTEST $LSD_CustomShipName
-                    stripText $LSD_CustomShipNameTEST " "
-                    if ($LSD_CustomShipNameTEST = "")
-                        setVar $LSD_CustomShipName $LSD_Ships_Names
-                    else
-                        getLength $LSD_CustomShipName $LSD_len
-                        if ($LSD_len > 30)
-                            cutText $LSD_CustomShipName $LSD_CustomShipName 1 30
-                        end
-                    end
-                end
-            end
-            return
-        end
-    end
-    add $LSD_ptr 1
-end
+	setvar $lsd_ptr 1
+	while ($lsd_ptr <= $lsd_shiplistmax)
+		if ($lsd_menuselections[$lsd_ptr] <> 0)
+			if ($lsd_menuselections[$lsd_ptr] = $lsd_selection)
+				setprecision 0
+				setvar $lsd_numberofship ""
+
+				:inputanotheramount
+				getinput $lsd_numberofship "  " & ansi_5 & "How Many " & $lsd_shiplist[$lsd_ptr][1] & "'s ?"
+				isnumber $lsd_test $lsd_numberofship
+				if ($lsd_test = 0)
+					goto :inputanotheramount
+				end
+				if (($lsd_numberofship < 0))
+					setvar $lsd_numberofship 0
+					setvar $lsd__trickster ""
+					goto :inputanotheramount
+				end
+				if ($lsd_numberofship = 0)
+					setvar $lsd__trickster ""
+				else
+					if ($lsd_pagetwoselected)
+						setvar $lsd__trickster "+" & $lsd_selection & "^^" & $lsd_shiplist[$lsd_ptr][2] & "@@" & $lsd_shiplist[$lsd_ptr][3] & "!!"
+					else
+						setvar $lsd__trickster $lsd_selection & "^^" & $lsd_shiplist[$lsd_ptr][2] & "@@" & $lsd_shiplist[$lsd_ptr][3] & "!!"
+					end
+					getinput $lsd_customshipname "  " & ansi_5 & "What do you want to name this ship? (30 chars) "
+					if ($lsd_customshipname = "")
+						setvar $lsd_customshipname $lsd_ships_names
+					else
+						setvar $lsd_customshipnametest $lsd_customshipname
+						striptext $lsd_customshipnametest " "
+						if ($lsd_customshipnametest = "")
+							setvar $lsd_customshipname $lsd_ships_names
+						else
+							getlength $lsd_customshipname $lsd_len
+							if ($lsd_len > 30)
+								cuttext $lsd_customshipname $lsd_customshipname 1 30
+							end
+						end
+					end
+				end
+				return
+			end
+		end
+		add $lsd_ptr 1
+	end
 end
 echo "*"
 echo #27 & "[1A" & #27 & "[2K"
-goto :MakingAnotherSlection
+goto :makinganotherslection
 return
-:doAddHistory
-loadVar $BOT~historyString
-setVar $BOT~history[1] $bot~user_command_line
-setVar $BOT~historyString $BOT~history[1]&"<<|HS|>>"&$BOT~historyString
-saveVar $BOT~historyString
+
+:doaddhistory
+loadvar $bot~historystring
+setvar $bot~history[1] $bot~user_command_line
+setvar $bot~historystring $bot~history[1]&"<<|HS|>>"&$bot~historystring
+savevar $bot~historystring
 return
 #============================================= END DOCK SHOPPER MENU  ==================================================
 

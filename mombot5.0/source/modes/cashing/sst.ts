@@ -1,1429 +1,1434 @@
-:LOAD_VARIABLES
-
-
+:load_variables
 loadvar $switchboard~bot_name
 loadvar $bot~user_command_line
 loadvar $player~unlimitedgame
 loadvar $bot~subspace
 loadvar $bot~bot_turn_limit
 
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 loadvar $bot~subspace
 
 loadvar $bot~bot_turn_limit
 loadvar $game~steal_factor
 
-setvar $HELP~HELP[1] $HELP~TAB&" sst {resetlra} [ship1] [ship2] {jet} {resetlra}"
-setvar $HELP~HELP[2] $HELP~TAB&"  - Do NOT need to start in Ship 1 or Ship 2."
-setvar $HELP~HELP[3] $HELP~TAB&"  - First Steal will be from Ship 1."
-setvar $HELP~HELP[4] $HELP~TAB&"  - Checks last rob and busts from Sec Params"
-setvar $HELP~HELP[5] $HELP~TAB&"  - {jet} will mega jet product for extra experience "
-setvar $HELP~HELP[6] $HELP~TAB&"          but will stop at mulitplier of 300 holds. "
-setvar $HELP~HELP[7] $HELP~TAB&"  - {resetlra} will reset last rob sector and exit"
-setvar $HELP~HELP[8] $HELP~TAB&"  - Will use EP Haggle if running in bot"
-setvar $HELP~HELP[9] $HELP~TAB&"  - Created by Cherokee"
-gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&" sst {resetlra} [ship1] [ship2] {jet} {resetlra}"
+setvar $help~help[2] $help~tab&"  - Do NOT need to start in Ship 1 or Ship 2."
+setvar $help~help[3] $help~tab&"  - First Steal will be from Ship 1."
+setvar $help~help[4] $help~tab&"  - Checks last rob and busts from Sec Params"
+setvar $help~help[5] $help~tab&"  - {jet} will mega jet product for extra experience "
+setvar $help~help[6] $help~tab&"          but will stop at mulitplier of 300 holds. "
+setvar $help~help[7] $help~tab&"  - {resetlra} will reset last rob sector and exit"
+setvar $help~help[8] $help~tab&"  - Will use EP Haggle if running in bot"
+setvar $help~help[9] $help~tab&"  - Created by Cherokee"
+gosub :help~helpfile
 
-setvar $SWITCHBOARD~MESSAGE "SST and JET starting up!*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "SST and JET starting up!*"
+gosub :switchboard~switchboard
 
 if ($bot~parm1 = "resetlra")
-  setsectorparameter 1 "LRA" 1
-  send "'Last rob sector reset*"
-  halt
+	setsectorparameter 1 "LRA" 1
+	send "'Last rob sector reset*"
+	halt
 end
 
-isnumber $TEST $bot~parm1
-if ($TEST)
+isnumber $test $bot~parm1
+if ($test)
 else
-  setvar $switchboard~message "Ship 1 Must Be a Number.*"
-  gosub :switchboard~switchboard
-  halt
+	setvar $switchboard~message "Ship 1 Must Be a Number.*"
+	gosub :switchboard~switchboard
+	halt
 end
-isnumber $TEST $bot~parm2
-if ($TEST)
+isnumber $test $bot~parm2
+if ($test)
 else
-  setvar $switchboard~message "Ship 2 Must Be a Number.*"
-  gosub :switchboard~switchboard
-  halt
+	setvar $switchboard~message "Ship 2 Must Be a Number.*"
+	gosub :switchboard~switchboard
+	halt
 end
-setvar $SHIP_1 $bot~parm1
-setvar $SHIP_2 $bot~parm2
-setvar $STEAL_DIVISOR $game~steal_factor
-
+setvar $ship_1 $bot~parm1
+setvar $ship_2 $bot~parm2
+setvar $steal_divisor $game~steal_factor
 
 if ($bot~parm3 = "jet")
-  setvar $JET "y"
+	setvar $jet "y"
 end
 
 if ($bot~parm4 = "jet")
-  setvar $JET "y"
+	setvar $jet "y"
 end
 
-if ($STEAL_DIVISOR = 0)
-  setvar $STEAL_DIVISOR 21
-  send "'No Steal divisor, assuming 21. Bot needs to refresh perhaps?*"
+if ($steal_divisor = 0)
+	setvar $steal_divisor 21
+	send "'No Steal divisor, assuming 21. Bot needs to refresh perhaps?*"
 end
 
+getsectorparameter 1 "LRA" $last_rob_attempt
 
-getsectorparameter 1 "LRA" $LAST_ROB_ATTEMPT
-:VERIFYPROMPT
-
-
-
-
+:verifyprompt
 gosub :player~quikstats
 
-setvar $LOCATION $player~current_prompt
-if ($LOCATION <> "Command")
-  setvar $switchboard~message "Must start at Command Prompt for SST*"
-  gosub :switchboard~switchboard
-  halt
+setvar $location $player~current_prompt
+if ($location <> "Command")
+	setvar $switchboard~message "Must start at Command Prompt for SST*"
+	gosub :switchboard~switchboard
+	halt
 end
 
 send "czq"
 waiton "-----------------------------------------------------------------------------"
-settextlinetrigger SHIPNUMBER :GETSHIPNUMBER "Corp"
-settextlinetrigger DONESHIPS :DONESHIPS "Computer command ["
+settextlinetrigger shipnumber :getshipnumber "Corp"
+settextlinetrigger doneships :doneships "Computer command ["
 pause
-:GETSHIPNUMBER
 
-getword CURRENTLINE $SHIPTEST 1
-getword CURRENTLINE $SHIPLOCATION 2
-isnumber $IS_A_NUMBER $SHIPLOCATION
-if ($IS_A_NUMBER)
-  if ($SHIP_1 = $SHIPTEST)
-    if ($SHIPLOCATION = $LAST_ROB_ATTEMPT)
-      setvar $TEMP $SHIP_1
-      setvar $SHIP_1 $SHIP_2
-      setvar $SHIP_2 $TEMP
-      goto :DONESHIPS
-    end
-  end
+:getshipnumber
+getword currentline $shiptest 1
+getword currentline $shiplocation 2
+isnumber $is_a_number $shiplocation
+if ($is_a_number)
+	if ($ship_1 = $shiptest)
+		if ($shiplocation = $last_rob_attempt)
+			setvar $temp $ship_1
+			setvar $ship_1 $ship_2
+			setvar $ship_2 $temp
+			goto :doneships
+		end
+	end
 end
-settextlinetrigger SHIPNUMBER :GETSHIPNUMBER "Corp"
+settextlinetrigger shipnumber :getshipnumber "Corp"
 pause
-:DONESHIPS
-killalltriggers
-:VERIFYSHIP
 
-if ($player~ship_number <> $SHIP_1)
-  send "x " $SHIP_1 "* q z n"
+:doneships
+killalltriggers
+
+:verifyship
+if ($player~ship_number <> $ship_1)
+	send "x " $ship_1 "* q z n"
 end
 gosub :player~quikstats
-if ($player~ship_number <> $SHIP_1)
-  setvar $switchboard~message "Cannot Xport to Ship 1.  Check Xport Range.  Halting.*"
-  gosub :switchboard~switchboard
-  halt
+if ($player~ship_number <> $ship_1)
+	setvar $switchboard~message "Cannot Xport to Ship 1.  Check Xport Range.  Halting.*"
+	gosub :switchboard~switchboard
+	halt
 end
 logging "OFF"
 
-gosub :STARTCNSETTINGS
+gosub :startcnsettings
 
 send "CZQ"
 waitfor "Command [TL="
-setdelaytrigger SHIPDISPWAIT :SHIPDISPWAIT 750
+setdelaytrigger shipdispwait :shipdispwait 750
 pause
 pause
-:SHIPDISPWAIT
 
+:shipdispwait
+setvar $jetholds 10
+setvar $jetholdsore 10
+setvar $jetholdsorg 5
+setvar $jetbonus 0
+setvar $jetcost 0
+setvar $current_ship $ship_1
+setvar $low_turns "NO"
+setvar $skip_ships "NO"
 
-setvar $JETHOLDS 10
-setvar $JETHOLDSORE 10
-setvar $JETHOLDSORG 5
-setvar $JETBONUS 0
-setvar $JETCOST 0
-setvar $CURRENT_SHIP $SHIP_1
-setvar $LOW_TURNS "NO"
-setvar $SKIP_SHIPS "NO"
+setvar $debugdelay 0
+setvar $sec1void 0
+setvar $sec2void 0
 
-setvar $DEBUGDELAY 0
-setvar $SEC1VOID 0
-setvar $SEC2VOID 0
-:INIT
-
-
-
-gosub :GETINFO
-setvar $INIT_CREDITS $player~credits
-setvar $INIT_EXP $EXP
-setvar $INIT_TURNS $player~turns
+:init
+gosub :getinfo
+setvar $init_credits $player~credits
+setvar $init_exp $exp
+setvar $init_turns $player~turns
 setvar $switchboard~message "Starting SST"
 gosub :switchboard~switchboard
 
-
-
-if ($JET = "y")
-  send "+JET"
+if ($jet = "y")
+	send "+JET"
 end
-send " with "&$INIT_CREDITS&" credits and "&$INIT_EXP&" experience.*"
+send " with "&$init_credits&" credits and "&$init_exp&" experience.*"
 gosub :player~quikstats
 
-
-
-setvar $switchboard~message "last rob attempt: "&$LAST_ROB_ATTEMPT&"*"
+setvar $switchboard~message "last rob attempt: "&$last_rob_attempt&"*"
 gosub :switchboard~switchboard
-if ($LAST_ROB_ATTEMPT = $player~current_sector)
-  setvar $switchboard~message "last rob attempt is this sector! HAlting*"
-  gosub :switchboard~switchboard
-  gosub :ENDCNSETTINGS
-  gosub :CLEARADJACENT
-  halt
+if ($last_rob_attempt = $player~current_sector)
+	setvar $switchboard~message "last rob attempt is this sector! HAlting*"
+	gosub :switchboard~switchboard
+	gosub :endcnsettings
+	gosub :clearadjacent
+	halt
 end
-gosub :VOIDADJACENT
+gosub :voidadjacent
 
-getsectorparameter $player~current_sector "BUSTED" $BUSTTHISSEC
-if ($BUSTTHISSEC = TRUE)
-  setvar $switchboard~message "According to my data i've busted here - ending*"
-  gosub :switchboard~switchboard
-  gosub :CLEARADJACENT
-  gosub :ENDCNSETTINGS
-  halt
-end
-
-gosub :CHECKPORT
-gosub :CLEANSHIP
-gosub :STEAL
-gosub :XPORT
-
-
-gosub :GETINFO
-gosub :VOIDADJACENT
-setvar $SEC2VOID 1
-getsectorparameter $player~current_sector "BUSTED" $BUSTTHISSEC
-if ($BUSTTHISSEC = TRUE)
-  setvar $switchboard~message "According to my data i've busted here - ending*"
-  gosub :switchboard~switchboard
-  gosub :ENDCNSETTINGS
-  gosub :CLEARADJACENT
-  halt
+getsectorparameter $player~current_sector "BUSTED" $bustthissec
+if ($bustthissec = true)
+	setvar $switchboard~message "According to my data i've busted here - ending*"
+	gosub :switchboard~switchboard
+	gosub :clearadjacent
+	gosub :endcnsettings
+	halt
 end
 
-gosub :CHECKPORT
-gosub :CLEANSHIP
-gosub :STEAL
-gosub :XPORT
+gosub :checkport
+gosub :cleanship
+gosub :steal
+gosub :xport
 
-setvar $SKIP_SHIPS "YES"
-:SSTLOOP
+gosub :getinfo
+gosub :voidadjacent
+setvar $sec2void 1
+getsectorparameter $player~current_sector "BUSTED" $bustthissec
+if ($bustthissec = true)
+	setvar $switchboard~message "According to my data i've busted here - ending*"
+	gosub :switchboard~switchboard
+	gosub :endcnsettings
+	gosub :clearadjacent
+	halt
+end
 
+gosub :checkport
+gosub :cleanship
+gosub :steal
+gosub :xport
 
-gosub :SELL
-gosub :STEAL
-gosub :XPORT
+setvar $skip_ships "YES"
+
+:sstloop
+gosub :sell
+gosub :steal
+gosub :xport
 if (($player~unlimitedgame) or ($player~turns > $bot~bot_turn_limit))
-  goto :SSTLOOP
+	goto :sstloop
 else
-  setvar $switchboard~message "Low Turns, Halting Script*"
-  gosub :switchboard~switchboard
-  setvar $LOW_TURNS "YES"
-  goto :FINISH
+	setvar $switchboard~message "Low Turns, Halting Script*"
+	gosub :switchboard~switchboard
+	setvar $low_turns "YES"
+	goto :finish
 end
-:FINISH
 
+:finish
+gosub :clearadjacent
 
-
-
-gosub :CLEARADJACENT
-
-setvar $player~turns_used $INIT_TURNS
+setvar $player~turns_used $init_turns
 subtract $player~turns_used $player~turns
 gosub :player~quikstats
 
-setvar $CASH_MADE ($player~credits - $INIT_CREDITS)
-setvar $EXP_MADE $player~experience
-subtract $EXP_MADE $INIT_EXP
-gosub :ENDCNSETTINGS
+setvar $cash_made ($player~credits - $init_credits)
+setvar $exp_made $player~experience
+subtract $exp_made $init_exp
+gosub :endcnsettings
 send "'*{" $switchboard~bot_name "} -*"
 if ($player~unlimitedgame)
-  send "I made "&$CASH_MADE&" credits and "&$EXP_MADE&" experience.*"
+	send "I made "&$cash_made&" credits and "&$exp_made&" experience.*"
 else
-  send "I made "&$CASH_MADE&" credits and "&$EXP_MADE&" experience.*"
+	send "I made "&$cash_made&" credits and "&$exp_made&" experience.*"
 end
-if ($JET = "y")
-  send "I made an extra "&$JETBONUS&" experience at a cost of "&$JETCOST&" credits.*"
+if ($jet = "y")
+	send "I made an extra "&$jetbonus&" experience at a cost of "&$jetcost&" credits.*"
 end
-send "Ship "&$SHIP_1&"'s equip multiple was "&$PORT.MULTIPLE[$SHIP_1]&".*"
-send "Ship "&$SHIP_2&"'s equip multiple was "&$PORT.MULTIPLE[$SHIP_2]&".*"
+send "Ship "&$ship_1&"'s equip multiple was "&$port.multiple[$ship_1]&".*"
+send "Ship "&$ship_2&"'s equip multiple was "&$port.multiple[$ship_2]&".*"
 gosub :player~quikstats
-if ($LOW_TURNS <> "YES")
+if ($low_turns <> "YES")
 
-  send "Busted in ship "&$CURRENT_SHIP&", FURB please, I still have "&$player~turns&" turns to run.**"
+	send "Busted in ship "&$current_ship&", FURB please, I still have "&$player~turns&" turns to run.**"
 end
 
 halt
-:GETINFO
 
-
-
-
+:getinfo
 send "I"
 waitfor "<Info>"
-:WAITFORINFO
-settextlinetrigger GETEXPANDALIGN :GETEXPANDALIGN "Rank and Exp"
-settextlinetrigger GETTURNS :GETTURNS "Turns left"
-settextlinetrigger GETHOLDS :GETHOLDS "Total Holds"
-settextlinetrigger GETCREDITS :GETCREDITS "Credits"
-settexttrigger GETINFODONE :GETINFODONE "Command [TL="
+
+:waitforinfo
+settextlinetrigger getexpandalign :getexpandalign "Rank and Exp"
+settextlinetrigger getturns :getturns "Turns left"
+settextlinetrigger getholds :getholds "Total Holds"
+settextlinetrigger getcredits :getcredits "Credits"
+settexttrigger getinfodone :getinfodone "Command [TL="
 pause
 pause
-:GETEXPANDALIGN
+
+:getexpandalign
 killalltriggers
-getword CURRENTLINE $EXP 5
-getword CURRENTLINE $ALIGN 7
-striptext $EXP ","
-striptext $ALIGN ","
-striptext $ALIGN "Alignment="
-goto :WAITFORINFO
-:GETTURNS
+getword currentline $exp 5
+getword currentline $align 7
+striptext $exp ","
+striptext $align ","
+striptext $align "Alignment="
+goto :waitforinfo
+
+:getturns
 killalltriggers
-getword CURRENTLINE $player~turns 4
+getword currentline $player~turns 4
 if ($player~turns = "Unlimited")
-  setvar $player~turns 65535
+	setvar $player~turns 65535
 end
-goto :WAITFORINFO
-:GETHOLDS
+goto :waitforinfo
+
+:getholds
 killalltriggers
-setvar $LINE CURRENTLINE
-getword $LINE $HOLDS[$CURRENT_SHIP] 4
-getwordpos $LINE $TEXTPOS "Ore="
-if ($TEXTPOS <> 0)
-  cuttext CURRENTLINE $TEMP $TEXTPOS 100
-  getword $TEMP $ORE[$CURRENT_SHIP] 1
-  striptext $ORE[$CURRENT_SHIP] "Ore="
+setvar $line currentline
+getword $line $holds[$current_ship] 4
+getwordpos $line $textpos "Ore="
+if ($textpos <> 0)
+	cuttext currentline $temp $textpos 100
+	getword $temp $ore[$current_ship] 1
+	striptext $ore[$current_ship] "Ore="
 else
-  setvar $ORE[$CURRENT_SHIP] 0
+	setvar $ore[$current_ship] 0
 end
-getwordpos $LINE $TEXTPOS "Organics="
-if ($TEXTPOS <> 0)
-  cuttext CURRENTLINE $TEMP $TEXTPOS 100
-  getword $TEMP $ORG[$CURRENT_SHIP] 1
-  striptext $ORG[$CURRENT_SHIP] "Organics="
+getwordpos $line $textpos "Organics="
+if ($textpos <> 0)
+	cuttext currentline $temp $textpos 100
+	getword $temp $org[$current_ship] 1
+	striptext $org[$current_ship] "Organics="
 else
-  setvar $ORG[$CURRENT_SHIP] 0
+	setvar $org[$current_ship] 0
 end
-getwordpos $LINE $TEXTPOS "Equipment="
-if ($TEXTPOS <> 0)
-  cuttext CURRENTLINE $TEMP $TEXTPOS 100
-  getword $TEMP $EQU[$CURRENT_SHIP] 1
-  striptext $EQU[$CURRENT_SHIP] "Equipment="
+getwordpos $line $textpos "Equipment="
+if ($textpos <> 0)
+	cuttext currentline $temp $textpos 100
+	getword $temp $equ[$current_ship] 1
+	striptext $equ[$current_ship] "Equipment="
 else
-  setvar $EQU[$CURRENT_SHIP] 0
+	setvar $equ[$current_ship] 0
 end
-getwordpos $LINE $TEXTPOS "Colonists="
-if ($TEXTPOS <> 0)
-  cuttext CURRENTLINE $TEMP $TEXTPOS 100
-  getword $TEMP $COL[$CURRENT_SHIP] 1
-  striptext $COL[$CURRENT_SHIP] "Colonists="
+getwordpos $line $textpos "Colonists="
+if ($textpos <> 0)
+	cuttext currentline $temp $textpos 100
+	getword $temp $col[$current_ship] 1
+	striptext $col[$current_ship] "Colonists="
 else
-  setvar $COL[$CURRENT_SHIP] 0
+	setvar $col[$current_ship] 0
 end
-getwordpos $LINE $TEXTPOS "Empty="
-if ($TEXTPOS <> 0)
-  cuttext CURRENTLINE $TEMP $TEXTPOS 100
-  getword $TEMP $EMP[$CURRENT_SHIP] 1
-  striptext $EMP[$CURRENT_SHIP] "Empty="
+getwordpos $line $textpos "Empty="
+if ($textpos <> 0)
+	cuttext currentline $temp $textpos 100
+	getword $temp $emp[$current_ship] 1
+	striptext $emp[$current_ship] "Empty="
 else
-  setvar $EMP[$CURRENT_SHIP] 0
+	setvar $emp[$current_ship] 0
 end
-goto :WAITFORINFO
-:GETCREDITS
+goto :waitforinfo
+
+:getcredits
 killalltriggers
-getword CURRENTLINE $player~credits 3
+getword currentline $player~credits 3
 striptext $player~credits ","
-goto :WAITFORINFO
-:GETINFODONE
+goto :waitforinfo
+
+:getinfodone
 killalltriggers
 return
-:CHECKPORT
 
-
-
+:checkport
 send "D"
 waitfor "<Re-Display>"
-settextlinetrigger GETPORT :GETPORT "Ports   :"
-settextlinetrigger NOPORT :NOPORT "Command [TL="
+settextlinetrigger getport :getport "Ports   :"
+settextlinetrigger noport :noport "Command [TL="
 pause
 pause
-:GETPORT
+
+:getport
 killalltriggers
-gettext CURRENTLINE $PORT[$CURRENT_SHIP] ", Class " " ("
-if (($PORT[$CURRENT_SHIP] <> 2) and (($PORT[$CURRENT_SHIP] <> 3) and (($PORT[$CURRENT_SHIP] <> 4) and ($PORT[$CURRENT_SHIP] <> 8))))
-  setvar $BAD_PORT_NAME PORT.NAME[$player~current_sector]
-  setvar $switchboard~message "Ship " $CURRENT_SHIP " is in sector " $player~current_sector " at " $BAD_PORT_NAME ", class " $PORT[$CURRENT_SHIP] ". SST needs an equipment-buying port (class 2, 3, 4, or 8). Halting.*"
-  gosub :switchboard~switchboard
-  gosub :ENDCNSETTINGS
-  gosub :CLEARADJACENT
-  halt
+gettext currentline $port[$current_ship] ", Class " " ("
+if (($port[$current_ship] <> 2) and (($port[$current_ship] <> 3) and (($port[$current_ship] <> 4) and ($port[$current_ship] <> 8))))
+	setvar $bad_port_name port.name[$player~current_sector]
+	setvar $switchboard~message "Ship " $current_ship " is in sector " $player~current_sector " at " $bad_port_name ", class " $port[$current_ship] ". SST needs an equipment-buying port (class 2, 3, 4, or 8). Halting.*"
+	gosub :switchboard~switchboard
+	gosub :endcnsettings
+	gosub :clearadjacent
+	halt
 else
-  setvar $PORT.MULTIPLE[$CURRENT_SHIP] 110
-  setvar $PORT.MAXMULTIPLE[$CURRENT_SHIP] 0
-  send "CR*Q"
-  :GETSELLING
-  if (($PORT[$CURRENT_SHIP] = 3) or ($PORT[$CURRENT_SHIP] = 4))
-    settextlinetrigger GETORESELLING :GETORESELLING "Fuel Ore   Selling"
-  else
-    setvar $PORT.ORE_SELLING[$CURRENT_SHIP] 0
-  end
+	setvar $port.multiple[$current_ship] 110
+	setvar $port.maxmultiple[$current_ship] 0
+	send "CR*Q"
 
-  if (($PORT[$CURRENT_SHIP] = 2) or ($PORT[$CURRENT_SHIP] = 4))
-    settextlinetrigger GETORGSELLING :GETORGSELLING "Organics   Selling"
-  else
-    setvar $PORT.ORG_SELLING[$CURRENT_SHIP] 0
-  end
+	:getselling
+	if (($port[$current_ship] = 3) or ($port[$current_ship] = 4))
+		settextlinetrigger getoreselling :getoreselling "Fuel Ore   Selling"
+	else
+		setvar $port.ore_selling[$current_ship] 0
+	end
 
-  settextlinetrigger GETEQUONPORT :GETEQUONPORT "Equipment  Buying"
-  pause
-  pause
-  :GETORESELLING
-  killalltriggers
-  getword CURRENTLINE $PORT.ORE_SELLING[$CURRENT_SHIP] 4
-  if ($PORT.ORE_SELLING[$CURRENT_SHIP] = 0)
-    send "o 1 1 * q"
-    setvar $PORT.ORE_SELLING[$CURRENT_SHIP] 10
-  end
-  goto :GETSELLING
-  :GETORGSELLING
-  killalltriggers
-  getword CURRENTLINE $PORT.ORG_SELLING[$CURRENT_SHIP] 3
-  if ($PORT.ORG_SELLING[$CURRENT_SHIP] = 0)
-    send "o 2 1 * q"
-    setvar $PORT.ORG_SELLING[$CURRENT_SHIP] 10
-  end
-  goto :GETSELLING
-  :GETEQUONPORT
-  killalltriggers
-  getword CURRENTLINE $PORT.EQU_AMOUNT[$CURRENT_SHIP] 3
-  getword CURRENTLINE $PORT.EQU_PCT[$CURRENT_SHIP] 4
-  striptext $PORT.EQU_PCT[$CURRENT_SHIP] "%"
-  setvar $PORT.EQU_MAX[$CURRENT_SHIP] $PORT.EQU_AMOUNT[$CURRENT_SHIP]
-  multiply $PORT.EQU_MAX[$CURRENT_SHIP] 100
-  divide $PORT.EQU_MAX[$CURRENT_SHIP] $PORT.EQU_PCT[$CURRENT_SHIP]
-  setvar $PORT.EQU_ON_DOCK[$CURRENT_SHIP] $PORT.EQU_MAX[$CURRENT_SHIP]
-  subtract $PORT.EQU_ON_DOCK[$CURRENT_SHIP] $PORT.EQU_AMOUNT[$CURRENT_SHIP]
+	if (($port[$current_ship] = 2) or ($port[$current_ship] = 4))
+		settextlinetrigger getorgselling :getorgselling "Organics   Selling"
+	else
+		setvar $port.org_selling[$current_ship] 0
+	end
 
-  setvar $STEAL_HOLDS $EXP
-  divide $STEAL_HOLDS $STEAL_DIVISOR
-  if ($STEAL_HOLDS < 10)
-    setvar $switchboard~message "You need more experience to SST!!!*"
-    gosub :switchboard~switchboard
-    gosub :ENDCNSETTINGS
-    gosub :CLEARADJACENT
-    halt
-  elseif ($HOLDS[$CURRENT_SHIP] < 10)
-    setvar $switchboard~message "You need more cargo holds to SST!!!*"
-    gosub :switchboard~switchboard
-    gosub :ENDCNSETTINGS
-    gosub :CLEARADJACENT
-    halt
-  end
-  if ($STEAL_HOLDS > $HOLDS[$CURRENT_SHIP])
-    setvar $STEAL_HOLDS $HOLDS[$CURRENT_SHIP]
-  end
+	settextlinetrigger getequonport :getequonport "Equipment  Buying"
+	pause
+	pause
 
-  setvar $TEMP $EQU["CURRENT_SHIP"]
-  add $TEMP $PORT.EQU_ON_DOCK[$CURRENT_SHIP]
-  if ($STEAL_HOLDS > $TEMP)
-    setvar $UPGRADE_AMOUNT $STEAL_HOLDS
-    subtract $UPGRADE_AMOUNT $PORT.EQU_ON_DOCK[$CURRENT_SHIP]
-    subtract $UPGRADE_AMOUNT $EQU[$CURRENT_SHIP]
-    divide $UPGRADE_AMOUNT 10
-    add $UPGRADE_AMOUNT 1
-    setvar $CASH_NEEDED $UPGRADE_AMOUNT
-    multiply $CASH_NEEDED 900
-    if ($player~credits >= $CASH_NEEDED)
-      send "o  3"&$UPGRADE_AMOUNT&"**"
-    else
-      setvar $switchboard~message "Not enough credits on hand to upgrade the port.*"
-      gosub :switchboard~switchboard
-      gosub :ENDCNSETTINGS
-      gosub :CLEARADJACENT
-      halt
-    end
-    setvar $UPGRADE_AMOUNT 0
-  end
+	:getoreselling
+	killalltriggers
+	getword currentline $port.ore_selling[$current_ship] 4
+	if ($port.ore_selling[$current_ship] = 0)
+		send "o 1 1 * q"
+		setvar $port.ore_selling[$current_ship] 10
+	end
+	goto :getselling
 
-  return
+	:getorgselling
+	killalltriggers
+	getword currentline $port.org_selling[$current_ship] 3
+	if ($port.org_selling[$current_ship] = 0)
+		send "o 2 1 * q"
+		setvar $port.org_selling[$current_ship] 10
+	end
+	goto :getselling
+
+	:getequonport
+	killalltriggers
+	getword currentline $port.equ_amount[$current_ship] 3
+	getword currentline $port.equ_pct[$current_ship] 4
+	striptext $port.equ_pct[$current_ship] "%"
+	setvar $port.equ_max[$current_ship] $port.equ_amount[$current_ship]
+	multiply $port.equ_max[$current_ship] 100
+	divide $port.equ_max[$current_ship] $port.equ_pct[$current_ship]
+	setvar $port.equ_on_dock[$current_ship] $port.equ_max[$current_ship]
+	subtract $port.equ_on_dock[$current_ship] $port.equ_amount[$current_ship]
+
+	setvar $steal_holds $exp
+	divide $steal_holds $steal_divisor
+	if ($steal_holds < 10)
+		setvar $switchboard~message "You need more experience to SST!!!*"
+		gosub :switchboard~switchboard
+		gosub :endcnsettings
+		gosub :clearadjacent
+		halt
+	elseif ($holds[$current_ship] < 10)
+		setvar $switchboard~message "You need more cargo holds to SST!!!*"
+		gosub :switchboard~switchboard
+		gosub :endcnsettings
+		gosub :clearadjacent
+		halt
+	end
+	if ($steal_holds > $holds[$current_ship])
+		setvar $steal_holds $holds[$current_ship]
+	end
+
+	setvar $temp $equ["CURRENT_SHIP"]
+	add $temp $port.equ_on_dock[$current_ship]
+	if ($steal_holds > $temp)
+		setvar $upgrade_amount $steal_holds
+		subtract $upgrade_amount $port.equ_on_dock[$current_ship]
+		subtract $upgrade_amount $equ[$current_ship]
+		divide $upgrade_amount 10
+		add $upgrade_amount 1
+		setvar $cash_needed $upgrade_amount
+		multiply $cash_needed 900
+		if ($player~credits >= $cash_needed)
+			send "o  3"&$upgrade_amount&"**"
+		else
+			setvar $switchboard~message "Not enough credits on hand to upgrade the port.*"
+			gosub :switchboard~switchboard
+			gosub :endcnsettings
+			gosub :clearadjacent
+			halt
+		end
+		setvar $upgrade_amount 0
+	end
+
+	return
 end
-:NOPORT
+
+:noport
 killalltriggers
 setvar $switchboard~message "There is no port, you can't SST here!*"
 gosub :switchboard~switchboard
-gosub :ENDCNSETTINGS
-gosub :CLEARADJACENT
+gosub :endcnsettings
+gosub :clearadjacent
 halt
-:CLEANSHIP
 
+:cleanship
+if ($port[$current_ship] = 2)
+	if (($ore[$current_ship] <> 0) or ($equ[$current_ship] <> 0))
+		subtract $player~turns 1
+		if (haggle)
+			setvar $nativesellore $ore[$current_ship]
+			setvar $nativesellorg 0
+			setvar $nativesellequ $equ[$current_ship]
+			setvar $nativebuyore 0
+			setvar $nativebuyorg 0
+			setvar $nativebuyequ 0
+			gosub :nativeporttrade
+			gosub :getinfo
+			if (($ore[$current_ship] <> 0) or ($equ[$current_ship] <> 0))
+				setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
+				gosub :switchboard~switchboard
+				gosub :endcnsettings
+				gosub :clearadjacent
+				halt
+			end
+		else
+			send "PT"
+			if ($ore[$current_ship] <> 0)
+				gosub :cleansell
+			end
+			if ($equ[$current_ship] <> 0)
+				gosub :cleansell
+			end
+			send "0*"
+		end
+	else
+		echo "**no need to port**"
+	end
 
+elseif ($port[$current_ship] = 3)
+	if (($org[$current_ship] <> 0) or ($equ[$current_ship] <> 0))
+		subtract $player~turns 1
+		if (haggle)
+			setvar $nativesellore 0
+			setvar $nativesellorg $org[$current_ship]
+			setvar $nativesellequ $equ[$current_ship]
+			setvar $nativebuyore 0
+			setvar $nativebuyorg 0
+			setvar $nativebuyequ 0
+			gosub :nativeporttrade
+			gosub :getinfo
+			if (($org[$current_ship] <> 0) or ($equ[$current_ship] <> 0))
+				setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
+				gosub :switchboard~switchboard
+				gosub :endcnsettings
+				gosub :clearadjacent
+				halt
+			end
+		else
+			send "PT"
+			if ($org[$current_ship] <> 0)
+				gosub :cleansell
+			end
+			if ($equ[$current_ship] <> 0)
+				gosub :cleansell
+			end
+			send "0*"
+		end
+	end
 
+elseif ($port[$current_ship] = 4)
+	if ($equ[$current_ship] <> 0)
+		subtract $player~turns 1
+		if (haggle)
+			setvar $nativesellore 0
+			setvar $nativesellorg 0
+			setvar $nativesellequ $equ[$current_ship]
+			setvar $nativebuyore 0
+			setvar $nativebuyorg 0
+			setvar $nativebuyequ 0
+			gosub :nativeporttrade
+			gosub :getinfo
+			if ($equ[$current_ship] <> 0)
+				setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
+				gosub :switchboard~switchboard
+				gosub :endcnsettings
+				gosub :clearadjacent
+				halt
+			end
+		else
+			send "PT"
+			if ($equ[$current_ship] <> 0)
+				gosub :cleansell
+			end
+			send "0*0*"
+		end
+	end
 
-
-if ($PORT[$CURRENT_SHIP] = 2)
-  if (($ORE[$CURRENT_SHIP] <> 0) or ($EQU[$CURRENT_SHIP] <> 0))
-    subtract $player~turns 1
-    if (HAGGLE)
-      setVar $nativeSellOre $ORE[$CURRENT_SHIP]
-      setVar $nativeSellOrg 0
-      setVar $nativeSellEqu $EQU[$CURRENT_SHIP]
-      setVar $nativeBuyOre 0
-      setVar $nativeBuyOrg 0
-      setVar $nativeBuyEqu 0
-      gosub :NATIVEPORTTRADE
-      gosub :GETINFO
-      if (($ORE[$CURRENT_SHIP] <> 0) or ($EQU[$CURRENT_SHIP] <> 0))
-        setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
-        gosub :switchboard~switchboard
-        gosub :ENDCNSETTINGS
-        gosub :CLEARADJACENT
-        halt
-      end
-    else
-      send "PT"
-      if ($ORE[$CURRENT_SHIP] <> 0)
-        gosub :CLEANSELL
-      end
-      if ($EQU[$CURRENT_SHIP] <> 0)
-        gosub :CLEANSELL
-      end
-      send "0*"
-    end
-  else
-    echo "**no need to port**"
-  end
-
-
-elseif ($PORT[$CURRENT_SHIP] = 3)
-  if (($ORG[$CURRENT_SHIP] <> 0) or ($EQU[$CURRENT_SHIP] <> 0))
-    subtract $player~turns 1
-    if (HAGGLE)
-      setVar $nativeSellOre 0
-      setVar $nativeSellOrg $ORG[$CURRENT_SHIP]
-      setVar $nativeSellEqu $EQU[$CURRENT_SHIP]
-      setVar $nativeBuyOre 0
-      setVar $nativeBuyOrg 0
-      setVar $nativeBuyEqu 0
-      gosub :NATIVEPORTTRADE
-      gosub :GETINFO
-      if (($ORG[$CURRENT_SHIP] <> 0) or ($EQU[$CURRENT_SHIP] <> 0))
-        setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
-        gosub :switchboard~switchboard
-        gosub :ENDCNSETTINGS
-        gosub :CLEARADJACENT
-        halt
-      end
-    else
-      send "PT"
-      if ($ORG[$CURRENT_SHIP] <> 0)
-        gosub :CLEANSELL
-      end
-      if ($EQU[$CURRENT_SHIP] <> 0)
-        gosub :CLEANSELL
-      end
-      send "0*"
-    end
-  end
-
-
-elseif ($PORT[$CURRENT_SHIP] = 4)
-  if ($EQU[$CURRENT_SHIP] <> 0)
-    subtract $player~turns 1
-    if (HAGGLE)
-      setVar $nativeSellOre 0
-      setVar $nativeSellOrg 0
-      setVar $nativeSellEqu $EQU[$CURRENT_SHIP]
-      setVar $nativeBuyOre 0
-      setVar $nativeBuyOrg 0
-      setVar $nativeBuyEqu 0
-      gosub :NATIVEPORTTRADE
-      gosub :GETINFO
-      if ($EQU[$CURRENT_SHIP] <> 0)
-        setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
-        gosub :switchboard~switchboard
-        gosub :ENDCNSETTINGS
-        gosub :CLEARADJACENT
-        halt
-      end
-    else
-      send "PT"
-      if ($EQU[$CURRENT_SHIP] <> 0)
-        gosub :CLEANSELL
-      end
-      send "0*0*"
-    end
-  end
-
-
-elseif ($PORT[$CURRENT_SHIP] = 8)
-  if (($ORE[$CURRENT_SHIP] <> 0) or ($ORG[$CURRENT_SHIP] <> 0) or ($EQU[$CURRENT_SHIP] <> 0))
-    subtract $player~turns 1
-    if (HAGGLE)
-      setVar $nativeSellOre $ORE[$CURRENT_SHIP]
-      setVar $nativeSellOrg $ORG[$CURRENT_SHIP]
-      setVar $nativeSellEqu $EQU[$CURRENT_SHIP]
-      setVar $nativeBuyOre 0
-      setVar $nativeBuyOrg 0
-      setVar $nativeBuyEqu 0
-      gosub :NATIVEPORTTRADE
-      gosub :GETINFO
-      if (($ORE[$CURRENT_SHIP] <> 0) or ($ORG[$CURRENT_SHIP] <> 0) or ($EQU[$CURRENT_SHIP] <> 0))
-        setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
-        gosub :switchboard~switchboard
-        gosub :ENDCNSETTINGS
-        gosub :CLEARADJACENT
-        halt
-      end
-    else
-      send "PT"
-      if ($ORE[$CURRENT_SHIP] <> 0)
-        gosub :CLEANSELL
-      end
-      if ($ORG[$CURRENT_SHIP] <> 0)
-        gosub :CLEANSELL
-      end
-      if ($EQU[$CURRENT_SHIP] <> 0)
-        gosub :CLEANSELL
-      end
-    end
-  end
-
+elseif ($port[$current_ship] = 8)
+	if (($ore[$current_ship] <> 0) or ($org[$current_ship] <> 0) or ($equ[$current_ship] <> 0))
+		subtract $player~turns 1
+		if (haggle)
+			setvar $nativesellore $ore[$current_ship]
+			setvar $nativesellorg $org[$current_ship]
+			setvar $nativesellequ $equ[$current_ship]
+			setvar $nativebuyore 0
+			setvar $nativebuyorg 0
+			setvar $nativebuyequ 0
+			gosub :nativeporttrade
+			gosub :getinfo
+			if (($ore[$current_ship] <> 0) or ($org[$current_ship] <> 0) or ($equ[$current_ship] <> 0))
+				setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
+				gosub :switchboard~switchboard
+				gosub :endcnsettings
+				gosub :clearadjacent
+				halt
+			end
+		else
+			send "PT"
+			if ($ore[$current_ship] <> 0)
+				gosub :cleansell
+			end
+			if ($org[$current_ship] <> 0)
+				gosub :cleansell
+			end
+			if ($equ[$current_ship] <> 0)
+				gosub :cleansell
+			end
+		end
+	end
 
 else
-  echo "**badport**"
-  gosub :ENDCNSETTINGS
-  gosub :CLEARADJACENT
-  halt
+	echo "**badport**"
+	gosub :endcnsettings
+	gosub :clearadjacent
+	halt
 end
 
 send "JY"
-setvar $EMP[$CURRENT_SHIP] $HOLDS[$CURRENT_SHIP]
-setvar $ORE[$CURRENT_SHIP] 0
-setvar $ORG[$CURRENT_SHIP] 0
-setvar $EQU[$CURRENT_SHIP] 0
-setvar $COL[$CURRENT_SHIP] 0
-setvar $SELL_FAILURES[$CURRENT_SHIP] 0
+setvar $emp[$current_ship] $holds[$current_ship]
+setvar $ore[$current_ship] 0
+setvar $org[$current_ship] 0
+setvar $equ[$current_ship] 0
+setvar $col[$current_ship] 0
+setvar $sell_failures[$current_ship] 0
 waitfor "Are you sure you want to jettison"
 return
-:CLEANSELL
+
+:cleansell
 send "**"
 return
-:SELL
 
-if ($EQU[$CURRENT_SHIP] > 0)
-  subtract $player~turns 1
+:sell
+if ($equ[$current_ship] > 0)
+	subtract $player~turns 1
 
-  if (HAGGLE)
-    setVar $nativeSellOre 0
-    setVar $nativeSellOrg 0
-    setVar $nativeSellEqu $EQU[$CURRENT_SHIP]
-    setVar $nativeBuyOre 0
-    setVar $nativeBuyOrg 0
-    setVar $nativeBuyEqu 0
-    gosub :NATIVEPORTTRADE
-    gosub :GETINFO
-    if ($EQU[$CURRENT_SHIP] > 0)
-      setvar $switchboard~message "I'm having problems selling my equipment to the port with native haggle. Script Halting*"
-      gosub :switchboard~switchboard
-      gosub :ENDCNSETTINGS
-      gosub :CLEARADJACENT
-      halt
-    end
-    goto :AFTERSELLSUCCESS
-  end
+	if (haggle)
+		setvar $nativesellore 0
+		setvar $nativesellorg 0
+		setvar $nativesellequ $equ[$current_ship]
+		setvar $nativebuyore 0
+		setvar $nativebuyorg 0
+		setvar $nativebuyequ 0
+		gosub :nativeporttrade
+		gosub :getinfo
+		if ($equ[$current_ship] > 0)
+			setvar $switchboard~message "I'm having problems selling my equipment to the port with native haggle. Script Halting*"
+			gosub :switchboard~switchboard
+			gosub :endcnsettings
+			gosub :clearadjacent
+			halt
+		end
+		goto :aftersellsuccess
+	end
 
-  killalltriggers
-  send "PT"
-  :SELLHAGGLE
-  send "*"
-  settextlinetrigger SELLFIRSTOFFER :SELLFIRSTOFFER "We'll buy them for"
-  pause
-  pause
-  :SELLFIRSTOFFER
-  killalltriggers
-  getword CURRENTLINE $OFFER 5
-  striptext $OFFER ","
-  setvar $COUNTER $OFFER
-  multiply $COUNTER $PORT.MULTIPLE[$CURRENT_SHIP]
-  divide $COUNTER 100
-  send $COUNTER&"*"
-  :SELLOFFERLOOP
-  settextlinetrigger SELLPRICE :SELLPRICE "We'll buy them for"
-  settextlinetrigger SELLFINALOFFER :SELLFINALOFFER "Our final offer"
-  settextlinetrigger SELLNOTINTERESTED :SELLNOTINTERESTED "We're not interested."
-  settextlinetrigger SELLEXPERIENCE :SELLEXPERIENCE "experience point(s)"
-  settextlinetrigger SELLEMPTY :SELLEMPTY "empty cargo holds"
+	killalltriggers
+	send "PT"
 
-  settextlinetrigger SELLSCREWUP1 :SELLSCREWUP "Get real ion-brain, make me a real offer."
-  settextlinetrigger SELLSCREWUP2 :SELLSCREWUP "This is the big leagues Jr.  Make a real offer."
-  settextlinetrigger SELLSCREWUP3 :SELLSCREWUP "My patience grows short with you."
-  settextlinetrigger SELLSCREWUP4 :SELLSCREWUP "I have much better things to do than waste my time.  Try again."
-  settextlinetrigger SELLSCREWUP5 :SELLSCREWUP "HA! HA, ha hahahhah hehehe hhhohhohohohh!  You choke me up!"
-  settextlinetrigger SELLSCREWUP6 :SELLSCREWUP "Quit playing around, you're wasting my time!"
-  settextlinetrigger SELLSCREWUP7 :SELLSCREWUP "Make a real offer or get the h*ll out of here!"
-  settextlinetrigger SELLSCREWUP8 :SELLSCREWUP "WHAT?!@!? you must be crazy!"
-  settextlinetrigger SELLSCREWUP9 :SELLSCREWUP "So, you think I'm as stupid as you look? Make a real offer."
-  settextlinetrigger SELLSCREWUP10 :SELLSCREWUP "What do you take me for, a fool?  Make a real offer!"
-  pause
-  pause
-  :SELLSCREWUP
-  killalltriggers
-  multiply $COUNTER 98
-  divide $COUNTER 100
-  send $COUNTER&"*"
-  goto :SELLOFFERLOOP
-  :SELLPRICE
-  killalltriggers
-  setvar $OLD_OFFER $OFFER
-  setvar $OLD_COUNTER $COUNTER
-  getword CURRENTLINE $OFFER 5
-  striptext $OFFER ","
-  setvar $OFFER_PCT $OFFER
-  multiply $OFFER_PCT 1000
-  divide $OFFER_PCT $OLD_OFFER
-  if ($OFFER_PCT < 1003)
-    setvar $OFFER_PCT 1003
-  end
-  multiply $COUNTER 1000
-  divide $COUNTER $OFFER_PCT
-  if ($COUNTER >= $OLD_COUNTER)
-    subtract $COUNTER 1
-  end
-  send $COUNTER&"*"
-  goto :SELLOFFERLOOP
-  :SELLFINALOFFER
-  killalltriggers
-  setvar $OLD_OFFER $OFFER
-  setvar $OLD_COUNTER $COUNTER
-  getword CURRENTLINE $OFFER 5
-  striptext $OFFER ","
-  setvar $OFFER_CHANGE $OFFER
-  subtract $OFFER_CHANGE $OLD_OFFER
-  multiply $OFFER_CHANGE 25
-  divide $OFFER_CHANGE 10
-  subtract $COUNTER $OFFER_CHANGE
-  subtract $COUNTER 3
-  send $COUNTER&"*"
-  goto :SELLOFFERLOOP
-  :SELLNOTINTERESTED
-  killalltriggers
-  goto :SELLHAGGLEFAILED
-  :SELLEXPERIENCE
-  killalltriggers
-  getword CURRENTLINE $EXP_BONUS 7
-  add $EXP $EXP_BONUS
-  goto :SELLOFFERLOOP
-  :SELLEMPTY
-  killalltriggers
-  getword CURRENTLINE $player~credits 3
-  striptext $player~credits ","
-  setvar $OLDEMP[$CURRENT_SHIP] $EMP[$CURRENT_SHIP]
-  getword CURRENTLINE $EMP[$CURRENT_SHIP] 6
-  if ($OLDEMP[$CURRENT_SHIP] = $EMP[$CURRENT_SHIP])
-    goto :SELLHAGGLEFAILED
-  else
-    goto :SELLHAGGLESUCCEEDED
-  end
-  :SELLHAGGLEFAILED
-  if (($PORT[$CURRENT_SHIP] = 2) or ($PORT[$CURRENT_SHIP] = 3))
-    send "0*"
-  elseif ($PORT[$CURRENT_SHIP] = 4)
-    send "0*0*"
-  end
+	:sellhaggle
+	send "*"
+	settextlinetrigger sellfirstoffer :sellfirstoffer "We'll buy them for"
+	pause
+	pause
 
-  add $SELL_FAILURES[$CURRENT_SHIP] 1
-  subtract $PORT.MULTIPLE[$CURRENT_SHIP] 1
-  setvar $PORT.MAXMULTIPLE[$CURRENT_SHIP] $PORT.MULTIPLE[$CURRENT_SHIP]
+	:sellfirstoffer
+	killalltriggers
+	getword currentline $offer 5
+	striptext $offer ","
+	setvar $counter $offer
+	multiply $counter $port.multiple[$current_ship]
+	divide $counter 100
+	send $counter&"*"
 
+	:sellofferloop
+	settextlinetrigger sellprice :sellprice "We'll buy them for"
+	settextlinetrigger sellfinaloffer :sellfinaloffer "Our final offer"
+	settextlinetrigger sellnotinterested :sellnotinterested "We're not interested."
+	settextlinetrigger sellexperience :sellexperience "experience point(s)"
+	settextlinetrigger sellempty :sellempty "empty cargo holds"
 
-  if ($SELL_FAILURES[$CURRENT_SHIP] > 5)
-    setvar $switchboard~message "I'm having problems selling my equipment to the port. Script Halting*"
-    gosub :switchboard~switchboard
-    gosub :ENDCNSETTINGS
-    gosub :CLEARADJACENT
-    halt
-  end
-  goto :SELL
-  :SELLHAGGLESUCCEEDED
-  if ($PORT.MAXMULTIPLE[$CURRENT_SHIP] = 0)
-    add $PORT.MULTIPLE[$CURRENT_SHIP] 2
-  end
+	settextlinetrigger sellscrewup1 :sellscrewup "Get real ion-brain, make me a real offer."
+	settextlinetrigger sellscrewup2 :sellscrewup "This is the big leagues Jr.  Make a real offer."
+	settextlinetrigger sellscrewup3 :sellscrewup "My patience grows short with you."
+	settextlinetrigger sellscrewup4 :sellscrewup "I have much better things to do than waste my time.  Try again."
+	settextlinetrigger sellscrewup5 :sellscrewup "HA! HA, ha hahahhah hehehe hhhohhohohohh!  You choke me up!"
+	settextlinetrigger sellscrewup6 :sellscrewup "Quit playing around, you're wasting my time!"
+	settextlinetrigger sellscrewup7 :sellscrewup "Make a real offer or get the h*ll out of here!"
+	settextlinetrigger sellscrewup8 :sellscrewup "WHAT?!@!? you must be crazy!"
+	settextlinetrigger sellscrewup9 :sellscrewup "So, you think I'm as stupid as you look? Make a real offer."
+	settextlinetrigger sellscrewup10 :sellscrewup "What do you take me for, a fool?  Make a real offer!"
+	pause
+	pause
 
-  :AFTERSELLSUCCESS
+	:sellscrewup
+	killalltriggers
+	multiply $counter 98
+	divide $counter 100
+	send $counter&"*"
+	goto :sellofferloop
 
-  if ($JET = "y")
-    setvar $DOOREUPGRADE 0
-    setvar $DOORGUPGRADE 0
+	:sellprice
+	killalltriggers
+	setvar $old_offer $offer
+	setvar $old_counter $counter
+	getword currentline $offer 5
+	striptext $offer ","
+	setvar $offer_pct $offer
+	multiply $offer_pct 1000
+	divide $offer_pct $old_offer
+	if ($offer_pct < 1003)
+		setvar $offer_pct 1003
+	end
+	multiply $counter 1000
+	divide $counter $offer_pct
+	if ($counter >= $old_counter)
+		subtract $counter 1
+	end
+	send $counter&"*"
+	goto :sellofferloop
 
-    if (($PORT[$CURRENT_SHIP] = 3) or ($PORT[$CURRENT_SHIP] = 4))
-      if ($PORT.ORE_SELLING[$CURRENT_SHIP] > $JETHOLDSORE)
-        if ($EMP[$CURRENT_SHIP] >= $JETHOLDSORE)
+	:sellfinaloffer
+	killalltriggers
+	setvar $old_offer $offer
+	setvar $old_counter $counter
+	getword currentline $offer 5
+	striptext $offer ","
+	setvar $offer_change $offer
+	subtract $offer_change $old_offer
+	multiply $offer_change 25
+	divide $offer_change 10
+	subtract $counter $offer_change
+	subtract $counter 3
+	send $counter&"*"
+	goto :sellofferloop
 
-          send $JETHOLDSORE
-          gosub :BUYHAGGLE
-          if ($BUYHAGGLE = 1)
-            subtract $PORT.ORE_SELLING[$CURRENT_SHIP] $JETHOLDSORE
-          end
-        else
-          send "0*"
-        end
-      elseif ($PORT.ORE_SELLING[$CURRENT_SHIP] > 0)
-        setvar $switchboard~message "This port is selling little ore, I will upgrade a small amount.*"
-        gosub :switchboard~switchboard
-        add $PORT.ORE_SELLING[$CURRENT_SHIP] 500
-        setvar $DOOREUPGRADE 1
-        send "0*"
-      else
-        setvar $switchboard~message "This port is selling 0 ore, I will upgrade a small amount.*"
-        gosub :switchboard~switchboard
-        add $PORT.ORE_SELLING[$CURRENT_SHIP] 500
-        setvar $DOOREUPGRADE 1
-      end
-    end
+	:sellnotinterested
+	killalltriggers
+	goto :sellhagglefailed
 
-    if (($PORT[$CURRENT_SHIP] = 2) or ($PORT[$CURRENT_SHIP] = 4))
-      if ($PORT.ORG_SELLING[$CURRENT_SHIP] > $JETHOLDSORG)
-        if ($EMP[$CURRENT_SHIP] >= $JETHOLDSORG)
-          send $JETHOLDSORG
-          gosub :BUYHAGGLE
-          if ($BUYHAGGLE = 1)
-            subtract $PORT.ORG_SELLING[$CURRENT_SHIP] $JETHOLDSORG
-          end
-        else
-          send "0*"
-        end
-      elseif ($PORT.ORG_SELLING[$CURRENT_SHIP] > 0)
-        setvar $switchboard~message "This port is selling little org, I will upgrade a small amount.*"
-        gosub :switchboard~switchboard
-        add $PORT.ORG_SELLING[$CURRENT_SHIP] 500
-        setvar $DOORGUPGRADE 1
-        send "0*"
-      else
-        setvar $switchboard~message "This port is selling 0 org, I will upgrade a small amount.*"
-        gosub :switchboard~switchboard
-        add $PORT.ORG_SELLING[$CURRENT_SHIP] 500
-        setvar $DOORGUPGRADE 1
-      end
-    end
-    if ($DOOREUPGRADE = 1)
-      setvar $DOOREUPGRADE 0
-      send "o 1 10 *  1 10 *  1 10 *  1 10 *  1 10 * q"
-    end
-    if ($DOORGUPGRADE = 1)
-      setvar $DOORGUPGRADE 0
-      send "o 2 5 *  2 5 *  2 5 *  2 5 *  2 5 *  2 5 *  2 5 *  2 5 *  2 5 *  2 5 * q"
-    end
-    send "JY"
-    setvar $EMP[$CURRENT_SHIP] $HOLDS[$CURRENT_SHIP]
-    setvar $ORE[$CURRENT_SHIP] 0
-    setvar $ORG[$CURRENT_SHIP] 0
-    setvar $EQU[$CURRENT_SHIP] 0
-    setvar $COL[$CURRENT_SHIP] 0
-  else
+	:sellexperience
+	killalltriggers
+	getword currentline $exp_bonus 7
+	add $exp $exp_bonus
+	goto :sellofferloop
 
-    if (($PORT[$CURRENT_SHIP] = 3) or ($PORT[$CURRENT_SHIP] = 4))
-      if ($PORT.ORE_SELLING[$CURRENT_SHIP] > 0)
-        send "0*"
-      else
-        setvar $switchboard~message "This port is selling 0 ore, I will upgrade a small amount.*"
-        gosub :switchboard~switchboard
-        setvar $DOOREUPGRADE 1
-        add $PORT.ORE_SELLING[$CURRENT_SHIP] 10
-      end
-    end
-    if (($PORT[$CURRENT_SHIP] = 2) or ($PORT[$CURRENT_SHIP] = 4))
-      if ($PORT.ORG_SELLING[$CURRENT_SHIP] > 0)
-        send "0*"
-      else
-        setvar $switchboard~message "This port is selling 0 org, I will upgrade a small amount.*"
-        gosub :switchboard~switchboard
-        setvar $DOORGUPGRADE 1
-        add $PORT.ORG_SELLING[$CURRENT_SHIP] 10
-      end
-    end
-    if ($DOOREUPGRADE = 1)
-      setvar $DOOREUPGRADE 0
-      send "o 1 1 * q"
-    end
-    if ($DOORGUPGRADE = 1)
-      setvar $DOORGUPGRADE 0
-      send "o 2 1 * q"
-    end
-    send "JY"
-    setvar $EMP[$CURRENT_SHIP] $HOLDS[$CURRENT_SHIP]
-    setvar $ORE[$CURRENT_SHIP] 0
-    setvar $ORG[$CURRENT_SHIP] 0
-    setvar $EQU[$CURRENT_SHIP] 0
-    setvar $COL[$CURRENT_SHIP] 0
-  end
-  return
+	:sellempty
+	killalltriggers
+	getword currentline $player~credits 3
+	striptext $player~credits ","
+	setvar $oldemp[$current_ship] $emp[$current_ship]
+	getword currentline $emp[$current_ship] 6
+	if ($oldemp[$current_ship] = $emp[$current_ship])
+		goto :sellhagglefailed
+	else
+		goto :sellhagglesucceeded
+	end
+
+	:sellhagglefailed
+	if (($port[$current_ship] = 2) or ($port[$current_ship] = 3))
+		send "0*"
+	elseif ($port[$current_ship] = 4)
+		send "0*0*"
+	end
+
+	add $sell_failures[$current_ship] 1
+	subtract $port.multiple[$current_ship] 1
+	setvar $port.maxmultiple[$current_ship] $port.multiple[$current_ship]
+
+	if ($sell_failures[$current_ship] > 5)
+		setvar $switchboard~message "I'm having problems selling my equipment to the port. Script Halting*"
+		gosub :switchboard~switchboard
+		gosub :endcnsettings
+		gosub :clearadjacent
+		halt
+	end
+	goto :sell
+
+	:sellhagglesucceeded
+	if ($port.maxmultiple[$current_ship] = 0)
+		add $port.multiple[$current_ship] 2
+	end
+
+	:aftersellsuccess
+	if ($jet = "y")
+		setvar $dooreupgrade 0
+		setvar $doorgupgrade 0
+
+		if (($port[$current_ship] = 3) or ($port[$current_ship] = 4))
+			if ($port.ore_selling[$current_ship] > $jetholdsore)
+				if ($emp[$current_ship] >= $jetholdsore)
+
+					send $jetholdsore
+					gosub :buyhaggle
+					if ($buyhaggle = 1)
+						subtract $port.ore_selling[$current_ship] $jetholdsore
+					end
+				else
+					send "0*"
+				end
+			elseif ($port.ore_selling[$current_ship] > 0)
+				setvar $switchboard~message "This port is selling little ore, I will upgrade a small amount.*"
+				gosub :switchboard~switchboard
+				add $port.ore_selling[$current_ship] 500
+				setvar $dooreupgrade 1
+				send "0*"
+			else
+				setvar $switchboard~message "This port is selling 0 ore, I will upgrade a small amount.*"
+				gosub :switchboard~switchboard
+				add $port.ore_selling[$current_ship] 500
+				setvar $dooreupgrade 1
+			end
+		end
+
+		if (($port[$current_ship] = 2) or ($port[$current_ship] = 4))
+			if ($port.org_selling[$current_ship] > $jetholdsorg)
+				if ($emp[$current_ship] >= $jetholdsorg)
+					send $jetholdsorg
+					gosub :buyhaggle
+					if ($buyhaggle = 1)
+						subtract $port.org_selling[$current_ship] $jetholdsorg
+					end
+				else
+					send "0*"
+				end
+			elseif ($port.org_selling[$current_ship] > 0)
+				setvar $switchboard~message "This port is selling little org, I will upgrade a small amount.*"
+				gosub :switchboard~switchboard
+				add $port.org_selling[$current_ship] 500
+				setvar $doorgupgrade 1
+				send "0*"
+			else
+				setvar $switchboard~message "This port is selling 0 org, I will upgrade a small amount.*"
+				gosub :switchboard~switchboard
+				add $port.org_selling[$current_ship] 500
+				setvar $doorgupgrade 1
+			end
+		end
+		if ($dooreupgrade = 1)
+			setvar $dooreupgrade 0
+			send "o 1 10 *  1 10 *  1 10 *  1 10 *  1 10 * q"
+		end
+		if ($doorgupgrade = 1)
+			setvar $doorgupgrade 0
+			send "o 2 5 *  2 5 *  2 5 *  2 5 *  2 5 *  2 5 *  2 5 *  2 5 *  2 5 *  2 5 * q"
+		end
+		send "JY"
+		setvar $emp[$current_ship] $holds[$current_ship]
+		setvar $ore[$current_ship] 0
+		setvar $org[$current_ship] 0
+		setvar $equ[$current_ship] 0
+		setvar $col[$current_ship] 0
+	else
+
+		if (($port[$current_ship] = 3) or ($port[$current_ship] = 4))
+			if ($port.ore_selling[$current_ship] > 0)
+				send "0*"
+			else
+				setvar $switchboard~message "This port is selling 0 ore, I will upgrade a small amount.*"
+				gosub :switchboard~switchboard
+				setvar $dooreupgrade 1
+				add $port.ore_selling[$current_ship] 10
+			end
+		end
+		if (($port[$current_ship] = 2) or ($port[$current_ship] = 4))
+			if ($port.org_selling[$current_ship] > 0)
+				send "0*"
+			else
+				setvar $switchboard~message "This port is selling 0 org, I will upgrade a small amount.*"
+				gosub :switchboard~switchboard
+				setvar $doorgupgrade 1
+				add $port.org_selling[$current_ship] 10
+			end
+		end
+		if ($dooreupgrade = 1)
+			setvar $dooreupgrade 0
+			send "o 1 1 * q"
+		end
+		if ($doorgupgrade = 1)
+			setvar $doorgupgrade 0
+			send "o 2 1 * q"
+		end
+		send "JY"
+		setvar $emp[$current_ship] $holds[$current_ship]
+		setvar $ore[$current_ship] 0
+		setvar $org[$current_ship] 0
+		setvar $equ[$current_ship] 0
+		setvar $col[$current_ship] 0
+	end
+	return
 else
-  setvar $switchboard~message "There is no equ to sell, something is wrong*"
-  gosub :switchboard~switchboard
-  gosub :ENDCNSETTINGS
-  gosub :CLEARADJACENT
-  halt
+	setvar $switchboard~message "There is no equ to sell, something is wrong*"
+	gosub :switchboard~switchboard
+	gosub :endcnsettings
+	gosub :clearadjacent
+	halt
 end
 
-:NATIVEPORTTRADE
-setVar $nativePortActive 0
+:nativeporttrade
+setvar $nativeportactive 0
 send "PT"
-:NATIVEPORTTRADEWAIT
-setTextLineTrigger NATIVEPORTSTART1 :NATIVEPORTTRADEPROGRESS "<Port>"
-setTextLineTrigger NATIVEPORTSTART2 :NATIVEPORTTRADEPROGRESS "Docking..."
-setTextTrigger NATIVEPORTSTART3 :NATIVEPORTTRADEPROGRESS "Your offer ["
-setTextTrigger NATIVEPORTSTART4 :NATIVEPORTTRADEPROGRESS "Our final offer"
-setTextTrigger NATIVEPORTSTART5 :NATIVEPORTTRADEPROGRESS "Agreed,"
-setTextTrigger NATIVEPORTQTY :NATIVEPORTTRADEQTY "How many holds of "
-if ($nativePortActive = 1)
-  setTextTrigger NATIVEPORTDONE1 :NATIVEPORTTRADEDONE "Command [TL="
-  setTextTrigger NATIVEPORTDONE2 :NATIVEPORTTRADEDONE "Citadel command"
+
+:nativeporttradewait
+settextlinetrigger nativeportstart1 :nativeporttradeprogress "<Port>"
+settextlinetrigger nativeportstart2 :nativeporttradeprogress "Docking..."
+settexttrigger nativeportstart3 :nativeporttradeprogress "Your offer ["
+settexttrigger nativeportstart4 :nativeporttradeprogress "Our final offer"
+settexttrigger nativeportstart5 :nativeporttradeprogress "Agreed,"
+settexttrigger nativeportqty :nativeporttradeqty "How many holds of "
+if ($nativeportactive = 1)
+	settexttrigger nativeportdone1 :nativeporttradedone "Command [TL="
+	settexttrigger nativeportdone2 :nativeporttradedone "Citadel command"
 end
 pause
 
-:NATIVEPORTTRADEPROGRESS
+:nativeporttradeprogress
 killalltriggers
-setVar $nativePortActive 1
-goto :NATIVEPORTTRADEWAIT
+setvar $nativeportactive 1
+goto :nativeporttradewait
 
-:NATIVEPORTTRADEQTY
+:nativeporttradeqty
 killalltriggers
-setVar $nativePortActive 1
-setVar $nativeLine CURRENTLINE
-gosub :HANDLENATIVEPORTQTY
-goto :NATIVEPORTTRADEWAIT
+setvar $nativeportactive 1
+setvar $nativeline currentline
+gosub :handlenativeportqty
+goto :nativeporttradewait
 
-:NATIVEPORTTRADEDONE
+:nativeporttradedone
 killalltriggers
 return
 
-:HANDLENATIVEPORTQTY
-setVar $nativeTradeProduct "None"
-setVar $nativeIsBuy 0
-setVar $nativeIsSell 0
+:handlenativeportqty
+setvar $nativetradeproduct "None"
+setvar $nativeisbuy 0
+setvar $nativeissell 0
 
-getWordPos $nativeLine $nativeX " do you want to buy "
-if ($nativeX > 0)
-  setVar $nativeIsBuy 1
+getwordpos $nativeline $nativex " do you want to buy "
+if ($nativex > 0)
+	setvar $nativeisbuy 1
 else
-  setVar $nativeIsSell 1
+	setvar $nativeissell 1
 end
 
-getWordPos $nativeLine $nativeX "Fuel"
-if ($nativeX > 0)
-  setVar $nativeTradeProduct "Fuel"
+getwordpos $nativeline $nativex "Fuel"
+if ($nativex > 0)
+	setvar $nativetradeproduct "Fuel"
 else
-  getWordPos $nativeLine $nativeX "Organics"
-  if ($nativeX > 0)
-    setVar $nativeTradeProduct "Organics"
-  else
-    getWordPos $nativeLine $nativeX "Equipment"
-    if ($nativeX > 0)
-      setVar $nativeTradeProduct "Equipment"
-    end
-  end
+	getwordpos $nativeline $nativex "Organics"
+	if ($nativex > 0)
+		setvar $nativetradeproduct "Organics"
+	else
+		getwordpos $nativeline $nativex "Equipment"
+		if ($nativex > 0)
+			setvar $nativetradeproduct "Equipment"
+		end
+	end
 end
 
-if ($nativeIsSell = 1)
-  if (($nativeTradeProduct = "Fuel") and ($nativeSellOre > 0))
-    send "*"
-    setVar $nativeSellOre 0
-  elseif (($nativeTradeProduct = "Organics") and ($nativeSellOrg > 0))
-    send "*"
-    setVar $nativeSellOrg 0
-  elseif (($nativeTradeProduct = "Equipment") and ($nativeSellEqu > 0))
-    send "*"
-    setVar $nativeSellEqu 0
-  else
-    send "0*"
-  end
-  return
+if ($nativeissell = 1)
+	if (($nativetradeproduct = "Fuel") and ($nativesellore > 0))
+		send "*"
+		setvar $nativesellore 0
+	elseif (($nativetradeproduct = "Organics") and ($nativesellorg > 0))
+		send "*"
+		setvar $nativesellorg 0
+	elseif (($nativetradeproduct = "Equipment") and ($nativesellequ > 0))
+		send "*"
+		setvar $nativesellequ 0
+	else
+		send "0*"
+	end
+	return
 end
 
-if (($nativeTradeProduct = "Fuel") and ($nativeBuyOre > 0))
-  send $nativeBuyOre & "*"
-  setVar $nativeBuyOre 0
-elseif (($nativeTradeProduct = "Organics") and ($nativeBuyOrg > 0))
-  send $nativeBuyOrg & "*"
-  setVar $nativeBuyOrg 0
-elseif (($nativeTradeProduct = "Equipment") and ($nativeBuyEqu > 0))
-  send $nativeBuyEqu & "*"
-  setVar $nativeBuyEqu 0
+if (($nativetradeproduct = "Fuel") and ($nativebuyore > 0))
+	send $nativebuyore & "*"
+	setvar $nativebuyore 0
+elseif (($nativetradeproduct = "Organics") and ($nativebuyorg > 0))
+	send $nativebuyorg & "*"
+	setvar $nativebuyorg 0
+elseif (($nativetradeproduct = "Equipment") and ($nativebuyequ > 0))
+	send $nativebuyequ & "*"
+	setvar $nativebuyequ 0
 else
-  send "0*"
+	send "0*"
 end
 return
 
-:BUYHAGGLE
+:buyhaggle
 send "*"
-settextlinetrigger BUYFIRSTOFFER :BUYFIRSTOFFER "We'll sell them for"
+settextlinetrigger buyfirstoffer :buyfirstoffer "We'll sell them for"
 pause
 pause
-:BUYFIRSTOFFER
+
+:buyfirstoffer
 killalltriggers
-getword CURRENTLINE $OFFER 5
-striptext $OFFER ","
-setvar $COUNTER $OFFER
-multiply $COUNTER 92
-divide $COUNTER 100
-send $COUNTER&"*"
-:BUYOFFERLOOP
-settextlinetrigger BUYPRICE :BUYPRICE "We'll sell them for"
-settextlinetrigger BUYFINALOFFER :BUYFINALOFFER "Our final offer"
-settextlinetrigger BUYNOTINTERESTED :BUYNOTINTERESTED "We're not interested."
-settextlinetrigger BUYEXPERIENCE :BUYEXPERIENCE "experience point(s)"
-settextlinetrigger BUYEMPTY :BUYEMPTY "empty cargo holds"
-settextlinetrigger BUYSCREWUP1 :BUYSCREWUP "Get real ion-brain, make me a real offer."
-settextlinetrigger BUYSCREWUP2 :BUYSCREWUP "This is the big leagues Jr.  Make a real offer."
-settextlinetrigger BUYSCREWUP3 :BUYSCREWUP "My patience grows short with you."
-settextlinetrigger BUYSCREWUP4 :BUYSCREWUP "I have much better things to do than waste my time.  Try again."
-settextlinetrigger BUYSCREWUP5 :BUYSCREWUP "HA! HA, ha hahahhah hehehe hhhohhohohohh!  You choke me up!"
-settextlinetrigger BUYSCREWUP6 :BUYSCREWUP "Quit playing around, you're wasting my time!"
-settextlinetrigger BUYSCREWUP7 :BUYSCREWUP "Make a real offer or get the h*ll out of here!"
-settextlinetrigger BUYSCREWUP8 :BUYSCREWUP "WHAT?!@!? you must be crazy!"
-settextlinetrigger BUYSCREWUP9 :BUYSCREWUP "So, you think I'm as stupid as you look? Make a real offer."
-settextlinetrigger BUYSCREWUP10 :BUYSCREWUP "What do you take me for, a fool?  Make a real offer!"
+getword currentline $offer 5
+striptext $offer ","
+setvar $counter $offer
+multiply $counter 92
+divide $counter 100
+send $counter&"*"
+
+:buyofferloop
+settextlinetrigger buyprice :buyprice "We'll sell them for"
+settextlinetrigger buyfinaloffer :buyfinaloffer "Our final offer"
+settextlinetrigger buynotinterested :buynotinterested "We're not interested."
+settextlinetrigger buyexperience :buyexperience "experience point(s)"
+settextlinetrigger buyempty :buyempty "empty cargo holds"
+settextlinetrigger buyscrewup1 :buyscrewup "Get real ion-brain, make me a real offer."
+settextlinetrigger buyscrewup2 :buyscrewup "This is the big leagues Jr.  Make a real offer."
+settextlinetrigger buyscrewup3 :buyscrewup "My patience grows short with you."
+settextlinetrigger buyscrewup4 :buyscrewup "I have much better things to do than waste my time.  Try again."
+settextlinetrigger buyscrewup5 :buyscrewup "HA! HA, ha hahahhah hehehe hhhohhohohohh!  You choke me up!"
+settextlinetrigger buyscrewup6 :buyscrewup "Quit playing around, you're wasting my time!"
+settextlinetrigger buyscrewup7 :buyscrewup "Make a real offer or get the h*ll out of here!"
+settextlinetrigger buyscrewup8 :buyscrewup "WHAT?!@!? you must be crazy!"
+settextlinetrigger buyscrewup9 :buyscrewup "So, you think I'm as stupid as you look? Make a real offer."
+settextlinetrigger buyscrewup10 :buyscrewup "What do you take me for, a fool?  Make a real offer!"
 pause
 pause
-:BUYSCREWUP
+
+:buyscrewup
 killalltriggers
 
-multiply $COUNTER 102
-divide $COUNTER 100
-send $COUNTER&"*"
-goto :BUYOFFERLOOP
-:BUYPRICE
-killalltriggers
-setvar $OLD_OFFER $OFFER
-setvar $OLD_COUNTER $COUNTER
-getword CURRENTLINE $OFFER 5
-striptext $OFFER ","
-setvar $OFFER_PCT $OFFER
-multiply $OFFER_PCT 1000
-divide $OFFER_PCT $OLD_OFFER
-if ($OFFER_PCT > 990)
-  setvar $OFFER_PCT 990
-end
-multiply $COUNTER 1000
-divide $COUNTER $OFFER_PCT
-if ($COUNTER <= $OLD_COUNTER)
-  add $COUNTER 1
-end
-send $COUNTER&"*"
-goto :BUYOFFERLOOP
-:BUYFINALOFFER
-killalltriggers
-setvar $OLD_OFFER $OFFER
-setvar $OLD_COUNTER $COUNTER
-getword CURRENTLINE $OFFER 5
-striptext $OFFER ","
-setvar $OFFER_CHANGE $OFFER
-subtract $OFFER_CHANGE $OLD_OFFER
-multiply $OFFER_CHANGE 25
-divide $OFFER_CHANGE 10
-subtract $COUNTER $OFFER_CHANGE
-if ($COUNTER = $OLD_COUNTER)
-  add $COUNTER 1
-end
-add $COUNTER 1
-send $COUNTER&"*"
-goto :BUYOFFERLOOP
-:BUYNOTINTERESTED
-killalltriggers
-goto :BUYHAGGLEFAILED
-:BUYEXPERIENCE
-killalltriggers
-getword CURRENTLINE $EXP_BONUS 7
-add $EXP $EXP_BONUS
-add $JETBONUS $EXP_BONUS
+multiply $counter 102
+divide $counter 100
+send $counter&"*"
+goto :buyofferloop
 
-goto :BUYOFFERLOOP
-:BUYEMPTY
+:buyprice
 killalltriggers
-getword CURRENTLINE $player~credits 3
+setvar $old_offer $offer
+setvar $old_counter $counter
+getword currentline $offer 5
+striptext $offer ","
+setvar $offer_pct $offer
+multiply $offer_pct 1000
+divide $offer_pct $old_offer
+if ($offer_pct > 990)
+	setvar $offer_pct 990
+end
+multiply $counter 1000
+divide $counter $offer_pct
+if ($counter <= $old_counter)
+	add $counter 1
+end
+send $counter&"*"
+goto :buyofferloop
+
+:buyfinaloffer
+killalltriggers
+setvar $old_offer $offer
+setvar $old_counter $counter
+getword currentline $offer 5
+striptext $offer ","
+setvar $offer_change $offer
+subtract $offer_change $old_offer
+multiply $offer_change 25
+divide $offer_change 10
+subtract $counter $offer_change
+if ($counter = $old_counter)
+	add $counter 1
+end
+add $counter 1
+send $counter&"*"
+goto :buyofferloop
+
+:buynotinterested
+killalltriggers
+goto :buyhagglefailed
+
+:buyexperience
+killalltriggers
+getword currentline $exp_bonus 7
+add $exp $exp_bonus
+add $jetbonus $exp_bonus
+
+goto :buyofferloop
+
+:buyempty
+killalltriggers
+getword currentline $player~credits 3
 striptext $player~credits ","
-setvar $OLDEMP[$CURRENT_SHIP] $EMP[$CURRENT_SHIP]
-getword CURRENTLINE $EMP[$CURRENT_SHIP] 6
-if ($OLDEMP[$CURRENT_SHIP] = $EMP[$CURRENT_SHIP])
-  goto :BUYHAGGLEFAILED
+setvar $oldemp[$current_ship] $emp[$current_ship]
+getword currentline $emp[$current_ship] 6
+if ($oldemp[$current_ship] = $emp[$current_ship])
+	goto :buyhagglefailed
 else
-  goto :BUYHAGGLESUCCEEDED
+	goto :buyhagglesucceeded
 end
-:BUYHAGGLEFAILED
 
-setvar $BUYHAGGLE 0
+:buyhagglefailed
+setvar $buyhaggle 0
 return
-:BUYHAGGLESUCCEEDED
-add $JETCOST $COUNTER
-setvar $BUYHAGGLE 1
+
+:buyhagglesucceeded
+add $jetcost $counter
+setvar $buyhaggle 1
 return
-:STEAL
 
-
-
-
-
-setvar $STEAL_HOLDS $EXP
-divide $STEAL_HOLDS $STEAL_DIVISOR
-if ($STEAL_HOLDS < 10)
-  setvar $switchboard~message "You need more experience to SST!!!*"
-  gosub :switchboard~switchboard
-  gosub :ENDCNSETTINGS
-  gosub :CLEARADJACENT
-  halt
-elseif ($HOLDS[$CURRENT_SHIP] < 10)
-  setvar $switchboard~message "You need more cargo holds to SST!!!*"
-  gosub :switchboard~switchboard
-  gosub :ENDCNSETTINGS
-  gosub :CLEARADJACENT
-  halt
+:steal
+setvar $steal_holds $exp
+divide $steal_holds $steal_divisor
+if ($steal_holds < 10)
+	setvar $switchboard~message "You need more experience to SST!!!*"
+	gosub :switchboard~switchboard
+	gosub :endcnsettings
+	gosub :clearadjacent
+	halt
+elseif ($holds[$current_ship] < 10)
+	setvar $switchboard~message "You need more cargo holds to SST!!!*"
+	gosub :switchboard~switchboard
+	gosub :endcnsettings
+	gosub :clearadjacent
+	halt
 end
-if (($STEAL_HOLDS > 300) and ($JET = "y"))
-  setvar $switchboard~message "We are at " $STEAL_HOLDS " holds of experience, stopping JET*"
-  gosub :switchboard~switchboard
-  setvar $JET ""
+if (($steal_holds > 300) and ($jet = "y"))
+	setvar $switchboard~message "We are at " $steal_holds " holds of experience, stopping JET*"
+	gosub :switchboard~switchboard
+	setvar $jet ""
 end
-if ($STEAL_HOLDS > $EMP[$CURRENT_SHIP])
-  setvar $STEAL_HOLDS $EMP[$CURRENT_SHIP]
+if ($steal_holds > $emp[$current_ship])
+	setvar $steal_holds $emp[$current_ship]
 end
 
-setvar $DESIRED_HOLDS_ON_PORT $STEAL_HOLDS
-add $DESIRED_HOLDS_ON_PORT 2
+setvar $desired_holds_on_port $steal_holds
+add $desired_holds_on_port 2
 
 subtract $player~turns 1
 send "PR*SZ3"
 waitfor "furtively about"
-settextlinetrigger EQUONPORT :EQUONPORT "Equipment  Buying"
-settextlinetrigger FAKE :FAKE "Suddenly you're Busted!"
+settextlinetrigger equonport :equonport "Equipment  Buying"
+settextlinetrigger fake :fake "Suddenly you're Busted!"
 pause
 pause
-:EQUONPORT
+
+:equonport
 killalltriggers
-getword CURRENTLINE $HOLDS_ON_PORT 4
-if ($HOLDS_ON_PORT < $DESIRED_HOLDS_ON_PORT)
-  setvar $UPGRADE_AMOUNT $DESIRED_HOLDS_ON_PORT
-  subtract $UPGRADE_AMOUNT $HOLDS_ON_PORT
-  divide $UPGRADE_AMOUNT 10
-  add $UPGRADE_AMOUNT 1
+getword currentline $holds_on_port 4
+if ($holds_on_port < $desired_holds_on_port)
+	setvar $upgrade_amount $desired_holds_on_port
+	subtract $upgrade_amount $holds_on_port
+	divide $upgrade_amount 10
+	add $upgrade_amount 1
 else
-  setvar $UPGRADE_AMOUNT 0
+	setvar $upgrade_amount 0
 end
-if ($HOLDS_ON_PORT < 10)
-  setvar $STEAL_HOLDS 0
-  goto :DOTHEDEED
-elseif ($HOLDS_ON_PORT < $STEAL_HOLDS)
-  setvar $TEMP $STEAL_HOLDS
-  multiply $TEMP 10
-  divide $TEMP $HOLDS_ON_PORT
-  if ($TEMP <= 20)
-    setvar $STEAL_HOLDS $HOLDS_ON_PORT
-  else
-    setvar $STEAL_HOLDS 0
-  end
+if ($holds_on_port < 10)
+	setvar $steal_holds 0
+	goto :dothedeed
+elseif ($holds_on_port < $steal_holds)
+	setvar $temp $steal_holds
+	multiply $temp 10
+	divide $temp $holds_on_port
+	if ($temp <= 20)
+		setvar $steal_holds $holds_on_port
+	else
+		setvar $steal_holds 0
+	end
 end
-:DOTHEDEED
-if ($DEBUGDELAY <> 0)
-  setdelaytrigger TESTING :TESTING $DEBUGDELAY
-  pause
-  pause
+
+:dothedeed
+if ($debugdelay <> 0)
+	setdelaytrigger testing :testing $debugdelay
+	pause
+	pause
 end
-:TESTING
-send $STEAL_HOLDS&"*"
-settextlinetrigger BUST :BUST "For getting caught"
-settextlinetrigger NOSTEAL :NOSTEAL "You leave the port"
-settextlinetrigger GOOD :GOOD "and you receive"
+
+:testing
+send $steal_holds&"*"
+settextlinetrigger bust :bust "For getting caught"
+settextlinetrigger nosteal :nosteal "You leave the port"
+settextlinetrigger good :good "and you receive"
 pause
 pause
-:BUST
+
+:bust
 killalltriggers
 
+setsectorparameter 1 "LRA" currentsector
+setvar $cklra currentsector
+savevar $cklra
+setsectorparameter currentsector "BUSTED" true
+send "'<"&$bot~subspace&">[Busted:"&currentsector "]<"&$bot~subspace&">*"
+gosub :getinfo
+goto :finish
 
-setsectorparameter 1 "LRA" CURRENTSECTOR
-setvar $CKLRA CURRENTSECTOR
-savevar $CKLRA
-setsectorparameter CURRENTSECTOR "BUSTED" TRUE
-send "'<"&$bot~subspace&">[Busted:"&CURRENTSECTOR "]<"&$bot~subspace&">*"
-gosub :GETINFO
-goto :FINISH
-:FAKE
+:fake
 killalltriggers
 gosub :player~quikstats
-setsectorparameter $player~current_sector "FAKEBUST" TRUE
+setsectorparameter $player~current_sector "FAKEBUST" true
 send "  "
 send "N  N  *  *"
-setvar $switchboard~message "FAKE Busted in Ship "&$CURRENT_SHIP&", need a super furb*"
+setvar $switchboard~message "FAKE Busted in Ship "&$current_ship&", need a super furb*"
 gosub :switchboard~switchboard
-gosub :ENDCNSETTINGS
-gosub :CLEARADJACENT
+gosub :endcnsettings
+gosub :clearadjacent
 halt
-:GOOD
+
+:good
 killalltriggers
 
-getword CURRENTLINE $EXP_BONUS 4
-add $EXP $EXP_BONUS
-add $EQU[$CURRENT_SHIP] $STEAL_HOLDS
-subtract $EMP[$CURRENT_SHIP] $STEAL_HOLDS
-if ($UPGRADE_AMOUNT <> 0)
-  send "o  3"&$UPGRADE_AMOUNT&"**"
+getword currentline $exp_bonus 4
+add $exp $exp_bonus
+add $equ[$current_ship] $steal_holds
+subtract $emp[$current_ship] $steal_holds
+if ($upgrade_amount <> 0)
+	send "o  3"&$upgrade_amount&"**"
 end
-setsectorparameter 1 "LRA" CURRENTSECTOR
-setvar $CKLRA CURRENTSECTOR
-savevar $CKLRA
+setsectorparameter 1 "LRA" currentsector
+setvar $cklra currentsector
+savevar $cklra
 
 return
-:NOSTEAL
+
+:nosteal
 killalltriggers
-if ($UPGRADE_AMOUNT <> 0)
-  send "o  3"&$UPGRADE_AMOUNT&"**"
+if ($upgrade_amount <> 0)
+	send "o  3"&$upgrade_amount&"**"
 end
-goto :STEAL
-:XPORT
+goto :steal
 
-
-
-if ($SHIP_1 = $CURRENT_SHIP)
-  setvar $CURRENT_SHIP $SHIP_2
+:xport
+if ($ship_1 = $current_ship)
+	setvar $current_ship $ship_2
 else
-  setvar $CURRENT_SHIP $SHIP_1
+	setvar $current_ship $ship_1
 end
 subtract $player~turns 1
-if ($SKIP_SHIPS = "YES")
-  setvar $XPORTSTRING "X  "&$CURRENT_SHIP&"*  Q"
-  send $XPORTSTRING
-  return
+if ($skip_ships = "YES")
+	setvar $xportstring "X  "&$current_ship&"*  Q"
+	send $xportstring
+	return
 else
-  setvar $XPORTSTRING "X  "&$CURRENT_SHIP&"*Q"
-  send $XPORTSTRING
-  settextlinetrigger NOXPORTSHIP :NOXPORTSHIP "That is not an available ship"
-  settextlinetrigger NOXPORTRANGE :NOXPORTRANGE "only has a transport range"
-  settextlinetrigger NOXPORTPASSWORD :NOXPORTPASSWORD "Enter the password for"
-  settextlinetrigger XPORTSUCCESS :XPORTSUCCESS "Security code accepted"
-  pause
-  pause
-  :NOXPORTSHIP
-  killalltriggers
-  setvar $switchboard~message "That is not an available ship, Script Halting.*"
-  gosub :switchboard~switchboard
-  gosub :ENDCNSETTINGS
-  gosub :CLEARADJACENT
-  halt
-  :NOXPORTRANGE
-  killalltriggers
-  setvar $switchboard~message "Not enough transport range, Script Halting.*"
-  gosub :switchboard~switchboard
-  gosub :ENDCNSETTINGS
-  gosub :CLEARADJACENT
-  halt
-  :NOXPORTPASSWORD
-  killalltriggers
-  setvar $switchboard~message "Transport ship requires a password, Script Halting.*"
-  gosub :switchboard~switchboard
-  gosub :ENDCNSETTINGS
-  gosub :CLEARADJACENT
-  halt
-  :XPORTSUCCESS
-  killalltriggers
-  return
+	setvar $xportstring "X  "&$current_ship&"*Q"
+	send $xportstring
+	settextlinetrigger noxportship :noxportship "That is not an available ship"
+	settextlinetrigger noxportrange :noxportrange "only has a transport range"
+	settextlinetrigger noxportpassword :noxportpassword "Enter the password for"
+	settextlinetrigger xportsuccess :xportsuccess "Security code accepted"
+	pause
+	pause
+
+	:noxportship
+	killalltriggers
+	setvar $switchboard~message "That is not an available ship, Script Halting.*"
+	gosub :switchboard~switchboard
+	gosub :endcnsettings
+	gosub :clearadjacent
+	halt
+
+	:noxportrange
+	killalltriggers
+	setvar $switchboard~message "Not enough transport range, Script Halting.*"
+	gosub :switchboard~switchboard
+	gosub :endcnsettings
+	gosub :clearadjacent
+	halt
+
+	:noxportpassword
+	killalltriggers
+	setvar $switchboard~message "Transport ship requires a password, Script Halting.*"
+	gosub :switchboard~switchboard
+	gosub :endcnsettings
+	gosub :clearadjacent
+	halt
+
+	:xportsuccess
+	killalltriggers
+	return
 end
-:STARTCNSETTINGS
 
-
+:startcnsettings
 send "CN"
 
-settextlinetrigger ANSI0 :ANSI0 "(1) ANSI graphics            - Off"
-settextlinetrigger ANSI1 :ANSI1 "(1) ANSI graphics            - On"
+settextlinetrigger ansi0 :ansi0 "(1) ANSI graphics            - Off"
+settextlinetrigger ansi1 :ansi1 "(1) ANSI graphics            - On"
 pause
-:ANSI0
 
+:ansi0
 killalltriggers
-setvar $CN1 0
-goto :CN1DONE
-:ANSI1
-killalltriggers
-setvar $CN1 1
-:CN1DONE
+setvar $cn1 0
+goto :cn1done
 
-settextlinetrigger ANIM0 :ANIM0 "(2) Animation display        - Off"
-settextlinetrigger ANIM1 :ANIM1 "(2) Animation display        - On"
+:ansi1
+killalltriggers
+setvar $cn1 1
+
+:cn1done
+settextlinetrigger anim0 :anim0 "(2) Animation display        - Off"
+settextlinetrigger anim1 :anim1 "(2) Animation display        - On"
 pause
-:ANIM0
 
+:anim0
 killalltriggers
-setvar $CN2 0
-goto :CN2DONE
-:ANIM1
-killalltriggers
-setvar $CN2 1
-:CN2DONE
+setvar $cn2 0
+goto :cn2done
 
-settextlinetrigger PAGE0 :PAGE0 "(3) Page on messages         - Off"
-settextlinetrigger PAGE1 :PAGE1 "(3) Page on messages         - On"
+:anim1
+killalltriggers
+setvar $cn2 1
+
+:cn2done
+settextlinetrigger page0 :page0 "(3) Page on messages         - Off"
+settextlinetrigger page1 :page1 "(3) Page on messages         - On"
 pause
-:PAGE0
 
+:page0
 killalltriggers
-setvar $CN3 0
-goto :CN3DONE
-:PAGE1
-killalltriggers
-setvar $CN3 1
-:CN3DONE
+setvar $cn3 0
+goto :cn3done
 
-settextlinetrigger SILENCE0 :SILENCE0 "(7) Silence ALL messages     - No"
-settextlinetrigger SILENCE1 :SILENCE1 "(7) Silence ALL messages     - Yes"
+:page1
+killalltriggers
+setvar $cn3 1
+
+:cn3done
+settextlinetrigger silence0 :silence0 "(7) Silence ALL messages     - No"
+settextlinetrigger silence1 :silence1 "(7) Silence ALL messages     - Yes"
 pause
-:SILENCE0
 
+:silence0
 killalltriggers
-setvar $CN7 0
-goto :CN7DONE
-:SILENCE1
-killalltriggers
-setvar $CN7 1
-:CN7DONE
+setvar $cn7 0
+goto :cn7done
 
-settextlinetrigger ABORTDISPLAY0 :ABORTDISPLAY0 "(9) Abort display on keys    - SPACE"
-settextlinetrigger ABORTDISPLAY1 :ABORTDISPLAY1 "(9) Abort display on keys    - ALL KEYS"
+:silence1
+killalltriggers
+setvar $cn7 1
+
+:cn7done
+settextlinetrigger abortdisplay0 :abortdisplay0 "(9) Abort display on keys    - SPACE"
+settextlinetrigger abortdisplay1 :abortdisplay1 "(9) Abort display on keys    - ALL KEYS"
 pause
-:ABORTDISPLAY0
 
+:abortdisplay0
 killalltriggers
-setvar $CN9 0
-goto :CN9DONE
-:ABORTDISPLAY1
-killalltriggers
-setvar $CN9 1
-:CN9DONE
+setvar $cn9 0
+goto :cn9done
 
-settextlinetrigger MESSAGEDISPLAY0 :MESSAGEDISPLAY0 "(A) Message Display Mode     - Compact"
-settextlinetrigger MESSAGEDISPLAY1 :MESSAGEDISPLAY1 "(A) Message Display Mode     - Long"
+:abortdisplay1
+killalltriggers
+setvar $cn9 1
+
+:cn9done
+settextlinetrigger messagedisplay0 :messagedisplay0 "(A) Message Display Mode     - Compact"
+settextlinetrigger messagedisplay1 :messagedisplay1 "(A) Message Display Mode     - Long"
 pause
-:MESSAGEDISPLAY0
 
+:messagedisplay0
 killalltriggers
-setvar $CNA 0
-goto :CNADONE
-:MESSAGEDISPLAY1
-killalltriggers
-setvar $CNA 1
-:CNADONE
+setvar $cna 0
+goto :cnadone
 
-settextlinetrigger SCREENPAUSES0 :SCREENPAUSES0 "(B) Screen Pauses            - No"
-settextlinetrigger SCREENPAUSES1 :SCREENPAUSES1 "(B) Screen Pauses            - Yes"
+:messagedisplay1
+killalltriggers
+setvar $cna 1
+
+:cnadone
+settextlinetrigger screenpauses0 :screenpauses0 "(B) Screen Pauses            - No"
+settextlinetrigger screenpauses1 :screenpauses1 "(B) Screen Pauses            - Yes"
 pause
-:SCREENPAUSES0
 
+:screenpauses0
 killalltriggers
-setvar $CNB 0
-goto :CNBDONE
-:SCREENPAUSES1
-killalltriggers
-setvar $CNB 1
-:CNBDONE
+setvar $cnb 0
+goto :cnbdone
 
+:screenpauses1
+killalltriggers
+setvar $cnb 1
+
+:cnbdone
 waitfor "Settings command (?=Help)"
-gosub :SENDCNSTRING
+gosub :sendcnstring
 send "?"
 waitfor "Settings command (?=Help)"
 send "QQ"
-settexttrigger SUBSTARTCNCONTINUE1 :SUBSTARTCNCONTINUE "Command [TL="
-settexttrigger SUBSTARTCNCONTINUE2 :SUBSTARTCNCONTINUE "Citadel command (?=help)"
+settexttrigger substartcncontinue1 :substartcncontinue "Command [TL="
+settexttrigger substartcncontinue2 :substartcncontinue "Citadel command (?=help)"
 pause
-:SUBSTARTCNCONTINUE
+
+:substartcncontinue
 killalltriggers
 return
-:ENDCNSETTINGS
 
-
-
-
+:endcnsettings
 send "CN"
 waitfor "Settings command (?=Help)"
-gosub :SENDCNSTRING
+gosub :sendcnstring
 send "?"
 waitfor "Settings command (?=Help)"
 send "QQ"
-settexttrigger SUBENDCNCONTINUE1 :SUBENDCNCONTINUE "Command [TL="
-settexttrigger SUBENDCNCONTINUE2 :SUBENDCNCONTINUE "Citadel command (?=help)"
+settexttrigger subendcncontinue1 :subendcncontinue "Command [TL="
+settexttrigger subendcncontinue2 :subendcncontinue "Citadel command (?=help)"
 pause
-:SUBENDCNCONTINUE
+
+:subendcncontinue
 killalltriggers
 return
-:SENDCNSTRING
 
-
-
-if ($CN1 = 0)
-  send "1  "
+:sendcnstring
+if ($cn1 = 0)
+	send "1  "
 end
-if ($CN2 = 1)
-  send "2  "
+if ($cn2 = 1)
+	send "2  "
 end
-if ($CN3 = 1)
-  send "3  "
+if ($cn3 = 1)
+	send "3  "
 end
-if ($CN7 = 1)
-  send "7  "
+if ($cn7 = 1)
+	send "7  "
 end
-if ($CN9 = 1)
-  send "9  "
+if ($cn9 = 1)
+	send "9  "
 end
-if ($CNA = 1)
-  send "A  "
+if ($cna = 1)
+	send "A  "
 end
-if ($CNB = 1)
-  send "B  "
+if ($cnb = 1)
+	send "B  "
 end
 return
-:VOIDADJACENT
 
-
+:voidadjacent
 send "*"
 gosub :player~quikstats
 
-if ($SEC1VOID = 0)
-  setvar $SEC1VOID $player~current_sector
+if ($sec1void = 0)
+	setvar $sec1void $player~current_sector
 else
-  setvar $SEC2VOID $player~current_sector
+	setvar $sec2void $player~current_sector
 end
-if (SECTOR.WARPS[$player~current_sector][1] = 0)
-  setvar $switchboard~message "This sector has no warps, maybe you need to scan it first*"
-  gosub :switchboard~switchboard
-  gosub :ENDCNSETTINGS
-  gosub :CLEARADJACENT
-  halt
+if (sector.warps[$player~current_sector][1] = 0)
+	setvar $switchboard~message "This sector has no warps, maybe you need to scan it first*"
+	gosub :switchboard~switchboard
+	gosub :endcnsettings
+	gosub :clearadjacent
+	halt
 else
-  setvar $VOIDSECT 0
-  :VOIDS
-  add $VOIDSECT 1
-  if ($VOIDSECT < 7)
-    if (SECTOR.WARPS[$player~current_sector][$VOIDSECT] <> 0)
-      send "CV"&SECTOR.WARPS[$player~current_sector][$VOIDSECT]&"*Q"
-    end
-    goto :VOIDS
-  end
+	setvar $voidsect 0
 
-  setvar $switchboard~message "Avoids set on all adjacent sectors*"
-  gosub :switchboard~switchboard
-  send "/"
-  waitfor " Sect "
-  return
+	:voids
+	add $voidsect 1
+	if ($voidsect < 7)
+		if (sector.warps[$player~current_sector][$voidsect] <> 0)
+			send "CV"&sector.warps[$player~current_sector][$voidsect]&"*Q"
+		end
+		goto :voids
+	end
+
+	setvar $switchboard~message "Avoids set on all adjacent sectors*"
+	gosub :switchboard~switchboard
+	send "/"
+	waitfor " Sect "
+	return
 end
-:CLEARADJACENT
 
+:clearadjacent
+setvar $voidsect 0
 
-
-
-
-setvar $VOIDSECT 0
-:CLEARVOIDS
-if ($SEC1VOID > 0)
-  add $VOIDSECT 1
-  if ($VOIDSECT < 7)
-    if (SECTOR.WARPS[$SEC1VOID][$VOIDSECT] <> 0)
-      send "CV0*YN"&SECTOR.WARPS[$SEC1VOID][$VOIDSECT]&"*Q"
-    end
-    goto :CLEARVOIDS
-  end
+:clearvoids
+if ($sec1void > 0)
+	add $voidsect 1
+	if ($voidsect < 7)
+		if (sector.warps[$sec1void][$voidsect] <> 0)
+			send "CV0*YN"&sector.warps[$sec1void][$voidsect]&"*Q"
+		end
+		goto :clearvoids
+	end
 end
 
 setvar $switchboard~message "Avoids cleared on all adjacent sectors*"
@@ -1431,21 +1436,22 @@ gosub :switchboard~switchboard
 send "/"
 waitfor " Sect "
 
-if ($SEC2VOID > 0)
-  setvar $VOIDSECT 0
-  :CLEARVOIDS2
-  add $VOIDSECT 1
-  if ($VOIDSECT < 7)
-    if (SECTOR.WARPS[$SEC2VOID][$VOIDSECT] <> 0)
-      send "CV0*YN"&SECTOR.WARPS[$SEC2VOID][$VOIDSECT]&"*Q"
-    end
-    goto :CLEARVOIDS2
-  end
+if ($sec2void > 0)
+	setvar $voidsect 0
 
-  setvar $switchboard~message "Avoids cleared on all adjacent sectors*"
-  gosub :switchboard~switchboard
-  send "/"
-  waitfor " Sect "
+	:clearvoids2
+	add $voidsect 1
+	if ($voidsect < 7)
+		if (sector.warps[$sec2void][$voidsect] <> 0)
+			send "CV0*YN"&sector.warps[$sec2void][$voidsect]&"*Q"
+		end
+		goto :clearvoids2
+	end
+
+	setvar $switchboard~message "Avoids cleared on all adjacent sectors*"
+	gosub :switchboard~switchboard
+	send "/"
+	waitfor " Sect "
 end
 
 return

@@ -1,59 +1,57 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-setVar $HELP~HELP[1]  $HELP~TAB&"Pages the bot owner."
-setVar $HELP~HELP[2]  $HELP~TAB&" "
-setVar $HELP~HELP[3]  $HELP~TAB&"page"
-gosub :HELP~HELPFILE
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1]  $help~tab&"Pages the bot owner."
+setvar $help~help[2]  $help~tab&" "
+setvar $help~help[3]  $help~tab&"page"
+gosub :help~helpfile
 
-loadvar $BOT_NAME
-loadvar $PARM1
+loadvar $bot_name
+loadvar $parm1
 
-:PAGE
-
-
+:page
 setvar $switchboard~message "Paging Bot Owner...*"
 gosub :switchboard~switchboard
-waiton "{"&$BOT_NAME&"} - Paging Bot Owner..."
+waiton "{"&$bot_name&"} - Paging Bot Owner..."
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_7 ANSI_15 "-YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_7 ansi_15 "-YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_14 "-YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_14 "-YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_15 "-YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_15 "-YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_14 "-YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_14 "-YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-*" ansi_7
 sound "scripts/MomBot/page.wav"
-echo ANSI_7 "*****" ANSI_12 "-YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-  " ANSI_12 "  -YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_7 "*****" ansi_12 "-YOU ARE BEING PAGED-  " ansi_11 "  -YOU ARE BEING PAGED-  " ansi_12 "  -YOU ARE BEING PAGED-  " ansi_11 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_14 "-YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_14 "-YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_12 "-YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-  " ANSI_12 "  -YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_12 "-YOU ARE BEING PAGED-  " ansi_11 "  -YOU ARE BEING PAGED-  " ansi_12 "  -YOU ARE BEING PAGED-  " ansi_11 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_14 "-YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_14 "-YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-*" ansi_7
 sound "scripts/MomBot/page.wav"
-echo ANSI_7 "*****" ANSI_15 "-YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_7 "*****" ansi_15 "-YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_12 "-YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-  " ANSI_12 "  -YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_12 "-YOU ARE BEING PAGED-  " ansi_11 "  -YOU ARE BEING PAGED-  " ansi_12 "  -YOU ARE BEING PAGED-  " ansi_11 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_15 "-YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_15 "-YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_12 "-YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_12 "-YOU ARE BEING PAGED-  " ansi_11 "  -YOU ARE BEING PAGED-  " ansi_11 "  -YOU ARE BEING PAGED-  " ansi_11 "  -YOU ARE BEING PAGED-*" ansi_7
 sound "scripts/MomBot/page.wav"
-echo ANSI_7 "*****" ANSI_15 "-YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_7 "*****" ansi_15 "-YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_14 "-YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_14 "-YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_15 "-YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_15 "-YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_14 "-YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_14 "-YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-*" ansi_7
 sound "scripts/MomBot/page.wav"
-echo ANSI_7 "*****" ANSI_12 "-YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-  " ANSI_12 "  -YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_7 "*****" ansi_12 "-YOU ARE BEING PAGED-  " ansi_11 "  -YOU ARE BEING PAGED-  " ansi_12 "  -YOU ARE BEING PAGED-  " ansi_11 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_14 "-YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_14 "-YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_12 "-YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-  " ANSI_12 "  -YOU ARE BEING PAGED-  " ANSI_11 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_12 "-YOU ARE BEING PAGED-  " ansi_11 "  -YOU ARE BEING PAGED-  " ansi_12 "  -YOU ARE BEING PAGED-  " ansi_11 "  -YOU ARE BEING PAGED-*" ansi_7
 echo "[5;31;47m[37;41m[0m[5;31;47m[37;41m[0m [1;5;31mWARNING! WARNING! [5;31;47m[37;41m[0m[5;31;47m[37;41m[0m*"
-echo ANSI_14 "-YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_15 "  -YOU ARE BEING PAGED-  " ANSI_14 "  -YOU ARE BEING PAGED-*" ANSI_7
+echo ansi_14 "-YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_15 "  -YOU ARE BEING PAGED-  " ansi_14 "  -YOU ARE BEING PAGED-*" ansi_7
 setvar $switchboard~message "Bot Owner Paged*"
 gosub :switchboard~switchboard
 halt

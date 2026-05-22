@@ -1,25 +1,24 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-setVar $HELP~HELP[1]  $HELP~TAB&"PSCAN - Sends Planet Data Over SubSpace. "
-setVar $HELP~HELP[2]  $HELP~TAB&"      "
-setVar $HELP~HELP[3]  $HELP~TAB&"   pscan {Planet #}"
-setVar $HELP~HELP[4]  $HELP~TAB&"       "
-setVar $HELP~HELP[5]  $HELP~TAB&"   [Planet #] - Is optional. However if left out you must "
-setVar $HELP~HELP[6]  $HELP~TAB&"                start it from Citadel,  or Planet command "
-setVar $HELP~HELP[7]  $HELP~TAB&"                and current planet will be displayed.  If "
-setVar $HELP~HELP[8]  $HELP~TAB&"                a Planet Number is specified, that planet "
-setVar $HELP~HELP[9]  $HELP~TAB&"                will be  displayed assuming  it's in the  "
-setVar $HELP~HELP[10] $HELP~TAB&"                current sector.   "
-setVar $HELP~HELP[11] $HELP~TAB&"             "
-setVar $HELP~HELP[12] $HELP~TAB&"              - Written by Lonestar "
-gosub :HELP~HELPFILE
-
+setvar $help~help[1]  $help~tab&"PSCAN - Sends Planet Data Over SubSpace. "
+setvar $help~help[2]  $help~tab&"      "
+setvar $help~help[3]  $help~tab&"   pscan {Planet #}"
+setvar $help~help[4]  $help~tab&"       "
+setvar $help~help[5]  $help~tab&"   [Planet #] - Is optional. However if left out you must "
+setvar $help~help[6]  $help~tab&"                start it from Citadel,  or Planet command "
+setvar $help~help[7]  $help~tab&"                and current planet will be displayed.  If "
+setvar $help~help[8]  $help~tab&"                a Planet Number is specified, that planet "
+setvar $help~help[9]  $help~tab&"                will be  displayed assuming  it's in the  "
+setvar $help~help[10] $help~tab&"                current sector.   "
+setvar $help~help[11] $help~tab&"             "
+setvar $help~help[12] $help~tab&"              - Written by Lonestar "
+gosub :help~helpfile
 
 gosub :player~quikstats
-setVar $Location $player~current_prompt
-setVar $array_cnt 0
-setVar $planet~planet 0
+setvar $location $player~current_prompt
+setvar $array_cnt 0
+setvar $planet~planet 0
 
 if ($player~current_prompt = "Citadel")
 	if ($bot~parm1 <> "")
@@ -27,9 +26,9 @@ if ($player~current_prompt = "Citadel")
 		send "Q"
 		gosub :planet~getplanetinfo
 		send "  Q  "
-		setVar $LandOn $bot~parm1
-		gosub :Land_OnPlanet
-		if ($LANDED)
+		setvar $landon $bot~parm1
+		gosub :land_onplanet
+		if ($landed)
 			send " D"
 			gosub :start
 		else
@@ -39,14 +38,14 @@ if ($player~current_prompt = "Citadel")
 			halt
 		end
 		send " Q  Q  Q  Z  N  *  "
-		setVar $LandOn $planet~planet
-		gosub :Land_OnPlanet
-		if ($LANDED = 0)
+		setvar $landon $planet~planet
+		gosub :land_onplanet
+		if ($landed = 0)
 			setvar $switchboard~message "Problem relanding on starting Planet #"&$planet~planet&".*"
 			gosub :switchboard~switchboard
 			halt
 		else
-			gosub :SpitItOut
+			gosub :spititout
 			send " C "
 			setvar $switchboard~message "Back In Citadel on Planet #"&$planet~planet&".*"
 			gosub :switchboard~switchboard
@@ -56,7 +55,7 @@ if ($player~current_prompt = "Citadel")
 		send " Q D"
 		waitfor "Planet command"
 		gosub :start
-		gosub :SpitItOut
+		gosub :spititout
 		send " C  "
 		setvar $switchboard~message "Back In Citadel.*"
 		gosub :switchboard~switchboard
@@ -67,9 +66,9 @@ elseif ($player~current_prompt = "Planet")
 		#get currnet planet number
 		gosub :planet~getplanetinfo
 		send "  Q  "
-		setVar $LandOn $bot~parm1
-		gosub :Land_OnPlanet
-		if ($LANDED)
+		setvar $landon $bot~parm1
+		gosub :land_onplanet
+		if ($landed)
 			send " D"
 			gosub :start
 		else
@@ -79,14 +78,14 @@ elseif ($player~current_prompt = "Planet")
 			halt
 		end
 		send " Q  Q  Q  Z  N  *  "
-		setVar $LandOn $planet~planet
-		gosub :Land_OnPlanet
-		if ($LANDED = 0)
+		setvar $landon $planet~planet
+		gosub :land_onplanet
+		if ($landed = 0)
 			setvar $switchboard~message "Problem relanding on starting Planet #"&$planet~planet&".*"
 			gosub :switchboard~switchboard
 			halt
 		else
-			gosub :SpitItOut
+			gosub :spititout
 			setvar $switchboard~message "Back on Planet #"&$planet~planet&" (Planet Command Prompt).*"
 			gosub :switchboard~switchboard
 			halt
@@ -95,7 +94,7 @@ elseif ($player~current_prompt = "Planet")
 		send "D"
 		waitfor "Planet command"
 		gosub :start
-		gosub :SpitItOut
+		gosub :spititout
 		setvar $switchboard~message "At Planet Prompt.*"
 		gosub :switchboard~switchboard
 		halt
@@ -106,9 +105,9 @@ elseif ($player~current_prompt = "Command")
 		gosub :switchboard~switchboard
 		halt
 	end
-	setVar $LandOn $bot~parm1
-	gosub :Land_OnPlanet
-	if ($LANDED)
+	setvar $landon $bot~parm1
+	gosub :land_onplanet
+	if ($landed)
 		send " D"
 		gosub :start
 	else
@@ -118,7 +117,7 @@ elseif ($player~current_prompt = "Command")
 		halt
 	end
 	send " Q  Q  Q  Z  N  *  "
-	gosub :SpitItOut
+	gosub :spititout
 	setvar $switchboard~message "Back At Command Prompt.*"
 	gosub :switchboard~switchboard
 else
@@ -128,100 +127,104 @@ end
 halt
 
 :start
-setArray $scan_array 30
-setVar $idx 0
-		:continuescan
-	setTextTrigger done :done "Planet command"
-	setTextLineTrigger line_trig :parse_scan_line
-	pause
-	:parse_scan_line
-	killTrigger line_trig
-	setVar $s CURRENTLINE
-	if (($s = "") OR ($s = 0))
-		setVar $s "          "
-	end
+setarray $scan_array 30
+setvar $idx 0
 
-	getWordPos $s $pos "Fuel Ore"
-	if ($pos <> 0)
-		getWord $s $t 8
-		cuttext $s $first_half 1 54
-		setvar $s $first_half&$t
-	end
-	getWordPos $s $pos "Organics"
-	if ($pos <> 0)
-		getWord $s $t 7
-		cuttext $s $first_half 1 54
-		setvar $s $first_half&$t
-	end
-	getWordPos $s $pos "Equipment"
-	if ($pos <> 0)
-		getWord $s $t 7
-		cuttext $s $first_half 1 54
-		setvar $s $first_half&$t
-	end
-	getWordPos $s $pos "Fighters "
-	if ($pos <> 0)
-		getWord $s $t 7
-		cuttext $s $first_half 1 54
-		setvar $s $first_half&$t
-	end
-	replacetext $s "  Item    Colonists  Colonists    Daily     Planet      Ship      Planet" "Item  Colonists Colonists    Daily     Planet    Planet"
-	replaceText $s "           (1000s)   2 Build 1   Product    Amount     Amount     Maximum"  "       (1000s)  2 Build 1   Product    Amount    Maximum"
-	replaceText $s " -------  ---------  ---------  ---------  ---------  ---------  ---------" "---  ---------  ---------  ---------  ---------  ---------"
-	replaceText $s "Fuel Ore" "Ore"
-	replaceText $s "Organics" "Org"
-	replaceText $s "Equipment" "Equ "
-	replaceText $s "Fighters " "Figs"
-	replaceText $s "Military reaction" "Mil-React"
+:continuescan
+settexttrigger done :done "Planet command"
+settextlinetrigger line_trig :parse_scan_line
+pause
 
-	add $idx 1
-	setVar $scan_array[$idx] $s
-	killAllTriggers
-	goto :continuescan
-	:done
-	killAllTriggers
+:parse_scan_line
+killtrigger line_trig
+setvar $s currentline
+if (($s = "") or ($s = 0))
+	setvar $s "          "
+end
+
+getwordpos $s $pos "Fuel Ore"
+if ($pos <> 0)
+	getword $s $t 8
+	cuttext $s $first_half 1 54
+	setvar $s $first_half&$t
+end
+getwordpos $s $pos "Organics"
+if ($pos <> 0)
+	getword $s $t 7
+	cuttext $s $first_half 1 54
+	setvar $s $first_half&$t
+end
+getwordpos $s $pos "Equipment"
+if ($pos <> 0)
+	getword $s $t 7
+	cuttext $s $first_half 1 54
+	setvar $s $first_half&$t
+end
+getwordpos $s $pos "Fighters "
+if ($pos <> 0)
+	getword $s $t 7
+	cuttext $s $first_half 1 54
+	setvar $s $first_half&$t
+end
+replacetext $s "  Item    Colonists  Colonists    Daily     Planet      Ship      Planet" "Item  Colonists Colonists    Daily     Planet    Planet"
+replacetext $s "           (1000s)   2 Build 1   Product    Amount     Amount     Maximum"  "       (1000s)  2 Build 1   Product    Amount    Maximum"
+replacetext $s " -------  ---------  ---------  ---------  ---------  ---------  ---------" "---  ---------  ---------  ---------  ---------  ---------"
+replacetext $s "Fuel Ore" "Ore"
+replacetext $s "Organics" "Org"
+replacetext $s "Equipment" "Equ "
+replacetext $s "Fighters " "Figs"
+replacetext $s "Military reaction" "Mil-React"
+
+add $idx 1
+setvar $scan_array[$idx] $s
+killalltriggers
+goto :continuescan
+
+:done
+killalltriggers
 return
 
-:SpitItOut
+:spititout
 setvar $switchboard~message ""
 setvar $i 1
 while ($i <= $idx)
 	if ($scan_array[$i] <> "0")
-			setvar $switchboard~message $switchboard~message & $scan_array[$i] & "*"
+		setvar $switchboard~message $switchboard~message & $scan_array[$i] & "*"
 	end
 	add $i 1
 end
 gosub :switchboard~switchboard
-	:continuecommpscan2
+
+:continuecommpscan2
 return
 
-:Land_OnPlanet
-setVar $LANDED FALSE
-send ("L"&$LandOn&"*Z  N  Z  N  *  ")
-setTextLineTrigger NoPlanet1	:NoPlanet	"There isn't a planet in this sector."
-setTextLineTrigger NoPlanet2	:NoPlanet	"That planet is not in this sector."
-setTextLineTrigger NotLanded 	:NotLanded	"since it couldn't possibly stand"
-setTextLineTrigger Landed		:Landed		"Planet #"
+:land_onplanet
+setvar $landed false
+send ("L"&$landon&"*Z  N  Z  N  *  ")
+settextlinetrigger noplanet1	:noplanet	"There isn't a planet in this sector."
+settextlinetrigger noplanet2	:noplanet	"That planet is not in this sector."
+settextlinetrigger notlanded 	:notlanded	"since it couldn't possibly stand"
+settextlinetrigger landed		:landed		"Planet #"
 pause
-	:NoPlanet
-	killAllTriggers
-	setvar $switchboard~message "Planet #" & $LandOn & ", not in Sector!*"
-	gosub :switchboard~switchboard
-	return
-	:NotLanded
-	killAllTriggers
-	setvar $switchboard~message "This ship cannot land!*"
-	gosub :switchboard~switchboard
-	return
-	:Landed
-	killAllTriggers
-	setVar $LANDED TRUE
-	waitfor "<Destroy Planet>"
-	waitfor "Planet command"
-	return
 
+:noplanet
+killalltriggers
+setvar $switchboard~message "Planet #" & $landon & ", not in Sector!*"
+gosub :switchboard~switchboard
+return
 
+:notlanded
+killalltriggers
+setvar $switchboard~message "This ship cannot land!*"
+gosub :switchboard~switchboard
+return
 
+:landed
+killalltriggers
+setvar $landed true
+waitfor "<Destroy Planet>"
+waitfor "Planet command"
+return
 
 #INCLUDES:
 include "source\include\planet"

@@ -3,40 +3,40 @@
 # to retreat to safety. A bit dangerous, but hey... so is life.
 # ----------------------------------------------------------------------------
 
-reqRecording
+reqrecording
 
 :init
 send "*  "
-waitFor "(?="
-getword CURRENTLINE $location 1
+waitfor "(?="
+getword currentline $location 1
 if ($location <> "Command")
-     clientMessage "This script must be run from the Command Prompt"
-     halt
+	clientmessage "This script must be run from the Command Prompt"
+	halt
 end
 
 send " c ;q"
-waitFor "Max Fighters:"
-setVar $line CURRENTLINE
-replaceText $line ":" " "
+waitfor "Max Fighters:"
+setvar $line currentline
+replacetext $line ":" " "
 getword $line $max_figs 7
-stripText $max_figs ","
-waitFor "Max Figs Per Attack:"
-setVar $line CURRENTLINE
-replaceText $line ":" " "
+striptext $max_figs ","
+waitfor "Max Figs Per Attack:"
+setvar $line currentline
+replacetext $line ":" " "
 getword $line $max_fig_wave 5
-stripText $max_fig_wave ","
+striptext $max_fig_wave ","
 if ($max_fig_wave = $max_figs)
-     setVar $max_fig_wave ($max_fig_wave - 100)
+	setvar $max_fig_wave ($max_fig_wave - 100)
 end
-setVar $waves_to_send ($max_figs / $max_fig_wave)
+setvar $waves_to_send ($max_figs / $max_fig_wave)
 
 :kill_check
 killtrigger noscan1
 killtrigger noscan2
 killtrigger scanned
-setTextLineTrigger noscan1 :noscanner "Handle which mine type, 1 Armid or 2 Limpet"
-setTextLineTrigger noscan2 :noscanner "You don't have a long range scanner."
-setTextLineTrigger scanned :scandone  "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
+settextlinetrigger noscan1 :noscanner "Handle which mine type, 1 Armid or 2 Limpet"
+settextlinetrigger noscan2 :noscanner "You don't have a long range scanner."
+settextlinetrigger scanned :scandone  "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
 send " sh*  "
 pause
 
@@ -44,7 +44,7 @@ pause
 killtrigger noscan1
 killtrigger noscan2
 killtrigger scanned
-clientMessage "You don't have a HoloScanner!"
+clientmessage "You don't have a HoloScanner!"
 send " *  "
 halt
 
@@ -52,66 +52,66 @@ halt
 killtrigger noscan1
 killtrigger noscan2
 killtrigger scanned
-waitFor "Warps to Sector(s) :"
+waitfor "Warps to Sector(s) :"
 
 :get_prompt
-waitFor "Command [TL="
-getText CURRENTLINE $current_sector "]:[" "] (?="
-isNumber $result $current_sector
+waitfor "Command [TL="
+gettext currentline $current_sector "]:[" "] (?="
+isnumber $result $current_sector
 if ($result < 1)
-     send " *  "
-     goto :get_prompt
+	send " *  "
+	goto :get_prompt
 end
-if ($current_sector < 1) OR ($current_sector > SECTORS)
-     send " *  "
-     goto :get_prompt
+if ($current_sector < 1) or ($current_sector > sectors)
+	send " *  "
+	goto :get_prompt
 end
 
-setVar $killsector 0
-setVar $idx 1
-while ($idx <= SECTOR.WARPCOUNT[$current_sector])
-     setVar $test_sector SECTOR.WARPS[$current_sector][$idx]
-     if ($test_sector <> STARDOCK) AND ($test_sector > 10) AND (SECTOR.TRADERCOUNT[$test_sector] > 0)
-          setVar $killsector $test_sector
-          goto :killem
-     end
-     add $idx 1
+setvar $killsector 0
+setvar $idx 1
+while ($idx <= sector.warpcount[$current_sector])
+	setvar $test_sector sector.warps[$current_sector][$idx]
+	if ($test_sector <> stardock) and ($test_sector > 10) and (sector.tradercount[$test_sector] > 0)
+		setvar $killsector $test_sector
+		goto :killem
+	end
+	add $idx 1
 end
 
 :killem
-if ($killsector > 10) AND ($killsector <> STARDOCK)
-     # Send SS alert
-     send "'Dnyarri's HoloKilla - Attacking sector " & $test_sector & ".*"
+if ($killsector > 10) and ($killsector <> stardock)
+	# Send SS alert
+	send "'Dnyarri's HoloKilla - Attacking sector " & $test_sector & ".*"
 
-     # Build the no string
-     setVar $no_str ""
-     setVar $no_cnt SECTOR.SHIPCOUNT[$killsector]
-     setVar $no_idx 1
-     while ($no_idx <= $no_cnt)
-          setVar $no_str $no_str & "n"
-     end
+	# Build the no string
+	setvar $no_str ""
+	setvar $no_cnt sector.shipcount[$killsector]
+	setvar $no_idx 1
+	while ($no_idx <= $no_cnt)
+		setvar $no_str $no_str & "n"
+	end
 
-     # Clear any avoids.
-     send " c v 0 * y n " & $test_sector & " * q "
+	# Clear any avoids.
+	send " c v 0 * y n " & $test_sector & " * q "
 
-     # Move there, drop a fig.
-     send " m " & $test_sector & " *   z  a  99999  *  R  *  f  z  1  *  z  c  d  *   "
+	# Move there, drop a fig.
+	send " m " & $test_sector & " *   z  a  99999  *  R  *  f  z  1  *  z  c  d  *   "
 
-     # Kill em
-     setVar $kill_idx 1
-     while ($kill_idx <= $waves_to_send)
-          send " a " & $no_cnt & " y n y q z " & $max_fig_wave & " * "
-          add $kill_idx 1
-     end
+	# Kill em
+	setvar $kill_idx 1
+	while ($kill_idx <= $waves_to_send)
+		send " a " & $no_cnt & " y n y q z " & $max_fig_wave & " * "
+		add $kill_idx 1
+	end
 
-     # Try to retreat back
-     send " DZ N  R  *  <  N  N  *  Z  A  99999  *  "
+	# Try to retreat back
+	send " DZ N  R  *  <  N  N  *  Z  A  99999  *  "
 
-     # Kill again?
-     goto :kill_check
+	# Kill again?
+	goto :kill_check
 else
-     clientMessage "No targets found adj!"
-     send " dz n  "
-     halt
+	clientmessage "No targets found adj!"
+	send " dz n  "
+	halt
 end
 halt

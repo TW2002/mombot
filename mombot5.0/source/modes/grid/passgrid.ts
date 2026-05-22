@@ -1,1547 +1,1550 @@
-  # Modified LoneStars Passive Gridder to suite MOMBOT
-  # All credits to the legend himself for this one!
-  #
-  #	Hammer - MOdifying to use EPHaggle and Sector Params
-  #            - Add filters for density
-  #            - Smarter filter on twarp/next sector
-  #		- paranoid/safe options - NextReport options
-  #   to do - remove aliens, enter sectors with level 4 planets (dangerous!)
-  #		- Store "explored" sectors for a while - option to clear it. so it can resume
-    
+# Modified LoneStars Passive Gridder to suite MOMBOT
+# All credits to the legend himself for this one!
+#
+#	Hammer - MOdifying to use EPHaggle and Sector Params
+#            - Add filters for density
+#            - Smarter filter on twarp/next sector
+#		- paranoid/safe options - NextReport options
+#   to do - remove aliens, enter sectors with level 4 planets (dangerous!)
+#		- Store "explored" sectors for a while - option to clear it. so it can resume
 
-    #=--------                                                                       -------=#
-     #=---------------------      LoneStar's Passive Gridder      -------------------------=#
-    #=--------                                                                       -------=#
-	#		Incep Date	:	Circa August 2007
-	#		Author		:	LoneStar
-	#		TWX			:	For TWX 2.04 Final
-	#
-	#		Credits		:	Mind Daggers QUIKSTATS, and GETCOURSE routines
-	#
-	#		To Run		:	You will Need the following addressed
-	#                                   - Command Prompt
-	#                                   - Density Scanner (at least)
-	#									- More Than 10 Fighters
-	#									- More than 10,000 creds (for buying fuel)
-	#                                   - have _ck_callsaveme.cts in scripts
-	#									- ZTM not required, but CIM will need to be updated
-	#								      periodically.
-	#
-	#		Fixes       :	Initial Release (work in progress)
-	#
-	#		Description	:   Passive Gridder that doesnt' holo-scan, and uses twarp when boxed in.
-	#                       Will update fig/limps lists if desired to SectorParam's, but also updates
-	#                       the FIGSEC as it moves
-	#						It's a good idea to update your deployed limp data, as the the Gridder will report
-	#						if, for example, an adjacent possibly has someone cloaked.
-	#
-	#		Notes:          Modified quikstats to change CURRENTTURNS to 68536, if $UNLIM ='s TRUE
-	#                       Had to use two Arrays: $DENS and $ANOM for: Adj Warp Count, and
-	#                       Anomoly readings in adj sectors as TWX is more than a little retarded
-	#                       (SECTOR.ANOMOLY[idx] doesn't work, and SECTOR.WARPCOUNT isn't accurate)
-	#
-		
-	reqRecording
-	clearAllAvoids
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
+#=--------                                                                       -------=#
+#=---------------------      LoneStar's Passive Gridder      -------------------------=#
+#=--------                                                                       -------=#
+#		Incep Date	:	Circa August 2007
+#		Author		:	LoneStar
+#		TWX			:	For TWX 2.04 Final
+#
+#		Credits		:	Mind Daggers QUIKSTATS, and GETCOURSE routines
+#
+#		To Run		:	You will Need the following addressed
+#                                   - Command Prompt
+#                                   - Density Scanner (at least)
+#									- More Than 10 Fighters
+#									- More than 10,000 creds (for buying fuel)
+#                                   - have _ck_callsaveme.cts in scripts
+#									- ZTM not required, but CIM will need to be updated
+#								      periodically.
+#
+#		Fixes       :	Initial Release (work in progress)
+#
+#		Description	:   Passive Gridder that doesnt' holo-scan, and uses twarp when boxed in.
+#                       Will update fig/limps lists if desired to SectorParam's, but also updates
+#                       the FIGSEC as it moves
+#						It's a good idea to update your deployed limp data, as the the Gridder will report
+#						if, for example, an adjacent possibly has someone cloaked.
+#
+#		Notes:          Modified quikstats to change CURRENTTURNS to 68536, if $UNLIM ='s TRUE
+#                       Had to use two Arrays: $DENS and $ANOM for: Adj Warp Count, and
+#                       Anomoly readings in adj sectors as TWX is more than a little retarded
+#                       (SECTOR.ANOMOLY[idx] doesn't work, and SECTOR.WARPCOUNT isn't accurate)
+#
 
-	loadVar $MAP~rylos
-	loadVar $MAP~alpha_centauri
-	loadVar $BOT~LIMP_FILE 		
-	loadVar $BOT~ARMID_FILE 
-	loadvar $bot~folder
-	setVar $LOG_FName $bot~folder&"/"&GAMENAME&"_PassiveGrid.log"
+reqrecording
+clearallavoids
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-	setVar $HELP~HELP[1]  $HELP~TAB&"       LS Passive Gridder - Still the best "
-	setVar $HELP~HELP[2]  $HELP~TAB&"       "
-	setVar $HELP~HELP[3]  $HELP~TAB&" lspassgrid [stopturns] {a1/a2/a3} {l1/l2/l3} {ports}"
-	setVar $HELP~HELP[4]  $HELP~TAB&"            {holo} {trade} {restock} {filter} {ignore:}"
-	setVar $HELP~HELP[5]  $HELP~TAB&" Options:"
-	setVar $HELP~HELP[6]  $HELP~TAB&"    [stopturns]     Passive Grid Stops at here"
-	setVar $HELP~HELP[7]  $HELP~TAB&"	   {a1/a2/a3}      Drop 1/2/3 Armid Mines"
-	setVar $HELP~HELP[8]  $HELP~TAB&"	   {l1/l2/l3}      Drop 1/2/3 Limpet Mines"
-	setVar $HELP~HELP[9]  $HELP~TAB&"    {ports}         Grabs port reports"
-	setVar $HELP~HELP[10]  $HELP~TAB&"    {holo}         Holo Scans to ensure sectors safe"
-	setVar $HELP~HELP[11]  $HELP~TAB&"    {trade}        Will trade ports looking for Equ MCIC"
-	setVar $HELP~HELP[12]  $HELP~TAB&"                   Requires EP Haggle or equiv"
-	setVar $HELP~HELP[13]  $HELP~TAB&"    {safe}         Twarps to Limpet sectors only"
-	setVar $HELP~HELP[14]  $HELP~TAB&"    {paranoid}     Twarp to Limpet and Mines only"
-	setVar $HELP~HELP[15]  $HELP~TAB&"    {nextreport}   Next sector requires an adj port report."
-	setVar $HELP~HELP[16]  $HELP~TAB&"    {restock}      Buys more Limpets and Mines."
-	setVar $HELP~HELP[17]  $HELP~TAB&"    {filter}       Filters mines/armids/planets to detect"
-	setVar $HELP~HELP[18]  $HELP~TAB&"                   safe sectors. run >limps >armids 1st"
-	setVar $HELP~HELP[19]  $HELP~TAB&"    {ignorea}      Uses holo scan to passive grid alien figs"
-	setVar $HELP~HELP[20]  $HELP~TAB&"    {resume}       Roughly resumes last run"
-	setVar $HELP~HELP[21]  $HELP~TAB&"    {ignore:}      Ignore corp or trader fighters"
-	setVar $HELP~HELP[22]  $HELP~TAB&"    {skip:}        Skips sectors with this param !=0 !=''"
-	setVar $HELP~HELP[23]  $HELP~TAB&"    {lock:PARAM=n} Lock grid to this param - WHICHBUB=2"
-	setVar $HELP~HELP[24]  $HELP~TAB&"    {twenty}       Drop 20 fighters in density 0 sectors"
-	setVar $HELP~HELP[25]  $HELP~TAB&"    Doesn't require ZTM but works better"
-	setVar $HELP~HELP[26]  $HELP~TAB&"    Works best with T-Warp to reroute"
+loadvar $map~rylos
+loadvar $map~alpha_centauri
+loadvar $bot~limp_file
+loadvar $bot~armid_file
+loadvar $bot~folder
+setvar $log_fname $bot~folder&"/"&gamename&"_PassiveGrid.log"
 
-	gosub :HELP~HELPFILE
+setvar $help~help[1]  $help~tab&"       LS Passive Gridder - Still the best "
+setvar $help~help[2]  $help~tab&"       "
+setvar $help~help[3]  $help~tab&" lspassgrid [stopturns] {a1/a2/a3} {l1/l2/l3} {ports}"
+setvar $help~help[4]  $help~tab&"            {holo} {trade} {restock} {filter} {ignore:}"
+setvar $help~help[5]  $help~tab&" Options:"
+setvar $help~help[6]  $help~tab&"    [stopturns]     Passive Grid Stops at here"
+setvar $help~help[7]  $help~tab&"	   {a1/a2/a3}      Drop 1/2/3 Armid Mines"
+setvar $help~help[8]  $help~tab&"	   {l1/l2/l3}      Drop 1/2/3 Limpet Mines"
+setvar $help~help[9]  $help~tab&"    {ports}         Grabs port reports"
+setvar $help~help[10]  $help~tab&"    {holo}         Holo Scans to ensure sectors safe"
+setvar $help~help[11]  $help~tab&"    {trade}        Will trade ports looking for Equ MCIC"
+setvar $help~help[12]  $help~tab&"                   Requires EP Haggle or equiv"
+setvar $help~help[13]  $help~tab&"    {safe}         Twarps to Limpet sectors only"
+setvar $help~help[14]  $help~tab&"    {paranoid}     Twarp to Limpet and Mines only"
+setvar $help~help[15]  $help~tab&"    {nextreport}   Next sector requires an adj port report."
+setvar $help~help[16]  $help~tab&"    {restock}      Buys more Limpets and Mines."
+setvar $help~help[17]  $help~tab&"    {filter}       Filters mines/armids/planets to detect"
+setvar $help~help[18]  $help~tab&"                   safe sectors. run >limps >armids 1st"
+setvar $help~help[19]  $help~tab&"    {ignorea}      Uses holo scan to passive grid alien figs"
+setvar $help~help[20]  $help~tab&"    {resume}       Roughly resumes last run"
+setvar $help~help[21]  $help~tab&"    {ignore:}      Ignore corp or trader fighters"
+setvar $help~help[22]  $help~tab&"    {skip:}        Skips sectors with this param !=0 !=''"
+setvar $help~help[23]  $help~tab&"    {lock:PARAM=n} Lock grid to this param - WHICHBUB=2"
+setvar $help~help[24]  $help~tab&"    {twenty}       Drop 20 fighters in density 0 sectors"
+setvar $help~help[25]  $help~tab&"    Doesn't require ZTM but works better"
+setvar $help~help[26]  $help~tab&"    Works best with T-Warp to reroute"
 
-	setvar $SWITCHBOARD~MESSAGE "LoneStar's Passive Gridder starting up!*"
-	gosub :SWITCHBOARD~SWITCHBOARD
-	
-	setVar $TAGLINE     "LoneStar's Passive Gridder"
-	setVar $TAGLINEB     $BOT~bot_name
-	setVar $TAGLINEC     $BOT~bot_name
+gosub :help~helpfile
 
-	setVar $Turn_Limit 20
-	setArray $CHKD	SECTORS
-	setArray $ANOM	10
-	setArray $DENS	10
-	setArray $Limps	SECTORS
-	setVar $Update_Limps		FALSE
-	setVar $Update_Figs		FALSE
-	setVar $Update_Port		FALSE
+setvar $switchboard~message "LoneStar's Passive Gridder starting up!*"
+gosub :switchboard~switchboard
 
-	setVar $DROPING_MINES	0
-	SetVar $DROP_LIMP 0
-	SetVar $DROP_ARMID 0
+setvar $tagline     "LoneStar's Passive Gridder"
+setvar $taglineb     $bot~bot_name
+setvar $taglinec     $bot~bot_name
 
+setvar $turn_limit 20
+setarray $chkd	sectors
+setarray $anom	10
+setarray $dens	10
+setarray $limps	sectors
+setvar $update_limps		false
+setvar $update_figs		false
+setvar $update_port		false
 
-	setArray $LOG_ENTRIES 5
-	setVar $LOG_ENTRIES[1] ""
-	setVar $LOG_ENTRIES[2] ""
-	setVar $LOG_ENTRIES[3] ""
-	setVar $LOG_ENTRIES[4] ""
-	setVar $LOG_ENTRIES[5] ""
+setvar $droping_mines	0
+setvar $drop_limp 0
+setvar $drop_armid 0
 
-	setVar $DEP_FIGS	0
-	setVar $DEP_LIMP	0
-	setVar $DEP_NEW	0
-	setVar $LOG_EVENT	0
-	setVar $HOLO		FALSE
-	setVar $TRACKER	FALSE
-	setVar $restoreHaggle 0
-	setVar $EQU_MIN 50
-	setVar $EQU_MIN_BUY 25
-	setVar $DROP_TWENTY	0
-	setVar $FILTER_DENSITY 0
+setarray $log_entries 5
+setvar $log_entries[1] ""
+setvar $log_entries[2] ""
+setvar $log_entries[3] ""
+setvar $log_entries[4] ""
+setvar $log_entries[5] ""
 
-	setVar $planet~planetsInSectors SECTORS
-	
-	
+setvar $dep_figs	0
+setvar $dep_limp	0
+setvar $dep_new	0
+setvar $log_event	0
+setvar $holo		false
+setvar $tracker	false
+setvar $restorehaggle 0
+setvar $equ_min 50
+setvar $equ_min_buy 25
+setvar $drop_twenty	0
+setvar $filter_density 0
 
-	if ($MAP~rylos < 1)
-		setVar $Report_RYLOS 	TRUE
+setvar $planet~planetsinsectors sectors
+
+if ($map~rylos < 1)
+	setvar $report_rylos 	true
+end
+if ($map~alpha_centauri < 1)
+	setvar $report_alpha	true
+end
+setvar $player~save true
+
+gosub :player~quikstats
+setvar $unlim $player~unlimitedgame
+if ($player~total_holds <= $equ_min)
+
+end
+
+setvar $startinglocation $player~current_prompt
+if ($startinglocation <> "Command")
+	setvar $switchboard~message "Must be started from Command prompt.*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+if ($player~scan_type = "None")
+	setvar $switchboard~message "Must At Least Have a Density Scanner.*"
+	gosub :switchboard~switchboard
+	halt
+end
+if ($player~fighters < 10)
+
+	setvar $switchboard~message "Must At More than 10 Fighters.*"
+	gosub :switchboard~switchboard
+	halt
+end
+if ($player~credits < 10000)
+
+	setvar $switchboard~message "Must At Least Have 10,000 creds.*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+setvar $update_figs false
+setvar $update_limps false
+
+setvar $turn_limit $bot~parm1
+isnumber $number $turn_limit
+
+if (($unlim = false) and (($number <> 1) or ($turn_limit = 0)))
+	setvar $switchboard~message "Please select what turns to halt at.*"
+	gosub :switchboard~switchboard
+	halt
+
+end
+
+getwordpos $bot~user_command_line $pos "ignore:"
+if ($pos > 0)
+	gettext $bot~user_command_line $ignore "ignore:" " "
+
+	if ($ignore = "")
+		setvar $bot~user_command_line $bot~user_command_line & " "
+		gettext $bot~user_command_line $ignore "ignore:" " "
 	end
-	if ($MAP~alpha_centauri < 1)
-		setVar $Report_ALPHA	TRUE
-	end
-	setvar $player~save true
+	replacetext $bot~user_command_line " ignore:" & $ignore & " " " "
+	replacetext $bot~user_command_line " ignore:" & $ignore " "
+end
 
-	gosub :player~quikstats
-	setvar $UNLIM $PLAYER~UNLIMITEDGAME
-	if ($player~total_holds <= $EQU_MIN)
-		
-	end
+getwordpos $bot~user_command_line $pos "skip:"
+if ($pos > 0)
+	gettext $bot~user_command_line $skipparam "skip:" " "
 
-	setVar $startingLocation $PLAYER~CURRENT_PROMPT
-	if ($startingLocation <> "Command")
-		setVar $SWITCHBOARD~message "Must be started from Command prompt.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
+	if ($skipparam = "")
+		setvar $bot~user_command_line $bot~user_command_line & " "
+		gettext $bot~user_command_line $skipparam "skip:" " "
 	end
+	replacetext $bot~user_command_line " skip:" & $skipparam & " " " "
+	replacetext $bot~user_command_line " skip:" & $skipparam " "
+	uppercase $skipparam
+end
 
-	if ($PLAYER~SCAN_TYPE = "None")
-		setVar $SWITCHBOARD~message "Must At Least Have a Density Scanner.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
+getwordpos $bot~user_command_line $pos "lock:"
+if ($pos > 0)
+	gettext $bot~user_command_line $lockparamtemp "lock:" " "
+
+	if ($lockparamtemp = "")
+		setvar $bot~user_command_line $bot~user_command_line & " "
+		gettext $bot~user_command_line $lockparamtemp "lock:" " "
+
 	end
-	if ($PLAYER~FIGHTERS < 10)
-		
-		setVar $SWITCHBOARD~message "Must At More than 10 Fighters.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
-	if ($PLAYER~CREDITS < 10000)
-		
-		setVar $SWITCHBOARD~message "Must At Least Have 10,000 creds.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
+	replacetext $bot~user_command_line " lock:" & $lockparamtemp & " " " "
+	replacetext $bot~user_command_line " lock:" & $lockparamtemp " "
 
+	setvar $temp $lockparamtemp
 
-	setVar $Update_Figs FALSE
-	setVar $Update_Limps FALSE
-	
-	
-	
-	setVar $Turn_Limit $bot~parm1
-	isNumber $number $Turn_Limit
-
-	if (($UNLIM = FALSE) and (($number <> 1) or ($Turn_Limit = 0)))
-		setvar $switchboard~message "Please select what turns to halt at.*"
+	replacetext $temp "=" " "
+	getword $temp $lockparam 1
+	getword $temp $lockvalue 2
+	if ($lockparam = "") or ($lockvalue = "")
+		setvar $switchboard~message "Issue with Lock syntax try LOCK:WHICHBUB=2*"
 		gosub :switchboard~switchboard
 		halt
-	
 	end
+	uppercase $lockparam
+end
 
-	getWordPos $bot~user_command_line $pos "ignore:"
-	if ($pos > 0)
-		getText $bot~user_command_line $ignore "ignore:" " "
+getwordpos $bot~user_command_line $pos "a1"
+if ($pos > 0)
+	setvar $drop_armid 1
+end
+getwordpos $bot~user_command_line $pos "a2"
+if ($pos > 0)
+	setvar $drop_armid 2
+end
+getwordpos $bot~user_command_line $pos "a3"
+if ($pos > 0)
+	setvar $drop_armid 3
+end
 
-		if ($ignore = "")
-			setVar $bot~user_command_line $bot~user_command_line & " "
-			getText $bot~user_command_line $ignore "ignore:" " "
+getwordpos $bot~user_command_line $pos "l1"
+if ($pos > 0)
+	setvar $drop_limp 1
+end
+getwordpos $bot~user_command_line $pos "l2"
+if ($pos > 0)
+	setvar $drop_limp 2
+end
+getwordpos $bot~user_command_line $pos "l3"
+if ($pos > 0)
+	setvar $drop_limp 3
+end
+
+setvar $lsdstring ""
+if (($drop_armid > 0) and ($drop_limp > 0))
+	setvar $droping_mines 3
+	setvar $lsdstring "0@0@0@0@0@N@M@M@0@N@0@0@N@0@0@0@0@0@0@0"
+elseif ($drop_armid > 0)
+
+	setvar $droping_mines 2
+	setvar $lsdstring "0@0@0@0@0@N@N@M@0@N@0@0@N@0@0@0@0@0@0@0"
+elseif ($drop_limp > 0)
+
+	setvar $droping_mines 1
+	setvar $lsdstring "0@0@0@0@0@N@M@N@0@N@0@0@N@0@0@0@0@0@0@0"
+else
+	setvar $droping_mines 0
+end
+
+setvar $alllimps 0
+setvar $allarmids 0
+
+getwordpos $bot~user_command_line $pos "filter"
+if ($pos > 0)
+	setvar $filter_density 1
+	readtoarray $bot~limp_file $alllimps
+	readtoarray $bot~armid_file $allarmids
+end
+
+setvar $update_port false
+getwordpos $bot~user_command_line $pos "ports"
+if ($pos > 0)
+	setvar $update_port true
+end
+
+setvar $holo false
+getwordpos $bot~user_command_line $pos "holo"
+if ($pos > 0)
+	setvar $holo true
+end
+
+setvar $drop_twenty 0
+getwordpos $bot~user_command_line $pos "twenty"
+if ($pos > 0)
+	setvar $drop_twenty 1
+end
+
+setvar $twarp_safety 0
+getwordpos $bot~user_command_line $pos "safe"
+if ($pos > 0)
+	setvar $twarp_safety 1
+end
+
+getwordpos $bot~user_command_line $pos "paranoid"
+if ($pos > 0)
+	setvar $twarp_safety 2
+end
+
+setvar $tracker false
+getwordpos $bot~user_command_line $pos "trade"
+if ($pos > 0)
+	setvar $tracker true
+end
+
+setvar $nextrequiresreport 0
+getwordpos $bot~user_command_line $pos "nextreport"
+if ($pos > 0)
+	setvar $nextrequiresreport 1
+end
+
+setvar $restock 0
+getwordpos $bot~user_command_line $pos "restock"
+if ($pos > 0)
+	setvar $restock 1
+end
+
+getwordpos $bot~user_command_line $pos "resume"
+if ($pos > 0)
+	setvar $r 11
+	while ($r <= sectors)
+		getsectorparameter $r "LSCHK" $lschk
+		if ($lschk = true)
+			setvar $chkd[$r] 1
+		else
+			setvar $chkd[$r] 0
 		end
-		replaceText $bot~user_command_line " ignore:" & $ignore & " " " "
-		replaceText $bot~user_command_line " ignore:" & $ignore " "
+		add $r 1
 	end
 
-	getWordPos $bot~user_command_line $pos "skip:"
-	if ($pos > 0)
-		getText $bot~user_command_line $skipparam "skip:" " "
-
-		if ($skipparam = "")
-			setVar $bot~user_command_line $bot~user_command_line & " "
-			getText $bot~user_command_line $skipparam "skip:" " "
-		end
-		replaceText $bot~user_command_line " skip:" & $skipparam & " " " "
-		replaceText $bot~user_command_line " skip:" & $skipparam " "
-		upperCase $skipparam
+else
+	setvar $r 11
+	while ($r <= sectors)
+		setsectorparameter $r "LSCHK" false
+		add $r 1
 	end
 
-	getWordPos $bot~user_command_line $pos "lock:"
-	if ($pos > 0)
-		getText $bot~user_command_line $lockparamtemp "lock:" " "
+end
 
-		if ($lockparamtemp = "")
-			setVar $bot~user_command_line $bot~user_command_line & " "
-			getText $bot~user_command_line $lockparamtemp "lock:" " "
-			
-		end
-		replaceText $bot~user_command_line " lock:" & $lockparamtemp & " " " "
-		replaceText $bot~user_command_line " lock:" & $lockparamtemp " "
+setvar $ignorea 0
+getwordpos $bot~user_command_line $pos "ignorea"
+if ($pos > 0)
+	setvar $ignorea 1
+end
 
-		setVar $temp $lockparamtemp
-		
-		replaceText $temp "=" " "
-		getWord $temp $lockparam 1
-		getWord $temp $lockvalue 2
-		if ($lockparam = "") or ($lockvalue = "")
-			setVar $SWITCHBOARD~message "Issue with Lock syntax try LOCK:WHICHBUB=2*"
-			gosub :SWITCHBOARD~switchboard
-			halt
-		end
-		upperCase $lockparam
-	end
+if ($filter_density = 1)
+	gosub :getpersonalplanets
+end
 
-	
+goto :lets_get_it_on
 
-	getWordPos $bot~user_command_line $pos "a1"
-	if ($pos > 0)
-		setVar $DROP_ARMID 1
-	end
-	getWordPos $bot~user_command_line $pos "a2"
-	if ($pos > 0)
-		setVar $DROP_ARMID 2
-	end
-	getWordPos $bot~user_command_line $pos "a3"
-	if ($pos > 0)
-		setVar $DROP_ARMID 3
-	end
+:lets_get_it_on
+gettime $stamp "t d/m/yy"
+if ($tracker)
+	setvar $mcicd	0
+	setarray $mcic	sectors
 
-	getWordPos $bot~user_command_line $pos "l1"
-	if ($pos > 0)
-		setVar $DROP_LIMP 1
-	end
-	getWordPos $bot~user_command_line $pos "l2"
-	if ($pos > 0)
-		setVar $DROP_LIMP 2
-	end
-	getWordPos $bot~user_command_line $pos "l3"
-	if ($pos > 0)
-		setVar $DROP_LIMP 3
-	end	
-
-
-
-	setVar $LSDString ""
-	if (($DROP_ARMID > 0) and ($DROP_LIMP > 0))
-		setVar $DROPING_MINES 3
-		setVar $LSDString "0@0@0@0@0@N@M@M@0@N@0@0@N@0@0@0@0@0@0@0"
-	elseif ($DROP_ARMID > 0)
-
-		setVar $DROPING_MINES 2
-		setVar $LSDString "0@0@0@0@0@N@N@M@0@N@0@0@N@0@0@0@0@0@0@0"
-	elseif ($DROP_LIMP > 0)
-
-		setVar $DROPING_MINES 1
-		setVar $LSDString "0@0@0@0@0@N@M@N@0@N@0@0@N@0@0@0@0@0@0@0"
-	else
-		setVar $DROPING_MINES 0
-	end
-	
-	setVar $allLimps 0
-	setVar $allArmids 0
-
-	getWordPos $bot~user_command_line $pos "filter"
-	if ($pos > 0)
-		setVar $FILTER_DENSITY 1
-		readToArray $BOT~LIMP_FILE $allLimps
-		readToArray $BOT~ARMID_FILE $allArmids
-	end
-
-
-	setVar $Update_Port FALSE
-	getWordPos $bot~user_command_line $pos "ports"
-	if ($pos > 0)
-		setVar $Update_Port TRUE
-	end
-
-	setVar $HOLO FALSE
-	getWordPos $bot~user_command_line $pos "holo"
-	if ($pos > 0)
-		setVar $HOLO TRUE
-	end
-
-	setVar $DROP_TWENTY 0
-	getWordPos $bot~user_command_line $pos "twenty"
-	if ($pos > 0)
-		setVar $DROP_TWENTY 1
-	end
-
-	setVar $twarp_safety 0
-	getWordPos $bot~user_command_line $pos "safe"
-	if ($pos > 0)
-		setVar $twarp_safety 1
-	end
-
-	getWordPos $bot~user_command_line $pos "paranoid"
-	if ($pos > 0)
-		setVar $twarp_safety 2
-	end
-
-	setVar $TRACKER FALSE
-	getWordPos $bot~user_command_line $pos "trade"
-	if ($pos > 0)
-		setVar $TRACKER TRUE
-	end
-
-	setVar $NextRequiresReport 0
-	getWordPos $bot~user_command_line $pos "nextreport"
-	if ($pos > 0)
-		setVar $NextRequiresReport 1
-	end
-
-	setVar $restock 0
-	getWordPos $bot~user_command_line $pos "restock"
-	if ($pos > 0)
-		setVar $restock 1
-	end
-
-
-	getWordPos $bot~user_command_line $pos "resume"
-	if ($pos > 0)
-		setvar $r 11
-		while ($r <= SECTORS)
-			getSectorParameter $r "LSCHK" $lschk
-			if ($lschk = TRUE)
-				setVar $CHKD[$r] 1
-			else
-				setVar $CHKD[$r] 0
-			end
-			add $r 1
-		end
-		
-	else
-		setvar $r 11
-		while ($r <= SECTORS)
-			setSectorParameter $r "LSCHK" FALSE
-			add $r 1
-		end
-		
-	end
-
-	setVar $ignorea 0
-	getWordPos $bot~user_command_line $pos "ignorea"
-	if ($pos > 0)
-		setVar $ignorea 1
-	end
-
-	if ($FILTER_DENSITY = 1)
-		goSub :getPersonalPlanets
-	end
-
-	goto :Lets_Get_It_On
-
-:Lets_Get_It_On
-getTime $Stamp "t d/m/yy"
-if ($TRACKER)
-	setVar $MCICd	0
-	setArray $MCIC	SECTORS
-
-	setVar $m 11
-	while ($m <= SECTORS)
-		getSectorParameter $m "EQUIPMENT-" $mtest
-		isNumber $tst $mtest
+	setvar $m 11
+	while ($m <= sectors)
+		getsectorparameter $m "EQUIPMENT-" $mtest
+		isnumber $tst $mtest
 		if ($tst)
 
-			setVar $MCIC[$m] TRUE
-			add $Results 1
-			add $MCICd 1
+			setvar $mcic[$m] true
+			add $results 1
+			add $mcicd 1
 		end
 		add $m 1
 	end
 
-
 else
 	if ($player~equipment_holds > 0)
-	    send "   j   y   "
+		send "   j   y   "
 	end
 end
 
-write $LOG_FName "-------------------------{ " & $Stamp & " }-------------------------"
+write $log_fname "-------------------------{ " & $stamp & " }-------------------------"
 echo "***"
-if ($Update_Figs)
+if ($update_figs)
 	#echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"ReFreshing Deployed Fighter Data"&ANSI_8&">*")
-	gosub :Build_FIG_LIST
+	gosub :build_fig_list
 end
 
 #echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Reading Figs"&ANSI_8&">*")
-setVar $idx 1
-while ($idx <= SECTORS)
-	getSectorParameter $idx "FIGSEC" $flag
-	isNumber $tst $flag
+setvar $idx 1
+while ($idx <= sectors)
+	getsectorparameter $idx "FIGSEC" $flag
+	isnumber $tst $flag
 	if ($tst <> 0)
 		if ($flag <> 0)
-			Add $DEP_FIGS 1
+			add $dep_figs 1
 		end
 	else
-		setSectorParameter $idx "FIGSEC" FALSE
+		setsectorparameter $idx "FIGSEC" false
 	end
 	add $idx 1
 end
 
-if ($DEP_FIGS = 0)
-	echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"No Deployed Fighter Data Found"&ANSI_8&">*")
+if ($dep_figs = 0)
+	echo ($taglinec & " " & ansi_8&"<"&ansi_15&"No Deployed Fighter Data Found"&ansi_8&">*")
 	halt
 else
-	echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Deployed Fighters "&ANSI_14&" : "&ANSI_15&$DEP_FIGS&ANSI_8&">*")
+	echo ($taglinec & " " & ansi_8&"<"&ansi_15&"Deployed Fighters "&ansi_14&" : "&ansi_15&$dep_figs&ansi_8&">*")
 end
 
-if ($Update_Limps)
-	echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"ReFreshing Limpet Data"&ANSI_8&">*")
-	gosub :Build_LIMP_LIST
+if ($update_limps)
+	echo ($taglinec & " " & ansi_8&"<"&ansi_15&"ReFreshing Limpet Data"&ansi_8&">*")
+	gosub :build_limp_list
 else
-	echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Reading Limps"&ANSI_8&">*")
-	setVar $idx 1
-	while ($idx <= SECTORS)
-		getSectorParameter $idx "LIMPSEC" $flag
-		isNumber $tst $Flag
+	echo ($taglinec & " " & ansi_8&"<"&ansi_15&"Reading Limps"&ansi_8&">*")
+	setvar $idx 1
+	while ($idx <= sectors)
+		getsectorparameter $idx "LIMPSEC" $flag
+		isnumber $tst $flag
 		if ($tst <> 0)
 			if ($flag > 0)
-				setVar $Limps[$idx] 1
-				add $DEP_LIMP 1
+				setvar $limps[$idx] 1
+				add $dep_limp 1
 			end
 		end
 		add $idx 1
 	end
 end
 
-  	window status 500 245 (" " & $TAGLINE & " v" & $Version)
-  	#echo "**"
+window status 500 245 (" " & $tagline & " v" & $version)
+#echo "**"
 #echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Gridded Sectors: "&ANSI_14&$DEP_FIGS&ANSI_8&">*")
 #echo ($TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Limp'd Sector  : "&ANSI_14&$DEP_LIMP&ANSI_8&">**")
 
 send " C ;UYQ "
 waitfor "Max Figs Per Attack:"
-getWord CurrentLine $maxFigAttack 5
-stripText $maxFigAttack ","
-isNumber $tst $maxFigAttack
+getword currentline $maxfigattack 5
+striptext $maxfigattack ","
+isnumber $tst $maxfigattack
 if ($tst = 0)
-	setVar $maxFigAttack 9999
+	setvar $maxfigattack 9999
 end
 
-	:PASSGRID_MAIN_LOOP
-	gosub :player~quikstats
-	if ($UNLIM = FALSE)
-		if ($PLAYER~TURNS <= $Turn_Limit)
-			goto :PASSGRID_MAIN_DONE
+:passgrid_main_loop
+gosub :player~quikstats
+if ($unlim = false)
+	if ($player~turns <= $turn_limit)
+		goto :passgrid_main_done
 	end
-	end
-		:To_The_Top
-		gosub :RestoreHaggle
-		setVar $anon_ptr 1
-		setTextLineTrigger	TurnsGone	:TurnsGone	"Do you want instructions (Y/N) [N]?"
+end
 
-		send "SZND*"
-		waiton "Relative Density Scan"
-		killAllTriggers
-	  	setTextLineTrigger	1	:getWarp "Sector "
-	  	setTextTrigger		2	:gotWarpInfo "Command [TL="
-		pause
-		:getWarp
-  	getWord CURRENTLINE $anm 13
-  	getText CURRENTLINE $temp "Warps :" "NavHaz :"
-		stripText $temp " "
-		stripText $temp ","
+:to_the_top
+gosub :restorehaggle
+setvar $anon_ptr 1
+settextlinetrigger	turnsgone	:turnsgone	"Do you want instructions (Y/N) [N]?"
 
-		setVar $DENS[$anon_ptr] $temp
-		setVar $ANOM[$anon_ptr] $anm
-		add $anon_ptr 1
-		setTextLineTrigger	1	:getWarp "Sector "
-		pause
-		:gotWarpInfo
-		killAllTriggers
-
-		if ($TRACKER)
-			gosub :Haggel_Checker
-		elseif (($player~ore_holds < $player~total_holds) AND ($player~TWARP_TYPE <> "No"))
-
-			if ((PORT.CLASS[$player~CURRENT_SECTOR] = 3) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 4) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 5) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 7))
-				#Echo "***Stupid Attmpt**"
-				if (HAGGLE)
-					setVar $restoreHaggle 1
-					autohaggle off
-				end
-				send "P T ** 0* 0* "
-					
-			end
-		end
-		if ($restock = 1)
-			if ($PLAYER~CREDITS < 100000)
-				send ("'["&$TagLineB&"] Restocking halted as credits low*")
-				setVar $restock 0
-			end
-
-			if (($player~ore_holds = $player~total_holds) AND ($player~TWARP_TYPE <> "No"))
-				
-				setVar $doRestock 0
-				if (($DROP_ARMID > 0) and ($DROP_LIMP > 0))
-					if (($player~ARMIDS < 4) or ($player~LIMPETS < 4))
-						setVar $doRestock 1
-					end
-				elseif ($DROP_ARMID > 0)
-					if ($player~ARMIDS < 4)
-						setVar $doRestock 1
-					end
-				elseif ($DROP_LIMP > 0)
-					if ($player~LIMPETS < 4)
-						setVar $doRestock 1
-					end
-
-				end
-				if ($doRestock = 1)
-					setVar $BOT~command "lsd"
-					setVar $BOT~user_command_line $LSDString
-					setVar $BOT~parm1 $LSDString
-						
-					saveVar $BOT~parm1
-						
-					saveVar $BOT~command
-					saveVar $BOT~user_command_line
-					load "scripts\"&$bot~mombot_directory&"\modes\resource\lsd.cts"
-					setEventTrigger        moveended        :moveended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\resource\lsd.cts"
-					pause
-						:moveended
-						killalltriggers
-						gosub :player~quikstats
-						gosub :resetMinesAfterRestock
-					end
-				end
-			end
-		
-		setArray $Adj_Targets SECTOR.WARPCOUNT[$player~CURRENT_SECTOR]
-		setArray $Filtered_Density SECTOR.WARPCOUNT[$player~CURRENT_SECTOR]
-
-		setVar $holoRequired 0
-		setVar $firstFilter 1
-
-
-		:refilter
-		setVar $i 1
-		while ($i <= SECTOR.WARPCOUNT[$player~CURRENT_SECTOR])
-			setVar $adj SECTOR.WARPS[$player~CURRENT_SECTOR][$i]
-			setVar $currentDensity SECTOR.DENSITY[$adj]
-			if ($FILTER_DENSITY = 1)
-				if ($planet~planetsInSectors[$adj] > 0)
-					subtract $currentDensity (500 * $planet~planetsInSectors[$adj])
-				end
-				if ($allLimps[$adj] > 0)
-					subtract $currentDensity (2 * $allLimps[$adj])
-					setVar $ANOM[$i] "No"
-				end
-				if ($allArmids[$adj] > 0)
-					subtract $currentDensity (10 * $allArmids[$adj])
-				end
-					
-			end
-			if (($ignorea = 1) OR (($ignore <> "") and ($ignore <> "0")))
-				if ($firstFilter = 1)
-					getSectorParameter $adj "FIGSEC" $Flag
-					isNumber $tst $Flag
-					if ($tst = 0)
-						setVar $Flag 0
-						setSectorParameter $adj "FIGSEC" FALSE
-					end
-					if (($flag = 0) and (($currentDensity <> 0) and $currentDensity <> 100))
-						# not our fig there, and density not passive
-						setVar $holoRequired 1
-					end
-				else
-					setVar $figsowner SECTOR.FIGS.OWNER[$adj]
-					lowercase $figsowner
-					getWordPos $figsowner $whereowner "belong to"
-					getWordPos $figsowner $whereownercorp "belong to corp#"&$ignore
-					getWordPos $figsowner $whereownerplayer "belong to "&$ignore
-					if ($whereowner = 0)
-						if (SECTOR.FIGS.QUANTITY[$adj] < $player~FIGHTERS)
-							subtract $currentDensity (SECTOR.FIGS.QUANTITY[$adj] * 5)
-						end
-					elseif (($whereownercorp > 0) OR ($whereownerplayer > 0))
-						if (SECTOR.FIGS.QUANTITY[$adj] < $player~FIGHTERS)
-							subtract $currentDensity (SECTOR.FIGS.QUANTITY[$adj] * 5)
-						end					
-					end
-					
-
-				end
-				
-			end
-
-			setVar $Filtered_Density[$i] $currentDensity
-			add $i 1
-		end 
-
-		if ($holoRequired = 1)
-			setVar $firstfilter 0
-			setVar $holoRequired 0
-			send "zn"
-			waitfor "o you want instructions (Y/N) [N]?"
-			gosub :Do_Holo
-	
-
-			goto :refilter
-			
-		end
-
-		setVar $i 1
-		while ($i <= SECTOR.WARPCOUNT[$player~CURRENT_SECTOR])
-        		setVar $adj SECTOR.WARPS[$player~CURRENT_SECTOR][$i]
-			setVar $Adj_Targets[$i] 10
-			setVar $currentDensity $Filtered_Density[$i]
-			
-			if (SECTOR.NAVHAZ[$adj] <> 0)
-				setVar $filter 0
-				setVar $Filter (SECTOR.NAVHAZ[$adj] * 21)
-				setVar $Filter ($currentDensity - $Filter)
-			else
-				setVar $filter $currentDensity
-			end
-
-			if ($adj < 10)
-				setVar $buff "    "
-			elseif ($adj < 100)
-				setVar $buff "   "
-			elseif ($adj < 1000)
-				setVar $buff "  "
-			elseif ($adj < 10000)
-				setVar $buff " "
-			else
-				setVar $buff ""
-			end
-
-			getSectorParameter $adj "FIGSEC" $Flag
-			isNumber $tst $Flag
-
-			if ($tst = 0)
-				setVar $Flag 0
-				setSectorParameter $adj "FIGSEC" FALSE
-			end
-
-			if ($skipparam <> "")
-				getSectorParameter $adj $skipparam $skipChk
-				if ($skipChk = "")
-					setVar $skipChk 0
-				end
-				
-				if ($skipChk <> 0)
-					goto :Next_ADJ_Please
-
-				end
-				
-			end
-
-			if ($lockparam <> "")
-				getSectorParameter $adj $lockparam $lockChk
-				if ($lockChk = "")
-					setVar $lockChk 0
-				end
-				
-				if ($lockChk <> $lockvalue)
-					goto :Next_ADJ_Please
-
-				end
-				
-			end
-
-			# Log anything interesting
-
-			if (($currentDensity > 200) AND ($Flag = 0))
-				setVar $StrMsg ("Sect: " & $buff & $adj & " Den: " & $currentDensity & " Haz: " & SECTOR.NAVHAZ[$adj] & "% Filtered: " & $Filter)
-				write $LOG_FName $StrMsg
-				add $LOG_EVENT 1
-				setVar $LOG_TEXT $StrMsg
-				gosub :Move_Down
-				send ("'["&$TagLineB&"] " & $StrMsg & "*")
-				waitfor "Message sent on sub-space channel"
-			elseif (SECTOR.NAVHAZ[$adj] <> 0)
-				setVar $StrMsg ("NavHaz in Sect: " & $buff & $adj & " Den: " & $currentDensity & " Haz: " & SECTOR.NAVHAZ[$adj] & "% Filtered: " & $Filter)
-				write $LOG_FName $StrMsg
-				add $LOG_EVENT 1
-				setVar $LOG_TEXT $StrMsg
-				gosub :Move_Down
-				send ("'["&$TagLineB&"] " & $StrMsg & "*")
-				waitfor "Message sent on sub-space channel"
-			end
-			if ((($currentDensity = 0) OR ($currentDensity = 5)) AND ($ANOM[$i] = "Yes"))
-				setVar $StrMsg ("Cloaked Ship, Sect: " & $buff & $adj & " Den: " & $currentDensity & " Haz: " & SECTOR.NAVHAZ[$adj] & "% Filtered: " & $Filter)
-				write $LOG_FName $StrMsg
-				add $LOG_EVENT 1
-				setVar $LOG_TEXT $StrMsg
-				gosub :Move_Down
-				send ("'["&$TagLineB&"] " & $StrMsg & "*")
-				waitfor "Message sent on sub-space channel"
-			end
-
-			if (($currentDensity = 40) OR ($currentDensity = 45) OR ($currentDensity = 140) OR ($currentDensity = 145))
-				setVar $StrMsg ("Possible Trader, Sect: " & $buff & $adj & " Den: " & $currentDensity & " Haz: " & SECTOR.NAVHAZ[$adj] & "% Filtered: " & $Filter)
-				write $LOG_FName $StrMsg
-				add $LOG_EVENT 1
-				setVar $LOG_TEXT $StrMsg
-				gosub :Move_Down
-				send ("'["&$TagLineB&"] " & $StrMsg & "*")
-				waitfor "Message sent on sub-space channel"
-			end
-
-			# END LOG
-
-			# Skip Limps
-			if (($ANOM[$i] = "Yes") AND ($Limps[$adj] = 0))
-            			goto :Next_ADJ_Please
-			end
-
-			#prioritise sectors nextdoor
-			if ($flag = 0)
-				if (($currentDensity = 0) OR ($currentDensity = 100))
-	            			if (SECTOR.NAVHAZ[$adj] = 0)
-						if (SECTOR.EXPLORED[$adj] <> "YES")
-							if ($DENS[$i] > 1)
-								setVar $Adj_Targets[$i] 1
-								goto :Next_ADJ_Please
-							end
-						end
-					end
-				end
-
-				if (($currentDensity = 0) OR ($currentDensity = 100))
-	            			if (SECTOR.NAVHAZ[$adj] = 0)
-						if (SECTOR.EXPLORED[$adj] = "YES")
-							if ($DENS[$i] > 1)
-								setVar $Adj_Targets[$i] 2
-								goto :Next_ADJ_Please
-							end
-						end
-					end
-				end
-				if (($currentDensity = 0) OR ($currentDensity = 100))
-	            			if (SECTOR.NAVHAZ[$adj] = 0)
-						if (SECTOR.EXPLORED[$adj] <> "YES")
-							if ($DENS[$i] >= 1)
-								setVar $Adj_Targets[$i] 3
-								goto :Next_ADJ_Please
-							end
-						end
-					end
-				end
-				if (($currentDensity = 0) OR ($currentDensity = 100))
-	            			if (SECTOR.NAVHAZ[$adj] = 0)
-						if (SECTOR.EXPLORED[$adj] = "YES")
-							if ($DENS[$i] >= 1)
-								setVar $Adj_Targets[$i] 4
-								goto :Next_ADJ_Please
-							end
-						end
-					end
-				end
-			end
-
-			if (($currentDensity = 105) OR ($currentDensity = 5))
-            			if (SECTOR.NAVHAZ[$adj] = 0)
-					if (SECTOR.EXPLORED[$adj] <> "YES")
-						if ($Flag <> 0)
-							if ($DENS[$i] > 1)
-								setVar $Adj_Targets[$i] 5
-								goto :Next_ADJ_Please
-							end
-						end
-					end
-				end
-			end
-			
-			# The next two seem illogical because there explored and figged. 
-			# However, I assume if you have no t-warp, it makes sense.
-			# Hammer: Adding twarp filter
-			
-			if ($player~TWARP_TYPE = "No")
-				# If density is 105 or 5, and 5+ warps, no hz, has fig, not checked - go there? but why
-				if (($currentDensity = 105) OR ($currentDensity = 5))
-					#if (SECTOR.EXPLORED[$adj] <> "YES")
-					if (SECTOR.WARPCOUNT[$adj] >= 5)
-						if (SECTOR.NAVHAZ[$adj] = 0)
-							if ($Flag = 1)
-								if ($DENS[$i] >= 1)
-									if ($CHKD[$ADJ] = 0)
-										setVar $Adj_Targets[$i] 6
-										goto :Next_ADJ_Please
-									end
-								end
-							end
-						end
-					end
-				end
-				if (($currentDensity = 105) OR ($currentDensity = 5))
-					#if (SECTOR.EXPLORED[$adj] <> "YES")
-					if (SECTOR.WARPCOUNT[$adj] > 1)
-						if (SECTOR.NAVHAZ[$adj] = 0)
-							if ($Flag = 1)
-								if ($DENS[$i] >= 1)
-									if ($CHKD[$ADJ] = 0)
-										setVar $Adj_Targets[$i] 6
-										goto :Next_ADJ_Please
-									end
-								end
-							end
-						end
-					end
-				end
-			end
-			:Next_ADJ_Please
-    		add $i 1
-		end
-
-		setVar $idx 1
-		setVar $Target 10
-		setVar $Target_IDX 0
-
-		while ($idx <= SECTOR.WARPCOUNT[$player~CURRENT_SECTOR])
-			if (($Adj_Targets[$idx] < $Target) AND ($Target <> 0))
-			setVar $Target $Adj_Targets[$idx]
-			setVar $Target_IDX $idx
-			end
-			add $idx 1
-		end
-
-		if ($Target_IDX <> 0)
-			setVar $Target SECTOR.WARPS[$player~CURRENT_SECTOR][$Target_IDX]
-			if (SECTOR.DENSITY[$Target] >= 100)
-			send " c r"&$Target&"*q"
-			setTextLineTrigger	NoData1	:NoData		"You have never visted sector"
-			setTextLineTrigger	NoData2	:NoData		"I have no information about a port in that sector"
-			setTextLineTrigger	YaData1	:YaData		"Items     Status  Trading % of max OnBoard"
-			setTextLineTrigger	YaData2	:YaData		"A  Cargo holds     :"
-			pause
-				:NoData
-				killAllTriggers
-				if ($HOLO)
-					gosub :Do_Holo
-					gosub :Display_Holo
-					waiton	"Command [TL="
-					if (SECTOR.FIGS.QUANTITY[$Target] <> 0)
-						if ((SECTOR.FIGS.OWNER[$Target] <> "belong to your Corp") AND (SECTOR.FIGS.OWNER[$Target] <> "yours"))
-							#Trying Again, but this time ignoring $Target
-							setVar $Ignore $Target
-							setVar $idx 1
-							setVar $Target 10
-							setVar $Target_IDX 0
-							while ($idx <= SECTOR.WARPCOUNT[$player~CURRENT_SECTOR])
-								if ($Adj_Targets[$idx] < $Target) AND ($Target <> 0) AND (SECTOR.WARPS[$player~CURRENT_SECTOR][$idx] <> $Ignore)
-									setVar $Target $Adj_Targets[$idx]
-									setVar $Target_IDX $idx
-								end
-								add $idx 1
-							end
-							if ($Target_IDX <> 0)
-								setVar $Target SECTOR.WARPS[$player~CURRENT_SECTOR][$Target_IDX]
-							else
-								goto :No_Target
-							end
-						end
-					end
-				end
-				:YaData
-				killAllTriggers
-			end
-        	goto :Next_Target
-        end
-
-        :No_Target
-	
-		if ($player~TWARP_TYPE <> "No")
-			#Find A Place To Twarp To
-			getNearestWarps $WarpArray $player~CURRENT_SECTOR
-			getRnd $w 5 10
-			while ($w <= $WarpArray)
-				setVar $focus $WarpArray[$w]
-				if ($Focus <> $player~CURRENT_SECTOR)
-					getSectorParameter $Focus "FIGSEC" $Flag
-					isNumber $tst $Flag
-					if ($tst = 0)
-						setVar $Flag 0
-						setSectorParameter $Focus "FIGSEC" FALSE
-					end
-					if ($flag <> false)
-						if ($twarp_safety = 1)
-							getSectorParameter $Focus "LIMPSEC" $Flag
-							isNumber $tst $Flag
-							if ($tst = 0)
-								setVar $Flag 0
-								setSectorParameter $Focus "LIMPSEC" FALSE
-							end
-						elseif ($twarp_safety = 2)
-							
-
-							getSectorParameter $Focus "LIMPSEC" $Flag1
-							isNumber $tst1 $Flag1
-							if ($tst1 = 0)
-								setVar $Flag1 0
-								setSectorParameter $Focus "LIMPSEC" FALSE
-							end
-
-							getSectorParameter $Focus "MINESEC" $Flag2
-							isNumber $tst2 $Flag2
-							if ($tst2 = 0)
-								setVar $Flag2 0
-								setSectorParameter $Focus "MINESEC" FALSE
-							end
-		
-							if (($Flag1 = 0) or ($Flag2 = 0))
-								setVar $Flag 0
-							else
-								setVar $Flag 1
-							end
-
-						end
-					end
-					if ($Flag <> 0)
-						if (SECTOR.WARPCOUNT[$Focus] > 1)
-							setVar $w_i 1
-							while ($w_i <= SECTOR.WARPCOUNT[$Focus])
-								setVar $w_adj SECTOR.WARPS[$Focus][$W_i]
-								getSectorParameter $w_adj "FIGSEC" $Flag
-								isNumber $tst $Flag
-								# check for a fig, if no fig it is a candidate
-								if ($tst = 0)
-									setVar $Flag 0
-									setSectorParameter $w_adj "FIGSEC" FALSE
-								end
-
-								setVar $skipWarp 0
-								if ($skipparam <> "")
-									getSectorParameter $w_adj $skipparam $skipChk
-									if ($skipChk = "")
-										setVar $skipChk 0
-									end
-									if ($skipChk <> 0)
-										setVar $skipWarp 1
-									end
-								end
-
-								if ($lockparam <> "")
-									getSectorParameter $adj $lockparam $lockChk
-									if ($lockChk = "")
-										setVar $lockChk 0
-									end
-									if ($lockChk <> $lockvalue)
-										setVar $skipWarp 1
-									end
-								end
-
-								if (($Flag = 0) AND ($CHKD[$w_adj] <> 1) AND ($skipWarp = 0))
-									setVar $CHKD[$w_adj] 1
-									if ($NextRequiresReport = 1)
-								
-										setVar $portOk 0
-										if (PORT.EXISTS[$w_adj] = 1)
-											send "cr" $w_adj "*q"
-											waitfor "Computer activate"
-											setTextLineTrigger portexists :portexists "Commerce report for"
-											setTextLineTrigger portexistsno :portexistsno "I have no information about a port in that sector"
-											setTextLineTrigger portexistsno2 :portexistsno2 "u have never visted sector"
-											pause
-											:portexists
-											setVar $portOk 1
-								
-											:portexistsno
-											:portexistsno2
-											killtrigger portexistsno
-											killtrigger portexistsno2
-											killtrigger portexists
-											
-
-										end
-										# no port report; it's mark it as checked and try aain
-										if ($portOk = 1)
-											goto :We_Got_Game
-										end
-									else
-										
-										goto :We_Got_Game
-									end
-
-									
-								end
-		                    	add $w_i 1
-							end
-						end
-					end
-				end
-	        	add $w 1
-			end
-
-			:We_Done
-			#get here, there's no hope
-			echo "**" & $TAGLINEc & " " & " No Target To Find. Try updating CIM***"
-			halt
-
-	        :We_Got_Game
-	        #Echo "***Focus " & $FOCUS & "**"
-	        if ($HOLO)
-				setVar $cx 1
-				setVar $cn 0
-				while (SECTOR.WARPS[$player~CURRENT_SECTOR][$cx] <> 0)
-					setVar $adj SECTOR.WARPS[$player~CURRENT_SECTOR][$cx]
-					if (SECTOR.EXPLORED[$adj] = "NO") OR (SECTOR.EXPLORED[$adj] = "CALC")
-						add $cn 1
-					end
-					add $cx 1
-				end
-				if ($cn > 2)
-					gosub :Do_Holo
-					gosub :Display_Holo
-				end
-	        end
-				setVar $engagestring "Y"
-				send " M" & $Focus & "*Y"
-				setTextLineTrigger		Sector__Good	:Sector__Good	"Locating beam pinpointed, TransWarp"
-				setTextLineTrigger		Sector__Here	:Sector__GoodNav	"<Set NavPoint>"
-				setTextLineTrigger		Sector__Bad		:Sector__Bad	"No locating beam found"
-				setTextTrigger				Sector__Far		:Sector__Far	"You do not have enough Fuel Ore to make the jump."
-				pause
-				:Sector__Bad
-				killAllTriggers
-				goto :We_Done
-				:Sector__Far
-				killAllTriggers
-				getNearestWarps $WarpArray $player~CURRENT_SECTOR
-				setVar $c 1
-				while ($c <= $WarpArray)
-					setVar $focus $WarpArray[$c]
-					if ((PORT.CLASS[$focus] = 3) OR (PORT.CLASS[$focus] = 4) OR (PORT.CLASS[$focus] = 5) OR (PORT.CLASS[$focus] = 7))
-						getSectorParameter $focus "FIGSEC" $Flag
-						isNumber $tst $flag
-						if ($tst = 0)
-							setVar $flag 0
-							setSectorParameter $focus "FIGSEC" FALSE
-						end
-                    	if ($flag = 1)
-							setVar $destination $focus
-							gosub :getCourse
-							if ($courseLength <> 0)
-								setVar $j 2
-								setVar $result ""
-
-								while ($j <= $courseLength)
-									getSectorParameter $COURSE[$j] "FIGSEC" $Flag
-									isNumber $tst $Flag
-									if ($tst = 0)
-										setVar $Flag 0
-										setSectorParameter $COURSE[$j] "FIGSEC" FALSE
-									end
-									if (($Flag = 0) AND ($COURSE[$j] <> $player~CURRENT_SECTOR))
-										goto :Next_SXX_Port
-									end
-									setVar $result $result&"m"&$COURSE[$j]&"* "
-									if (($COURSE[$j] > 10) AND ($COURSE[$j] <> STARDOCK))
-										setVar $result ($result&" Z  A  "&$maxFigAttack&"*  *  ")
-									end
-									# If Not FED Space, Drop A Fig, if we haven't already
-									if (($COURSE[$j] > 10) AND ($COURSE[$j] <> STARDOCK) AND ($j > 2))
-										getSectorParameter $COURSE[$j] "FIGSEC" $Flag
-										isNumber $tst $Flag
-										if ($tst = 0)
-											setVar $Flag 0
-											setSectorParameter $COURSE[$j] "FIGSEC" FALSE
-										end
-										if ($Flag = 0)
-											setVar $result ($result&" F  Z  1 * Z  C  D  *  ")
-											setSectorParameter $COURSE[$j] "FIGSEC" TRUE
-										end
-									end
-									add $j 1
-								end
-								waitfor "Command ["
-
-								if ($TRACKER)
-									send ($result&"  **  ")
-									gosub :player~quikstats
-									gosub :Haggel_Checker
-								else
-									send ($result&"  **    P   T   *   *   *   *   ")
-								end
-
-								gosub :player~quikstats
-								if ($player~total_holds <> $player~ore_holds) AND ($TRACKER = 0)
-									if ($PLAYER~CREDITS < 10000)
-										Echo "**" & $TAGLINEc & " " & " Appear To Be Out of Funds for ORE purchase.**"
-									elseif (($UNLIM = FALSE) AND (CURRENTTURNS < 1))
-										Echo "**" & $TAGLINEc & " " & " Appear To Be Out Turns. Photon'd Maybe??**"
-									else
-										Echo "**" & $TAGLINEc & " " & " Not Enough ORE to continue.**"
-									end
-									halt
-								elseif ($TRACKER) AND ($player~ore_holds < ($player~total_holds - $EQU_MIN))
-									if ($PLAYER~CREDITS < 10000)
-										Echo "**" & $TAGLINEc & " " & " Appear To Be Out of Funds for ORE purchase.**"
-									elseif (($UNLIM = FALSE) AND (CURRENTTURNS < 1))
-										Echo "**" & $TAGLINEc & " " & " Appear To Be Out Turns. Photon'd Maybe??**"
-									else
-										Echo "**" & $TAGLINEc & " " & " Not Enough ORE to continue.**"
-									end
-									halt
-								elseif ($PLAYER~CREDITS < 10000)
-									Echo "**" & $TAGLINEc & " " & " Too Few Credits to continue.**"
-									halt
-								end
-								goto :To_The_Top
-							end
-						end
-					end
-						:Next_SXX_Port
-                    	add $c 1
-					end
-					goto :We_Done
-				:Sector__GoodNav
-				send "*q"
-				setVar $engagestring ""
-				:Sector__Good
-				killAllTriggers
-				#echo ("**" & $TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Twarping To Jump Point: "&ANSI_14&$Focus&ANSI_8&">*")
-
-				setVar $DROP_STR ""
-				if ($DROPING_MINES <> 0)
-					if (SECTOR.WARPINCOUNT[$focus] >= 3)
-						if (($DROPING_MINES = 1) OR ($DROPING_MINES = 3))
-							if ($player~LIMPETS > $DROP_LIMP)
-								setVar $DROP_STR ($DROP_STR & "H 2 Z "&$DROP_LIMP&"* C * ")
-							else
-							   if ($DROPING_MINES = 1)
-							   	setVar $DROPING_MINES 0
-							   else
-							   	setVar $DROPING_MINES 2
-							   end
-							end
-						end
-
-						if (($DROPING_MINES = 2) OR ($DROPING_MINES = 3))
-							if ($player~ARMIDS > $DROP_ARMID)
-								setVar $DROP_STR ($DROP_STR & "H 1 Z "&$DROP_ARMID&"* C * ")
-							else
-								if ($DROPING_MINES = 2)
-									setVar $DROPING_MINES 0
-								else
-									setVar $DROPING_MINES 1
-								end
-							end
-						end
-					end
-				end
-				send $engagestring "  *  A Z " & $maxFigAttack & "998877665544332211 n  *  **   " & $DROP_STR
-				gosub :player~quikstats
-			goto :To_The_Top
-		else
-			Echo "**" & $TAGLINEc & " " & " Walled In (No Twarp Available)***"
-			halt
-		end
-
-		:Next_Target
-
-		setVar $figsToDrop 1
-		setvar $density_trick false
-		if (SECTOR.DENSITY[$Target] = 0)
-			if ($DROP_TWENTY = 1)
-				setvar $density_trick true
-				setVar $figsToDrop 20
-			end
-		end
-		send "  m " & $Target & " *  z  a  " & $maxFigAttack & "99887766554433221100  n  *  dz  n  f  z  " $figsToDrop "*  z  c  d  *  "
-		setTextLineTrigger u_torped :help_me "Your ship was hit by a Photon and has been disabled."
-		setTextLineTrigger no_turns :help_me "You don't have enough turns left."
-		setTextLineTrigger ig_hold1 :help_me "You attempt to retreat but are held fast by an Interdictor Generator."
-		setTextLineTrigger ig_hold2 :help_me "An Interdictor Generator in this sector holds you fast!"
-		setTextLineTrigger quasar_b :help_me "Quasar Blast!"
-		waiton ":[" & $Target & "] (?=Help)"
-		goto :help_me_jmp
-		:help_me
-		killAllTriggers
-		getWord CURRENTLINE $spoofy 1
-		if ($spoofy <> "Your") AND ($spoofy <> "You") AND ($spoofy <> "An") AND ($spoofy <> "Quasar")
-			goto :help_me_jmp
-		end
-		stop _ck_callsaveme
-		stop _ck_callsaveme
-		send "   N   Y  *  N   *   R   *   Q   Q   Q   Z   N   *   R   *   "
-		waitFor "Command [TL="
-		load _ck_callsaveme
-		waitFor "Message sent on sub-space channel"
-		halt
-		:help_me_jmp
-		add $DEP_FIGS 1
-		add $DEP_NEW 1
-		setSectorParameter $Target "FIGSEC" TRUE
-		setVar $CHKD[$Target] 1
-
-		setVar $DROP_STR ""
-
-		if ($density_trick <> true)
-			if ($DROPING_MINES <> 0)
-				if (SECTOR.WARPINCOUNT[$Target] >= 3)
-					if (($DROPING_MINES = 1) OR ($DROPING_MINES = 3))
-						if ($player~LIMPETS > $DROP_LIMP)
-							setVar $DROP_STR ($DROP_STR & "H 2 Z "&$DROP_LIMP&"* C * ")
-						else
-						   if ($DROPING_MINES = 1)
-						   	setVar $DROPING_MINES 0
-						   else
-						   	setVar $DROPING_MINES 2
-						   end
-						end
-					end
-
-					if (($DROPING_MINES = 2) OR ($DROPING_MINES = 3))
-						if ($player~ARMIDS > $DROP_ARMID)
-							setVar $DROP_STR ($DROP_STR & "H 1 Z "&$DROP_ARMID&"* C * ")
-						else
-							if ($DROPING_MINES = 2)
-								setVar $DROPING_MINES 0
-							else
-								setVar $DROPING_MINES 1
-							end
-						end
-					end
-				end
-			end
-		end
-		if  ($DROP_STR <> "")
-			send $DROP_STR & "  j  *"
-			waiton "Are you sure you want to jettison all cargo?"
-		end
-		gosub :player~quikstats
-
-		if ($PLAYER~CURRENT_PROMPT <> "Command")
-			Echo "**" & $TAGLINEc & " " & "Wrong Prompt After Sector Hit.***"
-			halt
-		end
-
-		if ($TRACKER)
-			gosub :Haggel_Checker
-		end
-
-		if ($PLAYER~CURRENT_PROMPT <> "Command")
-	        send " r *  *  p d 0* 0* 0* * *** * c q q q q q z 2 2 c q * z * *** * * "
-			gosub :player~quikstats
-			if ($PLAYER~CURRENT_PROMPT = "Command")
-				load "_ck_callsaveme.cts"
-				halt
-			else
-				Echo "**" & $TAGLINEc & " " & "Hmmm..  I seem to be stuck.***"
-				halt
-			end
-		end
-
-		gosub :UpdateStatus_window
-
-		if (($Report_RYLOS) AND (RYLOS > 1))
-			send "'["&$TagLineB&"] Class 0 RYLOS Spotted In Sector: " & RYLOS &"*"
-			waitfor "Message sent on sub-space channel"
-			setVar $Report_RYLOS	FALSE
-		end
-		if (($Report_ALPHA) AND (ALPHACENTAURI > 1))
-			send "'["&$TagLineB&"] Class 0 ALPHACENTAURI Spotted In Sector: " & ALPHACENTAURI &"*"
-			waitfor "Message sent on sub-space channel"
-            setVar $Report_ALPHA	FALSE
-		end
-
-		if (($Update_Port) AND (PORT.EXISTS[$Target]))
-			send "CR*Q"
-			waitfor "<Computer deactivated>"
-		end
-		
-		if ($player~FIGHTERS <= 10)
-			Echo "**" & $TAGLINEc & " " & "Fighter Level is Critically Low (Less Than 10)**"
-			Halt
-		end
-		goto :PASSGRID_MAIN_LOOP
-	:PASSGRID_MAIN_DONE
-	gosub :RestoreHaggle
-
-	if ($UNLIM = 0)
-		if (CURRENTTURNS <= $Turn_Limit)
-			send "'["&$TagLineB&"] Turn Limit Reached, Halting*"
-		end
-	else
-		send "'["&$TagLineB&"] Nothing To Do*"
-	end
-
-	halt
-
-:TurnsGone
-gosub :RestoreHaggle
-killAllTriggers
-send "   *   *    *   /"
-waiton #179 & "Turns"
-getText CURRENTLINE $LOCAL "Sect" (#179 & "Turns")
-stripText $LOCAL " "
-send "'"
-waitfor "Sub-space radio ("
-send $LOCAL & "=saveme*"
-waitfor "Message sent on sub-space channel"
-send "F  Z  1*  Z  C  D  *  "
-setDelayTrigger		NoHelpComming	:NoHelpComming	4000
-setTextLineTrigger	HelpCame		:HelpCame		"Saveme script activated - "
+send "SZND*"
+waiton "Relative Density Scan"
+killalltriggers
+settextlinetrigger	1	:getwarp "Sector "
+settexttrigger		2	:gotwarpinfo "Command [TL="
 pause
-	:NoHelpComming
-	killAllTriggers
-	send "'["&$TAGLINEb&"] No Help Came.*"
-	halt
-	:HelpCame
-	killAllTriggers
-	getText CURRENTLINE $planet~planet "Planet" "to"
-	stripText $planet~planet " "
-	send "L Z" & #8 & $planet~planet & "*  J  C  *  "
-	halt
 
+:getwarp
+getword currentline $anm 13
+gettext currentline $temp "Warps :" "NavHaz :"
+striptext $temp " "
+striptext $temp ","
 
+setvar $dens[$anon_ptr] $temp
+setvar $anom[$anon_ptr] $anm
+add $anon_ptr 1
+settextlinetrigger	1	:getwarp "Sector "
+pause
 
-:Build_FIG_LIST
-killAllTriggers
-send "'Scanning Deployed Fighters...*G"
-SetVar $idx 1
-while ($idx <= SECTORS)
-	setSectorParameter $idx "FIGSEC"	FALSE
+:gotwarpinfo
+killalltriggers
+
+if ($tracker)
+	gosub :haggel_checker
+elseif (($player~ore_holds < $player~total_holds) and ($player~twarp_type <> "No"))
+
+	if ((port.class[$player~current_sector] = 3) or (port.class[$player~current_sector] = 4) or (port.class[$player~current_sector] = 5) or (port.class[$player~current_sector] = 7))
+		#Echo "***Stupid Attmpt**"
+		if (haggle)
+			setvar $restorehaggle 1
+			autohaggle off
+		end
+		send "P T ** 0* 0* "
+
+	end
+end
+if ($restock = 1)
+	if ($player~credits < 100000)
+		send ("'["&$taglineb&"] Restocking halted as credits low*")
+		setvar $restock 0
+	end
+
+	if (($player~ore_holds = $player~total_holds) and ($player~twarp_type <> "No"))
+
+		setvar $dorestock 0
+		if (($drop_armid > 0) and ($drop_limp > 0))
+			if (($player~armids < 4) or ($player~limpets < 4))
+				setvar $dorestock 1
+			end
+		elseif ($drop_armid > 0)
+			if ($player~armids < 4)
+				setvar $dorestock 1
+			end
+		elseif ($drop_limp > 0)
+			if ($player~limpets < 4)
+				setvar $dorestock 1
+			end
+
+		end
+		if ($dorestock = 1)
+			setvar $bot~command "lsd"
+			setvar $bot~user_command_line $lsdstring
+			setvar $bot~parm1 $lsdstring
+
+			savevar $bot~parm1
+
+			savevar $bot~command
+			savevar $bot~user_command_line
+			load "scripts\"&$bot~mombot_directory&"\modes\resource\lsd.cts"
+			seteventtrigger        moveended        :moveended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\resource\lsd.cts"
+			pause
+
+			:moveended
+			killalltriggers
+			gosub :player~quikstats
+			gosub :resetminesafterrestock
+		end
+	end
+end
+
+setarray $adj_targets sector.warpcount[$player~current_sector]
+setarray $filtered_density sector.warpcount[$player~current_sector]
+
+setvar $holorequired 0
+setvar $firstfilter 1
+
+:refilter
+setvar $i 1
+while ($i <= sector.warpcount[$player~current_sector])
+	setvar $adj sector.warps[$player~current_sector][$i]
+	setvar $currentdensity sector.density[$adj]
+	if ($filter_density = 1)
+		if ($planet~planetsinsectors[$adj] > 0)
+			subtract $currentdensity (500 * $planet~planetsinsectors[$adj])
+		end
+		if ($alllimps[$adj] > 0)
+			subtract $currentdensity (2 * $alllimps[$adj])
+			setvar $anom[$i] "No"
+		end
+		if ($allarmids[$adj] > 0)
+			subtract $currentdensity (10 * $allarmids[$adj])
+		end
+
+	end
+	if (($ignorea = 1) or (($ignore <> "") and ($ignore <> "0")))
+		if ($firstfilter = 1)
+			getsectorparameter $adj "FIGSEC" $flag
+			isnumber $tst $flag
+			if ($tst = 0)
+				setvar $flag 0
+				setsectorparameter $adj "FIGSEC" false
+			end
+			if (($flag = 0) and (($currentdensity <> 0) and $currentdensity <> 100))
+				# not our fig there, and density not passive
+				setvar $holorequired 1
+			end
+		else
+			setvar $figsowner sector.figs.owner[$adj]
+			lowercase $figsowner
+			getwordpos $figsowner $whereowner "belong to"
+			getwordpos $figsowner $whereownercorp "belong to corp#"&$ignore
+			getwordpos $figsowner $whereownerplayer "belong to "&$ignore
+			if ($whereowner = 0)
+				if (sector.figs.quantity[$adj] < $player~fighters)
+					subtract $currentdensity (sector.figs.quantity[$adj] * 5)
+				end
+			elseif (($whereownercorp > 0) or ($whereownerplayer > 0))
+				if (sector.figs.quantity[$adj] < $player~fighters)
+					subtract $currentdensity (sector.figs.quantity[$adj] * 5)
+				end
+			end
+
+		end
+
+	end
+
+	setvar $filtered_density[$i] $currentdensity
+	add $i 1
+end
+
+if ($holorequired = 1)
+	setvar $firstfilter 0
+	setvar $holorequired 0
+	send "zn"
+	waitfor "o you want instructions (Y/N) [N]?"
+	gosub :do_holo
+
+	goto :refilter
+
+end
+
+setvar $i 1
+while ($i <= sector.warpcount[$player~current_sector])
+	setvar $adj sector.warps[$player~current_sector][$i]
+	setvar $adj_targets[$i] 10
+	setvar $currentdensity $filtered_density[$i]
+
+	if (sector.navhaz[$adj] <> 0)
+		setvar $filter 0
+		setvar $filter (sector.navhaz[$adj] * 21)
+		setvar $filter ($currentdensity - $filter)
+	else
+		setvar $filter $currentdensity
+	end
+
+	if ($adj < 10)
+		setvar $buff "    "
+	elseif ($adj < 100)
+		setvar $buff "   "
+	elseif ($adj < 1000)
+		setvar $buff "  "
+	elseif ($adj < 10000)
+		setvar $buff " "
+	else
+		setvar $buff ""
+	end
+
+	getsectorparameter $adj "FIGSEC" $flag
+	isnumber $tst $flag
+
+	if ($tst = 0)
+		setvar $flag 0
+		setsectorparameter $adj "FIGSEC" false
+	end
+
+	if ($skipparam <> "")
+		getsectorparameter $adj $skipparam $skipchk
+		if ($skipchk = "")
+			setvar $skipchk 0
+		end
+
+		if ($skipchk <> 0)
+			goto :next_adj_please
+
+		end
+
+	end
+
+	if ($lockparam <> "")
+		getsectorparameter $adj $lockparam $lockchk
+		if ($lockchk = "")
+			setvar $lockchk 0
+		end
+
+		if ($lockchk <> $lockvalue)
+			goto :next_adj_please
+
+		end
+
+	end
+
+	# Log anything interesting
+
+	if (($currentdensity > 200) and ($flag = 0))
+		setvar $strmsg ("Sect: " & $buff & $adj & " Den: " & $currentdensity & " Haz: " & sector.navhaz[$adj] & "% Filtered: " & $filter)
+		write $log_fname $strmsg
+		add $log_event 1
+		setvar $log_text $strmsg
+		gosub :move_down
+		send ("'["&$taglineb&"] " & $strmsg & "*")
+		waitfor "Message sent on sub-space channel"
+	elseif (sector.navhaz[$adj] <> 0)
+		setvar $strmsg ("NavHaz in Sect: " & $buff & $adj & " Den: " & $currentdensity & " Haz: " & sector.navhaz[$adj] & "% Filtered: " & $filter)
+		write $log_fname $strmsg
+		add $log_event 1
+		setvar $log_text $strmsg
+		gosub :move_down
+		send ("'["&$taglineb&"] " & $strmsg & "*")
+		waitfor "Message sent on sub-space channel"
+	end
+	if ((($currentdensity = 0) or ($currentdensity = 5)) and ($anom[$i] = "Yes"))
+		setvar $strmsg ("Cloaked Ship, Sect: " & $buff & $adj & " Den: " & $currentdensity & " Haz: " & sector.navhaz[$adj] & "% Filtered: " & $filter)
+		write $log_fname $strmsg
+		add $log_event 1
+		setvar $log_text $strmsg
+		gosub :move_down
+		send ("'["&$taglineb&"] " & $strmsg & "*")
+		waitfor "Message sent on sub-space channel"
+	end
+
+	if (($currentdensity = 40) or ($currentdensity = 45) or ($currentdensity = 140) or ($currentdensity = 145))
+		setvar $strmsg ("Possible Trader, Sect: " & $buff & $adj & " Den: " & $currentdensity & " Haz: " & sector.navhaz[$adj] & "% Filtered: " & $filter)
+		write $log_fname $strmsg
+		add $log_event 1
+		setvar $log_text $strmsg
+		gosub :move_down
+		send ("'["&$taglineb&"] " & $strmsg & "*")
+		waitfor "Message sent on sub-space channel"
+	end
+
+	# END LOG
+
+	# Skip Limps
+	if (($anom[$i] = "Yes") and ($limps[$adj] = 0))
+		goto :next_adj_please
+	end
+
+	#prioritise sectors nextdoor
+	if ($flag = 0)
+		if (($currentdensity = 0) or ($currentdensity = 100))
+			if (sector.navhaz[$adj] = 0)
+				if (sector.explored[$adj] <> "YES")
+					if ($dens[$i] > 1)
+						setvar $adj_targets[$i] 1
+						goto :next_adj_please
+					end
+				end
+			end
+		end
+
+		if (($currentdensity = 0) or ($currentdensity = 100))
+			if (sector.navhaz[$adj] = 0)
+				if (sector.explored[$adj] = "YES")
+					if ($dens[$i] > 1)
+						setvar $adj_targets[$i] 2
+						goto :next_adj_please
+					end
+				end
+			end
+		end
+		if (($currentdensity = 0) or ($currentdensity = 100))
+			if (sector.navhaz[$adj] = 0)
+				if (sector.explored[$adj] <> "YES")
+					if ($dens[$i] >= 1)
+						setvar $adj_targets[$i] 3
+						goto :next_adj_please
+					end
+				end
+			end
+		end
+		if (($currentdensity = 0) or ($currentdensity = 100))
+			if (sector.navhaz[$adj] = 0)
+				if (sector.explored[$adj] = "YES")
+					if ($dens[$i] >= 1)
+						setvar $adj_targets[$i] 4
+						goto :next_adj_please
+					end
+				end
+			end
+		end
+	end
+
+	if (($currentdensity = 105) or ($currentdensity = 5))
+		if (sector.navhaz[$adj] = 0)
+			if (sector.explored[$adj] <> "YES")
+				if ($flag <> 0)
+					if ($dens[$i] > 1)
+						setvar $adj_targets[$i] 5
+						goto :next_adj_please
+					end
+				end
+			end
+		end
+	end
+
+	# The next two seem illogical because there explored and figged.
+	# However, I assume if you have no t-warp, it makes sense.
+	# Hammer: Adding twarp filter
+
+	if ($player~twarp_type = "No")
+		# If density is 105 or 5, and 5+ warps, no hz, has fig, not checked - go there? but why
+		if (($currentdensity = 105) or ($currentdensity = 5))
+			#if (SECTOR.EXPLORED[$adj] <> "YES")
+			if (sector.warpcount[$adj] >= 5)
+				if (sector.navhaz[$adj] = 0)
+					if ($flag = 1)
+						if ($dens[$i] >= 1)
+							if ($chkd[$adj] = 0)
+								setvar $adj_targets[$i] 6
+								goto :next_adj_please
+							end
+						end
+					end
+				end
+			end
+		end
+		if (($currentdensity = 105) or ($currentdensity = 5))
+			#if (SECTOR.EXPLORED[$adj] <> "YES")
+			if (sector.warpcount[$adj] > 1)
+				if (sector.navhaz[$adj] = 0)
+					if ($flag = 1)
+						if ($dens[$i] >= 1)
+							if ($chkd[$adj] = 0)
+								setvar $adj_targets[$i] 6
+								goto :next_adj_please
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	:next_adj_please
+	add $i 1
+end
+
+setvar $idx 1
+setvar $target 10
+setvar $target_idx 0
+
+while ($idx <= sector.warpcount[$player~current_sector])
+	if (($adj_targets[$idx] < $target) and ($target <> 0))
+		setvar $target $adj_targets[$idx]
+		setvar $target_idx $idx
+	end
 	add $idx 1
 end
-killAllTriggers
-waitfor "==========================================================="
-setTextLineTrigger FigLine1		:AddInFigC	" Corp "
-setTextLineTrigger FigLine2		:AddInFigP	" Personal "
-setTextLineTrigger LstBottom	:LstBottom	" Total "
-setTextLineTrigger LstNone		:LstBottom	"No fighters deployed"
+
+if ($target_idx <> 0)
+	setvar $target sector.warps[$player~current_sector][$target_idx]
+	if (sector.density[$target] >= 100)
+		send " c r"&$target&"*q"
+		settextlinetrigger	nodata1	:nodata		"You have never visted sector"
+		settextlinetrigger	nodata2	:nodata		"I have no information about a port in that sector"
+		settextlinetrigger	yadata1	:yadata		"Items     Status  Trading % of max OnBoard"
+		settextlinetrigger	yadata2	:yadata		"A  Cargo holds     :"
+		pause
+
+		:nodata
+		killalltriggers
+		if ($holo)
+			gosub :do_holo
+			gosub :display_holo
+			waiton	"Command [TL="
+			if (sector.figs.quantity[$target] <> 0)
+				if ((sector.figs.owner[$target] <> "belong to your Corp") and (sector.figs.owner[$target] <> "yours"))
+					#Trying Again, but this time ignoring $Target
+					setvar $ignore $target
+					setvar $idx 1
+					setvar $target 10
+					setvar $target_idx 0
+					while ($idx <= sector.warpcount[$player~current_sector])
+						if ($adj_targets[$idx] < $target) and ($target <> 0) and (sector.warps[$player~current_sector][$idx] <> $ignore)
+							setvar $target $adj_targets[$idx]
+							setvar $target_idx $idx
+						end
+						add $idx 1
+					end
+					if ($target_idx <> 0)
+						setvar $target sector.warps[$player~current_sector][$target_idx]
+					else
+						goto :no_target
+					end
+				end
+			end
+		end
+
+		:yadata
+		killalltriggers
+	end
+	goto :next_target
+end
+
+:no_target
+if ($player~twarp_type <> "No")
+	#Find A Place To Twarp To
+	getnearestwarps $warparray $player~current_sector
+	getrnd $w 5 10
+	while ($w <= $warparray)
+		setvar $focus $warparray[$w]
+		if ($focus <> $player~current_sector)
+			getsectorparameter $focus "FIGSEC" $flag
+			isnumber $tst $flag
+			if ($tst = 0)
+				setvar $flag 0
+				setsectorparameter $focus "FIGSEC" false
+			end
+			if ($flag <> false)
+				if ($twarp_safety = 1)
+					getsectorparameter $focus "LIMPSEC" $flag
+					isnumber $tst $flag
+					if ($tst = 0)
+						setvar $flag 0
+						setsectorparameter $focus "LIMPSEC" false
+					end
+				elseif ($twarp_safety = 2)
+
+					getsectorparameter $focus "LIMPSEC" $flag1
+					isnumber $tst1 $flag1
+					if ($tst1 = 0)
+						setvar $flag1 0
+						setsectorparameter $focus "LIMPSEC" false
+					end
+
+					getsectorparameter $focus "MINESEC" $flag2
+					isnumber $tst2 $flag2
+					if ($tst2 = 0)
+						setvar $flag2 0
+						setsectorparameter $focus "MINESEC" false
+					end
+
+					if (($flag1 = 0) or ($flag2 = 0))
+						setvar $flag 0
+					else
+						setvar $flag 1
+					end
+
+				end
+			end
+			if ($flag <> 0)
+				if (sector.warpcount[$focus] > 1)
+					setvar $w_i 1
+					while ($w_i <= sector.warpcount[$focus])
+						setvar $w_adj sector.warps[$focus][$w_i]
+						getsectorparameter $w_adj "FIGSEC" $flag
+						isnumber $tst $flag
+						# check for a fig, if no fig it is a candidate
+						if ($tst = 0)
+							setvar $flag 0
+							setsectorparameter $w_adj "FIGSEC" false
+						end
+
+						setvar $skipwarp 0
+						if ($skipparam <> "")
+							getsectorparameter $w_adj $skipparam $skipchk
+							if ($skipchk = "")
+								setvar $skipchk 0
+							end
+							if ($skipchk <> 0)
+								setvar $skipwarp 1
+							end
+						end
+
+						if ($lockparam <> "")
+							getsectorparameter $adj $lockparam $lockchk
+							if ($lockchk = "")
+								setvar $lockchk 0
+							end
+							if ($lockchk <> $lockvalue)
+								setvar $skipwarp 1
+							end
+						end
+
+						if (($flag = 0) and ($chkd[$w_adj] <> 1) and ($skipwarp = 0))
+							setvar $chkd[$w_adj] 1
+							if ($nextrequiresreport = 1)
+
+								setvar $portok 0
+								if (port.exists[$w_adj] = 1)
+									send "cr" $w_adj "*q"
+									waitfor "Computer activate"
+									settextlinetrigger portexists :portexists "Commerce report for"
+									settextlinetrigger portexistsno :portexistsno "I have no information about a port in that sector"
+									settextlinetrigger portexistsno2 :portexistsno2 "u have never visted sector"
+									pause
+
+									:portexists
+									setvar $portok 1
+
+									:portexistsno
+									:portexistsno2
+									killtrigger portexistsno
+									killtrigger portexistsno2
+									killtrigger portexists
+
+								end
+								# no port report; it's mark it as checked and try aain
+								if ($portok = 1)
+									goto :we_got_game
+								end
+							else
+
+								goto :we_got_game
+							end
+
+						end
+						add $w_i 1
+					end
+				end
+			end
+		end
+		add $w 1
+	end
+
+	:we_done
+	#get here, there's no hope
+	echo "**" & $taglinec & " " & " No Target To Find. Try updating CIM***"
+	halt
+
+	:we_got_game
+	#Echo "***Focus " & $FOCUS & "**"
+	if ($holo)
+		setvar $cx 1
+		setvar $cn 0
+		while (sector.warps[$player~current_sector][$cx] <> 0)
+			setvar $adj sector.warps[$player~current_sector][$cx]
+			if (sector.explored[$adj] = "NO") or (sector.explored[$adj] = "CALC")
+				add $cn 1
+			end
+			add $cx 1
+		end
+		if ($cn > 2)
+			gosub :do_holo
+			gosub :display_holo
+		end
+	end
+	setvar $engagestring "Y"
+	send " M" & $focus & "*Y"
+	settextlinetrigger		sector__good	:sector__good	"Locating beam pinpointed, TransWarp"
+	settextlinetrigger		sector__here	:sector__goodnav	"<Set NavPoint>"
+	settextlinetrigger		sector__bad		:sector__bad	"No locating beam found"
+	settexttrigger				sector__far		:sector__far	"You do not have enough Fuel Ore to make the jump."
+	pause
+
+	:sector__bad
+	killalltriggers
+	goto :we_done
+
+	:sector__far
+	killalltriggers
+	getnearestwarps $warparray $player~current_sector
+	setvar $c 1
+	while ($c <= $warparray)
+		setvar $focus $warparray[$c]
+		if ((port.class[$focus] = 3) or (port.class[$focus] = 4) or (port.class[$focus] = 5) or (port.class[$focus] = 7))
+			getsectorparameter $focus "FIGSEC" $flag
+			isnumber $tst $flag
+			if ($tst = 0)
+				setvar $flag 0
+				setsectorparameter $focus "FIGSEC" false
+			end
+			if ($flag = 1)
+				setvar $destination $focus
+				gosub :getcourse
+				if ($courselength <> 0)
+					setvar $j 2
+					setvar $result ""
+
+					while ($j <= $courselength)
+						getsectorparameter $course[$j] "FIGSEC" $flag
+						isnumber $tst $flag
+						if ($tst = 0)
+							setvar $flag 0
+							setsectorparameter $course[$j] "FIGSEC" false
+						end
+						if (($flag = 0) and ($course[$j] <> $player~current_sector))
+							goto :next_sxx_port
+						end
+						setvar $result $result&"m"&$course[$j]&"* "
+						if (($course[$j] > 10) and ($course[$j] <> stardock))
+							setvar $result ($result&" Z  A  "&$maxfigattack&"*  *  ")
+						end
+						# If Not FED Space, Drop A Fig, if we haven't already
+						if (($course[$j] > 10) and ($course[$j] <> stardock) and ($j > 2))
+							getsectorparameter $course[$j] "FIGSEC" $flag
+							isnumber $tst $flag
+							if ($tst = 0)
+								setvar $flag 0
+								setsectorparameter $course[$j] "FIGSEC" false
+							end
+							if ($flag = 0)
+								setvar $result ($result&" F  Z  1 * Z  C  D  *  ")
+								setsectorparameter $course[$j] "FIGSEC" true
+							end
+						end
+						add $j 1
+					end
+					waitfor "Command ["
+
+					if ($tracker)
+						send ($result&"  **  ")
+						gosub :player~quikstats
+						gosub :haggel_checker
+					else
+						send ($result&"  **    P   T   *   *   *   *   ")
+					end
+
+					gosub :player~quikstats
+					if ($player~total_holds <> $player~ore_holds) and ($tracker = 0)
+						if ($player~credits < 10000)
+							echo "**" & $taglinec & " " & " Appear To Be Out of Funds for ORE purchase.**"
+						elseif (($unlim = false) and (currentturns < 1))
+							echo "**" & $taglinec & " " & " Appear To Be Out Turns. Photon'd Maybe??**"
+						else
+							echo "**" & $taglinec & " " & " Not Enough ORE to continue.**"
+						end
+						halt
+					elseif ($tracker) and ($player~ore_holds < ($player~total_holds - $equ_min))
+						if ($player~credits < 10000)
+							echo "**" & $taglinec & " " & " Appear To Be Out of Funds for ORE purchase.**"
+						elseif (($unlim = false) and (currentturns < 1))
+							echo "**" & $taglinec & " " & " Appear To Be Out Turns. Photon'd Maybe??**"
+						else
+							echo "**" & $taglinec & " " & " Not Enough ORE to continue.**"
+						end
+						halt
+					elseif ($player~credits < 10000)
+						echo "**" & $taglinec & " " & " Too Few Credits to continue.**"
+						halt
+					end
+					goto :to_the_top
+				end
+			end
+		end
+
+		:next_sxx_port
+		add $c 1
+	end
+	goto :we_done
+
+	:sector__goodnav
+	send "*q"
+	setvar $engagestring ""
+
+	:sector__good
+	killalltriggers
+	#echo ("**" & $TAGLINEc & " " & ANSI_8&"<"&ANSI_15&"Twarping To Jump Point: "&ANSI_14&$Focus&ANSI_8&">*")
+
+	setvar $drop_str ""
+	if ($droping_mines <> 0)
+		if (sector.warpincount[$focus] >= 3)
+			if (($droping_mines = 1) or ($droping_mines = 3))
+				if ($player~limpets > $drop_limp)
+					setvar $drop_str ($drop_str & "H 2 Z "&$drop_limp&"* C * ")
+				else
+					if ($droping_mines = 1)
+						setvar $droping_mines 0
+					else
+						setvar $droping_mines 2
+					end
+				end
+			end
+
+			if (($droping_mines = 2) or ($droping_mines = 3))
+				if ($player~armids > $drop_armid)
+					setvar $drop_str ($drop_str & "H 1 Z "&$drop_armid&"* C * ")
+				else
+					if ($droping_mines = 2)
+						setvar $droping_mines 0
+					else
+						setvar $droping_mines 1
+					end
+				end
+			end
+		end
+	end
+	send $engagestring "  *  A Z " & $maxfigattack & "998877665544332211 n  *  **   " & $drop_str
+	gosub :player~quikstats
+	goto :to_the_top
+else
+	echo "**" & $taglinec & " " & " Walled In (No Twarp Available)***"
+	halt
+end
+
+:next_target
+setvar $figstodrop 1
+setvar $density_trick false
+if (sector.density[$target] = 0)
+	if ($drop_twenty = 1)
+		setvar $density_trick true
+		setvar $figstodrop 20
+	end
+end
+send "  m " & $target & " *  z  a  " & $maxfigattack & "99887766554433221100  n  *  dz  n  f  z  " $figstodrop "*  z  c  d  *  "
+settextlinetrigger u_torped :help_me "Your ship was hit by a Photon and has been disabled."
+settextlinetrigger no_turns :help_me "You don't have enough turns left."
+settextlinetrigger ig_hold1 :help_me "You attempt to retreat but are held fast by an Interdictor Generator."
+settextlinetrigger ig_hold2 :help_me "An Interdictor Generator in this sector holds you fast!"
+settextlinetrigger quasar_b :help_me "Quasar Blast!"
+waiton ":[" & $target & "] (?=Help)"
+goto :help_me_jmp
+
+:help_me
+killalltriggers
+getword currentline $spoofy 1
+if ($spoofy <> "Your") and ($spoofy <> "You") and ($spoofy <> "An") and ($spoofy <> "Quasar")
+	goto :help_me_jmp
+end
+stop _ck_callsaveme
+stop _ck_callsaveme
+send "   N   Y  *  N   *   R   *   Q   Q   Q   Z   N   *   R   *   "
+waitfor "Command [TL="
+load _ck_callsaveme
+waitfor "Message sent on sub-space channel"
+halt
+
+:help_me_jmp
+add $dep_figs 1
+add $dep_new 1
+setsectorparameter $target "FIGSEC" true
+setvar $chkd[$target] 1
+
+setvar $drop_str ""
+
+if ($density_trick <> true)
+	if ($droping_mines <> 0)
+		if (sector.warpincount[$target] >= 3)
+			if (($droping_mines = 1) or ($droping_mines = 3))
+				if ($player~limpets > $drop_limp)
+					setvar $drop_str ($drop_str & "H 2 Z "&$drop_limp&"* C * ")
+				else
+					if ($droping_mines = 1)
+						setvar $droping_mines 0
+					else
+						setvar $droping_mines 2
+					end
+				end
+			end
+
+			if (($droping_mines = 2) or ($droping_mines = 3))
+				if ($player~armids > $drop_armid)
+					setvar $drop_str ($drop_str & "H 1 Z "&$drop_armid&"* C * ")
+				else
+					if ($droping_mines = 2)
+						setvar $droping_mines 0
+					else
+						setvar $droping_mines 1
+					end
+				end
+			end
+		end
+	end
+end
+if  ($drop_str <> "")
+	send $drop_str & "  j  *"
+	waiton "Are you sure you want to jettison all cargo?"
+end
+gosub :player~quikstats
+
+if ($player~current_prompt <> "Command")
+	echo "**" & $taglinec & " " & "Wrong Prompt After Sector Hit.***"
+	halt
+end
+
+if ($tracker)
+	gosub :haggel_checker
+end
+
+if ($player~current_prompt <> "Command")
+	send " r *  *  p d 0* 0* 0* * *** * c q q q q q z 2 2 c q * z * *** * * "
+	gosub :player~quikstats
+	if ($player~current_prompt = "Command")
+		load "_ck_callsaveme.cts"
+		halt
+	else
+		echo "**" & $taglinec & " " & "Hmmm..  I seem to be stuck.***"
+		halt
+	end
+end
+
+gosub :updatestatus_window
+
+if (($report_rylos) and (rylos > 1))
+	send "'["&$taglineb&"] Class 0 RYLOS Spotted In Sector: " & rylos &"*"
+	waitfor "Message sent on sub-space channel"
+	setvar $report_rylos	false
+end
+if (($report_alpha) and (alphacentauri > 1))
+	send "'["&$taglineb&"] Class 0 ALPHACENTAURI Spotted In Sector: " & alphacentauri &"*"
+	waitfor "Message sent on sub-space channel"
+	setvar $report_alpha	false
+end
+
+if (($update_port) and (port.exists[$target]))
+	send "CR*Q"
+	waitfor "<Computer deactivated>"
+end
+
+if ($player~fighters <= 10)
+	echo "**" & $taglinec & " " & "Fighter Level is Critically Low (Less Than 10)**"
+	halt
+end
+goto :passgrid_main_loop
+
+:passgrid_main_done
+gosub :restorehaggle
+
+if ($unlim = 0)
+	if (currentturns <= $turn_limit)
+		send "'["&$taglineb&"] Turn Limit Reached, Halting*"
+	end
+else
+	send "'["&$taglineb&"] Nothing To Do*"
+end
+
+halt
+
+:turnsgone
+gosub :restorehaggle
+killalltriggers
+send "   *   *    *   /"
+waiton #179 & "Turns"
+gettext currentline $local "Sect" (#179 & "Turns")
+striptext $local " "
+send "'"
+waitfor "Sub-space radio ("
+send $local & "=saveme*"
+waitfor "Message sent on sub-space channel"
+send "F  Z  1*  Z  C  D  *  "
+setdelaytrigger		nohelpcomming	:nohelpcomming	4000
+settextlinetrigger	helpcame		:helpcame		"Saveme script activated - "
 pause
-	:AddInFigP
-	getWord CURRENTLINE $sector 1
-	setSectorParameter $sector "FIGSEC" TRUE
-	add $DEP_FIGS 1
-	setTextLineTrigger FigLine2		:AddInFigP	" Personal "
-	pause
-	:AddInFigC
-	getWord CURRENTLINE $sector 1
-	setSectorParameter $sector "FIGSEC" TRUE
-	add $DEP_FIGS 1
-	setTextLineTrigger FigLine1		:AddInFigC	" Corp "
-	pause
-	:LstBottom
-	killAllTriggers
 
-	return
+:nohelpcomming
+killalltriggers
+send "'["&$taglineb&"] No Help Came.*"
+halt
 
-:Build_LIMP_LIST
-killAllTriggers
-setArray $Limps	SECTORS
+:helpcame
+killalltriggers
+gettext currentline $planet~planet "Planet" "to"
+striptext $planet~planet " "
+send "L Z" & #8 & $planet~planet & "*  J  C  *  "
+halt
 
-SetVar $idx		1
-while ($idx <= SECTORS)
-	setSectorParameter $idx "LIMPSEC"	0
+:build_fig_list
+killalltriggers
+send "'Scanning Deployed Fighters...*G"
+setvar $idx 1
+while ($idx <= sectors)
+	setsectorparameter $idx "FIGSEC"	false
+	add $idx 1
+end
+killalltriggers
+waitfor "==========================================================="
+settextlinetrigger figline1		:addinfigc	" Corp "
+settextlinetrigger figline2		:addinfigp	" Personal "
+settextlinetrigger lstbottom	:lstbottom	" Total "
+settextlinetrigger lstnone		:lstbottom	"No fighters deployed"
+pause
+
+:addinfigp
+getword currentline $sector 1
+setsectorparameter $sector "FIGSEC" true
+add $dep_figs 1
+settextlinetrigger figline2		:addinfigp	" Personal "
+pause
+
+:addinfigc
+getword currentline $sector 1
+setsectorparameter $sector "FIGSEC" true
+add $dep_figs 1
+settextlinetrigger figline1		:addinfigc	" Corp "
+pause
+
+:lstbottom
+killalltriggers
+
+return
+
+:build_limp_list
+killalltriggers
+setarray $limps	sectors
+
+setvar $idx		1
+while ($idx <= sectors)
+	setsectorparameter $idx "LIMPSEC"	0
 	add $idx 1
 end
 
 send "'Scanning Deployed Limpets...*k2"
 waitfor "===================================="
-setTextLineTrigger LimpLine1		:AddInLimpC	" Corporate"
-setTextLineTrigger LimpLine2		:AddInLimpP	" Personal "
-setTextLineTrigger LstBottom		:LimpLstBottom	"Activated  Limpet  Scan"
-setTextLineTrigger LstNone			:LimpLstBottom	"No Limpet mines deployed"
+settextlinetrigger limpline1		:addinlimpc	" Corporate"
+settextlinetrigger limpline2		:addinlimpp	" Personal "
+settextlinetrigger lstbottom		:limplstbottom	"Activated  Limpet  Scan"
+settextlinetrigger lstnone			:limplstbottom	"No Limpet mines deployed"
 pause
-	:AddInLimpC
-	getWord CURRENTLINE $sector 1
-	setSectorParameter $sector "LIMPSEC" TRUE
-	add $DEP_LIMP 1
-	setVar $Limps[$sector] TRUE
-	setTextLineTrigger LimpLine1		:AddInLimpC	" Corporate"
-	pause
-	:AddInLimpP
-	getWord CURRENTLINE $sector 1
-	setSectorParameter $sector "LIMPSEC" TRUE
-	add $DEP_LIMP 1
-	setVar $Limps[$sector] TRUE
-	setTextLineTrigger LimpLine2		:AddInLimpP	" Personal "
-	pause
-	:LimpLstBottom
-	killAllTriggers
 
-	return
+:addinlimpc
+getword currentline $sector 1
+setsectorparameter $sector "LIMPSEC" true
+add $dep_limp 1
+setvar $limps[$sector] true
+settextlinetrigger limpline1		:addinlimpc	" Corporate"
+pause
 
-:UpdateStatus_window
-setVar $Window_TXT ""
+:addinlimpp
+getword currentline $sector 1
+setsectorparameter $sector "LIMPSEC" true
+add $dep_limp 1
+setvar $limps[$sector] true
+settextlinetrigger limpline2		:addinlimpp	" Personal "
+pause
 
-setVar $Window_TXT ($Window_TXT & " Sector    : " & $player~CURRENT_SECTOR & "*")
-if ($UNLIM)
-	setVar $Window_TXT ($Window_TXT & " Turns     : Unlimited*")
+:limplstbottom
+killalltriggers
+
+return
+
+:updatestatus_window
+setvar $window_txt ""
+
+setvar $window_txt ($window_txt & " Sector    : " & $player~current_sector & "*")
+if ($unlim)
+	setvar $window_txt ($window_txt & " Turns     : Unlimited*")
 else
-	setVar $CashAmount CURRENTTURNS
-	gosub :CommaSize
-	setVar $Window_TXT ($Window_TXT & " Turns     : " & $CashAmount)
-	setVar $CashAmount $Turn_Limit
-	gosub :CommaSize
-	setVar $Window_TXT ($Window_TXT & " (Turn Limit " & $CashAmount & ")*")
+	setvar $cashamount currentturns
+	gosub :commasize
+	setvar $window_txt ($window_txt & " Turns     : " & $cashamount)
+	setvar $cashamount $turn_limit
+	gosub :commasize
+	setvar $window_txt ($window_txt & " (Turn Limit " & $cashamount & ")*")
 end
 
-setVar $CashAmount $PLAYER~CREDITS
-gosub :CommaSize
-setVar $Window_TXT ($Window_TXT & " Credits   : $" & $CashAmount & "*")
+setvar $cashamount $player~credits
+gosub :commasize
+setvar $window_txt ($window_txt & " Credits   : $" & $cashamount & "*")
 
-setVar $CashAmount $player~FIGHTERS
-gosub :CommaSize
-setVar $Window_TXT ($Window_TXT & " Fighters  : " & $CashAmount & "*")
+setvar $cashamount $player~fighters
+gosub :commasize
+setvar $window_txt ($window_txt & " Fighters  : " & $cashamount & "*")
 
-setVar $CashAmount $DEP_FIGS
-gosub :CommaSize
-setVar $CashAmount1 $CashAmount
-setVar $CashAmount SECTORS
-gosub :CommaSize
-setVar $Window_TXT ($Window_TXT & " Grid      : " & $CashAmount1 & " of " & $CashAmount & "*")
+setvar $cashamount $dep_figs
+gosub :commasize
+setvar $cashamount1 $cashamount
+setvar $cashamount sectors
+gosub :commasize
+setvar $window_txt ($window_txt & " Grid      : " & $cashamount1 & " of " & $cashamount & "*")
 
-setVar $CashAmount $DEP_NEW
-gosub :CommaSize
-setVar $Window_TXT ($Window_TXT & " Gridded   : " & $CashAmount & "*")
-if ($TRACKER)
-	setVar $CashAmount $MCICd
-	gosub :CommaSize
-	setVar $Window_TXT ($Window_TXT & " MCIC'd    : " & $CashAmount & " ("&$Track_File&")*")
+setvar $cashamount $dep_new
+gosub :commasize
+setvar $window_txt ($window_txt & " Gridded   : " & $cashamount & "*")
+if ($tracker)
+	setvar $cashamount $mcicd
+	gosub :commasize
+	setvar $window_txt ($window_txt & " MCIC'd    : " & $cashamount & " ("&$track_file&")*")
 end
 
-setVar $Window_TXT ($Window_TXT & "    ----------------: Log Entries :----------------*")
-setVar $ii 1
+setvar $window_txt ($window_txt & "    ----------------: Log Entries :----------------*")
+setvar $ii 1
 
 while ($ii <= 5)
-	if ($LOG_ENTRIES[$ii] <> "")
-		setVar $Window_TXT ($Window_TXT & " " & $LOG_ENTRIES[$ii] & "*")
+	if ($log_entries[$ii] <> "")
+		setvar $window_txt ($window_txt & " " & $log_entries[$ii] & "*")
 	end
 	add $ii 1
 end
-setWindowContents status ("*" & $Window_TXT)
-setvar $window_content $Window_TXT
+setwindowcontents status ("*" & $window_txt)
+setvar $window_content $window_txt
 replacetext $window_content "*" "[][]"
 savevar $window_content
 return
 
-:CommaSize
-if ($CashAmount < 1000)
+:commasize
+if ($cashamount < 1000)
 	#do nothing
-elseif ($CashAmount < 1000000)
-	getLength $CashAmount $len
-	setVar $len ($len - 3)
-	cutText $CashAmount $tmp 1 $len
-	cutText $CashAMount $tmp1 ($len + 1) 999
-	setVar $tmp $tmp & "," & $tmp1
-	setVar $CashAmount $tmp
-elseif ($CashAmount <= 999999999)
-	getLength $CashAmount $len
-	setVar $len ($len - 6)
-	cutText $CashAmount $tmp 1 $len
-	setVar $tmp $tmp & ","
-	cutText $CashAmount $tmp1 ($len + 1) 3
-	setVar $tmp $tmp & $tmp1 & ","
-	cutText $CashAmount $tmp1 ($len + 4) 999
-	setVar $tmp $tmp & $tmp1
-	setVar $CashAmount $tmp
+elseif ($cashamount < 1000000)
+	getlength $cashamount $len
+	setvar $len ($len - 3)
+	cuttext $cashamount $tmp 1 $len
+	cuttext $cashamount $tmp1 ($len + 1) 999
+	setvar $tmp $tmp & "," & $tmp1
+	setvar $cashamount $tmp
+elseif ($cashamount <= 999999999)
+	getlength $cashamount $len
+	setvar $len ($len - 6)
+	cuttext $cashamount $tmp 1 $len
+	setvar $tmp $tmp & ","
+	cuttext $cashamount $tmp1 ($len + 1) 3
+	setvar $tmp $tmp & $tmp1 & ","
+	cuttext $cashamount $tmp1 ($len + 4) 999
+	setvar $tmp $tmp & $tmp1
+	setvar $cashamount $tmp
 end
 return
 
-:Move_Down
-setVar $LOG_ENTRIES[5] $LOG_ENTRIES[4]
-setVar $LOG_ENTRIES[4] $LOG_ENTRIES[3]
-setVar $LOG_ENTRIES[3] $LOG_ENTRIES[2]
-setVar $LOG_ENTRIES[2] $LOG_ENTRIES[1]
-setVar $LOG_ENTRIES[1] ($LOG_EVENT & " " & $LOG_TEXT)
+:move_down
+setvar $log_entries[5] $log_entries[4]
+setvar $log_entries[4] $log_entries[3]
+setvar $log_entries[3] $log_entries[2]
+setvar $log_entries[2] $log_entries[1]
+setvar $log_entries[1] ($log_event & " " & $log_text)
 return
 
-:getCourse
+:getcourse
 killalltriggers
-setVar $sectors ""
-setTextLineTrigger sectorlinetrig :sectorsline " > "
+setvar $sectors ""
+settextlinetrigger sectorlinetrig :sectorsline " > "
 send "^f*"&$destination&"*nq"
 pause
-	:sectorsline
-	killAllTriggers
-	setVar $line CURRENTLINE
-	replacetext $line ">" " "
-	striptext $line "("
-	striptext $line ")"
-	setVar $line $line&" "
-	getWordPos $line $pos "So what's the point?"
-	getWordPos $line $pos2 ": ENDINTERROG"
-	getWordPos $line $pos3 "*** Error"
 
-	if (($pos > 0) OR ($pos2 > 0))
-	setVar $courseLength 0
+:sectorsline
+killalltriggers
+setvar $line currentline
+replacetext $line ">" " "
+striptext $line "("
+striptext $line ")"
+setvar $line $line&" "
+getwordpos $line $pos "So what's the point?"
+getwordpos $line $pos2 ": ENDINTERROG"
+getwordpos $line $pos3 "*** Error"
+
+if (($pos > 0) or ($pos2 > 0))
+	setvar $courselength 0
 	return
-	end
-	getWordPos $line $pos " sector "
-	getWordPos $line $pos2 "TO"
-	if (($pos <= 0) AND ($pos2 <= 0))
-	setVar $sectors $sectors & " " & $line
-	end
-	getWordPos $line $pos " "&$destination&" "
-	getWordPos $line $pos2 "("&$destination&")"
-	getWordPos $line $pos3 "TO"
-	if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
-		goto :gotSectors
-	end
-	:waitForNextCourseLine
-	setTextLineTrigger sectorlinetrig :sectorsline " > "
-	setTextLineTrigger sectorlinetrig2 :sectorsline " "&$destination&" "
-	setTextLineTrigger sectorlinetrig3 :sectorsline " "&$destination
-	setTextLineTrigger sectorlinetrig4 :sectorsline "("&$destination&")"
-	setTextLineTrigger donePath :sectorsline "So what's the point?"
-	setTextLineTrigger donePath2 :sectorsline ": ENDINTERROG"
-	pause
+end
+getwordpos $line $pos " sector "
+getwordpos $line $pos2 "TO"
+if (($pos <= 0) and ($pos2 <= 0))
+	setvar $sectors $sectors & " " & $line
+end
+getwordpos $line $pos " "&$destination&" "
+getwordpos $line $pos2 "("&$destination&")"
+getwordpos $line $pos3 "TO"
+if ((($pos > 0) or ($pos2 > 0)) and ($pos3 <= 0))
+	goto :gotsectors
+end
 
-:gotSectors
-killAllTriggers
-setVar $sectors $sectors&" :::"
-setVar $courseLength 0
-setVar $index 1
-	:keepGoing
-	if ($sectors = " FM     :::")
-		return
-	end
-	getWord $sectors $COURSE[$index] $index
-	while ($COURSE[$index] <> ":::")
-		add $courseLength 1
-		add $index 1
-		getWord $sectors $COURSE[$index] $index
-	end
+:waitfornextcourseline
+settextlinetrigger sectorlinetrig :sectorsline " > "
+settextlinetrigger sectorlinetrig2 :sectorsline " "&$destination&" "
+settextlinetrigger sectorlinetrig3 :sectorsline " "&$destination
+settextlinetrigger sectorlinetrig4 :sectorsline "("&$destination&")"
+settextlinetrigger donepath :sectorsline "So what's the point?"
+settextlinetrigger donepath2 :sectorsline ": ENDINTERROG"
+pause
+
+:gotsectors
+killalltriggers
+setvar $sectors $sectors&" :::"
+setvar $courselength 0
+setvar $index 1
+
+:keepgoing
+if ($sectors = " FM     :::")
 	return
+end
+getword $sectors $course[$index] $index
+while ($course[$index] <> ":::")
+	add $courselength 1
+	add $index 1
+	getword $sectors $course[$index] $index
+end
+return
 
-:Haggel_Checker
-killAllTriggers
+:haggel_checker
+killalltriggers
 #
 #	Been a few double ups so making some changes!
 #		We need to trade on one of three conditions
@@ -1549,233 +1552,247 @@ killAllTriggers
 #		- Low Equip and they sell Equip
 #		- Buy Equip and no MCIC
 
-	setVar $dotrade 0
-	if (($player~ore_holds < 75) and (PORT.BUYFUEL[$player~CURRENT_SECTOR] = 0))
-		setVar $dotrade 1
-	elseif (($player~equipment_holds < $EQU_MIN_BUY) and (PORT.BUYEQUIP[$player~CURRENT_SECTOR] = 0))
-		setVar $dotrade 1
-	elseif ((PORT.BUYEQUIP[$player~CURRENT_SECTOR] = 1) and ($MCIC[$player~CURRENT_SECTOR] = FALSE))
-		setVar $dotrade 1
-	end
-	if ($dotrade = 0)
-		return
-	end
+setvar $dotrade 0
+if (($player~ore_holds < 75) and (port.buyfuel[$player~current_sector] = 0))
+	setvar $dotrade 1
+elseif (($player~equipment_holds < $equ_min_buy) and (port.buyequip[$player~current_sector] = 0))
+	setvar $dotrade 1
+elseif ((port.buyequip[$player~current_sector] = 1) and ($mcic[$player~current_sector] = false))
+	setvar $dotrade 1
+end
+if ($dotrade = 0)
+	return
+end
 # End addition
 
-	setVar $restoreHaggle 0
-	if (HAGGLE)
-		setVar $restoreHaggle 1
-		autohaggle off
-	end
+setvar $restorehaggle 0
+if (haggle)
+	setvar $restorehaggle 1
+	autohaggle off
+end
 
-	setVar $EQU_NEED2BUY ($EQU_MIN - $player~equipment_holds)
-	setVar $ORE_NEED2BUY (($player~total_holds - $EQU_MIN) - $player~ore_holds)
-if (PORT.CLASS[$player~CURRENT_SECTOR] = 1) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 5) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 6) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 7) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 3) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 4) OR (PORT.CLASS[$player~CURRENT_SECTOR] = 2)
-		#send "CR*Q"
-		#waiton "<Computer deactivated>"
-		#if (PORT.EQUIP[$player~CURRENT_SECTOR] >= $EQU_NEED2BUY) AND ($EQU_NEED2BUY <> 0)
-		setVar $tradeStarted 0
-		setTextTrigger noPort :noPort "Corp Menu"
-		send "pt"
-		Waiton "<Port>"
-		setTextTrigger	noFuel		:noFuel		"How many holds of Fuel Ore do you want to buy"
-		setTextTrigger	noOrg		:noOrg		"How many holds of Organics do you want to buy"
-		setTextTrigger	equp		:equp		"How many holds of Equipment do you want to sell ["
-		setTextTrigger	buyequp		:buyequp	"How many holds of Equipment do you want to buy"
-		setTextTrigger	nosell		:nosell		"You don't have anything they want"
-		setTextTrigger	fuelsell 	:fuelsell	"How many holds of Fuel Ore do you want to sell"
-		setTextTrigger	orgSell 	:orgSell	"How many holds of Organics do you want to sell"
-		setTextTrigger	offer		:offer		"Your offer ["
-		setTextTrigger	finaloffer	:offer		"Our final offer"
-		setTextTrigger	done		:done		"Command [TL"
+setvar $equ_need2buy ($equ_min - $player~equipment_holds)
+setvar $ore_need2buy (($player~total_holds - $equ_min) - $player~ore_holds)
+if (port.class[$player~current_sector] = 1) or (port.class[$player~current_sector] = 5) or (port.class[$player~current_sector] = 6) or (port.class[$player~current_sector] = 7) or (port.class[$player~current_sector] = 3) or (port.class[$player~current_sector] = 4) or (port.class[$player~current_sector] = 2)
+	#send "CR*Q"
+	#waiton "<Computer deactivated>"
+	#if (PORT.EQUIP[$player~CURRENT_SECTOR] >= $EQU_NEED2BUY) AND ($EQU_NEED2BUY <> 0)
+	setvar $tradestarted 0
+	settexttrigger noport :noport "Corp Menu"
+	send "pt"
+	waiton "<Port>"
+	settexttrigger	nofuel		:nofuel		"How many holds of Fuel Ore do you want to buy"
+	settexttrigger	noorg		:noorg		"How many holds of Organics do you want to buy"
+	settexttrigger	equp		:equp		"How many holds of Equipment do you want to sell ["
+	settexttrigger	buyequp		:buyequp	"How many holds of Equipment do you want to buy"
+	settexttrigger	nosell		:nosell		"You don't have anything they want"
+	settexttrigger	fuelsell 	:fuelsell	"How many holds of Fuel Ore do you want to sell"
+	settexttrigger	orgsell 	:orgsell	"How many holds of Organics do you want to sell"
+	settexttrigger	offer		:offer		"Your offer ["
+	settexttrigger	finaloffer	:offer		"Our final offer"
+	settexttrigger	done		:done		"Command [TL"
+	pause
+
+	:noport
+	killalltriggers
+	gosub :restorehaggle
+	echo "***Hmmm.. where'd the port go?!?**"
+	halt
+
+	:done
+	if ($tradestarted = 0)
+		settexttrigger	done		:done		"Command [TL"
 		pause
-			:noPort
-			killAllTriggers
-			gosub :RestoreHaggle
-			Echo "***Hmmm.. where'd the port go?!?**"
-			halt
-			:done
-			if ($tradeStarted = 0)
-				setTextTrigger	done		:done		"Command [TL"
-				pause
-			end
-			killAllTriggers
-			gosub :RestoreHaggle
-			return
-			:noFuel
-			setVar $tradeStarted 1
-        		if ($ORE_NEED2BUY >= 1)
-        			#send $ORE_NEED2BUY & "**"
-        			send $ORE_NEED2BUY & "*"
-        		else
-        			send "0*"
-        		end
-        		pause
-			:noOrg
-			setVar $tradeStarted 1
-			send "0*"
-			pause
-			:equp
-			setVar $tradeStarted 1
-			if ($MCIC[$player~CURRENT_SECTOR] = 0)
-				setVar $MCIC[$player~CURRENT_SECTOR] TRUE
-				if ($player~equipment_holds > $EQU_MIN)
-					#send ($player~equipment_holds - $EQU_MIN) & "**"
-					send ($player~equipment_holds - $EQU_MIN) & "*"
-				else
-					add $MCICd 1
-					#send "5**"
-					send "5*"
-				end
-			else
-				send "0*"
-			end
-			pause
-			:buyequp
-			setVar $tradeStarted 1
-			if ($EQU_NEED2BUY >= 1)
-				#send $EQU_NEED2BUY & "**"
-				send $EQU_NEED2BUY & "*"
-			else
-				send "0*"
-        		end
-        		pause
-			:nosell
-			setVar $tradeStarted 1
-			killAllTriggers
-			gosub :RestoreHaggle
-			return
-			:offer
-			setVar $tradeStarted 1
-			send "*"
-			pause
-			:fuelsell
-			setVar $tradeStarted 1
-			if ($player~ore_holds > ($player~total_holds - $EQU_MIN))
-				#send $player~ore_holds - ($player~total_holds - $EQU_MIN)& "**"
-				send $player~ore_holds - ($player~total_holds - $EQU_MIN)& "*"
-			else
-				send "0*"
-			end
-			pause
-			:orgsell
-			setVar $tradeStarted 1
-			#send "**"
-			send "*"
-			pause
 	end
-	gosub :RestoreHaggle
+	killalltriggers
+	gosub :restorehaggle
 	return
-:RestoreHaggle
-if ($restoreHaggle = 1)
+
+	:nofuel
+	setvar $tradestarted 1
+	if ($ore_need2buy >= 1)
+		#send $ORE_NEED2BUY & "**"
+		send $ore_need2buy & "*"
+	else
+		send "0*"
+	end
+	pause
+
+	:noorg
+	setvar $tradestarted 1
+	send "0*"
+	pause
+
+	:equp
+	setvar $tradestarted 1
+	if ($mcic[$player~current_sector] = 0)
+		setvar $mcic[$player~current_sector] true
+		if ($player~equipment_holds > $equ_min)
+			#send ($player~equipment_holds - $EQU_MIN) & "**"
+			send ($player~equipment_holds - $equ_min) & "*"
+		else
+			add $mcicd 1
+			#send "5**"
+			send "5*"
+		end
+	else
+		send "0*"
+	end
+	pause
+
+	:buyequp
+	setvar $tradestarted 1
+	if ($equ_need2buy >= 1)
+		#send $EQU_NEED2BUY & "**"
+		send $equ_need2buy & "*"
+	else
+		send "0*"
+	end
+	pause
+
+	:nosell
+	setvar $tradestarted 1
+	killalltriggers
+	gosub :restorehaggle
+	return
+
+	:offer
+	setvar $tradestarted 1
+	send "*"
+	pause
+
+	:fuelsell
+	setvar $tradestarted 1
+	if ($player~ore_holds > ($player~total_holds - $equ_min))
+		#send $player~ore_holds - ($player~total_holds - $EQU_MIN)& "**"
+		send $player~ore_holds - ($player~total_holds - $equ_min)& "*"
+	else
+		send "0*"
+	end
+	pause
+
+	:orgsell
+	setvar $tradestarted 1
+	#send "**"
+	send "*"
+	pause
+end
+gosub :restorehaggle
+return
+
+:restorehaggle
+if ($restorehaggle = 1)
 	autohaggle on
-	setVar $restoreHaggle 0
+	setvar $restorehaggle 0
 end
 return
-:Do_Holo
-setArray $HoloOutput 2000
-setVar $Line_Pointer 1
-            	send "SzH*  "
-setTextLineTrigger	TurnsGone		:TurnsGone		"Do you want instructions (Y/N) [N]?"
-setTextLineTrigger	DoneScan		:DoneScan		"Warps to Sector(s) :"
+
+:do_holo
+setarray $holooutput 2000
+setvar $line_pointer 1
+send "SzH*  "
+settextlinetrigger	turnsgone		:turnsgone		"Do you want instructions (Y/N) [N]?"
+settextlinetrigger	donescan		:donescan		"Warps to Sector(s) :"
 
 waiton "Long Range Scan"
-    :reset_trigger
-	setTextLineTrigger holo_line :holo_line
-	pause
-	:holo_line
-	setVar $HoloOutput[$Line_Pointer] CURRENTLINE
-	if ($Line_Pointer <= 2000)
-		add $Line_Pointer 1
-	end
-	goto :reset_trigger
-	:DoneScan
-	killAllTriggers
-	setVar $HoloOutput[$Line_Pointer] "ENDENDENDENDENDENDEND"
-	return
 
-:Display_Holo
-setVar $Holo_i 1
-setVar $Holo_ptr 1
-setVar $Holo_s ""
-setVar $AvoidFlag ""
-while (SECTOR.WARPS[$player~CURRENT_SECTOR][$Holo_i] > 0)
-	setVar $Holo_adj SECTOR.WARPS[$player~CURRENT_SECTOR][$Holo_i]
-	if ((SECTOR.PLANETCOUNT[$Holo_adj] > 0) OR (SECTOR.TRADERCOUNT[$Holo_adj] > 0) OR (SECTOR.SHIPCOUNT[$Holo_adj] > 0))
-       		setVar $figOwner SECTOR.FIGS.OWNER[$Holo_adj]
-		if ((SECTOR.FIGS.QUANTITY[$Holo_adj] >= 100) AND (($figOwner <> "belong to your Corp") OR ($figOwner <> "yours")))
-			while ($Holo_ptr <= $Line_Pointer)
-            			getWordPos $HoloOutput[$Holo_ptr] $Holo_pos ("Sector  : " & $Holo_adj)
-            			setVar $AvoidFlag ($AvoidFlag & " " & $Holo_adj)
-				if ($Holo_pos <> 0)
-					setvar $Holo_s ($Holo_s & $HoloOutput[$Holo_ptr] & "*")
-						:Lets_Go_Again
-						add $Holo_ptr 1
-						getWordPos $HoloOutput[$Holo_ptr] $pos "Warps to Sector(s) :"
-						if (($HoloOutput[$Holo_ptr] <> "") AND ($pos = 0))
-							setvar $Holo_s ($Holo_s & $HoloOutput[$Holo_ptr] & "*")
-						else
-							setvar $Holo_s ($Holo_s & "         *")
-							goto :Done_Scan
-						end
-						goto :Lets_Go_Again
+:reset_trigger
+settextlinetrigger holo_line :holo_line
+pause
+
+:holo_line
+setvar $holooutput[$line_pointer] currentline
+if ($line_pointer <= 2000)
+	add $line_pointer 1
+end
+goto :reset_trigger
+
+:donescan
+killalltriggers
+setvar $holooutput[$line_pointer] "ENDENDENDENDENDENDEND"
+return
+
+:display_holo
+setvar $holo_i 1
+setvar $holo_ptr 1
+setvar $holo_s ""
+setvar $avoidflag ""
+while (sector.warps[$player~current_sector][$holo_i] > 0)
+	setvar $holo_adj sector.warps[$player~current_sector][$holo_i]
+	if ((sector.planetcount[$holo_adj] > 0) or (sector.tradercount[$holo_adj] > 0) or (sector.shipcount[$holo_adj] > 0))
+		setvar $figowner sector.figs.owner[$holo_adj]
+		if ((sector.figs.quantity[$holo_adj] >= 100) and (($figowner <> "belong to your Corp") or ($figowner <> "yours")))
+			while ($holo_ptr <= $line_pointer)
+				getwordpos $holooutput[$holo_ptr] $holo_pos ("Sector  : " & $holo_adj)
+				setvar $avoidflag ($avoidflag & " " & $holo_adj)
+				if ($holo_pos <> 0)
+					setvar $holo_s ($holo_s & $holooutput[$holo_ptr] & "*")
+
+					:lets_go_again
+					add $holo_ptr 1
+					getwordpos $holooutput[$holo_ptr] $pos "Warps to Sector(s) :"
+					if (($holooutput[$holo_ptr] <> "") and ($pos = 0))
+						setvar $holo_s ($holo_s & $holooutput[$holo_ptr] & "*")
+					else
+						setvar $holo_s ($holo_s & "         *")
+						goto :done_scan
 					end
-	            			add $Holo_ptr 1
+					goto :lets_go_again
 				end
+				add $holo_ptr 1
 			end
 		end
-		:Done_Scan
-    	add $Holo_i 1
 	end
 
-	SetVar	$HOLO_TARGETS	$bot~folder&"/LSHRED_" & GAMENAME & ".log"
-	if ($Holo_s <> "")
-		send "'*["&$TagLineB&"] SCAN RESULTS----------------------[ADJ SECTOR: " & CURRENTSECTOR & "*"
-		send $Holo_s & "* "
-		waitfor "Sub-space comm-link terminated"
-	end
-	return
-	
-:resetMinesAfterRestock
+	:done_scan
+	add $holo_i 1
+end
 
-if (($DROP_ARMID > 0) and ($DROP_LIMP > 0))
-	setVar $DROPING_MINES 3
-elseif ($DROP_ARMID > 0)
-
-	setVar $DROPING_MINES 2
-elseif ($DROP_LIMP > 0)
-
-	setVar $DROPING_MINES 1
-else
-	setVar $DROPING_MINES 0
+setvar	$holo_targets	$bot~folder&"/LSHRED_" & gamename & ".log"
+if ($holo_s <> "")
+	send "'*["&$taglineb&"] SCAN RESULTS----------------------[ADJ SECTOR: " & currentsector & "*"
+	send $holo_s & "* "
+	waitfor "Sub-space comm-link terminated"
 end
 return
 
+:resetminesafterrestock
+if (($drop_armid > 0) and ($drop_limp > 0))
+	setvar $droping_mines 3
+elseif ($drop_armid > 0)
 
-:getPersonalPlanets
+	setvar $droping_mines 2
+elseif ($drop_limp > 0)
 
+	setvar $droping_mines 1
+else
+	setvar $droping_mines 0
+end
+return
+
+:getpersonalplanets
 # Planet list from personal planets - relies on no shields being present
-setVar $planet~planetsInSectors SECTORS
+setvar $planet~planetsinsectors sectors
 
 send "cyq"
 waitfor "<Computer activated>"
 waitfor "Sector  Planet Name"
 
-	:pread
-	setTextLineTrigger pread1 :pread1 "#" 
-	setTextLineTrigger preadDone :preadDone "======   ============  ==== ==== ==== ===== ===== " 
-	setTextLineTrigger preadDone2 :preadDone "No Planets claimed"
-	pause
-	:pread1
-	killAllTriggers
-	getWord CURRENTLINE $sector 1
-	add $planet~planetsInSectors[$sector] 1
-	goto :pread
-	
-	:preadDone
-	killAllTriggers
-	return
+:pread
+settextlinetrigger pread1 :pread1 "#"
+settextlinetrigger preaddone :preaddone "======   ============  ==== ==== ==== ===== ===== "
+settextlinetrigger preaddone2 :preaddone "No Planets claimed"
+pause
 
+:pread1
+killalltriggers
+getword currentline $sector 1
+add $planet~planetsinsectors[$sector] 1
+goto :pread
+
+:preaddone
+killalltriggers
+return
 
 include "source\include\player"
 include "source\include\loadvars"

@@ -1,105 +1,102 @@
 systemscript
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
-	setVar $HELP~HELP[1]  $HELP~TAB&"Does bot command at certain time "
-	setVar $HELP~HELP[2]  $HELP~TAB&"      "
-	setVar $HELP~HELP[3]  $HELP~TAB&"  at [time] [bot command]"
-	setVar $HELP~HELP[4]  $HELP~TAB&"         "
-	setVar $HELP~HELP[5]  $HELP~TAB&"  Options: "
-	setVar $HELP~HELP[6]  $HELP~TAB&"            {time} - time to do command each day"
-	setVar $HELP~HELP[7]  $HELP~TAB&"     {bot command} - bot command to run, parameters and all"
-	setVar $HELP~HELP[8]  $HELP~TAB&"           {clear} - clears all commands"
-	setVar $HELP~HELP[9]  $HELP~TAB&"               "
-	setVar $HELP~HELP[10]  $HELP~TAB&"                     example: 5:30:00 PM"
-	setVar $HELP~HELP[11] $HELP~TAB&"     The time is on your machine, not the game server"
-	gosub :HELP~HELPFILE
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1]  $help~tab&"Does bot command at certain time "
+setvar $help~help[2]  $help~tab&"      "
+setvar $help~help[3]  $help~tab&"  at [time] [bot command]"
+setvar $help~help[4]  $help~tab&"         "
+setvar $help~help[5]  $help~tab&"  Options: "
+setvar $help~help[6]  $help~tab&"            {time} - time to do command each day"
+setvar $help~help[7]  $help~tab&"     {bot command} - bot command to run, parameters and all"
+setvar $help~help[8]  $help~tab&"           {clear} - clears all commands"
+setvar $help~help[9]  $help~tab&"               "
+setvar $help~help[10]  $help~tab&"                     example: 5:30:00 PM"
+setvar $help~help[11] $help~tab&"     The time is on your machine, not the game server"
+gosub :help~helpfile
 
-	loadVar $bot~bot_name
-	loadVar $bot~parm1
-	loadVar $bot~user_command_line
-	loadvar $bot~timer_file
+loadvar $bot~bot_name
+loadvar $bot~parm1
+loadvar $bot~user_command_line
+loadvar $bot~timer_file
 
-	if ($bot~parm1 = "clear")
-		delete $bot~timer_file
-		setvar $switchboard~message "Timer file for this game has been cleared.*"
-		gosub :switchboard~switchboard
-		halt
-	end
-
-	getLength $bot~parm1 $length
-	getWordPos $bot~user_command_line $pos $bot~parm1
-
-	if (($bot~parm2 <> "pm") and ($bot~parm2 <> "am"))
-		setvar $switchboard~message "Time must be entered in system format.*"
-		gosub :switchboard~switchboard
-		halt
-		#goto :just_loaded_timers
-	end
-
-    fileExists $exists $bot~timer_file
-    if ($exists)
-		readToArray $bot~timer_file $timer_array
-		setvar $i 1
-		setvar $isfound false
-		while (($i <= $timer_array) and ($isfound <> true))
-			if ($bot~user_command_line = $timer_array[$i])
-				setvar $isfound true
-			end
-			add $i 1
-		end
-    end
-    if ($isfound <> true)
-	uppercase $bot~user_command_line
-		write $bot~timer_file $bot~user_command_line
-	end
-
-
-	:just_loaded_timers
-
-	setvar $saved_timers false
-    fileExists $exists $bot~timer_file
-    if ($exists)
-        readToArray $bot~timer_file $timer_array
-        if ($timer_array > 0)
-	setvar $saved_timers true
-        end
-    end
-
-	:settimer
-	setvar $i 1
-	while ($i <= $timer_array)
-		killtrigger $i&"timer"
-		add $i 1
-	end
-	setvar $i 1
-	setvar $switchboard~self_command 2
-	setvar $switchboard~message ""
-	while ($i <= $timer_array)
-		gosub :strip_time_line
-		setEventTrigger $i&"timer" :continue "TIME HIT" $time&" "&$ampm
-		setvar $switchboard~message $switchboard~message&"At "&$time&" "&$ampm&", I will be running this command: "&$bot_command&"*"
-		add $i 1
-	end
+if ($bot~parm1 = "clear")
+	delete $bot~timer_file
+	setvar $switchboard~message "Timer file for this game has been cleared.*"
 	gosub :switchboard~switchboard
+	halt
+end
 
-	pause
+getlength $bot~parm1 $length
+getwordpos $bot~user_command_line $pos $bot~parm1
 
+if (($bot~parm2 <> "pm") and ($bot~parm2 <> "am"))
+	setvar $switchboard~message "Time must be entered in system format.*"
+	gosub :switchboard~switchboard
+	halt
+	#goto :just_loaded_timers
+end
 
-	:continue
-	setvar $time_hit TIME
+fileexists $exists $bot~timer_file
+if ($exists)
+	readtoarray $bot~timer_file $timer_array
 	setvar $i 1
 	setvar $isfound false
 	while (($i <= $timer_array) and ($isfound <> true))
-		getwordpos $timer_array[$i] $pos $time_hit
-
-		if ($pos > 0)
+		if ($bot~user_command_line = $timer_array[$i])
 			setvar $isfound true
-			gosub :strip_time_line
-			send "'"&$bot~bot_name&" "&$bot_command&"*"
 		end
 		add $i 1
 	end
-	goto :settimer
+end
+if ($isfound <> true)
+	uppercase $bot~user_command_line
+	write $bot~timer_file $bot~user_command_line
+end
+
+:just_loaded_timers
+setvar $saved_timers false
+fileexists $exists $bot~timer_file
+if ($exists)
+	readtoarray $bot~timer_file $timer_array
+	if ($timer_array > 0)
+		setvar $saved_timers true
+	end
+end
+
+:settimer
+setvar $i 1
+while ($i <= $timer_array)
+	killtrigger $i&"timer"
+	add $i 1
+end
+setvar $i 1
+setvar $switchboard~self_command 2
+setvar $switchboard~message ""
+while ($i <= $timer_array)
+	gosub :strip_time_line
+	seteventtrigger $i&"timer" :continue "TIME HIT" $time&" "&$ampm
+	setvar $switchboard~message $switchboard~message&"At "&$time&" "&$ampm&", I will be running this command: "&$bot_command&"*"
+	add $i 1
+end
+gosub :switchboard~switchboard
+
+pause
+
+:continue
+setvar $time_hit time
+setvar $i 1
+setvar $isfound false
+while (($i <= $timer_array) and ($isfound <> true))
+	getwordpos $timer_array[$i] $pos $time_hit
+
+	if ($pos > 0)
+		setvar $isfound true
+		gosub :strip_time_line
+		send "'"&$bot~bot_name&" "&$bot_command&"*"
+	end
+	add $i 1
+end
+goto :settimer
 
 halt
 
@@ -107,9 +104,9 @@ halt
 getword $timer_array[$i] $time 1
 getword $timer_array[$i] $ampm 2
 uppercase $ampm
-getLength $time $length
-getWordPos $timer_array[$i] $pos $time
-cutText $timer_array[$i] $bot_command ($pos + $length + 3) 9999
+getlength $time $length
+getwordpos $timer_array[$i] $pos $time
+cuttext $timer_array[$i] $bot_command ($pos + $length + 3) 9999
 lowercase $bot_command
 return
 

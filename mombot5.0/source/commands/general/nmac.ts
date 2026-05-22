@@ -1,15 +1,18 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
-	goto :wait_for_command
-end
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1]  $help~tab&"   nmac - multiple macro          "
+setvar $help~help[2]  $help~tab&"               "
+setvar $help~help[3]  $help~tab&"    nmac {number of times} {macro to send}  "
+setvar $help~help[4]  $help~tab&"        "
+gosub :help~helpfile
 
 # ============================== SINGLE MACRO (MAC) ==============================
 :nmac
-setVar $nmac $bot~parm1
+setvar $nmac $bot~parm1
+
 :go_macro
-isNumber $number $nmac
-if ($number <> TRUE)
+isnumber $number $nmac
+if ($number <> true)
 	setvar $switchboard~message "Invalid Macro Count*"
 	gosub :switchboard~switchboard
 	goto :wait_for_command
@@ -19,11 +22,11 @@ if ($nmac <= 0)
 	gosub :switchboard~switchboard
 	goto :wait_for_command
 end
-getlength $nmac $length 
+getlength $nmac $length
 getwordpos $bot~user_command_line $pos $nmac&" "
 cuttext $bot~user_command_line $bot~user_command_line ($pos+$length+1) 9999
-gosub :macroProtections
-setVar $i 0
+gosub :macroprotections
+setvar $i 0
 while ($i < $nmac)
 
 	send $bot~user_command_line
@@ -38,84 +41,75 @@ else
 end
 goto :wait_for_command
 # ============================== END MACROS (MAC/NMAC) SUB ==============================
-:macroProtections
-
-stripText $bot~user_command_line $SWITCHBOARD~bot_name
-StripText $bot~user_command_line " nmac "
-replaceText $bot~user_command_line "^m" "*"
-replaceText $bot~user_command_line "^b" #8
-replaceText $bot~user_command_line #42 "*"
-getWordPos $bot~user_command_line $pos "`"
-getWordPos $bot~user_command_line $pos2 "'"
-getWordPos $bot~user_command_line $pos3 "="
-if (($pos > 0) OR ($pos2 > 0) OR ($pos3 > 0))
+:macroprotections
+striptext $bot~user_command_line $switchboard~bot_name
+striptext $bot~user_command_line " nmac "
+replacetext $bot~user_command_line "^m" "*"
+replacetext $bot~user_command_line "^b" #8
+replacetext $bot~user_command_line #42 "*"
+getwordpos $bot~user_command_line $pos "`"
+getwordpos $bot~user_command_line $pos2 "'"
+getwordpos $bot~user_command_line $pos3 "="
+if (($pos > 0) or ($pos2 > 0) or ($pos3 > 0))
 	setvar $switchboard~message "No talking with the bot :P*"
 	gosub :switchboard~switchboard
 	goto :wait_for_command
 end
-setVar $cbyCheck $bot~user_command_line
-lowercase $cbyCheck
-getWordPos $cbyCheck $posc "c"
-getWordPos $cbyCheck $posb "b"
-getWordPos $cbyCheck $posy "y"
-gosub  :player~currentPrompt
-if (($PLAYER~CURRENT_PROMPT = "Computer") AND ($posb > 0) AND ($posy > 0))
+setvar $cbycheck $bot~user_command_line
+lowercase $cbycheck
+getwordpos $cbycheck $posc "c"
+getwordpos $cbycheck $posb "b"
+getwordpos $cbycheck $posy "y"
+gosub  :player~currentprompt
+if (($player~current_prompt = "Computer") and ($posb > 0) and ($posy > 0))
 	setvar $switchboard~message "Self Destruct Protection Activated*"
 	gosub :switchboard~switchboard
 	goto :wait_for_command
 end
-if (($PLAYER~self_destruct_prompt = true) AND ($posy > 0))
+if (($player~self_destruct_prompt = true) and ($posy > 0))
 	setvar $switchboard~message "Self Destruct Protection Activated*"
 	gosub :switchboard~switchboard
 	goto :wait_for_command
 end
 
-getLength $cbyCheck $length
-setVar $i 1
+getlength $cbycheck $length
+setvar $i 1
 while ($i <= $length)
-	if (($posc > 0) AND ($posb > $posc) AND ($posy > $posb))
+	if (($posc > 0) and ($posb > $posc) and ($posy > $posb))
 		setvar $switchboard~message "Self Destruct Protection Activated*"
 		gosub :switchboard~switchboard
 		goto :wait_for_command
 	end
-	if ($foundC = FALSE)
-		getWordPos $cbyCheck $pos "c"
+	if ($foundc = false)
+		getwordpos $cbycheck $pos "c"
 		if ($pos = 1)
-			setVar $foundC TRUE
+			setvar $foundc true
 		end
-	elseif ($foundB = FALSE)
-		getWordPos $cbyCheck $pos "b"
+	elseif ($foundb = false)
+		getwordpos $cbycheck $pos "b"
 		if ($pos = 1)
-			setVar $foundB TRUE
+			setvar $foundb true
 		end
-	elseif ($foundY = FALSE)
-		getWordPos $cbyCheck $pos "y"
+	elseif ($foundy = false)
+		getwordpos $cbycheck $pos "y"
 		if ($pos = 1)
-			setVar $foundY TRUE
+			setvar $foundy true
 		end
 	end
-	if ($foundC AND $foundB AND $foundY)
+	if ($foundc and $foundb and $foundy)
 		setvar $switchboard~message "Self Destruct Protection Activated*"
 		gosub :switchboard~switchboard
 		goto :wait_for_command
 	end
-	if ($testLength > 1)
-		cutText $cbyCheck $cbyCheck 2 9999
+	if ($testlength > 1)
+		cuttext $cbycheck $cbycheck 2 9999
 	end
 	add $i 1
 end
 return
 # ============================== END MULTIPLE MACRO (NMAC) SUB ==============================
-
-
 :wait_for_command
-setVar $HELP~HELP[1]  $HELP~TAB&"   nmac - multiple macro          "
-setVar $HELP~HELP[2]  $HELP~TAB&"               "
-setVar $HELP~HELP[3]  $HELP~TAB&"    nmac {number of times} {macro to send}  "
-setVar $HELP~HELP[4]  $HELP~TAB&"        "
-gosub :HELP~HELPFILE
 halt
-
 
 # includes:
 include "source\include\player"

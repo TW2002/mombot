@@ -1,146 +1,148 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-	
-setVar $HELP~HELP[1] $HELP~TAB&"Attempts a mega rob on port"
-gosub :HELP~HELPFILE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
+setvar $help~help[1] $help~tab&"Attempts a mega rob on port"
+gosub :help~helpfile
 
 :mega
-setVar $isMega TRUE
-:rob
-gosub :PLAYER~quikstats
-setVar $BOT~validPrompts "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-setVar $startingLocation $player~CURRENT_PROMPT
+setvar $ismega true
 
-if (($PLAYER~TURNS = 0) and ($PLAYER~unlimitedGame = FALSE))
+:rob
+gosub :player~quikstats
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
+setvar $startinglocation $player~current_prompt
+
+if (($player~turns = 0) and ($player~unlimitedgame = false))
 	setvar $switchboard~message "I have no turns*"
 	gosub :switchboard~switchboard
 	halt
 end
-cutText $PLAYER~ALIGNMENT $neg_ck 1 1
-stripText $PLAYER~ALIGNMENT "-"
-if ((($PLAYER~ALIGNMENT < 100) and ($neg_ck = "-")) OR ($neg_ck <> "-"))
+cuttext $player~alignment $neg_ck 1 1
+striptext $player~alignment "-"
+if ((($player~alignment < 100) and ($neg_ck = "-")) or ($neg_ck <> "-"))
 	setvar $switchboard~message "Need -100 Alignment Minimum*"
 	gosub :switchboard~switchboard
 	goto :portrm_done
 end
-if ($startingLocation = "Citadel")
+if ($startinglocation = "Citadel")
 	send "q"
-	gosub :PLANET~getPlanetInfo
+	gosub :planet~getplanetinfo
 	send "q"
 end
-setVar $second_mega 0
+setvar $second_mega 0
 setvar $leftover_cash 0
-setVar $mega_min 2970000
-setVar $mega_max 5760000
+setvar $mega_min 2970000
+setvar $mega_max 5760000
 send "p r * r"
-setTextLineTrigger fake :port_fake "Busted!"
-setTextLinetrigger mega :port_ok "port has in excess of"
+settextlinetrigger fake :port_fake "Busted!"
+settextlinetrigger mega :port_ok "port has in excess of"
 pause
+
 :port_fake
 killalltriggers
-if ($startingLocation = "Citadel")
-	gosub :PLANET~landingSub
+if ($startinglocation = "Citadel")
+	gosub :planet~landingsub
 end
-setSectorParameter $PLAYER~CURRENT_SECTOR "BUSTED" TRUE
+setsectorparameter $player~current_sector "BUSTED" true
 setvar $switchboard~message "Fake Busted*"
 gosub :switchboard~switchboard
 goto :portrm_done
+
 :port_ok
 killalltriggers
-setVar $rob ($rob_factor*$PLAYER~EXPERIENCE)
-getWord CURRENTLINE $port_cash 11
-stripText $port_cash ","
+setvar $rob ($rob_factor*$player~experience)
+getword currentline $port_cash 11
+striptext $port_cash ","
 if ($port_cash < $mega_min)
-	if ($isMega)
-		setVar $port_cash (($port_cash*10)/9)
-		setVar $mega_short (3300000 - $port_cash)
+	if ($ismega)
+		setvar $port_cash (($port_cash*10)/9)
+		setvar $mega_short (3300000 - $port_cash)
 		send "0* "
-		if ($startingLocation = "Citadel")
-			gosub :PLANET~landingSub
+		if ($startinglocation = "Citadel")
+			gosub :planet~landingsub
 		end
 		setvar $switchboard~message "Port is short "&$mega_short&" credits*"
 		gosub :switchboard~switchboard
 		goto :portrm_done
 	else
-		goto :do_rob        
+		goto :do_rob
 	end
-elseif (($game~mbbs = TRUE) AND ($isMega = FALSE))
+elseif (($game~mbbs = true) and ($ismega = false))
 	setvar $switchboard~message  $port_cash&" credits on port.  Port is ready for Mega Rob*"
 	gosub :switchboard~switchboard
 	send "*"
-	if ($startingLocation = "Citadel")
-		gosub :PLANET~landingSub
+	if ($startinglocation = "Citadel")
+		gosub :planet~landingsub
 	end
 	goto :portrm_done
 else
-	if ($isMega)
-		setVar $actual_cash $port_cash
+	if ($ismega)
+		setvar $actual_cash $port_cash
 		multiply $actual_cash 10
 		divide $actual_cash 9
-		setVar $mega_cash $actual_cash
+		setvar $mega_cash $actual_cash
 		if ($actual_cash >= 3300000)
-				:mega_loop
-				if ($mega_cash > 6400000)
-					subtract $mega_cash 3300000
-					add $leftover_cash 3300000
-					setVar $second_mega 1
-					goto :mega_loop
-				end
-				if ($second_mega = 0)
-					send $actual_cash "*"
-				elseif ($second_mega = 1)
-					send $mega_cash "*"
-					setVar $actual_cash $mega_cash
-				end
+
+			:mega_loop
+			if ($mega_cash > 6400000)
+				subtract $mega_cash 3300000
+				add $leftover_cash 3300000
+				setvar $second_mega 1
+				goto :mega_loop
+			end
+			if ($second_mega = 0)
+				send $actual_cash "*"
+			elseif ($second_mega = 1)
+				send $mega_cash "*"
+				setvar $actual_cash $mega_cash
+			end
 		end
-		setTextLineTrigger mega_suc :port_suc "Success!"
-		setTextLineTrigger mega_bust :port_bust "Busted!"
+		settextlinetrigger mega_suc :port_suc "Success!"
+		settextlinetrigger mega_bust :port_bust "Busted!"
 		pause
 	else
 		goto :do_rob
 	end
 end
+
 :port_bust
 killalltriggers
-if ($startingLocation = "Citadel")
-	gosub :PLANET~landingSub
+if ($startinglocation = "Citadel")
+	gosub :planet~landingsub
 end
-setSectorParameter $PLAYER~CURRENT_SECTOR "BUSTED" TRUE
-send "'<" & $bot~subspace & ">[Busted:" & $PLAYER~CURRENT_SECTOR & "]<" & $bot~subspace & ">*"
+setsectorparameter $player~current_sector "BUSTED" true
+send "'<" & $bot~subspace & ">[Busted:" & $player~current_sector & "]<" & $bot~subspace & ">*"
 goto :portrm_done
+
 :port_suc
 killalltriggers
-if ($startingLocation = "Citadel")
-	gosub :PLANET~landingSub
+if ($startinglocation = "Citadel")
+	gosub :planet~landingsub
 	send "tt" $actual_cash "*"
 end
 setvar $switchboard~message "Success! - "&$actual_cash&" credits robbed*"
 gosub :switchboard~switchboard
-if ($second_mega = TRUE)
+if ($second_mega = true)
 	setvar $switchboard~message "There are "&$leftover_cash&" credits left for a second mega*"
 	gosub :switchboard~switchboard
 end
+
 :portrm_done
-setVar $isMega FALSE
+setvar $ismega false
 halt
+
 :do_rob
-setVar $port_cash (($port_cash*10)/9)
+setvar $port_cash (($port_cash*10)/9)
 if ($port_cash < $rob)
-	setVar $rob $port_cash
+	setvar $rob $port_cash
 end
 send $rob "*"
-setVar $actual_cash $rob
-setTextLineTrigger port_empty :port_suc "Maybe some other day, eh?"
-setTextLineTrigger mega_suc :port_suc "Success!"
-setTextLineTrigger port_bust :port_bust "Busted!"
+setvar $actual_cash $rob
+settextlinetrigger port_empty :port_suc "Maybe some other day, eh?"
+settextlinetrigger mega_suc :port_suc "Success!"
+settextlinetrigger port_bust :port_bust "Busted!"
 pause
-
-
-
-
-
 
 # includes:
 include "source\include\planet"

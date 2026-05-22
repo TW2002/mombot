@@ -1,88 +1,78 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-	setVar $HELP~HELP[1]  $HELP~TAB&"bwarp {sector:#} {"&#34&"trader_name"&#34&"} {p}"
-	setVar $HELP~HELP[2]  $HELP~TAB&"      "
-	setVar $HELP~HELP[3]  $HELP~TAB&"        planet transports to sector"
-	setVar $HELP~HELP[4]  $HELP~TAB&"       "
-	setVar $HELP~HELP[5]  $HELP~TAB&"    Options: "
-	setVar $HELP~HELP[6]  $HELP~TAB&"           {sector:#} - sector to bwarp to "
-	setVar $HELP~HELP[7]  $HELP~TAB&"      {"&#34&"trader_name"&#34&"} - trader to bwarp to"
-	setVar $HELP~HELP[8]  $HELP~TAB&"                  {p} - port after bwarping in "
-	setVar $HELP~HELP[9]  $HELP~TAB&"         "
-	setVar $HELP~HELP[10] $HELP~TAB&"    Examples:"
-	setVar $HELP~HELP[11] $HELP~TAB&"               >b 233 - normal bwarp"
-	setVar $HELP~HELP[12] $HELP~TAB&"             >b 233 p - bwarp to sector, and port "
-	setVar $HELP~HELP[13] $HELP~TAB&"         >b planet 12 - bwarp to last known "
-	setVar $HELP~HELP[14] $HELP~TAB&"                        location of planet 12 "
-	setVar $HELP~HELP[15] $HELP~TAB&"              >b mind - bwarp to a corp member with mind"
-	setVar $HELP~HELP[16] $HELP~TAB&"                        in their name"
-	setVar $HELP~HELP[17] $HELP~TAB&"     >b "&#34&"mind dagger"&#34&" - bwarp to corp member"
-	gosub :HELP~HELPFILE
-
+setvar $help~help[1]  $help~tab&"bwarp {sector:#} {"&#34&"trader_name"&#34&"} {p}"
+setvar $help~help[2]  $help~tab&"      "
+setvar $help~help[3]  $help~tab&"        planet transports to sector"
+setvar $help~help[4]  $help~tab&"       "
+setvar $help~help[5]  $help~tab&"    Options: "
+setvar $help~help[6]  $help~tab&"           {sector:#} - sector to bwarp to "
+setvar $help~help[7]  $help~tab&"      {"&#34&"trader_name"&#34&"} - trader to bwarp to"
+setvar $help~help[8]  $help~tab&"                  {p} - port after bwarping in "
+setvar $help~help[9]  $help~tab&"         "
+setvar $help~help[10] $help~tab&"    Examples:"
+setvar $help~help[11] $help~tab&"               >b 233 - normal bwarp"
+setvar $help~help[12] $help~tab&"             >b 233 p - bwarp to sector, and port "
+setvar $help~help[13] $help~tab&"         >b planet 12 - bwarp to last known "
+setvar $help~help[14] $help~tab&"                        location of planet 12 "
+setvar $help~help[15] $help~tab&"              >b mind - bwarp to a corp member with mind"
+setvar $help~help[16] $help~tab&"                        in their name"
+setvar $help~help[17] $help~tab&"     >b "&#34&"mind dagger"&#34&" - bwarp to corp member"
+gosub :help~helpfile
 
 # ======================     START BWARP SUBROUTINES     =================
-:Bwarp
+:bwarp
 :b
-
 killalltriggers
-if ($bot~parm1 <> $PLAYER~CURRENT_SECTOR)
-	gosub  :player~currentPrompt
+if ($bot~parm1 <> $player~current_sector)
+	gosub  :player~currentprompt
 else
-	gosub :PLAYER~quikstats
+	gosub :player~quikstats
 end
 
-setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
-setVar $bot~validPrompts "Citadel"
-gosub :PLAYER~CHECKSTARTINGPROMPT
+setvar $player~startinglocation $player~current_prompt
+setvar $bot~validprompts "Citadel"
+gosub :player~checkstartingprompt
 gosub :player~checkfortravelname
-gosub :travelProtections
+gosub :travelprotections
 gosub :player~bwarp
 goto :wait_for_command
 # ======================     END BWARP SUBROUTINES     ==========================
-
-
-:travelProtections
-isNumber $test $bot~parm1
-if ($test = FALSE)
-	setVar $SWITCHBOARD~message "Sector must be entered as a number*"
-	gosub :SWITCHBOARD~switchboard
+:travelprotections
+isnumber $test $bot~parm1
+if ($test = false)
+	setvar $switchboard~message "Sector must be entered as a number*"
+	gosub :switchboard~switchboard
 	goto :wait_for_command
 else
 	if ($bot~parm2 = "p")
-		setVar $player~warpto_p "p z t *"
-		if ($bot~parm1 = $MAP~stardock)
-			setVar $player~warpto_p "p z s h *"
+		setvar $player~warpto_p "p z t *"
+		if ($bot~parm1 = $map~stardock)
+			setvar $player~warpto_p "p z s h *"
 		end
 	else
-		isNumber $test $bot~parm2
-		if ($test = FALSE)
-			setVar $player~warpto_p ""
+		isnumber $test $bot~parm2
+		if ($test = false)
+			setvar $player~warpto_p ""
 		else
-			setVar $player~warpto_p $bot~parm2
+			setvar $player~warpto_p $bot~parm2
 		end
 	end
-	setVar $PLAYER~warpto $bot~parm1
-	if ($PLAYER~CURRENT_SECTOR = $PLAYER~warpto)
-		setVar $SWITCHBOARD~message "Already in that sector!*"
-		gosub :SWITCHBOARD~switchboard
+	setvar $player~warpto $bot~parm1
+	if ($player~current_sector = $player~warpto)
+		setvar $switchboard~message "Already in that sector!*"
+		gosub :switchboard~switchboard
 		goto :wait_for_command
-	elseif (($PLAYER~warpto <= 0) OR ($PLAYER~warpto > SECTORS))
-		setVar $SWITCHBOARD~message "Destination sector is out of range!*"
-		gosub :SWITCHBOARD~switchboard
+	elseif (($player~warpto <= 0) or ($player~warpto > sectors))
+		setvar $switchboard~message "Destination sector is out of range!*"
+		gosub :switchboard~switchboard
 		goto :wait_for_command
 	end
 end
 return
 
-
-
-
 :wait_for_command
 halt
-
-
-
 
 # includes:
 include "source\include\player"

@@ -1,1220 +1,1269 @@
-:USER_INTERFACE~CHECK_ROUTING_ALL
-setvar $USER_INTERFACE~TEMP_BOT_NAME "all"
-goto :DO_ROUTING
-:USER_INTERFACE~CHECK_ROUTING_TEAM
-setvar $USER_INTERFACE~TEMP_BOT_NAME $BOT~BOT_TEAM_NAME
-goto :DO_ROUTING
-:USER_INTERFACE~CHECK_ROUTING
-setvar $USER_INTERFACE~TEMP_BOT_NAME $SWITCHBOARD~BOT_NAME
-:USER_INTERFACE~DO_ROUTING
+:user_interface~check_routing_all
+setvar $user_interface~temp_bot_name "all"
+goto :do_routing
 
-setvar $USER_INTERFACE~CURRENTLINE CURRENTLINE
-setvar $USER_INTERFACE~CURRENTANSILINE CURRENTANSILINE
-gosub :BOT~KILLTHETRIGGERS
-getword CURRENTLINE $USER_INTERFACE~ROUTING 1
-if ($USER_INTERFACE~ROUTING = "'"&$USER_INTERFACE~TEMP_BOT_NAME)
-  goto :OWN_COMMAND
-elseif ($USER_INTERFACE~ROUTING = "R")
-  goto :COMMAND
-elseif ($USER_INTERFACE~ROUTING = "P")
-  goto :PAGE_COMMAND
+:user_interface~check_routing_team
+setvar $user_interface~temp_bot_name $bot~bot_team_name
+goto :do_routing
+
+:user_interface~check_routing
+setvar $user_interface~temp_bot_name $switchboard~bot_name
+
+:user_interface~do_routing
+setvar $user_interface~currentline currentline
+setvar $user_interface~currentansiline currentansiline
+gosub :bot~killthetriggers
+getword currentline $user_interface~routing 1
+if ($user_interface~routing = "'"&$user_interface~temp_bot_name)
+	goto :own_command
+elseif ($user_interface~routing = "R")
+	goto :command
+elseif ($user_interface~routing = "P")
+	goto :page_command
 else
-  goto :BOT~WAIT_FOR_COMMAND
+	goto :bot~wait_for_command
 end
-:USER_INTERFACE~OWN_COMMAND
 
-cuttext $USER_INTERFACE~CURRENTANSILINE $USER_INTERFACE~ANSI_CK1 1 1
-if ($USER_INTERFACE~ANSI_CK1 <> "")
-  goto :BOT~WAIT_FOR_COMMAND
+:user_interface~own_command
+cuttext $user_interface~currentansiline $user_interface~ansi_ck1 1 1
+if ($user_interface~ansi_ck1 <> "")
+	goto :bot~wait_for_command
 end
-getword $USER_INTERFACE~CURRENTLINE $USER_INTERFACE~RADIO_TYPE 1
-striptext $USER_INTERFACE~RADIO_TYPE $USER_INTERFACE~TEMP_BOT_NAME
-setvar $BOT~USER_COMMAND_LINE $USER_INTERFACE~CURRENTLINE
-setvar $BOT~USER_COMMAND_LINE $BOT~USER_COMMAND_LINE&"              "
-lowercase $BOT~COMMAND_LINES[$USER_INTERFACE~B]
-if ($USER_INTERFACE~RADIO_TYPE = "'")
-  getlength "'"&$USER_INTERFACE~TEMP_BOT_NAME&" " $USER_INTERFACE~LENGTH
-  cuttext $BOT~USER_COMMAND_LINE $BOT~USER_COMMAND_LINE ($USER_INTERFACE~LENGTH + 1) 9999
-  setvar $USER_INTERFACE~USER_SEC_LEVEL 9
-  getword $USER_INTERFACE~CURRENTLINE $BOT~COMMAND 2
-  getwordpos $BOT~COMMAND $USER_INTERFACE~POS "'"
-  getwordpos $BOT~COMMAND $USER_INTERFACE~POS2 "`"
-  if (($USER_INTERFACE~POS = 1) or ($USER_INTERFACE~POS2 = 1))
-    goto :BOT~WAIT_FOR_COMMAND
-  end
-  setvar $BOT~COMMAND_CALLER "self"
-  savevar $BOT~COMMAND_CALLER
-  getwordpos $BOT~USER_COMMAND_LINE $USER_INTERFACE~POS "|"
-  if ($USER_INTERFACE~POS > 0)
-    savevar $SWITCHBOARD~SELF_COMMAND
-    savevar $BOT~USER_COMMAND_LINE
-    load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\run.cts"
-    goto :BOT~WAIT_FOR_COMMAND
-  end
-  gosub :CHECK_FOR_MULTI_COMMANDS
-  goto :COMMAND_PROCESSING
+getword $user_interface~currentline $user_interface~radio_type 1
+striptext $user_interface~radio_type $user_interface~temp_bot_name
+setvar $bot~user_command_line $user_interface~currentline
+setvar $bot~user_command_line $bot~user_command_line&"              "
+lowercase $bot~command_lines[$user_interface~b]
+if ($user_interface~radio_type = "'")
+	getlength "'"&$user_interface~temp_bot_name&" " $user_interface~length
+	cuttext $bot~user_command_line $bot~user_command_line ($user_interface~length + 1) 9999
+	setvar $user_interface~user_sec_level 9
+	getword $user_interface~currentline $bot~command 2
+	getwordpos $bot~command $user_interface~pos "'"
+	getwordpos $bot~command $user_interface~pos2 "`"
+	if (($user_interface~pos = 1) or ($user_interface~pos2 = 1))
+		goto :bot~wait_for_command
+	end
+	setvar $bot~command_caller "self"
+	savevar $bot~command_caller
+	getwordpos $bot~user_command_line $user_interface~pos "|"
+	if ($user_interface~pos > 0)
+		savevar $switchboard~self_command
+		savevar $bot~user_command_line
+		load "scripts\"&$bot~mombot_directory&"\commands\general\run.cts"
+		goto :bot~wait_for_command
+	end
+	gosub :check_for_multi_commands
+	goto :command_processing
 else
-  goto :BOT~WAIT_FOR_COMMAND
-end
-:USER_INTERFACE~COMMAND
-
-setvar $USER_INTERFACE~ANSI_LINE $USER_INTERFACE~CURRENTANSILINE
-getwordpos $USER_INTERFACE~ANSI_LINE $USER_INTERFACE~POS "[36mR"
-getwordpos $USER_INTERFACE~ANSI_LINE $USER_INTERFACE~POS2 "[0;36mR"
-if (($USER_INTERFACE~POS <= 0) and ($USER_INTERFACE~POS2 <= 0))
-  goto :BOT~WAIT_FOR_COMMAND
-end
-cuttext $USER_INTERFACE~CURRENTLINE $USER_INTERFACE~USER_NAME 3 6
-
-gosub :VERIFY_USER_STATUS
-if ($USER_INTERFACE~AUTHORIZATION = 0)
-  goto :BOT~WAIT_FOR_COMMAND
+	goto :bot~wait_for_command
 end
 
-cuttext $USER_INTERFACE~CURRENTLINE $BOT~USER_COMMAND_LINE 10 999
-getword $BOT~USER_COMMAND_LINE $USER_INTERFACE~BOTNAME_CHK 1
-if ($USER_INTERFACE~BOTNAME_CHK <> $USER_INTERFACE~TEMP_BOT_NAME)
-  goto :BOT~WAIT_FOR_COMMAND
+:user_interface~command
+setvar $user_interface~ansi_line $user_interface~currentansiline
+getwordpos $user_interface~ansi_line $user_interface~pos "[36mR"
+getwordpos $user_interface~ansi_line $user_interface~pos2 "[0;36mR"
+if (($user_interface~pos <= 0) and ($user_interface~pos2 <= 0))
+	goto :bot~wait_for_command
 end
-getlength $USER_INTERFACE~TEMP_BOT_NAME&" " $USER_INTERFACE~LENGTH
-cuttext $BOT~USER_COMMAND_LINE&"          " $BOT~USER_COMMAND_LINE ($USER_INTERFACE~LENGTH + 1) 9999
-setvar $BOT~USER_COMMAND_LINE $BOT~USER_COMMAND_LINE&"              "
-getword $BOT~USER_COMMAND_LINE $BOT~COMMAND 1
-if (($BOT~COMMAND = "bot") or ($BOT~COMMAND = "relog"))
-  goto :BOT~WAIT_FOR_COMMAND
-end
-getwordpos $BOT~USER_COMMAND_LINE $USER_INTERFACE~POS "|"
-if ($USER_INTERFACE~POS > 0)
-  savevar $SWITCHBOARD~SELF_COMMAND
-  savevar $BOT~USER_COMMAND_LINE
-  load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\run.cts"
-  goto :BOT~WAIT_FOR_COMMAND
-end
-gosub :CHECK_FOR_MULTI_COMMANDS
-goto :COMMAND_PROCESSING
-:USER_INTERFACE~PAGE_COMMAND
+cuttext $user_interface~currentline $user_interface~user_name 3 6
 
-cuttext $USER_INTERFACE~CURRENTLINE $USER_INTERFACE~USER_NAME 3 6
-cuttext $USER_INTERFACE~CURRENTLINE $BOT~USER_COMMAND_LINE 10 999
-getwordpos $BOT~USER_COMMAND_LINE $USER_INTERFACE~POS $SWITCHBOARD~BOT_NAME&":"&$BOT~BOT_PASSWORD&":"&$BOT~SUBSPACE
-if ($USER_INTERFACE~POS > 0)
-  add $BOT~CORPYCOUNT 1
-  setvar $BOT~CORPY[$BOT~CORPYCOUNT] $USER_INTERFACE~USER_NAME
-  setvar $USER_INTERFACE~LOGGEDIN[$USER_INTERFACE~USER_NAME] 1
-  setvar $switchboard~message "User Verified - " $USER_INTERFACE~USER_NAME "*"
-  gosub :switchboard~switchboard
+gosub :verify_user_status
+if ($user_interface~authorization = 0)
+	goto :bot~wait_for_command
+end
+
+cuttext $user_interface~currentline $bot~user_command_line 10 999
+getword $bot~user_command_line $user_interface~botname_chk 1
+if ($user_interface~botname_chk <> $user_interface~temp_bot_name)
+	goto :bot~wait_for_command
+end
+getlength $user_interface~temp_bot_name&" " $user_interface~length
+cuttext $bot~user_command_line&"          " $bot~user_command_line ($user_interface~length + 1) 9999
+setvar $bot~user_command_line $bot~user_command_line&"              "
+getword $bot~user_command_line $bot~command 1
+if (($bot~command = "bot") or ($bot~command = "relog"))
+	goto :bot~wait_for_command
+end
+getwordpos $bot~user_command_line $user_interface~pos "|"
+if ($user_interface~pos > 0)
+	savevar $switchboard~self_command
+	savevar $bot~user_command_line
+	load "scripts\"&$bot~mombot_directory&"\commands\general\run.cts"
+	goto :bot~wait_for_command
+end
+gosub :check_for_multi_commands
+goto :command_processing
+
+:user_interface~page_command
+cuttext $user_interface~currentline $user_interface~user_name 3 6
+cuttext $user_interface~currentline $bot~user_command_line 10 999
+getwordpos $bot~user_command_line $user_interface~pos $switchboard~bot_name&":"&$bot~bot_password&":"&$bot~subspace
+if ($user_interface~pos > 0)
+	add $bot~corpycount 1
+	setvar $bot~corpy[$bot~corpycount] $user_interface~user_name
+	setvar $user_interface~loggedin[$user_interface~user_name] 1
+	setvar $switchboard~message "User Verified - " $user_interface~user_name "*"
+	gosub :switchboard~switchboard
 else
-  gosub :VERIFY_USER_STATUS
-  if ($USER_INTERFACE~AUTHORIZATION = 0)
-    echo "*"&ANSI_14&"["&ANSI_15&"Bad attempt to control bot through private message."&ANSI_14&"]*"
-    goto :BOT~WAIT_FOR_COMMAND
-  end
-  getword $BOT~USER_COMMAND_LINE $USER_INTERFACE~BOTNAME_CHK 1
-  if ($USER_INTERFACE~BOTNAME_CHK <> $USER_INTERFACE~TEMP_BOT_NAME)
-    goto :BOT~WAIT_FOR_COMMAND
-  end
-  getlength $USER_INTERFACE~TEMP_BOT_NAME&" " $USER_INTERFACE~LENGTH
-  cuttext $BOT~USER_COMMAND_LINE&"          " $BOT~USER_COMMAND_LINE ($USER_INTERFACE~LENGTH + 1) 9999
-  lowercase $BOT~USER_COMMAND_LINE
-  setvar $BOT~USER_COMMAND_LINE $BOT~USER_COMMAND_LINE&"              "
-  getword $BOT~USER_COMMAND_LINE $BOT~COMMAND 1
-  if (($BOT~COMMAND = "bot") or ($BOT~COMMAND = "relog"))
-    goto :BOT~WAIT_FOR_COMMAND
-  end
-  getwordpos $BOT~USER_COMMAND_LINE $USER_INTERFACE~POS "|"
-  if ($USER_INTERFACE~POS > 0)
-    savevar $SWITCHBOARD~SELF_COMMAND
-    savevar $BOT~USER_COMMAND_LINE
-    load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\run.cts"
-    goto :BOT~WAIT_FOR_COMMAND
-  end
-  gosub :CHECK_FOR_MULTI_COMMANDS
-  goto :COMMAND_PROCESSING
+	gosub :verify_user_status
+	if ($user_interface~authorization = 0)
+		echo "*"&ansi_14&"["&ansi_15&"Bad attempt to control bot through private message."&ansi_14&"]*"
+		goto :bot~wait_for_command
+	end
+	getword $bot~user_command_line $user_interface~botname_chk 1
+	if ($user_interface~botname_chk <> $user_interface~temp_bot_name)
+		goto :bot~wait_for_command
+	end
+	getlength $user_interface~temp_bot_name&" " $user_interface~length
+	cuttext $bot~user_command_line&"          " $bot~user_command_line ($user_interface~length + 1) 9999
+	lowercase $bot~user_command_line
+	setvar $bot~user_command_line $bot~user_command_line&"              "
+	getword $bot~user_command_line $bot~command 1
+	if (($bot~command = "bot") or ($bot~command = "relog"))
+		goto :bot~wait_for_command
+	end
+	getwordpos $bot~user_command_line $user_interface~pos "|"
+	if ($user_interface~pos > 0)
+		savevar $switchboard~self_command
+		savevar $bot~user_command_line
+		load "scripts\"&$bot~mombot_directory&"\commands\general\run.cts"
+		goto :bot~wait_for_command
+	end
+	gosub :check_for_multi_commands
+	goto :command_processing
 end
-goto :BOT~WAIT_FOR_COMMAND
-:USER_INTERFACE~USER_ACCESS
+goto :bot~wait_for_command
 
-
-
-gosub :BIGDELAY_KILLTHETRIGGERS
-gosub :SELFCOMMANDPROMPT
-setvar $BOT~COMMAND_CALLER "self"
-savevar $BOT~COMMAND_CALLER
-lowercase $BOT~USER_COMMAND_LINE
-if ($BOT~USER_COMMAND_LINE = "")
-  echo CURRENTANSILINE
-  goto :BOT~WAIT_FOR_COMMAND
+:user_interface~user_access
+gosub :bigdelay_killthetriggers
+gosub :selfcommandprompt
+setvar $bot~command_caller "self"
+savevar $bot~command_caller
+lowercase $bot~user_command_line
+if ($bot~user_command_line = "")
+	echo currentansiline
+	goto :bot~wait_for_command
 end
-setvar $SWITCHBOARD~SELF_COMMAND TRUE
-getwordpos $BOT~USER_COMMAND_LINE $USER_INTERFACE~POS "|"
-if ($USER_INTERFACE~POS > 0)
-  savevar $SWITCHBOARD~SELF_COMMAND
-  savevar $BOT~USER_COMMAND_LINE
-  load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\run.cts"
-  goto :BOT~WAIT_FOR_COMMAND
+setvar $switchboard~self_command true
+getwordpos $bot~user_command_line $user_interface~pos "|"
+if ($user_interface~pos > 0)
+	savevar $switchboard~self_command
+	savevar $bot~user_command_line
+	load "scripts\"&$bot~mombot_directory&"\commands\general\run.cts"
+	goto :bot~wait_for_command
 end
-:USER_INTERFACE~RUNUSERCOMMANDLINE
-setvar $BOT~USER_COMMAND_LINE $BOT~USER_COMMAND_LINE&"              "
-setvar $USER_INTERFACE~AUTHORIZATION 9
-setvar $USER_INTERFACE~USER_SEC_LEVEL 9
 
-gosub :CHECK_FOR_MULTI_COMMANDS
+:user_interface~runusercommandline
+setvar $bot~user_command_line $bot~user_command_line&"              "
+setvar $user_interface~authorization 9
+setvar $user_interface~user_sec_level 9
 
-goto :COMMAND_PROCESSING
-:USER_INTERFACE~CHECK_FOR_MULTI_COMMANDS
+gosub :check_for_multi_commands
 
-gosub :USER_INTERFACE~NORMALIZE_USER_COMMAND_LINE
+goto :command_processing
 
+:user_interface~check_for_multi_commands
+gosub :user_interface~normalize_user_command_line
 
+setarray $bot~command_lines 10 10
+setarray $user_interface~typed_commands 10
+setarray $user_interface~command_remainders 10
+setarray $user_interface~command_remainders_from_eight 10
+getwordpos $bot~user_command_line $user_interface~pos "|"
+if ($user_interface~pos > 0)
 
+	splittext $bot~user_command_line $bot~commands "|"
+	setvar $user_interface~b 1
+	setvar $bot~command_lines 0
+	while ($user_interface~b <= $bot~commands)
+		getword $bot~commands[$user_interface~b] $bot~command_lines[$user_interface~b][9] 1
+		getlength $bot~command_lines[$user_interface~b][9]&" " $bot~commandlength
+		getwordpos $bot~command_lines[$user_interface~b][9] $user_interface~pos "'"
+		getwordpos $bot~command_lines[$user_interface~b][9] $user_interface~pos2 "`"
+		if (($user_interface~pos <> 1) and ($user_interface~pos2 <> 1))
+			cuttext $bot~commands[$user_interface~b]&"    " $bot~commands[$user_interface~b] ($bot~commandlength + 1) 9999
+		end
+		setvar $bot~command_lines[$user_interface~b] $bot~commands[$user_interface~b]
+		setvar $bot~command_lines[$user_interface~b][9] $bot~command_lines[$user_interface~b][9]
 
-
-
-
-
-
-
-
-
-
-
-
-setarray $BOT~COMMAND_LINES 10 10
-setarray $USER_INTERFACE~TYPED_COMMANDS 10
-getwordpos $BOT~USER_COMMAND_LINE $USER_INTERFACE~POS "|"
-if ($USER_INTERFACE~POS > 0)
-
-  splittext $BOT~USER_COMMAND_LINE $BOT~COMMANDS "|"
-  setvar $USER_INTERFACE~B 1
-  setvar $BOT~COMMAND_LINES 0
-  while ($USER_INTERFACE~B <= $BOT~COMMANDS)
-    getword $BOT~COMMANDS[$USER_INTERFACE~B] $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] 1
-    getlength $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&" " $BOT~COMMANDLENGTH
-    getwordpos $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] $USER_INTERFACE~POS "'"
-    getwordpos $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] $USER_INTERFACE~POS2 "`"
-    if (($USER_INTERFACE~POS <> 1) and ($USER_INTERFACE~POS2 <> 1))
-      cuttext $BOT~COMMANDS[$USER_INTERFACE~B]&"    " $BOT~COMMANDS[$USER_INTERFACE~B] ($BOT~COMMANDLENGTH + 1) 9999
-    end
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B] $BOT~COMMANDS[$USER_INTERFACE~B]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]
-
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B] $BOT~COMMANDS[$USER_INTERFACE~B]
-    gosub :GETPARAMETERS
-    add $BOT~COMMAND_LINES 1
-    add $USER_INTERFACE~B 1
-  end
+		setvar $bot~command_lines[$user_interface~b] $bot~commands[$user_interface~b]
+		gosub :getparameters
+		gosub :user_interface~set_command_remainder
+		add $bot~command_lines 1
+		add $user_interface~b 1
+	end
 else
-  setarray $BOT~COMMAND_LINES 1
-  setvar $BOT~COMMAND_LINES 1
-  setvar $BOT~COMMAND_LINES[1] $BOT~USER_COMMAND_LINE
-  getword $BOT~COMMAND_LINES[1] $BOT~COMMAND_LINES[1][9] 1
-  getlength $BOT~COMMAND_LINES[1][9]&" " $BOT~COMMANDLENGTH
-  getwordpos $BOT~COMMAND_LINES[1][9] $USER_INTERFACE~POS "'"
-  getwordpos $BOT~COMMAND_LINES[1][9] $USER_INTERFACE~POS2 "`"
-  if (($USER_INTERFACE~POS <> 1) and ($USER_INTERFACE~POS2 <> 1))
-    cuttext $BOT~COMMAND_LINES[1]&"    " $BOT~COMMAND_LINES[1] ($BOT~COMMANDLENGTH + 1) 9999
-  end
-  setvar $USER_INTERFACE~B 1
-  gosub :GETPARAMETERS
+	setarray $bot~command_lines 1
+	setvar $bot~command_lines 1
+	setvar $bot~command_lines[1] $bot~user_command_line
+	getword $bot~command_lines[1] $bot~command_lines[1][9] 1
+	getlength $bot~command_lines[1][9]&" " $bot~commandlength
+	getwordpos $bot~command_lines[1][9] $user_interface~pos "'"
+	getwordpos $bot~command_lines[1][9] $user_interface~pos2 "`"
+	if (($user_interface~pos <> 1) and ($user_interface~pos2 <> 1))
+		cuttext $bot~command_lines[1]&"    " $bot~command_lines[1] ($bot~commandlength + 1) 9999
+	end
+	setvar $user_interface~b 1
+	gosub :getparameters
+	gosub :user_interface~set_command_remainder
 end
 
 return
-:USER_INTERFACE~NORMALIZE_USER_COMMAND_LINE
-setvar $USER_INTERFACE~RAW_COMMAND_LINE $BOT~USER_COMMAND_LINE
-getlength $USER_INTERFACE~RAW_COMMAND_LINE $USER_INTERFACE~RAW_LENGTH
-if ($USER_INTERFACE~RAW_LENGTH <= 0)
-  return
+
+:user_interface~normalize_user_command_line
+setvar $user_interface~raw_command_line $bot~user_command_line
+getlength $user_interface~raw_command_line $user_interface~raw_length
+if ($user_interface~raw_length <= 0)
+	return
 end
 
-setvar $USER_INTERFACE~NORMALIZED_COMMAND_LINE ""
-setvar $USER_INTERFACE~CURSOR 1
-setvar $USER_INTERFACE~I 1
-while ($USER_INTERFACE~I <= $USER_INTERFACE~RAW_LENGTH)
-  cuttext $USER_INTERFACE~RAW_COMMAND_LINE $USER_INTERFACE~CURRENT_CHAR $USER_INTERFACE~I 1
-  if ($USER_INTERFACE~CURRENT_CHAR = #8)
-    if ($USER_INTERFACE~CURSOR > 1)
-      subtract $USER_INTERFACE~CURSOR 1
-    end
-  elseif ($USER_INTERFACE~CURRENT_CHAR <> #13)
-    getlength $USER_INTERFACE~NORMALIZED_COMMAND_LINE $USER_INTERFACE~NORMALIZED_LENGTH
-    if ($USER_INTERFACE~CURSOR > $USER_INTERFACE~NORMALIZED_LENGTH)
-      setvar $USER_INTERFACE~NORMALIZED_COMMAND_LINE $USER_INTERFACE~NORMALIZED_COMMAND_LINE & $USER_INTERFACE~CURRENT_CHAR
-    else
-      if ($USER_INTERFACE~CURSOR > 1)
-        cuttext $USER_INTERFACE~NORMALIZED_COMMAND_LINE $USER_INTERFACE~NORMALIZED_FRONT 1 ($USER_INTERFACE~CURSOR - 1)
-      else
-        setvar $USER_INTERFACE~NORMALIZED_FRONT ""
-      end
-      cuttext $USER_INTERFACE~NORMALIZED_COMMAND_LINE $USER_INTERFACE~NORMALIZED_TAIL ($USER_INTERFACE~CURSOR + 1) 9999
-      setvar $USER_INTERFACE~NORMALIZED_COMMAND_LINE $USER_INTERFACE~NORMALIZED_FRONT & $USER_INTERFACE~CURRENT_CHAR & $USER_INTERFACE~NORMALIZED_TAIL
-    end
-    add $USER_INTERFACE~CURSOR 1
-  end
-  add $USER_INTERFACE~I 1
+setvar $user_interface~normalized_command_line ""
+setvar $user_interface~cursor 1
+setvar $user_interface~i 1
+while ($user_interface~i <= $user_interface~raw_length)
+	cuttext $user_interface~raw_command_line $user_interface~current_char $user_interface~i 1
+	if ($user_interface~current_char = #8)
+		if ($user_interface~cursor > 1)
+			subtract $user_interface~cursor 1
+		end
+	elseif ($user_interface~current_char <> #13)
+		getlength $user_interface~normalized_command_line $user_interface~normalized_length
+		if ($user_interface~cursor > $user_interface~normalized_length)
+			setvar $user_interface~normalized_command_line $user_interface~normalized_command_line & $user_interface~current_char
+		else
+			if ($user_interface~cursor > 1)
+				cuttext $user_interface~normalized_command_line $user_interface~normalized_front 1 ($user_interface~cursor - 1)
+			else
+				setvar $user_interface~normalized_front ""
+			end
+			cuttext $user_interface~normalized_command_line $user_interface~normalized_tail ($user_interface~cursor + 1) 9999
+			setvar $user_interface~normalized_command_line $user_interface~normalized_front & $user_interface~current_char & $user_interface~normalized_tail
+		end
+		add $user_interface~cursor 1
+	end
+	add $user_interface~i 1
 end
-trim $USER_INTERFACE~NORMALIZED_COMMAND_LINE
-setvar $BOT~USER_COMMAND_LINE $USER_INTERFACE~NORMALIZED_COMMAND_LINE
+trim $user_interface~normalized_command_line
+setvar $bot~user_command_line $user_interface~normalized_command_line
 return
-:USER_INTERFACE~GETPARAMETERS
 
-
-
-
-setvar $USER_INTERFACE~TEST_VALUE 0
-setvar $USER_INTERFACE~I 1
-while ($USER_INTERFACE~TEST_VALUE <> "")
-  getword " "&$BOT~COMMAND_LINES[$USER_INTERFACE~B]&" " $USER_INTERFACE~TEST_VALUE $USER_INTERFACE~I ""
-  getwordpos " "&$USER_INTERFACE~TEST_VALUE&" " $USER_INTERFACE~POSTHOUSANDS "k "
-  getwordpos " "&$USER_INTERFACE~TEST_VALUE&" " $USER_INTERFACE~POSMILLIONS "m "
-  getwordpos " "&$USER_INTERFACE~TEST_VALUE&" " $USER_INTERFACE~POSBILLIONS "b "
-  if (($USER_INTERFACE~POSMILLIONS > 0) or ($USER_INTERFACE~POSTHOUSANDS > 0) or ($USER_INTERFACE~POSBILLIONS > 0))
-    replacetext $USER_INTERFACE~TEST_VALUE "k" ""
-    replacetext $USER_INTERFACE~TEST_VALUE "m" ""
-    replacetext $USER_INTERFACE~TEST_VALUE "b" ""
-    trim $USER_INTERFACE~TEST_VALUE
-    isnumber $USER_INTERFACE~IS_A_NUMBER $USER_INTERFACE~TEST_VALUE
-    if ($USER_INTERFACE~IS_A_NUMBER = TRUE)
-      if ($USER_INTERFACE~TEST_VALUE <> 0)
-        replacetext $BOT~COMMAND_LINES[$USER_INTERFACE~B] $USER_INTERFACE~TEST_VALUE&"k" $USER_INTERFACE~TEST_VALUE&000
-        replacetext $BOT~COMMAND_LINES[$USER_INTERFACE~B] $USER_INTERFACE~TEST_VALUE&"m" $USER_INTERFACE~TEST_VALUE&000000
-        replacetext $BOT~COMMAND_LINES[$USER_INTERFACE~B] $USER_INTERFACE~TEST_VALUE&"b" $USER_INTERFACE~TEST_VALUE&000000000
-      end
-    end
-  end
-  add $USER_INTERFACE~I 1
+:user_interface~getparameters
+setvar $user_interface~test_value 0
+setvar $user_interface~i 1
+while ($user_interface~test_value <> "")
+	getword " "&$bot~command_lines[$user_interface~b]&" " $user_interface~test_value $user_interface~i ""
+	getwordpos " "&$user_interface~test_value&" " $user_interface~posthousands "k "
+	getwordpos " "&$user_interface~test_value&" " $user_interface~posmillions "m "
+	getwordpos " "&$user_interface~test_value&" " $user_interface~posbillions "b "
+	if (($user_interface~posmillions > 0) or ($user_interface~posthousands > 0) or ($user_interface~posbillions > 0))
+		replacetext $user_interface~test_value "k" ""
+		replacetext $user_interface~test_value "m" ""
+		replacetext $user_interface~test_value "b" ""
+		trim $user_interface~test_value
+		isnumber $user_interface~is_a_number $user_interface~test_value
+		if ($user_interface~is_a_number = true)
+			if ($user_interface~test_value <> 0)
+				replacetext $bot~command_lines[$user_interface~b] $user_interface~test_value&"k" $user_interface~test_value&000
+				replacetext $bot~command_lines[$user_interface~b] $user_interface~test_value&"m" $user_interface~test_value&000000
+				replacetext $bot~command_lines[$user_interface~b] $user_interface~test_value&"b" $user_interface~test_value&000000000
+			end
+		end
+	end
+	add $user_interface~i 1
 end
 
-setvar $USER_INTERFACE~I 1
-while ($USER_INTERFACE~I <= 8)
-  getword " "&$BOT~COMMAND_LINES[$USER_INTERFACE~B]&" " $BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] $USER_INTERFACE~I ""
-  add $USER_INTERFACE~I 1
+setvar $user_interface~i 1
+while ($user_interface~i <= 8)
+	getword " "&$bot~command_lines[$user_interface~b]&" " $bot~command_lines[$user_interface~b][$user_interface~i] $user_interface~i ""
+	add $user_interface~i 1
 end
 return
-:USER_INTERFACE~SELFCOMMANDPROMPT
 
-loadvar $BOT~HISTORYSTRING
-setvar $BOT~HISTORYCOUNT 0
-getwordpos $BOT~HISTORYSTRING $USER_INTERFACE~POS "<<|HS|>>"
-while (($USER_INTERFACE~POS > 0) and ($BOT~HISTORYCOUNT < $BOT~HISTORYMAX))
-  cuttext $BOT~HISTORYSTRING $USER_INTERFACE~ARCHIVE 1 ($USER_INTERFACE~POS - 1)
-  replacetext $BOT~HISTORYSTRING $USER_INTERFACE~ARCHIVE&"<<|HS|>>" ""
-  setvar $BOT~HISTORY[($BOT~HISTORYCOUNT + 1)] $USER_INTERFACE~ARCHIVE
-  add $BOT~HISTORYCOUNT 1
-  getwordpos $BOT~HISTORYSTRING $USER_INTERFACE~POS "<<|HS|>>"
+:user_interface~set_command_remainder
+setvar $user_interface~command_remainders[$user_interface~b] ""
+setvar $user_interface~remainder_index 9
+setvar $user_interface~remainder_word "x"
+while ($user_interface~remainder_word <> "")
+	getword " "&$bot~command_lines[$user_interface~b]&" " $user_interface~remainder_word $user_interface~remainder_index ""
+	if ($user_interface~remainder_word <> "")
+		setvar $user_interface~command_remainders[$user_interface~b] $user_interface~command_remainders[$user_interface~b]&" "&$user_interface~remainder_word
+	end
+	add $user_interface~remainder_index 1
 end
-gosub :BOT~BIGDELAY_KILLTHETRIGGERS
-setvar $USER_INTERFACE~PROMPT ANSI_10&#27&"[255D"&#27&"[255B"&#27&"[K"&ANSI_4&"{"&ANSI_14&$BOT~MODE&ANSI_4&"}"&ANSI_15&" "&$SWITCHBOARD~BOT_NAME&ANSI_2&">"&ANSI_7
-echo $USER_INTERFACE~PROMPT
-:USER_INTERFACE~GETINPUT
-setvar $BOT~PROMPTOUTPUT ""
-killtrigger TEXT
-killtrigger REECHO
-killtrigger KEEPALIVE
-settextouttrigger TEXT :GETCHARACTER
-setdelaytrigger KEEPALIVE :CONNECTIVITY~KEEPALIVE 30000
-settexttrigger REECHO :REECHO
+setvar $user_interface~command_remainders_from_eight[$user_interface~b] ""
+setvar $user_interface~remainder_index 8
+setvar $user_interface~remainder_word "x"
+while ($user_interface~remainder_word <> "")
+	getword " "&$bot~command_lines[$user_interface~b]&" " $user_interface~remainder_word $user_interface~remainder_index ""
+	if ($user_interface~remainder_word <> "")
+		setvar $user_interface~command_remainders_from_eight[$user_interface~b] $user_interface~command_remainders_from_eight[$user_interface~b]&" "&$user_interface~remainder_word
+	end
+	add $user_interface~remainder_index 1
+end
+return
+
+:user_interface~selfcommandprompt
+loadvar $bot~historystring
+setvar $bot~historycount 0
+getwordpos $bot~historystring $user_interface~pos "<<|HS|>>"
+while (($user_interface~pos > 0) and ($bot~historycount < $bot~historymax))
+	cuttext $bot~historystring $user_interface~archive 1 ($user_interface~pos - 1)
+	replacetext $bot~historystring $user_interface~archive&"<<|HS|>>" ""
+	setvar $bot~history[($bot~historycount + 1)] $user_interface~archive
+	add $bot~historycount 1
+	getwordpos $bot~historystring $user_interface~pos "<<|HS|>>"
+end
+gosub :bot~bigdelay_killthetriggers
+setvar $user_interface~prompt ansi_10&#27&"[255D"&#27&"[255B"&#27&"[K"&ansi_4&"{"&ansi_14&$bot~mode&ansi_4&"}"&ansi_15&" "&$switchboard~bot_name&ansi_2&">"&ansi_7
+echo $user_interface~prompt
+
+:user_interface~getinput
+setvar $bot~promptoutput ""
+killtrigger text
+killtrigger reecho
+killtrigger keepalive
+settextouttrigger text :getcharacter
+setdelaytrigger keepalive :connectivity~keepalive 30000
+settexttrigger reecho :reecho
 pause
-:USER_INTERFACE~GETCHARACTER
-getouttext $USER_INTERFACE~CHARACTER
-setvar $USER_INTERFACE~FOUND_ENTER_KEY FALSE
-if ($USER_INTERFACE~CHARACTER = #13)
-  gosub :DO_ENTER_KEY
-  goto :DONESELFCOMMANDPROMPT
+
+:user_interface~getcharacter
+getouttext $user_interface~character
+setvar $user_interface~found_enter_key false
+if ($user_interface~character = #13)
+	gosub :do_enter_key
+	goto :doneselfcommandprompt
 end
-if (($USER_INTERFACE~CHARACTER = ">") and ($BOT~CHARCOUNT <= 0))
-  :USER_INTERFACE~CLEARGRIDPROMPT
-  loadvar $PLANET~PLANET
-  gosub :BOT~BIGDELAY_KILLTHETRIGGERS
-  gosub :PLAYER~QUIKSTATS
-  settextouttrigger TEXT :GETCHARACTER
-  setdelaytrigger KEEPALIVE :CONNECTIVITY~KEEPALIVE 30000
-  settexttrigger REECHO :REECHO
-  setdelaytrigger GRIDDELAY :GRID_MENU_CONTINUE 30
-  pause
-  :USER_INTERFACE~GRID_MENU_CONTINUE
-  echo #27&"[2J"
-  echo "**"
-  :USER_INTERFACE~GRIDPROMPT
-  setdelaytrigger GRIDDELAY2 :GRID_MENU_CONTINUE2 50
-  pause
-  :USER_INTERFACE~GRID_MENU_CONTINUE2
-  gosub :BOT~BIGDELAY_KILLTHETRIGGERS
-  setvar $USER_INTERFACE~DOHOLO FALSE
-  setvar $USER_INTERFACE~DODENS FALSE
+if (($user_interface~character = ">") and ($bot~charcount <= 0))
 
-  gosub :MAP~DISPLAYADJACENTGRIDANSI
-  setvar $USER_INTERFACE~GRIDPROMPT ANSI_10&#27&"[255D"&#27&"[255B"&#27&"[K"&ANSI_4&"{"&ANSI_14&"Grid Menu - ["&ANSI_15&"H"&ANSI_14&"]olo ["&ANSI_15&"D"&ANSI_14&"]ens ["&ANSI_15&"S"&ANSI_14&"]urround "
-  if ($PLAYER~PHOTONS > 0)
-    setvar $USER_INTERFACE~GRIDPROMPT $USER_INTERFACE~GRIDPROMPT&"["&ANSI_15&">"&ANSI_14&"] Photon "
-  end
-  if ($PLAYER~CURRENT_PROMPT = "Citadel")
-    setvar $USER_INTERFACE~GRIDPROMPT $USER_INTERFACE~GRIDPROMPT&"["&ANSI_15&"+"&ANSI_14&"]["&ANSI_15&$BOT~PGRID_TYPE&ANSI_14&"] ["&ANSI_15&1&ANSI_14&"-"&ANSI_15&$MAP~GRIDWARPCOUNT&ANSI_14&"]"&ANSI_4&"}"&ANSI_14&ANSI_2&">"&ANSI_7&" "
-  elseif ($PLAYER~CURRENT_PROMPT = "Command")
-    setvar $USER_INTERFACE~GRIDPROMPT $USER_INTERFACE~GRIDPROMPT&"["&ANSI_15&1&ANSI_14&"-"&ANSI_15&$MAP~GRIDWARPCOUNT&ANSI_14&"]"&ANSI_4&"}"&ANSI_14&" Move"&ANSI_4&"}"&ANSI_2&">"&ANSI_7
-  else
-    echo ANSI_12&"*Wrong prompt for Grid Menu*"
-    goto :DONEGRIDDINGPROMPT
-  end
-  echo $USER_INTERFACE~GRIDPROMPT
-  gosub :BOT~BIGDELAY_KILLTHETRIGGERS
-  settexttrigger REECHOGRIDMENU :REECHOGRIDMENU
-  settextouttrigger TEXT0 :GRIDPROMPT "?"
-  if ($PLAYER~PHOTONS > 0)
-    settextouttrigger TEXT12 :PHOTONPROMPT ">"
-  end
-  setdelaytrigger KEEPALIVE :CONNECTIVITY~KEEPALIVE 30000
-  setvar $USER_INTERFACE~I 1
-  while ($USER_INTERFACE~I <= $MAP~GRIDWARPCOUNT)
-    settextouttrigger "grid_map"&$USER_INTERFACE~I :VISITSECTORPGRID $USER_INTERFACE~I
-    add $USER_INTERFACE~I 1
-  end
-  settextouttrigger TEXT7 :HOLOGRID #72
-  settextouttrigger TEXT8 :HOLOGRID #104
-  settextouttrigger TEXT13 :HOLOGRID "h"
-  settextouttrigger TEXT14 :HOLOGRID "H"
-  settextouttrigger TEXT20 :SURROUNDGRID #115
-  settextouttrigger TEXT16 :SURROUNDGRID #83
-  settextouttrigger TEXT17 :SURROUNDGRID "s"
-  settextouttrigger TEXT18 :SURROUNDGRID "S"
-  settextouttrigger TEXT9 :DENSGRID #68
-  settextouttrigger TEXT10 :DENSGRID #100
-  if ($PLAYER~CURRENT_PROMPT = "Citadel")
-    settextouttrigger TEXT15 :CHANGEPGRIDTYPE "+"
-  end
-  settextouttrigger TEXT11 :DONEGRIDDINGPROMPT
-  pause
-  :USER_INTERFACE~PHOTONPROMPT
-  setdelaytrigger PHOTONDELAY :PHOTON_MENU_CONTINUE 50
-  pause
-  :USER_INTERFACE~PHOTON_MENU_CONTINUE
-  gosub :BOT~BIGDELAY_KILLTHETRIGGERS
-  echo #27&"[2J"
-  echo "**"
-  echo ANSI_10&#27&"[255D"&#27&"[255B"&#27&"[K"
-  echo ANSI_7&"               -----------------------------------*"
-  echo ANSI_7&"               | "&ANSI_4&"PHOTON "&ANSI_15&"armed and ready to fire! "&ANSI_7&"|*"
-  echo ANSI_7&"               -----------------------------------*"
-  gosub :MAP~DISPLAYADJACENTGRIDANSI
-  setvar $USER_INTERFACE~GRIDPROMPT ANSI_10&#27&"[255D"&#27&"[255B"&#27&"[K"&ANSI_4&"{"&ANSI_14&"Photon Menu - ["&ANSI_15&"H"&ANSI_14&"]olo ["&ANSI_15&"D"&ANSI_14&"]ens "
-  if ($PLAYER~CURRENT_PROMPT = "Citadel")
-    setvar $USER_INTERFACE~GRIDPROMPT $USER_INTERFACE~GRIDPROMPT&"["&ANSI_12&1&ANSI_14&"-"&ANSI_12&$MAP~GRIDWARPCOUNT&ANSI_14&"]"&ANSI_4&"}"&ANSI_14&ANSI_2&">"&ANSI_7&" "
-  elseif ($PLAYER~CURRENT_PROMPT = "Command")
-    setvar $USER_INTERFACE~GRIDPROMPT $USER_INTERFACE~GRIDPROMPT&"["&ANSI_15&1&ANSI_14&"-"&ANSI_15&$MAP~GRIDWARPCOUNT&ANSI_14&"]"&ANSI_4&"}"&ANSI_4&"}"&ANSI_2&">"&ANSI_7
-  else
-    echo ANSI_12&"*Wrong prompt for Photon Menu*"
-    goto :DONEGRIDDINGPROMPT
-  end
-  echo $USER_INTERFACE~GRIDPROMPT
-  gosub :BOT~BIGDELAY_KILLTHETRIGGERS
-  settexttrigger REECHOGRIDMENU :REECHOGRIDMENU
-  settextouttrigger TEXT0 :PHOTONPROMPT "?"
-  settextouttrigger TEXT12 :CLEARGRIDPROMPT ">"
-  setdelaytrigger KEEPALIVE :CONNECTIVITY~KEEPALIVE 30000
-  setvar $USER_INTERFACE~I 1
-  while ($USER_INTERFACE~I <= $MAP~GRIDWARPCOUNT)
-    settextouttrigger "grid_map"&$USER_INTERFACE~I :PHOTONSECTORPGRID $USER_INTERFACE~I
-    add $USER_INTERFACE~I 1
-  end
-  settextouttrigger TEXT7 :HOLOPHOTON #72
-  settextouttrigger TEXT8 :HOLOPHOTON #104
-  settextouttrigger TEXT13 :HOLOPHOTON "h"
-  settextouttrigger TEXT14 :HOLOPHOTON "H"
-  settextouttrigger TEXT9 :DENSPHOTON #68
-  settextouttrigger TEXT10 :DENSPHOTON #100
-  settextouttrigger TEXT11 :DONEGRIDDINGPROMPT
-  pause
-  :USER_INTERFACE~SURROUNDGRID
+	:user_interface~cleargridprompt
+	loadvar $planet~planet
+	gosub :bot~bigdelay_killthetriggers
+	gosub :player~quikstats
+	settextouttrigger text :getcharacter
+	setdelaytrigger keepalive :connectivity~keepalive 30000
+	settexttrigger reecho :reecho
+	setdelaytrigger griddelay :grid_menu_continue 30
+	pause
 
-  gosub :BOT~BIGDELAY_KILLTHETRIGGERS
+	:user_interface~grid_menu_continue
+	echo #27&"[2J"
+	echo "**"
 
-  setvar $BOT~COMMAND "surround"
-  setvar $BOT~USER_COMMAND_LINE " surround"
-  setvar $BOT~PARM1 ""
-  savevar $BOT~PARM1
-  savevar $BOT~COMMAND
-  savevar $BOT~USER_COMMAND_LINE
-  load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\surround.cts"
-  seteventtrigger SURROUNDENDED :SURROUNDENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\grid\surround.cts"
-  pause
-  :USER_INTERFACE~SURROUNDENDED
+	:user_interface~gridprompt
+	setdelaytrigger griddelay2 :grid_menu_continue2 50
+	pause
 
-  goto :GRIDPROMPT
-  :USER_INTERFACE~HOLOPHOTON
-  setvar $USER_INTERFACE~DOHOLO TRUE
-  gosub :DOGRIDSCAN
-  goto :PHOTONPROMPT
-  :USER_INTERFACE~DENSPHOTON
-  setvar $USER_INTERFACE~DODENS TRUE
-  gosub :DOGRIDSCAN
-  goto :PHOTONPROMPT
-  :USER_INTERFACE~HOLOGRID
-  setvar $USER_INTERFACE~DOHOLO TRUE
-  gosub :DOGRIDSCAN
-  goto :GRIDPROMPT
-  :USER_INTERFACE~DENSGRID
-  setvar $USER_INTERFACE~DODENS TRUE
-  gosub :DOGRIDSCAN
-  goto :GRIDPROMPT
-  :USER_INTERFACE~DOGRIDSCAN
-  gosub :BOT~BIGDELAY_KILLTHETRIGGERS
-  if ($PLAYER~CURRENT_PROMPT = "Citadel")
-    setvar $USER_INTERFACE~SCANTEXT "q q z n "
-  else
-    setvar $USER_INTERFACE~SCANTEXT ""
-  end
-  if ($USER_INTERFACE~DOHOLO = TRUE)
-    setvar $USER_INTERFACE~SCANTEXT $USER_INTERFACE~SCANTEXT&"szhzn* "
-  elseif ($USER_INTERFACE~DODENS = TRUE)
-    setvar $USER_INTERFACE~SCANTEXT $USER_INTERFACE~SCANTEXT&"sdz* "
-  end
-  if ($PLAYER~CURRENT_PROMPT = "Citadel")
-    setvar $USER_INTERFACE~SCANTEXT $USER_INTERFACE~SCANTEXT&"l "&$PLANET~PLANET&"*  c  "
-  end
-  send $USER_INTERFACE~SCANTEXT
-  if ($PLAYER~CURRENT_PROMPT = "Citadel")
-    waiton "<Enter Citadel>"
-  else
-    waiton "["&CURRENTSECTOR&"]"
-  end
-  return
-  :USER_INTERFACE~CHANGEPGRIDTYPE
-  if ($BOT~PGRID_TYPE = "Normal")
-    if ($BOT~SAFE_SHIP <= 0)
-      setvar $BOT~PGRID_TYPE "Xport (Not Available)"
-      setvar $BOT~PGRID_END_COMMAND " scan "
-    else
-      setvar $BOT~PGRID_TYPE "Xport"
-      setvar $BOT~PGRID_END_COMMAND " x:"&$BOT~SAFE_SHIP&" scan "
-    end
-  elseif (($BOT~PGRID_TYPE = "Xport") or ($BOT~PGRID_TYPE = "Xport (Not Available)"))
-    setvar $BOT~PGRID_TYPE "Retreat"
-    setvar $BOT~PGRID_END_COMMAND " r scan "
-  else
-    setvar $BOT~PGRID_TYPE "Normal"
-    setvar $BOT~PGRID_END_COMMAND " scan "
-  end
-  goto :GRIDPROMPT
-  :USER_INTERFACE~VISITSECTORPGRID
-  getouttext $USER_INTERFACE~SECTOR
-  gosub :BOT~BIGDELAY_KILLTHETRIGGERS
-  if (SECTOR.WARPS[CURRENTSECTOR][$USER_INTERFACE~SECTOR] > 0)
-    if ($PLAYER~CURRENT_PROMPT = "Citadel")
-      getsectorparameter SECTOR.WARPS[CURRENTSECTOR][$USER_INTERFACE~SECTOR] "FIGSEC" $USER_INTERFACE~ISFIGGED
-      if ($USER_INTERFACE~ISFIGGED)
-        setvar $BOT~USER_COMMAND_LINE "p "&SECTOR.WARPS[CURRENTSECTOR][$USER_INTERFACE~SECTOR]&" scan"
-        goto :RUNUSERCOMMANDLINE
-      else
-        if (($BOT~PGRID_BOT <> "") and ($BOT~PGRID_BOT <> 0))
-          send "'"&$BOT~PGRID_BOT&" pgrid "&SECTOR.WARPS[CURRENTSECTOR][$USER_INTERFACE~SECTOR]&" d:"&SECTOR.DENSITY[SECTOR.WARPS[CURRENTSECTOR][$USER_INTERFACE~SECTOR]]&" "&$BOT~PGRID_END_COMMAND "**"
-        else
-          setvar $BOT~USER_COMMAND_LINE "pgrid "&SECTOR.WARPS[CURRENTSECTOR][$USER_INTERFACE~SECTOR]&" "&$BOT~PGRID_END_COMMAND
-          goto :RUNUSERCOMMANDLINE
-        end
-      end
+	:user_interface~grid_menu_continue2
+	gosub :bot~bigdelay_killthetriggers
+	setvar $user_interface~doholo false
+	setvar $user_interface~dodens false
 
-    elseif ($PLAYER~CURRENT_PROMPT = "Command")
-      setvar $MOVE~MOVEINTOSECTOR SECTOR.WARPS[CURRENTSECTOR][$USER_INTERFACE~SECTOR]
-      gosub :MOVE~MOVEINTOSECTOR
-    end
-  end
-  :USER_INTERFACE~DONEGRIDDINGPROMPT
-  echo #27&"[255D"&#27&"[255B"&#27&"[K"
-  setvar $USER_INTERFACE~ANSI CURRENTANSILINE
-  striptext $USER_INTERFACE~ANSI "Y"
-  echo $USER_INTERFACE~ANSI
-  goto :BOT~WAIT_FOR_COMMAND
-  :USER_INTERFACE~PHOTONSECTORPGRID
-  getouttext $USER_INTERFACE~SECTOR
-  gosub :BOT~BIGDELAY_KILLTHETRIGGERS
-  if (SECTOR.WARPS[CURRENTSECTOR][$USER_INTERFACE~SECTOR] > 0)
-    setvar $BOT~USER_COMMAND_LINE "photon "&SECTOR.WARPS[CURRENTSECTOR][$USER_INTERFACE~SECTOR]
-    goto :RUNUSERCOMMANDLINE
-  end
-  goto :DONEGRIDDINGPROMPT
-  :USER_INTERFACE~NEXTMENU
-  settextouttrigger TEXT12 :NEXTMENU ">"
-  pause
-  :USER_INTERFACE~REECHOGRIDMENU
-  echo ANSI_10&#27&"[255D"&#27&"[255B"&#27&"[K"&$USER_INTERFACE~GRIDPROMPT
-  settexttrigger REECHOGRIDMENU :REECHOGRIDMENU
-  pause
+	gosub :map~displayadjacentgridansi
+	setvar $user_interface~gridprompt ansi_10&#27&"[255D"&#27&"[255B"&#27&"[K"&ansi_4&"{"&ansi_14&"Grid Menu - ["&ansi_15&"H"&ansi_14&"]olo ["&ansi_15&"D"&ansi_14&"]ens ["&ansi_15&"S"&ansi_14&"]urround "
+	if ($player~photons > 0)
+		setvar $user_interface~gridprompt $user_interface~gridprompt&"["&ansi_15&">"&ansi_14&"] Photon "
+	end
+	if ($player~current_prompt = "Citadel")
+		setvar $user_interface~gridprompt $user_interface~gridprompt&"["&ansi_15&"+"&ansi_14&"]["&ansi_15&$bot~pgrid_type&ansi_14&"] ["&ansi_15&1&ansi_14&"-"&ansi_15&$map~gridwarpcount&ansi_14&"]"&ansi_4&"}"&ansi_14&ansi_2&">"&ansi_7&" "
+	elseif ($player~current_prompt = "Command")
+		setvar $user_interface~gridprompt $user_interface~gridprompt&"["&ansi_15&1&ansi_14&"-"&ansi_15&$map~gridwarpcount&ansi_14&"]"&ansi_4&"}"&ansi_14&" Move"&ansi_4&"}"&ansi_2&">"&ansi_7
+	else
+		echo ansi_12&"*Wrong prompt for Grid Menu*"
+		goto :donegriddingprompt
+	end
+	echo $user_interface~gridprompt
+	gosub :bot~bigdelay_killthetriggers
+	settexttrigger reechogridmenu :reechogridmenu
+	settextouttrigger text0 :gridprompt "?"
+	if ($player~photons > 0)
+		settextouttrigger text12 :photonprompt ">"
+	end
+	setdelaytrigger keepalive :connectivity~keepalive 30000
+	setvar $user_interface~i 1
+	while ($user_interface~i <= $map~gridwarpcount)
+		settextouttrigger "grid_map"&$user_interface~i :visitsectorpgrid $user_interface~i
+		add $user_interface~i 1
+	end
+	settextouttrigger text7 :hologrid #72
+	settextouttrigger text8 :hologrid #104
+	settextouttrigger text13 :hologrid "h"
+	settextouttrigger text14 :hologrid "H"
+	settextouttrigger text20 :surroundgrid #115
+	settextouttrigger text16 :surroundgrid #83
+	settextouttrigger text17 :surroundgrid "s"
+	settextouttrigger text18 :surroundgrid "S"
+	settextouttrigger text9 :densgrid #68
+	settextouttrigger text10 :densgrid #100
+	if ($player~current_prompt = "Citadel")
+		settextouttrigger text15 :changepgridtype "+"
+	end
+	settextouttrigger text11 :donegriddingprompt
+	pause
+
+	:user_interface~photonprompt
+	setdelaytrigger photondelay :photon_menu_continue 50
+	pause
+
+	:user_interface~photon_menu_continue
+	gosub :bot~bigdelay_killthetriggers
+	echo #27&"[2J"
+	echo "**"
+	echo ansi_10&#27&"[255D"&#27&"[255B"&#27&"[K"
+	echo ansi_7&"               -----------------------------------*"
+	echo ansi_7&"               | "&ansi_4&"PHOTON "&ansi_15&"armed and ready to fire! "&ansi_7&"|*"
+	echo ansi_7&"               -----------------------------------*"
+	gosub :map~displayadjacentgridansi
+	setvar $user_interface~gridprompt ansi_10&#27&"[255D"&#27&"[255B"&#27&"[K"&ansi_4&"{"&ansi_14&"Photon Menu - ["&ansi_15&"H"&ansi_14&"]olo ["&ansi_15&"D"&ansi_14&"]ens "
+	if ($player~current_prompt = "Citadel")
+		setvar $user_interface~gridprompt $user_interface~gridprompt&"["&ansi_12&1&ansi_14&"-"&ansi_12&$map~gridwarpcount&ansi_14&"]"&ansi_4&"}"&ansi_14&ansi_2&">"&ansi_7&" "
+	elseif ($player~current_prompt = "Command")
+		setvar $user_interface~gridprompt $user_interface~gridprompt&"["&ansi_15&1&ansi_14&"-"&ansi_15&$map~gridwarpcount&ansi_14&"]"&ansi_4&"}"&ansi_4&"}"&ansi_2&">"&ansi_7
+	else
+		echo ansi_12&"*Wrong prompt for Photon Menu*"
+		goto :donegriddingprompt
+	end
+	echo $user_interface~gridprompt
+	gosub :bot~bigdelay_killthetriggers
+	settexttrigger reechogridmenu :reechogridmenu
+	settextouttrigger text0 :photonprompt "?"
+	settextouttrigger text12 :cleargridprompt ">"
+	setdelaytrigger keepalive :connectivity~keepalive 30000
+	setvar $user_interface~i 1
+	while ($user_interface~i <= $map~gridwarpcount)
+		settextouttrigger "grid_map"&$user_interface~i :photonsectorpgrid $user_interface~i
+		add $user_interface~i 1
+	end
+	settextouttrigger text7 :holophoton #72
+	settextouttrigger text8 :holophoton #104
+	settextouttrigger text13 :holophoton "h"
+	settextouttrigger text14 :holophoton "H"
+	settextouttrigger text9 :densphoton #68
+	settextouttrigger text10 :densphoton #100
+	settextouttrigger text11 :donegriddingprompt
+	pause
+
+	:user_interface~surroundgrid
+	gosub :bot~bigdelay_killthetriggers
+
+	setvar $bot~command "surround"
+	setvar $bot~user_command_line " surround"
+	setvar $bot~parm1 ""
+	savevar $bot~parm1
+	savevar $bot~command
+	savevar $bot~user_command_line
+	load "scripts\"&$bot~mombot_directory&"\commands\grid\surround.cts"
+	seteventtrigger surroundended :surroundended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\grid\surround.cts"
+	pause
+
+	:user_interface~surroundended
+	goto :gridprompt
+
+	:user_interface~holophoton
+	setvar $user_interface~doholo true
+	gosub :dogridscan
+	goto :photonprompt
+
+	:user_interface~densphoton
+	setvar $user_interface~dodens true
+	gosub :dogridscan
+	goto :photonprompt
+
+	:user_interface~hologrid
+	setvar $user_interface~doholo true
+	gosub :dogridscan
+	goto :gridprompt
+
+	:user_interface~densgrid
+	setvar $user_interface~dodens true
+	gosub :dogridscan
+	goto :gridprompt
+
+	:user_interface~dogridscan
+	gosub :bot~bigdelay_killthetriggers
+	if ($player~current_prompt = "Citadel")
+		setvar $user_interface~scantext "q q z n "
+	else
+		setvar $user_interface~scantext ""
+	end
+	if ($user_interface~doholo = true)
+		setvar $user_interface~scantext $user_interface~scantext&"szhzn* "
+	elseif ($user_interface~dodens = true)
+		setvar $user_interface~scantext $user_interface~scantext&"sdz* "
+	end
+	if ($player~current_prompt = "Citadel")
+		setvar $user_interface~scantext $user_interface~scantext&"l "&$planet~planet&"*  c  "
+	end
+	send $user_interface~scantext
+	if ($player~current_prompt = "Citadel")
+		waiton "<Enter Citadel>"
+	else
+		waiton "["&currentsector&"]"
+	end
+	return
+
+	:user_interface~changepgridtype
+	if ($bot~pgrid_type = "Normal")
+		if ($bot~safe_ship <= 0)
+			setvar $bot~pgrid_type "Xport (Not Available)"
+			setvar $bot~pgrid_end_command " scan "
+		else
+			setvar $bot~pgrid_type "Xport"
+			setvar $bot~pgrid_end_command " x:"&$bot~safe_ship&" scan "
+		end
+	elseif (($bot~pgrid_type = "Xport") or ($bot~pgrid_type = "Xport (Not Available)"))
+		setvar $bot~pgrid_type "Retreat"
+		setvar $bot~pgrid_end_command " r scan "
+	else
+		setvar $bot~pgrid_type "Normal"
+		setvar $bot~pgrid_end_command " scan "
+	end
+	goto :gridprompt
+
+	:user_interface~visitsectorpgrid
+	getouttext $user_interface~sector
+	gosub :bot~bigdelay_killthetriggers
+	if (sector.warps[currentsector][$user_interface~sector] > 0)
+		if ($player~current_prompt = "Citadel")
+			getsectorparameter sector.warps[currentsector][$user_interface~sector] "FIGSEC" $user_interface~isfigged
+			if ($user_interface~isfigged)
+				setvar $bot~user_command_line "p "&sector.warps[currentsector][$user_interface~sector]&" scan"
+				goto :runusercommandline
+			else
+				if (($bot~pgrid_bot <> "") and ($bot~pgrid_bot <> 0))
+					send "'"&$bot~pgrid_bot&" pgrid "&sector.warps[currentsector][$user_interface~sector]&" d:"&sector.density[sector.warps[currentsector][$user_interface~sector]]&" "&$bot~pgrid_end_command "**"
+				else
+					setvar $bot~user_command_line "pgrid "&sector.warps[currentsector][$user_interface~sector]&" "&$bot~pgrid_end_command
+					goto :runusercommandline
+				end
+			end
+
+		elseif ($player~current_prompt = "Command")
+			setvar $move~moveintosector sector.warps[currentsector][$user_interface~sector]
+			gosub :move~moveintosector
+		end
+	end
+
+	:user_interface~donegriddingprompt
+	echo #27&"[255D"&#27&"[255B"&#27&"[K"
+	setvar $user_interface~ansi currentansiline
+	striptext $user_interface~ansi "Y"
+	echo $user_interface~ansi
+	goto :bot~wait_for_command
+
+	:user_interface~photonsectorpgrid
+	getouttext $user_interface~sector
+	gosub :bot~bigdelay_killthetriggers
+	if (sector.warps[currentsector][$user_interface~sector] > 0)
+		setvar $bot~user_command_line "photon "&sector.warps[currentsector][$user_interface~sector]
+		goto :runusercommandline
+	end
+	goto :donegriddingprompt
+
+	:user_interface~nextmenu
+	settextouttrigger text12 :nextmenu ">"
+	pause
+
+	:user_interface~reechogridmenu
+	echo ansi_10&#27&"[255D"&#27&"[255B"&#27&"[K"&$user_interface~gridprompt
+	settexttrigger reechogridmenu :reechogridmenu
+	pause
 else
-  getlength $USER_INTERFACE~CHARACTER $USER_INTERFACE~CHARACTERLENGTH
-  if (($USER_INTERFACE~CHARACTERLENGTH > 1) or ($USER_INTERFACE~CHARACTER = #8))
-    if ($USER_INTERFACE~CHARACTER = #8)
-      if ($BOT~CHARCOUNT <= 0)
-        setvar $BOT~CHARCOUNT 0
-        setvar $BOT~CHARPOS 0
-      else
-        if ($BOT~CHARPOS >= $BOT~CHARCOUNT)
-          setvar $USER_INTERFACE~FRONTMACRO $BOT~PROMPTOUTPUT
-          setvar $USER_INTERFACE~TAILMACRO ""
-        else
-          cuttext $BOT~PROMPTOUTPUT $USER_INTERFACE~TAILMACRO ($BOT~CHARPOS + 1) 9999
-          cuttext $BOT~PROMPTOUTPUT $USER_INTERFACE~FRONTMACRO 1 $BOT~CHARPOS
-        end
-        getlength $USER_INTERFACE~FRONTMACRO $USER_INTERFACE~FRONTLENGTH
-        if ($USER_INTERFACE~FRONTLENGTH > 1)
-          cuttext $USER_INTERFACE~FRONTMACRO $USER_INTERFACE~FRONTMACRO 1 ($USER_INTERFACE~FRONTLENGTH - 1)
-        else
-          setvar $USER_INTERFACE~FRONTMACRO ""
-        end
-        setvar $BOT~PROMPTOUTPUT $USER_INTERFACE~FRONTMACRO&$USER_INTERFACE~TAILMACRO
-        getlength $BOT~PROMPTOUTPUT $BOT~CHARCOUNT
-        subtract $BOT~CHARPOS 1
-        if ($BOT~CHARPOS <= 0)
-          setvar $BOT~CHARPOS 0
-        end
-        if (($BOT~CHARCOUNT - $BOT~CHARPOS) > 0)
-          echo $USER_INTERFACE~PROMPT $BOT~PROMPTOUTPUT #27 "[" ($BOT~CHARCOUNT - $BOT~CHARPOS) "D"
-        else
-          echo $USER_INTERFACE~PROMPT $BOT~PROMPTOUTPUT
-        end
-      end
-    elseif (($USER_INTERFACE~CHARACTER = #27&"[A") or ($USER_INTERFACE~CHARACTER = #28) or ($USER_INTERFACE~CHARACTER = #27&#79&#65))
-      if ($BOT~HISTORYCOUNT > 0)
-        if ($BOT~HISTORYINDEX <= 0)
-          setvar $BOT~CURRENTPROMPTTEXT $BOT~PROMPTOUTPUT
-        end
-        add $BOT~HISTORYINDEX 1
-        if ($BOT~HISTORYINDEX > $BOT~HISTORYMAX)
-          setvar $BOT~HISTORYINDEX $BOT~HISTORYMAX
-        elseif ($BOT~HISTORYINDEX > $BOT~HISTORYCOUNT)
-          setvar $BOT~HISTORYINDEX $BOT~HISTORYCOUNT
-        end
-        getlength $BOT~HISTORY[$BOT~HISTORYINDEX] $BOT~CHARCOUNT
-        setvar $BOT~CHARPOS $BOT~CHARCOUNT
-        echo $USER_INTERFACE~PROMPT $BOT~HISTORY[$BOT~HISTORYINDEX]
-        setvar $BOT~PROMPTOUTPUT $BOT~HISTORY[$BOT~HISTORYINDEX]
-      end
-    elseif (($USER_INTERFACE~CHARACTER = #27&"[B") or ($USER_INTERFACE~CHARACTER = #29) or ($USER_INTERFACE~CHARACTER = #27&#79&#66))
-      if ($BOT~HISTORYCOUNT > 0)
-        if ($BOT~HISTORYINDEX <= 0)
-          setvar $BOT~CURRENTPROMPTTEXT $BOT~PROMPTOUTPUT
-        end
-        subtract $BOT~HISTORYINDEX 1
-        if ($BOT~HISTORYINDEX < 1)
-          setvar $BOT~HISTORYINDEX 0
-          getlength $BOT~CURRENTPROMPTTEXT $BOT~CHARCOUNT
-          setvar $BOT~CHARPOS $BOT~CHARCOUNT
-          echo $USER_INTERFACE~PROMPT $BOT~CURRENTPROMPTTEXT
-          setvar $BOT~PROMPTOUTPUT $BOT~CURRENTPROMPTTEXT
-        else
-          getlength $BOT~HISTORY[$BOT~HISTORYINDEX] $BOT~CHARCOUNT
-          setvar $BOT~CHARPOS $BOT~CHARCOUNT
-          echo $USER_INTERFACE~PROMPT $BOT~HISTORY[$BOT~HISTORYINDEX]
-          setvar $BOT~PROMPTOUTPUT $BOT~HISTORY[$BOT~HISTORYINDEX]
-        end
-      end
-    elseif (($USER_INTERFACE~CHARACTER = #27&"[D") or ($USER_INTERFACE~CHARACTER = #31))
-      if ($BOT~CHARPOS > 0)
-        subtract $BOT~CHARPOS 1
-        echo ANSI_10 $USER_INTERFACE~CHARACTER
-      end
-    elseif (($USER_INTERFACE~CHARACTER = #27&"[C") or ($USER_INTERFACE~CHARACTER = #30))
-      if ($BOT~CHARPOS <= $BOT~CHARCOUNT)
-        add $BOT~CHARPOS 1
-        echo ANSI_10 $USER_INTERFACE~CHARACTER
-      end
-    else
-      getwordpos $USER_INTERFACE~CHARACTER $USER_INTERFACE~POS #13
-      if ($USER_INTERFACE~POS > 0)
-        setvar $USER_INTERFACE~FOUND_ENTER_KEY TRUE
-      end
-      striptext $USER_INTERFACE~CHARACTER #27&"[A"
-      striptext $USER_INTERFACE~CHARACTER #27&"[B"
-      striptext $USER_INTERFACE~CHARACTER #27&"[C"
-      striptext $USER_INTERFACE~CHARACTER #27&"[D"
-      striptext $USER_INTERFACE~CHARACTER #8
-      striptext $USER_INTERFACE~CHARACTER #13
-      getlength $USER_INTERFACE~CHARACTER $USER_INTERFACE~CHARACTERLENGTH
-      goto :TREATASUSUAL
-    end
-  else
-    :USER_INTERFACE~TREATASUSUAL
-    if ($BOT~CHARPOS >= $BOT~CHARCOUNT)
-      setvar $USER_INTERFACE~FRONTMACRO $BOT~PROMPTOUTPUT
-      setvar $USER_INTERFACE~TAILMACRO ""&$USER_INTERFACE~CHARACTER&""
-    else
-      cuttext $BOT~PROMPTOUTPUT $USER_INTERFACE~FRONTMACRO 1 $BOT~CHARPOS
-      cuttext $BOT~PROMPTOUTPUT $USER_INTERFACE~TAILMACRO ($BOT~CHARPOS + 1) ($BOT~CHARCOUNT - ($BOT~CHARPOS - 1))
-      setvar $USER_INTERFACE~FRONTMACRO $USER_INTERFACE~FRONTMACRO&$USER_INTERFACE~CHARACTER
-    end
-    setvar $BOT~PROMPTOUTPUT $USER_INTERFACE~FRONTMACRO&$USER_INTERFACE~TAILMACRO
-    getlength $BOT~PROMPTOUTPUT $BOT~CHARCOUNT
-    add $BOT~CHARPOS $USER_INTERFACE~CHARACTERLENGTH
-    if (($BOT~CHARCOUNT - $BOT~CHARPOS) > 0)
-      echo $USER_INTERFACE~PROMPT $BOT~PROMPTOUTPUT #27 "[" ($BOT~CHARCOUNT - ($BOT~CHARPOS + 1)) "D"
-    else
-      echo $USER_INTERFACE~PROMPT $BOT~PROMPTOUTPUT
-    end
-    if ($USER_INTERFACE~FOUND_ENTER_KEY)
-      gosub :DO_ENTER_KEY
-      goto :DONESELFCOMMANDPROMPT
-    end
+	getlength $user_interface~character $user_interface~characterlength
+	if (($user_interface~characterlength > 1) or ($user_interface~character = #8))
+		if ($user_interface~character = #8)
+			if ($bot~charcount <= 0)
+				setvar $bot~charcount 0
+				setvar $bot~charpos 0
+			else
+				if ($bot~charpos >= $bot~charcount)
+					setvar $user_interface~frontmacro $bot~promptoutput
+					setvar $user_interface~tailmacro ""
+				else
+					cuttext $bot~promptoutput $user_interface~tailmacro ($bot~charpos + 1) 9999
+					cuttext $bot~promptoutput $user_interface~frontmacro 1 $bot~charpos
+				end
+				getlength $user_interface~frontmacro $user_interface~frontlength
+				if ($user_interface~frontlength > 1)
+					cuttext $user_interface~frontmacro $user_interface~frontmacro 1 ($user_interface~frontlength - 1)
+				else
+					setvar $user_interface~frontmacro ""
+				end
+				setvar $bot~promptoutput $user_interface~frontmacro&$user_interface~tailmacro
+				getlength $bot~promptoutput $bot~charcount
+				subtract $bot~charpos 1
+				if ($bot~charpos <= 0)
+					setvar $bot~charpos 0
+				end
+				if (($bot~charcount - $bot~charpos) > 0)
+					echo $user_interface~prompt $bot~promptoutput #27 "[" ($bot~charcount - $bot~charpos) "D"
+				else
+					echo $user_interface~prompt $bot~promptoutput
+				end
+			end
+		elseif (($user_interface~character = #27&"[A") or ($user_interface~character = #28) or ($user_interface~character = #27&#79&#65))
+			if ($bot~historycount > 0)
+				if ($bot~historyindex <= 0)
+					setvar $bot~currentprompttext $bot~promptoutput
+				end
+				add $bot~historyindex 1
+				if ($bot~historyindex > $bot~historymax)
+					setvar $bot~historyindex $bot~historymax
+				elseif ($bot~historyindex > $bot~historycount)
+					setvar $bot~historyindex $bot~historycount
+				end
+				getlength $bot~history[$bot~historyindex] $bot~charcount
+				setvar $bot~charpos $bot~charcount
+				echo $user_interface~prompt $bot~history[$bot~historyindex]
+				setvar $bot~promptoutput $bot~history[$bot~historyindex]
+			end
+		elseif (($user_interface~character = #27&"[B") or ($user_interface~character = #29) or ($user_interface~character = #27&#79&#66))
+			if ($bot~historycount > 0)
+				if ($bot~historyindex <= 0)
+					setvar $bot~currentprompttext $bot~promptoutput
+				end
+				subtract $bot~historyindex 1
+				if ($bot~historyindex < 1)
+					setvar $bot~historyindex 0
+					getlength $bot~currentprompttext $bot~charcount
+					setvar $bot~charpos $bot~charcount
+					echo $user_interface~prompt $bot~currentprompttext
+					setvar $bot~promptoutput $bot~currentprompttext
+				else
+					getlength $bot~history[$bot~historyindex] $bot~charcount
+					setvar $bot~charpos $bot~charcount
+					echo $user_interface~prompt $bot~history[$bot~historyindex]
+					setvar $bot~promptoutput $bot~history[$bot~historyindex]
+				end
+			end
+		elseif (($user_interface~character = #27&"[D") or ($user_interface~character = #31))
+			if ($bot~charpos > 0)
+				subtract $bot~charpos 1
+				echo ansi_10 $user_interface~character
+			end
+		elseif (($user_interface~character = #27&"[C") or ($user_interface~character = #30))
+			if ($bot~charpos <= $bot~charcount)
+				add $bot~charpos 1
+				echo ansi_10 $user_interface~character
+			end
+		else
+			getwordpos $user_interface~character $user_interface~pos #13
+			if ($user_interface~pos > 0)
+				setvar $user_interface~found_enter_key true
+			end
+			striptext $user_interface~character #27&"[A"
+			striptext $user_interface~character #27&"[B"
+			striptext $user_interface~character #27&"[C"
+			striptext $user_interface~character #27&"[D"
+			striptext $user_interface~character #8
+			striptext $user_interface~character #13
+			getlength $user_interface~character $user_interface~characterlength
+			goto :treatasusual
+		end
+	else
 
-  end
+		:user_interface~treatasusual
+		if ($bot~charpos >= $bot~charcount)
+			setvar $user_interface~frontmacro $bot~promptoutput
+			setvar $user_interface~tailmacro ""&$user_interface~character&""
+		else
+			cuttext $bot~promptoutput $user_interface~frontmacro 1 $bot~charpos
+			cuttext $bot~promptoutput $user_interface~tailmacro ($bot~charpos + 1) ($bot~charcount - ($bot~charpos - 1))
+			setvar $user_interface~frontmacro $user_interface~frontmacro&$user_interface~character
+		end
+		setvar $bot~promptoutput $user_interface~frontmacro&$user_interface~tailmacro
+		getlength $bot~promptoutput $bot~charcount
+		add $bot~charpos $user_interface~characterlength
+		if (($bot~charcount - $bot~charpos) > 0)
+			echo $user_interface~prompt $bot~promptoutput #27 "[" ($bot~charcount - ($bot~charpos + 1)) "D"
+		else
+			echo $user_interface~prompt $bot~promptoutput
+		end
+		if ($user_interface~found_enter_key)
+			gosub :do_enter_key
+			goto :doneselfcommandprompt
+		end
+
+	end
 end
-settextouttrigger TEXT :GETCHARACTER
+settextouttrigger text :getcharacter
 pause
-:USER_INTERFACE~REECHO
-if (($BOT~CHARCOUNT - $BOT~CHARPOS) > 0)
-  echo $USER_INTERFACE~PROMPT&$BOT~PROMPTOUTPUT&#27&"["&($BOT~CHARCOUNT - ($BOT~CHARPOS + 1))&"D"
+
+:user_interface~reecho
+if (($bot~charcount - $bot~charpos) > 0)
+	echo $user_interface~prompt&$bot~promptoutput&#27&"["&($bot~charcount - ($bot~charpos + 1))&"D"
 else
-  echo $USER_INTERFACE~PROMPT&$BOT~PROMPTOUTPUT
+	echo $user_interface~prompt&$bot~promptoutput
 end
-settexttrigger REECHO :REECHO
+settexttrigger reecho :reecho
 pause
-:USER_INTERFACE~DONESELFCOMMANDPROMPT
-killtrigger TEXT
-killtrigger REECHO
+
+:user_interface~doneselfcommandprompt
+killtrigger text
+killtrigger reecho
 return
-:USER_INTERFACE~DO_ENTER_KEY
 
+:user_interface~do_enter_key
 echo #27&"[255D"&#27&"[255B"&#27&"[K"
-setvar $BOT~USER_COMMAND_LINE $BOT~PROMPTOUTPUT
-gosub :DOADDHISTORY
+setvar $bot~user_command_line $bot~promptoutput
+gosub :doaddhistory
 return
-:USER_INTERFACE~DOADDHISTORY
 
+:user_interface~doaddhistory
+setvar $bot~charcount 0
+setvar $bot~currentprompttext ""
+setvar $bot~historyindex 0
+setvar $bot~charpos 0
+setvar $bot~promptoutput ""
+setvar $bot~historystring ""
+cuttext $bot~user_command_line&"  " $user_interface~checkforchat 1 1
+if ($bot~user_command_line <> "")
+	add $bot~historycount 1
+	if ($bot~historycount > 1)
+		setvar $user_interface~i $bot~historymax
+		while ($user_interface~i > 1)
+			setvar $bot~history[$user_interface~i] $bot~history[($user_interface~i - 1)]
+			setvar $bot~historystring $bot~history[$user_interface~i]&"<<|HS|>>"&$bot~historystring
+			subtract $user_interface~i 1
+		end
+	end
 
-setvar $BOT~CHARCOUNT 0
-setvar $BOT~CURRENTPROMPTTEXT ""
-setvar $BOT~HISTORYINDEX 0
-setvar $BOT~CHARPOS 0
-setvar $BOT~PROMPTOUTPUT ""
-setvar $BOT~HISTORYSTRING ""
-cuttext $BOT~USER_COMMAND_LINE&"  " $USER_INTERFACE~CHECKFORCHAT 1 1
-if ($BOT~USER_COMMAND_LINE <> "")
-  add $BOT~HISTORYCOUNT 1
-  if ($BOT~HISTORYCOUNT > 1)
-    setvar $USER_INTERFACE~I $BOT~HISTORYMAX
-    while ($USER_INTERFACE~I > 1)
-      setvar $BOT~HISTORY[$USER_INTERFACE~I] $BOT~HISTORY[($USER_INTERFACE~I - 1)]
-      setvar $BOT~HISTORYSTRING $BOT~HISTORY[$USER_INTERFACE~I]&"<<|HS|>>"&$BOT~HISTORYSTRING
-      subtract $USER_INTERFACE~I 1
-    end
-  end
-
-  if ($USER_INTERFACE~CHECKFORCHAT <> "`")
-    setvar $BOT~HISTORY[1] $BOT~USER_COMMAND_LINE
-    setvar $BOT~HISTORYSTRING $BOT~HISTORY[1]&"<<|HS|>>"&$BOT~HISTORYSTRING
-  end
-  savevar $BOT~HISTORYSTRING
-end
-return
-:USER_INTERFACE~COMMAND_PROCESSING
-
-gosub :BOT~LOAD_WATCHER_VARIABLES
-setvar $USER_INTERFACE~B 1
-while ($USER_INTERFACE~B <= $BOT~COMMAND_LINES)
-  lowercase $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]
-  :USER_INTERFACE~COMMAND_FILTERING
-  cuttext $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&"  " $USER_INTERFACE~CHECKFORCHAT 1 1
-  cuttext $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&"  " $USER_INTERFACE~CHECKFORFINDER 1 1
-  if ($USER_INTERFACE~CHECKFORCHAT = "'")
-    cuttext $BOT~COMMAND_LINES[$USER_INTERFACE~B] $BOT~COMMAND_LINES[$USER_INTERFACE~B] 2 9999
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] "ss"
-  elseif ($USER_INTERFACE~CHECKFORCHAT = "`")
-    cuttext $BOT~COMMAND_LINES[$USER_INTERFACE~B] $BOT~COMMAND_LINES[$USER_INTERFACE~B] 2 9999
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] "fed"
-  end
-  if ($BOT~COMMAND_CALLER <> "self")
-    if (($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "ss") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "fed"))
-
-      goto :BOT~WAIT_FOR_COMMAND
-    end
-  end
-  savevar $SWITCHBOARD~SELF_COMMAND
-  setvar $USER_INTERFACE~TYPED_COMMANDS[$USER_INTERFACE~B] $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]
-  gosub :USER_INTERFACE~RESOLVE_COMMAND_ALIAS
-  if ($USER_INTERFACE~TYPED_COMMANDS[$USER_INTERFACE~B] = $BOT~COMMAND_LINES[$USER_INTERFACE~B][9])
-    setvar $USER_INTERFACE~TYPED_COMMANDS[$USER_INTERFACE~B] ""
-  end
-  setvar $USER_INTERFACE~UPDATE_LIST " limps figs armids cim "
-  getwordpos " "&$BOT~COMMAND_LINES[$USER_INTERFACE~B]&" " $USER_INTERFACE~POS " override "
-  getwordpos " "&$BOT~COMMAND_LINES[$USER_INTERFACE~B]&" " $USER_INTERFACE~POS2 " overide "
-  setvar $PLAYER~OVERRIDE FALSE
-  if (($USER_INTERFACE~POS > 0) or ($USER_INTERFACE~POS2 > 0))
-    setvar $PLAYER~OVERRIDE TRUE
-  end
-  savevar $PLAYER~OVERRIDE
-  getwordpos $USER_INTERFACE~UPDATE_LIST $USER_INTERFACE~POS " "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&" "
-  if ($USER_INTERFACE~POS > 0)
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][8] $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] "update"
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][2]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][3]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][4]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][5]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][6]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][7]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][8]&" "
-  end
-  setvar $USER_INTERFACE~DEPLOY_LIST " lay put place limp mine armid plimp mines climp cmine pmine topoff mines fig "
-  getwordpos $USER_INTERFACE~DEPLOY_LIST $USER_INTERFACE~POS " "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&" "
-  if ($USER_INTERFACE~POS > 0)
-    if (($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] <> "lay") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] <> "put") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] <> "place"))
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][8] $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]
-    end
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] "deploy"
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][2]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][3]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][4]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][5]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][6]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][7]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][8]&" "
-  end
-  if (($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "figmove") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "movefigs"))
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] "movefig"
-  end
-  if (($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "build") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "create") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "make"))
-
-
-    if ($BOT~COMMAND_LINES[$USER_INTERFACE~B][1] = "port")
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-    elseif ($BOT~COMMAND_LINES[$USER_INTERFACE~B][1] = "planet")
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-    else
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] "port"
-    end
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][8] $BOT~COMMAND_LINES[$USER_INTERFACE~B][7]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][7] $BOT~COMMAND_LINES[$USER_INTERFACE~B][6]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][6] $BOT~COMMAND_LINES[$USER_INTERFACE~B][5]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][5] $BOT~COMMAND_LINES[$USER_INTERFACE~B][4]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][4] $BOT~COMMAND_LINES[$USER_INTERFACE~B][3]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][3] $BOT~COMMAND_LINES[$USER_INTERFACE~B][2]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][2] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][1] "create"
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][2]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][3]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][4]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][5]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][6]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][7]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][8]&" "
-  end
-  if (($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "kill") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "destroy") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "blow"))
-    if ($BOT~COMMAND_LINES[$USER_INTERFACE~B][1] = "port")
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][1] "kill"
-    elseif ($BOT~COMMAND_LINES[$USER_INTERFACE~B][1] = "planet")
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][1] "kill"
-    else
-
-
-
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] "kill"
-    end
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][2]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][3]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][4]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][5]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][6]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][7]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][8]&" "
-  end
-  if (($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "upgrade") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "max"))
-    if ($BOT~COMMAND_LINES[$USER_INTERFACE~B][1] = "port")
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-    elseif ($BOT~COMMAND_LINES[$USER_INTERFACE~B][1] = "planet")
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-    else
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] "port"
-    end
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][8] $BOT~COMMAND_LINES[$USER_INTERFACE~B][7]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][7] $BOT~COMMAND_LINES[$USER_INTERFACE~B][6]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][6] $BOT~COMMAND_LINES[$USER_INTERFACE~B][5]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][5] $BOT~COMMAND_LINES[$USER_INTERFACE~B][4]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][4] $BOT~COMMAND_LINES[$USER_INTERFACE~B][3]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][3] $BOT~COMMAND_LINES[$USER_INTERFACE~B][2]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][2] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][1] "upgrade"
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][2]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][3]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][4]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][5]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][6]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][7]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][8]&" "
-  end
-  if (($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "f") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "fde") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "ufde") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "nf") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "uf") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "de") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "fp") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "fup") or ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "nfup"))
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][8] $BOT~COMMAND_LINES[$USER_INTERFACE~B][7]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][7] $BOT~COMMAND_LINES[$USER_INTERFACE~B][6]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][6] $BOT~COMMAND_LINES[$USER_INTERFACE~B][5]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][5] $BOT~COMMAND_LINES[$USER_INTERFACE~B][4]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][4] $BOT~COMMAND_LINES[$USER_INTERFACE~B][3]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][3] $BOT~COMMAND_LINES[$USER_INTERFACE~B][2]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][2] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][1] $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] "find"
-    setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][2]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][3]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][4]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][5]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][6]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][7]&" "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][8]&" "
-  end
-  setvar $USER_INTERFACE~I 1
-  while ($USER_INTERFACE~I <= 8)
-    if ($BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] = "s")
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] $MAP~STARDOCK
-    elseif ($BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] = "r")
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] $MAP~RYLOS
-    elseif ($BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] = "a")
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] $MAP~ALPHA_CENTAURI
-    elseif ($BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] = "h")
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] $MAP~HOME_SECTOR
-    elseif ($BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] = "b")
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] $MAP~BACKDOOR
-    elseif ($BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] = "x")
-      setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] $BOT~SAFE_SHIP
-    elseif ($BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] = "l")
-      if (($BOT~SAFE_PLANET <> "") and ($BOT~SAFE_PLANET <> 0))
-        getsectorparameter $BOT~SAFE_PLANET "PSECTOR" $USER_INTERFACE~CHECK
-        setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] $USER_INTERFACE~CHECK
-      end
-    end
-    add $USER_INTERFACE~I 1
-  end
-  setvar $USER_INTERFACE~TRAVELCOMMANDS "mow twarp bwarp pwarp smow m t b p "
-
-  getwordpos $USER_INTERFACE~TRAVELCOMMANDS $USER_INTERFACE~POS $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]
-  if ($USER_INTERFACE~POS > 0)
-    getwordpos " "&$BOT~COMMAND_LINES[$USER_INTERFACE~B]&" " $USER_INTERFACE~POS " planet "
-    if ($USER_INTERFACE~POS > 0)
-      if ($BOT~COMMAND_LINES[$USER_INTERFACE~B][1] = "planet")
-        setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][1] $BOT~COMMAND_LINES[$USER_INTERFACE~B][2]
-
-        getsectorparameter $BOT~COMMAND_LINES[$USER_INTERFACE~B][1] "PSECTOR" $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-      end
-      setvar $USER_INTERFACE~I 1
-      while ($USER_INTERFACE~I <= $BOT~PARMS)
-        if ($BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] = "planet")
-          setvar $USER_INTERFACE~OLD_VALUE $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-          setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][$USER_INTERFACE~I] ""
-          setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][2] $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-          getsectorparameter $BOT~COMMAND_LINES[$USER_INTERFACE~B][1] "PSECTOR" $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-        end
-        add $USER_INTERFACE~I 1
-      end
-    end
-  end
-
-  setvar $BOT~PARM1 $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-  setvar $BOT~PARM2 $BOT~COMMAND_LINES[$USER_INTERFACE~B][2]
-  setvar $BOT~PARM3 $BOT~COMMAND_LINES[$USER_INTERFACE~B][3]
-  setvar $BOT~PARM4 $BOT~COMMAND_LINES[$USER_INTERFACE~B][4]
-  setvar $BOT~PARM5 $BOT~COMMAND_LINES[$USER_INTERFACE~B][5]
-  setvar $BOT~PARM6 $BOT~COMMAND_LINES[$USER_INTERFACE~B][6]
-  setvar $BOT~PARM7 $BOT~COMMAND_LINES[$USER_INTERFACE~B][7]
-  setvar $BOT~PARM8 $BOT~COMMAND_LINES[$USER_INTERFACE~B][8]
-  if ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = 0)
-    loadvar $PLAYER~CURRENT_SECTOR
-    if (($PLAYER~CURRENT_SECTOR = 0) or ($PLAYER~CURRENT_SECTOR = ""))
-      gosub :PLAYER~QUIKSTATS
-    end
-    send "'["&$BOT~MODE&"] ["&$PLAYER~CURRENT_SECTOR&"] {"&$SWITCHBOARD~BOT_NAME&"} - You are logged into this bot.  Use "&$SWITCHBOARD~BOT_NAME&" help for commands.*"
-    goto :BOT~WAIT_FOR_COMMAND
-  end
-  getwordpos " "&$BOT~COMMAND_LINES[$USER_INTERFACE~B]&" " $USER_INTERFACE~STOPCHECK " off "
-  gosub :FORMATCOMMAND
-  gosub :FINDCOMMAND
-  if ($USER_INTERFACE~CURRENTCATEGORY = "Modes")
-    if ($USER_INTERFACE~STOPCHECK > 0)
-      killtrigger SHUTDOWNTHEMODULE
-      stop $BOT~LAST_LOADED_MODULE
-      setvar $BOT~MODE "General"
-      savevar $BOT~MODE
-      setvar $switchboard~message ""&$USER_INTERFACE~FORMATTED_COMMAND&" mode is now off.*"
-      gosub :switchboard~switchboard
-      goto :BOT~WAIT_FOR_COMMAND
-    end
-  end
-  setvar $USER_INTERFACE~ISFOUND FALSE
-  if (($USER_INTERFACE~DOESEXIST > 0) or ($USER_INTERFACE~DOESEXISTHIDDEN > 0))
-    setvar $USER_INTERFACE~ISFOUND TRUE
-    gosub :LOAD_THE_MODULE
-    if ($USER_INTERFACE~B < $BOT~COMMAND_LINES)
-
-      killtrigger LOADENDED
-      seteventtrigger LOADENDED :LOADENDED "SCRIPT STOPPED" $USER_INTERFACE~LOADED
-      pause
-      :USER_INTERFACE~LOADENDED
-      if ($USER_INTERFACE~CURRENTCATEGORY = "Modes")
-        setvar $BOT~MODE "General"
-        savevar $BOT~MODE
-      end
-    else
-      goto :BOT~WAIT_FOR_COMMAND
-    end
-  else
-    getwordpos $BOT~INTERNALCOMMANDLIST&$BOT~DOUBLEDCOMMANDLIST $USER_INTERFACE~POS " "&$BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&" "
-    if ($USER_INTERFACE~POS > 0)
-      setvar $USER_INTERFACE~ISFOUND TRUE
-      gosub :BOT~KILLTHETRIGGERS
-      gosub ":INTERNAL_COMMANDS~"&$BOT~COMMAND_LINES[$USER_INTERFACE~B][9]
-    end
-  end
-  if ($USER_INTERFACE~ISFOUND <> TRUE)
-    if ($USER_INTERFACE~TEMP_BOT_NAME <> "all")
-      setvar $SWITCHBOARD~MESSAGE $USER_INTERFACE~FORMATTED_COMMAND&" is not a valid command.*"
-      gosub :SWITCHBOARD~SWITCHBOARD
-    end
-  end
-  add $USER_INTERFACE~B 1
-end
-goto :BOT~WAIT_FOR_COMMAND
-:USER_INTERFACE~RESOLVE_COMMAND_ALIAS
-
-fileexists $USER_INTERFACE~ALIASES_EXIST "scripts\"&$BOT~MOMBOT_DIRECTORY&"\aliases.cfg"
-if ($USER_INTERFACE~ALIASES_EXIST <> TRUE)
-  return
-end
-
-readtoarray "scripts\"&$BOT~MOMBOT_DIRECTORY&"\aliases.cfg" $USER_INTERFACE~ALIAS_LINES
-setvar $USER_INTERFACE~ALIAS_PASS 1
-while ($USER_INTERFACE~ALIAS_PASS <= 5)
-  setvar $USER_INTERFACE~ALIAS_MATCH FALSE
-  setvar $USER_INTERFACE~ALIAS_INDEX 1
-  while ($USER_INTERFACE~ALIAS_INDEX <= $USER_INTERFACE~ALIAS_LINES)
-    setvar $USER_INTERFACE~ALIAS_LINE $USER_INTERFACE~ALIAS_LINES[$USER_INTERFACE~ALIAS_INDEX]
-    cuttext $USER_INTERFACE~ALIAS_LINE&" " $USER_INTERFACE~ALIAS_FIRST_CHAR 1 1
-    if ($USER_INTERFACE~ALIAS_FIRST_CHAR <> "#")
-      getwordpos $USER_INTERFACE~ALIAS_LINE $USER_INTERFACE~ALIAS_EQ_POS "="
-      if ($USER_INTERFACE~ALIAS_EQ_POS > 1)
-        cuttext $USER_INTERFACE~ALIAS_LINE $USER_INTERFACE~ALIAS_NAME 1 ($USER_INTERFACE~ALIAS_EQ_POS - 1)
-        cuttext $USER_INTERFACE~ALIAS_LINE $USER_INTERFACE~ALIAS_TARGET ($USER_INTERFACE~ALIAS_EQ_POS + 1) 9999
-        lowercase $USER_INTERFACE~ALIAS_NAME
-        lowercase $USER_INTERFACE~ALIAS_TARGET
-        setvar $USER_INTERFACE~ALIAS_NAMES ","&$USER_INTERFACE~ALIAS_NAME&","
-        striptext $USER_INTERFACE~ALIAS_NAMES " "
-        getwordpos $USER_INTERFACE~ALIAS_NAMES $USER_INTERFACE~ALIAS_NAME_POS ","&$BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&","
-        if ($USER_INTERFACE~ALIAS_NAME_POS > 0)
-          setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] $USER_INTERFACE~ALIAS_TARGET
-          setvar $USER_INTERFACE~ALIAS_MATCH TRUE
-          goto :USER_INTERFACE~NEXT_ALIAS_PASS
-        end
-      end
-    end
-    add $USER_INTERFACE~ALIAS_INDEX 1
-  end
-
-  if ($USER_INTERFACE~ALIAS_MATCH <> TRUE)
-    return
-  end
-
-  :USER_INTERFACE~NEXT_ALIAS_PASS
-  add $USER_INTERFACE~ALIAS_PASS 1
+	if ($user_interface~checkforchat <> "`")
+		setvar $bot~history[1] $bot~user_command_line
+		setvar $bot~historystring $bot~history[1]&"<<|HS|>>"&$bot~historystring
+	end
+	savevar $bot~historystring
 end
 return
-:USER_INTERFACE~FORMATCOMMAND
 
-cuttext $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&" " $USER_INTERFACE~FIRSTCHAR 1 1
-cuttext $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&" " $USER_INTERFACE~RESTOFCOMMAND 2 999
-uppercase $USER_INTERFACE~FIRSTCHAR
-setvar $USER_INTERFACE~FORMATTED_COMMAND $USER_INTERFACE~FIRSTCHAR&$USER_INTERFACE~RESTOFCOMMAND
-striptext $USER_INTERFACE~FORMATTED_COMMAND " "
-return
-:USER_INTERFACE~FINDCOMMAND
-setvar $BOT~MODULECATEGORY ""
-gosub :USER_INTERFACE~CHECK_PRELOAD
-if ($USER_INTERFACE~DOESEXISTHIDDEN)
-  return
+:user_interface~command_processing
+gosub :bot~load_watcher_variables
+setvar $user_interface~b 1
+while ($user_interface~b <= $bot~command_lines)
+	lowercase $bot~command_lines[$user_interface~b][9]
+
+	:user_interface~command_filtering
+	cuttext $bot~command_lines[$user_interface~b][9]&"  " $user_interface~checkforchat 1 1
+	cuttext $bot~command_lines[$user_interface~b][9]&"  " $user_interface~checkforfinder 1 1
+	if ($user_interface~checkforchat = "'")
+		cuttext $bot~command_lines[$user_interface~b] $bot~command_lines[$user_interface~b] 2 9999
+		setvar $bot~command_lines[$user_interface~b][9] "ss"
+	elseif ($user_interface~checkforchat = "`")
+		cuttext $bot~command_lines[$user_interface~b] $bot~command_lines[$user_interface~b] 2 9999
+		setvar $bot~command_lines[$user_interface~b][9] "fed"
+	end
+	if ($bot~command_caller <> "self")
+		if (($bot~command_lines[$user_interface~b][9] = "ss") or ($bot~command_lines[$user_interface~b][9] = "fed"))
+
+			goto :bot~wait_for_command
+		end
+	end
+	savevar $switchboard~self_command
+	setvar $user_interface~typed_commands[$user_interface~b] $bot~command_lines[$user_interface~b][9]
+	gosub :user_interface~resolve_command_alias
+	if ($user_interface~typed_commands[$user_interface~b] = $bot~command_lines[$user_interface~b][9])
+		setvar $user_interface~typed_commands[$user_interface~b] ""
+	end
+	setvar $user_interface~use_word_eight_remainder false
+	setvar $user_interface~update_list " limps figs armids cim "
+	getwordpos " "&$bot~command_lines[$user_interface~b]&" " $user_interface~pos " override "
+	getwordpos " "&$bot~command_lines[$user_interface~b]&" " $user_interface~pos2 " overide "
+	setvar $player~override false
+	if (($user_interface~pos > 0) or ($user_interface~pos2 > 0))
+		setvar $player~override true
+	end
+	savevar $player~override
+	getwordpos $user_interface~update_list $user_interface~pos " "&$bot~command_lines[$user_interface~b][9]&" "
+	if ($user_interface~pos > 0)
+		setvar $user_interface~use_word_eight_remainder true
+		setvar $bot~command_lines[$user_interface~b][8] $bot~command_lines[$user_interface~b][9]
+		setvar $bot~command_lines[$user_interface~b][9] "update"
+		setvar $bot~command_lines[$user_interface~b] $bot~command_lines[$user_interface~b][1]&" "&$bot~command_lines[$user_interface~b][2]&" "&$bot~command_lines[$user_interface~b][3]&" "&$bot~command_lines[$user_interface~b][4]&" "&$bot~command_lines[$user_interface~b][5]&" "&$bot~command_lines[$user_interface~b][6]&" "&$bot~command_lines[$user_interface~b][7]&" "&$bot~command_lines[$user_interface~b][8]&" "
+	end
+	setvar $user_interface~deploy_list " lay put place limp mine armid plimp mines climp cmine pmine topoff mines fig "
+	getwordpos $user_interface~deploy_list $user_interface~pos " "&$bot~command_lines[$user_interface~b][9]&" "
+	if ($user_interface~pos > 0)
+		setvar $user_interface~use_word_eight_remainder true
+		if (($bot~command_lines[$user_interface~b][9] <> "lay") or ($bot~command_lines[$user_interface~b][9] <> "put") or ($bot~command_lines[$user_interface~b][9] <> "place"))
+			setvar $bot~command_lines[$user_interface~b][8] $bot~command_lines[$user_interface~b][9]
+		end
+		setvar $bot~command_lines[$user_interface~b][9] "deploy"
+		setvar $bot~command_lines[$user_interface~b] $bot~command_lines[$user_interface~b][1]&" "&$bot~command_lines[$user_interface~b][2]&" "&$bot~command_lines[$user_interface~b][3]&" "&$bot~command_lines[$user_interface~b][4]&" "&$bot~command_lines[$user_interface~b][5]&" "&$bot~command_lines[$user_interface~b][6]&" "&$bot~command_lines[$user_interface~b][7]&" "&$bot~command_lines[$user_interface~b][8]&" "
+	end
+	if (($bot~command_lines[$user_interface~b][9] = "figmove") or ($bot~command_lines[$user_interface~b][9] = "movefigs"))
+		setvar $bot~command_lines[$user_interface~b][9] "movefig"
+	end
+	if (($bot~command_lines[$user_interface~b][9] = "build") or ($bot~command_lines[$user_interface~b][9] = "create") or ($bot~command_lines[$user_interface~b][9] = "make"))
+
+		setvar $user_interface~use_word_eight_remainder true
+		if ($bot~command_lines[$user_interface~b][1] = "port")
+			setvar $bot~command_lines[$user_interface~b][9] $bot~command_lines[$user_interface~b][1]
+		elseif ($bot~command_lines[$user_interface~b][1] = "planet")
+			setvar $bot~command_lines[$user_interface~b][9] $bot~command_lines[$user_interface~b][1]
+		else
+			setvar $bot~command_lines[$user_interface~b][9] "port"
+		end
+		setvar $bot~command_lines[$user_interface~b][8] $bot~command_lines[$user_interface~b][7]
+		setvar $bot~command_lines[$user_interface~b][7] $bot~command_lines[$user_interface~b][6]
+		setvar $bot~command_lines[$user_interface~b][6] $bot~command_lines[$user_interface~b][5]
+		setvar $bot~command_lines[$user_interface~b][5] $bot~command_lines[$user_interface~b][4]
+		setvar $bot~command_lines[$user_interface~b][4] $bot~command_lines[$user_interface~b][3]
+		setvar $bot~command_lines[$user_interface~b][3] $bot~command_lines[$user_interface~b][2]
+		setvar $bot~command_lines[$user_interface~b][2] $bot~command_lines[$user_interface~b][1]
+		setvar $bot~command_lines[$user_interface~b][1] "create"
+		setvar $bot~command_lines[$user_interface~b] $bot~command_lines[$user_interface~b][1]&" "&$bot~command_lines[$user_interface~b][2]&" "&$bot~command_lines[$user_interface~b][3]&" "&$bot~command_lines[$user_interface~b][4]&" "&$bot~command_lines[$user_interface~b][5]&" "&$bot~command_lines[$user_interface~b][6]&" "&$bot~command_lines[$user_interface~b][7]&" "&$bot~command_lines[$user_interface~b][8]&" "
+	end
+	if (($bot~command_lines[$user_interface~b][9] = "kill") or ($bot~command_lines[$user_interface~b][9] = "destroy") or ($bot~command_lines[$user_interface~b][9] = "blow"))
+		if ($bot~command_lines[$user_interface~b][1] = "port")
+			setvar $bot~command_lines[$user_interface~b][9] $bot~command_lines[$user_interface~b][1]
+			setvar $bot~command_lines[$user_interface~b][1] "kill"
+		elseif ($bot~command_lines[$user_interface~b][1] = "planet")
+			setvar $bot~command_lines[$user_interface~b][9] $bot~command_lines[$user_interface~b][1]
+			setvar $bot~command_lines[$user_interface~b][1] "kill"
+		else
+
+			setvar $bot~command_lines[$user_interface~b][9] "kill"
+		end
+		setvar $bot~command_lines[$user_interface~b] $bot~command_lines[$user_interface~b][1]&" "&$bot~command_lines[$user_interface~b][2]&" "&$bot~command_lines[$user_interface~b][3]&" "&$bot~command_lines[$user_interface~b][4]&" "&$bot~command_lines[$user_interface~b][5]&" "&$bot~command_lines[$user_interface~b][6]&" "&$bot~command_lines[$user_interface~b][7]&" "&$bot~command_lines[$user_interface~b][8]&" "
+	end
+	if (($bot~command_lines[$user_interface~b][9] = "upgrade") or ($bot~command_lines[$user_interface~b][9] = "max"))
+		setvar $user_interface~use_word_eight_remainder true
+		if ($bot~command_lines[$user_interface~b][1] = "port")
+			setvar $bot~command_lines[$user_interface~b][9] $bot~command_lines[$user_interface~b][1]
+		elseif ($bot~command_lines[$user_interface~b][1] = "planet")
+			setvar $bot~command_lines[$user_interface~b][9] $bot~command_lines[$user_interface~b][1]
+		else
+			setvar $bot~command_lines[$user_interface~b][9] "port"
+		end
+		setvar $bot~command_lines[$user_interface~b][8] $bot~command_lines[$user_interface~b][7]
+		setvar $bot~command_lines[$user_interface~b][7] $bot~command_lines[$user_interface~b][6]
+		setvar $bot~command_lines[$user_interface~b][6] $bot~command_lines[$user_interface~b][5]
+		setvar $bot~command_lines[$user_interface~b][5] $bot~command_lines[$user_interface~b][4]
+		setvar $bot~command_lines[$user_interface~b][4] $bot~command_lines[$user_interface~b][3]
+		setvar $bot~command_lines[$user_interface~b][3] $bot~command_lines[$user_interface~b][2]
+		setvar $bot~command_lines[$user_interface~b][2] $bot~command_lines[$user_interface~b][1]
+		setvar $bot~command_lines[$user_interface~b][1] "upgrade"
+		setvar $bot~command_lines[$user_interface~b] $bot~command_lines[$user_interface~b][1]&" "&$bot~command_lines[$user_interface~b][2]&" "&$bot~command_lines[$user_interface~b][3]&" "&$bot~command_lines[$user_interface~b][4]&" "&$bot~command_lines[$user_interface~b][5]&" "&$bot~command_lines[$user_interface~b][6]&" "&$bot~command_lines[$user_interface~b][7]&" "&$bot~command_lines[$user_interface~b][8]&" "
+	end
+	if (($bot~command_lines[$user_interface~b][9] = "f") or ($bot~command_lines[$user_interface~b][9] = "fde") or ($bot~command_lines[$user_interface~b][9] = "ufde") or ($bot~command_lines[$user_interface~b][9] = "nf") or ($bot~command_lines[$user_interface~b][9] = "uf") or ($bot~command_lines[$user_interface~b][9] = "de") or ($bot~command_lines[$user_interface~b][9] = "fp") or ($bot~command_lines[$user_interface~b][9] = "fup") or ($bot~command_lines[$user_interface~b][9] = "nfup"))
+		setvar $user_interface~use_word_eight_remainder true
+		setvar $bot~command_lines[$user_interface~b][8] $bot~command_lines[$user_interface~b][7]
+		setvar $bot~command_lines[$user_interface~b][7] $bot~command_lines[$user_interface~b][6]
+		setvar $bot~command_lines[$user_interface~b][6] $bot~command_lines[$user_interface~b][5]
+		setvar $bot~command_lines[$user_interface~b][5] $bot~command_lines[$user_interface~b][4]
+		setvar $bot~command_lines[$user_interface~b][4] $bot~command_lines[$user_interface~b][3]
+		setvar $bot~command_lines[$user_interface~b][3] $bot~command_lines[$user_interface~b][2]
+		setvar $bot~command_lines[$user_interface~b][2] $bot~command_lines[$user_interface~b][1]
+		setvar $bot~command_lines[$user_interface~b][1] $bot~command_lines[$user_interface~b][9]
+		setvar $bot~command_lines[$user_interface~b][9] "find"
+		setvar $bot~command_lines[$user_interface~b] $bot~command_lines[$user_interface~b][1]&" "&$bot~command_lines[$user_interface~b][2]&" "&$bot~command_lines[$user_interface~b][3]&" "&$bot~command_lines[$user_interface~b][4]&" "&$bot~command_lines[$user_interface~b][5]&" "&$bot~command_lines[$user_interface~b][6]&" "&$bot~command_lines[$user_interface~b][7]&" "&$bot~command_lines[$user_interface~b][8]&" "
+	end
+	setvar $user_interface~append_remainder $user_interface~command_remainders[$user_interface~b]
+	if ($user_interface~use_word_eight_remainder = true)
+		setvar $user_interface~append_remainder $user_interface~command_remainders_from_eight[$user_interface~b]
+	end
+	getword " "&$bot~command_lines[$user_interface~b]&" " $user_interface~ninth_word 9 ""
+	if (($user_interface~ninth_word = "") and ($user_interface~append_remainder <> ""))
+		setvar $bot~command_lines[$user_interface~b] $bot~command_lines[$user_interface~b]&$user_interface~append_remainder&" "
+	end
+	setvar $user_interface~i 1
+	while ($user_interface~i <= 8)
+		if ($bot~command_lines[$user_interface~b][$user_interface~i] = "s")
+			setvar $bot~command_lines[$user_interface~b][$user_interface~i] $map~stardock
+		elseif ($bot~command_lines[$user_interface~b][$user_interface~i] = "r")
+			setvar $bot~command_lines[$user_interface~b][$user_interface~i] $map~rylos
+		elseif ($bot~command_lines[$user_interface~b][$user_interface~i] = "a")
+			setvar $bot~command_lines[$user_interface~b][$user_interface~i] $map~alpha_centauri
+		elseif ($bot~command_lines[$user_interface~b][$user_interface~i] = "h")
+			setvar $bot~command_lines[$user_interface~b][$user_interface~i] $map~home_sector
+		elseif ($bot~command_lines[$user_interface~b][$user_interface~i] = "b")
+			setvar $bot~command_lines[$user_interface~b][$user_interface~i] $map~backdoor
+		elseif ($bot~command_lines[$user_interface~b][$user_interface~i] = "x")
+			setvar $bot~command_lines[$user_interface~b][$user_interface~i] $bot~safe_ship
+		elseif ($bot~command_lines[$user_interface~b][$user_interface~i] = "l")
+			if (($bot~safe_planet <> "") and ($bot~safe_planet <> 0))
+				getsectorparameter $bot~safe_planet "PSECTOR" $user_interface~check
+				setvar $bot~command_lines[$user_interface~b][$user_interface~i] $user_interface~check
+			end
+		end
+		add $user_interface~i 1
+	end
+	setvar $user_interface~travelcommands "mow twarp bwarp pwarp smow m t b p "
+
+	getwordpos $user_interface~travelcommands $user_interface~pos $bot~command_lines[$user_interface~b][9]
+	if ($user_interface~pos > 0)
+		getwordpos " "&$bot~command_lines[$user_interface~b]&" " $user_interface~pos " planet "
+		if ($user_interface~pos > 0)
+			if ($bot~command_lines[$user_interface~b][1] = "planet")
+				setvar $bot~command_lines[$user_interface~b][1] $bot~command_lines[$user_interface~b][2]
+
+				getsectorparameter $bot~command_lines[$user_interface~b][1] "PSECTOR" $bot~command_lines[$user_interface~b][1]
+			end
+			setvar $user_interface~i 1
+			while ($user_interface~i <= $bot~parms)
+				if ($bot~command_lines[$user_interface~b][$user_interface~i] = "planet")
+					setvar $user_interface~old_value $bot~command_lines[$user_interface~b][1]
+					setvar $bot~command_lines[$user_interface~b][$user_interface~i] ""
+					setvar $bot~command_lines[$user_interface~b][2] $bot~command_lines[$user_interface~b][1]
+					getsectorparameter $bot~command_lines[$user_interface~b][1] "PSECTOR" $bot~command_lines[$user_interface~b][1]
+				end
+				add $user_interface~i 1
+			end
+		end
+	end
+
+	setvar $bot~parm1 $bot~command_lines[$user_interface~b][1]
+	setvar $bot~parm2 $bot~command_lines[$user_interface~b][2]
+	setvar $bot~parm3 $bot~command_lines[$user_interface~b][3]
+	setvar $bot~parm4 $bot~command_lines[$user_interface~b][4]
+	setvar $bot~parm5 $bot~command_lines[$user_interface~b][5]
+	setvar $bot~parm6 $bot~command_lines[$user_interface~b][6]
+	setvar $bot~parm7 $bot~command_lines[$user_interface~b][7]
+	setvar $bot~parm8 $bot~command_lines[$user_interface~b][8]
+	if ($bot~command_lines[$user_interface~b][9] = 0)
+		loadvar $player~current_sector
+		if (($player~current_sector = 0) or ($player~current_sector = ""))
+			gosub :player~quikstats
+		end
+		send "'["&$bot~mode&"] ["&$player~current_sector&"] {"&$switchboard~bot_name&"} - You are logged into this bot.  Use "&$switchboard~bot_name&" help for commands.*"
+		goto :bot~wait_for_command
+	end
+	getwordpos " "&$bot~command_lines[$user_interface~b]&" " $user_interface~stopcheck " off "
+	gosub :formatcommand
+	gosub :findcommand
+	if ($user_interface~currentcategory = "Modes")
+		if ($user_interface~stopcheck > 0)
+			killtrigger shutdownthemodule
+			stop $bot~last_loaded_module
+			setvar $bot~mode "General"
+			savevar $bot~mode
+			setvar $switchboard~message ""&$user_interface~formatted_command&" mode is now off.*"
+			gosub :switchboard~switchboard
+			goto :bot~wait_for_command
+		end
+	end
+	setvar $user_interface~isfound false
+	if (($user_interface~doesexist > 0) or ($user_interface~doesexisthidden > 0))
+		setvar $user_interface~isfound true
+		gosub :load_the_module
+		if ($user_interface~b < $bot~command_lines)
+
+			killtrigger loadended
+			seteventtrigger loadended :loadended "SCRIPT STOPPED" $user_interface~loaded
+			pause
+
+			:user_interface~loadended
+			if ($user_interface~currentcategory = "Modes")
+				setvar $bot~mode "General"
+				savevar $bot~mode
+			end
+		else
+			goto :bot~wait_for_command
+		end
+	else
+		getwordpos $bot~internalcommandlist&$bot~doubledcommandlist $user_interface~pos " "&$bot~command_lines[$user_interface~b][9]&" "
+		if ($user_interface~pos > 0)
+			setvar $user_interface~isfound true
+			gosub :bot~killthetriggers
+			gosub ":INTERNAL_COMMANDS~"&$bot~command_lines[$user_interface~b][9]
+		end
+	end
+	if ($user_interface~isfound <> true)
+		if ($user_interface~temp_bot_name <> "all")
+			setvar $switchboard~message $user_interface~formatted_command&" is not a valid command.*"
+			gosub :switchboard~switchboard
+		end
+	end
+	add $user_interface~b 1
 end
-setvar $USER_INTERFACE~I 1
-while ($USER_INTERFACE~I <= 3)
-  setvar $USER_INTERFACE~J 1
-  while ($USER_INTERFACE~J <= 7)
-    if ($USER_INTERFACE~I = 3)
-      fileexists $USER_INTERFACE~DOESEXIST "scripts\"&$BOT~MOMBOT_DIRECTORY&"\"&$BOT~CATAGORIES[$USER_INTERFACE~I]&"\"&$BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&".cts"
-      fileexists $USER_INTERFACE~DOESEXISTHIDDEN "scripts\"&$BOT~MOMBOT_DIRECTORY&"\"&$BOT~CATAGORIES[$USER_INTERFACE~I]&"\_"&$BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&".cts"
-      if ($USER_INTERFACE~DOESEXIST or $USER_INTERFACE~DOESEXISTHIDDEN)
-        setvar $USER_INTERFACE~CURRENTCATEGORY $BOT~CATAGORIES[$USER_INTERFACE~I]
-        if ($USER_INTERFACE~DOESEXISTHIDDEN)
-          setvar $BOT~MODULECATEGORY $BOT~CATAGORIES[$USER_INTERFACE~I]&"\_"
-        else
-          setvar $BOT~MODULECATEGORY $BOT~CATAGORIES[$USER_INTERFACE~I]&"\"
-        end
-        setvar $USER_INTERFACE~CURRENTLIST $BOT~INTERNALCOMMANDLIST[$USER_INTERFACE~J]
-        return
-      end
-    else
-      fileexists $USER_INTERFACE~DOESEXIST "scripts\"&$BOT~MOMBOT_DIRECTORY&"\"&$BOT~CATAGORIES[$USER_INTERFACE~I]&"\"&$BOT~TYPES[$USER_INTERFACE~J]&"\"&$BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&".cts"
-      fileexists $USER_INTERFACE~DOESEXISTHIDDEN "scripts\"&$BOT~MOMBOT_DIRECTORY&"\"&$BOT~CATAGORIES[$USER_INTERFACE~I]&"\"&$BOT~TYPES[$USER_INTERFACE~J]&"\_"&$BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&".cts"
-      if ($USER_INTERFACE~DOESEXIST or $USER_INTERFACE~DOESEXISTHIDDEN)
-        setvar $USER_INTERFACE~CURRENTCATEGORY $BOT~CATAGORIES[$USER_INTERFACE~I]
-        if ($USER_INTERFACE~DOESEXISTHIDDEN)
-          setvar $BOT~MODULECATEGORY $BOT~CATAGORIES[$USER_INTERFACE~I]&"\"&$BOT~TYPES[$USER_INTERFACE~J]&"\_"
-        else
-          setvar $BOT~MODULECATEGORY $BOT~CATAGORIES[$USER_INTERFACE~I]&"\"&$BOT~TYPES[$USER_INTERFACE~J]&"\"
-        end
-        setvar $USER_INTERFACE~CURRENTLIST $BOT~INTERNALCOMMANDLIST[$USER_INTERFACE~J]
-        return
-      end
-    end
-    add $USER_INTERFACE~J 1
-  end
-  add $USER_INTERFACE~I 1
-end
-return
-:USER_INTERFACE~CHECK_PRELOAD
-setvar $USER_INTERFACE~DOESEXIST 0
-setvar $USER_INTERFACE~DOESEXISTHIDDEN 0
-fileexists $USER_INTERFACE~DOESEXISTHIDDEN "scripts\"&$BOT~MOMBOT_DIRECTORY&"\preload\_"&$BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&".cts"
-if ($USER_INTERFACE~DOESEXISTHIDDEN <> TRUE)
-  return
+goto :bot~wait_for_command
+
+:user_interface~resolve_command_alias
+fileexists $user_interface~aliases_exist "scripts\"&$bot~mombot_directory&"\aliases.cfg"
+if ($user_interface~aliases_exist <> true)
+	return
 end
 
-setvar $BOT~MODULECATEGORY "preload\_"
-if ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "ldrop")
-  setvar $USER_INTERFACE~CURRENTCATEGORY "Modes"
-  setvar $USER_INTERFACE~CURRENTLIST $BOT~INTERNALCOMMANDLIST[6]
-elseif ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "macro_kit")
-  setvar $USER_INTERFACE~CURRENTCATEGORY "Commands"
-  setvar $USER_INTERFACE~CURRENTLIST $BOT~INTERNALCOMMANDLIST[3]
-elseif ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "dock_shopper")
-  setvar $USER_INTERFACE~CURRENTCATEGORY "Commands"
-  setvar $USER_INTERFACE~CURRENTLIST $BOT~INTERNALCOMMANDLIST[7]
-elseif ($BOT~COMMAND_LINES[$USER_INTERFACE~B][9] = "kazi")
-  setvar $USER_INTERFACE~CURRENTCATEGORY "Commands"
-  setvar $USER_INTERFACE~CURRENTLIST $BOT~INTERNALCOMMANDLIST[6]
+readtoarray "scripts\"&$bot~mombot_directory&"\aliases.cfg" $user_interface~alias_lines
+setvar $user_interface~alias_pass 1
+while ($user_interface~alias_pass <= 5)
+	setvar $user_interface~alias_match false
+	setvar $user_interface~alias_index 1
+	while ($user_interface~alias_index <= $user_interface~alias_lines)
+		setvar $user_interface~alias_line $user_interface~alias_lines[$user_interface~alias_index]
+		cuttext $user_interface~alias_line&" " $user_interface~alias_first_char 1 1
+		if ($user_interface~alias_first_char <> "#")
+			getwordpos $user_interface~alias_line $user_interface~alias_eq_pos "="
+			if ($user_interface~alias_eq_pos > 1)
+				cuttext $user_interface~alias_line $user_interface~alias_name 1 ($user_interface~alias_eq_pos - 1)
+				cuttext $user_interface~alias_line $user_interface~alias_target ($user_interface~alias_eq_pos + 1) 9999
+				lowercase $user_interface~alias_name
+				lowercase $user_interface~alias_target
+				setvar $user_interface~alias_names ","&$user_interface~alias_name&","
+				striptext $user_interface~alias_names " "
+				getwordpos $user_interface~alias_names $user_interface~alias_name_pos ","&$bot~command_lines[$user_interface~b][9]&","
+				if ($user_interface~alias_name_pos > 0)
+					setvar $bot~command_lines[$user_interface~b][9] $user_interface~alias_target
+					setvar $user_interface~alias_match true
+					goto :user_interface~next_alias_pass
+				end
+			end
+		end
+		add $user_interface~alias_index 1
+	end
+
+	if ($user_interface~alias_match <> true)
+		return
+	end
+
+	:user_interface~next_alias_pass
+	add $user_interface~alias_pass 1
+end
+return
+
+:user_interface~formatcommand
+cuttext $bot~command_lines[$user_interface~b][9]&" " $user_interface~firstchar 1 1
+cuttext $bot~command_lines[$user_interface~b][9]&" " $user_interface~restofcommand 2 999
+uppercase $user_interface~firstchar
+setvar $user_interface~formatted_command $user_interface~firstchar&$user_interface~restofcommand
+striptext $user_interface~formatted_command " "
+return
+
+:user_interface~findcommand
+setvar $bot~modulecategory ""
+gosub :user_interface~check_preload
+if ($user_interface~doesexisthidden)
+	return
+end
+setvar $user_interface~i 1
+while ($user_interface~i <= 3)
+	setvar $user_interface~j 1
+	while ($user_interface~j <= 7)
+		if ($user_interface~i = 3)
+			fileexists $user_interface~doesexist "scripts\"&$bot~mombot_directory&"\"&$bot~catagories[$user_interface~i]&"\"&$bot~command_lines[$user_interface~b][9]&".cts"
+			fileexists $user_interface~doesexisthidden "scripts\"&$bot~mombot_directory&"\"&$bot~catagories[$user_interface~i]&"\_"&$bot~command_lines[$user_interface~b][9]&".cts"
+			if ($user_interface~doesexist or $user_interface~doesexisthidden)
+				setvar $user_interface~currentcategory $bot~catagories[$user_interface~i]
+				if ($user_interface~doesexisthidden)
+					setvar $bot~modulecategory $bot~catagories[$user_interface~i]&"\_"
+				else
+					setvar $bot~modulecategory $bot~catagories[$user_interface~i]&"\"
+				end
+				setvar $user_interface~currentlist $bot~internalcommandlist[$user_interface~j]
+				return
+			end
+		else
+			fileexists $user_interface~doesexist "scripts\"&$bot~mombot_directory&"\"&$bot~catagories[$user_interface~i]&"\"&$bot~types[$user_interface~j]&"\"&$bot~command_lines[$user_interface~b][9]&".cts"
+			fileexists $user_interface~doesexisthidden "scripts\"&$bot~mombot_directory&"\"&$bot~catagories[$user_interface~i]&"\"&$bot~types[$user_interface~j]&"\_"&$bot~command_lines[$user_interface~b][9]&".cts"
+			if ($user_interface~doesexist or $user_interface~doesexisthidden)
+				setvar $user_interface~currentcategory $bot~catagories[$user_interface~i]
+				if ($user_interface~doesexisthidden)
+					setvar $bot~modulecategory $bot~catagories[$user_interface~i]&"\"&$bot~types[$user_interface~j]&"\_"
+				else
+					setvar $bot~modulecategory $bot~catagories[$user_interface~i]&"\"&$bot~types[$user_interface~j]&"\"
+				end
+				setvar $user_interface~currentlist $bot~internalcommandlist[$user_interface~j]
+				return
+			end
+		end
+		add $user_interface~j 1
+	end
+	add $user_interface~i 1
+end
+return
+
+:user_interface~check_preload
+setvar $user_interface~doesexist 0
+setvar $user_interface~doesexisthidden 0
+fileexists $user_interface~doesexisthidden "scripts\"&$bot~mombot_directory&"\preload\_"&$bot~command_lines[$user_interface~b][9]&".cts"
+if ($user_interface~doesexisthidden <> true)
+	return
+end
+
+setvar $bot~modulecategory "preload\_"
+if ($bot~command_lines[$user_interface~b][9] = "ldrop")
+	setvar $user_interface~currentcategory "Modes"
+	setvar $user_interface~currentlist $bot~internalcommandlist[6]
+elseif ($bot~command_lines[$user_interface~b][9] = "macro_kit")
+	setvar $user_interface~currentcategory "Commands"
+	setvar $user_interface~currentlist $bot~internalcommandlist[3]
+elseif ($bot~command_lines[$user_interface~b][9] = "dock_shopper")
+	setvar $user_interface~currentcategory "Commands"
+	setvar $user_interface~currentlist $bot~internalcommandlist[7]
+elseif ($bot~command_lines[$user_interface~b][9] = "kazi")
+	setvar $user_interface~currentcategory "Commands"
+	setvar $user_interface~currentlist $bot~internalcommandlist[6]
 else
-  setvar $USER_INTERFACE~CURRENTCATEGORY "Commands"
-  setvar $USER_INTERFACE~CURRENTLIST ""
+	setvar $user_interface~currentcategory "Commands"
+	setvar $user_interface~currentlist ""
 end
 return
-:USER_INTERFACE~RUN_MODULE
 
-gosub :LOAD_THE_MODULE
-goto :BOT~WAIT_FOR_COMMAND
-:USER_INTERFACE~LOAD_THE_MODULE
+:user_interface~run_module
+gosub :load_the_module
+goto :bot~wait_for_command
 
-setvar $BOT~USER_COMMAND_LINE $BOT~COMMAND_LINES[$USER_INTERFACE~B]
-setvar $BOT~COMMAND $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]
-setvar $BOT~COMMAND_TYPED $USER_INTERFACE~TYPED_COMMANDS[$USER_INTERFACE~B]
-setvar $BOT~PARM1 $BOT~COMMAND_LINES[$USER_INTERFACE~B][1]
-setvar $BOT~PARM2 $BOT~COMMAND_LINES[$USER_INTERFACE~B][2]
-setvar $BOT~PARM3 $BOT~COMMAND_LINES[$USER_INTERFACE~B][3]
-setvar $BOT~PARM4 $BOT~COMMAND_LINES[$USER_INTERFACE~B][4]
-setvar $BOT~PARM5 $BOT~COMMAND_LINES[$USER_INTERFACE~B][5]
-setvar $BOT~PARM6 $BOT~COMMAND_LINES[$USER_INTERFACE~B][6]
-setvar $BOT~PARM7 $BOT~COMMAND_LINES[$USER_INTERFACE~B][7]
-setvar $BOT~PARM8 $BOT~COMMAND_LINES[$USER_INTERFACE~B][8]
-gosub :BOT~BACKWARDS_COMPATIBLE
-getwordpos " "&$BOT~COMMAND_LINES[$USER_INTERFACE~B]&" " $USER_INTERFACE~HELPCHECK " help "
-getwordpos " "&$BOT~COMMAND_LINES[$USER_INTERFACE~B]&" " $USER_INTERFACE~HELPCHECK2 " ? "
-if (($USER_INTERFACE~CURRENTCATEGORY = "Modes") and (($USER_INTERFACE~HELPCHECK <= 0) and ($USER_INTERFACE~HELPCHECK2 <= 0)))
-  stop $BOT~LAST_LOADED_MODULE
-  setvar $BOT~LAST_LOADED_MODULE "scripts\"&$BOT~MOMBOT_DIRECTORY&"\"&$BOT~MODULECATEGORY&$BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&".cts"
-  setvar $BOT~MODE $USER_INTERFACE~FORMATTED_COMMAND
-  savevar $BOT~MODE
-  savevar $BOT~LAST_LOADED_MODULE
+:user_interface~load_the_module
+setvar $bot~user_command_line $bot~command_lines[$user_interface~b]
+setvar $bot~command $bot~command_lines[$user_interface~b][9]
+setvar $bot~command_typed $user_interface~typed_commands[$user_interface~b]
+setvar $bot~parm1 $bot~command_lines[$user_interface~b][1]
+setvar $bot~parm2 $bot~command_lines[$user_interface~b][2]
+setvar $bot~parm3 $bot~command_lines[$user_interface~b][3]
+setvar $bot~parm4 $bot~command_lines[$user_interface~b][4]
+setvar $bot~parm5 $bot~command_lines[$user_interface~b][5]
+setvar $bot~parm6 $bot~command_lines[$user_interface~b][6]
+setvar $bot~parm7 $bot~command_lines[$user_interface~b][7]
+setvar $bot~parm8 $bot~command_lines[$user_interface~b][8]
+gosub :bot~backwards_compatible
+getwordpos " "&$bot~command_lines[$user_interface~b]&" " $user_interface~helpcheck " help "
+getwordpos " "&$bot~command_lines[$user_interface~b]&" " $user_interface~helpcheck2 " ? "
+if (($user_interface~currentcategory = "Modes") and (($user_interface~helpcheck <= 0) and ($user_interface~helpcheck2 <= 0)))
+	stop $bot~last_loaded_module
+	setvar $bot~last_loaded_module "scripts\"&$bot~mombot_directory&"\"&$bot~modulecategory&$bot~command_lines[$user_interface~b][9]&".cts"
+	setvar $bot~mode $user_interface~formatted_command
+	savevar $bot~mode
+	savevar $bot~last_loaded_module
 end
-setvar $USER_INTERFACE~LOADED "scripts\"&$BOT~MOMBOT_DIRECTORY&"\"&$BOT~MODULECATEGORY&$BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&".cts"
-stop $USER_INTERFACE~LOADED
-load $USER_INTERFACE~LOADED
+setvar $user_interface~loaded "scripts\"&$bot~mombot_directory&"\"&$bot~modulecategory&$bot~command_lines[$user_interface~b][9]&".cts"
+stop $user_interface~loaded
+load $user_interface~loaded
 return
-:USER_INTERFACE~HOTKEY_ACCESS
 
+:user_interface~hotkey_access
+gosub :bot~bigdelay_killthetriggers
+setvar $switchboard~self_command true
+setvar $user_interface~b 1
+setvar $bot~command_lines[$user_interface~b][9] ""
+setvar $user_interface~invalid false
+setvar $bot~parm1 ""
+setvar $bot~parm2 ""
+setvar $bot~parm3 ""
+setvar $bot~parm4 ""
+setvar $bot~parm5 ""
+setvar $bot~parm6 ""
+setvar $bot~parm7 ""
+setvar $bot~parm8 ""
 
-gosub :BOT~BIGDELAY_KILLTHETRIGGERS
-setvar $SWITCHBOARD~SELF_COMMAND TRUE
-setvar $USER_INTERFACE~B 1
-setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] ""
-setvar $USER_INTERFACE~INVALID FALSE
-setvar $BOT~PARM1 ""
-setvar $BOT~PARM2 ""
-setvar $BOT~PARM3 ""
-setvar $BOT~PARM4 ""
-setvar $BOT~PARM5 ""
-setvar $BOT~PARM6 ""
-setvar $BOT~PARM7 ""
-setvar $BOT~PARM8 ""
+echo #27 "[1A" #27 "[K" ansi_15 "**Hotkey" ansi_4
+getconsoleinput $user_interface~tempcharacter singlekey
 
-
-echo #27 "[1A" #27 "[K" ANSI_15 "**Hotkey" ANSI_4
-getconsoleinput $USER_INTERFACE~TEMPCHARACTER SINGLEKEY
-:USER_INTERFACE~CHECKHOTKEY
-getcharcode $USER_INTERFACE~TEMPCHARACTER $USER_INTERFACE~CHARCODE
-gosub :BOT~KILLTHETRIGGERS
-if ($USER_INTERFACE~CHARCODE <= 0)
-  echo #27 "[10D          " #27 "[10D"
-  goto :BOT~WAIT_FOR_COMMAND
+:user_interface~checkhotkey
+getcharcode $user_interface~tempcharacter $user_interface~charcode
+gosub :bot~killthetriggers
+if ($user_interface~charcode <= 0)
+	echo #27 "[10D          " #27 "[10D"
+	goto :bot~wait_for_command
 end
-setvar $USER_INTERFACE~TEMP $BOT~HOTKEYS[$USER_INTERFACE~CHARCODE]
-if (($USER_INTERFACE~TEMP <> 0) and ($USER_INTERFACE~TEMP <> ""))
-  setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B][9] $BOT~CUSTOM_COMMANDS[$USER_INTERFACE~TEMP]
+setvar $user_interface~temp $bot~hotkeys[$user_interface~charcode]
+if (($user_interface~temp <> 0) and ($user_interface~temp <> ""))
+	setvar $bot~command_lines[$user_interface~b][9] $bot~custom_commands[$user_interface~temp]
 else
-  setvar $USER_INTERFACE~INVALID TRUE
+	setvar $user_interface~invalid true
 end
-cuttext $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]&"  " $USER_INTERFACE~TEST 1 1
-if ($USER_INTERFACE~CHARCODE = 48)
-  setvar $USER_INTERFACE~I 10
-  goto :RUNHOTSCRIPT
-elseif ($USER_INTERFACE~CHARCODE = 63)
-  setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B] "help"
-  goto :RUNUSERCOMMANDLINE
-elseif (($USER_INTERFACE~CHARCODE >= 49) and ($USER_INTERFACE~CHARCODE <= 57))
-  setvar $USER_INTERFACE~I ($USER_INTERFACE~CHARCODE - 48)
-  goto :RUNHOTSCRIPT
-elseif (($USER_INTERFACE~TEST = ":") and ($USER_INTERFACE~INVALID = FALSE))
-  goto $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]
-elseif ($USER_INTERFACE~INVALID = FALSE)
-  setvar $BOT~COMMAND_LINES[$USER_INTERFACE~B] $BOT~COMMAND_LINES[$USER_INTERFACE~B][9]
-  goto :RUNUSERCOMMANDLINE
+cuttext $bot~command_lines[$user_interface~b][9]&"  " $user_interface~test 1 1
+if ($user_interface~charcode = 48)
+	setvar $user_interface~i 10
+	goto :runhotscript
+elseif ($user_interface~charcode = 63)
+	setvar $bot~command_lines[$user_interface~b] "help"
+	goto :runusercommandline
+elseif (($user_interface~charcode >= 49) and ($user_interface~charcode <= 57))
+	setvar $user_interface~i ($user_interface~charcode - 48)
+	goto :runhotscript
+elseif (($user_interface~test = ":") and ($user_interface~invalid = false))
+	goto $bot~command_lines[$user_interface~b][9]
+elseif ($user_interface~invalid = false)
+	setvar $bot~command_lines[$user_interface~b] $bot~command_lines[$user_interface~b][9]
+	goto :runusercommandline
 end
 echo #27 "[10D          " #27 "[10D"
-goto :BOT~WAIT_FOR_COMMAND
-:USER_INTERFACE~SCRIPT_ACCESS
+goto :bot~wait_for_command
 
-
-gosub :BOT~KILLTHETRIGGERS
-setvar $USER_INTERFACE~I 1
-echo #27 "[3A" #27 "[K*" #27 "[K*" #27 "[K*" ANSI_14 "*Which script to run?                      *----------------------------------"
-while (($USER_INTERFACE~I <= $BOT~HOTKEY_SCRIPTS) and ($USER_INTERFACE~I <= 10))
-  if ($BOT~HOTKEY_SCRIPTS[$USER_INTERFACE~I] <> 0)
-    if ($USER_INTERFACE~I >= 10)
-      settextouttrigger "key"&$USER_INTERFACE~I :TRIGGERHOTSCRIPT 0
-      echo "*"&ANSI_15&0&ANSI_14&") "&ANSI_15&$BOT~HOTKEY_SCRIPTS[$USER_INTERFACE~I][1]
-    else
-      settextouttrigger "key"&$USER_INTERFACE~I :TRIGGERHOTSCRIPT $USER_INTERFACE~I
-      echo "*"&ANSI_15&$USER_INTERFACE~I&ANSI_14&") "&ANSI_15&$BOT~HOTKEY_SCRIPTS[$USER_INTERFACE~I][1]
-    end
-  end
-  add $USER_INTERFACE~I 1
+:user_interface~script_access
+gosub :bot~killthetriggers
+setvar $user_interface~i 1
+echo #27 "[3A" #27 "[K*" #27 "[K*" #27 "[K*" ansi_14 "*Which script to run?                      *----------------------------------"
+while (($user_interface~i <= $bot~hotkey_scripts) and ($user_interface~i <= 10))
+	if ($bot~hotkey_scripts[$user_interface~i] <> 0)
+		if ($user_interface~i >= 10)
+			settextouttrigger "key"&$user_interface~i :triggerhotscript 0
+			echo "*"&ansi_15&0&ansi_14&") "&ansi_15&$bot~hotkey_scripts[$user_interface~i][1]
+		else
+			settextouttrigger "key"&$user_interface~i :triggerhotscript $user_interface~i
+			echo "*"&ansi_15&$user_interface~i&ansi_14&") "&ansi_15&$bot~hotkey_scripts[$user_interface~i][1]
+		end
+	end
+	add $user_interface~i 1
 end
-settextouttrigger ECHOHELP2 :SCRIPT_ACCESS #63
-setdelaytrigger NOTFASTENOUGH2 :DONESCRIPTS 9000
-settextouttrigger NONEAVAIL2 :DONESCRIPTS
-echo #27 "[1A" #27 "[K" ANSI_14 "***Scripts" ANSI_15 ">" ANSI_7
+settextouttrigger echohelp2 :script_access #63
+setdelaytrigger notfastenough2 :donescripts 9000
+settextouttrigger noneavail2 :donescripts
+echo #27 "[1A" #27 "[K" ansi_14 "***Scripts" ansi_15 ">" ansi_7
 pause
-:USER_INTERFACE~DONESCRIPTS
+
+:user_interface~donescripts
 echo #27 "[10D          " #27 "[10D"
-goto :BOT~WAIT_FOR_COMMAND
-:USER_INTERFACE~TRIGGERHOTSCRIPT
-getouttext $USER_INTERFACE~I
-if ($USER_INTERFACE~I = 0)
-  setvar $USER_INTERFACE~I 10
+goto :bot~wait_for_command
+
+:user_interface~triggerhotscript
+getouttext $user_interface~i
+if ($user_interface~i = 0)
+	setvar $user_interface~i 10
 end
-:USER_INTERFACE~RUNHOTSCRIPT
-load $BOT~HOTKEY_SCRIPTS[$USER_INTERFACE~I]
-getwordpos $BOT~HOTKEY_SCRIPTS[$USER_INTERFACE~I] $USER_INTERFACE~POS "scripts/"
-if ($USER_INTERFACE~POS > 0)
-  fileexists $USER_INTERFACE~CHK $BOT~HOTKEY_SCRIPTS[$USER_INTERFACE~I]
+
+:user_interface~runhotscript
+load $bot~hotkey_scripts[$user_interface~i]
+getwordpos $bot~hotkey_scripts[$user_interface~i] $user_interface~pos "scripts/"
+if ($user_interface~pos > 0)
+	fileexists $user_interface~chk $bot~hotkey_scripts[$user_interface~i]
 else
-  fileexists $USER_INTERFACE~CHK "scripts/"&$BOT~HOTKEY_SCRIPTS[$USER_INTERFACE~I]
+	fileexists $user_interface~chk "scripts/"&$bot~hotkey_scripts[$user_interface~i]
 end
-if ($USER_INTERFACE~CHK <> TRUE)
-  echo ANSI_4&"*"&$BOT~HOTKEY_SCRIPTS[$USER_INTERFACE~I]&" does not exist in specified location.  Please check your "&$BOT~SCRIPT_FILE&" file to make sure it is correct.*"&ANSI_7
+if ($user_interface~chk <> true)
+	echo ansi_4&"*"&$bot~hotkey_scripts[$user_interface~i]&" does not exist in specified location.  Please check your "&$bot~script_file&" file to make sure it is correct.*"&ansi_7
 end
-goto :BOT~WAIT_FOR_COMMAND
-:USER_INTERFACE~VERIFY_USER_STATUS
+goto :bot~wait_for_command
 
-
-
-setvar $USER_INTERFACE~I 1
-lowercase $USER_INTERFACE~USER_NAME
-while ($USER_INTERFACE~I <= $BOT~CORPYCOUNT)
-  cuttext $BOT~CORPY[$USER_INTERFACE~I] $USER_INTERFACE~NAME 1 6
-  setvar $USER_INTERFACE~UNSTRIPPED_NAME $USER_INTERFACE~NAME
-  lowercase $USER_INTERFACE~NAME
-  trim $USER_INTERFACE~USER_NAME
-  trim $USER_INTERFACE~NAME
-  if ($USER_INTERFACE~USER_NAME = $USER_INTERFACE~NAME)
-    setvar $BOT~COMMAND_CALLER $USER_INTERFACE~UNSTRIPPED_NAME
-    savevar $BOT~COMMAND_CALLER
-    setvar $USER_INTERFACE~AUTHORIZATION 1
-    return
-  end
-  add $USER_INTERFACE~I 1
-end
-return
-:USER_INTERFACE~CHK_LOGIN
-if ($USER_INTERFACE~LOGGEDIN[$USER_INTERFACE~USER_NAME] = 1)
-  setvar $USER_INTERFACE~LOGGED 1
-else
-  setvar $USER_INTERFACE~LOGGED 0
+:user_interface~verify_user_status
+setvar $user_interface~i 1
+lowercase $user_interface~user_name
+while ($user_interface~i <= $bot~corpycount)
+	cuttext $bot~corpy[$user_interface~i] $user_interface~name 1 6
+	setvar $user_interface~unstripped_name $user_interface~name
+	lowercase $user_interface~name
+	trim $user_interface~user_name
+	trim $user_interface~name
+	if ($user_interface~user_name = $user_interface~name)
+		setvar $bot~command_caller $user_interface~unstripped_name
+		savevar $bot~command_caller
+		setvar $user_interface~authorization 1
+		return
+	end
+	add $user_interface~i 1
 end
 return
 
-:BIGDELAY_KILLTHETRIGGERS
+:user_interface~chk_login
+if ($user_interface~loggedin[$user_interface~user_name] = 1)
+	setvar $user_interface~logged 1
+else
+	setvar $user_interface~logged 0
+end
+return
+
+:bigdelay_killthetriggers
 killalltriggers
-setdelaytrigger UNFREEZINGTRIGGERBIGDELAY :UNFREEZEBOT 1800000
+setdelaytrigger unfreezingtriggerbigdelay :unfreezebot 1800000
 return
-:UNFREEZEBOT
+
+:unfreezebot
 echo "*Bot timed out, unfreezing..*"
-setdeafclients FALSE
+setdeafclients false
 setvar $switchboard~message "Bot frozen for over 100 seconds, resetting...*"
 gosub :switchboard~switchboard
-goto :BOT~WAIT_FOR_COMMAND
+goto :bot~wait_for_command
 
 include "source\include\internal_commands"
 include "source\include\move"

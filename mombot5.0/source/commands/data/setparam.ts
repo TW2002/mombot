@@ -1,29 +1,27 @@
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
+setvar $help~help[1]  $help~tab&"Set sector parameters"
+setvar $help~help[2]  $help~tab&"      setparam [parameter] [value] {sector} "
+setvar $help~help[3]  $help~tab&"       "
+setvar $help~help[4]  $help~tab&"Usage: "
+setvar $help~help[5]  $help~tab&"       >setparam BUSTED 1 45"
+setvar $help~help[6]  $help~tab&"       >setparam FIGSEC 1 "
+setvar $help~help[7]  $help~tab&"        "
+setvar $help~help[8]  $help~tab&"       Note: assumes current sector if sector isn't entered"
+setvar $help~help[9]  $help~tab&"       "
+setvar $help~help[10] $help~tab&"       Original Author: Deign"
+gosub :help~helpfile
 
-	setVar $HELP~HELP[1]  $HELP~TAB&"Set sector parameters"
-	setVar $HELP~HELP[2]  $HELP~TAB&"      setparam [parameter] [value] {sector} "
-	setVar $HELP~HELP[3]  $HELP~TAB&"       "
-	setVar $HELP~HELP[4]  $HELP~TAB&"Usage: "
-	setVar $HELP~HELP[5]  $HELP~TAB&"       >setparam BUSTED 1 45"
-	setVar $HELP~HELP[6]  $HELP~TAB&"       >setparam FIGSEC 1 "
-	setVar $HELP~HELP[7]  $HELP~TAB&"        "
-	setVar $HELP~HELP[8]  $HELP~TAB&"       Note: assumes current sector if sector isn't entered"
-	setVar $HELP~HELP[9]  $HELP~TAB&"       "
-	setVar $HELP~HELP[10] $HELP~TAB&"       Original Author: Deign"
-	gosub :HELP~HELPFILE
-
-
-setVar $name $bot~parm1
-upperCase $name
+setvar $name $bot~parm1
+uppercase $name
 if ($name = "")
 	setvar $switchboard~message "The name of the parameter to set must be defined.*"
 	gosub :switchboard~switchboard
 	halt
 end
 
-setVar $value $bot~parm2
+setvar $value $bot~parm2
 uppercase $value
 if ($value = "TRUE")
 	setvar $value true
@@ -32,14 +30,13 @@ if ($value = "FALSE")
 	setvar $value false
 end
 
+if ($bot~parm3 <> "")
+	setvar $hub $bot~parm3
+else
+	setvar $hub currentsector
+end
 
-IF ($bot~parm3 <> "")
-     setVar $hub $bot~parm3
-ELSE
-     setVar $hub CURRENTSECTOR
-END
-
-setSectorParameter $hub $name $value
+setsectorparameter $hub $name $value
 setvar $switchboard~message "Parameter "&$name&" has been set to "&$value&" in sector "&$hub&".*"
 gosub :switchboard~switchboard
 

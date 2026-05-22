@@ -1,27 +1,27 @@
-loadVar $bot~command
-loadVar $MAP~stardock
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-loadVar $PLAYER~unlimitedGame        
-loadvar $SWITCHBOARD~bot_name 
-loadvar $SWITCHBOARD~self_command 
+loadvar $bot~command
+loadvar $map~stardock
+gosub :loadvars~loadvars
+gosub :help~initialize
+loadvar $player~unlimitedgame
+loadvar $switchboard~bot_name
+loadvar $switchboard~self_command
 
-setVar $HELP~HELP[1]  $HELP~TAB&"find - Search TWX-DBase for Fighter/Port data"
-setVar $HELP~HELP[2]  $HELP~TAB&"  "
-setVar $HELP~HELP[3]  $HELP~TAB&"   find [f/nf/fp/p/de/ufde] [type] {sector} [port type]"
-setVar $HELP~HELP[4]  $HELP~TAB&"     - [type] :       [de]ad-end or"
-setVar $HELP~HELP[5]  $HELP~TAB&"                      [f]igged or  "
-setVar $HELP~HELP[6]  $HELP~TAB&"                      [nf] no-fig or  "
-setVar $HELP~HELP[7]  $HELP~TAB&"                      [fp] figged port or "
-setVar $HELP~HELP[8]  $HELP~TAB&"                      [p]ort or  "
-setVar $HELP~HELP[9]  $HELP~TAB&"                      [ufde] un-figged dead end"
-setVar $HELP~HELP[10] $HELP~TAB&"     - {sector}       sector number that you need finder data on,  "
-setVar $HELP~HELP[11] $HELP~TAB&"                      (default is current sector)"
-setVar $HELP~HELP[12] $HELP~TAB&"     - [port type]    port type (s)ell , (b)uy, or (x) either"
-setVar $HELP~HELP[13] $HELP~TAB&"                      (ex: s, b, sxb, bxb, sxx, etc.)"             
-setVar $HELP~HELP[14] $HELP~TAB&"     - [upgraded]     only list upgraded ports"
-setVar $HELP~HELP[15] $HELP~TAB&"     - [write {file}] write output to specified file on local disk"
-gosub :HELP~HELPFILE
+setvar $help~help[1]  $help~tab&"find - Search TWX-DBase for Fighter/Port data"
+setvar $help~help[2]  $help~tab&"  "
+setvar $help~help[3]  $help~tab&"   find [f/nf/fp/p/de/ufde] [type] {sector} [port type]"
+setvar $help~help[4]  $help~tab&"     - [type] :       [de]ad-end or"
+setvar $help~help[5]  $help~tab&"                      [f]igged or  "
+setvar $help~help[6]  $help~tab&"                      [nf] no-fig or  "
+setvar $help~help[7]  $help~tab&"                      [fp] figged port or "
+setvar $help~help[8]  $help~tab&"                      [p]ort or  "
+setvar $help~help[9]  $help~tab&"                      [ufde] un-figged dead end"
+setvar $help~help[10] $help~tab&"     - {sector}       sector number that you need finder data on,  "
+setvar $help~help[11] $help~tab&"                      (default is current sector)"
+setvar $help~help[12] $help~tab&"     - [port type]    port type (s)ell , (b)uy, or (x) either"
+setvar $help~help[13] $help~tab&"                      (ex: s, b, sxb, bxb, sxx, etc.)"
+setvar $help~help[14] $help~tab&"     - [upgraded]     only list upgraded ports"
+setvar $help~help[15] $help~tab&"     - [write {file}] write output to specified file on local disk"
+gosub :help~helpfile
 
 gosub :search~find
 halt

@@ -1,638 +1,618 @@
-:INTERNAL_COMMANDS~LOGINMEMO
-
-getword CURRENTLINE $INTERNAL_COMMANDS~WORD 1
-if ($INTERNAL_COMMANDS~WORD <> "You")
-  killtrigger LOGINMEMO
-  settextlinetrigger LOGINMEMO :LOGINMEMO "You have a corporate memo from "
-  pause
+:internal_commands~loginmemo
+getword currentline $internal_commands~word 1
+if ($internal_commands~word <> "You")
+	killtrigger loginmemo
+	settextlinetrigger loginmemo :loginmemo "You have a corporate memo from "
+	pause
 end
-gettext CURRENTLINE $INTERNAL_COMMANDS~USER_NAME "You have a corporate memo from " "."
+gettext currentline $internal_commands~user_name "You have a corporate memo from " "."
 
-setvar $INTERNAL_COMMANDS~I 1
-setvar $INTERNAL_COMMANDS~TEMPUSERNAME $INTERNAL_COMMANDS~USER_NAME
-lowercase $INTERNAL_COMMANDS~TEMPUSERNAME
-lowercase $INTERNAL_COMMANDS~USER_NAME
-while ($INTERNAL_COMMANDS~I <= $BOT~CORPYCOUNT)
-  setvar $INTERNAL_COMMANDS~TEMPCORPY $BOT~CORPY[$INTERNAL_COMMANDS~I]
-  lowercase $INTERNAL_COMMANDS~TEMPCORPY
-  if ($INTERNAL_COMMANDS~TEMPCORPY = $INTERNAL_COMMANDS~TEMPUSERNAME)
-    goto :BOT~WAIT_FOR_COMMAND
-  end
-  add $INTERNAL_COMMANDS~I 1
+setvar $internal_commands~i 1
+setvar $internal_commands~tempusername $internal_commands~user_name
+lowercase $internal_commands~tempusername
+lowercase $internal_commands~user_name
+while ($internal_commands~i <= $bot~corpycount)
+	setvar $internal_commands~tempcorpy $bot~corpy[$internal_commands~i]
+	lowercase $internal_commands~tempcorpy
+	if ($internal_commands~tempcorpy = $internal_commands~tempusername)
+		goto :bot~wait_for_command
+	end
+	add $internal_commands~i 1
 end
-add $BOT~CORPYCOUNT 1
-setvar $BOT~CORPY[$BOT~CORPYCOUNT] $INTERNAL_COMMANDS~USER_NAME
-cuttext $INTERNAL_COMMANDS~USER_NAME $INTERNAL_COMMANDS~CUT_USER_NAME 1 6
-striptext $INTERNAL_COMMANDS~CUT_USER_NAME " "
-setvar $INTERNAL_COMMANDS~LOGGEDIN[$INTERNAL_COMMANDS~CUT_USER_NAME] 1
-send "'["&$BOT~MODE&"]{"&$SWITCHBOARD~BOT_NAME&"} - User Verified - "&$INTERNAL_COMMANDS~USER_NAME&"*"
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~STOP
+add $bot~corpycount 1
+setvar $bot~corpy[$bot~corpycount] $internal_commands~user_name
+cuttext $internal_commands~user_name $internal_commands~cut_user_name 1 6
+striptext $internal_commands~cut_user_name " "
+setvar $internal_commands~loggedin[$internal_commands~cut_user_name] 1
+send "'["&$bot~mode&"]{"&$switchboard~bot_name&"} - User Verified - "&$internal_commands~user_name&"*"
+goto :bot~wait_for_command
 
-
-gosub :BOT~KILLTHETRIGGERS
-listactivescripts $INTERNAL_COMMANDS~SCRIPTS
-setvar $INTERNAL_COMMANDS~I 1
-setvar $INTERNAL_COMMANDS~FOUND FALSE
-while ($INTERNAL_COMMANDS~I <= $INTERNAL_COMMANDS~SCRIPTS)
-  lowercase $INTERNAL_COMMANDS~SCRIPTS[$INTERNAL_COMMANDS~I]
-  getwordpos "<><><>"&$INTERNAL_COMMANDS~SCRIPTS[$INTERNAL_COMMANDS~I] $INTERNAL_COMMANDS~POS "<><><>"&$BOT~PARM1
-  getwordpos "<><><>"&$INTERNAL_COMMANDS~SCRIPTS[$INTERNAL_COMMANDS~I] $INTERNAL_COMMANDS~POS2 "<><><>mombot"
-  if (($INTERNAL_COMMANDS~POS > 0) and ($INTERNAL_COMMANDS~POS2 <= 0))
-    stop $INTERNAL_COMMANDS~SCRIPTS[$INTERNAL_COMMANDS~I]
-    setvar $INTERNAL_COMMANDS~FOUND TRUE
-    setvar $SWITCHBOARD~MESSAGE "Script ["&$INTERNAL_COMMANDS~SCRIPTS[$INTERNAL_COMMANDS~I]&"] killed.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-  end
-  add $INTERNAL_COMMANDS~I 1
+:internal_commands~stop
+gosub :bot~killthetriggers
+listactivescripts $internal_commands~scripts
+setvar $internal_commands~i 1
+setvar $internal_commands~found false
+while ($internal_commands~i <= $internal_commands~scripts)
+	lowercase $internal_commands~scripts[$internal_commands~i]
+	getwordpos "<><><>"&$internal_commands~scripts[$internal_commands~i] $internal_commands~pos "<><><>"&$bot~parm1
+	getwordpos "<><><>"&$internal_commands~scripts[$internal_commands~i] $internal_commands~pos2 "<><><>mombot"
+	if (($internal_commands~pos > 0) and ($internal_commands~pos2 <= 0))
+		stop $internal_commands~scripts[$internal_commands~i]
+		setvar $internal_commands~found true
+		setvar $switchboard~message "Script ["&$internal_commands~scripts[$internal_commands~i]&"] killed.*"
+		gosub :switchboard~switchboard
+	end
+	add $internal_commands~i 1
 end
-if ($INTERNAL_COMMANDS~FOUND = FALSE)
-  setvar $SWITCHBOARD~MESSAGE "No script starting with "&$BOT~PARM1&" was found to kill.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
+if ($internal_commands~found = false)
+	setvar $switchboard~message "No script starting with "&$bot~parm1&" was found to kill.*"
+	gosub :switchboard~switchboard
 end
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~STOPALL
+goto :bot~wait_for_command
 
+:internal_commands~stopall
+gosub :bot~killthetriggers
+gosub :bot~enter_menu_deaf
+openmenu twx_stopallfast false
+gosub :bot~exit_menu_deaf
+setvar $bot~mode "General"
+savevar $bot~mode
+gosub :msgs_on
 
-gosub :BOT~KILLTHETRIGGERS
-gosub :BOT~ENTER_MENU_DEAF
-openmenu TWX_STOPALLFAST FALSE
-gosub :BOT~EXIT_MENU_DEAF
-setvar $BOT~MODE "General"
-savevar $BOT~MODE
-gosub :MSGS_ON
-
-if ($INTERNAL_COMMANDS~WAS_SILENT)
-  setvar $SWITCHBOARD~MESSAGE "All non-system scripts and modules killed, and modes reset. Also, turned messages back on.*"
+if ($internal_commands~was_silent)
+	setvar $switchboard~message "All non-system scripts and modules killed, and modes reset. Also, turned messages back on.*"
 else
-  setvar $SWITCHBOARD~MESSAGE "All non-system scripts and modules killed, and modes reset.*"
+	setvar $switchboard~message "All non-system scripts and modules killed, and modes reset.*"
 end
-gosub :SWITCHBOARD~SWITCHBOARD
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~MSGS_ON
+gosub :switchboard~switchboard
+goto :bot~wait_for_command
 
-setvar $INTERNAL_COMMANDS~WAS_SILENT TRUE
-:INTERNAL_COMMANDS~MSGS_ON_AGAIN
-settexttrigger ONMSGS_ON :ONMSGS_ON "Displaying all messages."
-settexttrigger ONMSGS_OFF :ONMSGS_OFF "Silencing all messages."
+:internal_commands~msgs_on
+setvar $internal_commands~was_silent true
+
+:internal_commands~msgs_on_again
+settexttrigger onmsgs_on :onmsgs_on "Displaying all messages."
+settexttrigger onmsgs_off :onmsgs_off "Silencing all messages."
 send "|"
 pause
-:INTERNAL_COMMANDS~ONMSGS_OFF
-killtrigger ONMSGS_ON
-setvar $INTERNAL_COMMANDS~WAS_SILENT FALSE
-goto :MSGS_ON_AGAIN
-:INTERNAL_COMMANDS~ONMSGS_ON
-killtrigger ONMSGS_OFF
-loadvar $BOT~BOTISDEAF
-if ($BOT~BOTISDEAF = TRUE)
-  gosub :MENUS~DONEPREFER
+
+:internal_commands~onmsgs_off
+killtrigger onmsgs_on
+setvar $internal_commands~was_silent false
+goto :msgs_on_again
+
+:internal_commands~onmsgs_on
+killtrigger onmsgs_off
+loadvar $bot~botisdeaf
+if ($bot~botisdeaf = true)
+	gosub :menus~doneprefer
 end
 return
-:INTERNAL_COMMANDS~LISTALL
 
-
-listactivescripts $INTERNAL_COMMANDS~SCRIPTS
-setvar $INTERNAL_COMMANDS~A 1
-setvar $SWITCHBOARD~MESSAGE " Current script(s) loaded*"
-setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~MESSAGE&"--------------------------*"
-while ($INTERNAL_COMMANDS~A <= $INTERNAL_COMMANDS~SCRIPTS)
-  setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~MESSAGE&"   "&$INTERNAL_COMMANDS~SCRIPTS[$INTERNAL_COMMANDS~A]&"*"
-  add $INTERNAL_COMMANDS~A 1
+:internal_commands~listall
+listactivescripts $internal_commands~scripts
+setvar $internal_commands~a 1
+setvar $switchboard~message " Current script(s) loaded*"
+setvar $switchboard~message $switchboard~message&"--------------------------*"
+while ($internal_commands~a <= $internal_commands~scripts)
+	setvar $switchboard~message $switchboard~message&"   "&$internal_commands~scripts[$internal_commands~a]&"*"
+	add $internal_commands~a 1
 end
-if (($SWITCHBOARD~SELF_COMMAND <> TRUE) or ($BOT~SILENT_RUNNING <> TRUE))
-  setvar $SWITCHBOARD~SELF_COMMAND 2
+if (($switchboard~self_command <> true) or ($bot~silent_running <> true))
+	setvar $switchboard~self_command 2
 end
-gosub :SWITCHBOARD~SWITCHBOARD
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~STOPMODULES
+gosub :switchboard~switchboard
+goto :bot~wait_for_command
 
-gosub :BOT~ENTER_MENU_DEAF
-openmenu TWX_STOPALLFAST FALSE
-gosub :BOT~EXIT_MENU_DEAF
-stop $BOT~LAST_LOADED_MODULE
-echo ANSI_14 "*<<" ANSI_15 "General Mode Reset" ANSI_14 ">>*" ANSI_7
-setvar $BOT~MODE "General"
-savevar $BOT~MODE
-setvar $BOT~LAST_LOADED_MODULE ""
-savevar $BOT~LAST_LOADED_MODULE
-gosub :MSGS_ON
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~CALLIN
+:internal_commands~stopmodules
+gosub :bot~enter_menu_deaf
+openmenu twx_stopallfast false
+gosub :bot~exit_menu_deaf
+stop $bot~last_loaded_module
+echo ansi_14 "*<<" ansi_15 "General Mode Reset" ansi_14 ">>*" ansi_7
+setvar $bot~mode "General"
+savevar $bot~mode
+setvar $bot~last_loaded_module ""
+savevar $bot~last_loaded_module
+gosub :msgs_on
+goto :bot~wait_for_command
 
-
-setvar $INTERNAL_COMMANDS~NEW_BOT_TEAM_NAME $BOT~PARM1
-striptext $INTERNAL_COMMANDS~NEW_BOT_TEAM_NAME "^"
-striptext $INTERNAL_COMMANDS~NEW_BOT_TEAM_NAME " "
-lowercase $INTERNAL_COMMANDS~NEW_BOT_TEAM_NAME
-getlength $INTERNAL_COMMANDS~NEW_BOT_TEAM_NAME $INTERNAL_COMMANDS~TARGETLENGTH
-if (($INTERNAL_COMMANDS~NEW_BOT_TEAM_NAME = "") or ($INTERNAL_COMMANDS~TARGETLENGTH < 3))
-  setvar $SWITCHBOARD~MESSAGE "Invalid team name entered, cannot join that one.  Must be more than 2 letters long.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  goto :BOT~WAIT_FOR_COMMAND
+:internal_commands~callin
+setvar $internal_commands~new_bot_team_name $bot~parm1
+striptext $internal_commands~new_bot_team_name "^"
+striptext $internal_commands~new_bot_team_name " "
+lowercase $internal_commands~new_bot_team_name
+getlength $internal_commands~new_bot_team_name $internal_commands~targetlength
+if (($internal_commands~new_bot_team_name = "") or ($internal_commands~targetlength < 3))
+	setvar $switchboard~message "Invalid team name entered, cannot join that one.  Must be more than 2 letters long.*"
+	gosub :switchboard~switchboard
+	goto :bot~wait_for_command
 else
-  if (($INTERNAL_COMMANDS~NEW_BOT_TEAM_NAME = "all") or ($INTERNAL_COMMANDS~NEW_BOT_TEAM_NAME = 0))
-    setvar $SWITCHBOARD~MESSAGE "Invalid team name*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    goto :BOT~WAIT_FOR_COMMAND
-  else
-    setvar $BOT~BOT_TEAM_NAME $INTERNAL_COMMANDS~NEW_BOT_TEAM_NAME
-    savevar $BOT~BOT_TEAM_NAME
-    setvar $SWITCHBOARD~MESSAGE "I am now part of team: "&$BOT~BOT_TEAM_NAME&"*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-  end
+	if (($internal_commands~new_bot_team_name = "all") or ($internal_commands~new_bot_team_name = 0))
+		setvar $switchboard~message "Invalid team name*"
+		gosub :switchboard~switchboard
+		goto :bot~wait_for_command
+	else
+		setvar $bot~bot_team_name $internal_commands~new_bot_team_name
+		savevar $bot~bot_team_name
+		setvar $switchboard~message "I am now part of team: "&$bot~bot_team_name&"*"
+		gosub :switchboard~switchboard
+	end
 end
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~TWARPSWITCH
+goto :bot~wait_for_command
 
-
-getinput $BOT~PARM1 "Twarp To:"
-getword $BOT~PARM1 $BOT~PARM1 1
-striptext $BOT~PARM1 " "
-if ($BOT~PARM1 = "")
-  goto :BOT~WAIT_FOR_COMMAND
+:internal_commands~twarpswitch
+getinput $bot~parm1 "Twarp To:"
+getword $bot~parm1 $bot~parm1 1
+striptext $bot~parm1 " "
+if ($bot~parm1 = "")
+	goto :bot~wait_for_command
 end
-setvar $BOT~USER_COMMAND_LINE "twarp "&$BOT~PARM1&" "
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-:INTERNAL_COMMANDS~MOWSWITCH
+setvar $bot~user_command_line "twarp "&$bot~parm1&" "
+goto :user_interface~runusercommandline
 
-
-
-getinput $BOT~PARM1 "Mow To:"
-getword $BOT~PARM1 $BOT~PARM1 1
-striptext $BOT~PARM1 " "
-if ($BOT~PARM1 = "")
-  goto :BOT~WAIT_FOR_COMMAND
+:internal_commands~mowswitch
+getinput $bot~parm1 "Mow To:"
+getword $bot~parm1 $bot~parm1 1
+striptext $bot~parm1 " "
+if ($bot~parm1 = "")
+	goto :bot~wait_for_command
 end
-setvar $BOT~USER_COMMAND_LINE "mow "&$BOT~PARM1&" 1"
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-:INTERNAL_COMMANDS~FOTONSWITCH
+setvar $bot~user_command_line "mow "&$bot~parm1&" 1"
+goto :user_interface~runusercommandline
 
-
-if ($BOT~MODE = "Foton")
-  setvar $BOT~USER_COMMAND_LINE "foton off"
-  goto :USER_INTERFACE~RUNUSERCOMMANDLINE
+:internal_commands~fotonswitch
+if ($bot~mode = "Foton")
+	setvar $bot~user_command_line "foton off"
+	goto :user_interface~runusercommandline
 else
-  setvar $BOT~USER_COMMAND_LINE "foton on p"
-  goto :USER_INTERFACE~RUNUSERCOMMANDLINE
+	setvar $bot~user_command_line "foton on p"
+	goto :user_interface~runusercommandline
 end
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~KIT
+goto :bot~wait_for_command
 
+:internal_commands~kit
+setvar $bot~user_command_line "macro_kit"
+goto :user_interface~runusercommandline
 
-setvar $BOT~USER_COMMAND_LINE "macro_kit"
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-:INTERNAL_COMMANDS~DOCK_SHOPPER
+:internal_commands~dock_shopper
+setvar $bot~user_command_line "dock_shopper"
+goto :user_interface~runusercommandline
 
-setvar $BOT~USER_COMMAND_LINE "dock_shopper"
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-:INTERNAL_COMMANDS~HELP
+:internal_commands~help
+setvar $bot~user_command_line "help "&$bot~parm1&" "&$bot~parm2&" "&$bot~parm3&" "&$bot~parm4&" "&$bot~parm5&" "&$bot~parm6&" "&$bot~parm7&" "&$bot~parm8
+goto :user_interface~runusercommandline
 
-setvar $BOT~USER_COMMAND_LINE "help "&$BOT~PARM1&" "&$BOT~PARM2&" "&$BOT~PARM3&" "&$BOT~PARM4&" "&$BOT~PARM5&" "&$BOT~PARM6&" "&$BOT~PARM7&" "&$BOT~PARM8
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-:INTERNAL_COMMANDS~SECTOR
-:INTERNAL_COMMANDS~SECTO
-:INTERNAL_COMMANDS~SECT
-:INTERNAL_COMMANDS~SEC
+:internal_commands~sector
+:internal_commands~secto
+:internal_commands~sect
+:internal_commands~sec
+setvar $bot~user_command_line "sector "&$bot~parm1&" "&$bot~parm2&" "&$bot~parm3&" "&$bot~parm4
+goto :user_interface~runusercommandline
 
+:internal_commands~parm
+:internal_commands~parms
+:internal_commands~params
+setvar $bot~user_command_line "param "&$bot~parm1&" "&$bot~parm2&" "&$bot~parm3&" "&$bot~parm4
+goto :user_interface~runusercommandline
 
-setvar $BOT~USER_COMMAND_LINE "sector "&$BOT~PARM1&" "&$BOT~PARM2&" "&$BOT~PARM3&" "&$BOT~PARM4
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-:INTERNAL_COMMANDS~PARM
-:INTERNAL_COMMANDS~PARMS
-:INTERNAL_COMMANDS~PARAMS
+:internal_commands~holotorp
+:internal_commands~htorp
+setvar $bot~user_command_line "htorp "&$bot~parm1&" "&$bot~parm2&" "&$bot~parm3&" "&$bot~parm4
 
-setvar $BOT~USER_COMMAND_LINE "param "&$BOT~PARM1&" "&$BOT~PARM2&" "&$BOT~PARM3&" "&$BOT~PARM4
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-:INTERNAL_COMMANDS~HOLOTORP
-:INTERNAL_COMMANDS~HTORP
+gosub :bot~killthetriggers
 
-setvar $BOT~USER_COMMAND_LINE "htorp "&$BOT~PARM1&" "&$BOT~PARM2&" "&$BOT~PARM3&" "&$BOT~PARM4
-
-gosub :BOT~KILLTHETRIGGERS
-
-gosub :PLAYER~QUIKSTATS
-if ($PLAYER~SCAN_TYPE <> "Holo")
-  setvar $SWITCHBOARD~MESSAGE "You can not run htorp without a holographic scanner.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  goto :BOT~WAIT_FOR_COMMAND
+gosub :player~quikstats
+if ($player~scan_type <> "Holo")
+	setvar $switchboard~message "You can not run htorp without a holographic scanner.*"
+	gosub :switchboard~switchboard
+	goto :bot~wait_for_command
 end
-setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-if ($PLAYER~STARTINGLOCATION = "Command")
+setvar $player~startinglocation $player~current_prompt
+if ($player~startinglocation = "Command")
 
-elseif ($PLAYER~STARTINGLOCATION = "Citadel")
-  send "q "
-  gosub :PLANET~GETPLANETINFO
+elseif ($player~startinglocation = "Citadel")
+	send "q "
+	gosub :planet~getplanetinfo
 else
-  echo "*Wrong prompt for htorp.*"
-  goto :BOT~WAIT_FOR_COMMAND
+	echo "*Wrong prompt for htorp.*"
+	goto :bot~wait_for_command
 end
-if ($PLAYER~STARTINGLOCATION = "Citadel")
-  send "q szh* l "&$PLANET~PLANET&"* c "
+if ($player~startinglocation = "Citadel")
+	send "q szh* l "&$planet~planet&"* c "
 else
-  send "szh* "
+	send "szh* "
 end
-settextlinetrigger CHECKFORHOLO :CONTINUECHECKHOLO "Select (H)olo Scan or (D)ensity Scan or (Q)uit?"
-settextlinetrigger CHECKFORDENS :PHOTONEDHTORP "Relative Density Scan"
+settextlinetrigger checkforholo :continuecheckholo "Select (H)olo Scan or (D)ensity Scan or (Q)uit?"
+settextlinetrigger checkfordens :photonedhtorp "Relative Density Scan"
 pause
-:INTERNAL_COMMANDS~CONTINUECHECKHOLO
-settexttrigger HTORPSECTOR :CONTINUEHTORPSECTOR "["&$PLAYER~CURRENT_SECTOR&"]"
+
+:internal_commands~continuecheckholo
+settexttrigger htorpsector :continuehtorpsector "["&$player~current_sector&"]"
 pause
-:INTERNAL_COMMANDS~CONTINUEHTORPSECTOR
-if ($PLAYER~PHOTONS <= 0)
-  echo ANSI_14&"*No Photons on hand.**"&ANSI_7
-  goto :BOT~WAIT_FOR_COMMAND
-end
-setvar $INTERNAL_COMMANDS~I 1
-while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$INTERNAL_COMMANDS~I] > 0)
-  setvar $INTERNAL_COMMANDS~ADJ_SEC SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$INTERNAL_COMMANDS~I]
-  if (SECTOR.TRADERCOUNT[$INTERNAL_COMMANDS~ADJ_SEC] > 0)
-    setvar $INTERNAL_COMMANDS~TARGETINSECTOR FALSE
-    setvar $INTERNAL_COMMANDS~CORPMEMBERINSECTOR FALSE
-    setvar $INTERNAL_COMMANDS~J 1
-    while (SECTOR.TRADERS[$INTERNAL_COMMANDS~ADJ_SEC][$INTERNAL_COMMANDS~J] <> 0)
-      setvar $INTERNAL_COMMANDS~TEMPTARGET SECTOR.TRADERS[$INTERNAL_COMMANDS~ADJ_SEC][$INTERNAL_COMMANDS~J]
-      getlength $INTERNAL_COMMANDS~TEMPTARGET $INTERNAL_COMMANDS~TARGETLENGTH
-      if ($INTERNAL_COMMANDS~TARGETLENGTH >= 4)
-        cuttext $INTERNAL_COMMANDS~TEMPTARGET $INTERNAL_COMMANDS~TARGETCORP ($INTERNAL_COMMANDS~TARGETLENGTH - 4) 999
-        gettext $INTERNAL_COMMANDS~TARGETCORP $INTERNAL_COMMANDS~TARGETCORP "[" "]"
-        if ($INTERNAL_COMMANDS~TARGETCORP <> $PLAYER~CORP)
-          setvar $INTERNAL_COMMANDS~TARGETINSECTOR TRUE
-        end
-        if ($INTERNAL_COMMANDS~TARGETCORP = $PLAYER~CORP)
-          setvar $INTERNAL_COMMANDS~CORPMEMBERINSECTOR TRUE
-        end
-      end
-      add $INTERNAL_COMMANDS~J 1
-    end
-    if (($INTERNAL_COMMANDS~TARGETINSECTOR = TRUE) and ($INTERNAL_COMMANDS~CORPMEMBERINSECTOR = FALSE))
-      send "c p y " $INTERNAL_COMMANDS~ADJ_SEC "* *q"
-      setvar $SWITCHBOARD~MESSAGE "Photon fired into sector "&$INTERNAL_COMMANDS~ADJ_SEC&"!*"
-      gosub :SWITCHBOARD~SWITCHBOARD
-      goto :BOT~WAIT_FOR_COMMAND
-    end
-  end
-  add $INTERNAL_COMMANDS~I 1
-end
-if ($PLAYER~STARTINGLOCATION = "Citadel")
-  settexttrigger WAITFORCIT :CONTINUEWAITFORCIT "Citadel command (?=help)"
-  pause
-  :INTERNAL_COMMANDS~CONTINUEWAITFORCIT
-end
-echo ANSI_14&"*No valid targets**"&ANSI_7
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~PHOTONEDHTORP
-setvar $SWITCHBOARD~MESSAGE "You have no holographic scanner, perhaps you were photoned?*"
-gosub :SWITCHBOARD~SWITCHBOARD
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~LOGOFF
-:INTERNAL_COMMANDS~LOGOUT
 
+:internal_commands~continuehtorpsector
+if ($player~photons <= 0)
+	echo ansi_14&"*No Photons on hand.**"&ansi_7
+	goto :bot~wait_for_command
+end
+setvar $internal_commands~i 1
+while (sector.warps[$player~current_sector][$internal_commands~i] > 0)
+	setvar $internal_commands~adj_sec sector.warps[$player~current_sector][$internal_commands~i]
+	if (sector.tradercount[$internal_commands~adj_sec] > 0)
+		setvar $internal_commands~targetinsector false
+		setvar $internal_commands~corpmemberinsector false
+		setvar $internal_commands~j 1
+		while (sector.traders[$internal_commands~adj_sec][$internal_commands~j] <> 0)
+			setvar $internal_commands~temptarget sector.traders[$internal_commands~adj_sec][$internal_commands~j]
+			getlength $internal_commands~temptarget $internal_commands~targetlength
+			if ($internal_commands~targetlength >= 4)
+				cuttext $internal_commands~temptarget $internal_commands~targetcorp ($internal_commands~targetlength - 4) 999
+				gettext $internal_commands~targetcorp $internal_commands~targetcorp "[" "]"
+				if ($internal_commands~targetcorp <> $player~corp)
+					setvar $internal_commands~targetinsector true
+				end
+				if ($internal_commands~targetcorp = $player~corp)
+					setvar $internal_commands~corpmemberinsector true
+				end
+			end
+			add $internal_commands~j 1
+		end
+		if (($internal_commands~targetinsector = true) and ($internal_commands~corpmemberinsector = false))
+			send "c p y " $internal_commands~adj_sec "* *q"
+			setvar $switchboard~message "Photon fired into sector "&$internal_commands~adj_sec&"!*"
+			gosub :switchboard~switchboard
+			goto :bot~wait_for_command
+		end
+	end
+	add $internal_commands~i 1
+end
+if ($player~startinglocation = "Citadel")
+	settexttrigger waitforcit :continuewaitforcit "Citadel command (?=help)"
+	pause
 
+	:internal_commands~continuewaitforcit
+end
+echo ansi_14&"*No valid targets**"&ansi_7
+goto :bot~wait_for_command
+
+:internal_commands~photonedhtorp
+setvar $switchboard~message "You have no holographic scanner, perhaps you were photoned?*"
+gosub :switchboard~switchboard
+goto :bot~wait_for_command
+
+:internal_commands~logoff
+:internal_commands~logout
 killalltriggers
-gosub :PLAYER~QUIKSTATS
-setvar $INTERNAL_COMMANDS~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $INTERNAL_COMMANDS~QUITTINGWITHNOTIMER FALSE
-isnumber $INTERNAL_COMMANDS~TEST $BOT~PARM1
+gosub :player~quikstats
+setvar $internal_commands~startinglocation $player~current_prompt
+setvar $internal_commands~quittingwithnotimer false
+isnumber $internal_commands~test $bot~parm1
 
-if ($INTERNAL_COMMANDS~STARTINGLOCATION = "Citadel")
-  send "q "
-  gosub :PLANET~GETPLANETINFO
-  send "c "
+if ($internal_commands~startinglocation = "Citadel")
+	send "q "
+	gosub :planet~getplanetinfo
+	send "c "
 end
-if ($INTERNAL_COMMANDS~TEST = FALSE)
-  setvar $INTERNAL_COMMANDS~QUITTINGWITHNOTIMER TRUE
-elseif (($BOT~PARM1 <= 0) or ($BOT~PARM1 = "cloak"))
-  setvar $INTERNAL_COMMANDS~QUITTINGWITHNOTIMER TRUE
+if ($internal_commands~test = false)
+	setvar $internal_commands~quittingwithnotimer true
+elseif (($bot~parm1 <= 0) or ($bot~parm1 = "cloak"))
+	setvar $internal_commands~quittingwithnotimer true
 else
-  setvar $INTERNAL_COMMANDS~TIMETOLOGBACKIN ($BOT~PARM1 * 60)
-  gosub :CALCTIME
+	setvar $internal_commands~timetologbackin ($bot~parm1 * 60)
+	gosub :calctime
 end
-setvar $INTERNAL_COMMANDS~CLOAKINGOUT FALSE
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $INTERNAL_COMMANDS~POS " cloak "
-if ($INTERNAL_COMMANDS~POS > 0)
-  setvar $INTERNAL_COMMANDS~CLOAKINGOUT TRUE
+setvar $internal_commands~cloakingout false
+getwordpos " "&$bot~user_command_line&" " $internal_commands~pos " cloak "
+if ($internal_commands~pos > 0)
+	setvar $internal_commands~cloakingout true
 end
-if ($INTERNAL_COMMANDS~QUITTINGWITHNOTIMER)
-  setvar $BOT~DO_NOT_RESUSCITATE TRUE
-  savevar $BOT~DO_NOT_RESUSCITATE
-  setvar $BOT~DORELOG FALSE
-  savevar $BOT~DORELOG
+if ($internal_commands~quittingwithnotimer)
+	setvar $bot~do_not_resuscitate true
+	savevar $bot~do_not_resuscitate
+	setvar $bot~dorelog false
+	savevar $bot~dorelog
 end
-if (($INTERNAL_COMMANDS~CLOAKINGOUT = TRUE) and ($PLAYER~CLOAKS > 0))
-  if ($INTERNAL_COMMANDS~QUITTINGWITHNOTIMER)
-    setvar $switchboard~message "Logging and cloaking out until I am at keys to login again.*"
-    gosub :switchboard~switchboard
-  else
-    setvar $switchboard~message "Logging and cloaking out for "&$INTERNAL_COMMANDS~HOURS&" hours, "&$INTERNAL_COMMANDS~MINUTES&" minutes, and "&$INTERNAL_COMMANDS~SECONDS&" seconds.*"
-    gosub :switchboard~switchboard
-  end
-  send "q q q q  * * * * q q q q y y x *"
-  waiton "==-- Trade Wars 2002 --=="
+if (($internal_commands~cloakingout = true) and ($player~cloaks > 0))
+	if ($internal_commands~quittingwithnotimer)
+		setvar $switchboard~message "Logging and cloaking out until I am at keys to login again.*"
+		gosub :switchboard~switchboard
+	else
+		setvar $switchboard~message "Logging and cloaking out for "&$internal_commands~hours&" hours, "&$internal_commands~minutes&" minutes, and "&$internal_commands~seconds&" seconds.*"
+		gosub :switchboard~switchboard
+	end
+	send "q q q q  * * * * q q q q y y x *"
+	waiton "==-- Trade Wars 2002 --=="
 else
-  if ($INTERNAL_COMMANDS~QUITTINGWITHNOTIMER)
-    setvar $switchboard~message "Logging out until I am at keys to login again.*"
-    gosub :switchboard~switchboard
-  else
-    setvar $switchboard~message "Logging out for "&$INTERNAL_COMMANDS~HOURS&" hours, "&$INTERNAL_COMMANDS~MINUTES&" minutes, and "&$INTERNAL_COMMANDS~SECONDS&" seconds.*"
-    gosub :switchboard~switchboard
-  end
-  if ($INTERNAL_COMMANDS~STARTINGLOCATION = "Citadel")
-    send "ryy* x *##"
-    waiton "Game Server"
-  else
-    send "q q q q  * * * * q q q q y*"
-    waiton "==-- Trade Wars 2002 --=="
-  end
+	if ($internal_commands~quittingwithnotimer)
+		setvar $switchboard~message "Logging out until I am at keys to login again.*"
+		gosub :switchboard~switchboard
+	else
+		setvar $switchboard~message "Logging out for "&$internal_commands~hours&" hours, "&$internal_commands~minutes&" minutes, and "&$internal_commands~seconds&" seconds.*"
+		gosub :switchboard~switchboard
+	end
+	if ($internal_commands~startinglocation = "Citadel")
+		send "ryy* x *##"
+		waiton "Game Server"
+	else
+		send "q q q q  * * * * q q q q y*"
+		waiton "==-- Trade Wars 2002 --=="
+	end
 end
 disconnect
-setvar $INTERNAL_COMMANDS~TIMER 0
-if ($INTERNAL_COMMANDS~QUITTINGWITHNOTIMER)
-  halt
+setvar $internal_commands~timer 0
+if ($internal_commands~quittingwithnotimer)
+	halt
 end
-settextouttrigger LOGEARLY :ENDLOGOFFGAME #32
-while ($INTERNAL_COMMANDS~TIMETOLOGBACKIN > 0)
-  gosub :CALCTIME
-  echo ANSI_10 #27&"[1A"&#27&"[K"&$INTERNAL_COMMANDS~HOURS ":" $INTERNAL_COMMANDS~MINUTES ":" $INTERNAL_COMMANDS~SECONDS " left before entering game " GAME " (" GAMENAME ") "&ANSI_15&" ["&ANSI_14&"Spacebar to relog"&ANSI_15&"]*"
-  setdelaytrigger TIMEBEFORERELOG :RELOGTIMER 1000
-  pause
-  :INTERNAL_COMMANDS~RELOGTIMER
-  setvar $INTERNAL_COMMANDS~TIMETOLOGBACKIN ($INTERNAL_COMMANDS~TIMETOLOGBACKIN - 1)
-end
-:INTERNAL_COMMANDS~ENDLOGOFFGAME
-killtrigger LOGEARLY
-killtrigger TIMEBEFORERELOG
-goto :RELOG_ATTEMPT
-:INTERNAL_COMMANDS~CALCTIME
+settextouttrigger logearly :endlogoffgame #32
+while ($internal_commands~timetologbackin > 0)
+	gosub :calctime
+	echo ansi_10 #27&"[1A"&#27&"[K"&$internal_commands~hours ":" $internal_commands~minutes ":" $internal_commands~seconds " left before entering game " game " (" gamename ") "&ansi_15&" ["&ansi_14&"Spacebar to relog"&ansi_15&"]*"
+	setdelaytrigger timebeforerelog :relogtimer 1000
+	pause
 
+	:internal_commands~relogtimer
+	setvar $internal_commands~timetologbackin ($internal_commands~timetologbackin - 1)
+end
 
-setvar $INTERNAL_COMMANDS~HOURS 0
-setvar $INTERNAL_COMMANDS~MINUTES 0
-setvar $INTERNAL_COMMANDS~SECONDS 0
-setvar $INTERNAL_COMMANDS~TESTTIME $INTERNAL_COMMANDS~TIMETOLOGBACKIN
-if ($INTERNAL_COMMANDS~TESTTIME >= 3600)
-  setvar $INTERNAL_COMMANDS~HOURS ($INTERNAL_COMMANDS~TESTTIME / 3600)
-  setvar $INTERNAL_COMMANDS~TESTTIME ($INTERNAL_COMMANDS~TESTTIME - ($INTERNAL_COMMANDS~HOURS * 3600))
+:internal_commands~endlogoffgame
+killtrigger logearly
+killtrigger timebeforerelog
+goto :relog_attempt
+
+:internal_commands~calctime
+setvar $internal_commands~hours 0
+setvar $internal_commands~minutes 0
+setvar $internal_commands~seconds 0
+setvar $internal_commands~testtime $internal_commands~timetologbackin
+if ($internal_commands~testtime >= 3600)
+	setvar $internal_commands~hours ($internal_commands~testtime / 3600)
+	setvar $internal_commands~testtime ($internal_commands~testtime - ($internal_commands~hours * 3600))
 end
-if ($INTERNAL_COMMANDS~TESTTIME >= 60)
-  setvar $INTERNAL_COMMANDS~MINUTES ($INTERNAL_COMMANDS~TESTTIME / 60)
-  setvar $INTERNAL_COMMANDS~TESTTIME ($INTERNAL_COMMANDS~TESTTIME - ($INTERNAL_COMMANDS~MINUTES * 60))
+if ($internal_commands~testtime >= 60)
+	setvar $internal_commands~minutes ($internal_commands~testtime / 60)
+	setvar $internal_commands~testtime ($internal_commands~testtime - ($internal_commands~minutes * 60))
 end
-if ($INTERNAL_COMMANDS~TESTTIME >= 1)
-  setvar $INTERNAL_COMMANDS~SECONDS $INTERNAL_COMMANDS~TESTTIME
+if ($internal_commands~testtime >= 1)
+	setvar $internal_commands~seconds $internal_commands~testtime
 end
-if ($INTERNAL_COMMANDS~HOURS < 10)
-  setvar $INTERNAL_COMMANDS~HOURS 0&$INTERNAL_COMMANDS~HOURS
+if ($internal_commands~hours < 10)
+	setvar $internal_commands~hours 0&$internal_commands~hours
 end
-if ($INTERNAL_COMMANDS~MINUTES < 10)
-  setvar $INTERNAL_COMMANDS~MINUTES 0&$INTERNAL_COMMANDS~MINUTES
+if ($internal_commands~minutes < 10)
+	setvar $internal_commands~minutes 0&$internal_commands~minutes
 end
-if ($INTERNAL_COMMANDS~SECONDS < 10)
-  setvar $INTERNAL_COMMANDS~SECONDS 0&$INTERNAL_COMMANDS~SECONDS
+if ($internal_commands~seconds < 10)
+	setvar $internal_commands~seconds 0&$internal_commands~seconds
 end
 return
-:INTERNAL_COMMANDS~SURROUND
 
+:internal_commands~surround
+setvar $bot~user_command_line "surround "&$bot~parm1&" "&$bot~parm2&" "&$bot~parm3&" "&$bot~parm4&" "&$bot~parm5&" "&$bot~parm6&" "&$bot~parm7&" "&$bot~parm8
+goto :user_interface~runusercommandline
 
+:internal_commands~clear
+setvar $bot~user_command_line "clear "&$bot~parm1&" "&$bot~parm2&" "&$bot~parm3&" "&$bot~parm4&" "&$bot~parm5&" "&$bot~parm6&" "&$bot~parm7&" "&$bot~parm8
+goto :user_interface~runusercommandline
 
-setvar $BOT~USER_COMMAND_LINE "surround "&$BOT~PARM1&" "&$BOT~PARM2&" "&$BOT~PARM3&" "&$BOT~PARM4&" "&$BOT~PARM5&" "&$BOT~PARM6&" "&$BOT~PARM7&" "&$BOT~PARM8
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-:INTERNAL_COMMANDS~CLEAR
+:internal_commands~exit
+:internal_commands~xenter
+setvar $bot~user_command_line "xenter "&$bot~parm1&" "&$bot~parm2&" "&$bot~parm3&" "&$bot~parm4&" "&$bot~parm5&" "&$bot~parm6&" "&$bot~parm7&" "&$bot~parm8
+goto :user_interface~runusercommandline
 
+:internal_commands~shutdown
+setvar $bot~mode "General"
+savevar $bot~mode
+goto :bot~wait_for_command
 
+:internal_commands~about
+gosub :bot~dosplashscreen
+echo "*" currentansiline
+goto :bot~wait_for_command
 
-
-
-setvar $BOT~USER_COMMAND_LINE "clear "&$BOT~PARM1&" "&$BOT~PARM2&" "&$BOT~PARM3&" "&$BOT~PARM4&" "&$BOT~PARM5&" "&$BOT~PARM6&" "&$BOT~PARM7&" "&$BOT~PARM8
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-:INTERNAL_COMMANDS~EXIT
-:INTERNAL_COMMANDS~XENTER
-
-setvar $BOT~USER_COMMAND_LINE "xenter "&$BOT~PARM1&" "&$BOT~PARM2&" "&$BOT~PARM3&" "&$BOT~PARM4&" "&$BOT~PARM5&" "&$BOT~PARM6&" "&$BOT~PARM7&" "&$BOT~PARM8
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-:INTERNAL_COMMANDS~SHUTDOWN
-
-
-setvar $BOT~MODE "General"
-savevar $BOT~MODE
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~ABOUT
-
-
-
-
-gosub :BOT~DOSPLASHSCREEN
-echo "*" CURRENTANSILINE
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~BOT
-
-setvar $SWITCHBOARD~MESSAGE ""
-if ($BOT~PARM1 = "on")
-  setvar $BOT~BOTISOFF FALSE
-  savevar $BOT~BOTISOFF
-  setvar $SWITCHBOARD~MESSAGE "Bot Active*"
+:internal_commands~bot
+setvar $switchboard~message ""
+if ($bot~parm1 = "on")
+	setvar $bot~botisoff false
+	savevar $bot~botisoff
+	setvar $switchboard~message "Bot Active*"
 end
-if ($BOT~PARM1 = "off")
-  setvar $BOT~BOTISOFF TRUE
-  savevar $BOT~BOTISOFF
-  setvar $SWITCHBOARD~MESSAGE "Bot Deactivated*"
+if ($bot~parm1 = "off")
+	setvar $bot~botisoff true
+	savevar $bot~botisoff
+	setvar $switchboard~message "Bot Deactivated*"
 end
-if (($BOT~PARM1 <> "off") and ($BOT~PARM1 <> "on"))
-  setvar $SWITCHBOARD~MESSAGE "That status option is unknown..*"
+if (($bot~parm1 <> "off") and ($bot~parm1 <> "on"))
+	setvar $switchboard~message "That status option is unknown..*"
 end
-gosub :SWITCHBOARD~SWITCHBOARD
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~REFRESH
+gosub :switchboard~switchboard
+goto :bot~wait_for_command
 
-
-gosub :BOT~KILLTHETRIGGERS
-gosub :PLAYER~QUIKSTATS
-setvar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-if ($PLAYER~CURRENT_PROMPT = "Citadel")
-  send "q"
-  gosub :PLANET~GETPLANETINFO
-  send "q"
+:internal_commands~refresh
+gosub :bot~killthetriggers
+gosub :player~quikstats
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
+if ($player~current_prompt = "Citadel")
+	send "q"
+	gosub :planet~getplanetinfo
+	send "q"
 end
 
-gosub :PLAYER~GETINFO
-gosub :GAME~GAMESTATS
+gosub :player~getinfo
+gosub :game~gamestats
 
-gosub :SHIP~GETSHIPSTATS
+gosub :ship~getshipstats
 
-gosub :PLAYER~QUIKSTATS
-gosub :SHIP~GETSHIPCAPSTATS
-gosub :SHIP~LOADSHIPINFO
+gosub :player~quikstats
+gosub :ship~getshipcapstats
+gosub :ship~loadshipinfo
 
-gosub :PLANET~GETPLANETSTATS
-gosub :PLANET~LOADPLANETINFO
+gosub :planet~getplanetstats
+gosub :planet~loadplanetinfo
 
-if ($PLAYER~CURRENT_PROMPT = "Citadel")
-  gosub :PLANET~LANDINGSUB
+if ($player~current_prompt = "Citadel")
+	gosub :planet~landingsub
 end
-setvar $SWITCHBOARD~MESSAGE "Bot data refresh completed.*"
-gosub :SWITCHBOARD~SWITCHBOARD
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~HOLO_KILL
-:INTERNAL_COMMANDS~HKILL
+setvar $switchboard~message "Bot data refresh completed.*"
+gosub :switchboard~switchboard
+goto :bot~wait_for_command
 
+:internal_commands~holo_kill
+:internal_commands~hkill
+setvar $bot~user_command_line "hkill "&$bot~parm1&" "&$bot~parm2&" "&$bot~parm3&" "&$bot~parm4&" "&$bot~parm5&" "&$bot~parm6&" "&$bot~parm7&" "&$bot~parm8
 
+gosub :bot~killthetriggers
 
-setvar $BOT~USER_COMMAND_LINE "hkill "&$BOT~PARM1&" "&$BOT~PARM2&" "&$BOT~PARM3&" "&$BOT~PARM4&" "&$BOT~PARM5&" "&$BOT~PARM6&" "&$BOT~PARM7&" "&$BOT~PARM8
-
-gosub :BOT~KILLTHETRIGGERS
-
-loadvar $PLAYER~SURROUND_BEFORE_HKILL
-getwordpos $BOT~USER_COMMAND_LINE $INTERNAL_COMMANDS~POS "surround"
-if ($INTERNAL_COMMANDS~POS > 0)
-  setvar $PLAYER~SURROUND_BEFORE_HKILL TRUE
+loadvar $player~surround_before_hkill
+getwordpos $bot~user_command_line $internal_commands~pos "surround"
+if ($internal_commands~pos > 0)
+	setvar $player~surround_before_hkill true
 else
-  if ($PLAYER~SURROUND_BEFORE_HKILL <> TRUE)
-    setvar $PLAYER~SURROUND_BEFORE_HKILL FALSE
-  end
+	if ($player~surround_before_hkill <> true)
+		setvar $player~surround_before_hkill false
+	end
 end
 
-setvar $PLAYER~CIT FALSE
-gosub :PLAYER~QUIKSTATS
-setvar $INTERNAL_COMMANDS~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-gosub :COMBAT~HOLOKILL
-if ($SWITCHBOARD~MESSAGE <> "")
-  gosub :SWITCHBOARD~SWITCHBOARD
+setvar $player~cit false
+gosub :player~quikstats
+setvar $internal_commands~startinglocation $player~current_prompt
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
+gosub :combat~holokill
+if ($switchboard~message <> "")
+	gosub :switchboard~switchboard
 end
 
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~AUTOKILL
+goto :bot~wait_for_command
 
+:internal_commands~autokill
+setvar $bot~parm1 "furb"
+setvar $bot~parm2 "silent"
 
-
-
-setvar $BOT~PARM1 "furb"
-setvar $BOT~PARM2 "silent"
-:INTERNAL_COMMANDS~KILL
-gosub :BOT~KILLTHETRIGGERS
-if ($BOT~PARM1 = "furb")
-  setvar $INTERNAL_COMMANDS~FURB TRUE
+:internal_commands~kill
+gosub :bot~killthetriggers
+if ($bot~parm1 = "furb")
+	setvar $internal_commands~furb true
 end
 
-gosub :PLAYER~CURRENTPROMPT
-setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+gosub :player~currentprompt
+setvar $player~startinglocation $player~current_prompt
 
-if ($PLAYER~STARTINGLOCATION <> "Command")
-  if ($PLAYER~STARTINGLOCATION = "Citadel")
-    loadvar $BOT~MODE
-    if ($BOT~MODE <> "Citkill")
-      setvar $BOT~USER_COMMAND_LINE "citkill on override"
-      setvar $BOT~AUTOATTACK FALSE
-      savevar $BOT~AUTOATTACK
-      goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-    else
-      setvar $BOT~USER_COMMAND_LINE "citkill off"
-      goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-    end
-  end
-  setvar $SWITCHBOARD~MESSAGE "Wrong prompt for auto kill.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  if ($BOT~AUTOATTACK)
-    setvar $BOT~AUTOATTACK FALSE
-    savevar $BOT~AUTOATTACK
-    setvar $SWITCHBOARD~MESSAGE "Since in wrong prompt, shutting down autokill option in bot.  Restart in options.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-  end
-  goto :BOT~WAIT_FOR_COMMAND
+if ($player~startinglocation <> "Command")
+	if ($player~startinglocation = "Citadel")
+		loadvar $bot~mode
+		if ($bot~mode <> "Citkill")
+			setvar $bot~user_command_line "citkill on override"
+			setvar $bot~autoattack false
+			savevar $bot~autoattack
+			goto :user_interface~runusercommandline
+		else
+			setvar $bot~user_command_line "citkill off"
+			goto :user_interface~runusercommandline
+		end
+	end
+	setvar $switchboard~message "Wrong prompt for auto kill.*"
+	gosub :switchboard~switchboard
+	if ($bot~autoattack)
+		setvar $bot~autoattack false
+		savevar $bot~autoattack
+		setvar $switchboard~message "Since in wrong prompt, shutting down autokill option in bot.  Restart in options.*"
+		gosub :switchboard~switchboard
+	end
+	goto :bot~wait_for_command
 end
-loadvar $SHIP~SHIP_MAX_ATTACK
-loadvar $SHIP~SHIP_FIGHTERS_MAX
-loadvar $SHIP~SHIP_OFFENSIVE_ODDS
-if ($SHIP~SHIP_MAX_ATTACK <= 0)
-  gosub :SHIP~GETSHIPSTATS
+loadvar $ship~ship_max_attack
+loadvar $ship~ship_fighters_max
+loadvar $ship~ship_offensive_odds
+if ($ship~ship_max_attack <= 0)
+	gosub :ship~getshipstats
 end
-setvar $PLAYER~ISFOUND FALSE
-gosub :SECTOR~GETSECTORDATA
-gosub :COMBAT~FASTATTACK
-if ((($PLAYER~CURRENT_SECTOR = 1) or ($PLAYER~CURRENT_SECTOR = $MAP~STARDOCK)) and ($INTERNAL_COMMANDS~FURB = TRUE))
-  if ($PLAYER~ISFOUND)
-    load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\refurb.cts"
-    seteventtrigger 1 :REFURBENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\resource\refurb.cts"
-    pause
-    :INTERNAL_COMMANDS~REFURBENDED
-    gosub :SECTOR~GETSECTORDATA
-    gosub :COMBAT~FASTATTACK
-  end
-end
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~AUTOCAPTURE
-:INTERNAL_COMMANDS~AUTOCAP
-:INTERNAL_COMMANDS~CAP
+setvar $player~isfound false
+gosub :sector~getsectordata
+gosub :combat~fastattack
+if ((($player~current_sector = 1) or ($player~current_sector = $map~stardock)) and ($internal_commands~furb = true))
+	if ($player~isfound)
+		load "scripts\"&$bot~mombot_directory&"\commands\resource\refurb.cts"
+		seteventtrigger 1 :refurbended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\resource\refurb.cts"
+		pause
 
-
-setvar $BOT~USER_COMMAND_LINE "cap "&$BOT~PARM1&" "&$BOT~PARM2&" "&$BOT~PARM3&" "&$BOT~PARM4&" "&$BOT~PARM5&" "&$BOT~PARM6&" "&$BOT~PARM7&" "&$BOT~PARM8
-
-gosub :BOT~KILLTHETRIGGERS
-gosub :PLAYER~QUIKSTATS
-setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-if ($PLAYER~STARTINGLOCATION <> "Command")
-  if ($PLAYER~STARTINGLOCATION = "Citadel")
-    loadvar $BOT~MODE
-    if ($BOT~MODE <> "Citcap")
-      setvar $BOT~COMMAND "citcap"
-      setvar $BOT~USER_COMMAND_LINE " citcap on "
-      setvar $BOT~PARM1 "on"
-      goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-    else
-      setvar $BOT~COMMAND "citcap"
-      setvar $BOT~USER_COMMAND_LINE " citcap off "
-      setvar $BOT~PARM1 "off"
-      goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-    end
-    goto :BOT~WAIT_FOR_COMMAND
-  end
-  setvar $SWITCHBOARD~MESSAGE "Wrong prompt for auto capture.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  goto :BOT~WAIT_FOR_COMMAND
+		:internal_commands~refurbended
+		gosub :sector~getsectordata
+		gosub :combat~fastattack
+	end
 end
-getwordpos $BOT~USER_COMMAND_LINE $INTERNAL_COMMANDS~POS "alien"
-if ($INTERNAL_COMMANDS~POS > 0)
-  setvar $PLAYER~ONLYALIENS TRUE
+goto :bot~wait_for_command
+
+:internal_commands~autocapture
+:internal_commands~autocap
+:internal_commands~cap
+setvar $bot~user_command_line "cap "&$bot~parm1&" "&$bot~parm2&" "&$bot~parm3&" "&$bot~parm4&" "&$bot~parm5&" "&$bot~parm6&" "&$bot~parm7&" "&$bot~parm8
+
+gosub :bot~killthetriggers
+gosub :player~quikstats
+setvar $player~startinglocation $player~current_prompt
+if ($player~startinglocation <> "Command")
+	if ($player~startinglocation = "Citadel")
+		loadvar $bot~mode
+		if ($bot~mode <> "Citcap")
+			setvar $bot~command "citcap"
+			setvar $bot~user_command_line " citcap on "
+			setvar $bot~parm1 "on"
+			goto :user_interface~runusercommandline
+		else
+			setvar $bot~command "citcap"
+			setvar $bot~user_command_line " citcap off "
+			setvar $bot~parm1 "off"
+			goto :user_interface~runusercommandline
+		end
+		goto :bot~wait_for_command
+	end
+	setvar $switchboard~message "Wrong prompt for auto capture.*"
+	gosub :switchboard~switchboard
+	goto :bot~wait_for_command
+end
+getwordpos $bot~user_command_line $internal_commands~pos "alien"
+if ($internal_commands~pos > 0)
+	setvar $player~onlyaliens true
 else
-  setvar $PLAYER~ONLYALIENS FALSE
+	setvar $player~onlyaliens false
 end
-fileexists $SHIP~CAP_FILE_CHK $SHIP~CAP_FILE
-if ($SHIP~CAP_FILE_CHK <> TRUE)
-  gosub :SHIP~GETSHIPCAPSTATS
+fileexists $ship~cap_file_chk $ship~cap_file
+if ($ship~cap_file_chk <> true)
+	gosub :ship~getshipcapstats
 end
-loadvar $SHIP~SHIP_MAX_ATTACK
-loadvar $SHIP~SHIP_FIGHTERS_MAX
-loadvar $SHIP~SHIP_OFFENSIVE_ODDS
-if ($SHIP~SHIP_OFFENSIVE_ODDS <= 0)
-  gosub :SHIP~GETSHIPSTATS
+loadvar $ship~ship_max_attack
+loadvar $ship~ship_fighters_max
+loadvar $ship~ship_offensive_odds
+if ($ship~ship_offensive_odds <= 0)
+	gosub :ship~getshipstats
 end
-setvar $INTERNAL_COMMANDS~LASTTARGET ""
-setvar $INTERNAL_COMMANDS~THISTARGET ""
-gosub :SECTOR~GETSECTORDATA
-gosub :COMBAT~FASTCAPTURE
+setvar $internal_commands~lasttarget ""
+setvar $internal_commands~thistarget ""
+gosub :sector~getsectordata
+gosub :combat~fastcapture
 
-goto :BOT~WAIT_FOR_COMMAND
-:INTERNAL_COMMANDS~DO_RELOG
+goto :bot~wait_for_command
 
+:internal_commands~do_relog
+setvar $bot~parm1 "do_relog"
 
-setvar $BOT~PARM1 "do_relog"
-:INTERNAL_COMMANDS~RELOG_ATTEMPT
-setvar $BOT~USER_COMMAND_LINE "relog "&$BOT~PARM1&" "&$BOT~PARM2&" "&$BOT~PARM3&" "&$BOT~PARM4&" "&$BOT~PARM5&" "&$BOT~PARM6&" "&$BOT~PARM7&" "&$BOT~PARM8
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-:INTERNAL_COMMANDS~SCRUB
+:internal_commands~relog_attempt
+setvar $bot~user_command_line "relog "&$bot~parm1&" "&$bot~parm2&" "&$bot~parm3&" "&$bot~parm4&" "&$bot~parm5&" "&$bot~parm6&" "&$bot~parm7&" "&$bot~parm8
+goto :user_interface~runusercommandline
 
+:internal_commands~scrub
+setvar $bot~user_command_line "scrub "&$bot~parm1&" "&$bot~parm2&" "&$bot~parm3&" "&$bot~parm4&" "&$bot~parm5&" "&$bot~parm6&" "&$bot~parm7&" "&$bot~parm8
+goto :user_interface~runusercommandline
 
-setvar $BOT~USER_COMMAND_LINE "scrub "&$BOT~PARM1&" "&$BOT~PARM2&" "&$BOT~PARM3&" "&$BOT~PARM4&" "&$BOT~PARM5&" "&$BOT~PARM6&" "&$BOT~PARM7&" "&$BOT~PARM8
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-:INTERNAL_COMMANDS~AUTOREFURB
-:INTERNAL_COMMANDS~REFURB
+:internal_commands~autorefurb
+:internal_commands~refurb
+setvar $bot~user_command_line "refurb "&$bot~parm1&" "&$bot~parm2&" "&$bot~parm3&" "&$bot~parm4&" "&$bot~parm5&" "&$bot~parm6&" "&$bot~parm7&" "&$bot~parm8
+goto :user_interface~runusercommandline
 
-setvar $BOT~USER_COMMAND_LINE "refurb "&$BOT~PARM1&" "&$BOT~PARM2&" "&$BOT~PARM3&" "&$BOT~PARM4&" "&$BOT~PARM5&" "&$BOT~PARM6&" "&$BOT~PARM7&" "&$BOT~PARM8
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
-:INTERNAL_COMMANDS~SWITCHBOT
-
-switchbot $BOT~PARM1
+:internal_commands~switchbot
+switchbot $bot~parm1
 halt
 
 include "source\include\user_interface"

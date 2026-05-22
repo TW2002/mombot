@@ -1,236 +1,243 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-	setVar $HELP~HELP[1]   $HELP~TAB&"  invader is a wrapper for the following commands:"
-	setVar $HELP~HELP[2]   $HELP~TAB&"  pe, ped, pel, pelk, pex, pxe, pxed, pxedx, pxel, pxelk, pxex"
-	setVar $HELP~HELP[3]   $HELP~TAB&"     "
-  setVar $HELP~HELP[4]   $HELP~TAB&"  usage:"
-	setVar $HELP~HELP[5]   $HELP~TAB&"     "
-	setVar $HELP~HELP[6]   $HELP~TAB&"  pe [Sector] - Launch photon into adjacent sector and immediately enter "
-	setVar $HELP~HELP[7]   $HELP~TAB&"  ped [Sector] - Launch photon, enter and launch genesis torpedo "
-  setVar $HELP~HELP[8]   $HELP~TAB&"  pel [Sector] [Planet#] - Photon, enter and land on planet "
-  setVar $HELP~HELP[9]   $HELP~TAB&"  pelk [Sector] [Planet#] - Photon, enter, land and send one wave of fighters "
-  setVar $HELP~HELP[10]   $HELP~TAB&"  pex [Sector] [Ship#] - Photon, enter and export to another ship "
-  setVar $HELP~HELP[11]   $HELP~TAB&"  pxe [Sector] [Ship#] - Photon, export to another ship and enter "
-  setVar $HELP~HELP[12]   $HELP~TAB&"  pxed [Sector] [Ship#] - Photon, export, enter and launch genesis torpedo "
-  setVar $HELP~HELP[13]   $HELP~TAB&"  pxel [Sector] [Ship#] [Planet#] - Photon, export, enter and land on planet "
-  setVar $HELP~HELP[14]   $HELP~TAB&"  pxelk [Sector] [Ship#] [Planet#] - Photon, export, enter, land and send wave "
-  setVar $HELP~HELP[15]   $HELP~TAB&"  pxex [Sector] [Ship#] - Photon, export, enter and export back "
-	setVar $HELP~HELP[16]  $HELP~TAB&"     "
-	setVar $HELP~HELP[17]   $HELP~TAB&"  Examples:"
-	setVar $HELP~HELP[18]  $HELP~TAB&"     "
-  setVar $HELP~HELP[19]  $HELP~TAB&"  >pe 24902 "
-  setVar $HELP~HELP[20]  $HELP~TAB&"  >pel 24902 15"
-  setVar $HELP~HELP[21]  $HELP~TAB&"  >pxel 24902 3 15"
-	gosub :HELP~HELPFILE
+setvar $help~help[1]   $help~tab&"  invader is a wrapper for the following commands:"
+setvar $help~help[2]   $help~tab&"  pe, ped, pel, pelk, pex, pxe, pxed, pxedx, pxel, pxelk, pxex"
+setvar $help~help[3]   $help~tab&"     "
+setvar $help~help[4]   $help~tab&"  usage:"
+setvar $help~help[5]   $help~tab&"     "
+setvar $help~help[6]   $help~tab&"  pe [Sector] - Launch photon into adjacent sector and immediately enter "
+setvar $help~help[7]   $help~tab&"  ped [Sector] - Launch photon, enter and launch genesis torpedo "
+setvar $help~help[8]   $help~tab&"  pel [Sector] [Planet#] - Photon, enter and land on planet "
+setvar $help~help[9]   $help~tab&"  pelk [Sector] [Planet#] - Photon, enter, land and send one wave of fighters "
+setvar $help~help[10]   $help~tab&"  pex [Sector] [Ship#] - Photon, enter and export to another ship "
+setvar $help~help[11]   $help~tab&"  pxe [Sector] [Ship#] - Photon, export to another ship and enter "
+setvar $help~help[12]   $help~tab&"  pxed [Sector] [Ship#] - Photon, export, enter and launch genesis torpedo "
+setvar $help~help[13]   $help~tab&"  pxel [Sector] [Ship#] [Planet#] - Photon, export, enter and land on planet "
+setvar $help~help[14]   $help~tab&"  pxelk [Sector] [Ship#] [Planet#] - Photon, export, enter, land and send wave "
+setvar $help~help[15]   $help~tab&"  pxex [Sector] [Ship#] - Photon, export, enter and export back "
+setvar $help~help[16]  $help~tab&"     "
+setvar $help~help[17]   $help~tab&"  Examples:"
+setvar $help~help[18]  $help~tab&"     "
+setvar $help~help[19]  $help~tab&"  >pe 24902 "
+setvar $help~help[20]  $help~tab&"  >pel 24902 15"
+setvar $help~help[21]  $help~tab&"  >pxel 24902 3 15"
+gosub :help~helpfile
 
-setvar $INVADER~COMMAND $BOT~COMMAND_TYPED
-if (($INVADER~COMMAND = "") or ($INVADER~COMMAND = 0))
-  setvar $INVADER~COMMAND $BOT~COMMAND
+setvar $invader~command $bot~command_typed
+if (($invader~command = "") or ($invader~command = 0))
+	setvar $invader~command $bot~command
 end
-lowercase $INVADER~COMMAND
+lowercase $invader~command
 
-setvar $INVADER~VALID_COMMANDS " pe ped pel pelk pex pxe pxed pxedx pxel pxelk pxex "
-getwordpos $INVADER~VALID_COMMANDS $INVADER~POS " "&$INVADER~COMMAND&" "
-if ($INVADER~POS <= 0)
-  setvar $SWITCHBOARD~MESSAGE "Invader must be called through one of: pe ped pel pelk pex pxe pxed pxedx pxel pxelk pxex.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+setvar $invader~valid_commands " pe ped pel pelk pex pxe pxed pxedx pxel pxelk pxex "
+getwordpos $invader~valid_commands $invader~pos " "&$invader~command&" "
+if ($invader~pos <= 0)
+	setvar $switchboard~message "Invader must be called through one of: pe ped pel pelk pex pxe pxed pxedx pxel pxelk pxex.*"
+	gosub :switchboard~switchboard
+	halt
 end
 
 killalltriggers
-if (($INVADER~COMMAND = "") or ($INVADER~COMMAND = 0))
-  setvar $INVADER~COMMAND $BOT~COMMAND_TYPED
-  if (($INVADER~COMMAND = "") or ($INVADER~COMMAND = 0))
-    setvar $INVADER~COMMAND $BOT~COMMAND
-  end
-  lowercase $INVADER~COMMAND
+if (($invader~command = "") or ($invader~command = 0))
+	setvar $invader~command $bot~command_typed
+	if (($invader~command = "") or ($invader~command = 0))
+		setvar $invader~command $bot~command
+	end
+	lowercase $invader~command
 end
-setarray $INVADER~SCAN_ARRAY 1000
-gosub :PLAYER~QUIKSTATS
-setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $INVADER~STARTING_SHIP $PLAYER~SHIP_NUMBER
+setarray $invader~scan_array 1000
+gosub :player~quikstats
+setvar $bot~startinglocation $player~current_prompt
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
+setvar $player~startinglocation $player~current_prompt
+setvar $invader~starting_ship $player~ship_number
 
-if ($SHIP~SHIP_MAX_ATTACK <= 0)
-  gosub :SHIP~GETSHIPSTATS
-end
-
-if ($PLAYER~PHOTONS <= 0)
-  setvar $SWITCHBOARD~MESSAGE "This command requires a photon*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+if ($ship~ship_max_attack <= 0)
+	gosub :ship~getshipstats
 end
 
-isnumber $INVADER~TEST $BOT~PARM2
-if ((($INVADER~TEST = FALSE) or ($BOT~PARM2 = 0)) and (($INVADER~COMMAND <> "pe") and ($INVADER~COMMAND <> "ped")))
-  setvar $SWITCHBOARD~MESSAGE "Parameter 2 invalid*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+if ($player~photons <= 0)
+	setvar $switchboard~message "This command requires a photon*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-isnumber $INVADER~TEST $BOT~PARM3
-if (($INVADER~TEST = FALSE) or ($BOT~PARM3 = 0))
-  if ($INVADER~COMMAND = "pxex")
-    setvar $BOT~PARM3 $PLAYER~SHIP_NUMBER
-  elseif (($INVADER~COMMAND = "pxel") or ($INVADER~COMMAND = "pxelk"))
-    setvar $SWITCHBOARD~MESSAGE "Planet Parameter in-valid*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
+isnumber $invader~test $bot~parm2
+if ((($invader~test = false) or ($bot~parm2 = 0)) and (($invader~command <> "pe") and ($invader~command <> "ped")))
+	setvar $switchboard~message "Parameter 2 invalid*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-isnumber $INVADER~TEST $BOT~PARM1
-if ($INVADER~TEST = FALSE)
-  setvar $SWITCHBOARD~MESSAGE "Sector Parameter invalid*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+isnumber $invader~test $bot~parm3
+if (($invader~test = false) or ($bot~parm3 = 0))
+	if ($invader~command = "pxex")
+		setvar $bot~parm3 $player~ship_number
+	elseif (($invader~command = "pxel") or ($invader~command = "pxelk"))
+		setvar $switchboard~message "Planet Parameter in-valid*"
+		gosub :switchboard~switchboard
+		halt
+	end
 end
-if (($BOT~PARM1 > 10) and (($BOT~PARM1 <= SECTORS) and ($BOT~PARM1 <> $MAP~STARDOCK)))
+
+isnumber $invader~test $bot~parm1
+if ($invader~test = false)
+	setvar $switchboard~message "Sector Parameter invalid*"
+	gosub :switchboard~switchboard
+	halt
+end
+if (($bot~parm1 > 10) and (($bot~parm1 <= sectors) and ($bot~parm1 <> $map~stardock)))
 else
-  setvar $SWITCHBOARD~MESSAGE "Invalid attack sector entered*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+	setvar $switchboard~message "Invalid attack sector entered*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-setvar $INVADER~I 1
-setvar $INVADER~ISFOUND FALSE
-while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$INVADER~I] > 0)
-  if (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$INVADER~I] = $BOT~PARM1)
-    setvar $INVADER~ISFOUND TRUE
-  end
-  add $INVADER~I 1
+setvar $invader~i 1
+setvar $invader~isfound false
+while (sector.warps[$player~current_sector][$invader~i] > 0)
+	if (sector.warps[$player~current_sector][$invader~i] = $bot~parm1)
+		setvar $invader~isfound true
+	end
+	add $invader~i 1
 end
-if ($INVADER~ISFOUND = FALSE)
-  setvar $SWITCHBOARD~MESSAGE "Cannot continue.  Sector not Adjacent, aborting..*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+if ($invader~isfound = false)
+	setvar $switchboard~message "Cannot continue.  Sector not Adjacent, aborting..*"
+	gosub :switchboard~switchboard
+	halt
 end
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $INVADER~POS "speed"
-if ($INVADER~POS > 0)
-  setvar $INVADER~SPEED TRUE
+getwordpos " "&$bot~user_command_line&" " $invader~pos "speed"
+if ($invader~pos > 0)
+	setvar $invader~speed true
 else
-  setvar $INVADER~SPEED FALSE
+	setvar $invader~speed false
 end
 
-send " c v * y * "&$BOT~PARM1&"*  "
+send " c v * y * "&$bot~parm1&"*  "
 
-if ($PLAYER~STARTINGLOCATION = "Citadel")
-  if ($PLAYER~CREDITS > 0)
-    send "t t"&$PLAYER~CREDITS&"* "
-  end
-  send " q  q"
-  gosub :PLANET~GETPLANETINFO
-  send "  C C  "
+if ($player~startinglocation = "Citadel")
+	if ($player~credits > 0)
+		send "t t"&$player~credits&"* "
+	end
+	send " q  q"
+	gosub :planet~getplanetinfo
+	send "  C C  "
 end
-setvar $INVADER~ENTER "m  "&$BOT~PARM1&"*"
-setvar $INVADER~XPORT "x   "&$BOT~PARM2&"*  q  z  n  "
-setvar $INVADER~XPORT_BACK "x   "&$INVADER~STARTING_SHIP&"*  q  z  n  "
-setvar $INVADER~PHOTON "  p y"&$BOT~PARM1&"*  q  "
+setvar $invader~enter "m  "&$bot~parm1&"*"
+setvar $invader~xport "x   "&$bot~parm2&"*  q  z  n  "
+setvar $invader~xport_back "x   "&$invader~starting_ship&"*  q  z  n  "
+setvar $invader~photon "  p y"&$bot~parm1&"*  q  "
 
-setvar $INVADER~XPORT_COMMANDS " pxe pxed pxedx pxel pxelk pxex "
-getwordpos $INVADER~XPORT_COMMANDS $INVADER~POS " "&$INVADER~COMMAND&" "
-if ($INVADER~POS > 0)
-  setvar $INVADER~SPEED_INVADE_MACRO $INVADER~XPORT&$INVADER~ENTER&"       * "
-  setvar $INVADER~NORMAL_INVADE_MACRO $INVADER~XPORT&$INVADER~ENTER&"** "
+setvar $invader~xport_commands " pxe pxed pxedx pxel pxelk pxex "
+getwordpos $invader~xport_commands $invader~pos " "&$invader~command&" "
+if ($invader~pos > 0)
+	setvar $invader~speed_invade_macro $invader~xport&$invader~enter&"       * "
+	setvar $invader~normal_invade_macro $invader~xport&$invader~enter&"** "
 else
-  setvar $INVADER~SPEED_INVADE_MACRO $INVADER~ENTER&"     *  "
-  setvar $INVADER~NORMAL_INVADE_MACRO $INVADER~ENTER&"*            "
+	setvar $invader~speed_invade_macro $invader~enter&"     *  "
+	setvar $invader~normal_invade_macro $invader~enter&"*            "
 end
 
-if ($PLAYER~STARTINGLOCATION = "Citadel")
-  setvar $INVADER~MAC_STARTING $INVADER~PHOTON&"q  q  "
+if ($player~startinglocation = "Citadel")
+	setvar $invader~mac_starting $invader~photon&"q  q  "
 else
-  setvar $INVADER~MAC_STARTING $INVADER~PHOTON&"  "
+	setvar $invader~mac_starting $invader~photon&"  "
 end
-if ($INVADER~COMMAND = "pxex")
-  setvar $INVADER~MAC_ENDING "x   "&$BOT~PARM3&"*  q  q  z  n"
-  setvar $INVADER~ENDS_IN_SECTOR TRUE
-elseif ($INVADER~COMMAND = "pex")
-  setvar $INVADER~MAC_ENDING "x    "&$BOT~PARM2&"*  q  q  *  z  n  *  "
-  setvar $INVADER~ENDS_IN_SECTOR TRUE
-elseif ($INVADER~COMMAND = "pel")
-  setvar $INVADER~MAC_ENDING "l "&$BOT~PARM2&"*  *"
-  setvar $INVADER~ENDS_IN_SECTOR FALSE
-elseif ($INVADER~COMMAND = "pxel")
-  setvar $INVADER~MAC_ENDING "l "&$BOT~PARM3&"*  *  "
-  setvar $INVADER~ENDS_IN_SECTOR FALSE
-elseif ($INVADER~COMMAND = "pxelk")
-  setvar $INVADER~MAC_ENDING "l "&$BOT~PARM3&"*  *  a"&$SHIP~SHIP_MAX_ATTACK&"*"
-  setvar $INVADER~ENDS_IN_SECTOR FALSE
-elseif ($INVADER~COMMAND = "pelk")
-  setvar $INVADER~MAC_ENDING "l "&$BOT~PARM2&"*  *  a"&$SHIP~SHIP_MAX_ATTACK&"*"
-  setvar $INVADER~ENDS_IN_SECTOR FALSE
-elseif (($INVADER~COMMAND = "pxed") or ($INVADER~COMMAND = "ped"))
-  setvar $INVADER~MAC_ENDING "u  y  n  . *  j  c  *  "
-  setvar $INVADER~ENDS_IN_SECTOR FALSE
-elseif (($INVADER~COMMAND = "pxedx") or ($INVADER~COMMAND = "pedx"))
-  setvar $INVADER~MAC_ENDING "u  y  n  . *  j  c  *  "&$INVADER~XPORT_BACK
-  setvar $INVADER~ENDS_IN_SECTOR TRUE
+if ($invader~command = "pxex")
+	setvar $invader~mac_ending "x   "&$bot~parm3&"*  q  q  z  n"
+	setvar $invader~ends_in_sector true
+elseif ($invader~command = "pex")
+	setvar $invader~mac_ending "x    "&$bot~parm2&"*  q  q  *  z  n  *  "
+	setvar $invader~ends_in_sector true
+elseif ($invader~command = "pel")
+	setvar $invader~mac_ending "l "&$bot~parm2&"*  *"
+	setvar $invader~ends_in_sector false
+elseif ($invader~command = "pxel")
+	setvar $invader~mac_ending "l "&$bot~parm3&"*  *  "
+	setvar $invader~ends_in_sector false
+elseif ($invader~command = "pxelk")
+	setvar $invader~mac_ending "l "&$bot~parm3&"*  *  a"&$ship~ship_max_attack&"*"
+	setvar $invader~ends_in_sector false
+elseif ($invader~command = "pelk")
+	setvar $invader~mac_ending "l "&$bot~parm2&"*  *  a"&$ship~ship_max_attack&"*"
+	setvar $invader~ends_in_sector false
+elseif (($invader~command = "pxed") or ($invader~command = "ped"))
+	setvar $invader~mac_ending "u  y  n  . *  j  c  *  "
+	setvar $invader~ends_in_sector false
+elseif (($invader~command = "pxedx") or ($invader~command = "pedx"))
+	setvar $invader~mac_ending "u  y  n  . *  j  c  *  "&$invader~xport_back
+	setvar $invader~ends_in_sector true
 else
-  setvar $INVADER~MAC_ENDING ""
-  setvar $INVADER~ENDS_IN_SECTOR FALSE
+	setvar $invader~mac_ending ""
+	setvar $invader~ends_in_sector false
 end
-if (($PLAYER~STARTINGLOCATION = "Citadel") and ($INVADER~ENDS_IN_SECTOR = TRUE))
-  setvar $INVADER~MAC_ENDING $INVADER~MAC_ENDING&"l "&$PLANET~PLANET&" * c"
+if (($player~startinglocation = "Citadel") and ($invader~ends_in_sector = true))
+	setvar $invader~mac_ending $invader~mac_ending&"l "&$planet~planet&" * c"
 end
-setvar $INVADER~MAC_ENDING $INVADER~MAC_ENDING&"@"
+setvar $invader~mac_ending $invader~mac_ending&"@"
 
 send "  t"
 waitfor ", 2"
-getword CURRENTLINE $INVADER~INITTIME 1
-:PHOTON_ATTACK_TIMER
+getword currentline $invader~inittime 1
+
+:photon_attack_timer
 send "  t"
 waitfor ", 2"
-getword CURRENTLINE $INVADER~CURRENTTIME 1
+getword currentline $invader~currenttime 1
 waitfor "Computer"
-if ($INVADER~INITTIME <> $INVADER~CURRENTTIME)
-  if ($INVADER~SPEED = TRUE)
-    send $INVADER~MAC_STARTING&$INVADER~SPEED_INVADE_MACRO&$INVADER~MAC_ENDING
-  else
-    send $INVADER~MAC_STARTING&$INVADER~NORMAL_INVADE_MACRO&$INVADER~MAC_ENDING
-  end
+if ($invader~inittime <> $invader~currenttime)
+	if ($invader~speed = true)
+		send $invader~mac_starting&$invader~speed_invade_macro&$invader~mac_ending
+	else
+		send $invader~mac_starting&$invader~normal_invade_macro&$invader~mac_ending
+	end
 else
-  goto :PHOTON_ATTACK_TIMER
+	goto :photon_attack_timer
 end
 
-if ($INVADER~SPEED = FALSE)
-  setvar $INVADER~I 1
-  settextlinetrigger DAMAGE :INVADER~COLLECT_DAMAGE "The console reports damages of "
-  settextlinetrigger DAMAGE_DONE :INVADER~DAMAGE_DONE "Average Interval Lag:"
-  settextlinetrigger DAMAGE_POD :INVADER~COLLECT_POD "You rush to an escape pod and abandon"
-  settextlinetrigger DEATH :INVADER~COLLECT_DEATH "You will have to start"
-  pause
-  :INVADER~COLLECT_DAMAGE
-  setvar $INVADER~SCAN_ARRAY[$INVADER~I] CURRENTLINE
-  add $INVADER~I 1
-  settextlinetrigger DAMAGE :INVADER~COLLECT_DAMAGE "The console reports damages of "
-  pause
-  :INVADER~COLLECT_POD
-  setvar $INVADER~SCAN_ARRAY[$INVADER~I] CURRENTLINE
-  add $INVADER~I 1
-  :INVADER~DAMAGE_DONE
-  killalltriggers
-  if ($INVADER~I > 1)
-    setvar $INVADER~J 1
-    send "'*"
-    settextlinetrigger COMM :INVADER~CONTINUEDAMAGE "Comm-link open on sub-space band"
-    pause
-    :INVADER~CONTINUEDAMAGE
-    while ($INVADER~J < $INVADER~I)
-      send $INVADER~SCAN_ARRAY[$INVADER~J]&"*"
-      add $INVADER~J 1
-    end
-    send "*"
-    settextlinetrigger COMM2 :INVADER~CONTINUEDAMAGE2 "Sub-space comm-link terminated"
-    pause
-    :INVADER~CONTINUEDAMAGE2
-  end
-  :INVADER~COLLECT_DEATH
-  killalltriggers
-  halt
+if ($invader~speed = false)
+	setvar $invader~i 1
+	settextlinetrigger damage :invader~collect_damage "The console reports damages of "
+	settextlinetrigger damage_done :invader~damage_done "Average Interval Lag:"
+	settextlinetrigger damage_pod :invader~collect_pod "You rush to an escape pod and abandon"
+	settextlinetrigger death :invader~collect_death "You will have to start"
+	pause
+
+	:invader~collect_damage
+	setvar $invader~scan_array[$invader~i] currentline
+	add $invader~i 1
+	settextlinetrigger damage :invader~collect_damage "The console reports damages of "
+	pause
+
+	:invader~collect_pod
+	setvar $invader~scan_array[$invader~i] currentline
+	add $invader~i 1
+
+	:invader~damage_done
+	killalltriggers
+	if ($invader~i > 1)
+		setvar $invader~j 1
+		send "'*"
+		settextlinetrigger comm :invader~continuedamage "Comm-link open on sub-space band"
+		pause
+
+		:invader~continuedamage
+		while ($invader~j < $invader~i)
+			send $invader~scan_array[$invader~j]&"*"
+			add $invader~j 1
+		end
+		send "*"
+		settextlinetrigger comm2 :invader~continuedamage2 "Sub-space comm-link terminated"
+		pause
+
+		:invader~continuedamage2
+	end
+
+	:invader~collect_death
+	killalltriggers
+	halt
 end
 halt
 

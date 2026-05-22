@@ -1,386 +1,384 @@
 logging "OFF"
-loadvar $BOT_NAME
-loadvar $UNLIMITEDGAME
-loadvar $BOT_TURN_LIMIT
-loadvar $USER_COMMAND_LINE
-loadvar $PARM1
-loadvar $PARM2
-loadvar $PARM3
-loadvar $PARM4
-loadvar $PARM5
-loadvar $PARM6
-loadvar $PARM7
-loadvar $PARM8
-loadvar $STARDOCK
-loadvar $BACKDOOR
-loadvar $RYLOS
-loadvar $ALPHA_CENTAURI
-loadvar $COMMAND
-goto :STRIPSHIPS_START
+loadvar $bot_name
+loadvar $unlimitedgame
+loadvar $bot_turn_limit
+loadvar $user_command_line
+loadvar $parm1
+loadvar $parm2
+loadvar $parm3
+loadvar $parm4
+loadvar $parm5
+loadvar $parm6
+loadvar $parm7
+loadvar $parm8
+loadvar $stardock
+loadvar $backdoor
+loadvar $rylos
+loadvar $alpha_centauri
+loadvar $command
+goto :stripships_start
 include "source\include\planet"
-:STRIPSHIPS_START
 
-fileexists $DOESHELPFILEEXIST "scripts\MOMBot\Help\"&$COMMAND&".txt"
-if ($DOESHELPFILEEXIST <> TRUE)
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "- stripship                                                 "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "                                                            "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    Strips fighters from all empty ships and deploys them   "
-  write "scripts\MOMBot\Help\"&$COMMAND&".txt" "    into the sector.                                        "
+:stripships_start
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Strips fighters from all empty ships and deploys them into the sector."
+setvar $help~help[2] $help~tab&"       "
+setvar $help~help[3] $help~tab&"  Usage: stripships"
+gosub :help~helpfile
 
-  setvar $switchboard~message "Writing help file for this command in Help directory.*"
-  gosub :switchboard~switchboard
-end
-:EMPTYSHIPS
-
+:emptyships
 killalltriggers
-gosub :PLAYER~QUIKSTATS
-setvar $STARTSHIP $PLAYER~SHIP_NUMBER
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $TOTAL_FIGS 0
+gosub :player~quikstats
+setvar $startship $player~ship_number
+setvar $startinglocation $player~current_prompt
+setvar $total_figs 0
 send "** "
-setvar $FUELINSECTOR FALSE
-if (($STARTINGLOCATION <> "Citadel") and (($STARTINGSECTOR <> "Planet") and ($STARTINGLOCATION <> "Command")))
-  setvar $switchboard~message "Must be in Command, Citadel or Planet prompt to run*"
-  gosub :switchboard~switchboard
-  halt
+setvar $fuelinsector false
+if (($startinglocation <> "Citadel") and (($startingsector <> "Planet") and ($startinglocation <> "Command")))
+	setvar $switchboard~message "Must be in Command, Citadel or Planet prompt to run*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-if ($STARTINGLOCATION = "Citadel")
-  send "q "
+if ($startinglocation = "Citadel")
+	send "q "
 end
-setvar $SHIPCOUNT 0
-if (($STARTINGLOCATION = "Planet") or ($STARTINGLOCATION = "Citadel"))
-  gosub :GETPLANETINFO
-  send "q "
+setvar $shipcount 0
+if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+	gosub :getplanetinfo
+	send "q "
 end
 setvar $switchboard~message "Ship Stripper starting up!  Starting ship scan..*"
 gosub :switchboard~switchboard
-:TRYSHIPSCAN
+
+:tryshipscan
 send "wnq*@"
-settextlinetrigger STATLINETRIG :SHIPLINE "-----------------------------------------------------------------------------"
-settextlinetrigger TOWALREADYON :CONTINUETOWON "You shut off your Tractor Beam."
+settextlinetrigger statlinetrig :shipline "-----------------------------------------------------------------------------"
+settextlinetrigger towalreadyon :continuetowon "You shut off your Tractor Beam."
 pause
-:CONTINUETOWON
-killtrigger STATLINETRIG
-goto :TRYSHIPSCAN
-:SHIPLINE
 
-killtrigger TOWALREADYON
-setvar $LINE CURRENTLINE
-getwordpos $LINE $POS "Average Interval Lag:"
-getword $LINE $TEMP 1
-isnumber $RESULT $TEMP
-if ($RESULT = TRUE)
-  if ($TEMP > 0)
-    add $SHIPCOUNT 1
-    setvar $THESHIPS[$SHIPCOUNT] $TEMP
-  end
+:continuetowon
+killtrigger statlinetrig
+goto :tryshipscan
+
+:shipline
+killtrigger towalreadyon
+setvar $line currentline
+getwordpos $line $pos "Average Interval Lag:"
+getword $line $temp 1
+isnumber $result $temp
+if ($result = true)
+	if ($temp > 0)
+		add $shipcount 1
+		setvar $theships[$shipcount] $temp
+	end
 end
-if ($POS > 0)
-  goto :GOTSHIPS
+if ($pos > 0)
+	goto :gotships
 else
-  settextlinetrigger GETLINE :SHIPLINE
-  pause
+	settextlinetrigger getline :shipline
+	pause
 end
-:GOTSHIPS
 
-
-setvar $switchboard~message "Found "&$SHIPCOUNT&" empty ships to strip.*"
+:gotships
+setvar $switchboard~message "Found "&$shipcount&" empty ships to strip.*"
 gosub :switchboard~switchboard
-setvar $I 1
-while ($I <= $SHIPCOUNT)
-  if ($THESHIPS[$I] > 0)
-    send "x "&$THESHIPS[$I]&"*   *   "
-    gosub :PLAYER~QUIKSTATS
-    send " F"
-    waiton " fighters available."
-    getword CURRENTLINE $FTRS_TO_LEAVE 3
-    striptext $FTRS_TO_LEAVE ","
-    striptext $FTRS_TO_LEAVE " "
-    if ($FTRS_TO_LEAVE > 0)
-      send " "&$FTRS_TO_LEAVE&" * C D"
-      add $TOTAL_FIGS $FTRS_TO_LEAVE
-    end
-  end
-  add $I 1
+setvar $i 1
+while ($i <= $shipcount)
+	if ($theships[$i] > 0)
+		send "x "&$theships[$i]&"*   *   "
+		gosub :player~quikstats
+		send " F"
+		waiton " fighters available."
+		getword currentline $ftrs_to_leave 3
+		striptext $ftrs_to_leave ","
+		striptext $ftrs_to_leave " "
+		if ($ftrs_to_leave > 0)
+			send " "&$ftrs_to_leave&" * C D"
+			add $total_figs $ftrs_to_leave
+		end
+	end
+	add $i 1
 end
-send "x "&$STARTSHIP&"*  *   "
-if (($STARTINGLOCATION = "Planet") or ($STARTINGLOCATION = "Citadel"))
-  gosub :LANDINGSUB
+send "x "&$startship&"*  *   "
+if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+	gosub :landingsub
 end
 setvar $switchboard~message "Done stripping empty ships.*"
 gosub :switchboard~switchboard
 
 halt
-:LANDINGSUB
 
-
-
-send "l" $PLANET "*z  n  z  n  *  "
-setvar $SUCESSFULCITADEL FALSE
-setvar $SUCESSFULPLANET FALSE
-settextlinetrigger NOPLANET :NOPLANET "There isn't a planet in this sector."
-settextlinetrigger NO_LAND :NO_LAND "since it couldn't possibly stand"
-settextlinetrigger PLANET :PLANET "Planet #"
-settextlinetrigger WRONGONE :WRONG_NUM "That planet is not in this sector."
+:landingsub
+send "l" $planet "*z  n  z  n  *  "
+setvar $sucessfulcitadel false
+setvar $sucessfulplanet false
+settextlinetrigger noplanet :noplanet "There isn't a planet in this sector."
+settextlinetrigger no_land :no_land "since it couldn't possibly stand"
+settextlinetrigger planet :planet "Planet #"
+settextlinetrigger wrongone :wrong_num "That planet is not in this sector."
 pause
-:NOPLANET
 
-killtrigger NO_LAND
-killtrigger PLANET
-killtrigger WRONGONE
+:noplanet
+killtrigger no_land
+killtrigger planet
+killtrigger wrongone
 setvar $switchboard~message "No Planet in Sector!*"
 gosub :switchboard~switchboard
 return
-:NO_LAND
 
-killtrigger NOPLANET
-killtrigger PLANET
-killtrigger WRONGONE
+:no_land
+killtrigger noplanet
+killtrigger planet
+killtrigger wrongone
 setvar $switchboard~message "This ship cannot land!*"
 gosub :switchboard~switchboard
 return
-:PLANET
 
-getword CURRENTLINE $PNUM_CK 2
-striptext $PNUM_CK "#"
-if ($PNUM_CK <> $PLANET)
-  killtrigger NO_LAND
-  killtrigger WRONGONE
-  killtrigger NO_PLANET
-  send "q"
-  goto :WRONG_NUM
+:planet
+getword currentline $pnum_ck 2
+striptext $pnum_ck "#"
+if ($pnum_ck <> $planet)
+	killtrigger no_land
+	killtrigger wrongone
+	killtrigger no_planet
+	send "q"
+	goto :wrong_num
 end
-killtrigger NOPLANET
-killtrigger NO_LAND
-killtrigger WRONGONE
-settexttrigger WRONG_NUM :WRONG_NUM "That planet is not in this sector."
-settexttrigger PLANET :PLANET_PROMPT "Planet command"
+killtrigger noplanet
+killtrigger no_land
+killtrigger wrongone
+settexttrigger wrong_num :wrong_num "That planet is not in this sector."
+settexttrigger planet :planet_prompt "Planet command"
 pause
-:WRONG_NUM
 
-killtrigger PLANET
-send "**'{" $BOT_NAME "} - Incorrect Planet Number*"
+:wrong_num
+killtrigger planet
+send "**'{" $bot_name "} - Incorrect Planet Number*"
 return
-:PLANET_PROMPT
 
-killtrigger WRONG_NUM
-setvar $CURRENTBOTPLANET $PLANET
-savevar $CURRENTBOTPLANET
+:planet_prompt
+killtrigger wrong_num
+setvar $currentbotplanet $planet
+savevar $currentbotplanet
 send "c"
-settexttrigger BUILD_CIT :BUILD_CIT "Do you wish to construct one?"
-settexttrigger IN_CIT :IN_CIT "Citadel command"
-settexttrigger NOCITALLOWED :BUILD_CIT "Citadels are not allowed in FedSpace."
-settexttrigger CITNOTBUILTYET :BUILD_CIT "Be patient, your Citadel is not yet finished."
+settexttrigger build_cit :build_cit "Do you wish to construct one?"
+settexttrigger in_cit :in_cit "Citadel command"
+settexttrigger nocitallowed :build_cit "Citadels are not allowed in FedSpace."
+settexttrigger citnotbuiltyet :build_cit "Be patient, your Citadel is not yet finished."
 pause
-:BUILD_CIT
 
-killtrigger IN_CIT
-killtrigger NOCITALLOWED
-killtrigger BUILD_CIT
-killtrigger CITNOTBUILTYET
-setvar $SUCESSFULPLANET TRUE
+:build_cit
+killtrigger in_cit
+killtrigger nocitallowed
+killtrigger build_cit
+killtrigger citnotbuiltyet
+setvar $sucessfulplanet true
 send "n*"
-setvar $STARTINGLOCATION "Planet"
+setvar $startinglocation "Planet"
 return
-:IN_CIT
 
-killtrigger IN_CIT
-killtrigger NOCITALLOWED
-killtrigger BUILD_CIT
-killtrigger CITNOTBUILTYET
-setvar $SUCESSFULCITADEL TRUE
-setvar $STARTINGLOCATION "Citadel"
+:in_cit
+killtrigger in_cit
+killtrigger nocitallowed
+killtrigger build_cit
+killtrigger citnotbuiltyet
+setvar $sucessfulcitadel true
+setvar $startinglocation "Citadel"
 return
-:GETPLANETINFO
-gosub :PLANET~GETPLANETINFO
-setvar $PLANET $PLANET~PLANET
-setvar $PLAYER~CURRENT_SECTOR $PLANET~CURRENT_SECTOR
-setvar $PLANET_FUEL $PLANET~PLANET_FUEL
-setvar $PLANET_FUEL_MAX $PLANET~PLANET_FUEL_MAX
-setvar $PLANET_ORGANICS $PLANET~PLANET_ORGANICS
-setvar $PLANET_ORGANICS_MAX $PLANET~PLANET_ORGANICS_MAX
-setvar $PLANET_EQUIPMENT $PLANET~PLANET_EQUIPMENT
-setvar $PLANET_EQUIPMENT_MAX $PLANET~PLANET_EQUIPMENT_MAX
-setvar $PLANET_FIGHTERS $PLANET~PLANET_FIGHTERS
-setvar $PLANET_FIGHTERS_MAX $PLANET~PLANET_FIGHTERS_MAX
-setvar $CITADEL $PLANET~CITADEL
-setvar $CITADEL_CREDITS $PLANET~CITADEL_CREDITS
-setvar $ATMOSPHERE_CANNON $PLANET~ATMOSPHERE_CANNON
-setvar $SECTOR_CANNON $PLANET~SECTOR_CANNON
+
+:getplanetinfo
+gosub :planet~getplanetinfo
+setvar $planet $planet~planet
+setvar $player~current_sector $planet~current_sector
+setvar $planet_fuel $planet~planet_fuel
+setvar $planet_fuel_max $planet~planet_fuel_max
+setvar $planet_organics $planet~planet_organics
+setvar $planet_organics_max $planet~planet_organics_max
+setvar $planet_equipment $planet~planet_equipment
+setvar $planet_equipment_max $planet~planet_equipment_max
+setvar $planet_fighters $planet~planet_fighters
+setvar $planet_fighters_max $planet~planet_fighters_max
+setvar $citadel $planet~citadel
+setvar $citadel_credits $planet~citadel_credits
+setvar $atmosphere_cannon $planet~atmosphere_cannon
+setvar $sector_cannon $planet~sector_cannon
 return
-killtrigger CITADELSTART
-killtrigger CANNON
+killtrigger citadelstart
+killtrigger cannon
 
 return
-:TWARPTO
 
-
-
-setvar $TWARPSUCCESS FALSE
-setvar $ORIGINAL 1
-if ($PLAYER~CURRENT_SECTOR = $WARPTO)
-  setvar $MSG "Already in that sector!"
-  goto :TWARPDONE
-elseif (($WARPTO <= 0) or ($WARPTO > SECTORS))
-  setvar $MSG "Destination sector is out of range!"
-  goto :TWARPDONE
+:twarpto
+setvar $twarpsuccess false
+setvar $original 1
+if ($player~current_sector = $warpto)
+	setvar $msg "Already in that sector!"
+	goto :twarpdone
+elseif (($warpto <= 0) or ($warpto > sectors))
+	setvar $msg "Destination sector is out of range!"
+	goto :twarpdone
 end
-if (($PLAYER~ALIGNMENT < 1000) and (($WARPTO = $STARDOCK) and (($BACKDOOR > 10) and ($BACKDOOR <> $PLAYER~CURRENT_SECTOR))))
-  setvar $ORIGINAL $WARPTO
-  setvar $WARPTO $BACKDOOR
+if (($player~alignment < 1000) and (($warpto = $stardock) and (($backdoor > 10) and ($backdoor <> $player~current_sector))))
+	setvar $original $warpto
+	setvar $warpto $backdoor
 end
-if ($PLAYER~TWARP_TYPE = "No")
-  setvar $MSG "No T-warp drive on this ship!"
-  goto :TWARPDONE
+if ($player~twarp_type = "No")
+	setvar $msg "No T-warp drive on this ship!"
+	goto :twarpdone
 end
-if ($STARTINGLOCATION = "Citadel")
-  send "q t*t1* q q * c u y q mz" $WARPTO "*"
-elseif ($STARTINGLOCATION = "Planet")
-  send "t*t1* q q * c u y q mz" $WARPTO "*"
+if ($startinglocation = "Citadel")
+	send "q t*t1* q q * c u y q mz" $warpto "*"
+elseif ($startinglocation = "Planet")
+	send "t*t1* q q * c u y q mz" $warpto "*"
 else
-  send "q q q * c u y q mz" $WARPTO "*"
+	send "q q q * c u y q mz" $warpto "*"
 end
-settexttrigger THERE :ADJ_WARP "You are already in that sector!"
-settextlinetrigger ADJ_WARP :ADJ_WARP "Sector  : "&$WARPTO&" "
-settexttrigger LOCKING :LOCKING "Do you want to engage the TransWarp drive?"
-settexttrigger IGD :TWARPIGD "An Interdictor Generator in this sector holds you fast!"
-settexttrigger NOTURNS :TWARPPHOTONED "Your ship was hit by a Photon and has been disabled"
-settexttrigger NOROUTE :TWARPNOROUTE "Do you really want to warp there? (Y/N)"
+settexttrigger there :adj_warp "You are already in that sector!"
+settextlinetrigger adj_warp :adj_warp "Sector  : "&$warpto&" "
+settexttrigger locking :locking "Do you want to engage the TransWarp drive?"
+settexttrigger igd :twarpigd "An Interdictor Generator in this sector holds you fast!"
+settexttrigger noturns :twarpphotoned "Your ship was hit by a Photon and has been disabled"
+settexttrigger noroute :twarpnoroute "Do you really want to warp there? (Y/N)"
 pause
-:ADJ_WARP
 
-killtrigger THERE
-killtrigger ADJ_WARP
-killtrigger LOCKING
-killtrigger IGD
-killtrigger NOTURNS
-killtrigger NOROUTE
+:adj_warp
+killtrigger there
+killtrigger adj_warp
+killtrigger locking
+killtrigger igd
+killtrigger noturns
+killtrigger noroute
 send "z*"
-goto :TWARP_ADJ
-:LOCKING
-killtrigger THERE
-killtrigger ADJ_WARP
-killtrigger LOCKING
-killtrigger IGD
-killtrigger NOTURNS
-killtrigger NOROUTE
+goto :twarp_adj
+
+:locking
+killtrigger there
+killtrigger adj_warp
+killtrigger locking
+killtrigger igd
+killtrigger noturns
+killtrigger noroute
 send "y"
-settextlinetrigger TWARP_LOCK :TWARP_LOCK "TransWarp Locked"
-settextlinetrigger NO_TWRP_LOCK :NO_TWARP_LOCK "No locating beam found"
-settextlinetrigger TWARP_ADJ :TWARP_ADJ "<Set NavPoint>"
-settextlinetrigger NO_FUEL :TWARPNOFUEL "You do not have enough Fuel Ore"
+settextlinetrigger twarp_lock :twarp_lock "TransWarp Locked"
+settextlinetrigger no_twrp_lock :no_twarp_lock "No locating beam found"
+settextlinetrigger twarp_adj :twarp_adj "<Set NavPoint>"
+settextlinetrigger no_fuel :twarpnofuel "You do not have enough Fuel Ore"
 pause
-:TWARPNOFUEL
 
-killtrigger THERE
-killtrigger ADJ_WARP
-killtrigger LOCKING
-killtrigger IGD
-killtrigger NOTURNS
-killtrigger NOROUTE
-killtrigger TWARP_LOCK
-killtrigger NO_TWRP_LOCK
-killtrigger TWARP_ADJ
-killtrigger NO_FUEL
-setvar $MSG "Not enough fuel for T-warp."
-goto :TWARPDONE
-:TWARP_ADJ
+:twarpnofuel
+killtrigger there
+killtrigger adj_warp
+killtrigger locking
+killtrigger igd
+killtrigger noturns
+killtrigger noroute
+killtrigger twarp_lock
+killtrigger no_twrp_lock
+killtrigger twarp_adj
+killtrigger no_fuel
+setvar $msg "Not enough fuel for T-warp."
+goto :twarpdone
 
-killtrigger THERE
-killtrigger ADJ_WARP
-killtrigger LOCKING
-killtrigger IGD
-killtrigger NOTURNS
-killtrigger NOROUTE
-killtrigger TWARP_LOCK
-killtrigger NO_TWRP_LOCK
-killtrigger TWARP_ADJ
-killtrigger NO_FUEL
+:twarp_adj
+killtrigger there
+killtrigger adj_warp
+killtrigger locking
+killtrigger igd
+killtrigger noturns
+killtrigger noroute
+killtrigger twarp_lock
+killtrigger no_twrp_lock
+killtrigger twarp_adj
+killtrigger no_fuel
 send "z* "
-setvar $MSG "That sector is next door, just plain warping."
-setvar $TWARPSUCCESS TRUE
-goto :TWARPDONE
-:TWARPNOROUTE
+setvar $msg "That sector is next door, just plain warping."
+setvar $twarpsuccess true
+goto :twarpdone
 
-killtrigger THERE
-killtrigger ADJ_WARP
-killtrigger LOCKING
-killtrigger IGD
-killtrigger NOTURNS
-killtrigger NOROUTE
-killtrigger TWARP_LOCK
-killtrigger NO_TWRP_LOCK
-killtrigger TWARP_ADJ
-killtrigger NO_FUEL
+:twarpnoroute
+killtrigger there
+killtrigger adj_warp
+killtrigger locking
+killtrigger igd
+killtrigger noturns
+killtrigger noroute
+killtrigger twarp_lock
+killtrigger no_twrp_lock
+killtrigger twarp_adj
+killtrigger no_fuel
 send "n* z* "
-setvar $MSG "No route available to that sector!"
-goto :TWARPDONE
-:NO_TWARP_LOCK
+setvar $msg "No route available to that sector!"
+goto :twarpdone
 
-killtrigger THERE
-killtrigger ADJ_WARP
-killtrigger LOCKING
-killtrigger IGD
-killtrigger NOTURNS
-killtrigger NOROUTE
-killtrigger TWARP_LOCK
-killtrigger NO_TWRP_LOCK
-killtrigger TWARP_ADJ
-killtrigger NO_FUEL
+:no_twarp_lock
+killtrigger there
+killtrigger adj_warp
+killtrigger locking
+killtrigger igd
+killtrigger noturns
+killtrigger noroute
+killtrigger twarp_lock
+killtrigger no_twrp_lock
+killtrigger twarp_adj
+killtrigger no_fuel
 send "n* z* "
-setsectorparameter $WARPTO "FIGSEC" FALSE
-setvar $MSG "No fighters at T-warp point!"
-goto :TWARPDONE
-:TWARPIGD
+setsectorparameter $warpto "FIGSEC" false
+setvar $msg "No fighters at T-warp point!"
+goto :twarpdone
 
-killtrigger THERE
-killtrigger ADJ_WARP
-killtrigger LOCKING
-killtrigger IGD
-killtrigger NOTURNS
-killtrigger NOROUTE
-killtrigger TWARP_LOCK
-killtrigger NO_TWRP_LOCK
-killtrigger TWARP_ADJ
-killtrigger NO_FUEL
-setvar $MSG "My ship is being held by Interdictor!"
-goto :TWARPDONE
-:TWARPPHOTONED
+:twarpigd
+killtrigger there
+killtrigger adj_warp
+killtrigger locking
+killtrigger igd
+killtrigger noturns
+killtrigger noroute
+killtrigger twarp_lock
+killtrigger no_twrp_lock
+killtrigger twarp_adj
+killtrigger no_fuel
+setvar $msg "My ship is being held by Interdictor!"
+goto :twarpdone
 
-killtrigger THERE
-killtrigger ADJ_WARP
-killtrigger LOCKING
-killtrigger IGD
-killtrigger NOTURNS
-killtrigger NOROUTE
-killtrigger TWARP_LOCK
-killtrigger NO_TWRP_LOCK
-killtrigger TWARP_ADJ
-killtrigger NO_FUEL
-setvar $MSG "I have been photoned and can not T-warp!"
-goto :TWARPDONE
-:TWARP_LOCK
+:twarpphotoned
+killtrigger there
+killtrigger adj_warp
+killtrigger locking
+killtrigger igd
+killtrigger noturns
+killtrigger noroute
+killtrigger twarp_lock
+killtrigger no_twrp_lock
+killtrigger twarp_adj
+killtrigger no_fuel
+setvar $msg "I have been photoned and can not T-warp!"
+goto :twarpdone
 
-killtrigger THERE
-killtrigger ADJ_WARP
-killtrigger LOCKING
-killtrigger IGD
-killtrigger NOTURNS
-killtrigger NOROUTE
-killtrigger TWARP_LOCK
-killtrigger NO_TWRP_LOCK
-killtrigger TWARP_ADJ
-killtrigger NO_FUEL
-setsectorparameter $WARPTO "FIGSEC" TRUE
+:twarp_lock
+killtrigger there
+killtrigger adj_warp
+killtrigger locking
+killtrigger igd
+killtrigger noturns
+killtrigger noroute
+killtrigger twarp_lock
+killtrigger no_twrp_lock
+killtrigger twarp_adj
+killtrigger no_fuel
+setsectorparameter $warpto "FIGSEC" true
 send "y* "
 
-setvar $MSG "T-warp completed."
-setvar $TWARPSUCCESS TRUE
-:TWARPDONE
-if (($TWARPSUCCESS = TRUE) and (($WARPTO = $BACKDOOR) and ($ORIGINAL = $STARDOCK)))
-  send "* m "&$STARDOCK&"*  za9999* * "
+setvar $msg "T-warp completed."
+setvar $twarpsuccess true
+
+:twarpdone
+if (($twarpsuccess = true) and (($warpto = $backdoor) and ($original = $stardock)))
+	send "* m "&$stardock&"*  za9999* * "
 end
 
 return
 include "source\include\switchboard.ts"
+include "source\include\loadvars"
+include "source\include\help"

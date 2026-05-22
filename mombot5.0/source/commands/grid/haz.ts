@@ -1,110 +1,112 @@
-loadvar $BOT_NAME
+loadvar $bot_name
 
-gosub :PLAYER~QUIKSTATS
+gosub :player~quikstats
 
-if ($PLAYER~CURRENT_PROMPT <> "Command")
-  setvar $switchboard~message "Start From Command Prompt!*"
-  gosub :switchboard~switchboard
-  halt
+if ($player~current_prompt <> "Command")
+	setvar $switchboard~message "Start From Command Prompt!*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($PLAYER~GENESIS < 10)
-  setvar $switchboard~message "Not Enough Gen Torps!*"
-  gosub :switchboard~switchboard
-  halt
+if ($player~genesis < 10)
+	setvar $switchboard~message "Not Enough Gen Torps!*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($PLAYER~ATOMIC < 10)
-  setvar $switchboard~message "Not Enough Atomic Dets!*"
-  gosub :switchboard~switchboard
-  halt
+if ($player~atomic < 10)
+	setvar $switchboard~message "Not Enough Atomic Dets!*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($PLAYER~CURRENT_SECTOR = 1)
-  setvar $switchboard~message "The intense traffic in sector 1 prohibits planetary construction.*"
-  gosub :switchboard~switchboard
-  halt
-end
-
-if ($PLAYER~CURRENT_SECTOR <> STARDOCK)
-  setvar $BUFFER ($PLAYER~SHIELDS + $PLAYER~FIGHTERS)
-  if ($BUFFER < 5500)
-    setvar $switchboard~message "Not Enough Shields/Fighters***"
-    gosub :switchboard~switchboard
-    halt
-  end
+if ($player~current_sector = 1)
+	setvar $switchboard~message "The intense traffic in sector 1 prohibits planetary construction.*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-setvar $START_FIGS $PLAYER~FIGHTERS
-setvar $START_SHIELDS $PLAYER~SHIELDS
-setvar $I 1
-
-getrnd $ID 1000 9999
-
-setvar $ID "["&$ID&"] Planet Creation"
-
-loadvar $HAZ_PMAX
-isnumber $TST $HAZ_PMAX
-if ($TST = 0)
-  setvar $HAZ_PMAX 0
+if ($player~current_sector <> stardock)
+	setvar $buffer ($player~shields + $player~fighters)
+	if ($buffer < 5500)
+		setvar $switchboard~message "Not Enough Shields/Fighters***"
+		gosub :switchboard~switchboard
+		halt
+	end
 end
 
-if ($HAZ_PMAX < 1)
-  send "  **  V"
-  waiton "Warps to Sector(s) :"
-  waiton "The Maximum number of Planets per sector:"
-  gettext CURRENTLINE $PMAX "sector:" ","
-  striptext $PMAX " "
-  setvar $HAZ_PMAX $PMAX
-  savevar $HAZ_PMAX
+setvar $start_figs $player~fighters
+setvar $start_shields $player~shields
+setvar $i 1
+
+getrnd $id 1000 9999
+
+setvar $id "["&$id&"] Planet Creation"
+
+loadvar $haz_pmax
+isnumber $tst $haz_pmax
+if ($tst = 0)
+	setvar $haz_pmax 0
+end
+
+if ($haz_pmax < 1)
+	send "  **  V"
+	waiton "Warps to Sector(s) :"
+	waiton "The Maximum number of Planets per sector:"
+	gettext currentline $pmax "sector:" ","
+	striptext $pmax " "
+	setvar $haz_pmax $pmax
+	savevar $haz_pmax
 else
-  send "  **  "
-  waiton "Warps to Sector(s) :"
-  setvar $PMAX $HAZ_PMAX
+	send "  **  "
+	waiton "Warps to Sector(s) :"
+	setvar $pmax $haz_pmax
 end
 
-setvar $PNUM SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR]
-setvar $STR ""
+setvar $pnum sector.planetcount[$player~current_sector]
+setvar $str ""
 
-setvar $I 1
-while ($I <= 10)
-  if ($PNUM < $PMAX)
-    setvar $STR $STR&" U  Y "&$ID&"*  J  C  * "
-    add $PNUM 1
-  else
-    setvar $STR $STR&" U  Y  N "&$ID&"*  J  C  * "
-  end
-  add $I 1
+setvar $i 1
+while ($i <= 10)
+	if ($pnum < $pmax)
+		setvar $str $str&" U  Y "&$id&"*  J  C  * "
+		add $pnum 1
+	else
+		setvar $str $str&" U  Y  N "&$id&"*  J  C  * "
+	end
+	add $i 1
 end
 
-send $STR&"  /"
+send $str&"  /"
 
 waitfor #179&"Turns"
 
-setarray $REGISTRY 10
-setvar $I 1
+setarray $registry 10
+setvar $i 1
 send " L"
 waitfor "--------------------------------------------------"
-settexttrigger DONEDRAWING :DONEDRAWING "Land on which planet <Q to abort>"
-:LOOP
-waiton "> "&$ID
-gettext CURRENTLINE $STR "<" ">"
-striptext $STR " "
-setvar $REGISTRY[$I] $STR
-add $I 1
-goto :LOOP
-:DONEDRAWING
+settexttrigger donedrawing :donedrawing "Land on which planet <Q to abort>"
+
+:loop
+waiton "> "&$id
+gettext currentline $str "<" ">"
+striptext $str " "
+setvar $registry[$i] $str
+add $i 1
+goto :loop
+
+:donedrawing
 killalltriggers
-setvar $STR ""
+setvar $str ""
 send "*   "
-setvar $I 1
-while ($I <= 10)
-  setvar $STR $STR&"  L  Z"&#8&#8&#8&$REGISTRY[$I]&"*   z  d  y  *   "
-  add $I 1
+setvar $i 1
+while ($i <= 10)
+	setvar $str $str&"  L  Z"&#8&#8&#8&$registry[$i]&"*   z  d  y  *   "
+	add $i 1
 end
 
-send $STR&"  **  "
+send $str&"  **  "
 
-gosub :PLAYER~QUIKSTATS
+gosub :player~quikstats
 
-setvar $switchboard~message SECTOR.NAVHAZ[$PLAYER~CURRENT_SECTOR]&"% Haz Created (Lost "&($START_FIGS - $PLAYER~FIGHTERS)&" Figs, "&($START_SHIELDS - $PLAYER~SHIELDS)&" Shields)*"
+setvar $switchboard~message sector.navhaz[$player~current_sector]&"% Haz Created (Lost "&($start_figs - $player~fighters)&" Figs, "&($start_shields - $player~shields)&" Shields)*"
 gosub :switchboard~switchboard
 halt
 include "source\include\player"

@@ -1,149 +1,149 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-setVar $HELP~HELP[1]  $HELP~TAB&"Mayhem Experience Haggler"
-setVar $HELP~HELP[2]  $HELP~TAB&" "
-setVar $HELP~HELP[3]  $HELP~TAB&"Usage: hagexp {target} {mincash}"
-setVar $HELP~HELP[4]  $HELP~TAB&" "
-setVar $HELP~HELP[5]  $HELP~TAB&"{target} = target experience"
-setVar $HELP~HELP[6]  $HELP~TAB&"{mincash} = minimum cash to stop at"
-gosub :HELP~HELPFILE
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1]  $help~tab&"Mayhem Experience Haggler"
+setvar $help~help[2]  $help~tab&" "
+setvar $help~help[3]  $help~tab&"Usage: hagexp {target} {mincash}"
+setvar $help~help[4]  $help~tab&" "
+setvar $help~help[5]  $help~tab&"{target} = target experience"
+setvar $help~help[6]  $help~tab&"{mincash} = minimum cash to stop at"
+gosub :help~helpfile
 
 setprecision 0
-setvar $U1 18
-setvar $U2 12
-setvar $U3 6
+setvar $u1 18
+setvar $u2 12
+setvar $u3 6
 setvar $prodtobuy 0
 setvar $min_holds 15
-setvar $HAGEXP~RESTORE_MESSAGES FALSE
+setvar $hagexp~restore_messages false
 
 gosub :player~quikstats
-setvar $HERE $PLAYER~CURRENT_SECTOR
-setvar $STARTINGPROMPT $PLAYER~CURRENT_PROMPT
-setvar $SECTOR $PLAYER~CURRENT_SECTOR
+setvar $here $player~current_sector
+setvar $startingprompt $player~current_prompt
+setvar $sector $player~current_sector
 
 setvar $planet~planet 0
 
-if ($STARTINGPROMPT = "Planet")
+if ($startingprompt = "Planet")
 	gosub :planet~getplanetinfo
-elseif ($STARTINGPROMPT = "Citadel")
+elseif ($startingprompt = "Citadel")
 	send "Q"
 	gosub :planet~getplanetinfo
-elseif ($STARTINGPROMPT = "Command")
-	setvar $PLANET 0
+elseif ($startingprompt = "Command")
+	setvar $planet 0
 else
 	setvar $switchboard~message "hagexp must start at Command, Planet, or Citadel prompt.*"
 	gosub :switchboard~switchboard
 	halt
 end
 
-if (PORT.EXISTS[$HERE] = 0) or (PORT.CLASS[$HERE] = 0) or (PORT.CLASS[$HERE] > 7) or (PORT.BUILDTIME[$HERE] > 0)
-	gosub :LAND
+if (port.exists[$here] = 0) or (port.class[$here] = 0) or (port.class[$here] > 7) or (port.buildtime[$here] > 0)
+	gosub :land
 	setvar $switchboard~message "There is no selling port here.*"
 	gosub :switchboard~switchboard
-		halt
+	halt
 end
 
-if ($PLAYER~TOTAL_HOLDS < $min_holds)
+if ($player~total_holds < $min_holds)
 	setvar $switchboard~message "hagexp must have at least " $min_holds " cargo holds.*"
 	gosub :switchboard~switchboard
-		halt
+	halt
 end
 
-setvar $TURNS0 $PLAYER~TURNS
-setvar $CREDS0 $PLAYER~CREDITS
-setvar $EXP0 $PLAYER~EXPERIENCE
-setvar $MINPERC 1
-setvar $EXPSTOP (0 - 1)
-if ($PARM1 <> 0)
-	getwordpos $PARM1 $TESTPERC "%"
-	setvar $P $PARM1
-	striptext $P "%"
-	isnumber $TEST $P
-	if ($TEST)
-		if ($TESTPERC > 0)
-			if ($P >= 0) and ($P <= 100)
-				setvar $MINPERC $P
+setvar $turns0 $player~turns
+setvar $creds0 $player~credits
+setvar $exp0 $player~experience
+setvar $minperc 1
+setvar $expstop (0 - 1)
+if ($parm1 <> 0)
+	getwordpos $parm1 $testperc "%"
+	setvar $p $parm1
+	striptext $p "%"
+	isnumber $test $p
+	if ($test)
+		if ($testperc > 0)
+			if ($p >= 0) and ($p <= 100)
+				setvar $minperc $p
 			end
 		else
-			setvar $EXPSTOP $P
+			setvar $expstop $p
 		end
- 	end
+	end
 end
-if ($PARM2 <> 0)
+if ($parm2 <> 0)
 	isnumber $test $parm2
 	if ($test)
 		setvar $mincash $parm2
- 	else
- 		setvar $mincash 0
- 	end
+	else
+		setvar $mincash 0
+	end
 end
 
-setvar $QUIT 0
-settextouttrigger QUIT :QUIT "~"
-settexttrigger MORETURNS :MORETURNS " of your turns."
-setvar $EXP $EXP0
+setvar $quit 0
+settextouttrigger quit :quit "~"
+settexttrigger moreturns :moreturns " of your turns."
+setvar $exp $exp0
 
-setvar $switchboard~message "hagexp trading " $BUYSELL " port for exp at sector " $HERE ".*"
+setvar $switchboard~message "hagexp trading " $buysell " port for exp at sector " $here ".*"
 
-if ($MINPERC >= 0)
-	setvar $switchboard~message $switchboard~message & "        Stopping when port percentage is below " $MINPERC "%.*"
+if ($minperc >= 0)
+	setvar $switchboard~message $switchboard~message & "        Stopping when port percentage is below " $minperc "%.*"
 end
-if ($EXPSTOP >= 0)
-	setvar $switchboard~message $switchboard~message & "        Stopping when experience reaches " $EXPSTOP ".*"
+if ($expstop >= 0)
+	setvar $switchboard~message $switchboard~message & "        Stopping when experience reaches " $expstop ".*"
 end
 gosub :switchboard~switchboard
 
 gosub :port~getportinfo
 gosub :upgrade
 
-:LOOP
-gosub :DUMP
-gosub :TRADE
+:loop
+gosub :dump
+gosub :trade
 gosub :upgrade
-if ($QUIT = 0)
-	goto :LOOP
+if ($quit = 0)
+	goto :loop
 end
 
-:DONE
-gosub :LAND
-gosub :REPORT
+:done
+gosub :land
+gosub :report
 setvar $mode "General"
 savevar $mode
 halt
 
-:LAND
-if ($PLANET~PLANET > 0)
-	send "L " $PLANET~PLANET "*"
-	if ($STARTINGPROMPT = "Citadel")
+:land
+if ($planet~planet > 0)
+	send "L " $planet~planet "*"
+	if ($startingprompt = "Citadel")
 		send "C"
 	end
 end
 return
 
-:DUMP
-if ($PLANET~PLANET = 0)
+:dump
+if ($planet~planet = 0)
 	send "J Y"
 else
-	send "L " $PLANET~PLANET "* T N L1* T N L2* T N L3* Q "
+	send "L " $planet~planet "* T N L1* T N L2* T N L3* Q "
 	send "J Y"
 end
 return
 
-:QUIT
-setvar $QUIT 1
+:quit
+setvar $quit 1
 pause
 
 :upgrade
-if ($BUYSELL[FUEL] = "SELLING") and (($PERCENT[FUEL] < ($MINPERC + 1)) or ($PORTQTY[FUEL] < 25))
-	if (($CREDITS - $mincash) > 10000)
+if ($buysell[fuel] = "SELLING") and (($percent[fuel] < ($minperc + 1)) or ($portqty[fuel] < 25))
+	if (($credits - $mincash) > 10000)
 		send "o119*q* "
 	end
-elseif ($BUYSELL[ORGANICS] = "SELLING") and (($PERCENT[ORGANICS] < ($MINPERC + 1)) or ($PORTQTY[ORGANICS] < 25))
-	if (($CREDITS - $mincash) > 10000)
+elseif ($buysell[organics] = "SELLING") and (($percent[organics] < ($minperc + 1)) or ($portqty[organics] < 25))
+	if (($credits - $mincash) > 10000)
 		send "o29*q* "
 	end
-elseif ($BUYSELL[EQUIPMENT] = "SELLING") and (($PERCENT[EQUIPMENT] < ($MINPERC + 1)) or ($PORTQTY[EQUIPMENT] < 25))
-	if (($CREDITS - $mincash) > 10000)
+elseif ($buysell[equipment] = "SELLING") and (($percent[equipment] < ($minperc + 1)) or ($portqty[equipment] < 25))
+	if (($credits - $mincash) > 10000)
 		send "o36*q* "
 	end
 else
@@ -153,76 +153,74 @@ send "cr*q"
 gosub :getportinfo
 goto :upgrade
 
-:MORETURNS
-getwordpos CURRENTLINE $TEST "You recover "
-if ($TEST = 1)
-	gettext CURRENTLINE $MORETURNS "recover " "of"
-	striptext $MORETURNS ","
-	add $TURNS0 $MORETURNS
+:moreturns
+getwordpos currentline $test "You recover "
+if ($test = 1)
+	gettext currentline $moreturns "recover " "of"
+	striptext $moreturns ","
+	add $turns0 $moreturns
 end
-settexttrigger MORETURNS :MORETURNS " of your turns."
+settexttrigger moreturns :moreturns " of your turns."
 pause
 
 #########################################################################################################################
-:REPORT
-
+:report
 gosub :player~quikstats
-setvar $TURNSUSED ($TURNS0 - $PLAYER~TURNS)
-setvar $CREDSUSED ($CREDS0 - $PLAYER~CREDITS)
-setvar $EXPGAINED ($PLAYER~EXPERIENCE - $EXP0)
-send "'{" $bot_name "} - hagexp spent " $TURNSUSED " turns and " $CREDSUSED " credits, gaining " $EXPGAINED " experience.*"
+setvar $turnsused ($turns0 - $player~turns)
+setvar $credsused ($creds0 - $player~credits)
+setvar $expgained ($player~experience - $exp0)
+send "'{" $bot_name "} - hagexp spent " $turnsused " turns and " $credsused " credits, gaining " $expgained " experience.*"
 setprecision 2
 
-if ($TURNSUSED > 0)
-	setvar $EXP_TURN ($EXPGAINED / $TURNSUSED)
+if ($turnsused > 0)
+	setvar $exp_turn ($expgained / $turnsused)
 else
-	setvar $EXP_TURN 0
+	setvar $exp_turn 0
 end
 
-if ($EXPGAINED > 0)
-	setvar $CREDS_EXP ($CREDSUSED / $EXPGAINED)
+if ($expgained > 0)
+	setvar $creds_exp ($credsused / $expgained)
 else
-	setvar $CREDS_EXP 0
+	setvar $creds_exp 0
 end
 
-setvar $switchboard~message $EXP_TURN " exp per turn / " $CREDS_EXP " credits per exp.*"
+setvar $switchboard~message $exp_turn " exp per turn / " $creds_exp " credits per exp.*"
 gosub :switchboard~switchboard
 setprecision 0
-setvar $switchboard~message "I have " $PLAYER~TURNS " turns, " $PLAYER~CREDITS " credits and " $PLAYER~EXPERIENCE " experience.*"
+setvar $switchboard~message "I have " $player~turns " turns, " $player~credits " credits and " $player~experience " experience.*"
 gosub :switchboard~switchboard
 return
 
 #########################################################################################################################
-:TRADE
-
+:trade
 setvar $round 0
-setvar $LASTCREDITS $CREDITS
+setvar $lastcredits $credits
 
 gosub :player~quikstats
-if ($PLAYER~EXPERIENCE >= $EXPSTOP)
-     setvar $QUIT 1
-     return
+if ($player~experience >= $expstop)
+	setvar $quit 1
+	return
 end
 
-gosub :MSGS_OFF
+gosub :msgs_off
 send "P T"
 gosub :getportinfo
-settextlinetrigger STARTCREDITS :STARTCREDITS "credits"
+settextlinetrigger startcredits :startcredits "credits"
 pause
 
 :getportinfo
 killalltriggers
-setTextLineTrigger foundport :foundport "Commerce report for"
-setTextLineTrigger noport :noport "I have no information about a port in that sector."
-setTextLineTrigger noport2 :noport "You have never visted sector"
-setTextLineTrigger noport3 :noport "credits / next hold"
+settextlinetrigger foundport :foundport "Commerce report for"
+settextlinetrigger noport :noport "I have no information about a port in that sector."
+settextlinetrigger noport2 :noport "You have never visted sector"
+settextlinetrigger noport3 :noport "credits / next hold"
 pause
 
 :noport
 killalltriggers
-setvar $QUIT 1
-if ($HAGEXP~RESTORE_MESSAGES = TRUE)
-	gosub :MSGS_ON
+setvar $quit 1
+if ($hagexp~restore_messages = true)
+	gosub :msgs_on
 end
 return
 
@@ -230,162 +228,161 @@ return
 killtrigger noport
 killtrigger noport2
 killtrigger noport3
-setvar $TEMP CURRENTLINE
-getword $TEMP $AMPM 6
-setvar $I 7
-while ($AMPM <> "AM") and ($AMPM <> "PM")
- getword $TEMP $AMPM $I
- add $I 1
+setvar $temp currentline
+getword $temp $ampm 6
+setvar $i 7
+while ($ampm <> "AM") and ($ampm <> "PM")
+	getword $temp $ampm $i
+	add $i 1
 end
-getword $TEMP $WEEKDAY $I
+getword $temp $weekday $i
 
-settextlinetrigger EXP :NEGLECTEDPORT "neglected port"
-settextlinetrigger EXP2 :NEGLECTEDPORT "unused port"
-settextlinetrigger FUELINFO :PRODUCTINFO "Fuel Ore"
-settextlinetrigger ORGSINFO :PRODUCTINFO "Organics"
-settextlinetrigger EQUIPINFO :PRODUCTINFO "Equipment"
+settextlinetrigger exp :neglectedport "neglected port"
+settextlinetrigger exp2 :neglectedport "unused port"
+settextlinetrigger fuelinfo :productinfo "Fuel Ore"
+settextlinetrigger orgsinfo :productinfo "Organics"
+settextlinetrigger equipinfo :productinfo "Equipment"
 #settexttrigger PORTOUT :PORTOUT "have anything they want"
-settexttrigger HAGGLEDONE :HAGGLEDONE "Command [TL"
+settexttrigger haggledone :haggledone "Command [TL"
 pause
 
-:NEGLECTEDPORT
+:neglectedport
 killtrigger "EXP"
 killtrigger "EXP2"
-getword CURRENTLINE $EXPDELTA 8
-add $EXP $EXPDELTA
-round $EXP 0
+getword currentline $expdelta 8
+add $exp $expdelta
+round $exp 0
 pause
 
-:PRODUCTINFO
-getword CURRENTLINE $PRODUCT 1
-uppercase $PRODUCT
-if ($PRODUCT = "FUEL")
-	setvar $WORD 3
+:productinfo
+getword currentline $product 1
+uppercase $product
+if ($product = "FUEL")
+	setvar $word 3
 else
-	setvar $WORD 2
+	setvar $word 2
 end
-getword CURRENTLINE $BUYSELL[$PRODUCT] $WORD
-uppercase $BUYSELL[$PRODUCT]
-getword CURRENTLINE $PORTQTY[$PRODUCT] (($WORD + 1))
-getword CURRENTLINE $PERCENT[$PRODUCT] (($WORD + 2))
-striptext $PERCENT[$PRODUCT] "%"
-getword CURRENTLINE $ONBOARD[$PRODUCT] (($WORD + 3))
-if ($BUYSELL[$PRODUCT] = "SELLING") and ($PERCENT[$PRODUCT] < ($MINPERC))
-	setvar $QUIT 1
+getword currentline $buysell[$product] $word
+uppercase $buysell[$product]
+getword currentline $portqty[$product] (($word + 1))
+getword currentline $percent[$product] (($word + 2))
+striptext $percent[$product] "%"
+getword currentline $onboard[$product] (($word + 3))
+if ($buysell[$product] = "SELLING") and ($percent[$product] < ($minperc))
+	setvar $quit 1
 end
-if ($PRODUCT = "EQUIPMENT")
+if ($product = "EQUIPMENT")
 	return
 end
 pause
 
-:STARTCREDITS
+:startcredits
 killalltriggers
-getWord CURRENTLINE $CREDITS 3
-getword CURRENTLINE $HOLDS 6
-stripText $CREDITS ","
+getword currentline $credits 3
+getword currentline $holds 6
+striptext $credits ","
 #echo "round " $round " credits " $CREDITS " lastcredits " $LASTCREDITS "*"
-if ($round > 0) and ($CREDITS = $LASTCREDITS)
+if ($round > 0) and ($credits = $lastcredits)
 	#echo "Haggle failed, resetting MCIC starting values.*"
-	setsectorparameter $SECTOR $PRODUCT & "-" ""
-  	setsectorparameter $SECTOR $PRODUCT & "+" ""
+	setsectorparameter $sector $product & "-" ""
+	setsectorparameter $sector $product & "+" ""
 end
-setvar $LASTCREDITS $CREDITS
-setvar $FINALOFFER 0
-setTextTrigger buy :buy "do you want to buy"
-setTextTrigger sell :sell "do you want to sell"
-settexttrigger HAGGLEDONE :HAGGLEDONE "Command [TL"
+setvar $lastcredits $credits
+setvar $finaloffer 0
+settexttrigger buy :buy "do you want to buy"
+settexttrigger sell :sell "do you want to sell"
+settexttrigger haggledone :haggledone "Command [TL"
 pause
 
 :buy
-getWord CURRENTLINE $PRODUCT 5
-uppercase $PRODUCT
-if ($PRODUCT = "FUEL")
- setvar $U $U1
-elseif ($PRODUCT = "ORGANICS")
- setvar $U $U2
+getword currentline $product 5
+uppercase $product
+if ($product = "FUEL")
+	setvar $u $u1
+elseif ($product = "ORGANICS")
+	setvar $u $u2
 else
- setvar $U $U3
+	setvar $u $u3
 end
-send $U "*"
+send $u "*"
 add $round 1
-if (HAGGLE)
-	settextlinetrigger STARTCREDITS :STARTCREDITS "credits"
-	settexttrigger HAGGLEDONE :HAGGLEDONE "Command [TL"
+if (haggle)
+	settextlinetrigger startcredits :startcredits "credits"
+	settexttrigger haggledone :haggledone "Command [TL"
 	pause
 end
 gosub :haggle~haggle
-goto :HAGGLEDONE
+goto :haggledone
 
 :sell
-getWord CURRENTLINE $PRODUCT 5
-uppercase $PRODUCT
+getword currentline $product 5
+uppercase $product
 send "*"
 add $round 1
-if (HAGGLE)
-	settextlinetrigger STARTCREDITS :STARTCREDITS "credits"
-	settexttrigger HAGGLEDONE :HAGGLEDONE "Command [TL"
+if (haggle)
+	settextlinetrigger startcredits :startcredits "credits"
+	settexttrigger haggledone :haggledone "Command [TL"
 	pause
 end
 gosub :haggle~haggle
-goto :HAGGLEDONE
+goto :haggledone
 
-:PORTOUT
-setvar $QUIT 1
+:portout
+setvar $quit 1
 pause
 
-:HAGGLEDONE
+:haggledone
 killtrigger "PORTOUT"
 killtrigger "BUY"
 killtrigger "SELL"
 killtrigger "HAGGLEDONE"
 killtrigger "DONE"
-if ($HAGEXP~RESTORE_MESSAGES = TRUE)
-	gosub :MSGS_ON
+if ($hagexp~restore_messages = true)
+	gosub :msgs_on
 end
 return
 
-:MSGS_OFF
-setvar $HAGEXP~MSGS_OFF_FIRST TRUE
+:msgs_off
+setvar $hagexp~msgs_off_first true
 
-:MSGS_OFF_AGAIN
-settexttrigger HAGEXP_MSGS_OFF :MSGS_OFF_CONFIRMED "Silencing all messages."
-settexttrigger HAGEXP_MSGS_ON :MSGS_OFF_WAS_ON "Displaying all messages."
+:msgs_off_again
+settexttrigger hagexp_msgs_off :msgs_off_confirmed "Silencing all messages."
+settexttrigger hagexp_msgs_on :msgs_off_was_on "Displaying all messages."
 send "|"
 pause
 
-:MSGS_OFF_WAS_ON
-killtrigger HAGEXP_MSGS_OFF
-killtrigger HAGEXP_MSGS_ON
-if ($HAGEXP~MSGS_OFF_FIRST = TRUE)
-	setvar $HAGEXP~RESTORE_MESSAGES FALSE
-	setvar $HAGEXP~MSGS_OFF_FIRST FALSE
+:msgs_off_was_on
+killtrigger hagexp_msgs_off
+killtrigger hagexp_msgs_on
+if ($hagexp~msgs_off_first = true)
+	setvar $hagexp~restore_messages false
+	setvar $hagexp~msgs_off_first false
 end
-goto :MSGS_OFF_AGAIN
+goto :msgs_off_again
 
-:MSGS_OFF_CONFIRMED
-killtrigger HAGEXP_MSGS_OFF
-killtrigger HAGEXP_MSGS_ON
-if ($HAGEXP~MSGS_OFF_FIRST = TRUE)
-	setvar $HAGEXP~RESTORE_MESSAGES TRUE
+:msgs_off_confirmed
+killtrigger hagexp_msgs_off
+killtrigger hagexp_msgs_on
+if ($hagexp~msgs_off_first = true)
+	setvar $hagexp~restore_messages true
 end
 return
 
-:MSGS_ON
-settexttrigger HAGEXP_MSGS_ON_DONE :MSGS_ON_CONFIRMED "Displaying all messages."
-settexttrigger HAGEXP_MSGS_ON_OFF :MSGS_ON_WAS_OFF "Silencing all messages."
+:msgs_on
+settexttrigger hagexp_msgs_on_done :msgs_on_confirmed "Displaying all messages."
+settexttrigger hagexp_msgs_on_off :msgs_on_was_off "Silencing all messages."
 send "|"
 pause
 
-:MSGS_ON_WAS_OFF
-killtrigger HAGEXP_MSGS_ON_DONE
-killtrigger HAGEXP_MSGS_ON_OFF
-goto :MSGS_ON
+:msgs_on_was_off
+killtrigger hagexp_msgs_on_done
+killtrigger hagexp_msgs_on_off
+goto :msgs_on
 
-:MSGS_ON_CONFIRMED
-killtrigger HAGEXP_MSGS_ON_DONE
-killtrigger HAGEXP_MSGS_ON_OFF
+:msgs_on_confirmed
+killtrigger hagexp_msgs_on_done
+killtrigger hagexp_msgs_on_off
 return
-
 
 include "source\include\player"
 include "source\include\port"

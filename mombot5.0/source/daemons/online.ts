@@ -1,198 +1,241 @@
 systemscript
 
 gosub :player~init
- 
-window COMS 250 400 "Who's Playing?" ONTOP
-setwindowcontents COMS "Waiting for Who's Playing..*"
 
-setVar $i 1
-while ($i < $player~ranksLength)
-	setVar $temp $player~ranks[$i]
-	stripText $temp "31m"
-    stripText $temp "36m"
-	settextlinetrigger lookFor&$i :lookFor&$i $temp
+window coms 250 400 "Who's Playing?" ontop
+setwindowcontents coms "Waiting for Who's Playing..*"
+
+setvar $i 1
+while ($i < $player~rankslength)
+	setvar $temp $player~ranks[$i]
+	striptext $temp "31m"
+	striptext $temp "36m"
+	settextlinetrigger lookfor&$i :lookfor&$i $temp
 	add $i 1
 end
 settextlinetrigger start_new :start_new "Who's Playing"
 pause
 
-
 :start_new
 killtrigger start_new
-getWordPos CURRENTANSILINE $pos "[1;44m"
+getwordpos currentansiline $pos "[1;44m"
 if ($pos > 0)
-	setVar $window_contents "     Who's Playing     *#######################**"
+	setvar $window_contents "     Who's Playing     *#######################**"
 end
-settextlinetrigger start_new :start_new "Who's Playing"	
+settextlinetrigger start_new :start_new "Who's Playing"
 pause
 
-:lookFor1
-setVar $i 1
+:lookfor1
+setvar $i 1
 goto :set_the_triggers
-:lookFor2
-setVar $i 2
+
+:lookfor2
+setvar $i 2
 goto :set_the_triggers
-:lookFor3
-setVar $i 3
+
+:lookfor3
+setvar $i 3
 goto :set_the_triggers
-:lookFor4
-setVar $i 4
+
+:lookfor4
+setvar $i 4
 goto :set_the_triggers
-:lookFor5
-setVar $i 5
+
+:lookfor5
+setvar $i 5
 goto :set_the_triggers
-:lookFor6
-setVar $i 6
+
+:lookfor6
+setvar $i 6
 goto :set_the_triggers
-:lookFor7
-setVar $i 7
+
+:lookfor7
+setvar $i 7
 goto :set_the_triggers
-:lookFor8
-setVar $i 8
+
+:lookfor8
+setvar $i 8
 goto :set_the_triggers
-:lookFor9
-setVar $i 9
+
+:lookfor9
+setvar $i 9
 goto :set_the_triggers
-:lookFor10
-setVar $i 10
+
+:lookfor10
+setvar $i 10
 goto :set_the_triggers
-:lookFor11
-setVar $i 11
+
+:lookfor11
+setvar $i 11
 goto :set_the_triggers
-:lookFor12
-setVar $i 12
+
+:lookfor12
+setvar $i 12
 goto :set_the_triggers
-:lookFor13
-setVar $i 13
+
+:lookfor13
+setvar $i 13
 goto :set_the_triggers
-:lookFor14
-setVar $i 14
+
+:lookfor14
+setvar $i 14
 goto :set_the_triggers
-:lookFor15
-setVar $i 15
+
+:lookfor15
+setvar $i 15
 goto :set_the_triggers
-:lookFor16
-setVar $i 16
+
+:lookfor16
+setvar $i 16
 goto :set_the_triggers
-:lookFor17
-setVar $i 17
+
+:lookfor17
+setvar $i 17
 goto :set_the_triggers
-:lookFor18
-setVar $i 18
+
+:lookfor18
+setvar $i 18
 goto :set_the_triggers
-:lookFor19
-setVar $i 19
+
+:lookfor19
+setvar $i 19
 goto :set_the_triggers
-:lookFor20
-setVar $i 20
+
+:lookfor20
+setvar $i 20
 goto :set_the_triggers
-:lookFor21
-setVar $i 21
+
+:lookfor21
+setvar $i 21
 goto :set_the_triggers
-:lookFor22
-setVar $i 22
+
+:lookfor22
+setvar $i 22
 goto :set_the_triggers
-:lookFor23
-setVar $i 23
+
+:lookfor23
+setvar $i 23
 goto :set_the_triggers
-:lookFor24
-setVar $i 24
+
+:lookfor24
+setvar $i 24
 goto :set_the_triggers
-:lookFor25
-setVar $i 25
+
+:lookfor25
+setvar $i 25
 goto :set_the_triggers
-:lookFor26
-setVar $i 26
+
+:lookfor26
+setvar $i 26
 goto :set_the_triggers
-:lookFor27
-setVar $i 27
+
+:lookfor27
+setvar $i 27
 goto :set_the_triggers
-:lookFor28
-setVar $i 28
+
+:lookfor28
+setvar $i 28
 goto :set_the_triggers
-:lookFor29
-setVar $i 29
+
+:lookfor29
+setvar $i 29
 goto :set_the_triggers
-:lookFor30
-setVar $i 30
+
+:lookfor30
+setvar $i 30
 goto :set_the_triggers
-:lookFor31
-setVar $i 31
+
+:lookfor31
+setvar $i 31
 goto :set_the_triggers
-:lookFor32
-setVar $i 32
+
+:lookfor32
+setvar $i 32
 goto :set_the_triggers
-:lookFor33
-setVar $i 33
+
+:lookfor33
+setvar $i 33
 goto :set_the_triggers
-:lookFor34
-setVar $i 34
+
+:lookfor34
+setvar $i 34
 goto :set_the_triggers
-:lookFor35
-setVar $i 35
+
+:lookfor35
+setvar $i 35
 goto :set_the_triggers
-:lookFor36
-setVar $i 36
+
+:lookfor36
+setvar $i 36
 goto :set_the_triggers
-:lookFor37
-setVar $i 37
+
+:lookfor37
+setvar $i 37
 goto :set_the_triggers
-:lookFor38
-setVar $i 38
+
+:lookfor38
+setvar $i 38
 goto :set_the_triggers
-:lookFor39
-setVar $i 39
+
+:lookfor39
+setvar $i 39
 goto :set_the_triggers
-:lookFor40
-setVar $i 40
+
+:lookfor40
+setvar $i 40
 goto :set_the_triggers
-:lookFor41
-setVar $i 41
+
+:lookfor41
+setvar $i 41
 goto :set_the_triggers
-:lookFor42
-setVar $i 42
+
+:lookfor42
+setvar $i 42
 goto :set_the_triggers
-:lookFor43
-setVar $i 43
+
+:lookfor43
+setvar $i 43
 goto :set_the_triggers
-:lookFor44
-setVar $i 44
+
+:lookfor44
+setvar $i 44
 goto :set_the_triggers
-:lookFor45
-setVar $i 45
+
+:lookfor45
+setvar $i 45
 goto :set_the_triggers
-:lookFor46
-setVar $i 46
+
+:lookfor46
+setvar $i 46
 
 :set_the_triggers
-setVar $temp $player~ranks[$i]
-getWordPos CURRENTANSILINE $pos5 "Trader Name   "
-setVar $line CURRENTANSILINE
-getWordPos $line $pos "33m,[0;32m w/ "
+setvar $temp $player~ranks[$i]
+getwordpos currentansiline $pos5 "Trader Name   "
+setvar $line currentansiline
+getwordpos $line $pos "33m,[0;32m w/ "
 if ($pos <= 0)
-    getWordPos $line $pos "[0;32mw/ "
+	getwordpos $line $pos "[0;32mw/ "
 end
-getWordPos $line $pos2 "[33m, [0;32mwith"
-getWordPos $line $pos3 "[0;35m[[31mOwned by[35m]"
-getWordPos $line $pos4 "[0;32mw/ "&#27&"[1;33m"
-if ((($pos4 > 0) OR ($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
-	//Fake
+getwordpos $line $pos2 "[33m, [0;32mwith"
+getwordpos $line $pos3 "[0;35m[[31mOwned by[35m]"
+getwordpos $line $pos4 "[0;32mw/ "&#27&"[1;33m"
+if ((($pos4 > 0) or ($pos > 0) or ($pos2 > 0)) and ($pos3 <= 0))
+	//fake
 
 elseif ($pos5 <= 0)
-	setVar $window_contents $window_contents&CURRENTLINE&"*"
-	setVar $who_is_online $window_contents
-	replaceText $who_is_online "     Who's Playing     *#######################**" ""
-	replaceText $who_is_online "*" ","
-	setVar $BOT~who_is_online $who_is_online
-	saveVar $BOT~who_is_online 
-	saveVar $who_is_online 
-	setwindowcontents COMS $window_contents
+	setvar $window_contents $window_contents&currentline&"*"
+	setvar $who_is_online $window_contents
+	replacetext $who_is_online "     Who's Playing     *#######################**" ""
+	replacetext $who_is_online "*" ","
+	setvar $bot~who_is_online $who_is_online
+	savevar $bot~who_is_online
+	savevar $who_is_online
+	setwindowcontents coms $window_contents
 end
-stripText $temp "31m"
-stripText $temp "36m"
-settextlinetrigger lookFor&$i :lookFor&$i $temp
+striptext $temp "31m"
+striptext $temp "36m"
+settextlinetrigger lookfor&$i :lookfor&$i $temp
 pause
-
 
 #includes:
 include "source\include\player"

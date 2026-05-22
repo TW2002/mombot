@@ -1,1988 +1,2006 @@
-:MENUS~PREFERENCESMENU
+:menus~preferencesmenu
+gosub :bot~enter_menu_deaf
+gosub :bot~killthetriggers
+gosub :bot~load_watcher_variables
+gosub :bot~load_the_variables
+setarray $menus~h 31
+setarray $menus~qss 31
+setarray $menus~qss_var 100
 
-gosub :BOT~ENTER_MENU_DEAF
-gosub :BOT~KILLTHETRIGGERS
-gosub :BOT~LOAD_WATCHER_VARIABLES
-gosub :BOT~LOAD_THE_VARIABLES
-setarray $MENUS~H 31
-setarray $MENUS~QSS 31
-setarray $MENUS~QSS_VAR 100
-:MENUS~REFRESHPREFERENCESMENU
+:menus~refreshpreferencesmenu
+setvar $menus~h[2] "                 "
+setvar $menus~h[3] "Bot Name         "
+setvar $menus~h[4] "Login Password   "
+setvar $menus~h[5] "Bot Password     "
+setvar $menus~h[6] "Figs to drop:         "
+setvar $menus~h[7] "Limps to drop:        "
+setvar $menus~h[8] "Armids to drop:       "
+setvar $menus~h[9] "Avoid Planets?        "
+setvar $menus~h[10] "Auto Kill Mode?       "
+setvar $menus~h[11] "Max Attack:      "
+setvar $menus~h[12] "Offensive Odds:  "
+setvar $menus~h[13] "Stardock         (S)  "
+setvar $menus~h[14] "Rylos            (R)  "
+setvar $menus~h[15] "Alpha            (A)  "
+setvar $menus~h[16] "Home Sector      (H)  "
+setvar $menus~h[17] "Max Fighters:    "
+setvar $menus~h[18] "Login Name:      "
+setvar $menus~h[19] "Surround type?        "
+setvar $menus~h[20] "Turn Limit:      "
+setvar $menus~h[21] "Game Letter:     "
+setvar $menus~h[22] "Safe Ship:       (X)  "
+setvar $menus~h[23] "Banner Interval: "
+setvar $menus~h[24] "Alien Ships:     "
+setvar $menus~h[25] "Backdoor         (B)  "
+setvar $menus~h[26] "Fig Type:             "
+setvar $menus~h[27] "Alarm List            "
+setvar $menus~h[28] "Surround HKILL?       "
+setvar $menus~h[29] "MSL/Busted Prompt"
+setvar $menus~h[30] "Silent Mode:     "
+setvar $menus~h[31] "Safe Planet:     (L)  "
 
-setvar $MENUS~H[2] "                 "
-setvar $MENUS~H[3] "Bot Name         "
-setvar $MENUS~H[4] "Login Password   "
-setvar $MENUS~H[5] "Bot Password     "
-setvar $MENUS~H[6] "Figs to drop:         "
-setvar $MENUS~H[7] "Limps to drop:        "
-setvar $MENUS~H[8] "Armids to drop:       "
-setvar $MENUS~H[9] "Avoid Planets?        "
-setvar $MENUS~H[10] "Auto Kill Mode?       "
-setvar $MENUS~H[11] "Max Attack:      "
-setvar $MENUS~H[12] "Offensive Odds:  "
-setvar $MENUS~H[13] "Stardock         (S)  "
-setvar $MENUS~H[14] "Rylos            (R)  "
-setvar $MENUS~H[15] "Alpha            (A)  "
-setvar $MENUS~H[16] "Home Sector      (H)  "
-setvar $MENUS~H[17] "Max Fighters:    "
-setvar $MENUS~H[18] "Login Name:      "
-setvar $MENUS~H[19] "Surround type?        "
-setvar $MENUS~H[20] "Turn Limit:      "
-setvar $MENUS~H[21] "Game Letter:     "
-setvar $MENUS~H[22] "Safe Ship:       (X)  "
-setvar $MENUS~H[23] "Banner Interval: "
-setvar $MENUS~H[24] "Alien Ships:     "
-setvar $MENUS~H[25] "Backdoor         (B)  "
-setvar $MENUS~H[26] "Fig Type:             "
-setvar $MENUS~H[27] "Alarm List            "
-setvar $MENUS~H[28] "Surround HKILL?       "
-setvar $MENUS~H[29] "MSL/Busted Prompt"
-setvar $MENUS~H[30] "Silent Mode:     "
-setvar $MENUS~H[31] "Safe Planet:     (L)  "
-
-setvar $MENUS~QSS[2] ""
-setvar $MENUS~QSS[3] $SWITCHBOARD~BOT_NAME
-setvar $MENUS~QSS[4] $BOT~PASSWORD
-if ($BOT~BOT_PASSWORD = 0)
-  setvar $BOT~BOT_PASSWORD $BOT~SUBSPACE
-  savevar $BOT~BOT_PASSWORD
+setvar $menus~qss[2] ""
+setvar $menus~qss[3] $switchboard~bot_name
+setvar $menus~qss[4] $bot~password
+if ($bot~bot_password = 0)
+	setvar $bot~bot_password $bot~subspace
+	savevar $bot~bot_password
 end
-setvar $MENUS~QSS[5] $BOT~BOT_PASSWORD
-setvar $MENUS~QSS[6] $PLAYER~SURROUNDFIGS
-setvar $MENUS~QSS[7] $PLAYER~SURROUNDLIMP
-setvar $MENUS~QSS[8] $PLAYER~SURROUNDMINE
-if ($PLAYER~SURROUNDAVOIDSHIELDEDONLY)
-  setvar $MENUS~QSS[9] "Shielded"
-elseif ($PLAYER~SURROUNDAVOIDALLPLANETS)
-  setvar $MENUS~QSS[9] "All"
+setvar $menus~qss[5] $bot~bot_password
+setvar $menus~qss[6] $player~surroundfigs
+setvar $menus~qss[7] $player~surroundlimp
+setvar $menus~qss[8] $player~surroundmine
+if ($player~surroundavoidshieldedonly)
+	setvar $menus~qss[9] "Shielded"
+elseif ($player~surroundavoidallplanets)
+	setvar $menus~qss[9] "All"
 else
-  setvar $MENUS~QSS[9] "None"
+	setvar $menus~qss[9] "None"
 end
-if ($BOT~AUTOATTACK)
-  setvar $MENUS~QSS[10] "Yes"
+if ($bot~autoattack)
+	setvar $menus~qss[10] "Yes"
 else
-  setvar $MENUS~QSS[10] "No"
+	setvar $menus~qss[10] "No"
 end
-setvar $MENUS~QSS[11] $SHIP~SHIP_MAX_ATTACK
-setvar $MENUS~QSS[12] $SHIP~SHIP_OFFENSIVE_ODDS
-if ($MAP~STARDOCK > 0)
-  setvar $MENUS~QSS[13] $MAP~STARDOCK
+setvar $menus~qss[11] $ship~ship_max_attack
+setvar $menus~qss[12] $ship~ship_offensive_odds
+if ($map~stardock > 0)
+	setvar $menus~qss[13] $map~stardock
 else
-  setvar $MENUS~QSS[13] "Not Defined"
+	setvar $menus~qss[13] "Not Defined"
 end
-if ($MAP~BACKDOOR > 0)
-  setvar $MENUS~QSS[25] $MAP~BACKDOOR
+if ($map~backdoor > 0)
+	setvar $menus~qss[25] $map~backdoor
 else
-  setvar $MENUS~QSS[25] "Not Defined"
+	setvar $menus~qss[25] "Not Defined"
 end
-if ($MAP~RYLOS > 0)
-  setvar $MENUS~QSS[14] $MAP~RYLOS
+if ($map~rylos > 0)
+	setvar $menus~qss[14] $map~rylos
 else
-  setvar $MENUS~QSS[14] "Not Defined"
+	setvar $menus~qss[14] "Not Defined"
 end
-if ($MAP~ALPHA_CENTAURI > 0)
-  setvar $MENUS~QSS[15] $MAP~ALPHA_CENTAURI
+if ($map~alpha_centauri > 0)
+	setvar $menus~qss[15] $map~alpha_centauri
 else
-  setvar $MENUS~QSS[15] "Not Defined"
+	setvar $menus~qss[15] "Not Defined"
 end
-if ($MAP~HOME_SECTOR > 0)
-  setvar $MENUS~QSS[16] $MAP~HOME_SECTOR
+if ($map~home_sector > 0)
+	setvar $menus~qss[16] $map~home_sector
 else
-  setvar $MENUS~QSS[16] "Not Defined"
+	setvar $menus~qss[16] "Not Defined"
 end
-setvar $MENUS~QSS[17] $SHIP~SHIP_FIGHTERS_MAX
-setvar $MENUS~QSS[18] $BOT~USERNAME
-if ($PLAYER~SURROUNDOVERWRITE)
-  setvar $MENUS~QSS[19] "All Sectors"
-elseif ($PLAYER~SURROUNDPASSIVE)
-  setvar $MENUS~QSS[19] "Passive"
+setvar $menus~qss[17] $ship~ship_fighters_max
+setvar $menus~qss[18] $bot~username
+if ($player~surroundoverwrite)
+	setvar $menus~qss[19] "All Sectors"
+elseif ($player~surroundpassive)
+	setvar $menus~qss[19] "Passive"
 else
-  setvar $MENUS~QSS[19] "Normal"
+	setvar $menus~qss[19] "Normal"
 end
-if ($PLAYER~UNLIMITEDGAME)
-  setvar $MENUS~QSS[20] "Unlimited"
+if ($player~unlimitedgame)
+	setvar $menus~qss[20] "Unlimited"
 else
-  setvar $MENUS~QSS[20] $BOT~BOT_TURN_LIMIT
+	setvar $menus~qss[20] $bot~bot_turn_limit
 end
-setvar $MENUS~QSS[21] $BOT~LETTER
-if ($BOT~SAFE_SHIP > 0)
-  setvar $MENUS~QSS[22] $BOT~SAFE_SHIP
+setvar $menus~qss[21] $bot~letter
+if ($bot~safe_ship > 0)
+	setvar $menus~qss[22] $bot~safe_ship
 else
-  setvar $MENUS~QSS[22] "Not Defined"
+	setvar $menus~qss[22] "Not Defined"
 end
-setvar $MENUS~QSS[23] $BOT~ECHOINTERVAL&" Minutes"
-if ($PLAYER~DROPOFFENSIVE)
-  setvar $MENUS~QSS[26] "Offensive"
-elseif ($PLAYER~DROPTOLL)
-  setvar $MENUS~QSS[26] "Toll"
+setvar $menus~qss[23] $bot~echointerval&" Minutes"
+if ($player~dropoffensive)
+	setvar $menus~qss[26] "Offensive"
+elseif ($player~droptoll)
+	setvar $menus~qss[26] "Toll"
 else
-  setvar $MENUS~QSS[26] "Defensive"
+	setvar $menus~qss[26] "Defensive"
 end
-if ($PLAYER~DEFENDERCAPPING)
-  setvar $MENUS~QSS[24] "Using defense"
-elseif ($PLAYER~OFFENSECAPPING)
-  setvar $MENUS~QSS[24] "Using offense"
+if ($player~defendercapping)
+	setvar $menus~qss[24] "Using defense"
+elseif ($player~offensecapping)
+	setvar $menus~qss[24] "Using offense"
 else
-  setvar $MENUS~QSS[24] "Don't attack"
+	setvar $menus~qss[24] "Don't attack"
 end
-if ($PLAYER~SURROUND_BEFORE_HKILL)
-  setvar $MENUS~QSS[28] "Yes"
+if ($player~surround_before_hkill)
+	setvar $menus~qss[28] "Yes"
 else
-  setvar $MENUS~QSS[28] "No"
+	setvar $menus~qss[28] "No"
 end
-if (($BOT~ALARM_LIST <> "") and ($BOT~ALARM_LIST <> 0))
-  setvar $MENUS~QSS[27] "Active"
+if (($bot~alarm_list <> "") and ($bot~alarm_list <> 0))
+	setvar $menus~qss[27] "Active"
 else
-  setvar $MENUS~QSS[27] "None"
-  setvar $BOT~ALARM_LIST ""
+	setvar $menus~qss[27] "None"
+	setvar $bot~alarm_list ""
 end
 
-if ($BOT~COMMAND_PROMPT_EXTRAS)
-  setvar $MENUS~QSS[29] "Yes"
+if ($bot~command_prompt_extras)
+	setvar $menus~qss[29] "Yes"
 else
-  setvar $MENUS~QSS[29] "No"
+	setvar $menus~qss[29] "No"
 end
-if ($BOT~SILENT_RUNNING)
-  setvar $MENUS~QSS[30] "Yes"
+if ($bot~silent_running)
+	setvar $menus~qss[30] "Yes"
 else
-  setvar $MENUS~QSS[30] "No"
+	setvar $menus~qss[30] "No"
 end
-if ($BOT~SAFE_PLANET > 0)
-  setvar $MENUS~QSS[31] $BOT~SAFE_PLANET
+if ($bot~safe_planet > 0)
+	setvar $menus~qss[31] $bot~safe_planet
 else
-  setvar $MENUS~QSS[31] "Not Defined"
+	setvar $menus~qss[31] "Not Defined"
 end
-setvar $MENUS~QSS_TOTAL 31
-gosub :MENUSPACING
+setvar $menus~qss_total 31
+gosub :menuspacing
 echo #27&"[2J"
 echo "**"
-echo ANSI_11&"         General Info                     Gridding/Attack Options*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mC"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[18]&ANSI_10&#27&"[35m<"&#27&"[32m3"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[6]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mP"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[4]&ANSI_10&#27&"[35m<"&#27&"[32m4"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[7]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mN"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[3]&ANSI_10&#27&"[35m<"&#27&"[32m5"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[8]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mZ"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[5]&ANSI_10&#27&"[35m<"&#27&"[32m6"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[26]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mG"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[21]&ANSI_10&#27&"[35m<"&#27&"[32m7"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[10]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mE"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[23]&ANSI_10&#27&"[35m<"&#27&"[32m8"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[9]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32m1"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[20]&ANSI_10&#27&"[35m<"&#27&"[32m9"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[19]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32m0"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[29]&ANSI_10&#27&"[35m<"&#27&"[32mK"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[28]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mV"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[30]&ANSI_10&#27&"[35m<"&#27&"[32mJ"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[27]&"*"
-echo ANSI_11&"         Capture Options                   Location Variables*"
-echo ANSI_10&#27&"[35m<"&#27&"[32m2"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[24]&ANSI_10&#27&"[35m<"&#27&"[32mS"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[13]&"*"
-echo ANSI_11&"        Current Ship Stats             "&#27&"[35m<"&#27&"[32mB"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[25]&"*"
-echo ANSI_10&"  "&ANSI_7&$MENUS~QSS_VAR[12]&ANSI_10&"  "&#27&"[35m<"&#27&"[32mR"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[14]&"*"
-echo ANSI_10&"  "&ANSI_7&$MENUS~QSS_VAR[11]&ANSI_10&"  "&ANSI_10&""&#27&"[35m<"&#27&"[32mA"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[15]&"*"
-echo ANSI_10&"  "&ANSI_7&$MENUS~QSS_VAR[17]&ANSI_10&"  "&#27&"[35m<"&#27&"[32mH"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[16]&"*"
-echo ANSI_10&"  "&ANSI_7&$MENUS~QSS_VAR[2]&ANSI_10&"  "&#27&"[35m<"&#27&"[32mX"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[22]&"*"
-echo ANSI_10&"  "&ANSI_7&$MENUS~QSS_VAR[2]&ANSI_10&"  "&#27&"[35m<"&#27&"[32mL"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[31]&"*"
+echo ansi_11&"         General Info                     Gridding/Attack Options*"
+echo ansi_10&#27&"[35m<"&#27&"[32mC"&#27&"[35m> "&ansi_7&$menus~qss_var[18]&ansi_10&#27&"[35m<"&#27&"[32m3"&#27&"[35m> "&ansi_7&$menus~qss_var[6]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mP"&#27&"[35m> "&ansi_7&$menus~qss_var[4]&ansi_10&#27&"[35m<"&#27&"[32m4"&#27&"[35m> "&ansi_7&$menus~qss_var[7]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mN"&#27&"[35m> "&ansi_7&$menus~qss_var[3]&ansi_10&#27&"[35m<"&#27&"[32m5"&#27&"[35m> "&ansi_7&$menus~qss_var[8]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mZ"&#27&"[35m> "&ansi_7&$menus~qss_var[5]&ansi_10&#27&"[35m<"&#27&"[32m6"&#27&"[35m> "&ansi_7&$menus~qss_var[26]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mG"&#27&"[35m> "&ansi_7&$menus~qss_var[21]&ansi_10&#27&"[35m<"&#27&"[32m7"&#27&"[35m> "&ansi_7&$menus~qss_var[10]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mE"&#27&"[35m> "&ansi_7&$menus~qss_var[23]&ansi_10&#27&"[35m<"&#27&"[32m8"&#27&"[35m> "&ansi_7&$menus~qss_var[9]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m1"&#27&"[35m> "&ansi_7&$menus~qss_var[20]&ansi_10&#27&"[35m<"&#27&"[32m9"&#27&"[35m> "&ansi_7&$menus~qss_var[19]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m0"&#27&"[35m> "&ansi_7&$menus~qss_var[29]&ansi_10&#27&"[35m<"&#27&"[32mK"&#27&"[35m> "&ansi_7&$menus~qss_var[28]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mV"&#27&"[35m> "&ansi_7&$menus~qss_var[30]&ansi_10&#27&"[35m<"&#27&"[32mJ"&#27&"[35m> "&ansi_7&$menus~qss_var[27]&"*"
+echo ansi_11&"         Capture Options                   Location Variables*"
+echo ansi_10&#27&"[35m<"&#27&"[32m2"&#27&"[35m> "&ansi_7&$menus~qss_var[24]&ansi_10&#27&"[35m<"&#27&"[32mS"&#27&"[35m> "&ansi_7&$menus~qss_var[13]&"*"
+echo ansi_11&"        Current Ship Stats             "&#27&"[35m<"&#27&"[32mB"&#27&"[35m> "&ansi_7&$menus~qss_var[25]&"*"
+echo ansi_10&"  "&ansi_7&$menus~qss_var[12]&ansi_10&"  "&#27&"[35m<"&#27&"[32mR"&#27&"[35m> "&ansi_7&$menus~qss_var[14]&"*"
+echo ansi_10&"  "&ansi_7&$menus~qss_var[11]&ansi_10&"  "&ansi_10&""&#27&"[35m<"&#27&"[32mA"&#27&"[35m> "&ansi_7&$menus~qss_var[15]&"*"
+echo ansi_10&"  "&ansi_7&$menus~qss_var[17]&ansi_10&"  "&#27&"[35m<"&#27&"[32mH"&#27&"[35m> "&ansi_7&$menus~qss_var[16]&"*"
+echo ansi_10&"  "&ansi_7&$menus~qss_var[2]&ansi_10&"  "&#27&"[35m<"&#27&"[32mX"&#27&"[35m> "&ansi_7&$menus~qss_var[22]&"*"
+echo ansi_10&"  "&ansi_7&$menus~qss_var[2]&ansi_10&"  "&#27&"[35m<"&#27&"[32mL"&#27&"[35m> "&ansi_7&$menus~qss_var[31]&"*"
 echo "*"
-echo ANSI_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ANSI_15&"Trader List                    Game Stats"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ANSI_7&"**"
-getconsoleinput $MENUS~CHOSEN_OPTION SINGLEKEY
-uppercase $MENUS~CHOSEN_OPTION
-:MENUS~PROCESS_COMMAND
-if ($MENUS~CHOSEN_OPTION = "?")
-  goto :REFRESHPREFERENCESMENU
-elseif ($MENUS~CHOSEN_OPTION = "+")
-  goto :CHATMENU
-elseif ($MENUS~CHOSEN_OPTION = "N")
+echo ansi_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ansi_15&"Trader List                    Game Stats"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ansi_7&"**"
+getconsoleinput $menus~chosen_option singlekey
+uppercase $menus~chosen_option
 
-  setvar $MENUS~QUESTION ANSI_13&"What is the 'in game' name of the bot? (one word, no spaces)"&ANSI_7
-  gosub :GETINPUT
-  setvar $MENUS~NEW_BOT_NAME $MENUS~RESPONSE
+:menus~process_command
+if ($menus~chosen_option = "?")
+	goto :refreshpreferencesmenu
+elseif ($menus~chosen_option = "+")
+	goto :chatmenu
+elseif ($menus~chosen_option = "N")
 
-  striptext $MENUS~NEW_BOT_NAME "^"
-  striptext $MENUS~NEW_BOT_NAME " "
-  lowercase $MENUS~NEW_BOT_NAME
-  if ($MENUS~NEW_BOT_NAME = "")
-    goto :REFRESHPREFERENCESMENU
-  end
-  delete $BOT~GCONFIG_FILE
-  write $BOT~GCONFIG_FILE $MENUS~NEW_BOT_NAME
-  setvar $SWITCHBOARD~BOT_NAME $MENUS~NEW_BOT_NAME
-  savevar $SWITCHBOARD~BOT_NAME
-  setvar $BOT~BOT_NAME $MENUS~NEW_BOT_NAME
-  savevar $BOT~BOT_NAME
+	setvar $menus~question ansi_13&"What is the 'in game' name of the bot? (one word, no spaces)"&ansi_7
+	gosub :getinput
+	setvar $menus~new_bot_name $menus~response
 
-elseif ($MENUS~CHOSEN_OPTION = "P")
-  setvar $MENUS~QUESTION "Please Enter your Game Password"
-  gosub :GETINPUT
-  setvar $BOT~PASSWORD $MENUS~RESPONSE
-elseif ($MENUS~CHOSEN_OPTION = "Z")
-  setvar $MENUS~QUESTION "Please Enter your Bot Password"
-  gosub :GETINPUT
-  setvar $BOT~BOT_PASSWORD $MENUS~RESPONSE
-elseif ($MENUS~CHOSEN_OPTION = "G")
-  setvar $MENUS~QUESTION "Please Enter your Game Letter"
-  gosub :GETINPUT
-  setvar $BOT~LETTER $MENUS~RESPONSE
-elseif ($MENUS~CHOSEN_OPTION = "C")
-  setvar $MENUS~QUESTION "Please Enter your Login Name"
-  gosub :GETINPUT
-  setvar $BOT~USERNAME $MENUS~RESPONSE
-elseif ($MENUS~CHOSEN_OPTION = 1)
-  if ($PLAYER~UNLIMITEDGAME = FALSE)
-    setvar $MENUS~QUESTION "What are the minimum turns you need to do bot commands?"
-    gosub :GETINPUT
-    setvar $MENUS~TEMP $MENUS~RESPONSE
-    isnumber $MENUS~TEST $MENUS~TEMP
-    if ($MENUS~TEST)
-      if (($MENUS~TEMP <= 65000) and ($MENUS~TEMP >= 0))
-        setvar $BOT~BOT_TURN_LIMIT $MENUS~TEMP
-      end
-    end
-  end
-elseif ($MENUS~CHOSEN_OPTION = 3)
-  setvar $MENUS~QUESTION "How many fighters to drop on surround/gridding?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST)
-    if (($MENUS~TEMP <= 50000) and ($MENUS~TEMP >= 0))
-      setvar $PLAYER~SURROUNDFIGS $MENUS~TEMP
-    end
-  end
-elseif ($MENUS~CHOSEN_OPTION = 4)
-  setvar $MENUS~QUESTION "How many limpets to drop on surround/gridding?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST)
-    if (($MENUS~TEMP <= 250) and ($MENUS~TEMP >= 0))
-      setvar $PLAYER~SURROUNDLIMP $MENUS~TEMP
-    end
-  end
-elseif ($MENUS~CHOSEN_OPTION = 5)
-  setvar $MENUS~QUESTION "How many armid mines to drop on surround/gridding?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST)
-    if (($MENUS~TEMP <= 250) and ($MENUS~TEMP >= 0))
-      setvar $PLAYER~SURROUNDMINE $MENUS~TEMP
-    end
-  end
-elseif ($MENUS~CHOSEN_OPTION = 8)
-  if ($PLAYER~SURROUNDAVOIDSHIELDEDONLY)
-    setvar $PLAYER~SURROUNDAVOIDSHIELDEDONLY FALSE
-    setvar $PLAYER~SURROUNDAVOIDALLPLANETS TRUE
-    setvar $PLAYER~SURROUNDDONTAVOID FALSE
-  elseif ($PLAYER~SURROUNDAVOIDALLPLANETS)
-    setvar $PLAYER~SURROUNDAVOIDSHIELDEDONLY FALSE
-    setvar $PLAYER~SURROUNDAVOIDALLPLANETS FALSE
-    setvar $PLAYER~SURROUNDDONTAVOID TRUE
-  else
-    setvar $PLAYER~SURROUNDAVOIDSHIELDEDONLY TRUE
-    setvar $PLAYER~SURROUNDAVOIDALLPLANETS FALSE
-    setvar $PLAYER~SURROUNDDONTAVOID FALSE
-  end
-elseif ($MENUS~CHOSEN_OPTION = 7)
-  if ($BOT~AUTOATTACK)
-    setvar $BOT~AUTOATTACK FALSE
-  else
-    setvar $BOT~AUTOATTACK TRUE
-  end
-elseif ($MENUS~CHOSEN_OPTION = 2)
-  if ($PLAYER~DEFENDERCAPPING)
-    setvar $PLAYER~DEFENDERCAPPING FALSE
-    setvar $PLAYER~OFFENSECAPPING TRUE
-    setvar $PLAYER~CAPPINGALIENS TRUE
-  elseif ($PLAYER~OFFENSECAPPING)
-    setvar $PLAYER~DEFENDERCAPPING FALSE
-    setvar $PLAYER~OFFENSECAPPING FALSE
-    setvar $PLAYER~CAPPINGALIENS FALSE
-  else
-    setvar $PLAYER~DEFENDERCAPPING TRUE
-    setvar $PLAYER~OFFENSECAPPING FALSE
-    setvar $PLAYER~CAPPINGALIENS TRUE
-  end
-elseif ($MENUS~CHOSEN_OPTION = 6)
-  if ($PLAYER~DROPOFFENSIVE)
-    setvar $PLAYER~DROPOFFENSIVE FALSE
-    setvar $PLAYER~DROPTOLL TRUE
-  elseif ($PLAYER~DROPTOLL)
-    setvar $PLAYER~DROPOFFENSIVE FALSE
-    setvar $PLAYER~DROPTOLL FALSE
-  else
-    setvar $PLAYER~DROPOFFENSIVE TRUE
-    setvar $PLAYER~DROPTOLL FALSE
-  end
-elseif ($MENUS~CHOSEN_OPTION = 0)
-  if ($BOT~COMMAND_PROMPT_EXTRAS)
-    setvar $BOT~COMMAND_PROMPT_EXTRAS FALSE
-  else
-    setvar $BOT~COMMAND_PROMPT_EXTRAS TRUE
-  end
-elseif ($MENUS~CHOSEN_OPTION = "V")
-  if ($BOT~SILENT_RUNNING)
-    setvar $BOT~SILENT_RUNNING FALSE
-    savevar $BOT~SILENT_RUNNING
-    setvar $silent_running FALSE
-    savevar $silent_running
-  else
-    setvar $BOT~SILENT_RUNNING TRUE
-    savevar $BOT~SILENT_RUNNING
-    setvar $silent_running TRUE
-    savevar $silent_running
-  end
-elseif ($MENUS~CHOSEN_OPTION = "K")
-  if ($PLAYER~SURROUND_BEFORE_HKILL)
-    setvar $PLAYER~SURROUND_BEFORE_HKILL FALSE
-  else
-    setvar $PLAYER~SURROUND_BEFORE_HKILL TRUE
-  end
-elseif ($MENUS~CHOSEN_OPTION = "S")
-  setvar $MENUS~QUESTION "What sector is the Stardock? (0 to set to twx variable)"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST)
-    if (($MENUS~TEMP <= SECTORS) and ($MENUS~TEMP >= 1))
-      setvar $MAP~STARDOCK $MENUS~TEMP
-      setvar $MAP~STARDOCK $MENUS~TEMP
-    elseif ($MENUS~TEMP = 0)
-      setvar $MAP~STARDOCK STARDOCK
-      setvar $MAP~STARDOCK STARDOCK
-    end
-  end
-elseif ($MENUS~CHOSEN_OPTION = "J")
-  setvar $MENUS~QUESTION "Please enter name of traders, seperated by commas.  Can also use [2],[1] for Corporations."
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  setvar $BOT~ALARM_LIST $MENUS~TEMP
-  savevar $BOT~ALARM_LIST
-elseif ($MENUS~CHOSEN_OPTION = "X")
-  setvar $MENUS~QUESTION "What ship number is your safe ship?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST)
-    setvar $BOT~SAFE_SHIP $MENUS~TEMP
-  end
-elseif ($MENUS~CHOSEN_OPTION = "L")
-  setvar $MENUS~QUESTION "What planet is your safe planet?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST)
-    setvar $BOT~SAFE_PLANET $MENUS~TEMP
-  end
-elseif ($MENUS~CHOSEN_OPTION = "E")
-  setvar $MENUS~TEMP 5760
-  setvar $MENUS~QUESTION "How many minutes afk do you want the echo banner to show each time?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST)
-    if ($MENUS~TEMP > 0)
-      setvar $BOT~ECHOINTERVAL $MENUS~TEMP
-    else
-      setvar $BOT~ECHOINTERVAL 5760
-    end
-  end
-elseif ($MENUS~CHOSEN_OPTION = "R")
-  setvar $MENUS~QUESTION "What sector is the Rylos port? (0 to set to twx variable)"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST)
-    if (($MENUS~TEMP <= SECTORS) and ($MENUS~TEMP >= 1))
-      setvar $MAP~RYLOS $MENUS~TEMP
-    elseif ($MENUS~TEMP = 0)
-      setvar $MAP~RYLOS RYLOS
-    end
-    savevar $MAP~RYLOS
-  end
-elseif ($MENUS~CHOSEN_OPTION = "A")
-  setvar $MENUS~QUESTION "What sector is the Alpha Centauri port? (0 to set to twx variable)"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST)
-    if (($MENUS~TEMP <= SECTORS) and ($MENUS~TEMP >= 1))
-      setvar $MAP~ALPHA_CENTAURI $MENUS~TEMP
-    elseif ($MENUS~TEMP = 0)
-      setvar $MAP~ALPHA_CENTAURI ALPHACENTAURI
-    end
-    savevar $MAP~ALPHA_CENTAURI
-  end
-elseif ($MENUS~CHOSEN_OPTION = "B")
-  setvar $MENUS~QUESTION "What sector is the Backdoor to Stardock?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST)
-    if (($MENUS~TEMP <= SECTORS) and ($MENUS~TEMP >= 1))
-      setvar $MAP~BACKDOOR $MENUS~TEMP
-    end
-    savevar $MAP~BACKDOOR
-  end
-elseif ($MENUS~CHOSEN_OPTION = "H")
-  setvar $MENUS~QUESTION "What sector is the Home Sector?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST)
-    if (($MENUS~TEMP <= SECTORS) and ($MENUS~TEMP >= 1))
-      setvar $MAP~HOME_SECTOR $MENUS~TEMP
-      savevar $MAP~HOME_SECTOR
-    end
-  end
-elseif ($MENUS~CHOSEN_OPTION = 9)
-  if ($PLAYER~SURROUNDOVERWRITE)
-    setvar $PLAYER~SURROUNDOVERWRITE FALSE
-    setvar $PLAYER~SURROUNDPASSIVE TRUE
-    setvar $PLAYER~SURROUNDNORMAL FALSE
-  elseif ($PLAYER~SURROUNDPASSIVE)
-    setvar $PLAYER~SURROUNDOVERWRITE FALSE
-    setvar $PLAYER~SURROUNDPASSIVE FALSE
-    setvar $PLAYER~SURROUNDNORMAL TRUE
-  else
-    setvar $PLAYER~SURROUNDOVERWRITE TRUE
-    setvar $PLAYER~SURROUNDPASSIVE FALSE
-    setvar $PLAYER~SURROUNDNORMAL FALSE
-  end
-elseif ($MENUS~CHOSEN_OPTION = ">")
-  goto :PREFERENCESMENUPAGE2
-elseif ($MENUS~CHOSEN_OPTION = "<")
-  goto :PREFERENCESMENUPAGE6
+	striptext $menus~new_bot_name "^"
+	striptext $menus~new_bot_name " "
+	lowercase $menus~new_bot_name
+	if ($menus~new_bot_name = "")
+		goto :refreshpreferencesmenu
+	end
+	delete $bot~gconfig_file
+	write $bot~gconfig_file $menus~new_bot_name
+	setvar $switchboard~bot_name $menus~new_bot_name
+	savevar $switchboard~bot_name
+	setvar $bot~bot_name $menus~new_bot_name
+	savevar $bot~bot_name
+
+elseif ($menus~chosen_option = "P")
+	setvar $menus~question "Please Enter your Game Password"
+	gosub :getinput
+	setvar $bot~password $menus~response
+elseif ($menus~chosen_option = "Z")
+	setvar $menus~question "Please Enter your Bot Password"
+	gosub :getinput
+	setvar $bot~bot_password $menus~response
+elseif ($menus~chosen_option = "G")
+	setvar $menus~question "Please Enter your Game Letter"
+	gosub :getinput
+	setvar $bot~letter $menus~response
+elseif ($menus~chosen_option = "C")
+	setvar $menus~question "Please Enter your Login Name"
+	gosub :getinput
+	setvar $bot~username $menus~response
+elseif ($menus~chosen_option = 1)
+	if ($player~unlimitedgame = false)
+		setvar $menus~question "What are the minimum turns you need to do bot commands?"
+		gosub :getinput
+		setvar $menus~temp $menus~response
+		isnumber $menus~test $menus~temp
+		if ($menus~test)
+			if (($menus~temp <= 65000) and ($menus~temp >= 0))
+				setvar $bot~bot_turn_limit $menus~temp
+			end
+		end
+	end
+elseif ($menus~chosen_option = 3)
+	setvar $menus~question "How many fighters to drop on surround/gridding?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test)
+		if (($menus~temp <= 50000) and ($menus~temp >= 0))
+			setvar $player~surroundfigs $menus~temp
+		end
+	end
+elseif ($menus~chosen_option = 4)
+	setvar $menus~question "How many limpets to drop on surround/gridding?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test)
+		if (($menus~temp <= 250) and ($menus~temp >= 0))
+			setvar $player~surroundlimp $menus~temp
+		end
+	end
+elseif ($menus~chosen_option = 5)
+	setvar $menus~question "How many armid mines to drop on surround/gridding?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test)
+		if (($menus~temp <= 250) and ($menus~temp >= 0))
+			setvar $player~surroundmine $menus~temp
+		end
+	end
+elseif ($menus~chosen_option = 8)
+	if ($player~surroundavoidshieldedonly)
+		setvar $player~surroundavoidshieldedonly false
+		setvar $player~surroundavoidallplanets true
+		setvar $player~surrounddontavoid false
+	elseif ($player~surroundavoidallplanets)
+		setvar $player~surroundavoidshieldedonly false
+		setvar $player~surroundavoidallplanets false
+		setvar $player~surrounddontavoid true
+	else
+		setvar $player~surroundavoidshieldedonly true
+		setvar $player~surroundavoidallplanets false
+		setvar $player~surrounddontavoid false
+	end
+elseif ($menus~chosen_option = 7)
+	if ($bot~autoattack)
+		setvar $bot~autoattack false
+	else
+		setvar $bot~autoattack true
+	end
+elseif ($menus~chosen_option = 2)
+	if ($player~defendercapping)
+		setvar $player~defendercapping false
+		setvar $player~offensecapping true
+		setvar $player~cappingaliens true
+	elseif ($player~offensecapping)
+		setvar $player~defendercapping false
+		setvar $player~offensecapping false
+		setvar $player~cappingaliens false
+	else
+		setvar $player~defendercapping true
+		setvar $player~offensecapping false
+		setvar $player~cappingaliens true
+	end
+elseif ($menus~chosen_option = 6)
+	if ($player~dropoffensive)
+		setvar $player~dropoffensive false
+		setvar $player~droptoll true
+	elseif ($player~droptoll)
+		setvar $player~dropoffensive false
+		setvar $player~droptoll false
+	else
+		setvar $player~dropoffensive true
+		setvar $player~droptoll false
+	end
+elseif ($menus~chosen_option = 0)
+	if ($bot~command_prompt_extras)
+		setvar $bot~command_prompt_extras false
+	else
+		setvar $bot~command_prompt_extras true
+	end
+elseif ($menus~chosen_option = "V")
+	if ($bot~silent_running)
+		setvar $bot~silent_running false
+		savevar $bot~silent_running
+		setvar $silent_running false
+		savevar $silent_running
+	else
+		setvar $bot~silent_running true
+		savevar $bot~silent_running
+		setvar $silent_running true
+		savevar $silent_running
+	end
+elseif ($menus~chosen_option = "K")
+	if ($player~surround_before_hkill)
+		setvar $player~surround_before_hkill false
+	else
+		setvar $player~surround_before_hkill true
+	end
+elseif ($menus~chosen_option = "S")
+	setvar $menus~question "What sector is the Stardock? (0 to set to twx variable)"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test)
+		if (($menus~temp <= sectors) and ($menus~temp >= 1))
+			setvar $map~stardock $menus~temp
+			setvar $map~stardock $menus~temp
+		elseif ($menus~temp = 0)
+			setvar $map~stardock stardock
+			setvar $map~stardock stardock
+		end
+	end
+elseif ($menus~chosen_option = "J")
+	setvar $menus~question "Please enter name of traders, seperated by commas.  Can also use [2],[1] for Corporations."
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	setvar $bot~alarm_list $menus~temp
+	savevar $bot~alarm_list
+elseif ($menus~chosen_option = "X")
+	setvar $menus~question "What ship number is your safe ship?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test)
+		setvar $bot~safe_ship $menus~temp
+	end
+elseif ($menus~chosen_option = "L")
+	setvar $menus~question "What planet is your safe planet?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test)
+		setvar $bot~safe_planet $menus~temp
+	end
+elseif ($menus~chosen_option = "E")
+	setvar $menus~temp 5760
+	setvar $menus~question "How many minutes afk do you want the echo banner to show each time?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test)
+		if ($menus~temp > 0)
+			setvar $bot~echointerval $menus~temp
+		else
+			setvar $bot~echointerval 5760
+		end
+	end
+elseif ($menus~chosen_option = "R")
+	setvar $menus~question "What sector is the Rylos port? (0 to set to twx variable)"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test)
+		if (($menus~temp <= sectors) and ($menus~temp >= 1))
+			setvar $map~rylos $menus~temp
+		elseif ($menus~temp = 0)
+			setvar $map~rylos rylos
+		end
+		savevar $map~rylos
+	end
+elseif ($menus~chosen_option = "A")
+	setvar $menus~question "What sector is the Alpha Centauri port? (0 to set to twx variable)"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test)
+		if (($menus~temp <= sectors) and ($menus~temp >= 1))
+			setvar $map~alpha_centauri $menus~temp
+		elseif ($menus~temp = 0)
+			setvar $map~alpha_centauri alphacentauri
+		end
+		savevar $map~alpha_centauri
+	end
+elseif ($menus~chosen_option = "B")
+	setvar $menus~question "What sector is the Backdoor to Stardock?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test)
+		if (($menus~temp <= sectors) and ($menus~temp >= 1))
+			setvar $map~backdoor $menus~temp
+		end
+		savevar $map~backdoor
+	end
+elseif ($menus~chosen_option = "H")
+	setvar $menus~question "What sector is the Home Sector?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test)
+		if (($menus~temp <= sectors) and ($menus~temp >= 1))
+			setvar $map~home_sector $menus~temp
+			savevar $map~home_sector
+		end
+	end
+elseif ($menus~chosen_option = 9)
+	if ($player~surroundoverwrite)
+		setvar $player~surroundoverwrite false
+		setvar $player~surroundpassive true
+		setvar $player~surroundnormal false
+	elseif ($player~surroundpassive)
+		setvar $player~surroundoverwrite false
+		setvar $player~surroundpassive false
+		setvar $player~surroundnormal true
+	else
+		setvar $player~surroundoverwrite true
+		setvar $player~surroundpassive false
+		setvar $player~surroundnormal false
+	end
+elseif ($menus~chosen_option = ">")
+	goto :preferencesmenupage2
+elseif ($menus~chosen_option = "<")
+	goto :preferencesmenupage6
 else
-  gosub :DONEPREFER
+	gosub :doneprefer
 end
-goto :REFRESHPREFERENCESMENU
-:MENUS~DONEPREFER
-gosub :BOT~EXIT_MENU_DEAF
+goto :refreshpreferencesmenu
+
+:menus~doneprefer
+gosub :bot~exit_menu_deaf
 echo "*Saving preferences..*"
-gosub :BOT~SAVE_THE_VARIABLES
+gosub :bot~save_the_variables
 
 echo #27 "[30D                        " #27 "[30D"
-echo CURRENTANSILINE
-goto :BOT~WAIT_FOR_COMMAND
-return
-:MENUS~PREFERENCESMENUPAGE2
-
-gosub :BOT~KILLTHETRIGGERS
-setarray $MENUS~H 34
-setarray $MENUS~QSS 34
-setvar $MENUS~H[1] "Atomic Detonators      "
-setvar $MENUS~H[2] "Marker Beacons         "
-setvar $MENUS~H[3] "Corbomite Devices      "
-setvar $MENUS~H[4] "Cloaking Devices       "
-setvar $MENUS~H[5] "SubSpace Ether Probes  "
-setvar $MENUS~H[6] "Planet Scanners        "
-setvar $MENUS~H[7] "Limpet Tracking Mines  "
-setvar $MENUS~H[8] "Space Mines            "
-setvar $MENUS~H[9] "Photon Missiles        "
-setvar $MENUS~H[10] "Holographic Scan       "
-setvar $MENUS~H[11] "Density Scan           "
-setvar $MENUS~H[12] "Mine Disruptors        "
-setvar $MENUS~H[13] "Genesis Torpedoes      "
-setvar $MENUS~H[14] "TransWarp I            "
-setvar $MENUS~H[15] "TransWarp II           "
-setvar $MENUS~H[16] "Psychic Probes         "
-setvar $MENUS~H[17] "Limpet Removal         "
-setvar $MENUS~H[18] "Server Max Commands    "
-setvar $MENUS~H[19] "Gold Enabled           "
-setvar $MENUS~H[20] "MBBS Mode              "
-setvar $MENUS~H[21] "Multiple Photons?      "
-setvar $MENUS~H[22] "                       "
-setvar $MENUS~H[23] "Colonists Per Day      "
-setvar $MENUS~H[24] "Planet Trade           "
-setvar $MENUS~H[25] "Steal Factor           "
-setvar $MENUS~H[26] "Rob Factor             "
-setvar $MENUS~H[27] "Days To Bust Clear     "
-setvar $MENUS~H[28] "                       "
-setvar $MENUS~H[29] "Port Maximum           "
-setvar $MENUS~H[30] "Port Production Rate   "
-setvar $MENUS~H[31] "Max Port Regen Per Day "
-setvar $MENUS~H[32] "                       "
-setvar $MENUS~H[33] "Nav Haz Loss Per Day   "
-setvar $MENUS~H[34] "Radiation Lifetime     "
-setvar $MENUS~QSS[1] $GAME~ATOMIC_COST
-setvar $MENUS~QSS[2] $GAME~BEACON_COST
-setvar $MENUS~QSS[3] $GAME~CORBO_COST
-setvar $MENUS~QSS[4] $GAME~CLOAK_COST
-setvar $MENUS~QSS[5] $GAME~PROBE_COST
-setvar $MENUS~QSS[6] $GAME~PLANET_SCANNER_COST
-setvar $MENUS~QSS[7] $GAME~PLANET_SCANNER_COST
-setvar $MENUS~QSS[8] $GAME~ARMID_COST
-if ($GAME~PHOTONS_ENABLED)
-  setvar $MENUS~QSS[9] $GAME~PHOTON_COST
-else
-  setvar $MENUS~QSS[9] "Disabled"
-end
-setvar $MENUS~QSS[10] $GAME~HOLO_COST
-setvar $MENUS~QSS[11] $GAME~DENSITY_COST
-setvar $MENUS~QSS[12] $GAME~DISRUPTOR_COST
-setvar $MENUS~QSS[13] $GAME~GENESIS_COST
-setvar $MENUS~QSS[14] $GAME~TWARPI_COST
-setvar $MENUS~QSS[15] $GAME~TWARPII_COST
-setvar $MENUS~QSS[16] $GAME~PSYCHIC_COST
-setvar $MENUS~QSS[17] $GAME~LIMPET_REMOVAL_COST
-if ($GAME~MAX_COMMANDS = 0)
-  setvar $MENUS~QSS[18] "Unlimited"
-else
-  setvar $MENUS~QSS[18] $GAME~MAX_COMMANDS
-end
-if ($GAME~GOLDENABLED)
-  setvar $MENUS~QSS[19] "Yes"
-else
-  setvar $MENUS~QSS[19] "No"
-end
-if ($GAME~MBBS)
-  setvar $MENUS~QSS[20] "Yes"
-else
-  setvar $MENUS~QSS[20] "No"
-end
-if ($GAME~PHOTONS_ENABLED = TRUE)
-  if ($GAME~MULTIPLE_PHOTONS = TRUE)
-    setvar $MENUS~QSS[21] "Yes"
-  else
-    setvar $MENUS~QSS[21] "No"
-  end
-else
-  setvar $MENUS~QSS[21] "Disabled"
-end
-setvar $MENUS~QSS[22] ""
-setvar $MENUS~QSS[23] $GAME~COLONIST_REGEN
-setvar $MENUS~QSS[24] $GAME~PTRADESETTING&"%"
-setvar $MENUS~QSS[25] $GAME~STEAL_FACTOR
-setvar $MENUS~QSS[26] $GAME~ROB_FACTOR
-setvar $MENUS~QSS[27] $GAME~CLEAR_BUST_DAYS
-setvar $MENUS~QSS[28] ""
-setvar $MENUS~QSS[29] $GAME~PORT_MAX
-setvar $MENUS~QSS[30] $GAME~PRODUCTION_RATE&"%"
-setvar $MENUS~QSS[31] $GAME~PRODUCTION_REGEN&"%"
-setvar $MENUS~QSS[32] ""
-setvar $MENUS~QSS[33] $GAME~DEBRIS_LOSS&"%"
-setvar $MENUS~QSS[34] $GAME~RADIATION_LIFETIME
-setvar $MENUS~QSS_TOTAL 34
-gosub :MENUSPACING
-echo #27&"[2J"
-echo "**"
-echo ANSI_11&"      Stardock Prices                 Game Statistics*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[1]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[18]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[2]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[19]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[3]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[20]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[4]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[21]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[5]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[22]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[6]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[23]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[7]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[24]&"*"
-echo ANSI_11&" "&ANSI_7&$MENUS~QSS_VAR[8]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[25]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[9]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[26]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[10]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[27]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[11]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[28]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[12]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[29]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[13]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[30]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[14]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[31]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[15]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[32]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[16]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[33]&"*"
-echo ANSI_10&" "&ANSI_7&$MENUS~QSS_VAR[17]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[34]&"*"
-echo "*"
-echo ANSI_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ANSI_15&"Preferences                Hot Keys"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ANSI_7&"**"
-getconsoleinput $MENUS~CHOSEN_OPTION SINGLEKEY
-uppercase $MENUS~CHOSEN_OPTION
-gosub :BOT~KILLTHETRIGGERS
-uppercase $MENUS~CHOSEN_OPTION
-:MENUS~PROCESS_COMMANDPAGE2
-if ($MENUS~CHOSEN_OPTION = "?")
-  goto :PREFERENCESMENUPAGE2
-elseif ($MENUS~CHOSEN_OPTION = ">")
-  goto :PREFERENCESMENUPAGE3
-elseif ($MENUS~CHOSEN_OPTION = "<")
-  goto :REFRESHPREFERENCESMENU
-else
-  gosub :DONEPREFER
-end
-:MENUS~PREFERENCESMENUPAGE3
-gosub :BOT~KILLTHETRIGGERS
-echo #27&"[2J"
-echo "**"
-echo ANSI_11&"                  Custom Hotkey Definitions           *"
-gosub :ECHOHOTKEYS
-echo "*"
-echo ANSI_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ANSI_15&"Game Stats                    Ship Info"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ANSI_7&"**"
-setvar $MENUS~OPTIONS "1234567890ABCDEFGHIJKLMNOPRSTUVWX\t "
-getconsoleinput $MENUS~CHOSEN_OPTION SINGLEKEY
-uppercase $MENUS~CHOSEN_OPTION
-getwordpos $MENUS~OPTIONS $MENUS~POS $MENUS~CHOSEN_OPTION
-gosub :BOT~KILLTHETRIGGERS
-:MENUS~PROCESS_COMMANDPAGE3
-
-if ($MENUS~CHOSEN_OPTION = "?")
-  goto :PREFERENCESMENUPAGE3
-elseif ($MENUS~CHOSEN_OPTION = ">")
-  goto :PREFERENCESMENUPAGE4
-elseif ($MENUS~CHOSEN_OPTION = "<")
-  goto :PREFERENCESMENUPAGE2
-elseif ($MENUS~POS > 0)
-  setdeafclients FALSE
-  echo "*What should this hotkey be set to?*"
-  getconsoleinput $MENUS~TEMP SINGLEKEY
-  setdeafclients TRUE
-  lowercase $MENUS~TEMP
-  getcharcode $MENUS~TEMP $MENUS~LOWER
-  uppercase $MENUS~TEMP
-  getcharcode $MENUS~TEMP $MENUS~UPPER
-  setvar $MENUS~KEY $BOT~CUSTOM_KEYS[$MENUS~POS]
-  uppercase $MENUS~KEY
-  getcharcode $MENUS~KEY $MENUS~OLD_UPPER
-  lowercase $MENUS~KEY
-  getcharcode $MENUS~KEY $MENUS~OLD_LOWER
-  if ((((($BOT~HOTKEYS[$MENUS~UPPER] = 0) or ($BOT~HOTKEYS[$MENUS~UPPER] = "")) and (($BOT~HOTKEYS[$MENUS~LOWER] = 0) or ($BOT~HOTKEYS[$MENUS~LOWER] = "")))) and (((($MENUS~LOWER < 48) or ($MENUS~LOWER > 57)) and ($MENUS~TEMP <> "?"))))
-    setvar $BOT~HOTKEYS[$MENUS~OLD_UPPER] ""
-    setvar $BOT~HOTKEYS[$MENUS~OLD_LOWER] ""
-    setvar $BOT~HOTKEYS[$MENUS~UPPER] $MENUS~POS
-    setvar $BOT~HOTKEYS[$MENUS~LOWER] $MENUS~POS
-    setvar $BOT~CUSTOM_KEYS[$MENUS~POS] $MENUS~TEMP
-    if ($MENUS~POS > 17)
-      setvar $MENUS~QUESTION "What is the bot command to connect to this hotkey?"
-      gosub :GETINPUT
-      setvar $MENUS~TEMP $MENUS~RESPONSE
-      setvar $BOT~CUSTOM_COMMANDS[$MENUS~POS] $MENUS~TEMP
-    end
-    gosub :BOT~WRITE_HOTKEY_CONFIG
-  else
-    setdeafclients FALSE
-    echo ANSI_4 "*Hot key already bound to another function.**" ANSI_7
-    setdeafclients TRUE
-    setdelaytrigger WARNINGDELAY :PREFERENCESMENUPAGE3 1000
-    pause
-  end
-  goto :PREFERENCESMENUPAGE3
-else
-  gosub :DONEPREFER
-end
-:MENUS~PREFERENCESMENUPAGE4
-gosub :BOT~KILLTHETRIGGERS
-setvar $MENUS~I 1
-if ($SHIP~SHIPCOUNTER > 10)
-  setvar $MENUS~PAGESEXIST TRUE
-else
-  setvar $MENUS~PAGESEXIST FALSE
-end
-:MENUS~NEXTSHIPPAGE
-gosub :SHIP~LOADSHIPINFO
-setvar $MENUS~SHIPSCHANGED FALSE
-setvar $MENUS~THISPAGE $MENUS~I
-setvar $MENUS~MENUCOUNT 0
-echo #27&"[2J"
-echo "**"
-echo ANSI_11&"                      Known Ship Information           **"
-echo ANSI_15 "    Type                      Def  Off  TPW  D-Bonus?   Shields   Fighters *"
-echo "   " #27 "[1m" ANSI_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
-while (($MENUS~I < $SHIP~SHIPCOUNTER) and ($MENUS~MENUCOUNT < 10))
-  cuttext $SHIP~SHIPLIST[$MENUS~I]&"                                    " $MENUS~TEMP 1 25
-  cuttext $SHIP~SHIPLIST[$MENUS~I][2]&"  " $MENUS~TEMPDEFHEAD 1 1
-  cuttext $SHIP~SHIPLIST[$MENUS~I][2]&"  " $MENUS~TEMPDEFTAIL 2 1
-  cuttext $SHIP~SHIPLIST[$MENUS~I][3]&"  " $MENUS~TEMPOFFHEAD 1 1
-  cuttext $SHIP~SHIPLIST[$MENUS~I][3]&"  " $MENUS~TEMPOFFTAIL 2 1
-  if ($SHIP~SHIPLIST[$MENUS~I][8])
-    setvar $MENUS~TEMPDEFENDER ANSI_12&"Yes"&ANSI_14
-  else
-    setvar $MENUS~TEMPDEFENDER "No "
-  end
-  cuttext $SHIP~SHIPLIST[$MENUS~I][1]&"              " $MENUS~TEMPSHIELDS 1 10
-  cuttext $SHIP~SHIPLIST[$MENUS~I][5]&"              " $MENUS~TEMPFIGHTERS 1 6
-  cuttext $SHIP~SHIPLIST[$MENUS~I][7]&"              " $MENUS~TEMPTPW 1 3
-  echo ANSI_14 "<" $MENUS~MENUCOUNT "> " $MENUS~TEMP " " $MENUS~TEMPDEFHEAD "." $MENUS~TEMPDEFTAIL "  " $MENUS~TEMPOFFHEAD "." $MENUS~TEMPOFFTAIL "   " $MENUS~TEMPTPW "   " $MENUS~TEMPDEFENDER "       " $MENUS~TEMPSHIELDS " " $MENUS~TEMPFIGHTERS "*"
-  add $MENUS~I 1
-  add $MENUS~MENUCOUNT 1
-end
-echo "   " #27 "[1m" ANSI_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
-echo "*"
-if ($MENUS~PAGESEXIST = TRUE)
-  echo "  "&ANSI_5&"<"&ANSI_6&"+"&ANSI_5&">"&ANSI_6&" More Ships*"
-end
-echo "*"
-echo ANSI_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ANSI_15&"Hot Keys                 Planet Types"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ANSI_7&"**"
-
-echo "  "&ANSI_5&"Toggle defender status (0-9)? "
-getconsoleinput $MENUS~SELECTION SINGLEKEY
-setvar $MENUS~OPTIONS 1234567890
-uppercase $MENUS~SELECTION
-getwordpos $MENUS~OPTIONS $MENUS~POS $MENUS~SELECTION
-gosub :BOT~KILLTHETRIGGERS
-if ($MENUS~SELECTION = "<")
-  gosub :REWRITE_CAP_FILE
-  goto :PREFERENCESMENUPAGE3
-elseif ($MENUS~SELECTION = ">")
-  gosub :REWRITE_CAP_FILE
-  goto :PREFERENCESMENUPAGEPLANET
-elseif ($MENUS~SELECTION = "?")
-  gosub :REWRITE_CAP_FILE
-  goto :PREFERENCESMENUPAGE4
-elseif ($MENUS~PAGESEXIST and ($MENUS~SELECTION = "+"))
-  if ($MENUS~I >= $SHIP~SHIPCOUNTER)
-    setvar $MENUS~I 1
-  end
-  goto :NEXTSHIPPAGE
-elseif ($MENUS~POS > 0)
-  if ($SHIP~SHIPLIST[($MENUS~SELECTION + $MENUS~THISPAGE)][8])
-    setvar $SHIP~SHIPLIST[($MENUS~SELECTION + $MENUS~THISPAGE)][8] FALSE
-  else
-    setvar $SHIP~SHIPLIST[($MENUS~SELECTION + $MENUS~THISPAGE)][8] TRUE
-  end
-  setvar $MENUS~I $MENUS~THISPAGE
-  setvar $MENUS~SHIPSCHANGED TRUE
-  gosub :REWRITE_CAP_FILE
-  goto :NEXTSHIPPAGE
-else
-  gosub :REWRITE_CAP_FILE
-  gosub :DONEPREFER
-end
-:MENUS~PREFERENCESMENUPAGEPLANET
-
-gosub :BOT~KILLTHETRIGGERS
-setvar $MENUS~I 1
-setvar $MENUS~PLANETSCHANGED FALSE
-if ($PLANET~PLANETCOUNTER > 10)
-  setvar $MENUS~PAGESEXIST TRUE
-else
-  setvar $MENUS~PAGESEXIST FALSE
-end
-:MENUS~NEXTPLANETINFOPAGE
-setvar $MENUS~THISPAGE $MENUS~I
-setvar $MENUS~MENUCOUNT 0
-echo #27&"[2J"
-echo "**"
-echo ANSI_11&"            Planet Type Information  (Max Colos Per Product Type)         **"
-echo ANSI_15 "    Type                       Min Fuel  Max Fuel  Min Org  Max Org  Min Equ  Max Equ  Keeper? *"
-echo "   " #27 "[1m" ANSI_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
-while (($MENUS~I <= $PLANET~PLANETCOUNTER) and ($MENUS~MENUCOUNT < 10))
-  cuttext $PLANET~PLANETLIST[$MENUS~I]&"                                    " $MENUS~TEMP 8 28
-  cuttext $PLANET~PLANETLIST[$MENUS~I][1]&"                                 " $MENUS~TEMPFUELMIN 1 8
-  cuttext $PLANET~PLANETLIST[$MENUS~I][2]&"                                 " $MENUS~TEMPFUEL 1 8
-  cuttext $PLANET~PLANETLIST[$MENUS~I][3]&"                                 " $MENUS~TEMPORGMIN 1 8
-  cuttext $PLANET~PLANETLIST[$MENUS~I][4]&"                                 " $MENUS~TEMPORG 1 8
-  cuttext $PLANET~PLANETLIST[$MENUS~I][5]&"                                 " $MENUS~TEMPEQUIPMIN 1 8
-  cuttext $PLANET~PLANETLIST[$MENUS~I][6]&"                                 " $MENUS~TEMPEQUIP 1 8
-  if ($PLANET~PLANETLIST[$MENUS~I][7] = TRUE)
-    setvar $MENUS~TEMPKEEPER "Yes"
-  else
-    setvar $MENUS~TEMPKEEPER "No"
-  end
-  echo ANSI_14 "<" $MENUS~MENUCOUNT ">" $MENUS~TEMP " " $MENUS~TEMPFUELMIN " " $MENUS~TEMPFUEL "  " $MENUS~TEMPORGMIN "  " $MENUS~TEMPORG "  " $MENUS~TEMPEQUIPMIN "  " $MENUS~TEMPEQUIP " " $MENUS~TEMPKEEPER "*"
-  add $MENUS~I 1
-  add $MENUS~MENUCOUNT 1
-end
-echo "   " #27 "[1m" ANSI_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
-echo "*"
-if ($MENUS~PAGESEXIST = TRUE)
-  echo "  "&ANSI_5&"<"&ANSI_6&"+"&ANSI_5&">"&ANSI_6&" More Planets*"
-end
-echo "*"
-echo ANSI_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ANSI_15&"Hot Keys                 Planet List"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ANSI_7&"**"
-if ($MENUS~TOGGLEAGAIN = TRUE)
-  goto :TOGGLEAGAIN
-end
-
-echo "  "&ANSI_5&"Update Planet Info (0-9)?   Toggle (k)eeper planet"
-getconsoleinput $MENUS~SELECTION SINGLEKEY
-setvar $MENUS~OPTIONS 1234567890
-uppercase $MENUS~SELECTION
-getwordpos $MENUS~OPTIONS $MENUS~POS $MENUS~SELECTION
-gosub :BOT~KILLTHETRIGGERS
-if ($MENUS~SELECTION = "<")
-  gosub :REWRITE_PLANET_FILE
-  goto :PREFERENCESMENUPAGE4
-elseif ($MENUS~SELECTION = ">")
-  gosub :REWRITE_PLANET_FILE
-  goto :PREFERENCESMENUPAGE5
-elseif ($MENUS~SELECTION = "?")
-  gosub :REWRITE_PLANET_FILE
-  goto :PREFERENCESMENUPAGEPLANET
-elseif ($MENUS~SELECTION = "K")
-  :MENUS~TOGGLEAGAIN
-  echo "  "&ANSI_5&"Which planet to set keeper status? (0-9)"
-  getconsoleinput $MENUS~PLANET SINGLEKEY
-  setvar $MENUS~OPTIONS 1234567890
-  uppercase $MENUS~PLANET
-  getwordpos $MENUS~OPTIONS $MENUS~POS $MENUS~PLANET
-  setvar $MENUS~TOGGLEAGAIN FALSE
-  if ($MENUS~POS > 0)
-    if ($PLANET~PLANETLIST[($MENUS~PLANET + $MENUS~THISPAGE)][7] = TRUE)
-      setvar $PLANET~PLANETLIST[($MENUS~PLANET + $MENUS~THISPAGE)][7] FALSE
-    else
-      setvar $PLANET~PLANETLIST[($MENUS~PLANET + $MENUS~THISPAGE)][7] TRUE
-    end
-    setvar $MENUS~TOGGLEAGAIN TRUE
-  else
-    gosub :REWRITE_PLANET_FILE
-  end
-  setvar $MENUS~I $MENUS~THISPAGE
-  setvar $MENUS~PLANETSCHANGED TRUE
-  gosub :REWRITE_PLANET_FILE
-  goto :PREFERENCESMENUPAGEPLANET
-elseif ($MENUS~PAGESEXIST and ($MENUS~SELECTION = "+"))
-  if ($MENUS~I >= $PLANET~PLANETCOUNTER)
-    setvar $MENUS~I 1
-  end
-  goto :NEXTPLANETINFOPAGE
-elseif ($MENUS~POS > 0)
-  setvar $MENUS~QUESTION "What are the min fuel colos for "&$PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)]&"?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST = FALSE)
-    goto :PREFERENCESMENUPAGEPLANET
-  end
-  setvar $PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)][1] $MENUS~TEMP
-
-  setvar $MENUS~QUESTION "What are the max fuel colos for "&$PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)]&"?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST = FALSE)
-    goto :PREFERENCESMENUPAGEPLANET
-  end
-  setvar $PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)][2] $MENUS~TEMP
-
-  setvar $MENUS~QUESTION "What are the min organics colos for "&$PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)]&"?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST = FALSE)
-    goto :PREFERENCESMENUPAGEPLANET
-  end
-  setvar $PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)][3] $MENUS~TEMP
-
-  setvar $MENUS~QUESTION "What are the max organics colos for "&$PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)]&"?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST = FALSE)
-    goto :PREFERENCESMENUPAGEPLANET
-  end
-  setvar $PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)][4] $MENUS~TEMP
-
-  setvar $MENUS~QUESTION "What are the min equipment colos for "&$PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)]&"?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST = FALSE)
-    goto :PREFERENCESMENUPAGEPLANET
-  end
-  setvar $PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)][5] $MENUS~TEMP
-
-  setvar $MENUS~QUESTION "What are the max equipment colos for "&$PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)]&"?"
-  gosub :GETINPUT
-  setvar $MENUS~TEMP $MENUS~RESPONSE
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST = FALSE)
-    goto :PREFERENCESMENUPAGEPLANET
-  end
-  setvar $PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)][6] $MENUS~TEMP
-
-  setdeafclients FALSE
-  echo "Is this planet a keeper? (y/n)*"
-  getconsoleinput $MENUS~KEEPERSELECTION SINGLEKEY
-  setdeafclients TRUE
-  uppercase $MENUS~KEEPERSELECTION
-  if ($MENUS~KEEPERSELECTION = "Y")
-    setvar $PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)][7] TRUE
-  else
-    setvar $PLANET~PLANETLIST[($MENUS~SELECTION + $MENUS~THISPAGE)][7] FALSE
-  end
-  setvar $MENUS~I $MENUS~THISPAGE
-  setvar $MENUS~PLANETSCHANGED TRUE
-  gosub :REWRITE_PLANET_FILE
-  goto :PREFERENCESMENUPAGEPLANET
-else
-  gosub :REWRITE_PLANET_FILE
-  gosub :DONEPREFER
-end
-:MENUS~REWRITE_CAP_FILE
-
-
-if ($MENUS~SHIPSCHANGED)
-  setvar $MENUS~GBONUS_FILE $BOT~FOLDER&"/dbonus-ships.cfg"
-  delete $MENUS~GBONUS_FILE
-  delete $SHIP~CAP_FILE
-  setvar $MENUS~J 1
-  while ($MENUS~J < $SHIP~SHIPCOUNTER)
-    write $SHIP~CAP_FILE $SHIP~SHIPLIST[$MENUS~J][1]&" "&$SHIP~SHIPLIST[$MENUS~J][2]&" "&$SHIP~SHIPLIST[$MENUS~J][3]&" "&$SHIP~SHIPLIST[$MENUS~J][9]&" "&$SHIP~SHIPLIST[$MENUS~J][4]&" "&$SHIP~SHIPLIST[$MENUS~J][5]&" "&$SHIP~SHIPLIST[$MENUS~J][6]&" "&$SHIP~SHIPLIST[$MENUS~J][7]&" "&$SHIP~SHIPLIST[$MENUS~J][8]&" "&$SHIP~SHIPLIST[$MENUS~J]
-    if ($SHIP~SHIPLIST[$MENUS~J][8])
-      write $MENUS~GBONUS_FILE $SHIP~SHIPLIST[$MENUS~J]
-    end
-    add $MENUS~J 1
-  end
-end
-return
-:MENUS~REWRITE_PLANET_FILE
-
-
-if ($MENUS~PLANETSCHANGED)
-  delete $PLANET~PLANET_FILE
-  setvar $MENUS~J 1
-  while ($MENUS~J <= $PLANET~PLANETCOUNTER)
-    write $PLANET~PLANET_FILE $PLANET~PLANETLIST[$MENUS~J][1]&" "&$PLANET~PLANETLIST[$MENUS~J][2]&" "&$PLANET~PLANETLIST[$MENUS~J][3]&" "&$PLANET~PLANETLIST[$MENUS~J][4]&" "&$PLANET~PLANETLIST[$MENUS~J][5]&" "&$PLANET~PLANETLIST[$MENUS~J][6]&" "&$PLANET~PLANETLIST[$MENUS~J][7]&"  "&$PLANET~PLANETLIST[$MENUS~J]
-    add $MENUS~J 1
-  end
-end
-return
-:MENUS~PREFERENCESMENUPAGE5
-
-setvar $MENUS~I 2
-:MENUS~NEXTPLANETPAGE
-echo ANSI_12 "*Searching for enemy planets in database" ANSI_14 "...*"
-gosub :BOT~KILLTHETRIGGERS
-setvar $MENUS~FOUNDSECTORS 0
-setvar $MENUS~DISPLAY ""
-while (($MENUS~I <= SECTORS) and ($MENUS~FOUNDSECTORS < 3))
-  getsectorparameter $MENUS~I "BUBBLE" $MENUS~ISBUBBLE
-  if ($MENUS~ISBUBBLE <> TRUE)
-    if (SECTOR.PLANETCOUNT[$MENUS~I] > 0)
-      setvar $MAP~DISPLAYSECTOR $MENUS~I
-      gosub :MAP~DISPLAYSECTOR
-      setvar $MENUS~DISPLAY $MENUS~DISPLAY&"*"&$MAP~OUTPUT
-      add $MENUS~FOUNDSECTORS 1
-    end
-  end
-  add $MENUS~I 1
-end
-echo #27&"[2J"
-echo "**"
-echo ANSI_11&"                         Known Planet List*             ("&ANSI_14&"Planets in database (Not in bubble)"&ANSI_11&")              **"
-echo "   " #27 "[1m" ANSI_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
-setvar $MENUS~PAGESEXIST FALSE
-if ($MENUS~FOUNDSECTORS > 0)
-  echo $MENUS~DISPLAY
-  if ($MENUS~I >= SECTORS)
-    echo "*    [End of List]"
-    setvar $MENUS~I 2
-  else
-    setvar $MENUS~PAGESEXIST TRUE
-  end
-else
-  echo "*    [End of List]"
-end
-echo "*"
-echo "   " #27 "[1m" ANSI_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
-echo "*"
-if ($MENUS~PAGESEXIST)
-  echo "  "&ANSI_5&"<"&ANSI_6&"+"&ANSI_5&">"&ANSI_6&" More Planets*"
-end
-echo "*"
-echo ANSI_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ANSI_15&"Planet Types                 Trader List"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ANSI_7&"**"
-getconsoleinput $MENUS~SELECTION SINGLEKEY
-setvar $MENUS~OPTIONS ""
-uppercase $MENUS~SELECTION
-getwordpos $MENUS~OPTIONS $MENUS~POS $MENUS~SELECTION
-gosub :BOT~KILLTHETRIGGERS
-if ($MENUS~SELECTION = "<")
-  goto :PREFERENCESMENUPAGEPLANET
-elseif ($MENUS~SELECTION = ">")
-  goto :PREFERENCESMENUPAGE6
-elseif ($MENUS~SELECTION = "?")
-  goto :PREFERENCESMENUPAGE5
-elseif ($MENUS~SELECTION = "+")
-  goto :NEXTPLANETPAGE
-else
-  gosub :DONEPREFER
-end
-:MENUS~PREFERENCESMENUPAGE6
-
-setvar $MENUS~I 2
-:MENUS~NEXTTRADERPAGE
-echo ANSI_12 "*Searching for traders in database" ANSI_14 "...*"
-gosub :BOT~KILLTHETRIGGERS
-setvar $MENUS~FOUNDSECTORS 0
-setvar $MENUS~DISPLAY ""
-while (($MENUS~I <= SECTORS) and ($MENUS~FOUNDSECTORS < 3))
-  if (SECTOR.TRADERCOUNT[$MENUS~I] > 0)
-    setvar $MAP~DISPLAYSECTOR $MENUS~I
-    gosub :MAP~DISPLAYSECTOR
-    setvar $MENUS~DISPLAY $MENUS~DISPLAY&"*"&$MAP~OUTPUT
-    add $MENUS~FOUNDSECTORS 1
-  end
-  add $MENUS~I 1
-end
-echo #27&"[2J"
-echo "**"
-echo ANSI_11&"                         Trader List*             ("&ANSI_14&"Traders last seen in sectors"&ANSI_11&")              **"
-echo "   " #27 "[1m" ANSI_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
-setvar $MENUS~PAGESEXIST FALSE
-if ($MENUS~FOUNDSECTORS > 0)
-  echo $MENUS~DISPLAY
-  if ($MENUS~I >= SECTORS)
-    echo "*    [End of List]"
-    setvar $MENUS~I 2
-  else
-    setvar $MENUS~PAGESEXIST TRUE
-  end
-else
-  echo "*    [End of List]"
-end
-echo "*"
-echo "   " #27 "[1m" ANSI_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
-echo "*"
-if ($MENUS~PAGESEXIST)
-  echo "  "&ANSI_5&"<"&ANSI_6&"+"&ANSI_5&">"&ANSI_6&" More Planets*"
-end
-echo "*"
-echo ANSI_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ANSI_15&"Planet Info                 Preferences"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ANSI_7&"**"
-
-
-getconsoleinput $MENUS~SELECTION SINGLEKEY
-setvar $MENUS~OPTIONS ""
-uppercase $MENUS~SELECTION
-getwordpos $MENUS~OPTIONS $MENUS~POS $MENUS~SELECTION
-gosub :BOT~KILLTHETRIGGERS
-if ($MENUS~SELECTION = "<")
-  goto :PREFERENCESMENUPAGE5
-elseif ($MENUS~SELECTION = ">")
-  goto :REFRESHPREFERENCESMENU
-elseif ($MENUS~SELECTION = "?")
-  goto :PREFERENCESMENUPAGE6
-elseif ($MENUS~SELECTION = "+")
-  goto :NEXTTRADERPAGE
-else
-  gosub :DONEPREFER
-end
-
-:MENUS~ECHOHOTKEYS
-setarray $MENUS~H 34
-setarray $MENUS~QSS 34
-setvar $MENUS~H[1] "Auto Kill            "
-setvar $MENUS~H[2] "Auto Capture         "
-setvar $MENUS~H[3] "Auto Refurb          "
-setvar $MENUS~H[4] "Surround             "
-setvar $MENUS~H[5] "Holo-Torp            "
-setvar $MENUS~H[6] "Transwarp Drive      "
-setvar $MENUS~H[7] "Planet Macros        "
-setvar $MENUS~H[8] "Quick Script Loading "
-setvar $MENUS~H[9] "Dny Holo Kill        "
-setvar $MENUS~H[10] "Stop Current Mode    "
-setvar $MENUS~H[11] "Dock Macros          "
-setvar $MENUS~H[12] "Exit Enter           "
-setvar $MENUS~H[13] "Mow                  "
-setvar $MENUS~H[14] "Fast Foton           "
-setvar $MENUS~H[15] "Clear Sector         "
-setvar $MENUS~H[16] "Preferences          "
-setvar $MENUS~H[17] "LS Dock Shopper      "
-setvar $MENUS~I 1
-while ($MENUS~I <= 16)
-  if ($BOT~CUSTOM_COMMANDS[($MENUS~I + 17)] <> 0)
-    setvar $MENUS~H[($MENUS~I + 17)] $BOT~CUSTOM_COMMANDS[($MENUS~I + 17)]&"                              "
-    cuttext $MENUS~H[($MENUS~I + 17)] $MENUS~H[($MENUS~I + 17)] 1 22
-  else
-    setvar $MENUS~H[($MENUS~I + 17)] "Custom Hotkey "&$MENUS~I&"        "
-    cuttext $MENUS~H[($MENUS~I + 17)] $MENUS~H[($MENUS~I + 17)] 1 22
-  end
-  add $MENUS~I 1
-end
-setvar $MENUS~H[34] "                     "
-setvar $MENUS~I 1
-while ($MENUS~I <= 33)
-  if (($BOT~CUSTOM_KEYS[$MENUS~I] <> 0) and ($BOT~CUSTOM_KEYS[$MENUS~I] <> ""))
-    if (($BOT~CUSTOM_KEYS[$MENUS~I] = #9) or ($BOT~CUSTOM_KEYS[$MENUS~I] = "\t"))
-      setvar $MENUS~QSS[$MENUS~I] "TAB-TAB"
-    elseif ($BOT~CUSTOM_KEYS[$MENUS~I] = #13)
-      setvar $MENUS~QSS[$MENUS~I] "TAB-Enter"
-    elseif ($BOT~CUSTOM_KEYS[$MENUS~I] = #8)
-      setvar $MENUS~QSS[$MENUS~I] "TAB-Backspace"
-    elseif ($BOT~CUSTOM_KEYS[$MENUS~I] = #32)
-      setvar $MENUS~QSS[$MENUS~I] "TAB-Spacebar"
-    else
-      setvar $MENUS~QSS[$MENUS~I] "TAB-"&$BOT~CUSTOM_KEYS[$MENUS~I]
-    end
-  else
-    setvar $MENUS~QSS[$MENUS~I] "Undefined"
-  end
-  add $MENUS~I 1
-end
-setvar $MENUS~QSS[34] ""
-setvar $MENUS~QSS_TOTAL 34
-gosub :MENUSPACING
-echo ANSI_10&#27&"[35m<"&#27&"[32m1"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[1]&ANSI_10&#27&"[35m<"&#27&"[32mH"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[18]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32m2"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[2]&ANSI_10&#27&"[35m<"&#27&"[32mI"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[19]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32m3"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[3]&ANSI_10&#27&"[35m<"&#27&"[32mJ"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[20]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32m4"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[4]&ANSI_10&#27&"[35m<"&#27&"[32mK"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[21]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32m5"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[5]&ANSI_10&#27&"[35m<"&#27&"[32mL"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[22]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32m6"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[6]&ANSI_10&#27&"[35m<"&#27&"[32mM"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[23]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32m7"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[7]&ANSI_10&#27&"[35m<"&#27&"[32mN"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[24]&"*"
-echo ANSI_11&#27&"[35m<"&#27&"[32m8"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[8]&ANSI_10&#27&"[35m<"&#27&"[32mO"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[25]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32m9"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[9]&ANSI_10&#27&"[35m<"&#27&"[32mP"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[26]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32m0"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[10]&ANSI_10&#27&"[35m<"&#27&"[32mR"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[27]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mA"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[11]&ANSI_10&#27&"[35m<"&#27&"[32mS"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[28]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mB"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[12]&ANSI_10&#27&"[35m<"&#27&"[32mT"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[29]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mC"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[13]&ANSI_10&#27&"[35m<"&#27&"[32mU"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[30]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mD"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[14]&ANSI_10&#27&"[35m<"&#27&"[32mV"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[31]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mE"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[15]&ANSI_10&#27&"[35m<"&#27&"[32mW"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[32]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mF"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[16]&ANSI_10&#27&"[35m<"&#27&"[32mX"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[33]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mG"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[17]&ANSI_10&""&ANSI_7&$MENUS~QSS_VAR[34]&"*"
+echo currentansiline
+goto :bot~wait_for_command
 return
 
-:MENUS~ADD_GAME
-setvar $MENUS~NEW_BOT_NAME ""
-getinput $MENUS~NEW_BOT_NAME ANSI_13&"What is the 'in game' name of the bot? (one word, no spaces)"&ANSI_7
-striptext $MENUS~NEW_BOT_NAME "^"
-striptext $MENUS~NEW_BOT_NAME " "
-lowercase $MENUS~NEW_BOT_NAME
-if ($MENUS~NEW_BOT_NAME = "")
-  goto :ADD_GAME
+:menus~preferencesmenupage2
+gosub :bot~killthetriggers
+setarray $menus~h 34
+setarray $menus~qss 34
+setvar $menus~h[1] "Atomic Detonators      "
+setvar $menus~h[2] "Marker Beacons         "
+setvar $menus~h[3] "Corbomite Devices      "
+setvar $menus~h[4] "Cloaking Devices       "
+setvar $menus~h[5] "SubSpace Ether Probes  "
+setvar $menus~h[6] "Planet Scanners        "
+setvar $menus~h[7] "Limpet Tracking Mines  "
+setvar $menus~h[8] "Space Mines            "
+setvar $menus~h[9] "Photon Missiles        "
+setvar $menus~h[10] "Holographic Scan       "
+setvar $menus~h[11] "Density Scan           "
+setvar $menus~h[12] "Mine Disruptors        "
+setvar $menus~h[13] "Genesis Torpedoes      "
+setvar $menus~h[14] "TransWarp I            "
+setvar $menus~h[15] "TransWarp II           "
+setvar $menus~h[16] "Psychic Probes         "
+setvar $menus~h[17] "Limpet Removal         "
+setvar $menus~h[18] "Server Max Commands    "
+setvar $menus~h[19] "Gold Enabled           "
+setvar $menus~h[20] "MBBS Mode              "
+setvar $menus~h[21] "Multiple Photons?      "
+setvar $menus~h[22] "                       "
+setvar $menus~h[23] "Colonists Per Day      "
+setvar $menus~h[24] "Planet Trade           "
+setvar $menus~h[25] "Steal Factor           "
+setvar $menus~h[26] "Rob Factor             "
+setvar $menus~h[27] "Days To Bust Clear     "
+setvar $menus~h[28] "                       "
+setvar $menus~h[29] "Port Maximum           "
+setvar $menus~h[30] "Port Production Rate   "
+setvar $menus~h[31] "Max Port Regen Per Day "
+setvar $menus~h[32] "                       "
+setvar $menus~h[33] "Nav Haz Loss Per Day   "
+setvar $menus~h[34] "Radiation Lifetime     "
+setvar $menus~qss[1] $game~atomic_cost
+setvar $menus~qss[2] $game~beacon_cost
+setvar $menus~qss[3] $game~corbo_cost
+setvar $menus~qss[4] $game~cloak_cost
+setvar $menus~qss[5] $game~probe_cost
+setvar $menus~qss[6] $game~planet_scanner_cost
+setvar $menus~qss[7] $game~planet_scanner_cost
+setvar $menus~qss[8] $game~armid_cost
+if ($game~photons_enabled)
+	setvar $menus~qss[9] $game~photon_cost
+else
+	setvar $menus~qss[9] "Disabled"
 end
-setvar $BOT~PASSWORD PASSWORD
-setvar $BOT~USERNAME LOGINNAME
-setvar $BOT~LETTER GAME
-if (($BOT~LETTER = "") or ($BOT~LETTER = 0))
-  getinput $BOT~LETTER "Please Enter your Game Letter"
+setvar $menus~qss[10] $game~holo_cost
+setvar $menus~qss[11] $game~density_cost
+setvar $menus~qss[12] $game~disruptor_cost
+setvar $menus~qss[13] $game~genesis_cost
+setvar $menus~qss[14] $game~twarpi_cost
+setvar $menus~qss[15] $game~twarpii_cost
+setvar $menus~qss[16] $game~psychic_cost
+setvar $menus~qss[17] $game~limpet_removal_cost
+if ($game~max_commands = 0)
+	setvar $menus~qss[18] "Unlimited"
+else
+	setvar $menus~qss[18] $game~max_commands
 end
-if (($BOT~USERNAME = "") or ($BOT~USERNAME = 0))
-  getinput $BOT~USERNAME "Please Enter your Login Name"
+if ($game~goldenabled)
+	setvar $menus~qss[19] "Yes"
+else
+	setvar $menus~qss[19] "No"
 end
-if (($BOT~PASSWORD = "") or ($BOT~PASSWORD = 0))
-  getinput $BOT~PASSWORD "Please Enter your Game password"
+if ($game~mbbs)
+	setvar $menus~qss[20] "Yes"
+else
+	setvar $menus~qss[20] "No"
 end
-savevar $BOT~LETTER
-savevar $BOT~USERNAME
-savevar $BOT~PASSWORD
+if ($game~photons_enabled = true)
+	if ($game~multiple_photons = true)
+		setvar $menus~qss[21] "Yes"
+	else
+		setvar $menus~qss[21] "No"
+	end
+else
+	setvar $menus~qss[21] "Disabled"
+end
+setvar $menus~qss[22] ""
+setvar $menus~qss[23] $game~colonist_regen
+setvar $menus~qss[24] $game~ptradesetting&"%"
+setvar $menus~qss[25] $game~steal_factor
+setvar $menus~qss[26] $game~rob_factor
+setvar $menus~qss[27] $game~clear_bust_days
+setvar $menus~qss[28] ""
+setvar $menus~qss[29] $game~port_max
+setvar $menus~qss[30] $game~production_rate&"%"
+setvar $menus~qss[31] $game~production_regen&"%"
+setvar $menus~qss[32] ""
+setvar $menus~qss[33] $game~debris_loss&"%"
+setvar $menus~qss[34] $game~radiation_lifetime
+setvar $menus~qss_total 34
+gosub :menuspacing
+echo #27&"[2J"
+echo "**"
+echo ansi_11&"      Stardock Prices                 Game Statistics*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[1]&ansi_10&""&ansi_7&$menus~qss_var[18]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[2]&ansi_10&""&ansi_7&$menus~qss_var[19]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[3]&ansi_10&""&ansi_7&$menus~qss_var[20]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[4]&ansi_10&""&ansi_7&$menus~qss_var[21]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[5]&ansi_10&""&ansi_7&$menus~qss_var[22]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[6]&ansi_10&""&ansi_7&$menus~qss_var[23]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[7]&ansi_10&""&ansi_7&$menus~qss_var[24]&"*"
+echo ansi_11&" "&ansi_7&$menus~qss_var[8]&ansi_10&""&ansi_7&$menus~qss_var[25]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[9]&ansi_10&""&ansi_7&$menus~qss_var[26]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[10]&ansi_10&""&ansi_7&$menus~qss_var[27]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[11]&ansi_10&""&ansi_7&$menus~qss_var[28]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[12]&ansi_10&""&ansi_7&$menus~qss_var[29]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[13]&ansi_10&""&ansi_7&$menus~qss_var[30]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[14]&ansi_10&""&ansi_7&$menus~qss_var[31]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[15]&ansi_10&""&ansi_7&$menus~qss_var[32]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[16]&ansi_10&""&ansi_7&$menus~qss_var[33]&"*"
+echo ansi_10&" "&ansi_7&$menus~qss_var[17]&ansi_10&""&ansi_7&$menus~qss_var[34]&"*"
+echo "*"
+echo ansi_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ansi_15&"Preferences                Hot Keys"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ansi_7&"**"
+getconsoleinput $menus~chosen_option singlekey
+uppercase $menus~chosen_option
+gosub :bot~killthetriggers
+uppercase $menus~chosen_option
 
-delete $BOT~GCONFIG_FILE
-write $BOT~GCONFIG_FILE $MENUS~NEW_BOT_NAME
-setvar $SWITCHBOARD~BOT_NAME $MENUS~NEW_BOT_NAME
-savevar $SWITCHBOARD~BOT_NAME
-setvar $BOT~BOT_NAME $MENUS~NEW_BOT_NAME
-savevar $BOT~BOT_NAME
+:menus~process_commandpage2
+if ($menus~chosen_option = "?")
+	goto :preferencesmenupage2
+elseif ($menus~chosen_option = ">")
+	goto :preferencesmenupage3
+elseif ($menus~chosen_option = "<")
+	goto :refreshpreferencesmenu
+else
+	gosub :doneprefer
+end
+
+:menus~preferencesmenupage3
+gosub :bot~killthetriggers
+echo #27&"[2J"
+echo "**"
+echo ansi_11&"                  Custom Hotkey Definitions           *"
+gosub :echohotkeys
+echo "*"
+echo ansi_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ansi_15&"Game Stats                    Ship Info"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ansi_7&"**"
+setvar $menus~options "1234567890ABCDEFGHIJKLMNOPRSTUVWX\t "
+getconsoleinput $menus~chosen_option singlekey
+uppercase $menus~chosen_option
+getwordpos $menus~options $menus~pos $menus~chosen_option
+gosub :bot~killthetriggers
+
+:menus~process_commandpage3
+if ($menus~chosen_option = "?")
+	goto :preferencesmenupage3
+elseif ($menus~chosen_option = ">")
+	goto :preferencesmenupage4
+elseif ($menus~chosen_option = "<")
+	goto :preferencesmenupage2
+elseif ($menus~pos > 0)
+	setdeafclients false
+	echo "*What should this hotkey be set to?*"
+	getconsoleinput $menus~temp singlekey
+	setdeafclients true
+	lowercase $menus~temp
+	getcharcode $menus~temp $menus~lower
+	uppercase $menus~temp
+	getcharcode $menus~temp $menus~upper
+	setvar $menus~key $bot~custom_keys[$menus~pos]
+	uppercase $menus~key
+	getcharcode $menus~key $menus~old_upper
+	lowercase $menus~key
+	getcharcode $menus~key $menus~old_lower
+	if ((((($bot~hotkeys[$menus~upper] = 0) or ($bot~hotkeys[$menus~upper] = "")) and (($bot~hotkeys[$menus~lower] = 0) or ($bot~hotkeys[$menus~lower] = "")))) and (((($menus~lower < 48) or ($menus~lower > 57)) and ($menus~temp <> "?"))))
+		setvar $bot~hotkeys[$menus~old_upper] ""
+		setvar $bot~hotkeys[$menus~old_lower] ""
+		setvar $bot~hotkeys[$menus~upper] $menus~pos
+		setvar $bot~hotkeys[$menus~lower] $menus~pos
+		setvar $bot~custom_keys[$menus~pos] $menus~temp
+		if ($menus~pos > 17)
+			setvar $menus~question "What is the bot command to connect to this hotkey?"
+			gosub :getinput
+			setvar $menus~temp $menus~response
+			setvar $bot~custom_commands[$menus~pos] $menus~temp
+		end
+		gosub :bot~write_hotkey_config
+	else
+		setdeafclients false
+		echo ansi_4 "*Hot key already bound to another function.**" ansi_7
+		setdeafclients true
+		setdelaytrigger warningdelay :preferencesmenupage3 1000
+		pause
+	end
+	goto :preferencesmenupage3
+else
+	gosub :doneprefer
+end
+
+:menus~preferencesmenupage4
+gosub :bot~killthetriggers
+setvar $menus~i 1
+if ($ship~shipcounter > 10)
+	setvar $menus~pagesexist true
+else
+	setvar $menus~pagesexist false
+end
+
+:menus~nextshippage
+gosub :ship~loadshipinfo
+setvar $menus~shipschanged false
+setvar $menus~thispage $menus~i
+setvar $menus~menucount 0
+echo #27&"[2J"
+echo "**"
+echo ansi_11&"                      Known Ship Information           **"
+echo ansi_15 "    Type                      Def  Off  TPW  D-Bonus?   Shields   Fighters *"
+echo "   " #27 "[1m" ansi_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
+while (($menus~i < $ship~shipcounter) and ($menus~menucount < 10))
+	cuttext $ship~shiplist[$menus~i]&"                                    " $menus~temp 1 25
+	cuttext $ship~shiplist[$menus~i][2]&"  " $menus~tempdefhead 1 1
+	cuttext $ship~shiplist[$menus~i][2]&"  " $menus~tempdeftail 2 1
+	cuttext $ship~shiplist[$menus~i][3]&"  " $menus~tempoffhead 1 1
+	cuttext $ship~shiplist[$menus~i][3]&"  " $menus~tempofftail 2 1
+	if ($ship~shiplist[$menus~i][8])
+		setvar $menus~tempdefender ansi_12&"Yes"&ansi_14
+	else
+		setvar $menus~tempdefender "No "
+	end
+	cuttext $ship~shiplist[$menus~i][1]&"              " $menus~tempshields 1 10
+	cuttext $ship~shiplist[$menus~i][5]&"              " $menus~tempfighters 1 6
+	cuttext $ship~shiplist[$menus~i][7]&"              " $menus~temptpw 1 3
+	echo ansi_14 "<" $menus~menucount "> " $menus~temp " " $menus~tempdefhead "." $menus~tempdeftail "  " $menus~tempoffhead "." $menus~tempofftail "   " $menus~temptpw "   " $menus~tempdefender "       " $menus~tempshields " " $menus~tempfighters "*"
+	add $menus~i 1
+	add $menus~menucount 1
+end
+echo "   " #27 "[1m" ansi_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
+echo "*"
+if ($menus~pagesexist = true)
+	echo "  "&ansi_5&"<"&ansi_6&"+"&ansi_5&">"&ansi_6&" More Ships*"
+end
+echo "*"
+echo ansi_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ansi_15&"Hot Keys                 Planet Types"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ansi_7&"**"
+
+echo "  "&ansi_5&"Toggle defender status (0-9)? "
+getconsoleinput $menus~selection singlekey
+setvar $menus~options 1234567890
+uppercase $menus~selection
+getwordpos $menus~options $menus~pos $menus~selection
+gosub :bot~killthetriggers
+if ($menus~selection = "<")
+	gosub :rewrite_cap_file
+	goto :preferencesmenupage3
+elseif ($menus~selection = ">")
+	gosub :rewrite_cap_file
+	goto :preferencesmenupageplanet
+elseif ($menus~selection = "?")
+	gosub :rewrite_cap_file
+	goto :preferencesmenupage4
+elseif ($menus~pagesexist and ($menus~selection = "+"))
+	if ($menus~i >= $ship~shipcounter)
+		setvar $menus~i 1
+	end
+	goto :nextshippage
+elseif ($menus~pos > 0)
+	if ($ship~shiplist[($menus~selection + $menus~thispage)][8])
+		setvar $ship~shiplist[($menus~selection + $menus~thispage)][8] false
+	else
+		setvar $ship~shiplist[($menus~selection + $menus~thispage)][8] true
+	end
+	setvar $menus~i $menus~thispage
+	setvar $menus~shipschanged true
+	gosub :rewrite_cap_file
+	goto :nextshippage
+else
+	gosub :rewrite_cap_file
+	gosub :doneprefer
+end
+
+:menus~preferencesmenupageplanet
+gosub :bot~killthetriggers
+setvar $menus~i 1
+setvar $menus~planetschanged false
+if ($planet~planetcounter > 10)
+	setvar $menus~pagesexist true
+else
+	setvar $menus~pagesexist false
+end
+
+:menus~nextplanetinfopage
+setvar $menus~thispage $menus~i
+setvar $menus~menucount 0
+echo #27&"[2J"
+echo "**"
+echo ansi_11&"            Planet Type Information  (Max Colos Per Product Type)         **"
+echo ansi_15 "    Type                       Min Fuel  Max Fuel  Min Org  Max Org  Min Equ  Max Equ  Keeper? *"
+echo "   " #27 "[1m" ansi_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
+while (($menus~i <= $planet~planetcounter) and ($menus~menucount < 10))
+	cuttext $planet~planetlist[$menus~i]&"                                    " $menus~temp 8 28
+	cuttext $planet~planetlist[$menus~i][1]&"                                 " $menus~tempfuelmin 1 8
+	cuttext $planet~planetlist[$menus~i][2]&"                                 " $menus~tempfuel 1 8
+	cuttext $planet~planetlist[$menus~i][3]&"                                 " $menus~temporgmin 1 8
+	cuttext $planet~planetlist[$menus~i][4]&"                                 " $menus~temporg 1 8
+	cuttext $planet~planetlist[$menus~i][5]&"                                 " $menus~tempequipmin 1 8
+	cuttext $planet~planetlist[$menus~i][6]&"                                 " $menus~tempequip 1 8
+	if ($planet~planetlist[$menus~i][7] = true)
+		setvar $menus~tempkeeper "Yes"
+	else
+		setvar $menus~tempkeeper "No"
+	end
+	echo ansi_14 "<" $menus~menucount ">" $menus~temp " " $menus~tempfuelmin " " $menus~tempfuel "  " $menus~temporgmin "  " $menus~temporg "  " $menus~tempequipmin "  " $menus~tempequip " " $menus~tempkeeper "*"
+	add $menus~i 1
+	add $menus~menucount 1
+end
+echo "   " #27 "[1m" ansi_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
+echo "*"
+if ($menus~pagesexist = true)
+	echo "  "&ansi_5&"<"&ansi_6&"+"&ansi_5&">"&ansi_6&" More Planets*"
+end
+echo "*"
+echo ansi_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ansi_15&"Hot Keys                 Planet List"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ansi_7&"**"
+if ($menus~toggleagain = true)
+	goto :toggleagain
+end
+
+echo "  "&ansi_5&"Update Planet Info (0-9)?   Toggle (k)eeper planet"
+getconsoleinput $menus~selection singlekey
+setvar $menus~options 1234567890
+uppercase $menus~selection
+getwordpos $menus~options $menus~pos $menus~selection
+gosub :bot~killthetriggers
+if ($menus~selection = "<")
+	gosub :rewrite_planet_file
+	goto :preferencesmenupage4
+elseif ($menus~selection = ">")
+	gosub :rewrite_planet_file
+	goto :preferencesmenupage5
+elseif ($menus~selection = "?")
+	gosub :rewrite_planet_file
+	goto :preferencesmenupageplanet
+elseif ($menus~selection = "K")
+
+	:menus~toggleagain
+	echo "  "&ansi_5&"Which planet to set keeper status? (0-9)"
+	getconsoleinput $menus~planet singlekey
+	setvar $menus~options 1234567890
+	uppercase $menus~planet
+	getwordpos $menus~options $menus~pos $menus~planet
+	setvar $menus~toggleagain false
+	if ($menus~pos > 0)
+		if ($planet~planetlist[($menus~planet + $menus~thispage)][7] = true)
+			setvar $planet~planetlist[($menus~planet + $menus~thispage)][7] false
+		else
+			setvar $planet~planetlist[($menus~planet + $menus~thispage)][7] true
+		end
+		setvar $menus~toggleagain true
+	else
+		gosub :rewrite_planet_file
+	end
+	setvar $menus~i $menus~thispage
+	setvar $menus~planetschanged true
+	gosub :rewrite_planet_file
+	goto :preferencesmenupageplanet
+elseif ($menus~pagesexist and ($menus~selection = "+"))
+	if ($menus~i >= $planet~planetcounter)
+		setvar $menus~i 1
+	end
+	goto :nextplanetinfopage
+elseif ($menus~pos > 0)
+	setvar $menus~question "What are the min fuel colos for "&$planet~planetlist[($menus~selection + $menus~thispage)]&"?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test = false)
+		goto :preferencesmenupageplanet
+	end
+	setvar $planet~planetlist[($menus~selection + $menus~thispage)][1] $menus~temp
+
+	setvar $menus~question "What are the max fuel colos for "&$planet~planetlist[($menus~selection + $menus~thispage)]&"?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test = false)
+		goto :preferencesmenupageplanet
+	end
+	setvar $planet~planetlist[($menus~selection + $menus~thispage)][2] $menus~temp
+
+	setvar $menus~question "What are the min organics colos for "&$planet~planetlist[($menus~selection + $menus~thispage)]&"?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test = false)
+		goto :preferencesmenupageplanet
+	end
+	setvar $planet~planetlist[($menus~selection + $menus~thispage)][3] $menus~temp
+
+	setvar $menus~question "What are the max organics colos for "&$planet~planetlist[($menus~selection + $menus~thispage)]&"?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test = false)
+		goto :preferencesmenupageplanet
+	end
+	setvar $planet~planetlist[($menus~selection + $menus~thispage)][4] $menus~temp
+
+	setvar $menus~question "What are the min equipment colos for "&$planet~planetlist[($menus~selection + $menus~thispage)]&"?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test = false)
+		goto :preferencesmenupageplanet
+	end
+	setvar $planet~planetlist[($menus~selection + $menus~thispage)][5] $menus~temp
+
+	setvar $menus~question "What are the max equipment colos for "&$planet~planetlist[($menus~selection + $menus~thispage)]&"?"
+	gosub :getinput
+	setvar $menus~temp $menus~response
+	isnumber $menus~test $menus~temp
+	if ($menus~test = false)
+		goto :preferencesmenupageplanet
+	end
+	setvar $planet~planetlist[($menus~selection + $menus~thispage)][6] $menus~temp
+
+	setdeafclients false
+	echo "Is this planet a keeper? (y/n)*"
+	getconsoleinput $menus~keeperselection singlekey
+	setdeafclients true
+	uppercase $menus~keeperselection
+	if ($menus~keeperselection = "Y")
+		setvar $planet~planetlist[($menus~selection + $menus~thispage)][7] true
+	else
+		setvar $planet~planetlist[($menus~selection + $menus~thispage)][7] false
+	end
+	setvar $menus~i $menus~thispage
+	setvar $menus~planetschanged true
+	gosub :rewrite_planet_file
+	goto :preferencesmenupageplanet
+else
+	gosub :rewrite_planet_file
+	gosub :doneprefer
+end
+
+:menus~rewrite_cap_file
+if ($menus~shipschanged)
+	setvar $menus~gbonus_file $bot~folder&"/dbonus-ships.cfg"
+	delete $menus~gbonus_file
+	delete $ship~cap_file
+	setvar $menus~j 1
+	while ($menus~j < $ship~shipcounter)
+		write $ship~cap_file $ship~shiplist[$menus~j][1]&" "&$ship~shiplist[$menus~j][2]&" "&$ship~shiplist[$menus~j][3]&" "&$ship~shiplist[$menus~j][9]&" "&$ship~shiplist[$menus~j][4]&" "&$ship~shiplist[$menus~j][5]&" "&$ship~shiplist[$menus~j][6]&" "&$ship~shiplist[$menus~j][7]&" "&$ship~shiplist[$menus~j][8]&" "&$ship~shiplist[$menus~j]
+		if ($ship~shiplist[$menus~j][8])
+			write $menus~gbonus_file $ship~shiplist[$menus~j]
+		end
+		add $menus~j 1
+	end
+end
 return
-:MENUS~PREGAMEMENULOAD
 
+:menus~rewrite_planet_file
+if ($menus~planetschanged)
+	delete $planet~planet_file
+	setvar $menus~j 1
+	while ($menus~j <= $planet~planetcounter)
+		write $planet~planet_file $planet~planetlist[$menus~j][1]&" "&$planet~planetlist[$menus~j][2]&" "&$planet~planetlist[$menus~j][3]&" "&$planet~planetlist[$menus~j][4]&" "&$planet~planetlist[$menus~j][5]&" "&$planet~planetlist[$menus~j][6]&" "&$planet~planetlist[$menus~j][7]&"  "&$planet~planetlist[$menus~j]
+		add $menus~j 1
+	end
+end
+return
 
+:menus~preferencesmenupage5
+setvar $menus~i 2
 
+:menus~nextplanetpage
+echo ansi_12 "*Searching for enemy planets in database" ansi_14 "...*"
+gosub :bot~killthetriggers
+setvar $menus~foundsectors 0
+setvar $menus~display ""
+while (($menus~i <= sectors) and ($menus~foundsectors < 3))
+	getsectorparameter $menus~i "BUBBLE" $menus~isbubble
+	if ($menus~isbubble <> true)
+		if (sector.planetcount[$menus~i] > 0)
+			setvar $map~displaysector $menus~i
+			gosub :map~displaysector
+			setvar $menus~display $menus~display&"*"&$map~output
+			add $menus~foundsectors 1
+		end
+	end
+	add $menus~i 1
+end
+echo #27&"[2J"
+echo "**"
+echo ansi_11&"                         Known Planet List*             ("&ansi_14&"Planets in database (Not in bubble)"&ansi_11&")              **"
+echo "   " #27 "[1m" ansi_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
+setvar $menus~pagesexist false
+if ($menus~foundsectors > 0)
+	echo $menus~display
+	if ($menus~i >= sectors)
+		echo "*    [End of List]"
+		setvar $menus~i 2
+	else
+		setvar $menus~pagesexist true
+	end
+else
+	echo "*    [End of List]"
+end
+echo "*"
+echo "   " #27 "[1m" ansi_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
+echo "*"
+if ($menus~pagesexist)
+	echo "  "&ansi_5&"<"&ansi_6&"+"&ansi_5&">"&ansi_6&" More Planets*"
+end
+echo "*"
+echo ansi_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ansi_15&"Planet Types                 Trader List"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ansi_7&"**"
+getconsoleinput $menus~selection singlekey
+setvar $menus~options ""
+uppercase $menus~selection
+getwordpos $menus~options $menus~pos $menus~selection
+gosub :bot~killthetriggers
+if ($menus~selection = "<")
+	goto :preferencesmenupageplanet
+elseif ($menus~selection = ">")
+	goto :preferencesmenupage6
+elseif ($menus~selection = "?")
+	goto :preferencesmenupage5
+elseif ($menus~selection = "+")
+	goto :nextplanetpage
+else
+	gosub :doneprefer
+end
 
+:menus~preferencesmenupage6
+setvar $menus~i 2
+
+:menus~nexttraderpage
+echo ansi_12 "*Searching for traders in database" ansi_14 "...*"
+gosub :bot~killthetriggers
+setvar $menus~foundsectors 0
+setvar $menus~display ""
+while (($menus~i <= sectors) and ($menus~foundsectors < 3))
+	if (sector.tradercount[$menus~i] > 0)
+		setvar $map~displaysector $menus~i
+		gosub :map~displaysector
+		setvar $menus~display $menus~display&"*"&$map~output
+		add $menus~foundsectors 1
+	end
+	add $menus~i 1
+end
+echo #27&"[2J"
+echo "**"
+echo ansi_11&"                         Trader List*             ("&ansi_14&"Traders last seen in sectors"&ansi_11&")              **"
+echo "   " #27 "[1m" ansi_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
+setvar $menus~pagesexist false
+if ($menus~foundsectors > 0)
+	echo $menus~display
+	if ($menus~i >= sectors)
+		echo "*    [End of List]"
+		setvar $menus~i 2
+	else
+		setvar $menus~pagesexist true
+	end
+else
+	echo "*    [End of List]"
+end
+echo "*"
+echo "   " #27 "[1m" ansi_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
+echo "*"
+if ($menus~pagesexist)
+	echo "  "&ansi_5&"<"&ansi_6&"+"&ansi_5&">"&ansi_6&" More Planets*"
+end
+echo "*"
+echo ansi_12&"           "&#27&"[35m["&#27&"[32m<"&#27&"[35m]"&ansi_15&"Planet Info                 Preferences"&#27&"[35m["&#27&"[32m>"&#27&"[35m]*"&ansi_7&"**"
+
+getconsoleinput $menus~selection singlekey
+setvar $menus~options ""
+uppercase $menus~selection
+getwordpos $menus~options $menus~pos $menus~selection
+gosub :bot~killthetriggers
+if ($menus~selection = "<")
+	goto :preferencesmenupage5
+elseif ($menus~selection = ">")
+	goto :refreshpreferencesmenu
+elseif ($menus~selection = "?")
+	goto :preferencesmenupage6
+elseif ($menus~selection = "+")
+	goto :nexttraderpage
+else
+	gosub :doneprefer
+end
+
+:menus~echohotkeys
+setarray $menus~h 34
+setarray $menus~qss 34
+setvar $menus~h[1] "Auto Kill            "
+setvar $menus~h[2] "Auto Capture         "
+setvar $menus~h[3] "Auto Refurb          "
+setvar $menus~h[4] "Surround             "
+setvar $menus~h[5] "Holo-Torp            "
+setvar $menus~h[6] "Transwarp Drive      "
+setvar $menus~h[7] "Planet Macros        "
+setvar $menus~h[8] "Quick Script Loading "
+setvar $menus~h[9] "Dny Holo Kill        "
+setvar $menus~h[10] "Stop Current Mode    "
+setvar $menus~h[11] "Dock Macros          "
+setvar $menus~h[12] "Exit Enter           "
+setvar $menus~h[13] "Mow                  "
+setvar $menus~h[14] "Fast Foton           "
+setvar $menus~h[15] "Clear Sector         "
+setvar $menus~h[16] "Preferences          "
+setvar $menus~h[17] "LS Dock Shopper      "
+setvar $menus~i 1
+while ($menus~i <= 16)
+	if ($bot~custom_commands[($menus~i + 17)] <> 0)
+		setvar $menus~h[($menus~i + 17)] $bot~custom_commands[($menus~i + 17)]&"                              "
+		cuttext $menus~h[($menus~i + 17)] $menus~h[($menus~i + 17)] 1 22
+	else
+		setvar $menus~h[($menus~i + 17)] "Custom Hotkey "&$menus~i&"        "
+		cuttext $menus~h[($menus~i + 17)] $menus~h[($menus~i + 17)] 1 22
+	end
+	add $menus~i 1
+end
+setvar $menus~h[34] "                     "
+setvar $menus~i 1
+while ($menus~i <= 33)
+	if (($bot~custom_keys[$menus~i] <> 0) and ($bot~custom_keys[$menus~i] <> ""))
+		if (($bot~custom_keys[$menus~i] = #9) or ($bot~custom_keys[$menus~i] = "\t"))
+			setvar $menus~qss[$menus~i] "TAB-TAB"
+		elseif ($bot~custom_keys[$menus~i] = #13)
+			setvar $menus~qss[$menus~i] "TAB-Enter"
+		elseif ($bot~custom_keys[$menus~i] = #8)
+			setvar $menus~qss[$menus~i] "TAB-Backspace"
+		elseif ($bot~custom_keys[$menus~i] = #32)
+			setvar $menus~qss[$menus~i] "TAB-Spacebar"
+		else
+			setvar $menus~qss[$menus~i] "TAB-"&$bot~custom_keys[$menus~i]
+		end
+	else
+		setvar $menus~qss[$menus~i] "Undefined"
+	end
+	add $menus~i 1
+end
+setvar $menus~qss[34] ""
+setvar $menus~qss_total 34
+gosub :menuspacing
+echo ansi_10&#27&"[35m<"&#27&"[32m1"&#27&"[35m> "&ansi_7&$menus~qss_var[1]&ansi_10&#27&"[35m<"&#27&"[32mH"&#27&"[35m> "&ansi_7&$menus~qss_var[18]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m2"&#27&"[35m> "&ansi_7&$menus~qss_var[2]&ansi_10&#27&"[35m<"&#27&"[32mI"&#27&"[35m> "&ansi_7&$menus~qss_var[19]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m3"&#27&"[35m> "&ansi_7&$menus~qss_var[3]&ansi_10&#27&"[35m<"&#27&"[32mJ"&#27&"[35m> "&ansi_7&$menus~qss_var[20]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m4"&#27&"[35m> "&ansi_7&$menus~qss_var[4]&ansi_10&#27&"[35m<"&#27&"[32mK"&#27&"[35m> "&ansi_7&$menus~qss_var[21]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m5"&#27&"[35m> "&ansi_7&$menus~qss_var[5]&ansi_10&#27&"[35m<"&#27&"[32mL"&#27&"[35m> "&ansi_7&$menus~qss_var[22]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m6"&#27&"[35m> "&ansi_7&$menus~qss_var[6]&ansi_10&#27&"[35m<"&#27&"[32mM"&#27&"[35m> "&ansi_7&$menus~qss_var[23]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m7"&#27&"[35m> "&ansi_7&$menus~qss_var[7]&ansi_10&#27&"[35m<"&#27&"[32mN"&#27&"[35m> "&ansi_7&$menus~qss_var[24]&"*"
+echo ansi_11&#27&"[35m<"&#27&"[32m8"&#27&"[35m> "&ansi_7&$menus~qss_var[8]&ansi_10&#27&"[35m<"&#27&"[32mO"&#27&"[35m> "&ansi_7&$menus~qss_var[25]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m9"&#27&"[35m> "&ansi_7&$menus~qss_var[9]&ansi_10&#27&"[35m<"&#27&"[32mP"&#27&"[35m> "&ansi_7&$menus~qss_var[26]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m0"&#27&"[35m> "&ansi_7&$menus~qss_var[10]&ansi_10&#27&"[35m<"&#27&"[32mR"&#27&"[35m> "&ansi_7&$menus~qss_var[27]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mA"&#27&"[35m> "&ansi_7&$menus~qss_var[11]&ansi_10&#27&"[35m<"&#27&"[32mS"&#27&"[35m> "&ansi_7&$menus~qss_var[28]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mB"&#27&"[35m> "&ansi_7&$menus~qss_var[12]&ansi_10&#27&"[35m<"&#27&"[32mT"&#27&"[35m> "&ansi_7&$menus~qss_var[29]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mC"&#27&"[35m> "&ansi_7&$menus~qss_var[13]&ansi_10&#27&"[35m<"&#27&"[32mU"&#27&"[35m> "&ansi_7&$menus~qss_var[30]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mD"&#27&"[35m> "&ansi_7&$menus~qss_var[14]&ansi_10&#27&"[35m<"&#27&"[32mV"&#27&"[35m> "&ansi_7&$menus~qss_var[31]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mE"&#27&"[35m> "&ansi_7&$menus~qss_var[15]&ansi_10&#27&"[35m<"&#27&"[32mW"&#27&"[35m> "&ansi_7&$menus~qss_var[32]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mF"&#27&"[35m> "&ansi_7&$menus~qss_var[16]&ansi_10&#27&"[35m<"&#27&"[32mX"&#27&"[35m> "&ansi_7&$menus~qss_var[33]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mG"&#27&"[35m> "&ansi_7&$menus~qss_var[17]&ansi_10&""&ansi_7&$menus~qss_var[34]&"*"
+return
+
+:menus~add_game
+setvar $menus~new_bot_name ""
+getinput $menus~new_bot_name ansi_13&"What is the 'in game' name of the bot? (one word, no spaces)"&ansi_7
+striptext $menus~new_bot_name "^"
+striptext $menus~new_bot_name " "
+lowercase $menus~new_bot_name
+if ($menus~new_bot_name = "")
+	goto :add_game
+end
+setvar $bot~password password
+setvar $bot~username loginname
+setvar $bot~letter game
+if (($bot~letter = "") or ($bot~letter = 0))
+	getinput $bot~letter "Please Enter your Game Letter"
+end
+if (($bot~username = "") or ($bot~username = 0))
+	getinput $bot~username "Please Enter your Login Name"
+end
+if (($bot~password = "") or ($bot~password = 0))
+	getinput $bot~password "Please Enter your Game password"
+end
+savevar $bot~letter
+savevar $bot~username
+savevar $bot~password
+
+delete $bot~gconfig_file
+write $bot~gconfig_file $menus~new_bot_name
+setvar $switchboard~bot_name $menus~new_bot_name
+savevar $switchboard~bot_name
+setvar $bot~bot_name $menus~new_bot_name
+savevar $bot~bot_name
+return
+
+:menus~pregamemenuload
 killalltriggers
-loadvar $BOT~PASSWORD
-loadvar $SWITCHBOARD~BOT_NAME
-setvar $BOT~BOT_NAME $SWITCHBOARD~BOT_NAME
-loadvar $BOT~STARTSHIPNAME
-loadvar $BOT~MOWTODOCK
-loadvar $BOT~MOWTODOCKBACKDOOR
-loadvar $BOT~STARTGAMEDELAY
-loadvar $BOT~ISCEO
-loadvar $BOT~CORPNAME
-if ($BOT~CORPNAME = 0)
-  setvar $BOT~CORPNAME ""
-  savevar $BOT~CORPNAME
+loadvar $bot~password
+loadvar $switchboard~bot_name
+setvar $bot~bot_name $switchboard~bot_name
+loadvar $bot~startshipname
+loadvar $bot~mowtodock
+loadvar $bot~mowtodockbackdoor
+loadvar $bot~startgamedelay
+loadvar $bot~isceo
+loadvar $bot~corpname
+if ($bot~corpname = 0)
+	setvar $bot~corpname ""
+	savevar $bot~corpname
 end
-loadvar $BOT~SUBSPACE
-loadvar $MENUS~CORPNUMBER
-loadvar $BOT~CORPPASSWORD
-if ($BOT~CORPPASSWORD = 0)
-  setvar $BOT~CORPPASSWORD ""
-  savevar $BOT~CORPPASSWORD
+loadvar $bot~subspace
+loadvar $menus~corpnumber
+loadvar $bot~corppassword
+if ($bot~corppassword = 0)
+	setvar $bot~corppassword ""
+	savevar $bot~corppassword
 end
-loadvar $BOT~USERNAME
-loadvar $BOT~LETTER
-loadvar $BOT~PASSWORD
-if ($BOT~PASSWORD = 0)
-  setvar $BOT~PASSWORD PASSWORD
+loadvar $bot~username
+loadvar $bot~letter
+loadvar $bot~password
+if ($bot~password = 0)
+	setvar $bot~password password
 end
-if ($BOT~USERNAME = 0)
-  setvar $BOT~USERNAME LOGINNAME
-  savevar $BOT~USERNAME
+if ($bot~username = 0)
+	setvar $bot~username loginname
+	savevar $bot~username
 end
-if ($BOT~SERVERNAME = 0)
-  setvar $BOT~SERVERNAME LOGINNAME
-  savevar $BOT~SERVERNAME
+if ($bot~servername = 0)
+	setvar $bot~servername loginname
+	savevar $bot~servername
 end
-if ($BOT~LETTER = 0)
-  setvar $BOT~LETTER GAME
-  savevar $BOT~LETTER
+if ($bot~letter = 0)
+	setvar $bot~letter game
+	savevar $bot~letter
 end
-if (($BOT~STARTSHIPNAME = 0) or ($BOT~STARTSHIPNAME = ""))
-  setvar $BOT~STARTSHIPNAME "Mind ()ver Matter"
+if (($bot~startshipname = 0) or ($bot~startshipname = ""))
+	setvar $bot~startshipname "Mind ()ver Matter"
 end
-if ($SWITCHBOARD~BOT_NAME = "")
-  setvar $BOT~NEWGAMEDAY1 TRUE
-  setvar $BOT~NEWGAMEOLDER FALSE
+if ($switchboard~bot_name = "")
+	setvar $bot~newgameday1 true
+	setvar $bot~newgameolder false
 else
-  setvar $BOT~NEWGAMEDAY1 FALSE
-  setvar $BOT~NEWGAMEOLDER TRUE
+	setvar $bot~newgameday1 false
+	setvar $bot~newgameolder true
 end
-if ($BOT~ISSHIPDESTROYED = TRUE)
-  setvar $BOT~NEWGAMEDAY1 FALSE
-  setvar $BOT~NEWGAMEOLDER FALSE
+if ($bot~isshipdestroyed = true)
+	setvar $bot~newgameday1 false
+	setvar $bot~newgameolder false
 end
-setvar $BOT~STARTMACRO ""
-:MENUS~PREGAMEMENU
-setarray $MENUS~H 26
-setarray $MENUS~QSS 26
-setvar $MENUS~H[1] "Bot Name:        "
-setvar $MENUS~H[2] "Server Name:     "
-setvar $MENUS~H[3] "Login Name:      "
-setvar $MENUS~H[4] "Password:        "
-setvar $MENUS~H[5] "Game Letter:     "
-setvar $MENUS~H[6] "Ship Name:       "
-setvar $MENUS~H[7] "Type of login:   "
-setvar $MENUS~H[8] "Are you CEO?     "
-setvar $MENUS~H[9] "Corp Name:       "
-setvar $MENUS~H[10] "Corp Password:   "
-setvar $MENUS~H[11] "Subspace Channel:"
-setvar $MENUS~H[12] "Delay (Minutes): "
-setvar $MENUS~H[13] "After login:     "
-setvar $MENUS~H[14] "Bot command to perform:"
-setvar $MENUS~H[15] "Mow Option       "
-setvar $MENUS~H[16] "Macro to fire after login:"
-setvar $MENUS~H[17] "Teammate names:  "
-setvar $MENUS~H[18] "                 "
-setvar $MENUS~H[19] "                 "
-setvar $MENUS~H[20] "                 "
-setvar $MENUS~H[21] "                 "
-setvar $MENUS~H[22] "                 "
-setvar $MENUS~H[23] "                 "
-setvar $MENUS~H[24] "                 "
-setvar $MENUS~H[25] "                 "
-setvar $MENUS~H[26] "                 "
-setvar $MENUS~QSS[1] $SWITCHBOARD~BOT_NAME
-setvar $MENUS~QSS[2] $BOT~SERVERNAME
-setvar $MENUS~QSS[3] $BOT~USERNAME
-setvar $MENUS~QSS[4] $BOT~PASSWORD
-setvar $MENUS~QSS[5] $BOT~LETTER
-setvar $MENUS~QSS[6] $BOT~STARTSHIPNAME
-if ($BOT~NEWGAMEDAY1)
-  setvar $MENUS~QSS[7] "New Game Account Creation"
-elseif ($BOT~NEWGAMEOLDER)
-  setvar $MENUS~QSS[7] "Normal Relog"
+setvar $bot~startmacro ""
+
+:menus~pregamemenu
+setarray $menus~h 26
+setarray $menus~qss 26
+setvar $menus~h[1] "Bot Name:        "
+setvar $menus~h[2] "Server Name:     "
+setvar $menus~h[3] "Login Name:      "
+setvar $menus~h[4] "Password:        "
+setvar $menus~h[5] "Game Letter:     "
+setvar $menus~h[6] "Ship Name:       "
+setvar $menus~h[7] "Type of login:   "
+setvar $menus~h[8] "Are you CEO?     "
+setvar $menus~h[9] "Corp Name:       "
+setvar $menus~h[10] "Corp Password:   "
+setvar $menus~h[11] "Subspace Channel:"
+setvar $menus~h[12] "Delay (Minutes): "
+setvar $menus~h[13] "After login:     "
+setvar $menus~h[14] "Bot command to perform:"
+setvar $menus~h[15] "Mow Option       "
+setvar $menus~h[16] "Macro to fire after login:"
+setvar $menus~h[17] "Teammate names:  "
+setvar $menus~h[18] "                 "
+setvar $menus~h[19] "                 "
+setvar $menus~h[20] "                 "
+setvar $menus~h[21] "                 "
+setvar $menus~h[22] "                 "
+setvar $menus~h[23] "                 "
+setvar $menus~h[24] "                 "
+setvar $menus~h[25] "                 "
+setvar $menus~h[26] "                 "
+setvar $menus~qss[1] $switchboard~bot_name
+setvar $menus~qss[2] $bot~servername
+setvar $menus~qss[3] $bot~username
+setvar $menus~qss[4] $bot~password
+setvar $menus~qss[5] $bot~letter
+setvar $menus~qss[6] $bot~startshipname
+if ($bot~newgameday1)
+	setvar $menus~qss[7] "New Game Account Creation"
+elseif ($bot~newgameolder)
+	setvar $menus~qss[7] "Normal Relog"
 else
-  setvar $MENUS~QSS[7] "Return after being destroyed."
+	setvar $menus~qss[7] "Return after being destroyed."
 end
-if ($BOT~ISCEO)
-  setvar $MENUS~QSS[8] "Yes"
+if ($bot~isceo)
+	setvar $menus~qss[8] "Yes"
 else
-  setvar $MENUS~QSS[8] "No"
+	setvar $menus~qss[8] "No"
 end
-loadvar $BOT~CORPNAME
-setvar $MENUS~QSS[9] $BOT~CORPNAME
-setvar $MENUS~QSS[10] $BOT~CORPPASSWORD
-setvar $MENUS~QSS[11] $BOT~SUBSPACE
-setvar $MENUS~QSS[12] $BOT~STARTGAMEDELAY
-if ($BOT~MOWTODOCK)
-  setvar $MENUS~QSS[13] "Mow To Stardock"
-elseif ($MENUS~FMOWTODOCK)
-  setvar $MENUS~QSS[13] "Fuel Mow to Stardock"
-elseif ($MENUS~MOWTOALPHA)
-  setvar $MENUS~QSS[13] "Mow To Alpha"
-elseif ($MENUS~MOWTORYLOS)
-  setvar $MENUS~QSS[13] "Mow To Rylos"
-elseif ($MENUS~MOWTOOTHER)
-  setvar $MENUS~QSS[13] "Mow To Custom TA"
-elseif ($MENUS~XPORTTOSHIP)
-  setvar $MENUS~QSS[13] "Xport to ship"
-elseif ($MENUS~LANDONTERRA)
-  setvar $MENUS~QSS[13] "Land on Terra"
-elseif ($MENUS~LANDONSTARDOCK)
-  setvar $MENUS~QSS[13] "Land on Stardock"
+loadvar $bot~corpname
+setvar $menus~qss[9] $bot~corpname
+setvar $menus~qss[10] $bot~corppassword
+setvar $menus~qss[11] $bot~subspace
+setvar $menus~qss[12] $bot~startgamedelay
+if ($bot~mowtodock)
+	setvar $menus~qss[13] "Mow To Stardock"
+elseif ($menus~fmowtodock)
+	setvar $menus~qss[13] "Fuel Mow to Stardock"
+elseif ($menus~mowtoalpha)
+	setvar $menus~qss[13] "Mow To Alpha"
+elseif ($menus~mowtorylos)
+	setvar $menus~qss[13] "Mow To Rylos"
+elseif ($menus~mowtoother)
+	setvar $menus~qss[13] "Mow To Custom TA"
+elseif ($menus~xporttoship)
+	setvar $menus~qss[13] "Xport to ship"
+elseif ($menus~landonterra)
+	setvar $menus~qss[13] "Land on Terra"
+elseif ($menus~landonstardock)
+	setvar $menus~qss[13] "Land on Stardock"
 else
-  setvar $MENUS~QSS[13] "Nothing"
+	setvar $menus~qss[13] "Nothing"
 end
-loadvar $MENUS~COMMAND_TO_ISSUE
-if (($MENUS~COMMAND_TO_ISSUE = "") or ($MENUS~COMMAND_TO_ISSUE = 0))
-  setvar $MENUS~QSS[14] "None"
+loadvar $menus~command_to_issue
+if (($menus~command_to_issue = "") or ($menus~command_to_issue = 0))
+	setvar $menus~qss[14] "None"
 else
-  setvar $MENUS~QSS[14] $MENUS~COMMAND_TO_ISSUE
+	setvar $menus~qss[14] $menus~command_to_issue
 end
-loadvar $MENUS~START_MOW_OPTION
-if (($MENUS~START_MOW_OPTION = "") or ($MENUS~START_MOW_OPTION = 0))
-  setvar $MENUS~QSS[15] "Direct"
-elseif ($MENUS~START_MOW_OPTION = "backdoor")
-  setvar $MENUS~QSS[15] "Via Backdoor"
-elseif ($MENUS~START_MOW_OPTION = "i1")
-  setvar $MENUS~QSS[15] "Indirect Mow 1"
-elseif ($MENUS~START_MOW_OPTION = "i2")
-  setvar $MENUS~QSS[15] "Indirect Mow 2"
-elseif ($MENUS~START_MOW_OPTION = "i3")
-  setvar $MENUS~QSS[15] "Indirect Mow 3"
+loadvar $menus~start_mow_option
+if (($menus~start_mow_option = "") or ($menus~start_mow_option = 0))
+	setvar $menus~qss[15] "Direct"
+elseif ($menus~start_mow_option = "backdoor")
+	setvar $menus~qss[15] "Via Backdoor"
+elseif ($menus~start_mow_option = "i1")
+	setvar $menus~qss[15] "Indirect Mow 1"
+elseif ($menus~start_mow_option = "i2")
+	setvar $menus~qss[15] "Indirect Mow 2"
+elseif ($menus~start_mow_option = "i3")
+	setvar $menus~qss[15] "Indirect Mow 3"
 end
-if (($BOT~STARTMACRO = "") or ($BOT~STARTMACRO = 0))
-  setvar $MENUS~QSS[16] "None"
+if (($bot~startmacro = "") or ($bot~startmacro = 0))
+	setvar $menus~qss[16] "None"
 else
-  replacetext $BOT~STARTMACRO "*" #42
-  setvar $MENUS~QSS[16] $BOT~STARTMACRO
+	replacetext $bot~startmacro "*" #42
+	setvar $menus~qss[16] $bot~startmacro
 end
-if (($BOT~TEAMMATES = "") or ($BOT~TEAMMATES = 0))
-  setvar $MENUS~QSS[17] "None"
+if (($bot~teammates = "") or ($bot~teammates = 0))
+	setvar $menus~qss[17] "None"
 else
-  setvar $MENUS~QSS[17] $BOT~STARTMACRO
+	setvar $menus~qss[17] $bot~startmacro
 end
-setvar $MENUS~QSS[18] ""
-setvar $MENUS~QSS[19] ""
-setvar $MENUS~QSS[20] ""
-setvar $MENUS~QSS[21] ""
-setvar $MENUS~QSS[22] ""
-setvar $MENUS~QSS[23] ""
-setvar $MENUS~QSS[24] ""
-setvar $MENUS~QSS[25] ""
-setvar $MENUS~QSS[26] ""
-setvar $MENUS~QSS_TOTAL 26
-gosub :MENUSPACING
+setvar $menus~qss[18] ""
+setvar $menus~qss[19] ""
+setvar $menus~qss[20] ""
+setvar $menus~qss[21] ""
+setvar $menus~qss[22] ""
+setvar $menus~qss[23] ""
+setvar $menus~qss[24] ""
+setvar $menus~qss[25] ""
+setvar $menus~qss[26] ""
+setvar $menus~qss_total 26
+gosub :menuspacing
 echo "**"
-echo ANSI_11&" Relog Menu   (Q to quit, Z to start logging in.)         *"
-echo ANSI_10&#27&"[35m<"&#27&"[32m1"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[7]&"*"
+echo ansi_11&" Relog Menu   (Q to quit, Z to start logging in.)         *"
+echo ansi_10&#27&"[35m<"&#27&"[32m1"&#27&"[35m> "&ansi_7&$menus~qss_var[7]&"*"
 echo "*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mB"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[1]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mN"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[2]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mL"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[3]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mP"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[4]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32mG"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[5]&"*"
-if ($BOT~NEWGAMEOLDER = FALSE)
-  echo ANSI_10&#27&"[35m<"&#27&"[32mS"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[6]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mB"&#27&"[35m> "&ansi_7&$menus~qss_var[1]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mN"&#27&"[35m> "&ansi_7&$menus~qss_var[2]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mL"&#27&"[35m> "&ansi_7&$menus~qss_var[3]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mP"&#27&"[35m> "&ansi_7&$menus~qss_var[4]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32mG"&#27&"[35m> "&ansi_7&$menus~qss_var[5]&"*"
+if ($bot~newgameolder = false)
+	echo ansi_10&#27&"[35m<"&#27&"[32mS"&#27&"[35m> "&ansi_7&$menus~qss_var[6]&"*"
 end
-if ($BOT~NEWGAMEDAY1 = TRUE)
-  echo ANSI_10&#27&"[35m<"&#27&"[32m2"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[8]&"*"
-  echo ANSI_10&#27&"[35m<"&#27&"[32m3"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[9]&"*"
-  echo ANSI_10&#27&"[35m<"&#27&"[32m4"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[10]&"*"
-  echo ANSI_10&#27&"[35m<"&#27&"[32m5"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[11]&"*"
+if ($bot~newgameday1 = true)
+	echo ansi_10&#27&"[35m<"&#27&"[32m2"&#27&"[35m> "&ansi_7&$menus~qss_var[8]&"*"
+	echo ansi_10&#27&"[35m<"&#27&"[32m3"&#27&"[35m> "&ansi_7&$menus~qss_var[9]&"*"
+	echo ansi_10&#27&"[35m<"&#27&"[32m4"&#27&"[35m> "&ansi_7&$menus~qss_var[10]&"*"
+	echo ansi_10&#27&"[35m<"&#27&"[32m5"&#27&"[35m> "&ansi_7&$menus~qss_var[11]&"*"
 end
-echo ANSI_10&#27&"[35m<"&#27&"[32m6"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[12]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32m7"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[13]&"*"
-if (($BOT~MOWTODOCK = TRUE) or ($MENUS~MOWTOALPHA = TRUE) or ($MENUS~MOWTORYLOS = TRUE) or ($MENUS~MOWTOOTHER = TRUE) or ($MENUS~FMOWTODOCK = TRUE))
-  echo ANSI_10&#27&"[35m<"&#27&"[32mM"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[15]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m6"&#27&"[35m> "&ansi_7&$menus~qss_var[12]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m7"&#27&"[35m> "&ansi_7&$menus~qss_var[13]&"*"
+if (($bot~mowtodock = true) or ($menus~mowtoalpha = true) or ($menus~mowtorylos = true) or ($menus~mowtoother = true) or ($menus~fmowtodock = true))
+	echo ansi_10&#27&"[35m<"&#27&"[32mM"&#27&"[35m> "&ansi_7&$menus~qss_var[15]&"*"
 end
-echo ANSI_10&#27&"[35m<"&#27&"[32m8"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[14]&"*"
-echo ANSI_10&#27&"[35m<"&#27&"[32m9"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[16]&"*"
-if ($BOT~NEWGAMEOLDER <> TRUE)
-  echo ANSI_10&#27&"[35m<"&#27&"[32mT"&#27&"[35m> "&ANSI_7&$MENUS~QSS_VAR[17]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m8"&#27&"[35m> "&ansi_7&$menus~qss_var[14]&"*"
+echo ansi_10&#27&"[35m<"&#27&"[32m9"&#27&"[35m> "&ansi_7&$menus~qss_var[16]&"*"
+if ($bot~newgameolder <> true)
+	echo ansi_10&#27&"[35m<"&#27&"[32mT"&#27&"[35m> "&ansi_7&$menus~qss_var[17]&"*"
 end
 echo "*"
-:MENUS~GETSTARTGAMEINPUT
-getconsoleinput $MENUS~CHOSEN_OPTION SINGLEKEY
+
+:menus~getstartgameinput
+getconsoleinput $menus~chosen_option singlekey
 killalltriggers
-uppercase $MENUS~CHOSEN_OPTION
-:MENUS~PROCESS_START_COMMAND
-if ($MENUS~CHOSEN_OPTION = "?")
-  goto :PREGAMEMENU
-elseif ($MENUS~CHOSEN_OPTION = "B")
-  killalltriggers
-  getinput $MENUS~NEW_BOT_NAME ANSI_13&"What is the 'in game' name of the bot? (one word, no spaces)"&ANSI_7
-  striptext $MENUS~NEW_BOT_NAME "^"
-  striptext $MENUS~NEW_BOT_NAME " "
-  if ($MENUS~NEW_BOT_NAME = "")
-    goto :PREGAMEMENU
-  end
-  delete $BOT~GCONFIG_FILE
-  write $BOT~GCONFIG_FILE $MENUS~NEW_BOT_NAME
-  setvar $BOT~BOT_NAME $MENUS~NEW_BOT_NAME
-  setvar $SWITCHBOARD~BOT_NAME $MENUS~NEW_BOT_NAME
-  savevar $SWITCHBOARD~BOT_NAME
-  savevar $BOT~BOT_NAME
-elseif ($MENUS~CHOSEN_OPTION = "P")
-  killalltriggers
-  getinput $BOT~PASSWORD "Please Enter your Game Password"
-  savevar $BOT~PASSWORD
-elseif ($MENUS~CHOSEN_OPTION = "G")
-  killalltriggers
-  getinput $BOT~LETTER "Please Enter your Game Letter"
-  savevar $BOT~LETTER
-elseif ($MENUS~CHOSEN_OPTION = "N")
-  killalltriggers
-  getinput $BOT~SERVERNAME "Please Enter your Server Name"
-  savevar $BOT~SERVERNAME
-elseif ($MENUS~CHOSEN_OPTION = "L")
-  killalltriggers
-  getinput $BOT~USERNAME "Please Enter your Login Name"
-  savevar $BOT~USERNAME
-elseif ($MENUS~CHOSEN_OPTION = "S")
-  killalltriggers
-  getinput $BOT~STARTSHIPNAME "What ship name would you like?"
-  savevar $BOT~STARTSHIPNAME
-elseif ($MENUS~CHOSEN_OPTION = 1)
-  if ($BOT~NEWGAMEDAY1)
-    setvar $BOT~NEWGAMEDAY1 FALSE
-    setvar $BOT~NEWGAMEOLDER TRUE
-  elseif ($BOT~NEWGAMEOLDER)
-    setvar $BOT~NEWGAMEDAY1 FALSE
-    setvar $BOT~NEWGAMEOLDER FALSE
-  else
-    setvar $BOT~NEWGAMEDAY1 TRUE
-    setvar $BOT~NEWGAMEOLDER FALSE
-  end
-elseif (($MENUS~CHOSEN_OPTION = 2) and (($BOT~NEWGAMEDAY1 = TRUE) or ($BOT~NEWGAMEOLDER = TRUE)))
-  if ($BOT~ISCEO)
-    setvar $BOT~ISCEO FALSE
-  else
-    setvar $BOT~ISCEO TRUE
-  end
-elseif (($MENUS~CHOSEN_OPTION = 3) and (($BOT~NEWGAMEDAY1 = TRUE) or ($BOT~NEWGAMEOLDER = TRUE)))
-  getinput $MENUS~TEMP "What Corp Name will you use?"
-  if ($MENUS~TEMP = 0)
-    setvar $MENUS~TEMP ""
-  end
-  setvar $BOT~CORPNAME $MENUS~TEMP
-  savevar $BOT~CORPNAME
-elseif (($MENUS~CHOSEN_OPTION = 4) and (($BOT~NEWGAMEDAY1 = TRUE) or ($BOT~NEWGAMEOLDER = TRUE)))
-  getinput $MENUS~TEMP "What Corp Password will you use?"
-  if ($MENUS~TEMP = 0)
-    setvar $MENUS~TEMP ""
-  end
-  setvar $BOT~CORPPASSWORD $MENUS~TEMP
-elseif (($MENUS~CHOSEN_OPTION = 5) and (($BOT~NEWGAMEDAY1 = TRUE) or ($BOT~NEWGAMEOLDER = TRUE)))
-  getinput $MENUS~TEMP "What subspace channel do you want to use?"
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST)
-    if (($MENUS~TEMP <= 60000) and ($MENUS~TEMP >= 0))
-      setvar $BOT~SUBSPACE $MENUS~TEMP
-    end
-  end
-elseif ($MENUS~CHOSEN_OPTION = 6)
-  getinput $MENUS~TEMP "How long in minutes before the game starts?"
-  isnumber $MENUS~TEST $MENUS~TEMP
-  if ($MENUS~TEST)
-    setvar $BOT~STARTGAMEDELAY $MENUS~TEMP
-  end
-elseif ($MENUS~CHOSEN_OPTION = 7)
-  if ($MENUS~XPORTTOSHIP)
-    setvar $MENUS~QSS[12] "Nothing"
-    setvar $BOT~MOWTODOCK FALSE
-    setvar $MENUS~MOWTOALPHA FALSE
-    setvar $MENUS~MOWTORYLOS FALSE
-    setvar $MENUS~XPORTTOSHIP FALSE
-    setvar $MENUS~MOWTOOTHER FALSE
-    setvar $MENUS~LANDONTERRA FALSE
-    setvar $MENUS~LANDONSTARDOCK FALSE
-    setvar $MENUS~MOWDESTINATION ""
-    setvar $MENUS~DO_NOTHING TRUE
-    setvar $MENUS~FMOWTODOCK FALSE
-  elseif (($BOT~MOWTODOCK = FALSE) and (($MENUS~MOWTOALPHA = FALSE) and (($MENUS~FMOWTODOCK = FALSE) and (($MENUS~MOWTORYLOS = FALSE) and (($MENUS~MOWTOOTHER = FALSE) and (($MENUS~XPORTTOSHIP = FALSE) and (($MENUS~LANDONTERRA = FALSE) and ($MENUS~LANDONSTARDOCK = FALSE))))))))
-    setvar $MENUS~QSS[12] "Land on Terra"
-    setvar $MENUS~DO_NOTHING FALSE
-    setvar $BOT~MOWTODOCK FALSE
-    setvar $MENUS~MOWTOALPHA FALSE
-    setvar $MENUS~MOWTORYLOS FALSE
-    setvar $MENUS~MOWTOOTHER FALSE
-    setvar $MENUS~XPORTTOSHIP FALSE
-    setvar $MENUS~LANDONTERRA TRUE
-    setvar $MENUS~LANDONSTARDOCK FALSE
-    setvar $MENUS~MOWDESTINATION ""
-    setvar $MENUS~FMOWTODOCK FALSE
-  elseif ($MENUS~LANDONTERRA)
-    setvar $MENUS~QSS[12] "Land on Stardock"
-    setvar $BOT~MOWTODOCK FALSE
-    setvar $MENUS~MOWTOALPHA FALSE
-    setvar $MENUS~MOWTORYLOS FALSE
-    setvar $MENUS~MOWTOOTHER FALSE
-    setvar $MENUS~XPORTTOSHIP FALSE
-    setvar $MENUS~LANDONTERRA FALSE
-    setvar $MENUS~LANDONSTARDOCK TRUE
-    setvar $MENUS~MOWDESTINATION ""
-    setvar $MENUS~DO_NOTHING FALSE
-    setvar $MENUS~FMOWTODOCK FALSE
-  elseif ($MENUS~LANDONSTARDOCK)
-    setvar $MENUS~QSS[12] "Mow To Custom TA"
-    setvar $BOT~MOWTODOCK FALSE
-    setvar $MENUS~MOWTOALPHA FALSE
-    setvar $MENUS~MOWTORYLOS FALSE
-    setvar $MENUS~MOWTOOTHER TRUE
-    setvar $MENUS~XPORTTOSHIP FALSE
-    setvar $MENUS~LANDONTERRA FALSE
-    setvar $MENUS~LANDONSTARDOCK FALSE
-    setvar $MENUS~MOWDESTINATION ""
-    setvar $MENUS~DO_NOTHING FALSE
-    setvar $MENUS~FMOWTODOCK FALSE
-  elseif ($MENUS~MOWTOOTHER)
-    setvar $MENUS~QSS[12] "Mow to Stardock"
-    setvar $BOT~MOWTODOCK TRUE
-    setvar $MENUS~MOWTOALPHA FALSE
-    setvar $MENUS~MOWTORYLOS FALSE
-    setvar $MENUS~XPORTTOSHIP FALSE
-    setvar $MENUS~MOWTOOTHER FALSE
-    setvar $MENUS~LANDONTERRA FALSE
-    setvar $MENUS~LANDONSTARDOCK FALSE
-    setvar $MENUS~DO_NOTHING FALSE
-    setvar $MENUS~FMOWTODOCK FALSE
-    setvar $MENUS~MOWDESTINATION $MAP~STARDOCK
-  elseif ($BOT~MOWTODOCK)
-    setvar $MENUS~QSS[12] "Fuel Mow to Stardock"
-    setvar $BOT~MOWTODOCK FALSE
-    setvar $MENUS~MOWTOALPHA FALSE
-    setvar $MENUS~MOWTORYLOS FALSE
-    setvar $MENUS~XPORTTOSHIP FALSE
-    setvar $MENUS~MOWTOOTHER FALSE
-    setvar $MENUS~LANDONTERRA FALSE
-    setvar $MENUS~LANDONSTARDOCK FALSE
-    setvar $MENUS~DO_NOTHING FALSE
-    setvar $MENUS~FMOWTODOCK TRUE
-    setvar $MENUS~MOWDESTINATION $MAP~STARDOCK
-  elseif ($MENUS~FMOWTODOCK)
-    setvar $MENUS~QSS[12] "Xport to Ship"
-    setvar $MENUS~XPORTTOSHIP TRUE
-    setvar $MENUS~MOWTOALPHA FALSE
-    setvar $MENUS~MOWTORYLOS FALSE
-    setvar $MENUS~MOWTOOTHER FALSE
-    setvar $MENUS~LANDONTERRA FALSE
-    setvar $MENUS~LANDONSTARDOCK FALSE
-    setvar $BOT~MOWTODOCK FALSE
-    setvar $MENUS~MOWDESTINATION ""
-    setvar $MENUS~DO_NOTHING FALSE
-    setvar $MENUS~FMOWTODOCK FALSE
-  end
-  savevar $MENUS~XPORTTOSHIP
-  savevar $MENUS~FMOWTODOCK
-  savevar $MENUS~MOWTOALPHA
-  savevar $MENUS~MOWTORYLOS
-  savevar $MENUS~MOWTOOTHER
-  savevar $BOT~MOWTODOCK
-  savevar $MENUS~LANDONTERRA
-  savevar $MENUS~LANDONSTARDOCK
-  savevar $MENUS~DO_NOTHING
-elseif ($MENUS~CHOSEN_OPTION = "M")
+uppercase $menus~chosen_option
 
-  if ($MENUS~START_MOW_OPTION = "i3")
-    setvar $MENUS~QSS[14] "Direct"
-    setvar $MENUS~START_MOW_OPTION ""
-  elseif (($MENUS~START_MOW_OPTION = "") or ($MENUS~START_MOW_OPTION = 0))
-    setvar $MENUS~QSS[14] "Via Backdoor"
-    setvar $MENUS~START_MOW_OPTION "backdoor"
-  elseif ($MENUS~START_MOW_OPTION = "backdoor")
-    setvar $MENUS~QSS[14] "Indirect Mow 1"
-    setvar $MENUS~START_MOW_OPTION "i1"
-  elseif ($MENUS~START_MOW_OPTION = "i1")
-    setvar $MENUS~QSS[14] "Indirect Mow 2"
-    setvar $MENUS~START_MOW_OPTION "i2"
-  elseif ($MENUS~START_MOW_OPTION = "i2")
-    setvar $MENUS~QSS[14] "Indirect Mow 3"
-    setvar $MENUS~START_MOW_OPTION "i3"
-  end
-  savevar $MENUS~START_MOW_OPTION
-elseif ($MENUS~CHOSEN_OPTION = 8)
-  getinput $MENUS~TEMP "Enter a command line for the bot to run after entering game (No bot name needed)"
-  setvar $MENUS~COMMAND_TO_ISSUE $MENUS~TEMP
-  savevar $MENUS~COMMAND_TO_ISSUE
+:menus~process_start_command
+if ($menus~chosen_option = "?")
+	goto :pregamemenu
+elseif ($menus~chosen_option = "B")
+	killalltriggers
+	getinput $menus~new_bot_name ansi_13&"What is the 'in game' name of the bot? (one word, no spaces)"&ansi_7
+	striptext $menus~new_bot_name "^"
+	striptext $menus~new_bot_name " "
+	if ($menus~new_bot_name = "")
+		goto :pregamemenu
+	end
+	delete $bot~gconfig_file
+	write $bot~gconfig_file $menus~new_bot_name
+	setvar $bot~bot_name $menus~new_bot_name
+	setvar $switchboard~bot_name $menus~new_bot_name
+	savevar $switchboard~bot_name
+	savevar $bot~bot_name
+elseif ($menus~chosen_option = "P")
+	killalltriggers
+	getinput $bot~password "Please Enter your Game Password"
+	savevar $bot~password
+elseif ($menus~chosen_option = "G")
+	killalltriggers
+	getinput $bot~letter "Please Enter your Game Letter"
+	savevar $bot~letter
+elseif ($menus~chosen_option = "N")
+	killalltriggers
+	getinput $bot~servername "Please Enter your Server Name"
+	savevar $bot~servername
+elseif ($menus~chosen_option = "L")
+	killalltriggers
+	getinput $bot~username "Please Enter your Login Name"
+	savevar $bot~username
+elseif ($menus~chosen_option = "S")
+	killalltriggers
+	getinput $bot~startshipname "What ship name would you like?"
+	savevar $bot~startshipname
+elseif ($menus~chosen_option = 1)
+	if ($bot~newgameday1)
+		setvar $bot~newgameday1 false
+		setvar $bot~newgameolder true
+	elseif ($bot~newgameolder)
+		setvar $bot~newgameday1 false
+		setvar $bot~newgameolder false
+	else
+		setvar $bot~newgameday1 true
+		setvar $bot~newgameolder false
+	end
+elseif (($menus~chosen_option = 2) and (($bot~newgameday1 = true) or ($bot~newgameolder = true)))
+	if ($bot~isceo)
+		setvar $bot~isceo false
+	else
+		setvar $bot~isceo true
+	end
+elseif (($menus~chosen_option = 3) and (($bot~newgameday1 = true) or ($bot~newgameolder = true)))
+	getinput $menus~temp "What Corp Name will you use?"
+	if ($menus~temp = 0)
+		setvar $menus~temp ""
+	end
+	setvar $bot~corpname $menus~temp
+	savevar $bot~corpname
+elseif (($menus~chosen_option = 4) and (($bot~newgameday1 = true) or ($bot~newgameolder = true)))
+	getinput $menus~temp "What Corp Password will you use?"
+	if ($menus~temp = 0)
+		setvar $menus~temp ""
+	end
+	setvar $bot~corppassword $menus~temp
+elseif (($menus~chosen_option = 5) and (($bot~newgameday1 = true) or ($bot~newgameolder = true)))
+	getinput $menus~temp "What subspace channel do you want to use?"
+	isnumber $menus~test $menus~temp
+	if ($menus~test)
+		if (($menus~temp <= 60000) and ($menus~temp >= 0))
+			setvar $bot~subspace $menus~temp
+		end
+	end
+elseif ($menus~chosen_option = 6)
+	getinput $menus~temp "How long in minutes before the game starts?"
+	isnumber $menus~test $menus~temp
+	if ($menus~test)
+		setvar $bot~startgamedelay $menus~temp
+	end
+elseif ($menus~chosen_option = 7)
+	if ($menus~xporttoship)
+		setvar $menus~qss[12] "Nothing"
+		setvar $bot~mowtodock false
+		setvar $menus~mowtoalpha false
+		setvar $menus~mowtorylos false
+		setvar $menus~xporttoship false
+		setvar $menus~mowtoother false
+		setvar $menus~landonterra false
+		setvar $menus~landonstardock false
+		setvar $menus~mowdestination ""
+		setvar $menus~do_nothing true
+		setvar $menus~fmowtodock false
+	elseif (($bot~mowtodock = false) and (($menus~mowtoalpha = false) and (($menus~fmowtodock = false) and (($menus~mowtorylos = false) and (($menus~mowtoother = false) and (($menus~xporttoship = false) and (($menus~landonterra = false) and ($menus~landonstardock = false))))))))
+		setvar $menus~qss[12] "Land on Terra"
+		setvar $menus~do_nothing false
+		setvar $bot~mowtodock false
+		setvar $menus~mowtoalpha false
+		setvar $menus~mowtorylos false
+		setvar $menus~mowtoother false
+		setvar $menus~xporttoship false
+		setvar $menus~landonterra true
+		setvar $menus~landonstardock false
+		setvar $menus~mowdestination ""
+		setvar $menus~fmowtodock false
+	elseif ($menus~landonterra)
+		setvar $menus~qss[12] "Land on Stardock"
+		setvar $bot~mowtodock false
+		setvar $menus~mowtoalpha false
+		setvar $menus~mowtorylos false
+		setvar $menus~mowtoother false
+		setvar $menus~xporttoship false
+		setvar $menus~landonterra false
+		setvar $menus~landonstardock true
+		setvar $menus~mowdestination ""
+		setvar $menus~do_nothing false
+		setvar $menus~fmowtodock false
+	elseif ($menus~landonstardock)
+		setvar $menus~qss[12] "Mow To Custom TA"
+		setvar $bot~mowtodock false
+		setvar $menus~mowtoalpha false
+		setvar $menus~mowtorylos false
+		setvar $menus~mowtoother true
+		setvar $menus~xporttoship false
+		setvar $menus~landonterra false
+		setvar $menus~landonstardock false
+		setvar $menus~mowdestination ""
+		setvar $menus~do_nothing false
+		setvar $menus~fmowtodock false
+	elseif ($menus~mowtoother)
+		setvar $menus~qss[12] "Mow to Stardock"
+		setvar $bot~mowtodock true
+		setvar $menus~mowtoalpha false
+		setvar $menus~mowtorylos false
+		setvar $menus~xporttoship false
+		setvar $menus~mowtoother false
+		setvar $menus~landonterra false
+		setvar $menus~landonstardock false
+		setvar $menus~do_nothing false
+		setvar $menus~fmowtodock false
+		setvar $menus~mowdestination $map~stardock
+	elseif ($bot~mowtodock)
+		setvar $menus~qss[12] "Fuel Mow to Stardock"
+		setvar $bot~mowtodock false
+		setvar $menus~mowtoalpha false
+		setvar $menus~mowtorylos false
+		setvar $menus~xporttoship false
+		setvar $menus~mowtoother false
+		setvar $menus~landonterra false
+		setvar $menus~landonstardock false
+		setvar $menus~do_nothing false
+		setvar $menus~fmowtodock true
+		setvar $menus~mowdestination $map~stardock
+	elseif ($menus~fmowtodock)
+		setvar $menus~qss[12] "Xport to Ship"
+		setvar $menus~xporttoship true
+		setvar $menus~mowtoalpha false
+		setvar $menus~mowtorylos false
+		setvar $menus~mowtoother false
+		setvar $menus~landonterra false
+		setvar $menus~landonstardock false
+		setvar $bot~mowtodock false
+		setvar $menus~mowdestination ""
+		setvar $menus~do_nothing false
+		setvar $menus~fmowtodock false
+	end
+	savevar $menus~xporttoship
+	savevar $menus~fmowtodock
+	savevar $menus~mowtoalpha
+	savevar $menus~mowtorylos
+	savevar $menus~mowtoother
+	savevar $bot~mowtodock
+	savevar $menus~landonterra
+	savevar $menus~landonstardock
+	savevar $menus~do_nothing
+elseif ($menus~chosen_option = "M")
 
-elseif ($MENUS~CHOSEN_OPTION = 9)
-  getinput $BOT~STARTMACRO "What macro should fire upon entry?"
-  replacetext $BOT~STARTMACRO "*" #42
-elseif ($MENUS~CHOSEN_OPTION = "T")
-  getinput $BOT~TEAMMATES "Enter teammate names (separated by commas)"
-elseif ($MENUS~CHOSEN_OPTION = "Q")
-  stop $BOT~LAST_LOADED_MODULE
-  savevar $BOT~LAST_LOADED_MODULE
-  halt
-elseif ($MENUS~CHOSEN_OPTION = "Z")
-  replacetext $BOT~STARTMACRO "^m" #42
-  replacetext $BOT~STARTMACRO "^M" #42
-  savevar $BOT~STARTMACRO
-  :MENUS~GETMOWSECTOR
-  killalltriggers
-  if ($MENUS~MOWTOOTHER)
-    getinput $MENUS~TEMP "What mow destination do you want to use?"
-    isnumber $MENUS~TEST $MENUS~TEMP
-    if ($MENUS~TEST)
-      if (($MENUS~TEMP <= SECTORS) and ($MENUS~TEMP > 0))
-        setvar $MENUS~MOWDESTINATION $MENUS~TEMP
-      else
-        goto :GETMOWSECTOR
-      end
-    else
-      goto :GETMOWSECTOR
-    end
-  end
-  if ($MENUS~XPORTTOSHIP)
-    getinput $MENUS~TEMP "What ship do you want to xport to?"
-    isnumber $MENUS~TEST $MENUS~TEMP
-    if ($MENUS~TEST <> TRUE)
-      goto :GETMOWSECTOR
-    else
-      setvar $MENUS~MOWDESTINATION $MENUS~TEMP
-    end
-  end
-  setvar $TIMETOLOGBACKIN ($BOT~STARTGAMEDELAY * 60)
-  if ($TIMETOLOGBACKIN > 0)
-    killalltriggers
-  end
-  settextouttrigger LOGEARLY :ENDDELAYSTARTGAME #32
-  while ($TIMETOLOGBACKIN > 0)
-    gosub :CALCTIME
-    echo ANSI_10 #27&"[1A"&#27&"[K"&$HOURS ":" $MINUTES ":" $SECONDS " left before entering game " GAME " (" GAMENAME ") "&ANSI_15&" ["&ANSI_14&"Spacebar to relog"&ANSI_15&"]*"
-    setdelaytrigger TIMEBEFORERELOG :STARTGAMETIMER 1000
-    pause
-    :MENUS~STARTGAMETIMER
-    setvar $TIMETOLOGBACKIN ($TIMETOLOGBACKIN - 1)
-  end
-  :MENUS~ENDDELAYSTARTGAME
-  killalltriggers
-  if ($BOT~NEWGAMEOLDER = TRUE)
-    setvar $CONNECTIVITY~NEWGAME FALSE
-    setvar $MENUS~POST_RELOG_RESUME TRUE
-    load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\relog.cts"
-    seteventtrigger 1 :RELOGENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\relog.cts"
-    pause
-    :MENUS~RELOGENDED
-    gosub :CONNECTIVITY~MOVING
-  elseif ($BOT~NEWGAMEDAY1 = TRUE)
-    setvar $CONNECTIVITY~NEWGAME TRUE
-    gosub :CONNECTIVITY~ENTER_NEW_GAME
-  else
-    setvar $CONNECTIVITY~NEWGAME FALSE
-    gosub :CONNECTIVITY~ENTER_NEW_GAME
-  end
-  loadvar $BOT~STARTMACRO
-  if ($BOT~STARTMACRO <> "")
-    replacetext $BOT~STARTMACRO #42 "*"
-    send $BOT~STARTMACRO
-    setvar $BOT~STARTMACRO ""
-    savevar $BOT~STARTMACRO
-  end
-  goto :DONEPREGAME
+	if ($menus~start_mow_option = "i3")
+		setvar $menus~qss[14] "Direct"
+		setvar $menus~start_mow_option ""
+	elseif (($menus~start_mow_option = "") or ($menus~start_mow_option = 0))
+		setvar $menus~qss[14] "Via Backdoor"
+		setvar $menus~start_mow_option "backdoor"
+	elseif ($menus~start_mow_option = "backdoor")
+		setvar $menus~qss[14] "Indirect Mow 1"
+		setvar $menus~start_mow_option "i1"
+	elseif ($menus~start_mow_option = "i1")
+		setvar $menus~qss[14] "Indirect Mow 2"
+		setvar $menus~start_mow_option "i2"
+	elseif ($menus~start_mow_option = "i2")
+		setvar $menus~qss[14] "Indirect Mow 3"
+		setvar $menus~start_mow_option "i3"
+	end
+	savevar $menus~start_mow_option
+elseif ($menus~chosen_option = 8)
+	getinput $menus~temp "Enter a command line for the bot to run after entering game (No bot name needed)"
+	setvar $menus~command_to_issue $menus~temp
+	savevar $menus~command_to_issue
+
+elseif ($menus~chosen_option = 9)
+	getinput $bot~startmacro "What macro should fire upon entry?"
+	replacetext $bot~startmacro "*" #42
+elseif ($menus~chosen_option = "T")
+	getinput $bot~teammates "Enter teammate names (separated by commas)"
+elseif ($menus~chosen_option = "Q")
+	stop $bot~last_loaded_module
+	savevar $bot~last_loaded_module
+	halt
+elseif ($menus~chosen_option = "Z")
+	replacetext $bot~startmacro "^m" #42
+	replacetext $bot~startmacro "^M" #42
+	savevar $bot~startmacro
+
+	:menus~getmowsector
+	killalltriggers
+	if ($menus~mowtoother)
+		getinput $menus~temp "What mow destination do you want to use?"
+		isnumber $menus~test $menus~temp
+		if ($menus~test)
+			if (($menus~temp <= sectors) and ($menus~temp > 0))
+				setvar $menus~mowdestination $menus~temp
+			else
+				goto :getmowsector
+			end
+		else
+			goto :getmowsector
+		end
+	end
+	if ($menus~xporttoship)
+		getinput $menus~temp "What ship do you want to xport to?"
+		isnumber $menus~test $menus~temp
+		if ($menus~test <> true)
+			goto :getmowsector
+		else
+			setvar $menus~mowdestination $menus~temp
+		end
+	end
+	setvar $timetologbackin ($bot~startgamedelay * 60)
+	if ($timetologbackin > 0)
+		killalltriggers
+	end
+	settextouttrigger logearly :enddelaystartgame #32
+	while ($timetologbackin > 0)
+		gosub :calctime
+		echo ansi_10 #27&"[1A"&#27&"[K"&$hours ":" $minutes ":" $seconds " left before entering game " game " (" gamename ") "&ansi_15&" ["&ansi_14&"Spacebar to relog"&ansi_15&"]*"
+		setdelaytrigger timebeforerelog :startgametimer 1000
+		pause
+
+		:menus~startgametimer
+		setvar $timetologbackin ($timetologbackin - 1)
+	end
+
+	:menus~enddelaystartgame
+	killalltriggers
+	if ($bot~newgameolder = true)
+		setvar $connectivity~newgame false
+		setvar $menus~post_relog_resume true
+		load "scripts\"&$bot~mombot_directory&"\commands\general\relog.cts"
+		seteventtrigger 1 :relogended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\general\relog.cts"
+		pause
+
+		:menus~relogended
+		gosub :connectivity~moving
+	elseif ($bot~newgameday1 = true)
+		setvar $connectivity~newgame true
+		gosub :connectivity~enter_new_game
+	else
+		setvar $connectivity~newgame false
+		gosub :connectivity~enter_new_game
+	end
+	loadvar $bot~startmacro
+	if ($bot~startmacro <> "")
+		replacetext $bot~startmacro #42 "*"
+		send $bot~startmacro
+		setvar $bot~startmacro ""
+		savevar $bot~startmacro
+	end
+	goto :donepregame
 else
-  goto :GETSTARTGAMEINPUT
+	goto :getstartgameinput
 end
-gosub :PREGAMESTATS
-goto :PREGAMEMENU
-:MENUS~DONEPREGAME
-if (($BOT~TEAMMATES <> "") and ($BOT~TEAMMATES <> 0))
-  splittext $BOT~TEAMMATES $MENUS~CORP_LIST ","
-  setvar $MENUS~I 1
-  while ($MENUS~I <= $MENUS~CORP_LIST)
-    setvar $MENUS~J 1
-    setvar $MENUS~ISFOUND FALSE
-    trim $MENUS~CORP_LIST[$MENUS~I]
-    while ($MENUS~J <= $MENUS~CORPYCOUNT)
-      trim $BOT~CORPY[$MENUS~J]
-      setvar $MENUS~CORPY_LOWER $BOT~CORPY[$MENUS~J]
-      setvar $MENUS~CORP_LIST_LOWER $MENUS~CORP_LIST[$MENUS~I]
-      lowercase $MENUS~CORPY_LOWER
-      lowercase $MENUS~CORP_LIST_LOWER
-      if ($MENUS~CORP_LIST_LOWER = $MENUS~CORPY_LOWER)
-        setvar $MENUS~ISFOUND TRUE
-      end
-      add $MENUS~J 1
-    end
-    if ($MENUS~ISFOUND <> TRUE)
-      add $MENUS~CORPYCOUNT 1
-      setvar $BOT~CORPY[$MENUS~CORPYCOUNT] $MENUS~CORP_LIST[$MENUS~I]
-    end
-    add $MENUS~I 1
-  end
+gosub :pregamestats
+goto :pregamemenu
+
+:menus~donepregame
+if (($bot~teammates <> "") and ($bot~teammates <> 0))
+	splittext $bot~teammates $menus~corp_list ","
+	setvar $menus~i 1
+	while ($menus~i <= $menus~corp_list)
+		setvar $menus~j 1
+		setvar $menus~isfound false
+		trim $menus~corp_list[$menus~i]
+		while ($menus~j <= $menus~corpycount)
+			trim $bot~corpy[$menus~j]
+			setvar $menus~corpy_lower $bot~corpy[$menus~j]
+			setvar $menus~corp_list_lower $menus~corp_list[$menus~i]
+			lowercase $menus~corpy_lower
+			lowercase $menus~corp_list_lower
+			if ($menus~corp_list_lower = $menus~corpy_lower)
+				setvar $menus~isfound true
+			end
+			add $menus~j 1
+		end
+		if ($menus~isfound <> true)
+			add $menus~corpycount 1
+			setvar $bot~corpy[$menus~corpycount] $menus~corp_list[$menus~i]
+		end
+		add $menus~i 1
+	end
 end
-if ($MENUS~POST_RELOG_RESUME = TRUE)
-  setvar $MENUS~POST_RELOG_RESUME FALSE
-  goto :BOT~RUN_BOT
+if ($menus~post_relog_resume = true)
+	setvar $menus~post_relog_resume false
+	goto :bot~run_bot
 end
-goto :BOT~GETINITIAL_SETTINGS
+goto :bot~getinitial_settings
 
 return
-:MENUS~PREGAMESTATS
-gosub :BOT~SAVE_THE_VARIABLES
+
+:menus~pregamestats
+gosub :bot~save_the_variables
 return
-:MENUS~MENUSPACING
-setvar $MENUS~QSS_SS 0
-setvar $MENUS~QSS_COUNT 1
-setvar $MENUS~SPC " "
-setvar $MENUS~OVERALL 15
-while ($MENUS~QSS_COUNT <= $MENUS~QSS_TOTAL)
-  setvar $MENUS~SPC_COUNT 1
-  setvar $MENUS~CHECKLENGTH $MENUS~H[$MENUS~QSS_COUNT]&""&$MENUS~QSS[$MENUS~QSS_COUNT]
-  setvar $MENUS~QSS_VAR[$MENUS~QSS_COUNT] ANSI_15&$MENUS~H[$MENUS~QSS_COUNT]&" "&ANSI_14&$MENUS~QSS[$MENUS~QSS_COUNT]&ANSI_7
-  getlength $MENUS~CHECKLENGTH $MENUS~LENGTH
-  setvar $MENUS~SPACE 34
-  subtract $MENUS~SPACE $MENUS~LENGTH
-  while ($MENUS~SPC_COUNT <= $MENUS~SPACE)
-    mergetext $MENUS~QSS_VAR[$MENUS~QSS_COUNT] $MENUS~SPC $MENUS~QSS_VAR[$MENUS~QSS_COUNT]
-    add $MENUS~SPC_COUNT 1
-  end
-  add $MENUS~QSS_COUNT 1
+
+:menus~menuspacing
+setvar $menus~qss_ss 0
+setvar $menus~qss_count 1
+setvar $menus~spc " "
+setvar $menus~overall 15
+while ($menus~qss_count <= $menus~qss_total)
+	setvar $menus~spc_count 1
+	setvar $menus~checklength $menus~h[$menus~qss_count]&""&$menus~qss[$menus~qss_count]
+	setvar $menus~qss_var[$menus~qss_count] ansi_15&$menus~h[$menus~qss_count]&" "&ansi_14&$menus~qss[$menus~qss_count]&ansi_7
+	getlength $menus~checklength $menus~length
+	setvar $menus~space 34
+	subtract $menus~space $menus~length
+	while ($menus~spc_count <= $menus~space)
+		mergetext $menus~qss_var[$menus~qss_count] $menus~spc $menus~qss_var[$menus~qss_count]
+		add $menus~spc_count 1
+	end
+	add $menus~qss_count 1
 end
 return
 
-:MENUS~GETINPUT
-gosub :BOT~KILLTHETRIGGERS
-setdeafclients FALSE
-getinput $MENUS~RESPONSE $MENUS~QUESTION
-setdeafclients TRUE
+:menus~getinput
+gosub :bot~killthetriggers
+setdeafclients false
+getinput $menus~response $menus~question
+setdeafclients true
 return
 
-:chatMenu
-setVar $BOT~botIsDeaf FALSE
-saveVar $BOT~botIsDeaf
-gosub :buildComString
+:chatmenu
+setvar $bot~botisdeaf false
+savevar $bot~botisdeaf
+gosub :buildcomstring
 
 setvar $i 1
 while ($i <= $figsize)
-        setVar $figs[$i] ""
-        add $i 1
+	setvar $figs[$i] ""
+	add $i 1
 end
+
 :start
-getDeafClients $BOT~botIsDeaf
-if (($BOT~botIsDeaf = true) and ($active_viewscreen = true))
-        gosub :refreshChatMenu
+getdeafclients $bot~botisdeaf
+if (($bot~botisdeaf = true) and ($active_viewscreen = true))
+	gosub :refreshchatmenu
 end
+
 :start_no_refresh
 setvar $comtype ""
 gosub :killchattriggers
-settextlinetrigger lookForP :lookForCom "P "
-settextlinetrigger lookForR :lookForCom "R "
-settextlinetrigger lookForF :lookForCom "F "
-settextlinetrigger lookForSelfR :lookForCom "'"
-settextlinetrigger lookForSelfF :lookForCom "`"
-settextlinetrigger lookForSelfMul :lookForCom "S: "
-settextlinetrigger figHit :figHitProcess "of your fighters in sector"
-settextlinetrigger offFigHit :figHitProcess "Your fighters in sector"
+settextlinetrigger lookforp :lookforcom "P "
+settextlinetrigger lookforr :lookforcom "R "
+settextlinetrigger lookforf :lookforcom "F "
+settextlinetrigger lookforselfr :lookforcom "'"
+settextlinetrigger lookforselff :lookforcom "`"
+settextlinetrigger lookforselfmul :lookforcom "S: "
+settextlinetrigger fighit :fighitprocess "of your fighters in sector"
+settextlinetrigger offfighit :fighitprocess "Your fighters in sector"
 #settextlinetrigger entered :figHitProcess "Deployed Fighters Report Sector"
 
 #setdelaytrigger    silentdelay :checksilent 900000
 #settextlinetrigger limpet :limpetProcess "Limpet mine in "
 
-getDeafClients $BOT~botIsDeaf
-if ($BOT~botIsDeaf = true)
-        setDelayTrigger delay :refresh 500
+getdeafclients $bot~botisdeaf
+if ($bot~botisdeaf = true)
+	setdelaytrigger delay :refresh 500
 end
-setTextOutTrigger open :process_command "_"
-getDeafClients $BOT~botIsDeaf
-if ($BOT~botIsDeaf = true)
-        setTextOutTrigger talk2 :process_down "d"
-        setTextOutTrigger talk3 :process_down "D"
-        setTextOutTrigger talk4 :process_up "u"
-        setTextOutTrigger talk5 :process_up "U"
-        settextouttrigger ignore :process_chat "'"
-        settextouttrigger ignore2 :process_chat "`"
+settextouttrigger open :process_command "_"
+getdeafclients $bot~botisdeaf
+if ($bot~botisdeaf = true)
+	settextouttrigger talk2 :process_down "d"
+	settextouttrigger talk3 :process_down "D"
+	settextouttrigger talk4 :process_up "u"
+	settextouttrigger talk5 :process_up "U"
+	settextouttrigger ignore :process_chat "'"
+	settextouttrigger ignore2 :process_chat "`"
 
-        setTextOutTrigger talk7 :toggle_mute_me "+"
-        setTextOutTrigger talk6 :start_no_refresh ""
+	settextouttrigger talk7 :toggle_mute_me "+"
+	settextouttrigger talk6 :start_no_refresh ""
 end
 pause
 
 :process_chat
 gosub :killchattriggers
-getOutText $chat_symbol
-processOut $chat_symbol
-        :wait_for_chat
-        settextouttrigger chat :processchatstring ""
-        pause
-        :processchatstring
-        getOutText $character
-        processOut $character
-        getwordpos $character $pos #13
-        setvar $found_enter_key false
-        if ($pos > 0)
-                setvar $found_enter_key true
-        end
-        if ($found_enter_key = true)
-                goto :start
-        else
-                goto :wait_for_chat
-        end
+getouttext $chat_symbol
+processout $chat_symbol
+
+:wait_for_chat
+settextouttrigger chat :processchatstring ""
+pause
+
+:processchatstring
+getouttext $character
+processout $character
+getwordpos $character $pos #13
+setvar $found_enter_key false
+if ($pos > 0)
+	setvar $found_enter_key true
+end
+if ($found_enter_key = true)
+	goto :start
+else
+	goto :wait_for_chat
+end
 
 :process_up
 gosub :killchattriggers
-getDeafClients $BOT~botIsDeaf
-if ($BOT~botIsDeaf)
-        if ($comm_window_start_index < ($comsize-$comm_window_size))
-                add $comm_window_start_index $comm_window_size
-                if ($comm_window_start_index > ($comsize-$comm_window_size))
-                        setVar $comm_window_start_index ($comsize-$comm_window_size)
-                end
-        end
+getdeafclients $bot~botisdeaf
+if ($bot~botisdeaf)
+	if ($comm_window_start_index < ($comsize-$comm_window_size))
+		add $comm_window_start_index $comm_window_size
+		if ($comm_window_start_index > ($comsize-$comm_window_size))
+			setvar $comm_window_start_index ($comsize-$comm_window_size)
+		end
+	end
 end
 goto :start
 
 :process_down
 gosub :killchattriggers
-if ($BOT~botIsDeaf)
-        if ($comm_window_start_index > 1)
-                subtract $comm_window_start_index $comm_window_size
-                if ($comm_window_start_index < 1)
-                        setVar $comm_window_start_index 1
-                end
-        end
+if ($bot~botisdeaf)
+	if ($comm_window_start_index > 1)
+		subtract $comm_window_start_index $comm_window_size
+		if ($comm_window_start_index < 1)
+			setvar $comm_window_start_index 1
+		end
+	end
 end
 goto :start
 
 :process_command
 gosub :killchattriggers
-getDeafClients $BOT~botIsDeaf
-if ($BOT~botIsDeaf)
-        setvar $active_viewscreen false
-        setDeafClients false
-        echo #27&"[255D"&#27&"[255B"&#27&"[K"
-        echo "*"&ansi_5&"Viewscreen shutting down..*"&ansi_15&CURRENTANSILINE
+getdeafclients $bot~botisdeaf
+if ($bot~botisdeaf)
+	setvar $active_viewscreen false
+	setdeafclients false
+	echo #27&"[255D"&#27&"[255B"&#27&"[K"
+	echo "*"&ansi_5&"Viewscreen shutting down..*"&ansi_15&currentansiline
 else
-        setvar $active_viewscreen true
-        setDeafClients true
-        setVar $comm_window_start_index 1
-        setvar $old_output ""
-        gosub :refreshChatMenu
+	setvar $active_viewscreen true
+	setdeafclients true
+	setvar $comm_window_start_index 1
+	setvar $old_output ""
+	gosub :refreshchatmenu
 end
-getDeafClients $BOT~botIsDeaf
-saveVar $BOT~botIsDeaf
+getdeafclients $bot~botisdeaf
+savevar $bot~botisdeaf
 goto :start
 
 :toggle_battle_screen
 gosub :killchattriggers
-getDeafClients $BOT~botIsDeaf
-if ($BOT~botIsDeaf)
-        if ($battle_screen = true)
-                setvar $battle_screen false
-        else
-                setvar $battle_screen true
-        end
-        goto :start
+getdeafclients $bot~botisdeaf
+if ($bot~botisdeaf)
+	if ($battle_screen = true)
+		setvar $battle_screen false
+	else
+		setvar $battle_screen true
+	end
+	goto :start
 end
+
 :toggle_mute_me
 gosub :killchattriggers
-getDeafClients $BOT~botIsDeaf
-if ($BOT~botIsDeaf)
-        if ($ignoreme = true)
-                setvar $ignoreme false
-        else
-                setvar $ignoreme true
-        end
-        goto :start
+getdeafclients $bot~botisdeaf
+if ($bot~botisdeaf)
+	if ($ignoreme = true)
+		setvar $ignoreme false
+	else
+		setvar $ignoreme true
+	end
+	goto :start
 end
 
 :refresh
-getDeafClients $BOT~botIsDeaf
-if (($BOT~botIsDeaf) and ($active_viewscreen = true))
-        gosub :refreshChatMenu
-        setDelayTrigger delay :refresh 500
+getdeafclients $bot~botisdeaf
+if (($bot~botisdeaf) and ($active_viewscreen = true))
+	gosub :refreshchatmenu
+	setdelaytrigger delay :refresh 500
 end
 pause
 
-:lookForCom
+:lookforcom
 gosub :killchattriggers
-setvar $line CURRENTLINE
-cuttext $line $checkCom 1 2
-cutText $line $firstChar 1 1
-getword $checkCom $checkCom 1
-if ($firstChar = "'") OR ($firstChar = "`") OR ($checkCom = "P") OR ($checkCom = "R") OR ($checkCom = "F") OR ($checkCom = "S:")
-        if ($checkCom = "P")
-                getword $line $checkCorpScan 2
-                if ($checkCorpScan = "indicates")
-                        goto :start
-                end
-        end
-        getlength $line $length
-        setvar $isme false
-        if ($length > 4)
-                if ($firstChar = "'")
-                        cuttext $line $line 2 9999
-                        setVar $line "R ME     "&$line
-                        setvar $isme true
-                end
-                if ($firstChar = "`")
-                        cuttext $line $line 2 9999
-                        setVar $line "F ME     "&$line
-                        setvar $isme true
-                end
-                if ($checkCom = "S:")
-                        cuttext $line $line 4 9999
-                        setVar $line "R ME     "&$line
-                        setvar $isme true
-                end
-                gosub :addCom2Window
-        end
-        goto :start
+setvar $line currentline
+cuttext $line $checkcom 1 2
+cuttext $line $firstchar 1 1
+getword $checkcom $checkcom 1
+if ($firstchar = "'") or ($firstchar = "`") or ($checkcom = "P") or ($checkcom = "R") or ($checkcom = "F") or ($checkcom = "S:")
+	if ($checkcom = "P")
+		getword $line $checkcorpscan 2
+		if ($checkcorpscan = "indicates")
+			goto :start
+		end
+	end
+	getlength $line $length
+	setvar $isme false
+	if ($length > 4)
+		if ($firstchar = "'")
+			cuttext $line $line 2 9999
+			setvar $line "R ME     "&$line
+			setvar $isme true
+		end
+		if ($firstchar = "`")
+			cuttext $line $line 2 9999
+			setvar $line "F ME     "&$line
+			setvar $isme true
+		end
+		if ($checkcom = "S:")
+			cuttext $line $line 4 9999
+			setvar $line "R ME     "&$line
+			setvar $isme true
+		end
+		gosub :addcom2window
+	end
+	goto :start
 else
-        goto :start
+	goto :start
 end
 
-:figHitProcess
+:fighitprocess
 gosub :killchattriggers
-setvar $line CURRENTLINE
-getword $line $spoofCheck 1
-if ($spoofCheck = "P") OR ($spoofCheck = "F") OR ($spoofCheck = "R") OR ($spoofCheck = ">")
-        goto :start
+setvar $line currentline
+getword $line $spoofcheck 1
+if ($spoofcheck = "P") or ($spoofcheck = "F") or ($spoofcheck = "R") or ($spoofcheck = ">")
+	goto :start
 else
-        gosub :addFig2Window
-        goto :start
+	gosub :addfig2window
+	goto :start
 end
 
-:limpetProcess
+:limpetprocess
 gosub :killchattriggers
-setvar $line CURRENTLINE
-getword $line $spoofCheck 1
-if ($spoofCheck = "P") OR ($spoofCheck = "F") OR ($spoofCheck = "R") OR ($spoofCheck = ">")
-        goto :start
+setvar $line currentline
+getword $line $spoofcheck 1
+if ($spoofcheck = "P") or ($spoofcheck = "F") or ($spoofcheck = "R") or ($spoofcheck = ">")
+	goto :start
 else
-        #getword CURRENTLINE $sector 4
-        #getdistance $distance $sector CURRENTSECTOR
-        #setvar $line " Hops: " & $distance & " " & $line
-        gosub :addFig2Window
-        goto :start
+	#getword CURRENTLINE $sector 4
+	#getdistance $distance $sector CURRENTSECTOR
+	#setvar $line " Hops: " & $distance & " " & $line
+	gosub :addfig2window
+	goto :start
 end
 
-:addCom2Window
-gosub :getTime
-if ($startDate <> $year & $month & $day)
-        setvar $startDate $year & $month & $day
-        setvar $logFileName $bot~folder&"/"&$year & $month & $day & ".comms"
+:addcom2window
+gosub :gettime
+if ($startdate <> $year & $month & $day)
+	setvar $startdate $year & $month & $day
+	setvar $logfilename $bot~folder&"/"&$year & $month & $day & ".comms"
 end
-write $logFileName $hour & ":" & $minute & ":" & $second & ":" & $msec & "  " &$line
+write $logfilename $hour & ":" & $minute & ":" & $second & ":" & $msec & "  " &$line
 getlength $line $length
 setvar $numline 1
 setvar $line2 ""
 setvar $line " " & $line
 if (($isme = true) and ($ignoreme = true))
-        # ignore self chat if ignore me is set. #
+	# ignore self chat if ignore me is set. #
 else
-        if ($length > ($comm_line_length+1))
-                cuttext $line $line1 1 ($comm_line_length)
-                cuttext $line $line2 ($comm_line_length+1) 200
-                setvar $line $line1&"* "&$line2
-                setvar $numline 2
+	if ($length > ($comm_line_length+1))
+		cuttext $line $line1 1 ($comm_line_length)
+		cuttext $line $line2 ($comm_line_length+1) 200
+		setvar $line $line1&"* "&$line2
+		setvar $numline 2
 
-                setVar $line $line1
-                getlength $line $length
-                gosub :formatLine
-                if ($line2 <> "")
-                        setVar $line "+         "&$line2
-                        getlength $line $length
-                        gosub :formatLine
-                end
-        else
-                gosub :formatLine
-        end
+		setvar $line $line1
+		getlength $line $length
+		gosub :formatline
+		if ($line2 <> "")
+			setvar $line "+         "&$line2
+			getlength $line $length
+			gosub :formatline
+		end
+	else
+		gosub :formatline
+	end
 end
 return
 
-:addFig2Window
-gosub :getTime
-setVar $time " "&$hour & ":" & $minute & ":" & $second & ":" & $msec & "  "
-if ($isOdd)
-        setVar $isOdd FALSE
-        setVar $time ANSI_4&$time&ANSI_11
+:addfig2window
+gosub :gettime
+setvar $time " "&$hour & ":" & $minute & ":" & $second & ":" & $msec & "  "
+if ($isodd)
+	setvar $isodd false
+	setvar $time ansi_4&$time&ansi_11
 else
-        setVar $isOdd TRUE
-        setVar $time ANSI_12&$time&ANSI_11
+	setvar $isodd true
+	setvar $time ansi_12&$time&ansi_11
 end
 gettext " "&$line $attacker " " " destroyed "
 gettext " "&$line $howmany " destroyed " " of your fighters in sector "
 gettext $line&"[end][end]" $attacked " in sector " "[end][end]"
-replaceText $line $attacker&" " ANSI_11&$attacker&" "&ANSI_2
-replaceText $line " "&$howmany&" " ANSI_6&" "&$howmany&" "&ANSI_2
-replaceText $line $attacked ANSI_6&$attacked&ANSI_2
-isNumber $isNumber $attacked
-if ($isNumber)
-        if (($attacked > 10)  AND ($attacked <= SECTORS))
-                getdistance $distance $attacked CURRENTSECTOR
-                if ($MAP~home_sector > 0)
-                        getdistance $distance_home $attacked $MAP~home_sector
-                end
-                setVar $hops ""
-                if ($distance > 0)
-                        setvar $hops ANSI_2&" ("&ANSI_15&$distance & " hops away"&ANSI_2&")"
-                        if ($MAP~home_sector > 0)
-                                setVar $hops $hops&" ("&ANSI_15&$distance_home & " from home"&ANSI_2&")"
-                        end
-                end
-                setvar $line  $time&$line&$hops
-                gosub :buildFigString
-        end
+replacetext $line $attacker&" " ansi_11&$attacker&" "&ansi_2
+replacetext $line " "&$howmany&" " ansi_6&" "&$howmany&" "&ansi_2
+replacetext $line $attacked ansi_6&$attacked&ansi_2
+isnumber $isnumber $attacked
+if ($isnumber)
+	if (($attacked > 10)  and ($attacked <= sectors))
+		getdistance $distance $attacked currentsector
+		if ($map~home_sector > 0)
+			getdistance $distance_home $attacked $map~home_sector
+		end
+		setvar $hops ""
+		if ($distance > 0)
+			setvar $hops ansi_2&" ("&ansi_15&$distance & " hops away"&ansi_2&")"
+			if ($map~home_sector > 0)
+				setvar $hops $hops&" ("&ansi_15&$distance_home & " from home"&ansi_2&")"
+			end
+		end
+		setvar $line  $time&$line&$hops
+		gosub :buildfigstring
+	end
 end
 return
 
-:addEntry2Window
-gosub :getTime
-setVar $time " "&$hour & ":" & $minute & ":" & $second & ":" & $msec & "  "
-if ($isOdd)
-        setVar $isOdd FALSE
-        setVar $time ANSI_4&$time&ANSI_11
+:addentry2window
+gosub :gettime
+setvar $time " "&$hour & ":" & $minute & ":" & $second & ":" & $msec & "  "
+if ($isodd)
+	setvar $isodd false
+	setvar $time ansi_4&$time&ansi_11
 else
-        setVar $isOdd TRUE
-        setVar $time ANSI_12&$time&ANSI_11
+	setvar $isodd true
+	setvar $time ansi_12&$time&ansi_11
 end
-getWord CURRENTLINE $attacked 5
-replaceText $attacked ":" ""
-replaceText $line $attacked ANSI_6&$attacked&ANSI_2
-replaceText $line "Deployed Fighters Report Sector" ANSI_2&"Deployed Fighters Report Sector"&ANSI_2
+getword currentline $attacked 5
+replacetext $attacked ":" ""
+replacetext $line $attacked ansi_6&$attacked&ansi_2
+replacetext $line "Deployed Fighters Report Sector" ansi_2&"Deployed Fighters Report Sector"&ansi_2
 #    isNumber $isNumber $attacked
 #    if ($isNumber)
 #        if (($attacked > 10)  AND ($attacked <= SECTORS))
@@ -1997,38 +2015,38 @@ replaceText $line "Deployed Fighters Report Sector" ANSI_2&"Deployed Fighters Re
 #                                       setVar $hops $hops&" ("&ANSI_15&$distance_home & " from home"&ANSI_2&")"
 #                               end
 #                       end
-                setvar $line  $time&$line&$hops
-                gosub :buildFigString
+setvar $line  $time&$line&$hops
+gosub :buildfigstring
 #       end
 #    end
 return
 
-:formatLine
+:formatline
 if ($length > 11)
-        cuttext $line $commChar 1 2
-        cuttext $line $theName 3 8
-        cuttext $line $theRest 10 9999
-        setVar $line ANSI_3&$commChar&ANSI_11&$theName&ANSI_14&$theRest
-        if ($ignore <> TRUE)
-                gosub :buildComString
-        end
-        setVar $ignore FALSE
+	cuttext $line $commchar 1 2
+	cuttext $line $thename 3 8
+	cuttext $line $therest 10 9999
+	setvar $line ansi_3&$commchar&ansi_11&$thename&ansi_14&$therest
+	if ($ignore <> true)
+		gosub :buildcomstring
+	end
+	setvar $ignore false
 end
 return
 
-:buildFigString
+:buildfigstring
 setvar $figstring ""
-setvar $windowString ""
-setVar $i $figsize
+setvar $windowstring ""
+setvar $i $figsize
 while ($i > 0)
-        if ($i = 1)
-                setvar $figs[1] $line
-                #setvar $figs[1][1] $numline
-        else
-                setvar $figs[$i] $figs[($i-1)]
-                #setvar $figs[$i][1] $figs[($i-1)][1]
-        end
-        subtract $i 1
+	if ($i = 1)
+		setvar $figs[1] $line
+		#setvar $figs[1][1] $numline
+	else
+		setvar $figs[$i] $figs[($i-1)]
+		#setvar $figs[$i][1] $figs[($i-1)][1]
+	end
+	subtract $i 1
 end
 
 #setvar $count 2
@@ -2037,27 +2055,27 @@ end
 #    add $count 1
 #end
 while ($count >=1)
-        if ($figs[$count] = 0)
-                setvar $figs[$count] ""
-        end
-        setvar $figstring $figstring & $figs[$count] & "*"
-        subtract $count 1
+	if ($figs[$count] = 0)
+		setvar $figs[$count] ""
+	end
+	setvar $figstring $figstring & $figs[$count] & "*"
+	subtract $count 1
 end
 return
 
-:buildComString
+:buildcomstring
 setvar $comstring ""
-setvar $windowString ""
-setVar $i $comsize
+setvar $windowstring ""
+setvar $i $comsize
 while ($i > 0)
-        if ($i = 1)
-                setvar $coms[1] $line
-                #setvar $coms[1][1] $numline
-        else
-                setvar $coms[$i] $coms[($i-1)]
-                #setvar $coms[$i][1] $coms[($i-1)][1]
-        end
-        subtract $i 1
+	if ($i = 1)
+		setvar $coms[1] $line
+		#setvar $coms[1][1] $numline
+	else
+		setvar $coms[$i] $coms[($i-1)]
+		#setvar $coms[$i][1] $coms[($i-1)][1]
+	end
+	subtract $i 1
 end
 
 #setvar $count 2
@@ -2066,11 +2084,11 @@ end
 #    add $count 1
 #end
 while ($count >=1)
-        if ($coms[$count] = 0)
-                setvar $coms[$count] ""
-        end
-        setvar $comstring $comstring & $coms[$count] & "*"
-        subtract $count 1
+	if ($coms[$count] = 0)
+		setvar $coms[$count] ""
+	end
+	setvar $comstring $comstring & $coms[$count] & "*"
+	subtract $count 1
 end
 return
 
@@ -2078,311 +2096,313 @@ return
 # creates a unique number timestamp
 # if time/date is 10:50:00am 9/15/05 then output = 20050915105000
 # if time/date is 5:33:22pm 9/15/05 then output = 20050915173322
-:getTime
-getTime $dateTime "yyyymmddhhnnsszzz am/pm"
-getword $dateTime $amPMcheck 2
-getword $dateTime $finalTime 1
-cuttext $finalTime $12check 9 2
-if ($amPMcheck = "pm")
-        if ($12check <> 12)
-                add $finalTime 120000000
-        end
+:gettime
+gettime $datetime "yyyymmddhhnnsszzz am/pm"
+getword $datetime $ampmcheck 2
+getword $datetime $finaltime 1
+cuttext $finaltime $12check 9 2
+if ($ampmcheck = "pm")
+	if ($12check <> 12)
+		add $finaltime 120000000
+	end
 end
-cuttext $finalTime $year 1 4
-cuttext $finalTime $month 5 2
-cuttext $finalTime $day 7 2
-cuttext $finalTime $hour 9 2
-cuttext $finalTime $minute 11 2
-cuttext $finalTime $second 13 2
-cuttext $finalTime $msec 15 3
+cuttext $finaltime $year 1 4
+cuttext $finaltime $month 5 2
+cuttext $finaltime $day 7 2
+cuttext $finaltime $hour 9 2
+cuttext $finaltime $minute 11 2
+cuttext $finaltime $second 13 2
+cuttext $finaltime $msec 15 3
 # echo ANSI_10 "*" $finalTime
 # echo ANSI_10 "**" $month "/" $day "/" $year " - " $hour ":" $minute ":" $second
 # echo ANSI_10 "*Date: " DATE " Time: " TIME "*"
 return
 
-:getStats
-gosub :loadVars
+:getstats
+gosub :loadvars
 
-if ($PLAYER~CURRENT_SECTOR = 0)
-        setVar $stats[1] "    Sector: "&CURRENTSECTOR&"*"
+if ($player~current_sector = 0)
+	setvar $stats[1] "    Sector: "&currentsector&"*"
 else
-        setVar $stats[1] "    Sector: "&$PLAYER~CURRENT_SECTOR&"*"
+	setvar $stats[1] "    Sector: "&$player~current_sector&"*"
 end
 if ($planet~planet <> 0)
-        setVar $stats[2] "    Planet: "&$planet~planet&"*"
+	setvar $stats[2] "    Planet: "&$planet~planet&"*"
 else
-        setVar $stats[2] "    Planet: None*"
+	setvar $stats[2] "    Planet: None*"
 end
-if ($PLAYER~unlimitedGame)
-        setVar $stats[3] "     Turns: Unlimited*"
+if ($player~unlimitedgame)
+	setvar $stats[3] "     Turns: Unlimited*"
 else
-        setVar $stats[3] "     Turns: "&CURRENTTURNS&"*"
+	setvar $stats[3] "     Turns: "&currentturns&"*"
 end
-setvar $player~value CURRENTEXPERIENCE
+setvar $player~value currentexperience
 gosub :player~commasize
-setVar $stats[4]  "       Exp: "&$player~value&"*"
-setvar $player~value CURRENTALIGNMENT
+setvar $stats[4]  "       Exp: "&$player~value&"*"
+setvar $player~value currentalignment
 gosub :player~commasize
-setVar $stats[5]  "     Align: "&$player~value&"*"
-setvar $player~value CURRENTCREDITS
+setvar $stats[5]  "     Align: "&$player~value&"*"
+setvar $player~value currentcredits
 gosub :player~commasize
-setVar $stats[6]  "   Credits: "&$player~value&"*"
-setVar $stats[7]  "Holds Info: "&CURRENTTOTALHOLDS&"*"
-setVar $stats[8] "  Fuel Ore: "&CURRENTOREHOLDS&"*"
-setVar $stats[9] "  Organics: "&CURRENTORGHOLDS&"*"
-setVar $stats[10] " Equipment: "&CURRENTEQUHOLDS&"*"
-setVar $stats[11] " Colonists: "&CURRENTCOLHOLDS&"*"
-setVar $empty_holds (CURRENTTOTALHOLDS - CURRENTOREHOLDS)
-setVar $empty_holds ($empty_holds - CURRENTORGHOLDS)
-setVar $empty_holds ($empty_holds - CURRENTEQUHOLDS)
-setVar $empty_holds ($empty_holds - CURRENTCOLHOLDS)
+setvar $stats[6]  "   Credits: "&$player~value&"*"
+setvar $stats[7]  "Holds Info: "&currenttotalholds&"*"
+setvar $stats[8] "  Fuel Ore: "&currentoreholds&"*"
+setvar $stats[9] "  Organics: "&currentorgholds&"*"
+setvar $stats[10] " Equipment: "&currentequholds&"*"
+setvar $stats[11] " Colonists: "&currentcolholds&"*"
+setvar $empty_holds (currenttotalholds - currentoreholds)
+setvar $empty_holds ($empty_holds - currentorgholds)
+setvar $empty_holds ($empty_holds - currentequholds)
+setvar $empty_holds ($empty_holds - currentcolholds)
 
-setVar $stats[12] "     Empty: "&CURRENTEMPTYHOLDS&"*"
-setVar $stats[13] "    Ship #: "&CURRENTSHIPNUMBER&"*"
-setvar $player~value CURRENTFIGHTERS
+setvar $stats[12] "     Empty: "&currentemptyholds&"*"
+setvar $stats[13] "    Ship #: "&currentshipnumber&"*"
+setvar $player~value currentfighters
 gosub :player~commasize
-setVar $stats[14] "  Fighters: "&$player~value&"*"
-setvar $player~value CURRENTSHIELDS
+setvar $stats[14] "  Fighters: "&$player~value&"*"
+setvar $player~value currentshields
 gosub :player~commasize
-setVar $stats[15] "   Shields: "&$player~value&"*"
+setvar $stats[15] "   Shields: "&$player~value&"*"
 setvar $player~value $ship~ship_fighters_max
 gosub :player~commasize
-setVar $stats[16] "  Max Figs: "&$player~value&"*"
+setvar $stats[16] "  Max Figs: "&$player~value&"*"
 setvar $player~value $ship~ship_max_attack
 gosub :player~commasize
-setVar $stats[17] "  Max Wave: "&$player~value&"*"
-setVar $stats[18] "Turns/Warp: "&$PLAYER~TURNS_PER_WARP&"*"
+setvar $stats[17] "  Max Wave: "&$player~value&"*"
+setvar $stats[18] "Turns/Warp: "&$player~turns_per_warp&"*"
 
-cutText CURRENTARMIDS&"    " $player~armids 0 3
-cutText CURRENTCLOAKS&"    " $player~cloaks 0 3
-cutText CURRENTGENTORPS&"    " $player~genesis 0 3
-cutText CURRENTMINEDISR&"    " $player~mine_disruptors 0 3
-cutText CURRENTEPROBES&"    " $player~eprobes 0 3
-cutText CURRENTTWARPTYPE&"    " $player~twarp_type 0 3
-cutText CURRENTSCANTYPE&"    " $player~scan_type 0 3
+cuttext currentarmids&"    " $player~armids 0 3
+cuttext currentcloaks&"    " $player~cloaks 0 3
+cuttext currentgentorps&"    " $player~genesis 0 3
+cuttext currentminedisr&"    " $player~mine_disruptors 0 3
+cuttext currenteprobes&"    " $player~eprobes 0 3
+cuttext currenttwarptype&"    " $player~twarp_type 0 3
+cuttext currentscantype&"    " $player~scan_type 0 3
 
-setVar $stats[19] "   EProbes: "&CURRENTEPROBES&ANSI_5&"   Beacons: "&CURRENTBEACONS&"*"
-setVar $stats[20] "   Disrupt: "&CURRENTMINEDISR&ANSI_5&"   Photons: "&CURRENTPHOTONS&"*"
-setVar $stats[21] "    Armids: "&CURRENTARMIDS&ANSI_5&"   Limpets: "&CURRENTLIMPETS&"*"
-setVar $stats[22] "   Genesis: "&CURRENTGENTORPS&ANSI_5&"   AtmDets: "&CURRENTATOMICS&"*"
-setvar $player~value CURRENTCORBOMITE
+setvar $stats[19] "   EProbes: "&currenteprobes&ansi_5&"   Beacons: "&currentbeacons&"*"
+setvar $stats[20] "   Disrupt: "&currentminedisr&ansi_5&"   Photons: "&currentphotons&"*"
+setvar $stats[21] "    Armids: "&currentarmids&ansi_5&"   Limpets: "&currentlimpets&"*"
+setvar $stats[22] "   Genesis: "&currentgentorps&ansi_5&"   AtmDets: "&currentatomics&"*"
+setvar $player~value currentcorbomite
 gosub :player~commasize
-setVar $stats[23] "    Cloaks: "&CURRENTCLOAKS&ANSI_5&"    Corbos: "&$player~value&"*"
-setVar $stats[24] "     Twarp: "&CURRENTTWARPTYPE&ANSI_5&"   PlnScan: "&CURRENTPLANETSCANNER&"*"
-setVar $stats[25] "   Scanner: "&CURRENTSCANTYPE&ANSI_5&"   PsiProb: "&CURRENTPSYCHICPROBE&"*"
-setVar $stats[26] "     *"
+setvar $stats[23] "    Cloaks: "&currentcloaks&ansi_5&"    Corbos: "&$player~value&"*"
+setvar $stats[24] "     Twarp: "&currenttwarptype&ansi_5&"   PlnScan: "&currentplanetscanner&"*"
+setvar $stats[25] "   Scanner: "&currentscantype&ansi_5&"   PsiProb: "&currentpsychicprobe&"*"
+setvar $stats[26] "     *"
 return
 
-:loadVars
-loadVar $planet~planet
-loadVar $PLAYER~unlimitedGame
-loadVar $PLAYER~TRADER_NAME
-loadVar $MAP~STARDOCK
-loadVar $MAP~alpha_centauri
-loadVar $MAP~rylos
-loadVar $MAP~backdoor
-loadVar $SHIP~SHIP_FIGHTERS_MAX
-loadvar $SHIP~SHIP_MAX_ATTACK
-loadVar $PLAYER~TURNS_PER_WARP
+:loadvars
+loadvar $planet~planet
+loadvar $player~unlimitedgame
+loadvar $player~trader_name
+loadvar $map~stardock
+loadvar $map~alpha_centauri
+loadvar $map~rylos
+loadvar $map~backdoor
+loadvar $ship~ship_fighters_max
+loadvar $ship~ship_max_attack
+loadvar $player~turns_per_warp
 return
 
-:refreshChatMenu
-loadVar $BOT~who_is_online
-loadVar $window_content
+:refreshchatmenu
+loadvar $bot~who_is_online
+loadvar $window_content
 loadvar $switchboard~window_content
 if ($switchboard~window_content <> "")
-        setvar $window_content $window_content&"** "&$switchboard~window_content
+	setvar $window_content $window_content&"** "&$switchboard~window_content
 end
-replaceText $BOT~who_is_online "," "*"
-replaceText $window_content "[][]" "*"
+replacetext $bot~who_is_online "," "*"
+replacetext $window_content "[][]" "*"
 
-gosub :getStats
-setVar $output #27 & "[2J"
-setVar $output $output&"**"
-if (($BOT~who_is_online <> "0") and ($bot~who_is_online <> ""))
-        setvar $i 1
-        listActiveScripts $scripts
-        setvar $found false
-        while ($i <= $scripts)
-                getWordPos $scripts[$i] $pos "online.cts"
-                if ($pos > 0)
-                        setVar $found TRUE
-                end
-                add $i 1
-        end
-        if ($found = true)
-                setVar $output $output&ANSI_15&"---------------------------------------"&ansi_13&" Who's Online? "&ansi_15&"---------------------------------------------*"
-                setVar $output $output&ANSI_10&""&ANSI_7&$BOT~who_is_online
-        else
-                setvar $bot~who_is_online ""
-                savevar $bot~who_is_online
-        end
+gosub :getstats
+setvar $output #27 & "[2J"
+setvar $output $output&"**"
+if (($bot~who_is_online <> "0") and ($bot~who_is_online <> ""))
+	setvar $i 1
+	listactivescripts $scripts
+	setvar $found false
+	while ($i <= $scripts)
+		getwordpos $scripts[$i] $pos "online.cts"
+		if ($pos > 0)
+			setvar $found true
+		end
+		add $i 1
+	end
+	if ($found = true)
+		setvar $output $output&ansi_15&"---------------------------------------"&ansi_13&" Who's Online? "&ansi_15&"---------------------------------------------*"
+		setvar $output $output&ansi_10&""&ansi_7&$bot~who_is_online
+	else
+		setvar $bot~who_is_online ""
+		savevar $bot~who_is_online
+	end
 else
-        if ($BOT~who_is_online = "0")
-                setvar $bot~who_is_online ""
-                savevar $bot~who_is_online
-        end
+	if ($bot~who_is_online = "0")
+		setvar $bot~who_is_online ""
+		savevar $bot~who_is_online
+	end
 end
 if ($battle_screen = true)
-        setVar $output $output&ANSI_15&"---------------------------------------------------------------------------------------------------*"
-        gosub :MAP~displayNavigation
-        setvar $output $output&$map~map&"*"
+	setvar $output $output&ansi_15&"---------------------------------------------------------------------------------------------------*"
+	gosub :map~displaynavigation
+	setvar $output $output&$map~map&"*"
 else
 
-        if (($window_content <> "") and ($window_content <> "0"))
-                if ($window_content = $previous_window_content)
-                        add $window_content_time 500
-                else
-                        setvar $window_content_time 0
-                end
-                if ($window_content_time < 120000)
-                        setVar $output $output&ANSI_15&"------------------------------------"&ansi_13&" Script Status Window "&ansi_15&"-----------------------------------------*"
-                        setVar $output $output&ANSI_10&""&ANSI_15&$window_content&"*"
-                        setvar $previous_window_content $window_content
-                else
-                        setvar $window_content ""
-                        savevar $window_content
-                        setvar $switchboard~window_content ""
-                        savevar $switchboard~window_content
-                        setvar $window_content_time 0
-                end
-        else
-                if ($window_content = "0")
-                        setvar $window_content ""
-                        savevar $window_content
-                end
-        end
-        setVar $output $output&ANSI_15&"---------------------------------"&ansi_13&" Communications "&ansi_15&"--------------------------------"&ansi_13&" Stats "&ansi_15&"-----------*"
+	if (($window_content <> "") and ($window_content <> "0"))
+		if ($window_content = $previous_window_content)
+			add $window_content_time 500
+		else
+			setvar $window_content_time 0
+		end
+		if ($window_content_time < 120000)
+			setvar $output $output&ansi_15&"------------------------------------"&ansi_13&" Script Status Window "&ansi_15&"-----------------------------------------*"
+			setvar $output $output&ansi_10&""&ansi_15&$window_content&"*"
+			setvar $previous_window_content $window_content
+		else
+			setvar $window_content ""
+			savevar $window_content
+			setvar $switchboard~window_content ""
+			savevar $switchboard~window_content
+			setvar $window_content_time 0
+		end
+	else
+		if ($window_content = "0")
+			setvar $window_content ""
+			savevar $window_content
+		end
+	end
+	setvar $output $output&ansi_15&"---------------------------------"&ansi_13&" Communications "&ansi_15&"--------------------------------"&ansi_13&" Stats "&ansi_15&"-----------*"
 
-        splittext $window_content $window_linecount "*"
-        splittext $BOT~who_is_online $who_linecount "*"
+	splittext $window_content $window_linecount "*"
+	splittext $bot~who_is_online $who_linecount "*"
 
-        setVar $i $figsize
-        setVar $j 1
-        setvar $fighter_output ""
-        setvar $figlines 0
-        while ($i >= 1)
-                setVar $line $figs[$i]
-                if ($line <> "")
-                        setVar $fighter_output $fighter_output&$line&"*"
-                        add $figlines 1
-                end
-                subtract $i 1
-        end
+	setvar $i $figsize
+	setvar $j 1
+	setvar $fighter_output ""
+	setvar $figlines 0
+	while ($i >= 1)
+		setvar $line $figs[$i]
+		if ($line <> "")
+			setvar $fighter_output $fighter_output&$line&"*"
+			add $figlines 1
+		end
+		subtract $i 1
+	end
 
-        setvar $subtract_com_lines 0
-        if ($bot~who_is_online <> "")
-                add $subtract_com_lines $who_linecount
-        end
-        if ($window_content <> "")
-                add $subtract_com_lines $window_linecount
-        end
-        add $subtract_com_lines $figlines
+	setvar $subtract_com_lines 0
+	if ($bot~who_is_online <> "")
+		add $subtract_com_lines $who_linecount
+	end
+	if ($window_content <> "")
+		add $subtract_com_lines $window_linecount
+	end
+	add $subtract_com_lines $figlines
 
-        setVar $i ($comm_window_size - $subtract_com_lines)
-        setVar $j 1
-        while ($i >= 0)
-                setVar $line $coms[($comm_window_start_index+$i)]
-                getWordPos $line $posF "F"
-                getWordPos $line $posR "R"
-                getWordPos $line $posP "P"
-                getWordPos $line $posPlus "+"
+	setvar $i ($comm_window_size - $subtract_com_lines)
+	setvar $j 1
+	while ($i >= 0)
+		setvar $line $coms[($comm_window_start_index+$i)]
+		getwordpos $line $posf "F"
+		getwordpos $line $posr "R"
+		getwordpos $line $posp "P"
+		getwordpos $line $posplus "+"
 
-                #if (($posF = 1) OR ($posR = 1) OR ($posP = 1) OR ($posPlus = 1))
-                        setVar $line_length ($comm_line_length+24)
-                #else
-                #       setVar $line_length $comm_line_length
-                #end
-                getlength $line $length
-                while ($length <= $line_length)
-                        setVar $line $line&" "
-                        getlength $line $length
-                end
-                replaceText $stats[$j] ":" ANSI_14&":"&ANSI_11
-                replaceText $stats[$j] "|" ANSI_5&":"&ANSI_11
-                setVar $output $output&$line&" "&ANSI_5&$stats[$j]
-                subtract $i 1
-                add $j 1
-        end
+		#if (($posF = 1) OR ($posR = 1) OR ($posP = 1) OR ($posPlus = 1))
+		setvar $line_length ($comm_line_length+24)
+		#else
+		#       setVar $line_length $comm_line_length
+		#end
+		getlength $line $length
+		while ($length <= $line_length)
+			setvar $line $line&" "
+			getlength $line $length
+		end
+		replacetext $stats[$j] ":" ansi_14&":"&ansi_11
+		replacetext $stats[$j] "|" ansi_5&":"&ansi_11
+		setvar $output $output&$line&" "&ansi_5&$stats[$j]
+		subtract $i 1
+		add $j 1
+	end
 end
 if ($fighter_output <> "")
-        setVar $output $output&ANSI_15&"-----------------------------------------"&ansi_2&" Fighter Hits "&ansi_15&"--------------------------------------------*"&$fighter_output
+	setvar $output $output&ansi_15&"-----------------------------------------"&ansi_2&" Fighter Hits "&ansi_15&"--------------------------------------------*"&$fighter_output
 else
-        setvar $output $output&"*"
+	setvar $output $output&"*"
 end
-setVar $output $output&ANSI_15&"--------"&ANSI_12&" "&ANSI_5&"["&ANSI_2&"'"&ANSI_5&"]"&ANSI_15&"Sub ("&$BOT~subspace&") "&ansi_15&"----- "&ANSI_5&"["&ANSI_2&"`"&ANSI_5&"]"&ANSI_15&"Fed "&ansi_15&"---- "&ANSI_5&"Page ["&ANSI_2&"U"&ANSI_5&"]p Chat "&ansi_15&"--"&ANSI_5&" Page "&ANSI_5&"["&ANSI_2&"D"&ANSI_5&"]own Chat "&ansi_15&"---- "
+setvar $output $output&ansi_15&"--------"&ansi_12&" "&ansi_5&"["&ansi_2&"'"&ansi_5&"]"&ansi_15&"Sub ("&$bot~subspace&") "&ansi_15&"----- "&ansi_5&"["&ansi_2&"`"&ansi_5&"]"&ansi_15&"Fed "&ansi_15&"---- "&ansi_5&"Page ["&ansi_2&"U"&ansi_5&"]p Chat "&ansi_15&"--"&ansi_5&" Page "&ansi_5&"["&ansi_2&"D"&ansi_5&"]own Chat "&ansi_15&"---- "
 loadvar $bot~subspace
 
 if ($ignoreme = true)
-        setvar $output $output&ANSI_5&"["&ANSI_2&"+"&ANSI_5&"]Show Me"&ANSI_15&" ---------*"
+	setvar $output $output&ansi_5&"["&ansi_2&"+"&ansi_5&"]Show Me"&ansi_15&" ---------*"
 else
-        setvar $output $output&ANSI_5&"["&ANSI_2&"+"&ANSI_5&"]Ignore Me"&ANSI_15&" -------*"
+	setvar $output $output&ansi_5&"["&ansi_2&"+"&ansi_5&"]Ignore Me"&ansi_15&" -------*"
 end
 
 if ($output <> $old_output)
-        echo $output
-        setVar $old_output $output
+	echo $output
+	setvar $old_output $output
 end
 return
 
-:CALCTIME
-setvar $HOURS 0
-setvar $MINUTES 0
-setvar $SECONDS 0
-setvar $TESTTIME $TIMETOLOGBACKIN
-if ($TESTTIME >= 3600)
-  setvar $HOURS ($TESTTIME / 3600)
-  setvar $TESTTIME ($TESTTIME - ($HOURS * 3600))
+:calctime
+setvar $hours 0
+setvar $minutes 0
+setvar $seconds 0
+setvar $testtime $timetologbackin
+if ($testtime >= 3600)
+	setvar $hours ($testtime / 3600)
+	setvar $testtime ($testtime - ($hours * 3600))
 end
-if ($TESTTIME >= 60)
-  setvar $MINUTES ($TESTTIME / 60)
-  setvar $TESTTIME ($TESTTIME - ($MINUTES * 60))
+if ($testtime >= 60)
+	setvar $minutes ($testtime / 60)
+	setvar $testtime ($testtime - ($minutes * 60))
 end
-if ($TESTTIME >= 1)
-  setvar $SECONDS $TESTTIME
+if ($testtime >= 1)
+	setvar $seconds $testtime
 end
-if ($HOURS < 10)
-  setvar $HOURS 0&$HOURS
+if ($hours < 10)
+	setvar $hours 0&$hours
 end
-if ($MINUTES < 10)
-  setvar $MINUTES 0&$MINUTES
+if ($minutes < 10)
+	setvar $minutes 0&$minutes
 end
-if ($SECONDS < 10)
-  setvar $SECONDS 0&$SECONDS
+if ($seconds < 10)
+	setvar $seconds 0&$seconds
 end
 return
 
 :checksilent
-        :msgs_on_again
-        killtrigger onMSGS_ON
-        killtrigger onMSGS_OFF
-        killtrigger silentdelay
-        setTextTrigger onMSGS_ON  :onMSGS_ON "Displaying all messages."
-        setTextTrigger onMSGS_OFF :onMSGS_OFF "Silencing all messages."
-        send "|"
-        pause
-        :onMSGS_OFF
-        killtrigger onMSGS_ON
-        SETVAR $was_silent FALSE
-        goto :msgs_on_again
-        :onMSGS_ON
-        killtrigger onMSGS_OFF
-        getDeafClients $BOT~botIsDeaf
-        if ($BOT~botIsDeaf = TRUE)
-                gosub :MENUS~donePrefer
-        end
-        killtrigger silentdelay
-        setdelaytrigger    silentdelay :checksilent 900000
-        pause
+:msgs_on_again
+killtrigger onmsgs_on
+killtrigger onmsgs_off
+killtrigger silentdelay
+settexttrigger onmsgs_on  :onmsgs_on "Displaying all messages."
+settexttrigger onmsgs_off :onmsgs_off "Silencing all messages."
+send "|"
+pause
+
+:onmsgs_off
+killtrigger onmsgs_on
+setvar $was_silent false
+goto :msgs_on_again
+
+:onmsgs_on
+killtrigger onmsgs_off
+getdeafclients $bot~botisdeaf
+if ($bot~botisdeaf = true)
+	gosub :menus~doneprefer
+end
+killtrigger silentdelay
+setdelaytrigger    silentdelay :checksilent 900000
+pause
 
 :killchattriggers
-killtrigger lookForP
-killtrigger lookForR
-killtrigger lookForF
-killtrigger lookForF2
-killtrigger lookForR2
-killtrigger lookForSelfR
-killtrigger lookForSelfF
+killtrigger lookforp
+killtrigger lookforr
+killtrigger lookforf
+killtrigger lookforf2
+killtrigger lookforr2
+killtrigger lookforselfr
+killtrigger lookforselff
 killtrigger open
 killtrigger talk
 killtrigger talk2
@@ -2393,13 +2413,13 @@ killtrigger talk6
 killtrigger talk7
 killtrigger talk8
 killtrigger silentdelay
-killtrigger figHit
-killtrigger offFigHit
+killtrigger fighit
+killtrigger offfighit
 killtrigger limpet
-killtrigger lookForSelfMul
+killtrigger lookforselfmul
 killtrigger enter
 killtrigger delay
-killtrigger lookForP
+killtrigger lookforp
 killtrigger ignore
 killtrigger ignore2
 return

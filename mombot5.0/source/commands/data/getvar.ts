@@ -1,16 +1,15 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-
-setVar $HELP~HELP[1]  $HELP~TAB&"getvar"
-setVar $HELP~HELP[2]  $HELP~TAB&"  Displays bot variables"
-setVar $HELP~HELP[3]  $HELP~TAB&"    s - stardock"
-setVar $HELP~HELP[4]  $HELP~TAB&"    r - rylos"
-setVar $HELP~HELP[5]  $HELP~TAB&"    a - alpha centauri"
-setVar $HELP~HELP[6]  $HELP~TAB&"    b - backdoor"
-setVar $HELP~HELP[7]  $HELP~TAB&"    x - safe ship"
-setVar $HELP~HELP[8]  $HELP~TAB&"   tl - turn limit"
-gosub :HELP~HELPFILE
+setvar $help~help[1]  $help~tab&"getvar"
+setvar $help~help[2]  $help~tab&"  Displays bot variables"
+setvar $help~help[3]  $help~tab&"    s - stardock"
+setvar $help~help[4]  $help~tab&"    r - rylos"
+setvar $help~help[5]  $help~tab&"    a - alpha centauri"
+setvar $help~help[6]  $help~tab&"    b - backdoor"
+setvar $help~help[7]  $help~tab&"    x - safe ship"
+setvar $help~help[8]  $help~tab&"   tl - turn limit"
+gosub :help~helpfile
 
 loadvar $map~rylos
 loadvar $map~stardock
@@ -18,39 +17,39 @@ loadvar $map~alpha_centauri
 loadvar $map~backdoor
 loadvar $map~home_sector
 
-getWord $BOT~user_command_line $BOT~parm1 1
-setVar $SWITCHBOARD~message ""
-if (($BOT~parm1 = "h") OR ($BOT~parm1 = "home") OR ($BOT~parm1 = $SWITCHBOARD~bot_name))
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"Home Sector: "&$MAP~home_sector&"*"
+getword $bot~user_command_line $bot~parm1 1
+setvar $switchboard~message ""
+if (($bot~parm1 = "h") or ($bot~parm1 = "home") or ($bot~parm1 = $switchboard~bot_name))
+	setvar $switchboard~message $switchboard~message&"Home Sector: "&$map~home_sector&"*"
 end
-if (($BOT~parm1 = "s") OR ($BOT~parm1 = "stardock") OR ($BOT~parm1 = $SWITCHBOARD~bot_name))
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"Stardock: "&$MAP~stardock&"*"
+if (($bot~parm1 = "s") or ($bot~parm1 = "stardock") or ($bot~parm1 = $switchboard~bot_name))
+	setvar $switchboard~message $switchboard~message&"Stardock: "&$map~stardock&"*"
 end
-if (($BOT~parm1 = "r") OR ($BOT~parm1 = "rylos") OR ($BOT~parm1 = $SWITCHBOARD~bot_name))
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"Rylos: "&$MAP~rylos&"*"
+if (($bot~parm1 = "r") or ($bot~parm1 = "rylos") or ($bot~parm1 = $switchboard~bot_name))
+	setvar $switchboard~message $switchboard~message&"Rylos: "&$map~rylos&"*"
 end
-if (($BOT~parm1 = "a") OR ($BOT~parm1 = "alpha") OR ($BOT~parm1 = $SWITCHBOARD~bot_name))
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"Alpha Centauri: "&$MAP~alpha_centauri&"*"
+if (($bot~parm1 = "a") or ($bot~parm1 = "alpha") or ($bot~parm1 = $switchboard~bot_name))
+	setvar $switchboard~message $switchboard~message&"Alpha Centauri: "&$map~alpha_centauri&"*"
 end
-if (($BOT~parm1 = "b") OR ($BOT~parm1 = "backdoor") OR ($BOT~parm1 = $SWITCHBOARD~bot_name))
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"Backdoor: "&$MAP~backdoor&"*"
+if (($bot~parm1 = "b") or ($bot~parm1 = "backdoor") or ($bot~parm1 = $switchboard~bot_name))
+	setvar $switchboard~message $switchboard~message&"Backdoor: "&$map~backdoor&"*"
 end
-if (($BOT~parm1 = "x") OR ($BOT~parm1 = "safeship") OR ($BOT~parm1 = $SWITCHBOARD~bot_name))
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"Safe Ship: "&$BOT~safe_ship&"*"
+if (($bot~parm1 = "x") or ($bot~parm1 = "safeship") or ($bot~parm1 = $switchboard~bot_name))
+	setvar $switchboard~message $switchboard~message&"Safe Ship: "&$bot~safe_ship&"*"
 end
-if (($BOT~parm1 = "tl") OR ($BOT~parm1 = "turnlimit") OR ($BOT~parm1 = $SWITCHBOARD~bot_name))
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"Turn Limit: "&$BOT~bot_turn_limit&"*"
+if (($bot~parm1 = "tl") or ($bot~parm1 = "turnlimit") or ($bot~parm1 = $switchboard~bot_name))
+	setvar $switchboard~message $switchboard~message&"Turn Limit: "&$bot~bot_turn_limit&"*"
 end
-if (($BOT~parm1 = "pgridbot") OR ($BOT~parm1 = "pbot") OR ($BOT~parm1 = $SWITCHBOARD~bot_name))
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"PGrid Bot: "&$BOT~pgrid_bot&"*"
+if (($bot~parm1 = "pgridbot") or ($bot~parm1 = "pbot") or ($bot~parm1 = $switchboard~bot_name))
+	setvar $switchboard~message $switchboard~message&"PGrid Bot: "&$bot~pgrid_bot&"*"
 end
-if ($SWITCHBOARD~message = "")
-	setVar $SWITCHBOARD~message "Unknown variable name entered.*"
+if ($switchboard~message = "")
+	setvar $switchboard~message "Unknown variable name entered.*"
 end
-if ($SWITCHBOARD~self_command <> TRUE)
-	setVar $SWITCHBOARD~self_command 2
+if ($switchboard~self_command <> true)
+	setvar $switchboard~self_command 2
 end
-gosub :SWITCHBOARD~switchboard
+gosub :switchboard~switchboard
 halt
 
 # includes:

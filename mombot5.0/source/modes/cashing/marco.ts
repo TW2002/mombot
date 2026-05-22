@@ -1,741 +1,698 @@
+gosub :loadvars~loadvars
+gosub :help~initialize
 
+loadvar $game~port_max
+loadvar $game~ptradesetting
+loadvar $game~max_planets_in_game
+loadvar $bot~folder
+loadvar $player~surroundfigs
+loadvar $player~surroundlimp;
+loadvar $player~surroundmine
+loadvar $map~stardock
+loadvar $bot~limp_file
+loadvar $bot~armid_file
+loadvar $bot~bot_turn_limit
+loadvar $bot~bot_name
 
+setvar $help~help[1] $help~tab&"       Marco Polo - Trade Route for PPTing"
+setvar $help~help[2] $help~tab&"       "
+setvar $help~help[3] $help~tab&" macro [trade/report] {turns} {filename.txt} "
+setvar $help~help[4] $help~tab&"                      "
+setvar $help~help[5] $help~tab&" trade  - indicates bot will trade the route"
+setvar $help~help[6] $help~tab&" report - indicates bot will write route to file"
+setvar $help~help[7] $help~tab&" "
+setvar $help~help[8] $help~tab&" {filename.txt} - can either be used as a source"
+setvar $help~help[9] $help~tab&"                  route or for writing to share."
+setvar $help~help[10] $help~tab&"  "
+setvar $help~help[11] $help~tab&" {turns}       - Compulsary when trade option used "
+setvar $help~help[12] $help~tab&"                 stops trading when reaching turns"
+setvar $help~help[13] $help~tab&"  "
+setvar $help~help[14] $help~tab&"  Marco requires pairs to have one ore seller."
+setvar $help~help[15] $help~tab&"  Please update CIM Ports/Warps and Figs."
 
+gosub :help~helpfile
 
+gosub :player~quikstats
+setvar $startcredits $player~credits
+setvar $startturns $player~turns
+setvar $stat_pairs_traded 0
+setvar $cash_made 0
+setvar $turns_taken 0
 
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+setvar $mode ""
 
-loadvar $GAME~PORT_MAX
-loadvar $GAME~PTRADESETTING
-loadvar $GAME~MAX_PLANETS_IN_GAME
-loadvar $BOT~FOLDER
-loadvar $PLAYER~SURROUNDFIGS
-loadvar $PLAYER~SURROUNDLIMP;
-loadvar $PLAYER~SURROUNDMINE
-loadvar $MAP~STARDOCK
-loadvar $BOT~LIMP_FILE
-loadvar $BOT~ARMID_FILE
-loadvar $BOT~BOT_TURN_LIMIT
-loadvar $BOT~BOT_NAME
+setvar $trademode ""
+setvar $cashpause 0
+setarray $portsused sectors
 
-setvar $HELP~HELP[1] $HELP~TAB&"       Marco Polo - Trade Route for PPTing"
-setvar $HELP~HELP[2] $HELP~TAB&"       "
-setvar $HELP~HELP[3] $HELP~TAB&" macro [trade/report] {turns} {filename.txt} "
-setvar $HELP~HELP[4] $HELP~TAB&"                      "
-setvar $HELP~HELP[5] $HELP~TAB&" trade  - indicates bot will trade the route"
-setvar $HELP~HELP[6] $HELP~TAB&" report - indicates bot will write route to file"
-setvar $HELP~HELP[7] $HELP~TAB&" "
-setvar $HELP~HELP[8] $HELP~TAB&" {filename.txt} - can either be used as a source"
-setvar $HELP~HELP[9] $HELP~TAB&"                  route or for writing to share."
-setvar $HELP~HELP[10] $HELP~TAB&"  "
-setvar $HELP~HELP[11] $HELP~TAB&" {turns}       - Compulsary when trade option used "
-setvar $HELP~HELP[12] $HELP~TAB&"                 stops trading when reaching turns"
-setvar $HELP~HELP[13] $HELP~TAB&"  "
-setvar $HELP~HELP[14] $HELP~TAB&"  Marco requires pairs to have one ore seller."
-setvar $HELP~HELP[15] $HELP~TAB&"  Please update CIM Ports/Warps and Figs."
+setvar $portpairs 0
+setvar $portpairsi 0
 
-gosub :HELP~HELPFILE
+setvar $totaldist 0
+setvar $oneoretotaldist 12
+setvar $twooretotaldist 20
 
+setvar $ports[1] "BBS"
+setvar $ports[2] "BSB"
+setvar $ports[3] "SBB"
+setvar $ports[4] "SSB"
+setvar $ports[5] "SBS"
+setvar $ports[6] "BSS"
+setvar $ports[7] "SSS"
+setvar $ports[8] "BBB"
 
-gosub :PLAYER~QUIKSTATS
-setvar $STARTCREDITS $PLAYER~CREDITS
-setvar $STARTTURNS $PLAYER~TURNS
-setvar $STAT_PAIRS_TRADED 0
-setvar $CASH_MADE 0
-setvar $TURNS_TAKEN 0
-
-
-setvar $MODE ""
-
-setvar $TRADEMODE ""
-setvar $CASHPAUSE 0
-setarray $PORTSUSED SECTORS
-
-
-
-
-
-
-setvar $PORTPAIRS 0
-setvar $PORTPAIRSI 0
-
-setvar $TOTALDIST 0
-setvar $ONEORETOTALDIST 12
-setvar $TWOORETOTALDIST 20
-
-
-
-
-
-
-
-
-
-
-
-setvar $PORTS[1] "BBS"
-setvar $PORTS[2] "BSB"
-setvar $PORTS[3] "SBB"
-setvar $PORTS[4] "SSB"
-setvar $PORTS[5] "SBS"
-setvar $PORTS[6] "BSS"
-setvar $PORTS[7] "SSS"
-setvar $PORTS[8] "BBB"
-
-if (($BOT~PARM1 <> "trade") and ($BOT~PARM1 <> "report"))
-  setvar $SWITCHBOARD~MESSAGE "First parameter should be trade or report.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+if (($bot~parm1 <> "trade") and ($bot~parm1 <> "report"))
+	setvar $switchboard~message "First parameter should be trade or report.*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($BOT~PARM2 = 0)
-  setvar $BOT~PARM2 ""
+if ($bot~parm2 = 0)
+	setvar $bot~parm2 ""
 end
 
-if ($BOT~PARM3 = 0)
-  setvar $BOT~PARM3 ""
+if ($bot~parm3 = 0)
+	setvar $bot~parm3 ""
 end
 
-if ($BOT~PARM1 = "trade")
-  setvar $MODE "trade"
-  isnumber $TEST $BOT~PARM2
-  if ($TEST)
-    setvar $SWITCHBOARD~MESSAGE "We will stop when we reach "&$BOT~PARM2&" turns.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-  else
-    setvar $SWITCHBOARD~MESSAGE "Halt turns must be greater than 0.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
+if ($bot~parm1 = "trade")
+	setvar $mode "trade"
+	isnumber $test $bot~parm2
+	if ($test)
+		setvar $switchboard~message "We will stop when we reach "&$bot~parm2&" turns.*"
+		gosub :switchboard~switchboard
+	else
+		setvar $switchboard~message "Halt turns must be greater than 0.*"
+		gosub :switchboard~switchboard
+		halt
+	end
 
-  setvar $HALT_TURNS $BOT~PARM2
+	setvar $halt_turns $bot~parm2
 
-  setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-  if ($STARTINGLOCATION <> "Command")
-    setvar $SWITCHBOARD~MESSAGE "must be started from Command prompt.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
+	setvar $startinglocation $player~current_prompt
+	if ($startinglocation <> "Command")
+		setvar $switchboard~message "must be started from Command prompt.*"
+		gosub :switchboard~switchboard
+		halt
+	end
 
-  if (($PLAYER~TWARP_TYPE <> 1) and ($PLAYER~TWARP_TYPE <> 2))
-    setvar $SWITCHBOARD~MESSAGE "Requires T-Warp as we warp around.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
+	if (($player~twarp_type <> 1) and ($player~twarp_type <> 2))
+		setvar $switchboard~message "Requires T-Warp as we warp around.*"
+		gosub :switchboard~switchboard
+		halt
+	end
 
-  if (($PLAYER~ORE_HOLDS = 0) or ($PLAYER~ORGANIC_HOLDS > 0) or ($PLAYER~EQUIPMENT_HOLDS > 0) or ($PLAYER~COLONIST_HOLDS > 0))
-    setvar $SWITCHBOARD~MESSAGE "Fuel in holds only please.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
+	if (($player~ore_holds = 0) or ($player~organic_holds > 0) or ($player~equipment_holds > 0) or ($player~colonist_holds > 0))
+		setvar $switchboard~message "Fuel in holds only please.*"
+		gosub :switchboard~switchboard
+		halt
+	end
 
-  if ($PLAYER~FIGHTERS < 100)
-    setvar $SWITCHBOARD~MESSAGE "Less than 100 figs - are you mad?*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
-  send "cuyq"
-  if ($PLAYER~TOTAL_HOLDS > 200)
-    if ($PLAYER~CREDITS < 25000)
-      setvar $SWITCHBOARD~MESSAGE "We have 200+ holds and less than 25k Creds - more Cash Please!*"
-      gosub :SWITCHBOARD~SWITCHBOARD
-      halt
-    end
-  elseif ($PLAYER~TOTAL_HOLDS > 150)
-    if ($PLAYER~CREDITS < 20000)
-      setvar $SWITCHBOARD~MESSAGE "We have 150+ holds and less than 20k Creds - more Cash Please!*"
-      gosub :SWITCHBOARD~SWITCHBOARD
-      halt
-    end
-  elseif ($PLAYER~TOTAL_HOLDS > 100)
-    if ($PLAYER~CREDITS < 15000)
-      setvar $SWITCHBOARD~MESSAGE "We have 100+ holds and less than 15k Creds - more Cash Please!*"
-      gosub :SWITCHBOARD~SWITCHBOARD
-      halt
-    end
-  else
-    if ($PLAYER~CREDITS < 10000)
-      setvar $SWITCHBOARD~MESSAGE "We need at least 10k Creds please!*"
-      gosub :SWITCHBOARD~SWITCHBOARD
-      halt
-    end
+	if ($player~fighters < 100)
+		setvar $switchboard~message "Less than 100 figs - are you mad?*"
+		gosub :switchboard~switchboard
+		halt
+	end
+	send "cuyq"
+	if ($player~total_holds > 200)
+		if ($player~credits < 25000)
+			setvar $switchboard~message "We have 200+ holds and less than 25k Creds - more Cash Please!*"
+			gosub :switchboard~switchboard
+			halt
+		end
+	elseif ($player~total_holds > 150)
+		if ($player~credits < 20000)
+			setvar $switchboard~message "We have 150+ holds and less than 20k Creds - more Cash Please!*"
+			gosub :switchboard~switchboard
+			halt
+		end
+	elseif ($player~total_holds > 100)
+		if ($player~credits < 15000)
+			setvar $switchboard~message "We have 100+ holds and less than 15k Creds - more Cash Please!*"
+			gosub :switchboard~switchboard
+			halt
+		end
+	else
+		if ($player~credits < 10000)
+			setvar $switchboard~message "We need at least 10k Creds please!*"
+			gosub :switchboard~switchboard
+			halt
+		end
 
+	end
+	setdelaytrigger delay :startpause 1000
+	pause
 
+	:startpause
+	if ($bot~parm3 <> "")
+		setvar $trademode "file"
+		setvar $fread $bot~folder&"/"&$bot~parm3
+		fileexists $exists $fread
+		if ($exists)
+			setarray $pairlist sectors
+			setvar $i 1
+			setvar $pairi 1
+			read $fread $pair $i
+			while ($pair <> "EOF")
 
-  end
-  setdelaytrigger DELAY :STARTPAUSE 1000
-  pause
-  :STARTPAUSE
+				if ($pair <> "")
+					setvar $pairlist[$pairi] $pair
+					add $pairi 1
+				end
+				add $i 1
+				read $fread $pair $i
+			end
+			setvar $totalpairs ($pairi - 1)
+		end
+		setvar $i 1
+		setvar $portpairsi 0
+		while ($i <= $totalpairs)
+			add $portpairsi 1
+			getword $pairlist[$portpairsi] $portpairs[$i][1] 1
+			getword $pairlist[$portpairsi] $portpairs[$i][2] 2
+			getword $pairlist[$portpairsi] $portpairs[$i][3] 3
+			getword $pairlist[$portpairsi] $portpairs[$i][4] 4
+			echo $pairlist[$portpairsi] "*"
+			add $i 1
+		end
+		echo "total pairs: " $totalpairs "*"
 
-  if ($BOT~PARM3 <> "")
-    setvar $TRADEMODE "file"
-    setvar $FREAD $BOT~FOLDER&"/"&$BOT~PARM3
-    fileexists $EXISTS $FREAD
-    if ($EXISTS)
-      setarray $PAIRLIST SECTORS
-      setvar $I 1
-      setvar $PAIRI 1
-      read $FREAD $PAIR $I
-      while ($PAIR <> "EOF")
-
-        if ($PAIR <> "")
-          setvar $PAIRLIST[$PAIRI] $PAIR
-          add $PAIRI 1
-        end
-        add $I 1
-        read $FREAD $PAIR $I
-      end
-      setvar $TOTALPAIRS ($PAIRI - 1)
-    end
-    setvar $I 1
-    setvar $PORTPAIRSI 0
-    while ($I <= $TOTALPAIRS)
-      add $PORTPAIRSI 1
-      getword $PAIRLIST[$PORTPAIRSI] $PORTPAIRS[$I][1] 1
-      getword $PAIRLIST[$PORTPAIRSI] $PORTPAIRS[$I][2] 2
-      getword $PAIRLIST[$PORTPAIRSI] $PORTPAIRS[$I][3] 3
-      getword $PAIRLIST[$PORTPAIRSI] $PORTPAIRS[$I][4] 4
-      echo $PAIRLIST[$PORTPAIRSI] "*"
-      add $I 1
-    end
-    echo "total pairs: " $TOTALPAIRS "*"
-
-  else
-    setvar $TRADEMODE "self"
-    gosub :GETPAIRS
-  end
+	else
+		setvar $trademode "self"
+		gosub :getpairs
+	end
 else
 
-  if ($BOT~PARM2 = "")
-    setvar $SWITCHBOARD~MESSAGE "Filename not specified.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
-  setvar $SWITCHBOARD~MESSAGE "Writig to file: "&$BOT~PARM2&".*"
-  gosub :SWITCHBOARD~SWITCHBOARD
+	if ($bot~parm2 = "")
+		setvar $switchboard~message "Filename not specified.*"
+		gosub :switchboard~switchboard
+		halt
+	end
+	setvar $switchboard~message "Writig to file: "&$bot~parm2&".*"
+	gosub :switchboard~switchboard
 
+	gosub :getpairs
+	setvar $fwrite $bot~folder&"/"&$bot~parm2
+	delete $fwrite
+	setvar $i 1
+	while ($i <= $portpairsi)
+		write $fwrite $portpairs[$i][1]&" "&$portpairs[$i][2]&" "&$portpairs[$i][3]&" "&$portpairs[$i][4]&"*"
+		add $i 1
+	end
 
-  gosub :GETPAIRS
-  setvar $FWRITE $BOT~FOLDER&"/"&$BOT~PARM2
-  delete $FWRITE
-  setvar $I 1
-  while ($I <= $PORTPAIRSI)
-    write $FWRITE $PORTPAIRS[$I][1]&" "&$PORTPAIRS[$I][2]&" "&$PORTPAIRS[$I][3]&" "&$PORTPAIRS[$I][4]&"*"
-    add $I 1
-  end
-
-  setvar $SWITCHBOARD~MESSAGE "Written "&$PORTPAIRSI&" to file*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
-
-
-
-
-
+	setvar $switchboard~message "Written "&$portpairsi&" to file*"
+	gosub :switchboard~switchboard
+	halt
 
 end
-setvar $LOOPI 1
-while ($LOOPI <= $PORTPAIRSI)
-  setvar $SEC $PORTPAIRS[$LOOPI][1]
-  setvar $PAIRSEC $PORTPAIRS[$LOOPI][2]
-  setvar $SKIP FALSE
-  if (PORT.EXISTS[$SEC] = 1)
-    if (PORT.PERCENTEQUIP[$SEC] < 85)
-      setvar $SKIP TRUE
-    end
-  end
-  if (PORT.EXISTS[$PAIRSEC] = 1)
-    if (PORT.PERCENTEQUIP[$PAIRSEC] < 85)
-      setvar $SKIP TRUE
-    end
-  end
-  if ($SKIP = TRUE)
-    goto :NEXTLOOP
-  end
+setvar $loopi 1
+while ($loopi <= $portpairsi)
+	setvar $sec $portpairs[$loopi][1]
+	setvar $pairsec $portpairs[$loopi][2]
+	setvar $skip false
+	if (port.exists[$sec] = 1)
+		if (port.percentequip[$sec] < 85)
+			setvar $skip true
+		end
+	end
+	if (port.exists[$pairsec] = 1)
+		if (port.percentequip[$pairsec] < 85)
+			setvar $skip true
+		end
+	end
+	if ($skip = true)
+		goto :nextloop
+	end
 
-  if ($PLAYER~TURNS < $HALT_TURNS)
-    stop "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\cashing\ppt.cts"
-    setvar $SWITCHBOARD~MESSAGE "Turns are low, halting!*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
-  if ($PLAYER~CURRENT_SECTOR <> $PAIRSEC)
+	if ($player~turns < $halt_turns)
+		stop "scripts\"&$bot~mombot_directory&"\commands\cashing\ppt.cts"
+		setvar $switchboard~message "Turns are low, halting!*"
+		gosub :switchboard~switchboard
+		halt
+	end
+	if ($player~current_sector <> $pairsec)
 
-    send "m" $SEC "*yn"
-    settextlinetrigger CHECKPAIR2LOCKYES :CHECKPAIR2LOCKYES "Locating beam pinpointed, TransWarp"
-    settextlinetrigger CHECKPAIR2LOCKNO :CHECKPAIR2LOCKNO "No locating beam found for sector"
-    pause
-    :CHECKPAIR2LOCKNO
-    killalltriggers
-    setvar $SWITCHBOARD~MESSAGE "Sector missing fig, moving onto next.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    goto :NEXTLOOP
-    :CHECKPAIR2LOCKYES
-    killalltriggers
+		send "m" $sec "*yn"
+		settextlinetrigger checkpair2lockyes :checkpair2lockyes "Locating beam pinpointed, TransWarp"
+		settextlinetrigger checkpair2lockno :checkpair2lockno "No locating beam found for sector"
+		pause
 
-    setvar $PLAYER~WARPTO $PAIRSEC
-    gosub :MOVE~TWARP
-    if ($PLAYER~TWARPSUCCESS = FALSE)
-      setvar $SWITCHBOARD~MESSAGE "Sector missing fig, moving onto next.*"
-      gosub :SWITCHBOARD~SWITCHBOARD
-      goto :NEXTLOOP
-    end
-    gosub :PLAYER~QUIKSTATS
-  end
+		:checkpair2lockno
+		killalltriggers
+		setvar $switchboard~message "Sector missing fig, moving onto next.*"
+		gosub :switchboard~switchboard
+		goto :nextloop
 
+		:checkpair2lockyes
+		killalltriggers
 
-  gosub :CHECKDIST
-  send "d"
-  waitfor "Warps to Sect"
-  if ($CASHPAUSE = 1)
-    if (PORT.EXISTS[CURRENTSECTOR] = TRUE)
-      if (PORT.BUYFUEL[CURRENTSECTOR] = FALSE)
-        send "'[atm:" $SWITCHBOARD~BOT_NAME "=" CURRENTSECTOR "]*"
-        waitfor "[atmdone]"
-        send "'[atm]Spend it wisely, I'm out here risking my hide for peanuts!*"
-        setvar $CASHPAUSE 0
-      end
-    end
-  end
-  if (PORT.BUYFUEL[$PAIRSEC] = 1)
+		setvar $player~warpto $pairsec
+		gosub :move~twarp
+		if ($player~twarpsuccess = false)
+			setvar $switchboard~message "Sector missing fig, moving onto next.*"
+			gosub :switchboard~switchboard
+			goto :nextloop
+		end
+		gosub :player~quikstats
+	end
 
-    gosub :BALANCETRADE
-    if ($PORTPAIRS[$LOOPI][4] = 1)
-      setvar $MOVE~MOVEINTOSECTOR $SEC
-      gosub :MOVE~MOVEINTOSECTOR
-    else
-      setvar $PLAYER~WARPTO $SEC
-      gosub :MOVE~TWARP
-      if ($PLAYER~TWARPSUCCESS = FALSE)
-        setvar $SWITCHBOARD~MESSAGE "Sector missing fig, moving onto next.*"
-        gosub :SWITCHBOARD~SWITCHBOARD
-        goto :NEXTLOOP
-      end
-    end
-    gosub :PLAYER~QUIKSTATS
-    send "d"
-    waitfor "Warps to Sect"
-    if ($CASHPAUSE = 1)
-      if (PORT.EXISTS[CURRENTSECTOR] = TRUE)
-        if (PORT.BUYFUEL[CURRENTSECTOR] = FALSE)
-          send "'[atm:" $SWITCHBOARD~BOT_NAME "=" CURRENTSECTOR "]*"
-          waitfor "[atmdone]"
-          send "'[atm]Spend it wisely, I'm out here risking my hide for peanuts!*"
-          setvar $CASHPAUSE 0
-        end
-      end
-    end
-  end
+	gosub :checkdist
+	send "d"
+	waitfor "Warps to Sect"
+	if ($cashpause = 1)
+		if (port.exists[currentsector] = true)
+			if (port.buyfuel[currentsector] = false)
+				send "'[atm:" $switchboard~bot_name "=" currentsector "]*"
+				waitfor "[atmdone]"
+				send "'[atm]Spend it wisely, I'm out here risking my hide for peanuts!*"
+				setvar $cashpause 0
+			end
+		end
+	end
+	if (port.buyfuel[$pairsec] = 1)
 
-  setvar $BEFORETRADECASH $PLAYER~CREDITS
-  gosub :TRADEPAIR
-  gosub :PLAYER~QUIKSTATS
-  if ($BEFORETRADECASH = $PLAYER~CREDITS)
-    setvar $SWITCHBOARD~MESSAGE "Something went wrong with that trade; didn't make any money.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-  end
+		gosub :balancetrade
+		if ($portpairs[$loopi][4] = 1)
+			setvar $move~moveintosector $sec
+			gosub :move~moveintosector
+		else
+			setvar $player~warpto $sec
+			gosub :move~twarp
+			if ($player~twarpsuccess = false)
+				setvar $switchboard~message "Sector missing fig, moving onto next.*"
+				gosub :switchboard~switchboard
+				goto :nextloop
+			end
+		end
+		gosub :player~quikstats
+		send "d"
+		waitfor "Warps to Sect"
+		if ($cashpause = 1)
+			if (port.exists[currentsector] = true)
+				if (port.buyfuel[currentsector] = false)
+					send "'[atm:" $switchboard~bot_name "=" currentsector "]*"
+					waitfor "[atmdone]"
+					send "'[atm]Spend it wisely, I'm out here risking my hide for peanuts!*"
+					setvar $cashpause 0
+				end
+			end
+		end
+	end
 
-  add $STAT_PAIRS_TRADED 1
-  setvar $CASH_MADE ($PLAYER~CREDITS - $STARTCREDITS)
-  setvar $TURNS_TAKEN ($STARTTURNS - $PLAYER~TURNS)
+	setvar $beforetradecash $player~credits
+	gosub :tradepair
+	gosub :player~quikstats
+	if ($beforetradecash = $player~credits)
+		setvar $switchboard~message "Something went wrong with that trade; didn't make any money.*"
+		gosub :switchboard~switchboard
+	end
 
-  setvar $SWITCHBOARD~MESSAGE "Pairs Traded: "&$STAT_PAIRS_TRADED&" Cash Made: "&$CASH_MADE&" Turns Taken: "&$TURNS_TAKEN&".*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  :NEXTLOOP
+	add $stat_pairs_traded 1
+	setvar $cash_made ($player~credits - $startcredits)
+	setvar $turns_taken ($startturns - $player~turns)
 
-  add $LOOPI 1
+	setvar $switchboard~message "Pairs Traded: "&$stat_pairs_traded&" Cash Made: "&$cash_made&" Turns Taken: "&$turns_taken&".*"
+	gosub :switchboard~switchboard
+
+	:nextloop
+	add $loopi 1
 end
 
 halt
-:BALANCETRADE
 
-
-if ($PORTPAIRS[$LOOPI][4] > 1)
-  setvar $OREREQ ($PORTPAIRS[$LOOPI][4] * 3)
+:balancetrade
+if ($portpairs[$loopi][4] > 1)
+	setvar $orereq ($portpairs[$loopi][4] * 3)
 else
-  setvar $OREREQ 0
+	setvar $orereq 0
 end
 
-if ($OREREQ > $PLAYER~ORE_HOLDS)
-  setvar $SWITCHBOARD~MESSAGE "Not enough fuel to keep trading.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
+if ($orereq > $player~ore_holds)
+	setvar $switchboard~message "Not enough fuel to keep trading.*"
+	gosub :switchboard~switchboard
 end
 
-
-if (PORT.BUYORG[$SEC] = 1)
-  setvar $PRODUCTTOBUY "org"
+if (port.buyorg[$sec] = 1)
+	setvar $producttobuy "org"
 else
-  setvar $PRODUCTTOBUY "equip"
+	setvar $producttobuy "equip"
 end
-setvar $SELLOREQUANT ($PLAYER~ORE_HOLDS - $OREREQ)
+setvar $sellorequant ($player~ore_holds - $orereq)
 
 send "p   t"
 waitfor "Commerce report for"
 
-settextlinetrigger CHECKCASH :CHECKCASH "empty cargo holds"
-settextlinetrigger PORTFAIL :PORTFAIL "ou don't have anything they want, and they don't have anything you can b"
+settextlinetrigger checkcash :checkcash "empty cargo holds"
+settextlinetrigger portfail :portfail "ou don't have anything they want, and they don't have anything you can b"
 pause
-:PORTFAIL
-setvar $SWITCHBOARD~MESSAGE "Oops nothing to trade; script fail*"
-gosub :SWITCHBOARD~SWITCHBOARD
+
+:portfail
+setvar $switchboard~message "Oops nothing to trade; script fail*"
+gosub :switchboard~switchboard
 halt
-:CHECKCASH
+
+:checkcash
 killalltriggers
 
 killalltriggers
-:TRADELOOP
-settexttrigger SELL1 :SELL1 "How many holds of Fuel Ore do you want to sell"
-settexttrigger SELL2 :SELL2 "How many holds of Organics do you want to sell"
-settexttrigger SELL3 :SELL3 "How many holds of Equipment do you want to sell"
-settexttrigger BUY1 :BUY1 "How many holds of Fuel Ore do you want to buy"
-settexttrigger BUY2 :BUY2 "How many holds of Organics do you want to buy"
-settexttrigger BUY3 :BUY3 "How many holds of Equipment do you want to buy"
-settexttrigger TRADELOOPDONE :TRADELOOPDONE "Command ["
+
+:tradeloop
+settexttrigger sell1 :sell1 "How many holds of Fuel Ore do you want to sell"
+settexttrigger sell2 :sell2 "How many holds of Organics do you want to sell"
+settexttrigger sell3 :sell3 "How many holds of Equipment do you want to sell"
+settexttrigger buy1 :buy1 "How many holds of Fuel Ore do you want to buy"
+settexttrigger buy2 :buy2 "How many holds of Organics do you want to buy"
+settexttrigger buy3 :buy3 "How many holds of Equipment do you want to buy"
+settexttrigger tradeloopdone :tradeloopdone "Command ["
 pause
-:SELL1
 
+:sell1
 killalltriggers
-send $SELLOREQUANT "*"
-gosub :DOTRADE
-goto :TRADELOOP
-:SELL2
+send $sellorequant "*"
+gosub :dotrade
+goto :tradeloop
+
+:sell2
 killalltriggers
 send "*"
-gosub :DOTRADE
-goto :TRADELOOP
-:SELL3
+gosub :dotrade
+goto :tradeloop
 
+:sell3
 killalltriggers
 send "*"
-gosub :DOTRADE
-goto :TRADELOOP
-:BUY1
+gosub :dotrade
+goto :tradeloop
 
+:buy1
 killalltriggers
-gosub :NOTRADE
-goto :TRADELOOP
-:BUY2
-killalltriggers
-if ($PRODUCTTOBUY = "org")
-  send "*"
-else
-  gosub :NOTRADE
-end
-goto :TRADELOOP
-:BUY3
-killalltriggers
-if ($PRODUCTTOBUY = "equip")
-  send "*"
-else
-  gosub :NOTRADE
-end
-goto :TRADELOOP
-:TRADELOOPDONE
+gosub :notrade
+goto :tradeloop
 
+:buy2
+killalltriggers
+if ($producttobuy = "org")
+	send "*"
+else
+	gosub :notrade
+end
+goto :tradeloop
+
+:buy3
+killalltriggers
+if ($producttobuy = "equip")
+	send "*"
+else
+	gosub :notrade
+end
+goto :tradeloop
+
+:tradeloopdone
 killalltriggers
 
 return
-:DOTRADE
 
+:dotrade
 waitfor "Agreed,"
-settextlinetrigger TRADEFIN :TRADEFIN "empty cargo holds"
+settextlinetrigger tradefin :tradefin "empty cargo holds"
 pause
-:TRADEFIN
+
+:tradefin
 return
-:NOTRADE
 
-
+:notrade
 send "0*"
 waitfor "empty cargo holds."
 return
-:TRADEPAIR
 
-
-
-
-if ($PLAYER~CURRENT_SECTOR = $PORTPAIRS[$LOOPI][1])
-  setvar $TRADESEC $PORTPAIRS[$LOOPI][2]
-elseif ($PLAYER~CURRENT_SECTOR = $PORTPAIRS[$LOOPI][2])
-  setvar $TRADESEC $PORTPAIRS[$LOOPI][1]
+:tradepair
+if ($player~current_sector = $portpairs[$loopi][1])
+	setvar $tradesec $portpairs[$loopi][2]
+elseif ($player~current_sector = $portpairs[$loopi][2])
+	setvar $tradesec $portpairs[$loopi][1]
 else
-  setvar $SWITCHBOARD~MESSAGE "We should be at one of the ports here, fail.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+	setvar $switchboard~message "We should be at one of the ports here, fail.*"
+	gosub :switchboard~switchboard
+	halt
 
 end
-if (($PORTPAIRS[$LOOPI][3] = 1) and ($PORTPAIRS[$LOOPI][4] = 1))
-  setvar $BOT~PARM1 $TRADESEC
-  setvar $BOT~PARM2 "ore:"&$PLAYER~TOTAL_HOLDS
-  setvar $BOT~PARM3 ""
+if (($portpairs[$loopi][3] = 1) and ($portpairs[$loopi][4] = 1))
+	setvar $bot~parm1 $tradesec
+	setvar $bot~parm2 "ore:"&$player~total_holds
+	setvar $bot~parm3 ""
 else
-  setvar $BOT~PARM1 $TRADESEC
-  setvar $BOT~PARM2 "twarp"
-  setvar $BOT~PARM3 "ore:"&$PLAYER~TOTAL_HOLDS
+	setvar $bot~parm1 $tradesec
+	setvar $bot~parm2 "twarp"
+	setvar $bot~parm3 "ore:"&$player~total_holds
 end
-setvar $BOT~COMMAND "ppt"
-setvar $BOT~USER_COMMAND_LINE $TRADESEC&" "&$BOT~PARM2&" "&$BOT~PARM3
+setvar $bot~command "ppt"
+setvar $bot~user_command_line $tradesec&" "&$bot~parm2&" "&$bot~parm3
 
+savevar $bot~parm1
+savevar $bot~parm2
+savevar $bot~parm3
 
-savevar $BOT~PARM1
-savevar $BOT~PARM2
-savevar $BOT~PARM3
+savevar $bot~command
+savevar $bot~user_command_line
 
-savevar $BOT~COMMAND
-savevar $BOT~USER_COMMAND_LINE
+load "scripts\"&$bot~mombot_directory&"\commands\cashing\ppt.cts"
 
-load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\cashing\ppt.cts"
-:BACKPPTWAIT
-settextlinetrigger PPTPAUSEFORCASH :PPTPAUSEFORCASH "[atm:"&$SWITCHBOARD~BOT_NAME&"]"
-settextlinetrigger PPTMOVE :PPTMOVE "<Move>"
-seteventtrigger PPTENDED :PPTENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\cashing\ppt.cts"
+:backpptwait
+settextlinetrigger pptpauseforcash :pptpauseforcash "[atm:"&$switchboard~bot_name&"]"
+settextlinetrigger pptmove :pptmove "<Move>"
+seteventtrigger pptended :pptended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\cashing\ppt.cts"
 pause
-:PPTPAUSEFORCASH
+
+:pptpauseforcash
 killalltriggers
-setvar $CASHPAUSE 1
+setvar $cashpause 1
 send "'[atm:ack] Will pause at next SXB post trading.*"
-goto :BACKPPTWAIT
-:PPTMOVE
-killalltriggers
-if ($PLAYER~TURNS < $HALT_TURNS)
-  stop "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\cashing\ppt.cts"
-  setvar $SWITCHBOARD~MESSAGE "Turns are low, halting!*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
-end
-goto :BACKPPTWAIT
-:PPTENDED
-killalltriggers
-gosub :PLAYER~QUIKSTATS
+goto :backpptwait
 
+:pptmove
+killalltriggers
+if ($player~turns < $halt_turns)
+	stop "scripts\"&$bot~mombot_directory&"\commands\cashing\ppt.cts"
+	setvar $switchboard~message "Turns are low, halting!*"
+	gosub :switchboard~switchboard
+	halt
+end
+goto :backpptwait
+
+:pptended
+killalltriggers
+gosub :player~quikstats
 
 return
-:CHECKDIST
-:TRYAGAINPLOT1
 
-send "cf" $PAIRSEC "*" $SEC "*q"
-settextlinetrigger PATHGOOD1 :PATHGOOD1 "he shortest path"
-settextlinetrigger PATHBAD1 :PATHBAD1 "No route within"
+:checkdist
+:tryagainplot1
+send "cf" $pairsec "*" $sec "*q"
+settextlinetrigger pathgood1 :pathgood1 "he shortest path"
+settextlinetrigger pathbad1 :pathbad1 "No route within"
 pause
-:PATHBAD1
+
+:pathbad1
 killalltriggers
 send "yq"
-setvar $PLOT 0
-goto :TRYAGAINPLOT1
-:PATHGOOD1
+setvar $plot 0
+goto :tryagainplot1
+
+:pathgood1
 killalltriggers
 
-getword CURRENTLINE $DIST2 4
-striptext $DIST2 "("
+getword currentline $dist2 4
+striptext $dist2 "("
 
-send "cf" $SEC "*" $PAIRSEC "*q"
-settextlinetrigger PATHGOOD2 :PATHGOOD2 "he shortest path"
-settextlinetrigger PATHBAD2 :PATHBAD2 "No route within"
+send "cf" $sec "*" $pairsec "*q"
+settextlinetrigger pathgood2 :pathgood2 "he shortest path"
+settextlinetrigger pathbad2 :pathbad2 "No route within"
 pause
-:PATHBAD2
+
+:pathbad2
 killalltriggers
 send "yq"
-setvar $PLOT 0
-goto :TRYAGAINPLOT1
-:PATHGOOD2
+setvar $plot 0
+goto :tryagainplot1
+
+:pathgood2
 killalltriggers
 
-getword CURRENTLINE $DIST1 4
-striptext $DIST1 "("
+getword currentline $dist1 4
+striptext $dist1 "("
 
-setvar $PORTPAIRS[$LOOPI][3] $DIST1
-setvar $PORTPAIRS[$LOOPI][4] $DIST2
-
-return
-:GETPAIRS
-
-
-setvar $SWITCHBOARD~MESSAGE "Finding Pairs..*"
-gosub :SWITCHBOARD~SWITCHBOARD
-
-
-
-setvar $TOTALDIST $ONEORETOTALDIST
-
-setvar $SEC 11
-while ($SEC < SECTORS)
-
-  if ($PORTSUSED[$SEC] = 0)
-    setvar $CPORT PORT.CLASS[$SEC]
-    getsectorparameter $SEC "FIGSEC" $HASFIG
-
-    if (($HASFIG = 1) and (PORT.PERCENTEQUIP[$SEC] > 80))
-      if ($CPORT = 5)
-        setvar $TARGETA 2
-        gosub :CHECKPAIRDIST
-      elseif ($CPORT = 4)
-        setvar $TARGETA 1
-        gosub :CHECKPAIRDIST
-      end
-    end
-  end
-  add $SEC 1
-end
-
-
-
-
-echo "Two Ore Port " $TWOORETOTALDIST " total warps apart*"
-
-
-
-
-
-setvar $TOTALDIST $TWOORETOTALDIST
-setvar $SEC 11
-while ($SEC < SECTORS)
-
-  if ($PORTSUSED[$SEC] = 0)
-    setvar $CPORT PORT.CLASS[$SEC]
-    getsectorparameter $SEC "FIGSEC" $HASFIG
-    if (($HASFIG = 1) and (PORT.PERCENTEQUIP[$SEC] > 80))
-      if ($CPORT = 5)
-        setvar $TARGETA 4
-
-        gosub :CHECKPAIRDIST
-      elseif ($CPORT = 5)
-        setvar $TARGETA 4
-
-        gosub :CHECKPAIRDIST
-      end
-    end
-  end
-  add $SEC 1
-end
-
-
-
+setvar $portpairs[$loopi][3] $dist1
+setvar $portpairs[$loopi][4] $dist2
 
 return
-:CHECKPAIRDIST
 
+:getpairs
+setvar $switchboard~message "Finding Pairs..*"
+gosub :switchboard~switchboard
 
-setvar $FR1 "[] "
-setvar $FR2 "[] "
-getnearestwarps $NEARARRAY $SEC
-setvar $Y 1
-while ($Y <= $NEARARRAY)
-  setvar $FOCUS $NEARARRAY[$Y]
+setvar $totaldist $oneoretotaldist
 
-  if ((PORT.CLASS[$FOCUS] = $TARGETA) and ($PORTSUSED[$FOCUS] = 0))
-    getsectorparameter $FOCUS "FIGSEC" $HASFIG2
-    if ($HASFIG2 = 1)
-      getdistance $TO $FOCUS $SEC
-      getdistance $FROM $SEC $FOCUS
-      if (($TO > 0) and ($FROM > 0))
-        setvar $ACCUM $TO
-        add $ACCUM $FROM
-        if ($ACCUM <= $TOTALDIST)
-          setvar $PAIRSEC $FOCUS
-          setvar $PAIRCLASS PORT.CLASS[$FOCUS]
-          if (PORT.PERCENTEQUIP[$PAIRSEC] > 80)
-            setvar $PORTSUSED[$FOCUS] 1
-            setvar $PORTSUSED[$SEC] 1
-            add $PORTPAIRSI 1
-            setvar $PORTPAIRS[$PORTPAIRSI][1] $SEC
-            setvar $PORTPAIRS[$PORTPAIRSI][2] $PAIRSEC
-            setvar $PORTPAIRS[$PORTPAIRSI][3] $FROM
-            setvar $PORTPAIRS[$PORTPAIRSI][4] $TO
+setvar $sec 11
+while ($sec < sectors)
 
-            echo "Pair Found (" $PORTPAIRSI "):" $FR1 $SEC "(" $PORTS[$CPORT] ") (" $FROM ") <> (" $TO ") " $FR2 $PAIRSEC "(" $PORTS[$PAIRCLASS] ")*"
+	if ($portsused[$sec] = 0)
+		setvar $cport port.class[$sec]
+		getsectorparameter $sec "FIGSEC" $hasfig
 
-            return
-          end
-        end
-      end
-    end
-  end
+		if (($hasfig = 1) and (port.percentequip[$sec] > 80))
+			if ($cport = 5)
+				setvar $targeta 2
+				gosub :checkpairdist
+			elseif ($cport = 4)
+				setvar $targeta 1
+				gosub :checkpairdist
+			end
+		end
+	end
+	add $sec 1
+end
 
+echo "Two Ore Port " $twooretotaldist " total warps apart*"
 
+setvar $totaldist $twooretotaldist
+setvar $sec 11
+while ($sec < sectors)
 
-  add $Y 1
+	if ($portsused[$sec] = 0)
+		setvar $cport port.class[$sec]
+		getsectorparameter $sec "FIGSEC" $hasfig
+		if (($hasfig = 1) and (port.percentequip[$sec] > 80))
+			if ($cport = 5)
+				setvar $targeta 4
+
+				gosub :checkpairdist
+			elseif ($cport = 5)
+				setvar $targeta 4
+
+				gosub :checkpairdist
+			end
+		end
+	end
+	add $sec 1
 end
 
 return
-:CHECKPAIR
 
+:checkpairdist
+setvar $fr1 "[] "
+setvar $fr2 "[] "
+getnearestwarps $neararray $sec
+setvar $y 1
+while ($y <= $neararray)
+	setvar $focus $neararray[$y]
 
-setvar $FR1 "[] "
-setvar $FR2 "[] "
-setvar $Y 1
-while ($Y <= SECTOR.WARPCOUNT[$SEC])
-  if ($PORTSUSED[SECTOR.WARPS[$SEC][$Y]] = 0)
-    if ((PORT.CLASS[SECTOR.WARPS[$SEC][$Y]] = $TARGETA) or (PORT.CLASS[SECTOR.WARPS[$SEC][$Y]] = $TARGETB))
-      setvar $PAIRSEC SECTOR.WARPS[$SEC][$Y]
-      setvar $PAIRCLASS PORT.CLASS[SECTOR.WARPS[$SEC][$Y]]
-      getsectorparameter $PAIRSEC "FIGSEC" $HASFIG2
-      if ($HASFIG2 = 1)
-        gosub :CHECKADJ
-        if ($ADJ = 1)
-          setvar $PORTSUSED[SECTOR.WARPS[$SEC][$Y]] 1
-          setvar $PORTSUSED[$SEC] 1
-          getsectorparameter $SEC "FIGSEC" $HASFIG1
-          if ($HASFIG1)
-            setvar $FR1 "[x] "
-          end
-          getsectorparameter $PAIRSEC "FIGSEC" $HASFIG2
-          if ($HASFIG2)
-            setvar $FR2 "[x] "
-          end
-          echo "Pair Found:" $FR1 $SEC "(" $PORTS[$CPORT] ") <> " $FR2 $PAIRSEC "(" $PORTS[$PAIRCLASS] ")*"
-          return
-        else
-          setvar $PAIRSEC 0
-          setvar $PAIRCLASS 0
-        end
-      end
-    end
-  end
-  add $Y 1
+	if ((port.class[$focus] = $targeta) and ($portsused[$focus] = 0))
+		getsectorparameter $focus "FIGSEC" $hasfig2
+		if ($hasfig2 = 1)
+			getdistance $to $focus $sec
+			getdistance $from $sec $focus
+			if (($to > 0) and ($from > 0))
+				setvar $accum $to
+				add $accum $from
+				if ($accum <= $totaldist)
+					setvar $pairsec $focus
+					setvar $pairclass port.class[$focus]
+					if (port.percentequip[$pairsec] > 80)
+						setvar $portsused[$focus] 1
+						setvar $portsused[$sec] 1
+						add $portpairsi 1
+						setvar $portpairs[$portpairsi][1] $sec
+						setvar $portpairs[$portpairsi][2] $pairsec
+						setvar $portpairs[$portpairsi][3] $from
+						setvar $portpairs[$portpairsi][4] $to
+
+						echo "Pair Found (" $portpairsi "):" $fr1 $sec "(" $ports[$cport] ") (" $from ") <> (" $to ") " $fr2 $pairsec "(" $ports[$pairclass] ")*"
+
+						return
+					end
+				end
+			end
+		end
+	end
+
+	add $y 1
 end
 
 return
-:CHECKADJ
 
-setvar $ADJ 0
-setvar $X 1
-while ($X <= SECTOR.WARPCOUNT[$PAIRSEC])
-  if (SECTOR.WARPS[$PAIRSEC][$X] = $SEC)
-    setvar $ADJ 1
-    return
-  end
-  add $X 1
+:checkpair
+setvar $fr1 "[] "
+setvar $fr2 "[] "
+setvar $y 1
+while ($y <= sector.warpcount[$sec])
+	if ($portsused[sector.warps[$sec][$y]] = 0)
+		if ((port.class[sector.warps[$sec][$y]] = $targeta) or (port.class[sector.warps[$sec][$y]] = $targetb))
+			setvar $pairsec sector.warps[$sec][$y]
+			setvar $pairclass port.class[sector.warps[$sec][$y]]
+			getsectorparameter $pairsec "FIGSEC" $hasfig2
+			if ($hasfig2 = 1)
+				gosub :checkadj
+				if ($adj = 1)
+					setvar $portsused[sector.warps[$sec][$y]] 1
+					setvar $portsused[$sec] 1
+					getsectorparameter $sec "FIGSEC" $hasfig1
+					if ($hasfig1)
+						setvar $fr1 "[x] "
+					end
+					getsectorparameter $pairsec "FIGSEC" $hasfig2
+					if ($hasfig2)
+						setvar $fr2 "[x] "
+					end
+					echo "Pair Found:" $fr1 $sec "(" $ports[$cport] ") <> " $fr2 $pairsec "(" $ports[$pairclass] ")*"
+					return
+				else
+					setvar $pairsec 0
+					setvar $pairclass 0
+				end
+			end
+		end
+	end
+	add $y 1
+end
+
+return
+
+:checkadj
+setvar $adj 0
+setvar $x 1
+while ($x <= sector.warpcount[$pairsec])
+	if (sector.warps[$pairsec][$x] = $sec)
+		setvar $adj 1
+		return
+	end
+	add $x 1
 end
 return
-:PORTREPORT
 
+:portreport
+setvar $i 11
+setarray $reportports 10
+setarray $reportportsused 10
 
+while ($i <= sectors)
 
-
-
-setvar $I 11
-setarray $REPORTPORTS 10
-setarray $REPORTPORTSUSED 10
-
-while ($I <= SECTORS)
-
-  if (PORT.CLASS[$I] > 0)
-    add $REPORTPORTS[PORT.CLASS[$I]] 1
-    if ($PORTSUSED[$I] = 1)
-      add $REPORTPORTSUSED[PORT.CLASS[$I]] 1
-    end
-  end
-  add $I 1
+	if (port.class[$i] > 0)
+		add $reportports[port.class[$i]] 1
+		if ($portsused[$i] = 1)
+			add $reportportsused[port.class[$i]] 1
+		end
+	end
+	add $i 1
 end
 
 echo "Port Status and Usage *"
-echo "Ports BBS: " $REPORTPORTSUSED[1] "/" $REPORTPORTS[1] "*"
-echo "Ports BSB: " $REPORTPORTSUSED[2] "/" $REPORTPORTS[2] "*"
-echo "Ports SBB: " $REPORTPORTSUSED[3] "/" $REPORTPORTS[3] "*"
-echo "Ports SSB: " $REPORTPORTSUSED[4] "/" $REPORTPORTS[4] "*"
-echo "Ports SBS: " $REPORTPORTSUSED[5] "/" $REPORTPORTS[5] "*"
-echo "Ports BSS: " $REPORTPORTSUSED[6] "/" $REPORTPORTS[6] "*"
-echo "Ports SSS: " $REPORTPORTSUSED[7] "/" $REPORTPORTS[7] "*"
-echo "Ports BBB: " $REPORTPORTSUSED[8] "/" $REPORTPORTS[8] "*"
+echo "Ports BBS: " $reportportsused[1] "/" $reportports[1] "*"
+echo "Ports BSB: " $reportportsused[2] "/" $reportports[2] "*"
+echo "Ports SBB: " $reportportsused[3] "/" $reportports[3] "*"
+echo "Ports SSB: " $reportportsused[4] "/" $reportports[4] "*"
+echo "Ports SBS: " $reportportsused[5] "/" $reportports[5] "*"
+echo "Ports BSS: " $reportportsused[6] "/" $reportports[6] "*"
+echo "Ports SSS: " $reportportsused[7] "/" $reportports[7] "*"
+echo "Ports BBB: " $reportportsused[8] "/" $reportports[8] "*"
 echo "**"
 return
 

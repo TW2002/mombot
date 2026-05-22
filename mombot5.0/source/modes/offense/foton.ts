@@ -1,144 +1,143 @@
-	logging off
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
-	loadVar $game~MULTIPLE_PHOTONS
+logging off
+gosub :loadvars~loadvars
+gosub :help~initialize
+loadvar $game~multiple_photons
 
-	setVar $HELP~HELP[1]  $HELP~TAB&"- foton [on|off|sec] {a|d|p|s|d|t} {towship} {sector} "
-	setVar $HELP~HELP[2]  $HELP~TAB&"                     {return} {den40}"
-	setVar $HELP~HELP[3]  $HELP~TAB&"  Multiple use photon script.  "
-	setVar $HELP~HELP[4]  $HELP~TAB&"  "
-	setVar $HELP~HELP[5]  $HELP~TAB&"  Options: "
-	setVar $HELP~HELP[6]  $HELP~TAB&"    {a}djacent - photons adjacent sector when"
-	setVar $HELP~HELP[7]  $HELP~TAB&"                 fig/limp/armid hit"
-	setVar $HELP~HELP[8]  $HELP~TAB&"    {d}ensity  - constant density scan, photons"
-	setVar $HELP~HELP[9]  $HELP~TAB&"                 on density change"
-	setVar $HELP~HELP[10] $HELP~TAB&"    {p}lanet   - standard planet warp photon script"
-	setVar $HELP~HELP[11] $HELP~TAB&"    {s}urround - attempts to foton retreat sector"
-	setVar $HELP~HELP[12] $HELP~TAB&"    d{o}ck     - sits on dock and attempts to foton"
-	setVar $HELP~HELP[13] $HELP~TAB&"                 on adjacent fig hit"
-	setVar $HELP~HELP[14] $HELP~TAB&"    {t}ow      - twarp tow a photon in a second ship"
-	setVar $HELP~HELP[15] $HELP~TAB&"       "
-	setVar $HELP~HELP[16] $HELP~TAB&"    {towship}  - Ship in sector with photon you will tow"
-	setVar $HELP~HELP[17] $HELP~TAB&"    {sector}   - Apply the mode from/to that sector"
-	setVar $HELP~HELP[18] $HELP~TAB&"    {return}   - Returns Planet Home after Pwarp"
-	setVar $HELP~HELP[19] $HELP~TAB&"     {den40}   - Only shoots on 40 to 499 Density Change"
-	setVar $HELP~HELP[20] $HELP~TAB&"      {holo}   - does holo command after firing"
-	setVar $HELP~HELP[21] $HELP~TAB&"   {dockexp}   - Will pop planet to get to 1k"
-	setVar $HELP~HELP[22] $HELP~TAB&"                 for dock photon"
-	setVar $HELP~HELP[23] $HELP~TAB&"      {self}   - Will pwarp out, photon your current "
-	setVar $HELP~HELP[24] $HELP~TAB&"                 sector, and pwarp back in. "
-	setVar $HELP~HELP[25] $HELP~TAB&"      {cont}   - Will continue shooting if in density mode."
-	setVar $HELP~HELP[26] $HELP~TAB&" {delwalk:n}   - Delay walk will delay the shot for this many MS."
-	setVar $HELP~HELP[27] $HELP~TAB&"                 Then add another 100ms to subsequent hit."
-	setVar $HELP~HELP[28] $HELP~TAB&"      "
-	setVar $HELP~HELP[28] $HELP~TAB&"      Examples:   "
-	setVar $HELP~HELP[28] $HELP~TAB&"           >foton 1922 "
-	setVar $HELP~HELP[28] $HELP~TAB&"           >foton on d "
-	setVar $HELP~HELP[28] $HELP~TAB&"           >foton p holo return"
-	setVar $HELP~HELP[28] $HELP~TAB&"      "
-	setVar $HELP~HELP[29] $HELP~TAB&"       Authors: Mind Dagger and The Bounty Hunter "
-	gosub :HELP~HELPFILE
+setvar $help~help[1]  $help~tab&"- foton [on|off|sec] {a|d|p|s|d|t} {towship} {sector} "
+setvar $help~help[2]  $help~tab&"                     {return} {den40}"
+setvar $help~help[3]  $help~tab&"  Multiple use photon script.  "
+setvar $help~help[4]  $help~tab&"  "
+setvar $help~help[5]  $help~tab&"  Options: "
+setvar $help~help[6]  $help~tab&"    {a}djacent - photons adjacent sector when"
+setvar $help~help[7]  $help~tab&"                 fig/limp/armid hit"
+setvar $help~help[8]  $help~tab&"    {d}ensity  - constant density scan, photons"
+setvar $help~help[9]  $help~tab&"                 on density change"
+setvar $help~help[10] $help~tab&"    {p}lanet   - standard planet warp photon script"
+setvar $help~help[11] $help~tab&"    {s}urround - attempts to foton retreat sector"
+setvar $help~help[12] $help~tab&"    d{o}ck     - sits on dock and attempts to foton"
+setvar $help~help[13] $help~tab&"                 on adjacent fig hit"
+setvar $help~help[14] $help~tab&"    {t}ow      - twarp tow a photon in a second ship"
+setvar $help~help[15] $help~tab&"       "
+setvar $help~help[16] $help~tab&"    {towship}  - Ship in sector with photon you will tow"
+setvar $help~help[17] $help~tab&"    {sector}   - Apply the mode from/to that sector"
+setvar $help~help[18] $help~tab&"    {return}   - Returns Planet Home after Pwarp"
+setvar $help~help[19] $help~tab&"     {den40}   - Only shoots on 40 to 499 Density Change"
+setvar $help~help[20] $help~tab&"      {holo}   - does holo command after firing"
+setvar $help~help[21] $help~tab&"   {dockexp}   - Will pop planet to get to 1k"
+setvar $help~help[22] $help~tab&"                 for dock photon"
+setvar $help~help[23] $help~tab&"      {self}   - Will pwarp out, photon your current "
+setvar $help~help[24] $help~tab&"                 sector, and pwarp back in. "
+setvar $help~help[25] $help~tab&"      {cont}   - Will continue shooting if in density mode."
+setvar $help~help[26] $help~tab&" {delwalk:n}   - Delay walk will delay the shot for this many MS."
+setvar $help~help[27] $help~tab&"                 Then add another 100ms to subsequent hit."
+setvar $help~help[28] $help~tab&"      "
+setvar $help~help[28] $help~tab&"      Examples:   "
+setvar $help~help[28] $help~tab&"           >foton 1922 "
+setvar $help~help[28] $help~tab&"           >foton on d "
+setvar $help~help[28] $help~tab&"           >foton p holo return"
+setvar $help~help[28] $help~tab&"      "
+setvar $help~help[29] $help~tab&"       Authors: Mind Dagger and The Bounty Hunter "
+gosub :help~helpfile
 
-	setvar $SWITCHBOARD~MESSAGE "Fast Foton starting up!*"
-	gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "Fast Foton starting up!*"
+gosub :switchboard~switchboard
 
-
-	getSectorParameter SECTORS "FIGSEC" $isFigged
-	if ($isFigged = "")
-		setvar $switchboard~message "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
-		gosub :switchboard~switchboard
-		halt
-	end
-
-getWord $bot~user_command_line $bot~parm1 1
-getWord $bot~user_command_line $bot~parm2 2
-getWord $bot~user_command_line $bot~parm3 3
-getWord $bot~user_command_line $bot~parm4 4
-getWord $bot~user_command_line $bot~parm5 5
-getWord $bot~user_command_line $bot~parm6 6
-getWord $bot~user_command_line $bot~parm7 7
-getWord $bot~user_command_line $bot~parm8 8
-getWordPos " "&$bot~user_command_line&" " $pos " return "
-if ($pos > 0)
-	setVar $auto_return TRUE
-else
-	setVar $auto_return FALSE
+getsectorparameter sectors "FIGSEC" $isfigged
+if ($isfigged = "")
+	setvar $switchboard~message "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-getWordPos " "&$bot~user_command_line&" " $pos " den40 "
+getword $bot~user_command_line $bot~parm1 1
+getword $bot~user_command_line $bot~parm2 2
+getword $bot~user_command_line $bot~parm3 3
+getword $bot~user_command_line $bot~parm4 4
+getword $bot~user_command_line $bot~parm5 5
+getword $bot~user_command_line $bot~parm6 6
+getword $bot~user_command_line $bot~parm7 7
+getword $bot~user_command_line $bot~parm8 8
+getwordpos " "&$bot~user_command_line&" " $pos " return "
 if ($pos > 0)
-	setVar $shipchange 1
+	setvar $auto_return true
 else
-	setVar $shipchange 0
+	setvar $auto_return false
 end
 
-getWordPos " "&$bot~user_command_line&" " $pos " cont "
+getwordpos " "&$bot~user_command_line&" " $pos " den40 "
 if ($pos > 0)
-	setVar $dencontinue 1
+	setvar $shipchange 1
 else
-	setVar $dencontinue 0
+	setvar $shipchange 0
 end
 
-getWordPos " "&$bot~user_command_line&" " $pos " holo "
+getwordpos " "&$bot~user_command_line&" " $pos " cont "
 if ($pos > 0)
-	setVar $holo 1
+	setvar $dencontinue 1
 else
-	setVar $holo 0
+	setvar $dencontinue 0
 end
 
-getWordPos " "&$bot~user_command_line&" " $pos " dockexp "
+getwordpos " "&$bot~user_command_line&" " $pos " holo "
 if ($pos > 0)
-	setVar $dockexp 1
+	setvar $holo 1
 else
-	setVar $dockexp 0
+	setvar $holo 0
 end
 
-getWordPos " "&$bot~user_command_line&" " $pos " self "
+getwordpos " "&$bot~user_command_line&" " $pos " dockexp "
 if ($pos > 0)
-	setVar $self 1
+	setvar $dockexp 1
 else
-	setVar $self 0
+	setvar $dockexp 0
 end
 
-setVar $delaywalk 0
-getWordPos $bot~user_command_line $pos "delwalk:"
+getwordpos " "&$bot~user_command_line&" " $pos " self "
 if ($pos > 0)
-	
-	setVar $cline $bot~user_command_line & " "
-	getText $cline $delaywalk "delwalk:" " "
+	setvar $self 1
 else
-	setVar $delaywalk 0
+	setvar $self 0
+end
+
+setvar $delaywalk 0
+getwordpos $bot~user_command_line $pos "delwalk:"
+if ($pos > 0)
+
+	setvar $cline $bot~user_command_line & " "
+	gettext $cline $delaywalk "delwalk:" " "
+else
+	setvar $delaywalk 0
 end
 
 # ============================== START FOTON CHECK SUB ==============================
 :foton_check
 gosub :player~quikstats
-setVar $startingLocation $player~current_prompt
-isNumber $isnum $bot~parm1
+setvar $startinglocation $player~current_prompt
+isnumber $isnum $bot~parm1
 
 if ($bot~parm2 = "d")
-        goto :start_dtorp
+	goto :start_dtorp
 elseif ($bot~parm2 = "a")
-        goto :adjphoton
+	goto :adjphoton
 elseif ($bot~parm2 = "s")
-        goto :surround_foton
+	goto :surround_foton
 elseif ($bot~parm2 = "r")
-        goto :trap_foton
+	goto :trap_foton
 elseif ($bot~parm2 = "o")
-        goto :dockPhoton
+	goto :dockphoton
 elseif ($bot~parm2 = "t")
-		goto :photonTow
+	goto :photontow
 elseif (($bot~parm2 = "p") or ($bot~parm2 = ""))
-        goto :foton
+	goto :foton
 elseif (($isnum = 1) or ($self = true))
 	if ($self)
 		setvar $bot~parm1 $player~current_sector
 		setvar $auto_return true
 	end
-	if (($bot~parm1 > 10) and ($bot~parm1 <= SECTORS) and ($bot~parm1 <> STARDOCK))
+	if (($bot~parm1 > 10) and ($bot~parm1 <= sectors) and ($bot~parm1 <> stardock))
 		gosub :player~quikstats
-		goto :photonSector
-	elseif (($bot~parm1 < 10) or ($bot~parm1 >= SECTORS) or ($bot~parm1 = STARDOCK))
+		goto :photonsector
+	elseif (($bot~parm1 < 10) or ($bot~parm1 >= sectors) or ($bot~parm1 = stardock))
 		setvar $switchboard~message "Not a Valid FOTON Sector*"
 		gosub :switchboard~switchboard
 		halt
@@ -149,72 +148,61 @@ else
 	halt
 end
 # ============================== END FOTON CHECK SUB ==============================
-
-
-:planetPhotonTriggers
-
+:planetphotontriggers
 killalltriggers
-setTextLineTrigger 1 :foton_pwplimp "Limpet mine in "
-setTextLineTrigger 2 :foton_pwparmid "Your mines in "
-setTextLineTrigger 3 :foton_fighit "Deployed Fighters Report Sector "
+settextlinetrigger 1 :foton_pwplimp "Limpet mine in "
+settextlinetrigger 2 :foton_pwparmid "Your mines in "
+settextlinetrigger 3 :foton_fighit "Deployed Fighters Report Sector "
 pause
 
-:towPhotonTriggers
-
+:towphotontriggers
 killalltriggers
-setTextLineTrigger 1 :tow_pwplimp "Limpet mine in "
-setTextLineTrigger 2 :tow_pwparmid "Your mines in "
-setTextLineTrigger 3 :tow_fighit "Deployed Fighters Report Sector "
+settextlinetrigger 1 :tow_pwplimp "Limpet mine in "
+settextlinetrigger 2 :tow_pwparmid "Your mines in "
+settextlinetrigger 3 :tow_fighit "Deployed Fighters Report Sector "
 pause
 
-:surroundPhotonTriggers
-
+:surroundphotontriggers
 killalltriggers
 #setTextLineTrigger 1 :foton_pwplimp "Limpet mine in "
 #setTextLineTrigger 2 :foton_pwparmid "Your mines in "
-setTextLineTrigger 3 :surround_foton_fighit "Deployed Fighters Report Sector "
+settextlinetrigger 3 :surround_foton_fighit "Deployed Fighters Report Sector "
 pause
 
-:trapPhotonTriggers
-
+:trapphotontriggers
 killalltriggers
 #setTextLineTrigger 1 :foton_pwplimp "Limpet mine in "
 #setTextLineTrigger 2 :foton_pwparmid "Your mines in "
-setTextLineTrigger 3 :trap_foton_fighit "Deployed Fighters Report Sector "
+settextlinetrigger 3 :trap_foton_fighit "Deployed Fighters Report Sector "
 pause
 
-
-
-:setAdjacentTriggers
+:setadjacenttriggers
 killalltriggers
-setVar $warpies 1
-setDelayTrigger 1 :load_photon 300000
-While ($warpies <= $pwarps)
-	setTextTrigger phot&$warpies :shoot&$warpies "Deployed Fighters Report Sector "&SECTOR.WARPS[$psec][$warpies]&":"
-	setTextTrigger limp&$warpies :shoot&$warpies "Limpet mine in "&SECTOR.WARPS[$psec][$warpies]&" activated"
+setvar $warpies 1
+setdelaytrigger 1 :load_photon 300000
+while ($warpies <= $pwarps)
+	settexttrigger phot&$warpies :shoot&$warpies "Deployed Fighters Report Sector "&sector.warps[$psec][$warpies]&":"
+	settexttrigger limp&$warpies :shoot&$warpies "Limpet mine in "&sector.warps[$psec][$warpies]&" activated"
 	add $warpies 1
 end
 pause
 
-:setDockTriggers
+:setdocktriggers
 killalltriggers
-setVar $warpies 1
-	
-While ($warpies <= $pwarps)
-	setTextTrigger dphot&$warpies :dshoot&$warpies "Deployed Fighters Report Sector "&SECTOR.WARPS[$psec][$warpies]&":"
-	setTextTrigger dlimp&$warpies :dshoot&$warpies "Limpet mine in "&SECTOR.WARPS[$psec][$warpies]&" activated"
+setvar $warpies 1
+
+while ($warpies <= $pwarps)
+	settexttrigger dphot&$warpies :dshoot&$warpies "Deployed Fighters Report Sector "&sector.warps[$psec][$warpies]&":"
+	settexttrigger dlimp&$warpies :dshoot&$warpies "Limpet mine in "&sector.warps[$psec][$warpies]&" activated"
 	add $warpies 1
 end
 pause
-
 
 # ============================== DOCK PHOTON ==============================================
-:dockPhoton
+:dockphoton
+setvar $startinglocation $player~current_prompt
 
-
-setVar $startingLocation $player~current_prompt
-	
-if ($startingLocation <> "<StarDock>") and ($startingLocation <> "Command") and ($startingLocation <> "<Hardware")
+if ($startinglocation <> "<StarDock>") and ($startinglocation <> "Command") and ($startinglocation <> "<Hardware")
 	setvar $switchboard~message "Must start at Command, Stardock or Hardware*"
 	gosub :switchboard~switchboard
 	halt
@@ -225,60 +213,60 @@ if ($bot~parm1 <> "on") and ($bot~parm1 <> "off") and ($bot~parm1 <> "reset")
 	halt
 end
 if ($bot~parm1 = "on")
-	setVar $cooloff ($GAME~PHOTON_DURATION * 1000)
-		
+	setvar $cooloff ($game~photon_duration * 1000)
+
 	if ($player~photons = 0)
 		setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
 		gosub :switchboard~switchboard
-		setVar $mode "General"
+		setvar $mode "General"
 		halt
 	end
-	if ($player~TURNS < 3)
+	if ($player~turns < 3)
 		setvar $switchboard~message "Need a couple of turns..*"
 		gosub :switchboard~switchboard
-		setVar $mode "General"
+		setvar $mode "General"
 		halt
-			
+
 	end
 	if ($dockexp = 1)
 
 		if (($player~experience < 976) and ($player~alignment >= 0))
-			if ($player~fedspacePhotons <> TRUE)
+			if ($player~fedspacephotons <> true)
 				setvar $switchboard~message "Need 976 exp + for this mode.*"
 				gosub :switchboard~switchboard
-				setVar $mode "General"
+				setvar $mode "General"
 				halt
 			end
 		end
 
-		if ($player~GENESIS < 1)
+		if ($player~genesis < 1)
 			setvar $switchboard~message "Please buy one genesis torp*"
 			gosub :switchboard~switchboard
-			setVar $mode "General"
+			setvar $mode "General"
 			halt
 		end
-		setVar $makeMacro " u y n . * z c * "
+		setvar $makemacro " u y n . * z c * "
 	else
 		if (($player~experience < 1000) and ($player~alignment >= 0))
-			if ($player~fedspacePhotons <> TRUE)
+			if ($player~fedspacephotons <> true)
 				setvar $switchboard~message "Fed safe people can't shoot photons from fed..*"
 				gosub :switchboard~switchboard
-				setVar $mode "General"
+				setvar $mode "General"
 				halt
 			end
 		end
-		setVar $makeMacro ""
+		setvar $makemacro ""
 	end
 	setvar $switchboard~message "Dock Foton Running - Shooting from the dock at adjacent sectors!*"
 	gosub :switchboard~switchboard
-	setVar $psec $player~current_sector
-	if ($startingLocation = "Command")
+	setvar $psec $player~current_sector
+	if ($startinglocation = "Command")
 		send "psh"
-	elseif ($startingLocation = "<StarDock>")
+	elseif ($startinglocation = "<StarDock>")
 		send "h"
-	end 
-	setVar $pwarps SECTOR.WARPCOUNT[$psec]
-	goto :setDockTriggers
+	end
+	setvar $pwarps sector.warpcount[$psec]
+	goto :setdocktriggers
 else
 	setvar $switchboard~message "Please use - foton [on/off/reset] {a/d/s/p/o} format*"
 	gosub :switchboard~switchboard
@@ -287,210 +275,209 @@ end
 
 :dshoot1
 killalltriggers
-echo "#" "Photon Missile launched into sector "&SECTOR.WARPS[$psec][1] "#"
-send "q q " $makeMacro "  c  p  y  " SECTOR.WARPS[$psec][1] "**   * q p sh"
-setVar $makeMacro ""
+echo "#" "Photon Missile launched into sector "&sector.warps[$psec][1] "#"
+send "q q " $makemacro "  c  p  y  " sector.warps[$psec][1] "**   * q p sh"
+setvar $makemacro ""
 killtrigger dshot
 killtrigger dmissed
-setTextTrigger dshot :dshot1 "Photon Missile launched into sector "&SECTOR.WARPS[$psec][1]
-setTextTrigger dmissed :dmissed1 "<Computer deactivated>"
+settexttrigger dshot :dshot1 "Photon Missile launched into sector "&sector.warps[$psec][1]
+settexttrigger dmissed :dmissed1 "<Computer deactivated>"
 pause
 
 :dmissed1
 killtrigger dshot
-goto :setDockTriggers
+goto :setdocktriggers
 
 :dshot1
 killtrigger dmissed
-getWord CURRENTLINE $spoof 1
+getword currentline $spoof 1
 if ($spoof <> "Photon")
-	goto :setDockTriggers
+	goto :setdocktriggers
 end
-setvar $switchboard~message "Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][1] "*"
+setvar $switchboard~message "Dock Foton Fired -> Sector " sector.warps[$psec][1] "*"
 gosub :switchboard~switchboard
-	
+
 subtract $player~photons 1
 if ($player~photons = 0)
 	setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
 	gosub :switchboard~switchboard
-	setVar $mode "General"
+	setvar $mode "General"
 	halt
 end
-setDelayTrigger cool :setDockTriggers $cooloff
+setdelaytrigger cool :setdocktriggers $cooloff
 pause
-goto :setDockTriggers
+goto :setdocktriggers
 
 :dshoot2
-send "q q " $makeMacro "  c  p  y  " SECTOR.WARPS[$psec][2] "**   * q p sh"
-setVar $makeMacro ""
+send "q q " $makemacro "  c  p  y  " sector.warps[$psec][2] "**   * q p sh"
+setvar $makemacro ""
 killtrigger dshot
 killtrigger dmissed
-setTextTrigger dshot :dshot2 "Photon Missile launched into sector "&SECTOR.WARPS[$psec][2]
-setTextTrigger dmissed :dmissed2 "<Computer deactivated>"
+settexttrigger dshot :dshot2 "Photon Missile launched into sector "&sector.warps[$psec][2]
+settexttrigger dmissed :dmissed2 "<Computer deactivated>"
 pause
 
 :dmissed2
 killtrigger dshot
-goto :setDockTriggers
+goto :setdocktriggers
 
 :dshot2
 killtrigger dmissed
-getWord CURRENTLINE $spoof 1
+getword currentline $spoof 1
 if ($spoof <> "Photon")
-	goto :setDockTriggers
+	goto :setdocktriggers
 end
-setvar $switchboard~message "Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][2] "*"
+setvar $switchboard~message "Dock Foton Fired -> Sector " sector.warps[$psec][2] "*"
 gosub :switchboard~switchboard
-	
+
 subtract $player~photons 1
 if ($player~photons = 0)
 	setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
 	gosub :switchboard~switchboard
-	setVar $mode "General"
+	setvar $mode "General"
 	halt
 end
-setDelayTrigger cool :setDockTriggers $cooloff
+setdelaytrigger cool :setdocktriggers $cooloff
 pause
-goto :setDockTriggers
+goto :setdocktriggers
 
 :dshoot3
-	
-send "q q " $makeMacro "  c  p  y  " SECTOR.WARPS[$psec][3] "**   * q p sh"
-setVar $makeMacro ""
+send "q q " $makemacro "  c  p  y  " sector.warps[$psec][3] "**   * q p sh"
+setvar $makemacro ""
 killtrigger dshot
 killtrigger dmissed
-setTextTrigger dshot :dshot3 "Photon Missile launched into sector "&SECTOR.WARPS[$psec][3]
-setTextTrigger dmissed :dmissed3 "<Computer deactivated>"
+settexttrigger dshot :dshot3 "Photon Missile launched into sector "&sector.warps[$psec][3]
+settexttrigger dmissed :dmissed3 "<Computer deactivated>"
 pause
 
 :dmissed3
 killtrigger dshot
-goto :setDockTriggers
+goto :setdocktriggers
 
 :dshot3
 killtrigger dmissed
-getWord CURRENTLINE $spoof 1
+getword currentline $spoof 1
 if ($spoof <> "Photon")
-	goto :setDockTriggers
+	goto :setdocktriggers
 end
-setvar $switchboard~message "Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][3] "*"
+setvar $switchboard~message "Dock Foton Fired -> Sector " sector.warps[$psec][3] "*"
 gosub :switchboard~switchboard
-	
+
 subtract $player~photons 1
 if ($player~photons = 0)
 	setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
 	gosub :switchboard~switchboard
-	setVar $mode "General"
+	setvar $mode "General"
 	halt
 end
-setDelayTrigger cool :setDockTriggers $cooloff
+setdelaytrigger cool :setdocktriggers $cooloff
 pause
-goto :setDockTriggers
+goto :setdocktriggers
 
 :dshoot4
-send "q q " $makeMacro "  c  p  y  " SECTOR.WARPS[$psec][4] "**   * q p sh"
-setVar $makeMacro ""
+send "q q " $makemacro "  c  p  y  " sector.warps[$psec][4] "**   * q p sh"
+setvar $makemacro ""
 killtrigger dshot
 killtrigger dmissed
-setTextTrigger dshot :dshot4 "Photon Missile launched into sector "&SECTOR.WARPS[$psec][4]
-setTextTrigger dmissed :dmissed4 "<Computer deactivated>"
+settexttrigger dshot :dshot4 "Photon Missile launched into sector "&sector.warps[$psec][4]
+settexttrigger dmissed :dmissed4 "<Computer deactivated>"
 pause
 
 :dmissed4
 killtrigger dshot
-goto :setDockTriggers
+goto :setdocktriggers
 
 :dshot4
 killtrigger dmissed
-getWord CURRENTLINE $spoof 1
+getword currentline $spoof 1
 if ($spoof <> "Photon")
-	goto :setDockTriggers
+	goto :setdocktriggers
 end
-setvar $switchboard~message "Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][4] "*"
+setvar $switchboard~message "Dock Foton Fired -> Sector " sector.warps[$psec][4] "*"
 gosub :switchboard~switchboard
-	
+
 subtract $player~photons 1
 if ($player~photons = 0)
 	setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
 	gosub :switchboard~switchboard
-	setVar $mode "General"
+	setvar $mode "General"
 	halt
 end
-setDelayTrigger cool :setDockTriggers $cooloff
+setdelaytrigger cool :setdocktriggers $cooloff
 pause
-goto :setDockTriggers
+goto :setdocktriggers
+
 :dshoot5
-send "q q " $makeMacro "  c  p  y  " SECTOR.WARPS[$psec][5] "**   * q p sh"
-setVar $makeMacro ""
+send "q q " $makemacro "  c  p  y  " sector.warps[$psec][5] "**   * q p sh"
+setvar $makemacro ""
 killtrigger dshot
 killtrigger dmissed
-setTextTrigger dshot :dshot5 "Photon Missile launched into sector "&SECTOR.WARPS[$psec][5]
-setTextTrigger dmissed :dmissed5 "<Computer deactivated>"
+settexttrigger dshot :dshot5 "Photon Missile launched into sector "&sector.warps[$psec][5]
+settexttrigger dmissed :dmissed5 "<Computer deactivated>"
 pause
 
 :dmissed5
 killtrigger dshot
-goto :setDockTriggers
+goto :setdocktriggers
 
 :dshot5
 killtrigger dmissed
-getWord CURRENTLINE $spoof 1
+getword currentline $spoof 1
 if ($spoof <> "Photon")
-	goto :setDockTriggers
+	goto :setdocktriggers
 end
-setvar $switchboard~message "Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][5] "*"
+setvar $switchboard~message "Dock Foton Fired -> Sector " sector.warps[$psec][5] "*"
 gosub :switchboard~switchboard
-	
+
 subtract $player~photons 1
 if ($player~photons = 0)
 	setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
 	gosub :switchboard~switchboard
-	setVar $mode "General"
+	setvar $mode "General"
 	halt
 end
-setDelayTrigger cool :setDockTriggers $cooloff
+setdelaytrigger cool :setdocktriggers $cooloff
 pause
-goto :setDockTriggers
+goto :setdocktriggers
 
 :dshoot6
-send "q q " $makeMacro "  c  p  y  " SECTOR.WARPS[$psec][6] "**   * q p sh"
-setVar $makeMacro ""
+send "q q " $makemacro "  c  p  y  " sector.warps[$psec][6] "**   * q p sh"
+setvar $makemacro ""
 killtrigger dshot
 killtrigger dmissed
-setTextTrigger dshot :dshot6 "Photon Missile launched into sector "&SECTOR.WARPS[$psec][6]
-setTextTrigger dmissed :dmissed6 "<Computer deactivated>"
+settexttrigger dshot :dshot6 "Photon Missile launched into sector "&sector.warps[$psec][6]
+settexttrigger dmissed :dmissed6 "<Computer deactivated>"
 pause
 
 :dmissed6
 killtrigger dshot
-goto :setDockTriggers
+goto :setdocktriggers
 
 :dshot6
 killtrigger dmissed
-getWord CURRENTLINE $spoof 1
+getword currentline $spoof 1
 if ($spoof <> "Photon")
-	goto :setDockTriggers
+	goto :setdocktriggers
 end
-setvar $switchboard~message "Dock Foton Fired -> Sector " SECTOR.WARPS[$psec][6] "*"
+setvar $switchboard~message "Dock Foton Fired -> Sector " sector.warps[$psec][6] "*"
 gosub :switchboard~switchboard
-	
+
 subtract $player~photons 1
 if ($player~photons = 0)
 	setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
 	gosub :switchboard~switchboard
-	setVar $mode "General"
+	setvar $mode "General"
 	halt
 end
-setDelayTrigger cool :setDockTriggers $cooloff
+setdelaytrigger cool :setdocktriggers $cooloff
 pause
-goto :setDockTriggers
+goto :setdocktriggers
 
 # ============================== ADJACENT PHOTON (ADJPHOTON) ==============================
 :adjphoton
-
 gosub :player~quikstats
-setVar $startingLocation $player~current_prompt
-if ($startingLocation <> "Citadel") and ($startingLocation <> "Command")
+setvar $startinglocation $player~current_prompt
+if ($startinglocation <> "Citadel") and ($startinglocation <> "Command")
 	setvar $switchboard~message "Must start at Citadel or Command prompt*"
 	gosub :switchboard~switchboard
 	halt
@@ -512,60 +499,58 @@ else
 	halt
 end
 
-
-
 :load_photon
-if ($startingLocation <> "Citadel") and ($startingLocation <> "Command")
+if ($startinglocation <> "Citadel") and ($startinglocation <> "Command")
 	setvar $switchboard~message "Must start at Citadel or Command prompt*"
 	gosub :switchboard~switchboard
 	halt
 end
-if ($startingLocation = "Citadel")
+if ($startinglocation = "Citadel")
 	send "s*"
-	waitFor "<Scan Sector>"
-	waitFor "(?="
-elseif ($startingLocation = "Command")
+	waitfor "<Scan Sector>"
+	waitfor "(?="
+elseif ($startinglocation = "Command")
 	send "*zn"
-	waitFor "<Re-Display>"
-	waitFor "Command [TL"
+	waitfor "<Re-Display>"
+	waitfor "Command [TL"
 end
 gosub :player~quikstats
 if ($player~photons = 0)
 	setvar $switchboard~message "Out of Fotons - Adjacent Foton Deactivated*"
 	gosub :switchboard~switchboard
-	setVar $mode "General"
+	setvar $mode "General"
 	halt
 end
 if ($player~current_sector <> $psec) and ($psec <> 0)
 	setvar $switchboard~message "Resetting Adjacent Photon to Sector " $player~current_sector "*"
 	gosub :switchboard~switchboard
-	setVar $psec $player~current_sector
+	setvar $psec $player~current_sector
 end
-setVar $psec $player~current_sector
-	setvar $switchboard~message "Adjacent Foton Running in Sector " $psec " - " $player~photons " Photon(s) Aboard!*"
-	gosub :switchboard~switchboard
-setVar $pwarps SECTOR.WARPCOUNT[$psec]
-goto :setAdjacentTriggers
+setvar $psec $player~current_sector
+setvar $switchboard~message "Adjacent Foton Running in Sector " $psec " - " $player~photons " Photon(s) Aboard!*"
+gosub :switchboard~switchboard
+setvar $pwarps sector.warpcount[$psec]
+goto :setadjacenttriggers
 
 :shoot1
-send "c  p  y  " SECTOR.WARPS[$psec][1] "**  q*"
+send "c  p  y  " sector.warps[$psec][1] "**  q*"
 killtrigger shot
 killtrigger missed
-setTextTrigger shot :shot1 "Photon Missile launched into sector "&SECTOR.WARPS[$psec][1]
-setTextTrigger missed :missed1 "<Computer deactivated>"
+settexttrigger shot :shot1 "Photon Missile launched into sector "&sector.warps[$psec][1]
+settexttrigger missed :missed1 "<Computer deactivated>"
 pause
 
 :missed1
 killtrigger shot
-goto :setAdjacentTriggers
+goto :setadjacenttriggers
 
 :shot1
 killtrigger missed
-getWord CURRENTLINE $spoof 1
+getword currentline $spoof 1
 if ($spoof <> "Deployed") and ($spoof <> "Limpet")
-	goto :setAdjacentTriggers
+	goto :setadjacenttriggers
 end
-setvar $switchboard~message "Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][1] "*"
+setvar $switchboard~message "Adjacent Foton Fired -> Sector " sector.warps[$psec][1] "*"
 gosub :switchboard~switchboard
 if ($holo)
 	gosub :doholo
@@ -574,32 +559,32 @@ subtract $player~photons 1
 if ($player~photons = 0)
 	setvar $switchboard~message "Out of Fotons - Adjacent Foton Deactivated*"
 	gosub :switchboard~switchboard
-	setVar $mode "General"
+	setvar $mode "General"
 	halt
 end
-setDelayTrigger cool :setAdjacentTriggers 500
+setdelaytrigger cool :setadjacenttriggers 500
 pause
-goto :setAdjacentTriggers
+goto :setadjacenttriggers
 
 :shoot2
-getWord CURRENTLINE $spoof 1
+getword currentline $spoof 1
 if ($spoof <> "Deployed") and ($spoof <> "Limpet")
-	goto :setAdjacentTriggers
+	goto :setadjacenttriggers
 end
-send "c  p  y  " SECTOR.WARPS[$psec][2] "**  q*"
+send "c  p  y  " sector.warps[$psec][2] "**  q*"
 killtrigger shot
 killtrigger missed
-setTextTrigger shot :shot2 "Photon Missile launched into sector "&SECTOR.WARPS[$psec][2]
-setTextTrigger missed :missed2 "<Computer deactivated>"
+settexttrigger shot :shot2 "Photon Missile launched into sector "&sector.warps[$psec][2]
+settexttrigger missed :missed2 "<Computer deactivated>"
 pause
 
 :missed2
 killtrigger shot
-goto :setAdjacentTriggers
+goto :setadjacenttriggers
 
 :shot2
 killtrigger missed
-setvar $switchboard~message "Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][2] "*"
+setvar $switchboard~message "Adjacent Foton Fired -> Sector " sector.warps[$psec][2] "*"
 gosub :switchboard~switchboard
 subtract $player~photons 1
 if ($holo)
@@ -610,28 +595,28 @@ if ($player~photons = 0)
 	gosub :switchboard~switchboard
 	halt
 end
-goto :setAdjacentTriggers
+goto :setadjacenttriggers
 
 :shoot3
-getWord CURRENTLINE $spoof 1
+getword currentline $spoof 1
 if ($spoof <> "Deployed") and ($spoof <> "Limpet")
-	goto :setAdjacentTriggers
+	goto :setadjacenttriggers
 end
-send "c  p  y  " SECTOR.WARPS[$psec][3] "**  q*"
+send "c  p  y  " sector.warps[$psec][3] "**  q*"
 killtrigger shot
 killtrigger missed
-setTextTrigger shot :shot3 "Photon Missile launched into sector "&SECTOR.WARPS[$psec][3]
-setTextTrigger missed :missed3 "<Computer deactivated>"
+settexttrigger shot :shot3 "Photon Missile launched into sector "&sector.warps[$psec][3]
+settexttrigger missed :missed3 "<Computer deactivated>"
 pause
 
 :missed3
 killtrigger shot
-goto :setAdjacentTriggers
+goto :setadjacenttriggers
 
 :shot3
 killtrigger missed
-    setvar $switchboard~message "Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][3] "*"
-    gosub :switchboard~switchboard
+setvar $switchboard~message "Adjacent Foton Fired -> Sector " sector.warps[$psec][3] "*"
+gosub :switchboard~switchboard
 subtract $player~photons 1
 if ($holo)
 	gosub :doholo
@@ -641,27 +626,27 @@ if ($player~photons = 0)
 	gosub :switchboard~switchboard
 	halt
 end
-goto :setAdjacentTriggers
+goto :setadjacenttriggers
 
 :shoot4
-getWord CURRENTLINE $spoof 1
+getword currentline $spoof 1
 if ($spoof <> "Deployed") and ($spoof <> "Limpet")
-	goto :setAdjacentTriggers
+	goto :setadjacenttriggers
 end
-send "c  p  y  " SECTOR.WARPS[$psec][4] "**  q*"
+send "c  p  y  " sector.warps[$psec][4] "**  q*"
 killtrigger shot
 killtrigger missed
-setTextTrigger shot :shot4 "Photon Missile launched into sector "&SECTOR.WARPS[$psec][4]
-setTextTrigger missed :missed4 "<Computer deactivated>"
+settexttrigger shot :shot4 "Photon Missile launched into sector "&sector.warps[$psec][4]
+settexttrigger missed :missed4 "<Computer deactivated>"
 pause
 
 :missed4
 killtrigger shot
-goto :setAdjacentTriggers
+goto :setadjacenttriggers
 
 :shot4
 killtrigger missed
-setvar $switchboard~message "Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][4] "*"
+setvar $switchboard~message "Adjacent Foton Fired -> Sector " sector.warps[$psec][4] "*"
 gosub :switchboard~switchboard
 subtract $player~photons 1
 if ($holo)
@@ -672,27 +657,27 @@ if ($player~photons = 0)
 	gosub :switchboard~switchboard
 	halt
 end
-goto :setAdjacentTriggers
-	
+goto :setadjacenttriggers
+
 :shoot5
-getWord CURRENTLINE $spoof 1
+getword currentline $spoof 1
 if ($spoof <> "Deployed") and ($spoof <> "Limpet")
-	goto :setAdjacentTriggers
+	goto :setadjacenttriggers
 end
-send "c  p  y  " SECTOR.WARPS[$psec][5] "**  q*"
+send "c  p  y  " sector.warps[$psec][5] "**  q*"
 killtrigger shot
 killtrigger missed
-setTextTrigger shot :shot5 "Photon Missile launched into sector "&SECTOR.WARPS[$psec][5]
-setTextTrigger missed :missed5 "<Computer deactivated>"
+settexttrigger shot :shot5 "Photon Missile launched into sector "&sector.warps[$psec][5]
+settexttrigger missed :missed5 "<Computer deactivated>"
 pause
 
 :missed5
 killtrigger shot
-goto :setAdjacentTriggers
+goto :setadjacenttriggers
 
 :shot5
 killtrigger missed
-setvar $switchboard~message "Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][5] "*"
+setvar $switchboard~message "Adjacent Foton Fired -> Sector " sector.warps[$psec][5] "*"
 gosub :switchboard~switchboard
 subtract $player~photons 1
 if ($holo)
@@ -703,27 +688,27 @@ if ($player~photons = 0)
 	gosub :switchboard~switchboard
 	halt
 end
-goto :setAdjacentTriggers
+goto :setadjacenttriggers
 
 :shoot6
-getWord CURRENTLINE $spoof 1
+getword currentline $spoof 1
 if ($spoof <> "Deployed") and ($spoof <> "Limpet")
-	goto :setAdjacentTriggers
+	goto :setadjacenttriggers
 end
-send "c  p  y  " SECTOR.WARPS[$psec][6] "**  q*"
+send "c  p  y  " sector.warps[$psec][6] "**  q*"
 killtrigger shot
 killtrigger missed
-setTextTrigger shot :shot6 "Photon Missile launched into sector "&SECTOR.WARPS[$psec][6]
-setTextTrigger missed :missed6 "<Computer deactivated>"
+settexttrigger shot :shot6 "Photon Missile launched into sector "&sector.warps[$psec][6]
+settexttrigger missed :missed6 "<Computer deactivated>"
 pause
 
 :missed6
 killtrigger shot
-goto :setAdjacentTriggers
+goto :setadjacenttriggers
 
 :shot6
 killtrigger missed
-setvar $switchboard~message "Adjacent Foton Fired -> Sector " SECTOR.WARPS[$psec][6] "*"
+setvar $switchboard~message "Adjacent Foton Fired -> Sector " sector.warps[$psec][6] "*"
 gosub :switchboard~switchboard
 subtract $player~photons 1
 if ($holo)
@@ -734,30 +719,29 @@ if ($player~photons = 0)
 	gosub :switchboard~switchboard
 	halt
 end
-goto :setAdjacentTriggers
+goto :setadjacenttriggers
 # ============================== END ADJ PHOTON (PHOTON) SUB ==============================
-
 
 # ======================     START DENSITY PHOTON (DTORP) SUBROUTINE    ==========================
 :start_dtorp
 gosub :player~quikstats
-setVar $startingLocation $player~current_prompt
-setArray $adj 7
-setArray $dens 7
-setArray $adjsec 7
-setArray $density 7
-if ($startingLocation = "Command")
+setvar $startinglocation $player~current_prompt
+setarray $adj 7
+setarray $dens 7
+setarray $adjsec 7
+setarray $density 7
+if ($startinglocation = "Command")
 	goto :checkndtorps
-elseif ($startingLocation = "Planet")
+elseif ($startinglocation = "Planet")
 	gosub :planet~getplanetinfo
 	send "q"
 	goto :checkndtorps
-elseif ($startingLocation = "Citadel")
+elseif ($startinglocation = "Citadel")
 	send "q"
 	gosub :planet~getplanetinfo
 	send "q"
 	goto :checkndtorps
-elseif ($startingLocation = "<StarDock>")
+elseif ($startinglocation = "<StarDock>")
 	send "q"
 	goto :checkndtorps
 else
@@ -768,15 +752,15 @@ end
 
 :checkndtorps
 send "cp*q"
-waitFor "Command [TL="
-setTextTrigger anyphots :anyphots "Photon Missiles left."
-setTextTrigger hmmtorps :hmmtorps "You do not have any Photon Missiles!"
-setTextTrigger fed :feds "The Feds do not permit protected"
+waitfor "Command [TL="
+settexttrigger anyphots :anyphots "Photon Missiles left."
+settexttrigger hmmtorps :hmmtorps "You do not have any Photon Missiles!"
+settexttrigger fed :feds "The Feds do not permit protected"
 pause
 
 :anyphots
-killTrigger fed
-killTrigger hmmtorps
+killtrigger fed
+killtrigger hmmtorps
 gosub :player~turnoffansi
 goto :check_dens
 
@@ -791,34 +775,34 @@ gosub :switchboard~switchboard
 halt
 
 :check_dens
-setVar $mm 0
-setVar $i 0
+setvar $mm 0
+setvar $i 0
 send "sz*"
 waiton "Relative Density Scan"
 
-:dtorp_Start
-killTrigger alldone
-setTextLineTrigger getSec :getSec "Sector"
-setTextTrigger allDone :allDone "Command [TL="
+:dtorp_start
+killtrigger alldone
+settextlinetrigger getsec :getsec "Sector"
+settexttrigger alldone :alldone "Command [TL="
 pause
 
-:getSec
+:getsec
 add $i 1
-getText CURRENTLINE $Adj[$i] "Sector" "==>"
-stripText $adj[$i] "("
-stripText $adj[$i] ")"
-stripText $adj[$i] " "
-getText CURRENTLINE $Dens[$i] "==>" "Warps :"
-stripText $dens[$i] ","
-stripText $dens[$i] " "
-goto :dtorp_Start
+gettext currentline $adj[$i] "Sector" "==>"
+striptext $adj[$i] "("
+striptext $adj[$i] ")"
+striptext $adj[$i] " "
+gettext currentline $dens[$i] "==>" "Warps :"
+striptext $dens[$i] ","
+striptext $dens[$i] " "
+goto :dtorp_start
 
-:allDone
-killTrigger getSec
+:alldone
+killtrigger getsec
 gosub :firechk
 
 :letslook
-setVar $w 0
+setvar $w 0
 
 :sublooky
 add $w 1
@@ -826,16 +810,16 @@ if ($w > $i)
 	goto :alldone
 elseif ($density[$w] <> $dens[$w])
 	if ($shipchange = 1)
-		setVar $diff ($density[$w] - $dens[$w])
+		setvar $diff ($density[$w] - $dens[$w])
 		if (($diff > 39) and ($diff < 495))
 			send "c p y " $adj[$w] "*  Q  "
 			setvar $switchboard~message "Foton Missle Fired into sector => " $adj[$w] "*"
 			gosub :switchboard~switchboard
-			subtract $player~PHOTONS 1
-			if ($dencontinue = 1) and ($player~PHOTONS > 0)
-				setvar $switchboard~message "" $player~PHOTONS " left continuing scanning..*"
+			subtract $player~photons 1
+			if ($dencontinue = 1) and ($player~photons > 0)
+				setvar $switchboard~message "" $player~photons " left continuing scanning..*"
 				gosub :switchboard~switchboard
-				setVar $dens[$w] $density[$w]
+				setvar $dens[$w] $density[$w]
 				goto :sublooky
 			else
 				gosub :player~turnonansi
@@ -849,11 +833,11 @@ elseif ($density[$w] <> $dens[$w])
 		send "c p y " $adj[$w] "*  Q  "
 		setvar $switchboard~message "Foton Missle Fired into sector => " $adj[$w] "*"
 		gosub :switchboard~switchboard
-		subtract $player~PHOTONS 1
-		if ($dencontinue = 1) and ($player~PHOTONS > 0)
-			setvar $switchboard~message "" $player~PHOTONS " left continuing scanning..*"
+		subtract $player~photons 1
+		if ($dencontinue = 1) and ($player~photons > 0)
+			setvar $switchboard~message "" $player~photons " left continuing scanning..*"
 			gosub :switchboard~switchboard
-			setVar $dens[$w] $density[$w]
+			setvar $dens[$w] $density[$w]
 			goto :sublooky
 		else
 			gosub :player~turnonansi
@@ -869,9 +853,9 @@ add $mm 1
 if ($mm = 150)
 	setvar $switchboard~message "WARNING  Density Foton Running at My TA!!!*"
 	gosub :switchboard~switchboard
-	setVar $mm 0
+	setvar $mm 0
 end
-setVar $y 0
+setvar $y 0
 send "sz*"
 waiton "Relative Density Scan"
 
@@ -880,53 +864,51 @@ killtrigger manual_stop
 killtrigger dtop_dtorp
 killtrigger getsec
 killtrigger alldone
-setTextOutTrigger manual_stop :manual_stop "-"
-setTextLineTrigger dtop_dtorp :manual_stop $bot~bot_name & " foton off"
-setTextLineTrigger getSec :looksec "Sector"
-setTextTrigger allDone :donelook "Command [TL="
+settextouttrigger manual_stop :manual_stop "-"
+settextlinetrigger dtop_dtorp :manual_stop $bot~bot_name & " foton off"
+settextlinetrigger getsec :looksec "Sector"
+settexttrigger alldone :donelook "Command [TL="
 pause
 
 :looksec
 add $y 1
-getText CURRENTLINE $Adjsec[$y] "Sector" "==>"
-stripText $adjsec[$y] "("
-stripText $adjsec[$y] ")"
-stripText $adjsec[$y] " "
-getText CURRENTLINE $Density[$y] "==>" "Warps :"
-stripText $density[$y] ","
-stripText $density[$y] " "
+gettext currentline $adjsec[$y] "Sector" "==>"
+striptext $adjsec[$y] "("
+striptext $adjsec[$y] ")"
+striptext $adjsec[$y] " "
+gettext currentline $density[$y] "==>" "Warps :"
+striptext $density[$y] ","
+striptext $density[$y] " "
 killtrigger dtop_dtorp
-killtrigger manual_Stop
+killtrigger manual_stop
 killtrigger alldone
 goto :looky
 
 :donelook
-killtrigger getSec
+killtrigger getsec
 return
 
 :manual_stop
 killtrigger manual_stop
 killtrigger dtop_dtorp
-killtrigger getSec
-killtrigger allDone
+killtrigger getsec
+killtrigger alldone
 setvar $switchboard~message "Density Foton Stoped . . *"
 gosub :switchboard~switchboard
 gosub :player~turnonansi
 
 :dtorp_end
-if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
+if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
 	gosub :planet~landingsub
 	halt
 else
 	halt
 end
 # ======================     END DENSITY PHOTON (DTORP) SUBROUTINE    ==========================
-
-
 :foton
 gosub :player~quikstats
-setVar $startingLocation $player~current_prompt
-if ($startingLocation = "Citadel")
+setvar $startinglocation $player~current_prompt
+if ($startinglocation = "Citadel")
 	goto :foton_start
 else
 	setvar $switchboard~message "Must Start at Citadel.*"
@@ -935,7 +917,7 @@ else
 end
 
 :foton_start
-setVar $home_sector2 $player~current_sector
+setvar $home_sector2 $player~current_sector
 if ($player~photons <= 0)
 	goto :foton_out_of_fotons
 end
@@ -946,8 +928,7 @@ send "c"
 
 :foton_get_figs
 send "*"
-waitFor "Citadel command (?="
-
+waitfor "Citadel command (?="
 
 :foton_go
 if ($auto_return)
@@ -957,10 +938,7 @@ else
 	setvar $switchboard~message "Foton Running From Planet " & $planet~planet & ", " & $player~photons &" Photons armed and ready.*"
 	gosub :switchboard~switchboard
 end
-goto :planetPhotonTriggers
-
-
-
+goto :planetphotontriggers
 
 :foton_pwplimp
 gosub :foton_limphit
@@ -971,22 +949,22 @@ gosub :foton_minehit
 goto :foton_pwp_go
 
 :foton_pwpfig
-	#gosub :foton_fighit
-
+#gosub :foton_fighit
 :foton_pwp_go
 killalltriggers
 gosub :foton_get_adj
 if ($delaywalk > 0)
-	setDelayTrigger delaywalkTrigger :delaywalkTrigger $delaywalk
+	setdelaytrigger delaywalktrigger :delaywalktrigger $delaywalk
 	pause
-			:delaywalkTrigger
-			add $delaywalk 100
-	end
-	send "p" $adjsec "*y c p y " $sector "**q"
-	setTextLineTrigger	wrong	:foton_wrong	"That is not an adjacent sector"
-	setTextLineTrigger	gotem	:foton_gotem	"Photon Missile launched into sector"
-	setTextLineTrigger	wrong2	:foton_wrong2	"The Feds do not permit Photon Torpedos"
-	pause
+
+	:delaywalktrigger
+	add $delaywalk 100
+end
+send "p" $adjsec "*y c p y " $sector "**q"
+settextlinetrigger	wrong	:foton_wrong	"That is not an adjacent sector"
+settextlinetrigger	gotem	:foton_gotem	"Photon Missile launched into sector"
+settextlinetrigger	wrong2	:foton_wrong2	"The Feds do not permit Photon Torpedos"
+pause
 
 :foton_wrong2
 killtrigger gotem
@@ -995,17 +973,17 @@ gosub :switchboard~switchboard
 if ($auto_return)
 	gosub :foton_go_home
 end
-goto :planetPhotonTriggers
+goto :planetphotontriggers
 
 :foton_wrong
 killtrigger gotem
 setvar $switchboard~message "Foton Missed! Resetting!*"
 gosub :switchboard~switchboard
-setSectorParameter $adjsec "FIGSEC" FALSE
+setsectorparameter $adjsec "FIGSEC" false
 if ($auto_return)
 	gosub :foton_go_home
 end
-goto :planetPhotonTriggers
+goto :planetphotontriggers
 
 :foton_gotem
 killtrigger wrong
@@ -1021,107 +999,109 @@ gosub :player~quikstats
 if ($player~photons = 0)
 	goto :foton_out_of_fotons
 end
-if ($game~multiple_photons <> TRUE)
-	setTextLineTrigger waitingforcooldown :exitcooldown "Photon Wave Duration has ended in sector "&$sector
+if ($game~multiple_photons <> true)
+	settextlinetrigger waitingforcooldown :exitcooldown "Photon Wave Duration has ended in sector "&$sector
 	pause
-		:exitcooldown
-	end
-	goto :planetPhotonTriggers
+
+	:exitcooldown
+end
+goto :planetphotontriggers
 
 :foton_go_home
 send "p" $home_sector2 "*y"
-SetTextLineTrigger homelock :foton_home_lock "Locating beam pinpointed"
-setTextLineTrigger nohomelock :foton_no_home_lock "Your own fighters must be"
-setTextLineTrigger home_now :foton_home_lock "You are already in that sector!"
+settextlinetrigger homelock :foton_home_lock "Locating beam pinpointed"
+settextlinetrigger nohomelock :foton_no_home_lock "Your own fighters must be"
+settextlinetrigger home_now :foton_home_lock "You are already in that sector!"
 pause
 
-	:foton_no_home_lock
-	killtrigger homelock
-	killtrigger nohomelock
-	killtrigger home_now
-	setvar $switchboard~message "PWarp Lock To Home Failed.*"
-	gosub :switchboard~switchboard
+:foton_no_home_lock
+killtrigger homelock
+killtrigger nohomelock
+killtrigger home_now
+setvar $switchboard~message "PWarp Lock To Home Failed.*"
+gosub :switchboard~switchboard
 
-        :foton_home_lock
-		killtrigger homelock
-		killtrigger nohomelock
-		killtrigger home_now
-	return
+:foton_home_lock
+killtrigger homelock
+killtrigger nohomelock
+killtrigger home_now
+return
+
 :foton_get_adj
-setVar $adjsec 0
-setVar $i 1
-while (SECTOR.WARPS[$Sector][$i] > 0)
-	setVar $tempAdj SECTOR.WARPS[$Sector][$i]
-            getSectorParameter $tempAdj "FIGSEC" $isFigged
-            if ($isFigged)
-		setVar $adjsec $tempAdj
+setvar $adjsec 0
+setvar $i 1
+while (sector.warps[$sector][$i] > 0)
+	setvar $tempadj sector.warps[$sector][$i]
+	getsectorparameter $tempadj "FIGSEC" $isfigged
+	if ($isfigged)
+		setvar $adjsec $tempadj
 		return
 	end
 	add $i 1
 end
 if ($adjsec <= 0)
-	echo ANSI_12 "No Adjacent fig found*" ANSI_7
-	goto :planetPhotonTriggers
+	echo ansi_12 "No Adjacent fig found*" ansi_7
+	goto :planetphotontriggers
 end
 return
 
 :foton_limphit
-cutText CURRENTLINE&"      " $ck 1 6
+cuttext currentline&"      " $ck 1 6
 if ($ck <> "Limpet")
-	goto :planetPhotonTriggers
+	goto :planetphotontriggers
 end
-getWord CURRENTLINE $sector 4
+getword currentline $sector 4
 return
 
 :foton_minehit
-cutText CURRENTLINE&"    " $ck 1 4
+cuttext currentline&"    " $ck 1 4
 if ($ck <> "Your")
-	goto :planetPhotonTriggers
+	goto :planetphotontriggers
 end
 
 # Check for alien hits
 
-getText CURRENTANSILINE $alien_check "damage to" ""
-getWordPos $alien_check $pos #27 & "[1;36m" & #27 & "["
+gettext currentansiline $alien_check "damage to" ""
+getwordpos $alien_check $pos #27 & "[1;36m" & #27 & "["
 if ($pos > 0)
-     goto :planetPhotonTriggers
+	goto :planetphotontriggers
 end
 
-getWord CURRENTLINE $sector 4
+getword currentline $sector 4
 return
 
 :foton_fighit
 # Check for spoofs
-	
-getWord CURRENTLINE $spoof_test 1
-getWord CURRENTANSILINE $ansi_spoof_test 1
-getWordPos $ansi_spoof_test $ansi_spoof_pos #27 & "[1;33m"
-if ($spoof_test <> "Deployed") OR ($ansi_spoof_pos <= 0)
-     goto :planetPhotonTriggers
+
+getword currentline $spoof_test 1
+getword currentansiline $ansi_spoof_test 1
+getwordpos $ansi_spoof_test $ansi_spoof_pos #27 & "[1;33m"
+if ($spoof_test <> "Deployed") or ($ansi_spoof_pos <= 0)
+	goto :planetphotontriggers
 end
 
 # Torp only on sector entry
-getWordPos CURRENTLINE $pos "entered sector."
+getwordpos currentline $pos "entered sector."
 if ($pos < 1)
-	goto :planetPhotonTriggers
+	goto :planetphotontriggers
 end
 
 # Check for alien hits
-getText CURRENTANSILINE $alien_check ": " "'s"
-getWordPos $alien_check $pos #27 & "[1;36m" & #27 & "["
+gettext currentansiline $alien_check ": " "'s"
+getwordpos $alien_check $pos #27 & "[1;36m" & #27 & "["
 if ($pos > 0)
-     goto :planetPhotonTriggers
+	goto :planetphotontriggers
 end
 
 # Get the sector number
-getWord CURRENTLINE $sector 5
-stripText $sector ":"
-isNumber $result $sector
+getword currentline $sector 5
+striptext $sector ":"
+isnumber $result $sector
 if ($result < 1)
-	goto :planetPhotonTriggers
+	goto :planetphotontriggers
 end
-if (($sector > SECTORS) OR ($sector <= 10))
-	 goto :planetPhotonTriggers
+if (($sector > sectors) or ($sector <= 10))
+	goto :planetphotontriggers
 end
 goto :foton_pwp_go
 #getText CURRENTANSILINE $sector #27&"[K"&#27&"[1A"&#27&"[1;33mDeployed Fighters "&#27&"[0;32mReport Sector "&#27&"[1;33m" #27&"[0;32m: "&#27&"[1;36m"
@@ -1135,7 +1115,6 @@ goto :foton_pwp_go
 #	goto :planetPhotonTriggers
 #end
 #return
-
 :foton_out_of_fotons
 setvar $switchboard~message "No photon missles, Foton mode shutting down.*"
 gosub :switchboard~switchboard
@@ -1143,8 +1122,8 @@ halt
 
 :surround_foton
 gosub :player~quikstats
-setVar $startingLocation $player~current_prompt
-if ($startingLocation = "Citadel")
+setvar $startinglocation $player~current_prompt
+if ($startinglocation = "Citadel")
 	goto :surround_foton_start
 else
 	setvar $switchboard~message "Must Start at Citadel.*"
@@ -1153,7 +1132,7 @@ else
 end
 
 :surround_foton_start
-setVar $home_sector2 $player~current_sector
+setvar $home_sector2 $player~current_sector
 if ($player~photons <= 0)
 	goto :foton_out_of_fotons
 end
@@ -1164,8 +1143,7 @@ send "c"
 
 :surround_foton_get_figs
 send "*"
-waitFor "Citadel command (?="
-
+waitfor "Citadel command (?="
 
 :surround_foton_go
 if ($auto_return)
@@ -1175,121 +1153,123 @@ else
 	setvar $switchboard~message "Surround Foton Running From Planet " & $planet~planet & ", " & $player~photons &" Photons armed and ready.*"
 	gosub :switchboard~switchboard
 end
-goto :surroundPhotonTriggers
+goto :surroundphotontriggers
 
 :surround_foton_fighit
 # Check for spoofs
 
-getWord CURRENTLINE $spoof_test 1
-getWord CURRENTANSILINE $ansi_spoof_test 1
-getWordPos $ansi_spoof_test $ansi_spoof_pos #27 & "[1;33m"
-if ($spoof_test <> "Deployed") OR ($ansi_spoof_pos <= 0)
-     goto :surroundPhotonTriggers
+getword currentline $spoof_test 1
+getword currentansiline $ansi_spoof_test 1
+getwordpos $ansi_spoof_test $ansi_spoof_pos #27 & "[1;33m"
+if ($spoof_test <> "Deployed") or ($ansi_spoof_pos <= 0)
+	goto :surroundphotontriggers
 end
 
 # Torp only on sector entry
-getWordPos CURRENTLINE $pos "entered sector."
+getwordpos currentline $pos "entered sector."
 if ($pos < 1)
-	goto :surroundPhotonTriggers
+	goto :surroundphotontriggers
 end
 
 # Check for alien hits
-getText CURRENTANSILINE $alien_check ": " "'s"
-getWordPos $alien_check $pos #27 & "[1;36m" & #27 & "["
+gettext currentansiline $alien_check ": " "'s"
+getwordpos $alien_check $pos #27 & "[1;36m" & #27 & "["
 if ($pos > 0)
-     goto :surroundPhotonTriggers
+	goto :surroundphotontriggers
 end
 
 # Get the sector number
-getWord CURRENTLINE $sector 5
-stripText $sector ":"
-isNumber $result $sector
+getword currentline $sector 5
+striptext $sector ":"
+isnumber $result $sector
 if ($result < 1)
-	goto :surroundPhotonTriggers
+	goto :surroundphotontriggers
 end
-if (($sector > SECTORS) OR ($sector <= 10))
-	 goto :surroundPhotonTriggers
+if (($sector > sectors) or ($sector <= 10))
+	goto :surroundphotontriggers
 end
-:attemptSurroundDrop
-setVar $i 1
-setVar $checkSector SECTOR.WARPS[$sector][$i]
-setVar $isFound FALSE
-while (($checkSector > 0) AND ($isFound = FALSE))
-	getSectorParameter $checkSector "FIGSEC" $isFigged
-	if ($isFigged <> TRUE)
-		setVar $retreatSector $checkSector
-		setVar $isFound TRUE
+
+:attemptsurrounddrop
+setvar $i 1
+setvar $checksector sector.warps[$sector][$i]
+setvar $isfound false
+while (($checksector > 0) and ($isfound = false))
+	getsectorparameter $checksector "FIGSEC" $isfigged
+	if ($isfigged <> true)
+		setvar $retreatsector $checksector
+		setvar $isfound true
 	else
 		add $i 1
-		setVar $checkSector SECTOR.WARPS[$sector][$i]
+		setvar $checksector sector.warps[$sector][$i]
 	end
 end
 
-if ($isFound)
-	setVar $i 2
+if ($isfound)
+	setvar $i 2
 
-	setVar $checkSector SECTOR.WARPS[$retreatSector][$i]
-	setVar $isFound FALSE
-	setVar $targets ""
-	setVar $targetCount 0
-	while ($checkSector > 0)
-		getSectorParameter $checkSector "FIGSEC" $isFigged
-		if (($isFigged = TRUE) AND ($checkSector <> $sector))
-			setVar $targets $targets&" "&$checkSector&" "
-			add $targetCount 1
+	setvar $checksector sector.warps[$retreatsector][$i]
+	setvar $isfound false
+	setvar $targets ""
+	setvar $targetcount 0
+	while ($checksector > 0)
+		getsectorparameter $checksector "FIGSEC" $isfigged
+		if (($isfigged = true) and ($checksector <> $sector))
+			setvar $targets $targets&" "&$checksector&" "
+			add $targetcount 1
 		end
-		setVar $checkSector SECTOR.WARPS[$retreatSector][$i]
+		setvar $checksector sector.warps[$retreatsector][$i]
 		add $i 1
 	end
-	if ($targetCount > 0)
-			:trySurroundFotonAgain
-			killalltriggers
-			getWord $targets $gotoSector $targetCount
-			setVar $targetCount ($targetCount-1)
-			send "p" $gotoSector "*y c p y " $retreatSector "**q"
-			setTextLineTrigger s_wrong	:surround_foton_wrong	"That is not an adjacent sector"
-			setTextLineTrigger s_gotem	:surround_foton_gotem	"Photon Missile launched into sector"
-			setTextLineTrigger s_fed	:surround_foton_fed		"The Feds do not permit Photon Torpedos"
-			pause
-		else
-			echo "** No Adjacent Fig Next To Possible Retreat Sector **"
-		end
+	if ($targetcount > 0)
+
+		:trysurroundfotonagain
+		killalltriggers
+		getword $targets $gotosector $targetcount
+		setvar $targetcount ($targetcount-1)
+		send "p" $gotosector "*y c p y " $retreatsector "**q"
+		settextlinetrigger s_wrong	:surround_foton_wrong	"That is not an adjacent sector"
+		settextlinetrigger s_gotem	:surround_foton_gotem	"Photon Missile launched into sector"
+		settextlinetrigger s_fed	:surround_foton_fed		"The Feds do not permit Photon Torpedos"
+		pause
 	else
-		echo "** No Possible Retreat Sector **"
+		echo "** No Adjacent Fig Next To Possible Retreat Sector **"
 	end
-goto :surroundPhotonTriggers
+else
+	echo "** No Possible Retreat Sector **"
+end
+goto :surroundphotontriggers
 
 :surround_foton_fed
 killtrigger s_gotem
 killtrigger s_wrong
-if ($targetCount > 0)
-	goto :trySurroundFotonAgain
+if ($targetcount > 0)
+	goto :trysurroundfotonagain
 end
 setvar $switchboard~message "Foton Missed! Resetting!*"
 gosub :switchboard~switchboard
-setSectorParameter $gotoSector "FIGSEC" FALSE
+setsectorparameter $gotosector "FIGSEC" false
 if ($auto_return)
 	gosub :foton_go_home
 end
-goto :surroundPhotonTriggers
+goto :surroundphotontriggers
 
 :surround_foton_wrong
 killtrigger s_gotem
 killtrigger s_fed
-if ($targetCount > 0)
-	goto :trySurroundFotonAgain
+if ($targetcount > 0)
+	goto :trysurroundfotonagain
 end
 setvar $switchboard~message "Foton Missed! Resetting!*"
 gosub :switchboard~switchboard
 if ($auto_return)
 	gosub :foton_go_home
 end
-goto :surroundPhotonTriggers
+goto :surroundphotontriggers
 
 :surround_foton_gotem
 killtrigger s_wrong
 killtrigger s_fed
-setvar $switchboard~message "Foton Fired - Sector => " $retreatSector "!*"
+setvar $switchboard~message "Foton Fired - Sector => " $retreatsector "!*"
 gosub :switchboard~switchboard
 if ($holo)
 	gosub :doholo
@@ -1301,18 +1281,18 @@ gosub :player~quikstats
 if ($player~photons = 0)
 	goto :foton_out_of_fotons
 end
-if ($game~multiple_photons <> TRUE)
-	setTextLineTrigger waitingforcooldown :exitcooldownsurround "Photon Wave Duration has ended in sector "&$retreatSector
+if ($game~multiple_photons <> true)
+	settextlinetrigger waitingforcooldown :exitcooldownsurround "Photon Wave Duration has ended in sector "&$retreatsector
 	pause
-		:exitcooldownsurround
-	end
-	goto :surroundPhotonTriggers
 
+	:exitcooldownsurround
+end
+goto :surroundphotontriggers
 
 :trap_foton
 gosub :player~quikstats
-setVar $startingLocation $player~current_prompt
-if ($startingLocation = "Citadel")
+setvar $startinglocation $player~current_prompt
+if ($startinglocation = "Citadel")
 	goto :trap_foton_start
 else
 	setvar $switchboard~message "Must Start at Citadel.*"
@@ -1321,7 +1301,7 @@ else
 end
 
 :trap_foton_start
-setVar $home_sector2 $player~current_sector
+setvar $home_sector2 $player~current_sector
 if ($player~photons <= 0)
 	goto :foton_out_of_fotons
 end
@@ -1332,8 +1312,7 @@ send "c"
 
 :trap_foton_get_figs
 send "*"
-waitFor "Citadel command (?="
-
+waitfor "Citadel command (?="
 
 :trap_foton_go
 if ($auto_return)
@@ -1343,93 +1322,95 @@ else
 	setvar $switchboard~message "Trap Foton Running From Planet " & $planet~planet & ", " & $player~photons &" Photons armed and ready.*"
 	gosub :switchboard~switchboard
 end
-goto :trapPhotonTriggers
+goto :trapphotontriggers
 
 :trap_foton_fighit
 # Check for spoofs
 
-getWord CURRENTLINE $spoof_test 1
-getWord CURRENTANSILINE $ansi_spoof_test 1
-getWordPos $ansi_spoof_test $ansi_spoof_pos #27 & "[1;33m"
-if ($spoof_test <> "Deployed") OR ($ansi_spoof_pos <= 0)
-     goto :trapPhotonTriggers
+getword currentline $spoof_test 1
+getword currentansiline $ansi_spoof_test 1
+getwordpos $ansi_spoof_test $ansi_spoof_pos #27 & "[1;33m"
+if ($spoof_test <> "Deployed") or ($ansi_spoof_pos <= 0)
+	goto :trapphotontriggers
 end
 
 # Torp only on sector entry
-getWordPos CURRENTLINE $pos "entered sector."
+getwordpos currentline $pos "entered sector."
 if ($pos < 1)
-	goto :trapPhotonTriggers
+	goto :trapphotontriggers
 end
 
 # Check for alien hits
-getText CURRENTANSILINE $alien_check ": " "'s"
-getWordPos $alien_check $pos #27 & "[1;36m" & #27 & "["
+gettext currentansiline $alien_check ": " "'s"
+getwordpos $alien_check $pos #27 & "[1;36m" & #27 & "["
 if ($pos > 0)
-     goto :trapPhotonTriggers
+	goto :trapphotontriggers
 end
 
 # Get the sector number
-getWord CURRENTLINE $sector 5
-stripText $sector ":"
-isNumber $result $sector
+getword currentline $sector 5
+striptext $sector ":"
+isnumber $result $sector
 if ($result < 1)
-	goto :trapPhotonTriggers
-end
-:testTrapEnterHere
-if (($sector > SECTORS) OR ($sector <= 10))
-	 goto :trapPhotonTriggers
-end
-:attemptTrapDrop
-setVar $i 1
-setVar $checkSector SECTOR.WARPS[$sector][$i]
-setVar $fadj 0
-setVar $fadji 0
-setVar $isFound FALSE
-while ($checkSector > 0)
-	getSectorParameter $checkSector "FIGSEC" $isFigged
-	getSectorParameter $checkSector "LIMPSEC" $isLimp
-	# Can't hide in a sector with limpets
-	if (($isFigged = TRUE) and ($isLimp <> TRUE))
-		add $fadji 1
-		setVar $fadj[$fadji] $checkSector
-		setVar $isFound TRUE
-	end
-	add $i 1
-	setVar $checkSector SECTOR.WARPS[$sector][$i]
+	goto :trapphotontriggers
 end
 
-if ($isFound)
-	setVar $trapSecLand 0
-	setVar $trapSecFireTo 0
-	setVar $trapSeci 0
-	setVar $isFound FALSE
-	setVar $i 1
+:testtrapenterhere
+if (($sector > sectors) or ($sector <= 10))
+	goto :trapphotontriggers
+end
+
+:attempttrapdrop
+setvar $i 1
+setvar $checksector sector.warps[$sector][$i]
+setvar $fadj 0
+setvar $fadji 0
+setvar $isfound false
+while ($checksector > 0)
+	getsectorparameter $checksector "FIGSEC" $isfigged
+	getsectorparameter $checksector "LIMPSEC" $islimp
+	# Can't hide in a sector with limpets
+	if (($isfigged = true) and ($islimp <> true))
+		add $fadji 1
+		setvar $fadj[$fadji] $checksector
+		setvar $isfound true
+	end
+	add $i 1
+	setvar $checksector sector.warps[$sector][$i]
+end
+
+if ($isfound)
+	setvar $trapsecland 0
+	setvar $trapsecfireto 0
+	setvar $trapseci 0
+	setvar $isfound false
+	setvar $i 1
 	while ($i <= $fadji)
-		setVar $testSector $fadj[$i]
-		setVar $y 1
-		while ($y <= SECTOR.WARPINCOUNT[$testSector])
-			getSectorParameter SECTOR.WARPSIN[$testSector][$y] "FIGSEC" $isFigged
-			if (($isFigged = TRUE) and (SECTOR.WARPSIN[$testSector][$y] <> $sector))
-				setVar $isFound TRUE
-				add $trapSeci 1
-				setVar $trapSecLand[$trapSeci] SECTOR.WARPSIN[$testSector][$y]
-				setVar $trapSecFireTo[$trapSeci] $testSector
+		setvar $testsector $fadj[$i]
+		setvar $y 1
+		while ($y <= sector.warpincount[$testsector])
+			getsectorparameter sector.warpsin[$testsector][$y] "FIGSEC" $isfigged
+			if (($isfigged = true) and (sector.warpsin[$testsector][$y] <> $sector))
+				setvar $isfound true
+				add $trapseci 1
+				setvar $trapsecland[$trapseci] sector.warpsin[$testsector][$y]
+				setvar $trapsecfireto[$trapseci] $testsector
 				# we only need one trap drop sector per adjacent ($i) hit sector
-				setVar $y 99
+				setvar $y 99
 			end
 			add $y 1
 		end
 		add $i 1
 	end
 
-	if ($isFound = TRUE)
-		getRnd $whichTrap 1 $trapSeci
+	if ($isfound = true)
+		getrnd $whichtrap 1 $trapseci
 		killalltriggers
-		send "p" $trapSecLand[$whichTrap] "*y c p y " $trapSecFireTo[$whichTrap] "**q"
-			
-		setTextLineTrigger s_wrong	:trap_foton_wrong	"That is not an adjacent sector"
-		setTextLineTrigger s_gotem	:trap_foton_gotem	"Photon Missile launched into sector"
-		setTextLineTrigger s_fed	:trap_foton_fed		"The Feds do not permit Photon Torpedos"
+		send "p" $trapsecland[$whichtrap] "*y c p y " $trapsecfireto[$whichtrap] "**q"
+
+		settextlinetrigger s_wrong	:trap_foton_wrong	"That is not an adjacent sector"
+		settextlinetrigger s_gotem	:trap_foton_gotem	"Photon Missile launched into sector"
+		settextlinetrigger s_fed	:trap_foton_fed		"The Feds do not permit Photon Torpedos"
 		pause
 	else
 		echo "** No Adjacent Fig Next To Possible Adjacent Sector **"
@@ -1437,35 +1418,35 @@ if ($isFound)
 else
 	echo "** No Possible Trap Sector **"
 end
-goto :trapPhotonTriggers
+goto :trapphotontriggers
 
 :trap_foton_fed
 killtrigger s_gotem
 killtrigger s_wrong
-	
+
 setvar $switchboard~message "Foton Missed! Resetting!*"
 gosub :switchboard~switchboard
-setSectorParameter $gotoSector "FIGSEC" FALSE
+setsectorparameter $gotosector "FIGSEC" false
 if ($auto_return)
 	gosub :foton_go_home
 end
-goto :trapPhotonTriggers
+goto :trapphotontriggers
 
 :trap_foton_wrong
 killtrigger s_gotem
 killtrigger s_fed
-	
+
 setvar $switchboard~message "Foton Missed! Resetting!*"
 gosub :switchboard~switchboard
 if ($auto_return)
 	gosub :foton_go_home
 end
-goto :trapPhotonTriggers
+goto :trapphotontriggers
 
 :trap_foton_gotem
 killtrigger s_wrong
 killtrigger s_fed
-setvar $switchboard~message "Foton Fired - Sector => " $trapSecFireTo[$whichTrap] "!*"
+setvar $switchboard~message "Foton Fired - Sector => " $trapsecfireto[$whichtrap] "!*"
 gosub :switchboard~switchboard
 if ($holo)
 	gosub :doholo
@@ -1477,27 +1458,27 @@ gosub :player~quikstats
 if ($player~photons = 0)
 	goto :foton_out_of_fotons
 end
-if ($game~multiple_photons <> TRUE)
-	setTextLineTrigger waitingforcooldown :exitcooldowntrap "Photon Wave Duration has ended in sector "& $trapSecFireTo[$whichTrap]
+if ($game~multiple_photons <> true)
+	settextlinetrigger waitingforcooldown :exitcooldowntrap "Photon Wave Duration has ended in sector "& $trapsecfireto[$whichtrap]
 	pause
-		:exitcooldowntrap
-	end
-	goto :trapPhotonTriggers
 
+	:exitcooldowntrap
+end
+goto :trapphotontriggers
 
 :foton_launch
 killalltriggers
 send "p" $adjsec "*y c p y " $sector "**q"
-setTextLineTrigger launch_wrong :foton_launch_wrong "That is not an adjacent sector"
-setTextLineTrigger launch_gotem :foton_launch_gotem "Photon Missile launched into sector"
-setTextLineTrigger launch_wrong2 :foton_launch_wrong "The Feds do not permit Photon Torpedos to be launched into FedSpace"
+settextlinetrigger launch_wrong :foton_launch_wrong "That is not an adjacent sector"
+settextlinetrigger launch_gotem :foton_launch_gotem "Photon Missile launched into sector"
+settextlinetrigger launch_wrong2 :foton_launch_wrong "The Feds do not permit Photon Torpedos to be launched into FedSpace"
 pause
 
 :foton_launch_wrong
 killtrigger launch_gotem
 setvar $switchboard~message "That is not an adjacent sector!*"
 gosub :switchboard~switchboard
-    HALT
+halt
 
 :foton_launch_gotem
 killtrigger wrong
@@ -1506,405 +1487,405 @@ gosub :switchboard~switchboard
 if ($holo)
 	gosub :doholo
 end
-    HALT
+halt
 
+:doholo
+setvar $bot~command "holo"
+setvar $bot~user_command_line " holo"
 
-:doHolo
-setVar $BOT~command "holo"
-setVar $BOT~user_command_line " holo"
-	
-saveVar $BOT~command
-saveVar $BOT~user_command_line
+savevar $bot~command
+savevar $bot~user_command_line
 load "scripts\"&$bot~mombot_directory&"\commands\data\holo.cts"
-setEventTrigger        holoend1        :holoend1 "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\data\holo.cts"
+seteventtrigger        holoend1        :holoend1 "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\data\holo.cts"
 pause
-	:holoend1
-	killalltriggers
+
+:holoend1
+killalltriggers
 return
 
+:photonsector
+setvar $startinglocation $player~current_prompt
 
-
-:photonSector
-setVar $startingLocation $player~current_prompt
-	
-if ($startingLocation <> "Planet") and ($startingLocation <> "Command") and ($startingLocation <> "Citadel")
+if ($startinglocation <> "Planet") and ($startinglocation <> "Command") and ($startinglocation <> "Citadel")
 	setvar $switchboard~message "Must start at Command, Planet or Citadel*"
 	gosub :switchboard~switchboard
 	halt
 end
-	
+
 if ($player~photons = 0)
 	setvar $switchboard~message "Out of Fotons - Dock Foton Deactivated*"
 	gosub :switchboard~switchboard
-	setVar $mode "General"
+	setvar $mode "General"
 	halt
 end
-	
-//if ($PLAYER~CURRENT_SECTOR = STARDOCK)
+
+//if ($player~current_sector = stardock)
 //	if (($player~experience < 1000) and ($player~alignment >= 0))
-//		if ($player~fedspacePhotons <> TRUE)
+//		if ($player~fedspacephotons <> true)
 //			send "'{" $bot~bot_name "} - Fed safe people can't shoot photons from fed..*"
-//			setVar $mode "General"
+//			setvar $mode "General"
 //			halt
 //		end
 //	end
 //end
-	
-setVar $returnSector 0
-setVar $adjsec 0
-setVar $psec $bot~parm1
-setVar $psecAdj 0
-setVar $i 1
-while ($i <= SECTOR.WARPCOUNT[$PLAYER~CURRENT_SECTOR])
-	if ($psec = SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$i])
-		setVar $psecAdj 1
+
+setvar $returnsector 0
+setvar $adjsec 0
+setvar $psec $bot~parm1
+setvar $psecadj 0
+setvar $i 1
+while ($i <= sector.warpcount[$player~current_sector])
+	if ($psec = sector.warps[$player~current_sector][$i])
+		setvar $psecadj 1
 	end
 	add $i 1
 end
 
-
-	
-if ($psecAdj = 0)
-	if ($startingLocation = "Command")
+if ($psecadj = 0)
+	if ($startinglocation = "Command")
 		# TWARP PHOTON
 		# At this stage, not plotting courses, just going for it. Let player worry about that.
-		if (($player~TWARP_TYPE = 1) or ($player~TWARP_TYPE = 2))
-			If ($player~ORE_HOLDS < 2)
-				setVar $SWITCHBOARD~message "No fuel ore onboard.*"
-				gosub :SWITCHBOARD~switchboard
+		if (($player~twarp_type = 1) or ($player~twarp_type = 2))
+			if ($player~ore_holds < 2)
+				setvar $switchboard~message "No fuel ore onboard.*"
+				gosub :switchboard~switchboard
 				halt
 			end
 		else
-			setVar $SWITCHBOARD~message "Photoning non adjacent sectors via TWarp not currently implemented*"
-			gosub :SWITCHBOARD~switchboard
+			setvar $switchboard~message "Photoning non adjacent sectors via TWarp not currently implemented*"
+			gosub :switchboard~switchboard
 			halt
 		end
 
 	end
-		
-	// HB: We could technically allow someone to shoot from fed if they are firing come command prompt
-	//     However, I think sending a non-fed safe person in by mistake to high a risk.
-	setVar $i 1
-	while ($i <= SECTOR.WARPINCOUNT[$psec])
 
-		getSectorParameter SECTOR.WARPSIN[$psec][$i] "FIGSEC" $isFigged
-		if ($isFigged)
-			setVar $adjsec SECTOR.WARPSIN[$psec][$i]
-			setVar $i 7
+	// hb: we could technically allow someone to shoot from fed if they are firing come command prompt
+	//     however, i think sending a non-fed safe person in by mistake to high a risk.
+	setvar $i 1
+	while ($i <= sector.warpincount[$psec])
+
+		getsectorparameter sector.warpsin[$psec][$i] "FIGSEC" $isfigged
+		if ($isfigged)
+			setvar $adjsec sector.warpsin[$psec][$i]
+			setvar $i 7
 		end
 		add $i 1
 	end
 
-	if ($auto_return = TRUE)
-		setVar $returnSector $PLAYER~CURRENT_SECTOR
+	if ($auto_return = true)
+		setvar $returnsector $player~current_sector
 	end
 
 	if ($adjsec = 0)
-		setVar $SWITCHBOARD~message "No sector adjacent with a fighter.*"
-		gosub :SWITCHBOARD~switchboard
+		setvar $switchboard~message "No sector adjacent with a fighter.*"
+		gosub :switchboard~switchboard
 		halt
 	end
-	if ($startingLocation = "Planet")
+	if ($startinglocation = "Planet")
 		send "c p" $adjsec "*y "
-	elseif ($startingLocation = "Citadel")
+	elseif ($startinglocation = "Citadel")
 		send "p" $adjsec "*y "
-	elseif ($startingLocation = "Command")
-			
-		setVar $warpto $adjsec
+	elseif ($startinglocation = "Command")
+
+		setvar $warpto $adjsec
 		gosub :fotontwarp
-		if ($twarpSuccess = FALSE)
-			setVar $SWITCHBOARD~message "We did not make the twarp to the location.*"
-			gosub :SWITCHBOARD~switchboard
+		if ($twarpsuccess = false)
+			setvar $switchboard~message "We did not make the twarp to the location.*"
+			gosub :switchboard~switchboard
 			halt
 		end
-			
+
 	end
-		
+
 	send "c p y " $psec "* * q"
 else
 	send "c p y " $psec "* * q"
-		
+
 end
 
-setTextLineTrigger launch_wrong :foton_launch_wrong2 "That is not an adjacent sector"
-setTextLineTrigger launch_gotem :foton_launch_gotem2 "Photon Missile launched into sector"
-setTextLineTrigger launch_wrong2 :foton_launch_wrong2 "The Feds do not permit Photon Torpedos to be launched into FedSpace"
+settextlinetrigger launch_wrong :foton_launch_wrong2 "That is not an adjacent sector"
+settextlinetrigger launch_gotem :foton_launch_gotem2 "Photon Missile launched into sector"
+settextlinetrigger launch_wrong2 :foton_launch_wrong2 "The Feds do not permit Photon Torpedos to be launched into FedSpace"
 pause
-	:foton_launch_wrong2
-	killAllTriggers
-		
-	setVar $SWITCHBOARD~message "That is not an adjacent sector!*"
-	gosub :SWITCHBOARD~switchboard
-	goSub :photonCheckReturn
-	halt
-	:foton_launch_gotem2
-		
-	killAllTriggers
 
-	setVar $SWITCHBOARD~message "Foton Fired - Sector => " & $bot~parm1 & "!*"
-	gosub :SWITCHBOARD~switchboard
-	if ($holo)
-		gosub :doholo
-	end
-	goSub :photonCheckReturn
-		
+:foton_launch_wrong2
+killalltriggers
+
+setvar $switchboard~message "That is not an adjacent sector!*"
+gosub :switchboard~switchboard
+gosub :photoncheckreturn
 halt
 
-:photonTow
-	
-setVar $towShip $bot~parm3
-isNumber $number $towShip
+:foton_launch_gotem2
+killalltriggers
+
+setvar $switchboard~message "Foton Fired - Sector => " & $bot~parm1 & "!*"
+gosub :switchboard~switchboard
+if ($holo)
+	gosub :doholo
+end
+gosub :photoncheckreturn
+
+halt
+
+:photontow
+setvar $towship $bot~parm3
+isnumber $number $towship
 
 if ($number <> 1)
 	setvar $switchboard~message "Please user Foton on t [ship_number] for tow xport foton.*"
 	gosub :switchboard~switchboard
 	halt
 else
-	if ($towShip = 0)
+	if ($towship = 0)
 		setvar $switchboard~message "Please user Foton on t [ship_number] for tow xport foton.*"
 		gosub :switchboard~switchboard
 		halt
 	end
 end
-gosUb :prepTow
+gosub :preptow
 
-setVar $home_sector2 $player~current_sector
-setVar $ourship $player~ship_number
+setvar $home_sector2 $player~current_sector
+setvar $ourship $player~ship_number
 
 if ($auto_return)
-	setvar $switchboard~message "TWarp Tow Foton Running, Towing " & $towShip & " w/ Return Home enabled. Firing one shot.*"
+	setvar $switchboard~message "TWarp Tow Foton Running, Towing " & $towship & " w/ Return Home enabled. Firing one shot.*"
 	gosub :switchboard~switchboard
 else
-	setvar $switchboard~message "TWarp Tow Foton Running, Towing " & $towShip & ", Firing one shot.*"
+	setvar $switchboard~message "TWarp Tow Foton Running, Towing " & $towship & ", Firing one shot.*"
 	gosub :switchboard~switchboard
 end
-goto :towPhotonTriggers
+goto :towphotontriggers
 
-	
-	:tow_pwplimp
-	gosub :tow_limphit
-	goto :tow_pwp_go
+:tow_pwplimp
+gosub :tow_limphit
+goto :tow_pwp_go
 
-	:tow_pwparmid
-	gosub :tow_minehit
-	goto :tow_pwp_go
+:tow_pwparmid
+gosub :tow_minehit
+goto :tow_pwp_go
 
-	:tow_pwpfig
-		#gosub :tow_fighit
-
-	:tow_pwp_go
-	killalltriggers
-	gosub :tow_get_adj
-	if ($adjsec <> $PLAYER~CURRENT_SECTOR)
-		setVar $warpto $adjsec
-		gosub :fotontwarp
-		if ($twarpSuccess = FALSE)
-			setVar $SWITCHBOARD~message "We did not make the twarp to the launch sector.. Shutting Down*"
-			gosub :SWITCHBOARD~switchboard
-			halt
-		end
-	end
-	send "x " $towship "* * " 
-	send "c p y " $sector "**q"
-	send "x " $ourship "* * "
-	send "w n " $towship "*"
-
-	setTextLineTrigger	wrong	:tow_wrong	"That is not an adjacent sector"
-	setTextLineTrigger	gotem	:tow_gotem	"Photon Missile launched into sector"
-	setTextLineTrigger	wrong2	:tow_wrong2	"The Feds do not permit Photon Torpedos"
-	pause
-
-	:tow_wrong2
-	killtrigger gotem
-	setvar $switchboard~message "Foton Missed! Resetting!*"
-	gosub :switchboard~switchboard
-	if ($auto_return and ($adjsec <> $PLAYER~CURRENT_SECTOR))
-		gosub :tow_go_home
-	end
-	goto :towPhotonTriggers
-
-	:tow_wrong
-	killtrigger gotem
-	setvar $switchboard~message "Foton Missed! Resetting!*"
-	gosub :switchboard~switchboard
-	setSectorParameter $adjsec "FIGSEC" FALSE
-	if ($auto_return and ($adjsec <> $PLAYER~CURRENT_SECTOR))
-		gosub :tow_go_home
-	end
-	goto :towPhotonTriggers
-
-	:tow_gotem
-	killtrigger wrong
-	setvar $switchboard~message "Foton Fired - Sector => " $sector "!*"
-	gosub :switchboard~switchboard
-	if ($holo)
-		gosub :doholo
-	end
-	if ($auto_return and ($adjsec <> $PLAYER~CURRENT_SECTOR))
-		gosub :tow_go_home
-	end
-	gosub :player~quikstats
-	send "w"
-	setVar $SWITCHBOARD~message "T-warp foton complete - reload ore/fotons and run again.*"
-	gosub :SWITCHBOARD~switchboard
-	halt
-		
-	:tow_go_home
-	setVar $warpto $home_sector2
+:tow_pwpfig
+#gosub :tow_fighit
+:tow_pwp_go
+killalltriggers
+gosub :tow_get_adj
+if ($adjsec <> $player~current_sector)
+	setvar $warpto $adjsec
 	gosub :fotontwarp
-	if ($twarpSuccess = FALSE)
-		setvar $switchboard~message "Failed to twarp back with tow, attemping without!*"
+	if ($twarpsuccess = false)
+		setvar $switchboard~message "We did not make the twarp to the launch sector.. Shutting Down*"
 		gosub :switchboard~switchboard
-		gosub :fotontwarp
-		if ($twarpSuccess = FALSE)
-			setVar $SWITCHBOARD~message "Failed to make twarp back without ship. Exiting and then Panicking.*"
-			gosub :SWITCHBOARD~switchboard
-			halt
-		end
+		halt
 	end
-		
-	return
-	:tow_get_adj
-	# we are exluding fed for now. Could risk 2-10 ?
-	setVar $adjsec 0
-	setVar $i 1
-	while (SECTOR.WARPS[$Sector][$i] > 0)
-		setVar $tempAdj SECTOR.WARPS[$Sector][$i]
-		getSectorParameter $tempAdj "FIGSEC" $isFigged
-		if ($tempAdj = $PLAYER~CURRENT_SECTOR)
-			setVar $adjsec $tempAdj
-			return
-		end
-		if ($isFigged)
-			setVar $adjsec $tempAdj
-			//return
-			// This used to return - I'd rather it loops through all and checks for current sector
-			// plus guessing first sector is more easy/predicatable and no real speed advantag
-		end
-		add $i 1
-	end
-	if ($adjsec <= 0)
-		echo ANSI_12 "No Adjacent fig found*" ANSI_7
-		goto :towPhotonTriggers
-	end
-	return
+end
+send "x " $towship "* * "
+send "c p y " $sector "**q"
+send "x " $ourship "* * "
+send "w n " $towship "*"
 
+settextlinetrigger	wrong	:tow_wrong	"That is not an adjacent sector"
+settextlinetrigger	gotem	:tow_gotem	"Photon Missile launched into sector"
+settextlinetrigger	wrong2	:tow_wrong2	"The Feds do not permit Photon Torpedos"
+pause
+
+:tow_wrong2
+killtrigger gotem
+setvar $switchboard~message "Foton Missed! Resetting!*"
+gosub :switchboard~switchboard
+if ($auto_return and ($adjsec <> $player~current_sector))
+	gosub :tow_go_home
+end
+goto :towphotontriggers
+
+:tow_wrong
+killtrigger gotem
+setvar $switchboard~message "Foton Missed! Resetting!*"
+gosub :switchboard~switchboard
+setsectorparameter $adjsec "FIGSEC" false
+if ($auto_return and ($adjsec <> $player~current_sector))
+	gosub :tow_go_home
+end
+goto :towphotontriggers
+
+:tow_gotem
+killtrigger wrong
+setvar $switchboard~message "Foton Fired - Sector => " $sector "!*"
+gosub :switchboard~switchboard
+if ($holo)
+	gosub :doholo
+end
+if ($auto_return and ($adjsec <> $player~current_sector))
+	gosub :tow_go_home
+end
+gosub :player~quikstats
+send "w"
+setvar $switchboard~message "T-warp foton complete - reload ore/fotons and run again.*"
+gosub :switchboard~switchboard
 halt
 
-:prepTow
-if ($startingLocation <> "Command")
-	setVar $SWITCHBOARD~message "Foton two needs to be from command prompt*"
-	gosub :SWITCHBOARD~switchboard
-	halt
+:tow_go_home
+setvar $warpto $home_sector2
+gosub :fotontwarp
+if ($twarpsuccess = false)
+	setvar $switchboard~message "Failed to twarp back with tow, attemping without!*"
+	gosub :switchboard~switchboard
+	gosub :fotontwarp
+	if ($twarpsuccess = false)
+		setvar $switchboard~message "Failed to make twarp back without ship. Exiting and then Panicking.*"
+		gosub :switchboard~switchboard
+		halt
+	end
 end
-if ($player~TWARP_TYPE = 2)
-	If ($player~ORE_HOLDS <> $player~TOTAL_HOLDS)
-		setVar $SWITCHBOARD~message "Make sure holds are full of fuel.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
-else
-	setVar $SWITCHBOARD~message "You need a type two twarp.*"
-	gosub :SWITCHBOARD~switchboard
-	halt
-end
-
-setVar $xportSectorOk 0
-setVar $xportPhotonsOk 0
-
-send "x"
-	:xportwait
-	setTextLineTrigger xporttestfed :xporttestfed "Any unmanned ships in FedSpace will be automatically"
-	setTextLineTrigger xporttest :xporttest "--<  Available Ship Scan  >--"
-	setTextLineTrigger xportfail :xportfail "You do not own any other ships!"
-	pause
-	:xportfail
-	killAllTriggers
-	setVar $SWITCHBOARD~message "You don't own any ships to tow.*"
-	gosub :SWITCHBOARD~switchboard
-	halt
-	:xporttestfed
-	send "*"
-	killAllTriggers
-	goto :xportwait
-	:xporttest
-	killalltriggers
-	send "i"
-	send $towShip "*q"
-	setTextLineTrigger xportShipNA :xportShipNA "That is not an available ship."
-	setTextLineTrigger xportShip :xportShip "Ship Name      :"
-	pause
-		:xportShipNA
-		killAllTriggers
-			
-		setVar $SWITCHBOARD~message "Ship is not available.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-		:xportShip
-		setTextLineTrigger xportShipSec :xportShipSec "Current Sector :"
-		setTextLineTrigger xportShipPhoton :xportShipPhoton "Photon Missiles:"
-		setTextTrigger xportShipPause :xportShipPause "[Pause]"
-		pause
-			:xportShipSec
-			killAllTriggers
-			getWord CURRENTLINE $testSector 4
-			if ($testSector = $player~CURRENT_SECTOR)
-				setVar $xportSectorOk 1
-			end
-			goto :xportShip
-			:xportShipPhoton
-			killalltriggers
-			setVar $xportPhotonsOk 1
-
-			:xportShipPause
-			killalltriggers
-			send "*q"
-
-	
-
-	if ($xportSectorOk = 0)
-		setVar $SWITCHBOARD~message "Tow ship is not in same sector.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
-	if ($xportPhotonsOk = 0)
-		setVar $SWITCHBOARD~message "Tow ship has no photons.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
-
-	:xportReStartGo
-	send "w"
-	setTextLineTrigger xportRestart :xportRestart "You shut off your Tractor Beam."
-	setTextTrigger xportStart :xportStart "Do you wish to tow a manned ship?"
-	pause
-	:xportRestart
-	killAllTriggers
-	goto :xportReStartGo
-	:xportStart
-	send "n" $towShip "*"
-	
-	
 
 return
 
-:photonCheckReturn
-	
-if ($returnSector > 0)
+:tow_get_adj
+# we are exluding fed for now. Could risk 2-10 ?
+setvar $adjsec 0
+setvar $i 1
+while (sector.warps[$sector][$i] > 0)
+	setvar $tempadj sector.warps[$sector][$i]
+	getsectorparameter $tempadj "FIGSEC" $isfigged
+	if ($tempadj = $player~current_sector)
+		setvar $adjsec $tempadj
+		return
+	end
+	if ($isfigged)
+		setvar $adjsec $tempadj
+		//return
+		// this used to return - i'd rather it loops through all and checks for current sector
+		// plus guessing first sector is more easy/predicatable and no real speed advantag
+	end
+	add $i 1
+end
+if ($adjsec <= 0)
+	echo ansi_12 "No Adjacent fig found*" ansi_7
+	goto :towphotontriggers
+end
+return
+
+halt
+
+:preptow
+if ($startinglocation <> "Command")
+	setvar $switchboard~message "Foton two needs to be from command prompt*"
+	gosub :switchboard~switchboard
+	halt
+end
+if ($player~twarp_type = 2)
+	if ($player~ore_holds <> $player~total_holds)
+		setvar $switchboard~message "Make sure holds are full of fuel.*"
+		gosub :switchboard~switchboard
+		halt
+	end
+else
+	setvar $switchboard~message "You need a type two twarp.*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+setvar $xportsectorok 0
+setvar $xportphotonsok 0
+
+send "x"
+
+:xportwait
+settextlinetrigger xporttestfed :xporttestfed "Any unmanned ships in FedSpace will be automatically"
+settextlinetrigger xporttest :xporttest "--<  Available Ship Scan  >--"
+settextlinetrigger xportfail :xportfail "You do not own any other ships!"
+pause
+
+:xportfail
+killalltriggers
+setvar $switchboard~message "You don't own any ships to tow.*"
+gosub :switchboard~switchboard
+halt
+
+:xporttestfed
+send "*"
+killalltriggers
+goto :xportwait
+
+:xporttest
+killalltriggers
+send "i"
+send $towship "*q"
+settextlinetrigger xportshipna :xportshipna "That is not an available ship."
+settextlinetrigger xportship :xportship "Ship Name      :"
+pause
+
+:xportshipna
+killalltriggers
+
+setvar $switchboard~message "Ship is not available.*"
+gosub :switchboard~switchboard
+halt
+
+:xportship
+settextlinetrigger xportshipsec :xportshipsec "Current Sector :"
+settextlinetrigger xportshipphoton :xportshipphoton "Photon Missiles:"
+settexttrigger xportshippause :xportshippause "[Pause]"
+pause
+
+:xportshipsec
+killalltriggers
+getword currentline $testsector 4
+if ($testsector = $player~current_sector)
+	setvar $xportsectorok 1
+end
+goto :xportship
+
+:xportshipphoton
+killalltriggers
+setvar $xportphotonsok 1
+
+:xportshippause
+killalltriggers
+send "*q"
+
+if ($xportsectorok = 0)
+	setvar $switchboard~message "Tow ship is not in same sector.*"
+	gosub :switchboard~switchboard
+	halt
+end
+if ($xportphotonsok = 0)
+	setvar $switchboard~message "Tow ship has no photons.*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+:xportrestartgo
+send "w"
+settextlinetrigger xportrestart :xportrestart "You shut off your Tractor Beam."
+settexttrigger xportstart :xportstart "Do you wish to tow a manned ship?"
+pause
+
+:xportrestart
+killalltriggers
+goto :xportrestartgo
+
+:xportstart
+send "n" $towship "*"
+
+return
+
+:photoncheckreturn
+if ($returnsector > 0)
 	gosub :player~quikstats
-	if ($PLAYER~CURRENT_SECTOR <> $returnSector)
-		if ($startingLocation = "Command")
-			setVar $warpto $returnSector
+	if ($player~current_sector <> $returnsector)
+		if ($startinglocation = "Command")
+			setvar $warpto $returnsector
 			gosub :fotontwarp
-			if ($twarpSuccess = FALSE)
-				setVar $SWITCHBOARD~message "Twarp return failed post foton.*"
-				gosub :SWITCHBOARD~switchboard
+			if ($twarpsuccess = false)
+				setvar $switchboard~message "Twarp return failed post foton.*"
+				gosub :switchboard~switchboard
 				halt
 			end
 		else
-			send "p" $returnSector "*y"
+			send "p" $returnsector "*y"
 		end
-			
+
 	end
 end
 
@@ -1919,129 +1900,130 @@ killtrigger twarp_lock
 killtrigger no_twrp_lock
 killtrigger twarp_adj
 killtrigger no_fuel
-killtrigger twarpDelay
+killtrigger twarpdelay
 return
 
 :fotontwarp
 # HB: INCOMING CALLS MUST cHECK - NOT ADJACENT - NOT CURRENT SECTOR
 #     I've made this less safe to remove a pause for speed
-setVar $twarpSuccess FALSE
+setvar $twarpsuccess false
 send "mz" $warpto "*y"
 
+settextlinetrigger twarp_lock :twarp_lock "TransWarp Locked"
+settextlinetrigger no_twrp_lock :no_twarp_lock "No locating beam found"
+settextlinetrigger twarp_adj :twarp_adj "<Set NavPoint>"
+settextlinetrigger no_fuel :twarpnofuel "You do not have enough Fuel Ore"
+settexttrigger      igd        :twarpigd       "An Interdictor Generator in this sector holds you fast!"
+settexttrigger      noturns    :twarpphotoned  "Your ship was hit by a Photon and has been disabled"
+setdelaytrigger 	twarpdelay  :twarpdelay 2000
+pause
 
-setTextLineTrigger twarp_lock :twarp_lock "TransWarp Locked"
-setTextLineTrigger no_twrp_lock :no_twarp_lock "No locating beam found"
-setTextLineTrigger twarp_adj :twarp_adj "<Set NavPoint>"
-setTextLineTrigger no_fuel :twarpNoFuel "You do not have enough Fuel Ore"
-setTextTrigger      igd        :twarpIgd       "An Interdictor Generator in this sector holds you fast!"
-setTextTrigger      noturns    :twarpPhotoned  "Your ship was hit by a Photon and has been disabled"
-setDelayTrigger 	twarpDelay  :twarpDelay 2000
-	pause
-	:twarpNoFuel
-	gosub :killtwarptriggers
-		
-	goto :twarpDone
-	:twarp_adj
-	gosub :killtwarptriggers
-	send "q za  "&$ship~SHIP_MAX_ATTACK&"* * r * "
-	setVar $twarpSuccess TRUE
-	setVar $msg "Sector was nextdoor so just warped!"
-	goto :twarpDone
-	:no_twarp_lock
-	gosub :killtwarptriggers
-	send "n* z* "
-	setVar $target $warpto
-	setSectorParameter $target "FIGSEC" FALSE
-	setVar $msg "No fighters at T-warp point!"
-	goto :twarpDone
-	:twarpIgd
-	gosub :killtwarptriggers
-	setVar $msg "My ship is being held by Interdictor!"
-	goto :twarpDone
-	:twarpPhotoned
-	gosub :killtwarptriggers
-	setVar $msg "I have been photoned and can not T-warp!"
-	goto :twarpDone
-	:twarpDelay
-	gosub :killtwarptriggers
-	setVar $msg "T-Warp timed out - Something went wrong!"
-	goto :twarpDone
-	:twarp_lock
-	gosub :killtwarptriggers
-	setVar $target $warpto
-	setSectorParameter $target "FIGSEC" TRUE
-	send "y   *     "
-	setVar $msg "T-warp completed."
-	setVar $twarpSuccess TRUE
-	:twarpDone
+:twarpnofuel
+gosub :killtwarptriggers
 
-	send "'" $msg "*"
+goto :twarpdone
+
+:twarp_adj
+gosub :killtwarptriggers
+send "q za  "&$ship~ship_max_attack&"* * r * "
+setvar $twarpsuccess true
+setvar $msg "Sector was nextdoor so just warped!"
+goto :twarpdone
+
+:no_twarp_lock
+gosub :killtwarptriggers
+send "n* z* "
+setvar $target $warpto
+setsectorparameter $target "FIGSEC" false
+setvar $msg "No fighters at T-warp point!"
+goto :twarpdone
+
+:twarpigd
+gosub :killtwarptriggers
+setvar $msg "My ship is being held by Interdictor!"
+goto :twarpdone
+
+:twarpphotoned
+gosub :killtwarptriggers
+setvar $msg "I have been photoned and can not T-warp!"
+goto :twarpdone
+
+:twarpdelay
+gosub :killtwarptriggers
+setvar $msg "T-Warp timed out - Something went wrong!"
+goto :twarpdone
+
+:twarp_lock
+gosub :killtwarptriggers
+setvar $target $warpto
+setsectorparameter $target "FIGSEC" true
+send "y   *     "
+setvar $msg "T-warp completed."
+setvar $twarpsuccess true
+
+:twarpdone
+send "'" $msg "*"
 return
 
-
-
-
 :tow_limphit
-cutText CURRENTLINE&"      " $ck 1 6
+cuttext currentline&"      " $ck 1 6
 if ($ck <> "Limpet")
-	goto :towPhotonTriggers
+	goto :towphotontriggers
 end
-getWord CURRENTLINE $sector 4
+getword currentline $sector 4
 return
 
 :tow_minehit
-cutText CURRENTLINE&"    " $ck 1 4
+cuttext currentline&"    " $ck 1 4
 if ($ck <> "Your")
-	goto :towPhotonTriggers
+	goto :towphotontriggers
 end
 
 # Check for alien hits
 
-getText CURRENTANSILINE $alien_check "damage to" ""
-getWordPos $alien_check $pos #27 & "[1;36m" & #27 & "["
+gettext currentansiline $alien_check "damage to" ""
+getwordpos $alien_check $pos #27 & "[1;36m" & #27 & "["
 if ($pos > 0)
-     goto :towPhotonTriggers
+	goto :towphotontriggers
 end
 
-getWord CURRENTLINE $sector 4
+getword currentline $sector 4
 return
 
 :tow_fighit
 # Check for spoofs
-	
-getWord CURRENTLINE $spoof_test 1
-getWord CURRENTANSILINE $ansi_spoof_test 1
-getWordPos $ansi_spoof_test $ansi_spoof_pos #27 & "[1;33m"
-if ($spoof_test <> "Deployed") OR ($ansi_spoof_pos <= 0)
-     goto :towPhotonTriggers
+
+getword currentline $spoof_test 1
+getword currentansiline $ansi_spoof_test 1
+getwordpos $ansi_spoof_test $ansi_spoof_pos #27 & "[1;33m"
+if ($spoof_test <> "Deployed") or ($ansi_spoof_pos <= 0)
+	goto :towphotontriggers
 end
 
 # Torp only on sector entry
-getWordPos CURRENTLINE $pos "entered sector."
+getwordpos currentline $pos "entered sector."
 if ($pos < 1)
-	goto :towPhotonTriggers
+	goto :towphotontriggers
 end
 
 # Check for alien hits
-getText CURRENTANSILINE $alien_check ": " "'s"
-getWordPos $alien_check $pos #27 & "[1;36m" & #27 & "["
+gettext currentansiline $alien_check ": " "'s"
+getwordpos $alien_check $pos #27 & "[1;36m" & #27 & "["
 if ($pos > 0)
-     goto :towPhotonTriggers
+	goto :towphotontriggers
 end
 
 # Get the sector number
-getWord CURRENTLINE $sector 5
-stripText $sector ":"
-isNumber $result $sector
+getword currentline $sector 5
+striptext $sector ":"
+isnumber $result $sector
 if ($result < 1)
-	goto :towPhotonTriggers
+	goto :towphotontriggers
 end
-if (($sector > SECTORS) OR ($sector <= 10))
-	 goto :towPhotonTriggers
+if (($sector > sectors) or ($sector <= 10))
+	goto :towphotontriggers
 end
 goto :tow_pwp_go
-
-
 
 #INCLUDES:
 include "source\include\planet"

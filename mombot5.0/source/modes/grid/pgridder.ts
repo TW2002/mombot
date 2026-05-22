@@ -1,24 +1,22 @@
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
-								
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-setVar $HELP~HELP[1] $HELP~TAB&"Pgrids automatically until stopped. pgrid {fighterToDrop} "
-setVar $HELP~HELP[2] $HELP~TAB&"          "
-setVar $HELP~HELP[3] $HELP~TAB&"Requires corpie running saveme"
-setVar $HELP~HELP[4] $HELP~TAB&" "
-setVar $HELP~HELP[5] $HELP~TAB&"   Options:"
-setVar $HELP~HELP[6] $HELP~TAB&"          {fightersToDrop} - how many figs to drop in sector"
-setVar $HELP~HELP[6] $HELP~TAB&"                    {near} - moves using near fighter"
-gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&"Pgrids automatically until stopped. pgrid {fighterToDrop} "
+setvar $help~help[2] $help~tab&"          "
+setvar $help~help[3] $help~tab&"Requires corpie running saveme"
+setvar $help~help[4] $help~tab&" "
+setvar $help~help[5] $help~tab&"   Options:"
+setvar $help~help[6] $help~tab&"          {fightersToDrop} - how many figs to drop in sector"
+setvar $help~help[6] $help~tab&"                    {near} - moves using near fighter"
+gosub :help~helpfile
 
-setvar $SWITCHBOARD~MESSAGE "Planet Gridder starting up!*"
-gosub :SWITCHBOARD~SWITCHBOARD
-
+setvar $switchboard~message "Planet Gridder starting up!*"
+gosub :switchboard~switchboard
 
 if ($bot~parm1 > 0)
-	setVar $fighterDrop $bot~parm1
+	setvar $fighterdrop $bot~parm1
 else
-	setVar $fighterDrop 1
+	setvar $fighterdrop 1
 end
 
 getwordpos $bot~user_command_line $pos "near"
@@ -28,254 +26,249 @@ else
 	setvar $near false
 end
 
-gosub :PLAYER~quikstats
+gosub :player~quikstats
 
-setVar $location $PLAYER~CURRENT_PROMPT
-setVar $homeSector $PLAYER~CURRENT_SECTOR
-setVar $lastDestination 1
+setvar $location $player~current_prompt
+setvar $homesector $player~current_sector
+setvar $lastdestination 1
 
 send "c;q"
-waitFor "Offensive Odds:"
-getWordPos CURRENTLINE $pos "Offensive"
-cutText CURRENTLINE $oddline $pos 99
-getText $oddline $offodd "Odds:" ":1"
-stripText $offodd " "
-stripText $offodd "."
-waitFor "Mine Max:"
-getText CURRENTLINE $maxMines "Mine Max:" "B"
-stripText $maxMines " "
-waitFor "Figs Per Attack:"
-getWord CURRENTLINE $figs 5
+waitfor "Offensive Odds:"
+getwordpos currentline $pos "Offensive"
+cuttext currentline $oddline $pos 99
+gettext $oddline $offodd "Odds:" ":1"
+striptext $offodd " "
+striptext $offodd "."
+waitfor "Mine Max:"
+gettext currentline $maxmines "Mine Max:" "B"
+striptext $maxmines " "
+waitfor "Figs Per Attack:"
+getword currentline $figs 5
 multiply $offodd $figs
 divide $offodd 12
-setVar $max_figs $player~FIGHTERS
-
+setvar $max_figs $player~fighters
 
 setvar $avoided_sectors " "
+
 :getplanetnum
 send "qD"
-waitOn "Planet #"
-getWord CURRENTLINE $planet~planet 2
-stripText $planet~planet "#"
-saveVar $planet~planet
+waiton "Planet #"
+getword currentline $planet~planet 2
+striptext $planet~planet "#"
+savevar $planet~planet
 send "tnl1*tnl2*tnl3*snl1*snl2*snl3*tnt1*mnt*c "
 
+:inac
+if (($player~unlimitedgame = false) and ($player~turns <= $bot~bot_turn_limit))
+	setvar $switchboard~message "Turns too low to continue.*"
+	gosub :switchboard~switchboard
+	goto :done
+end
 
-	:inac
-	if (($PLAYER~unlimitedGame = FALSE) AND ($PLAYER~TURNS <= $BOT~bot_turn_limit))
-		setVar $SWITCHBOARD~message "Turns too low to continue.*"
-		gosub :SWITCHBOARD~switchboard
-		goto :done
+:tryagain
+setarray $checked sectors
+if ($boomsec > 0)
+	setvar $checked[$boomsec] true
+end
+killtrigger again
+killtrigger done
+setvar $bottom 1
+setvar $top 1
+if ($near = true)
+	gosub :player~quikstats
+	setvar $randomsector $player~current_sector
+else
+	getrnd $randomsector 11 sectors
+end
+setvar $que[1] $randomsector
+setvar $checked[$randomsector] 1
+while ($bottom <= $top)
+	# Now, pull out the next sector in the que, and make it our focus
+	setvar $focus $que[$bottom]
+	getsectorparameter $focus "FIGSEC" $isfigged
+	setvar $checked[$focus] true
+	getwordpos $avoided_sectors $pos " "&$focus&" "
+	if (($focus <> $player~current_sector) and ($pos <= 0))
+		if ($isfigged <> true)
+			setvar $a 1
+			while (sector.warps[$focus][$a] > 0)
+				setvar $adjacent sector.warps[$focus][$a]
+				getsectorparameter $adjacent "FIGSEC" $isfigged
+				if (($isfigged = true))
+					setvar $travelto $focus
+					setvar $nearfig $adjacent
+					setvar $checked[$nearfig] true
+					goto :continue
+				end
+				add $a 1
+			end
+		end
 	end
-	:tryAgain
-	setArray $checked SECTORS
-	if ($boomsec > 0)
-		setvar $checked[$boomsec] true
+	setvar $nearfig 0
+	# That wasn't it, so let's add all the adjacents to the que for future testing.
+	setvar $a 1
+	while (sector.warps[$focus][$a] > 0)
+		setvar $adjacent sector.warps[$focus][$a]
+		# But only add them if they haven't been added previously
+		if ($adjacent > 0)
+			if ($checked[$adjacent] = 0)
+				# Okay, this one hasn't been checked, so tag it and que it.
+				setvar $checked[$adjacent] 1
+				add $top 1
+				setvar $que[$top] $adjacent
+			end
+		end
+		add $a 1
 	end
-	killtrigger again
-	killtrigger done
-	setVar $bottom 1
-	setVar $top 1
-	if ($near = true)
-		gosub :player~quikstats
-		setvar $randomsector $player~current_sector
+	# The adjacents of $focus were all queued, now on to the next one.
+	add $bottom 1
+end
+setvar $switchboard~message "Can't find a route to any other gridding sectors.*"
+gosub :switchboard~switchboard
+goto :done
+
+:continue
+setvar $output ""
+if ($nearfig > 0)
+	killtrigger warped
+	killtrigger same
+	killtrigger didnotwarp
+	killtrigger notenoughfuel
+	send "p"&$nearfig&"*y"
+	settextlinetrigger warped :emptyport "-=-=-=- Planetary TransWarp Drive Engaged! -=-=-=-"
+	settextlinetrigger same :emptyport "You are already in that sector!"
+	settextlinetrigger didnotwarp :nofigatlocation "Your own fighters must be in the destination to make a safe jump."
+	settextlinetrigger notenoughfuel :done "You do not have enough Fuel Ore on this planet to make the jump."
+	pause
+
+	:emptyport
+	killtrigger warped
+	killtrigger same
+	killtrigger didnotwarp
+	killtrigger notenoughfuel
+	setsectorparameter $nearfig "FIGSEC" true
+
+	send "q q sdsh* l "&$planet~planet&"* m * * * c  "
+	waitfor "Relative Density Scan"
+	waitfor "Long Range Scan"
+	waitfor "[" & $nearfig & "]"
+	setvar $boomsec $travelto
+	getdistance $distance $nearfig $boomsec
+	getdistance $distanceback $boomsec $nearfig
+	gosub :player~quikstats
+	setvar $containsshieldedplanet false
+	setvar $i 1
+	while ($i <= sector.planetcount[$boomsec])
+		getword sector.planets[$boomsec][$i] $test 1
+		if ($test = "<<<<")
+			setvar $containsshieldedplanet true
+		end
+		add $i 1
+	end
+
+	setvar $containsshieldedplanetwithus false
+	setvar $i 1
+	if (sector.planetcount[$player~current_sector] > 1)
+		while ($i <= sector.planetcount[$player~current_sector])
+			getword sector.planets[$player~current_sector][$i] $test 1
+			if ($test = "<<<<")
+				setvar $containsshieldedplanetwithus true
+			end
+			add $i 1
+		end
+	end
+
+	if ($containsshieldedplanetwithus = true)
+		setvar $switchboard~message "There is a shielded planet in sector with us!  Either take it or get out of here!*"
+		gosub :switchboard~switchboard
+		halt
+	end
+
+	setvar $figowner sector.figs.owner[$boomsec]
+	setvar $figcount sector.figs.quantity[$boomsec]
+	getword $figowner $aliencheck 1
+	lowercase $aliencheck
+	setvar $mineowner sector.mines.owner[$boomsec]
+	setvar $minecount sector.mines.quantity[$boomsec]
+	if (sector.planetcount[$boomsec] > 0)
+		setvar $i 1
+		while ($i <= sector.planetcount[$boomsec])
+			setvar $output $output&"    "&sector.planets[$boomsec][$i]&#13
+			add $i 1
+		end
+		setvar $i 1
+		while ($i <= sector.tradercount[$boomsec])
+			setvar $output $output&"    "&sector.traders[$boomsec][$i]&#13
+			add $i 1
+		end
+		setvar $output $output&sector.figs.quantity[$boomsec]&" figs owned by: "&sector.figs.owner[$boomsec]&#13
+		setvar $output "'"&#13&"WARNING - Planet(s) Detected - Sector "&$boomsec&#13&$output&#13&" "&#13&" "
+	elseif (sector.tradercount[$boomsec] > 0)
+		setvar $i 1
+		while ($i <= sector.tradercount[$boomsec])
+			setvar $output $output&"    "&sector.traders[$boomsec][$i]&#13
+			add $i 1
+		end
+		setvar $output $output&sector.figs.quantity[$boomsec]&" figs owned by: "&sector.figs.owner[$boomsec]&#13
+		setvar $output "'"&#13&"WARNING - Trader(s) Detected - Sector "&$boomsec&#13&$output&#13&" "&#13&" "
+	elseif ($distance <> 1)
+		setvar $output "'WARNING - Sector not Adj (Sector "&$boomsec&")"&#13
+	elseif ($boomsec <= 10) or ($boomsec = stardock)
+		setvar $output "'WARNING - Fed Sector Adj (Sector "&$boomsec&")"&#13
+	elseif (sector.figs.quantity[$boomsec] >= ($offodd*2))
+		setvar $output "'WARNING - "&sector.figs.quantity[$boomsec]&" figs owned by: "&sector.figs.owner[$boomsec]&" - Sector "&$boomsec&#13
 	else
-		getRnd $randomSector 11 SECTORS
+		setvar $output ""
 	end
-	setVar $que[1] $randomSector
-	setVar $checked[$randomSector] 1
-	while ($bottom <= $top)
-		# Now, pull out the next sector in the que, and make it our focus
-		setVar $focus $que[$bottom]
-		getSectorParameter $focus "FIGSEC" $isFigged
-		setVar $checked[$focus] TRUE
-		getwordpos $avoided_sectors $pos " "&$focus&" "
-		if (($focus <> $player~current_sector) and ($pos <= 0))
-			if ($isFigged <> TRUE)
-				setVar $a 1
-				while (SECTOR.WARPS[$focus][$a] > 0)
-					setVar $adjacent SECTOR.WARPS[$focus][$a]
-					getSectorParameter $adjacent "FIGSEC" $isFigged
-					if (($isFigged = TRUE))
-						setVar $travelTo $focus
-						setVar $nearfig $adjacent
-						setVar $checked[$nearfig] TRUE
-						goto :continue
-					end
-					add $a 1	
-				end
-			end
+
+	if (((($avoidshieldedonly = true) and ($containsshieldedplanet = false)) or (sector.planetcount[$boomsec] <= 0)) and (sector.tradercount[$boomsec] <= 0) and ($distance = 1) and ($boomsec > 10) and ($boomsec <> stardock) and ((($attackretreat = true) and ($distanceback = 1) and (sector.figs.quantity[$boomsec] >= ($offodd*2))) or (sector.figs.quantity[$boomsec] < ($offodd*2))))
+		if ((sector.anomaly[$boomsec] = true) and ($islimped = false))
+			setvar $imlimped true
 		end
-		setVar $nearfig 0
-		# That wasn't it, so let's add all the adjacents to the que for future testing.
-		setVar $a 1
-		while (SECTOR.WARPS[$focus][$a] > 0)
-			setVar $adjacent SECTOR.WARPS[$focus][$a]
-			# But only add them if they haven't been added previously
-			if ($adjacent > 0)
-				if ($checked[$adjacent] = 0)
-					# Okay, this one hasn't been checked, so tag it and que it.
-					setVar $checked[$adjacent] 1
-					add $top 1
-					setVar $que[$top] $adjacent
-				end
-			end
-			add $a 1
+		if ($figcount <= 10)
+			setvar $wave 99
+		elseif ($figcount <= 100)
+			setvar $wave 999
+		elseif ($figcount <= 1000)
+			setvar $wave 9999
+		else
+			setvar $wave $figs
 		end
-		# The adjacents of $focus were all queued, now on to the next one.
-		add $bottom 1
-	end	
-	setVar $SWITCHBOARD~message "Can't find a route to any other gridding sectors.*"
-	gosub :SWITCHBOARD~switchboard
- 	goto :done
-	:continue
-	setvar $output ""
-	if ($NearFig > 0)
+		send "'"&$switchboard~bot_name&" pgrid "&$travelto&" f:"&$fighterdrop&" wave:"&$wave&" scan unsafe*"
+		settextlinetrigger done :done "Unsuccessful P-grid into sector " & $travelto & ". Someone make sure bot is picked up."
+		settextlinetrigger again :success "Successfully P-gridded into sector " & $travelto
+		pause
+
+		:nofigatlocation
 		killtrigger warped
 		killtrigger same
 		killtrigger didnotwarp
-		killtrigger notEnoughFuel
-		send "p"&$nearfig&"*y"
-		setTextLineTrigger warped :emptyPort "-=-=-=- Planetary TransWarp Drive Engaged! -=-=-=-"
-		setTextLineTrigger same :emptyPort "You are already in that sector!"
-		setTextLineTrigger didnotwarp :noFigAtLocation "Your own fighters must be in the destination to make a safe jump."
-		setTextLineTrigger notEnoughFuel :done "You do not have enough Fuel Ore on this planet to make the jump."
-		pause			
-			:emptyPort
-			killtrigger warped
-			killtrigger same
-			killtrigger didnotwarp
-			killtrigger notEnoughFuel
-			setSectorParameter $nearfig "FIGSEC" TRUE
+		killtrigger notenoughfuel
+		setsectorparameter $nearfig "FIGSEC" false
+		goto :report
 
-			send "q q sdsh* l "&$planet~planet&"* m * * * c  " 
-			waitFor "Relative Density Scan"
-			waitFor "Long Range Scan"
-			waitFor "[" & $nearfig & "]"
-			setVar $boomsec $travelTo
-			getDistance $distance $nearfig $boomsec
-			getDistance $distanceback $boomsec $nearfig 
-			gosub :PLAYER~quikstats
-			setVar $containsShieldedPlanet FALSE
-			setVar $i 1
-			while ($i <= SECTOR.PLANETCOUNT[$boomsec])
-				getWord SECTOR.PLANETS[$boomsec][$i] $test 1
-				if ($test = "<<<<")
-					setVar $containsShieldedPlanet TRUE
-				end
-				add $i 1
-			end
-				
-			setvar $containsShieldedPlanetWithUs false
-			setVar $i 1
-			if (SECTOR.PLANETCOUNT[$player~current_sector] > 1)
-				while ($i <= SECTOR.PLANETCOUNT[$player~current_sector])
-					getWord SECTOR.PLANETS[$player~current_sector][$i] $test 1
-					if ($test = "<<<<")
-						setVar $containsShieldedPlanetWithUs TRUE
-					end
-					add $i 1
-				end
-			end
+		:success
+		killtrigger done
+		setsectorparameter $travelto "FIGSEC" true
+		goto :report
 
-			if ($containsShieldedPlanetWithUs = true)
-				setVar $SWITCHBOARD~message "There is a shielded planet in sector with us!  Either take it or get out of here!*"
-				gosub :SWITCHBOARD~switchboard
-				halt
-			end
-				
-			setVar $figowner SECTOR.FIGS.OWNER[$boomsec]
-			setVar $figCount SECTOR.FIGS.QUANTITY[$boomsec]
-			getWord $figOwner $alienCheck 1
-			lowerCase $alienCheck
-			setVar $mineOwner SECTOR.MINES.OWNER[$boomsec]
-			setVar $mineCount SECTOR.MINES.QUANTITY[$boomsec]
-			if (SECTOR.PLANETCOUNT[$boomsec] > 0)
-				setVar $i 1
-				while ($i <= SECTOR.PLANETCOUNT[$boomsec])
-					setVar $output $output&"    "&SECTOR.PLANETS[$boomsec][$i]&#13
-					add $i 1
-				end
-				setVar $i 1
-				while ($i <= SECTOR.TRADERCOUNT[$boomsec])
-					setVar $output $output&"    "&SECTOR.TRADERS[$boomsec][$i]&#13
-					add $i 1
-				end
-				setVar $output $output&SECTOR.FIGS.QUANTITY[$boomsec]&" figs owned by: "&SECTOR.FIGS.OWNER[$boomsec]&#13
-				setVar $output "'"&#13&"WARNING - Planet(s) Detected - Sector "&$boomsec&#13&$output&#13&" "&#13&" "
-			elseif (SECTOR.TRADERCOUNT[$boomsec] > 0)
-				setVar $i 1
-				while ($i <= SECTOR.TRADERCOUNT[$boomsec])
-					setVar $output $output&"    "&SECTOR.TRADERS[$boomsec][$i]&#13
-					add $i 1
-				end
-				setVar $output $output&SECTOR.FIGS.QUANTITY[$boomsec]&" figs owned by: "&SECTOR.FIGS.OWNER[$boomsec]&#13
-				setVar $output "'"&#13&"WARNING - Trader(s) Detected - Sector "&$boomsec&#13&$output&#13&" "&#13&" "
-			elseif ($distance <> 1)
-				setVar $output "'WARNING - Sector not Adj (Sector "&$boomsec&")"&#13
-			elseif ($boomsec <= 10) or ($boomsec = STARDOCK)
-				setVar $output "'WARNING - Fed Sector Adj (Sector "&$boomsec&")"&#13
-			elseif (SECTOR.FIGS.QUANTITY[$boomsec] >= ($offodd*2))
-				setVar $output "'WARNING - "&SECTOR.FIGS.QUANTITY[$boomsec]&" figs owned by: "&SECTOR.FIGS.OWNER[$boomsec]&" - Sector "&$boomsec&#13
-			else
-				setVar $output ""
-			end
+		:done
+		killalltriggers
+		setvar $switchboard~message "Planet Gridder halting*"
+		gosub :switchboard~switchboard
+		halt
+	else
+		setvar $avoided_sectors $avoided_sectors&" "&$boomsec&" "
+	end
 
-			if (((($avoidShieldedOnly = TRUE) AND ($containsShieldedPlanet = FALSE)) OR (SECTOR.PLANETCOUNT[$boomsec] <= 0)) and (SECTOR.TRADERCOUNT[$boomsec] <= 0) and ($distance = 1) and ($boomsec > 10) and ($boomsec <> STARDOCK) and ((($attackretreat = TRUE) AND ($distanceback = 1) AND (SECTOR.FIGS.QUANTITY[$boomsec] >= ($offodd*2))) OR (SECTOR.FIGS.QUANTITY[$boomsec] < ($offodd*2))))
-				if ((SECTOR.anomaly[$boomsec] = TRUE) and ($isLimped = FALSE))
-					setVar $imlimped TRUE
-				end
-				if ($figCount <= 10)
-					setvar $wave 99
-				elseif ($figCount <= 100)
-					setvar $wave 999
-				elseif ($figCount <= 1000)
-					setvar $wave 9999
-				else
-					setvar $wave $figs
-				end
-				send "'"&$SWITCHBOARD~bot_name&" pgrid "&$travelTo&" f:"&$fighterDrop&" wave:"&$wave&" scan unsafe*"
-				setTextLineTrigger done :done "Unsuccessful P-grid into sector " & $travelTo & ". Someone make sure bot is picked up."
-				setTextLineTrigger again :success "Successfully P-gridded into sector " & $travelTo
-				pause
-					:noFigAtLocation
-					killtrigger warped
-					killtrigger same
-					killtrigger didnotwarp
-					killtrigger notEnoughFuel
-					setSectorParameter $nearfig "FIGSEC" FALSE
-					goto :report
-					:success
-					killtrigger done
-					setSectorParameter $travelTo "FIGSEC" TRUE
-					goto :report
-					:done
-					killalltriggers
-					setVar $SWITCHBOARD~message "Planet Gridder halting*"
-					gosub :SWITCHBOARD~switchboard
-					halt
-				else
-					setvar $avoided_sectors $avoided_sectors&" "&$boomsec&" "
-				end
-
-			:report				
-			if ($output <> "")
-				send $output
-			else
-				setvar $boomsec 0
-			end
-			goto :tryAgain
-		end
-
-
-
-
-
-
-
-
-
-
+	:report
+	if ($output <> "")
+		send $output
+	else
+		setvar $boomsec 0
+	end
+	goto :tryagain
+end
 
 #INCLUDES:
 include "source\include\player"

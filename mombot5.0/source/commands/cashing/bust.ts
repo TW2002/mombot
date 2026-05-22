@@ -1,131 +1,138 @@
-:LOAD_VARIABLES
-loadvar $BOT_NAME
-loadvar $USER_COMMAND_LINE
-loadvar $BOT_TURN_LIMIT
-loadvar $PARM1
-loadvar $PARM2
-setvar $NAME[1] ".  n"
-setvar $NAME[2] ".  n"
-setvar $NAME[3] ".  n"
-setvar $NAME[4] ".  n"
-setvar $NAME[5] ".  n"
-setvar $COUNT 0
-setvar $BLOW_PLANET "No"
-if (($PARM1 = "?") or ($PARM1 = "help"))
-  setvar $switchboard~message "bust [Experience Desired]*"
-  gosub :switchboard~switchboard
-  halt
-end
-isnumber $TEST $PARM1
-if ($TEST)
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"bust [Experience Desired]"
+setvar $help~help[2] $help~tab&"Creates and busts planets until the desired experience is reached."
+gosub :help~helpfile
+
+:load_variables
+loadvar $bot_name
+loadvar $user_command_line
+loadvar $bot_turn_limit
+loadvar $parm1
+loadvar $parm2
+setvar $name[1] ".  n"
+setvar $name[2] ".  n"
+setvar $name[3] ".  n"
+setvar $name[4] ".  n"
+setvar $name[5] ".  n"
+setvar $count 0
+setvar $blow_planet "No"
+isnumber $test $parm1
+if ($test)
 
 else
-  setvar $switchboard~message "Experience Must Be a Number.*"
-  gosub :switchboard~switchboard
-  halt
-end
-:START
-gosub :PLAYER~QUIKSTATS
-setvar $START_PROMPT $PLAYER~CURRENT_PROMPT
-if ($PLAYER~CREDITS < 1000000)
-  setvar $switchboard~message "Not Enough Cash on Hand*"
-  gosub :switchboard~switchboard
-  halt
-end
-isnumber $TEST $PARM1
-if ($TEST)
-  setvar $EXPERIENCEAMOUNT $PARM1
-else
-  setvar $switchboard~message "Invalid Experience Amount.*"
-  gosub :switchboard~switchboard
-  halt
-end
-if ($PLAYER~EXPERIENCE > $EXPERIENCEAMOUNT)
-  setvar $switchboard~message "Desired Experience Reached.*"
-  gosub :switchboard~switchboard
-  if ($START_PROMPT = "<StarDock>")
-    send "p  s"
-  end
-  halt
+	setvar $switchboard~message "Experience Must Be a Number.*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-if (($PLAYER~CURRENT_PROMPT <> "Command") and ($PLAYER~CURRENT_PROMPT <> "<StarDock>"))
-  setvar $switchboard~message "Script must be run from Command or StarDock.*"
-  gosub :switchboard~switchboard
-  halt
+:start
+gosub :player~quikstats
+setvar $start_prompt $player~current_prompt
+if ($player~credits < 1000000)
+	setvar $switchboard~message "Not Enough Cash on Hand*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($PLAYER~CORP > 1)
-  setvar $PLAYER~CORP "Yes"
+isnumber $test $parm1
+if ($test)
+	setvar $experienceamount $parm1
 else
-  setvar $PLAYER~CORP "No"
+	setvar $switchboard~message "Invalid Experience Amount.*"
+	gosub :switchboard~switchboard
+	halt
 end
-setvar $SCANNER $PLAYER~PLANET_SCANNER
-:RUN
+if ($player~experience > $experienceamount)
+	setvar $switchboard~message "Desired Experience Reached.*"
+	gosub :switchboard~switchboard
+	if ($start_prompt = "<StarDock>")
+		send "p  s"
+	end
+	halt
+end
 
+if (($player~current_prompt <> "Command") and ($player~current_prompt <> "<StarDock>"))
+	setvar $switchboard~message "Script must be run from Command or StarDock.*"
+	gosub :switchboard~switchboard
+	halt
+end
+if ($player~corp > 1)
+	setvar $player~corp "Yes"
+else
+	setvar $player~corp "No"
+end
+setvar $scanner $player~planet_scanner
+
+:run
 killalltriggers
-if ($PLAYER~EXPERIENCE > $EXPERIENCEAMOUNT)
-  setvar $switchboard~message "Desired Experience Reached.*"
-  gosub :switchboard~switchboard
-  if ($START_PROMPT = "<StarDock>")
-    send "p  s"
-  end
-  halt
+if ($player~experience > $experienceamount)
+	setvar $switchboard~message "Desired Experience Reached.*"
+	gosub :switchboard~switchboard
+	if ($start_prompt = "<StarDock>")
+		send "p  s"
+	end
+	halt
 end
-if ($PLAYER~CURRENT_PROMPT = "<StarDock>")
-  send "q  "
+if ($player~current_prompt = "<StarDock>")
+	send "q  "
 end
-add $COUNT 1
-if ($BLOW_PLANET = "Yes")
-  send "l " $PLANET "*  z  d  y  "
-  setvar $BLOW_PLANET "No"
+add $count 1
+if ($blow_planet = "Yes")
+	send "l " $planet "*  z  d  y  "
+	setvar $blow_planet "No"
 end
-if ($COUNT > 5)
-  setvar $COUNT 1
-  goto :RUN
+if ($count > 5)
+	setvar $count 1
+	goto :run
 end
-gosub :PLAYER~QUIKSTATS
-if (($PLAYER~CREDITS < 1000000) and ($PLAYER~ATOMIC < 1)) or (($PLAYER~CREDITS < 1000000) and ($PLAYER~GENESIS < 1))
-  if ($START_PROMPT = "<StarDock>")
-    send "p  s"
-  end
-  halt
+gosub :player~quikstats
+if (($player~credits < 1000000) and ($player~atomic < 1)) or (($player~credits < 1000000) and ($player~genesis < 1))
+	if ($start_prompt = "<StarDock>")
+		send "p  s"
+	end
+	halt
 end
 killalltriggers
 send "u y  "
-settexttrigger GENESIS :BUY_MORE "You don't have any Genesis Torpedoes"
-settexttrigger CREATE :CREATE_PLANET "For building this planet you receive"
+settexttrigger genesis :buy_more "You don't have any Genesis Torpedoes"
+settexttrigger create :create_planet "For building this planet you receive"
 pause
-:CREATE_PLANET
 
-killtrigger GENESIS
-send $NAME[$COUNT] "*  c  l"
-if ($SCANNER = "Yes")
-  settexttrigger 3 :LAND "None"
-  pause
-  :LAND
-  gettext CURRENTLINE $PLANET "<" ">"
-  send $PLANET "*  "
+:create_planet
+killtrigger genesis
+send $name[$count] "*  c  l"
+if ($scanner = "Yes")
+	settexttrigger 3 :land "None"
+	pause
+
+	:land
+	gettext currentline $planet "<" ">"
+	send $planet "*  "
 end
 send " z  d  y  "
-settexttrigger ATOMIC :BUY_ATOMIC "You do not have any Atomic Detonators"
-settexttrigger BLOWN :SUB_RUN "For blowing up this planet you"
+settexttrigger atomic :buy_atomic "You do not have any Atomic Detonators"
+settexttrigger blown :sub_run "For blowing up this planet you"
 pause
-:SUB_RUN
-setvar $BLOW_PLANET "No"
-goto :RUN
-:BUY_ATOMIC
-setvar $BLOW_PLANET "Yes"
-send "qq"
-:BUY_MORE
 
-killtrigger CREATE
+:sub_run
+setvar $blow_planet "No"
+goto :run
+
+:buy_atomic
+setvar $blow_planet "Yes"
+send "qq"
+
+:buy_more
+killtrigger create
 send "* * p s h a"
 waitfor "How many Atomic Detonators do you want"
-gettext CURRENTLINE $PLAYER~ATOMIC "(Max " ")"
-send $PLAYER~ATOMIC "* t"
+gettext currentline $player~atomic "(Max " ")"
+send $player~atomic "* t"
 waitfor "How many Genesis Torpedoes do you want"
-gettext CURRENTLINE $PLAYER~GENESIS "(Max " ")"
-send $PLAYER~GENESIS "* q q "
-goto :RUN
+gettext currentline $player~genesis "(Max " ")"
+send $player~genesis "* q q "
+goto :run
 include "source\include\player"
 include "source\include\switchboard.ts"
+include "source\include\loadvars"
+include "source\include\help"

@@ -1,55 +1,55 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-setVar $HELP~HELP[1] $HELP~TAB&"logoff {minutes} {cloak}"
-setVar $HELP~HELP[2] $HELP~TAB&"  - logs off now and optionally relogs after a timer"
-setVar $HELP~HELP[3] $HELP~TAB&"logout {minutes} {cloak}"
-setVar $HELP~HELP[4] $HELP~TAB&"  - alias for logoff"
-setVar $HELP~HELP[5] $HELP~TAB&"Examples:"
-setVar $HELP~HELP[6] $HELP~TAB&"  >logoff        - log off until manually restarted"
-setVar $HELP~HELP[7] $HELP~TAB&"  >logoff 10     - log off and relog in 10 minutes"
-setVar $HELP~HELP[8] $HELP~TAB&"  >logout cloak  - cloak and log off until manually restarted"
-setVar $HELP~HELP[9] $HELP~TAB&"  >logoff 30 cloak - cloak out and relog in 30 minutes"
-gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&"logoff {minutes} {cloak}"
+setvar $help~help[2] $help~tab&"  - logs off now and optionally relogs after a timer"
+setvar $help~help[3] $help~tab&"logout {minutes} {cloak}"
+setvar $help~help[4] $help~tab&"  - alias for logoff"
+setvar $help~help[5] $help~tab&"Examples:"
+setvar $help~help[6] $help~tab&"  >logoff        - log off until manually restarted"
+setvar $help~help[7] $help~tab&"  >logoff 10     - log off and relog in 10 minutes"
+setvar $help~help[8] $help~tab&"  >logout cloak  - cloak and log off until manually restarted"
+setvar $help~help[9] $help~tab&"  >logoff 30 cloak - cloak out and relog in 30 minutes"
+gosub :help~helpfile
 
-if (($BOT~parm1 = "?") or ($BOT~parm1 = "help"))
+if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
 	halt
 end
 
 :logoff
 :logout
 killalltriggers
-gosub :PLAYER~quikstats
-setVar $startingLocation $PLAYER~CURRENT_PROMPT
-setVar $quittingWithNoTimer FALSE
-isNumber $test $BOT~parm1
+gosub :player~quikstats
+setvar $startinglocation $player~current_prompt
+setvar $quittingwithnotimer false
+isnumber $test $bot~parm1
 
-if ($startingLocation = "Citadel")
+if ($startinglocation = "Citadel")
 	send "q "
-	gosub :PLANET~getPlanetInfo
+	gosub :planet~getplanetinfo
 	send "c "
 end
-if ($test = FALSE)
-	setVar $quittingWithNoTimer TRUE
-elseif (($BOT~parm1 <= 0) OR ($BOT~parm1 = "cloak"))
-	setVar $quittingWithNoTimer TRUE
+if ($test = false)
+	setvar $quittingwithnotimer true
+elseif (($bot~parm1 <= 0) or ($bot~parm1 = "cloak"))
+	setvar $quittingwithnotimer true
 else
-	setVar $timeToLogBackIn ($BOT~parm1*60)
-	gosub :calcTime
+	setvar $timetologbackin ($bot~parm1*60)
+	gosub :calctime
 end
-setVar $cloakingOut FALSE
-getWordPos " "&$BOT~user_command_line&" " $pos " cloak "
+setvar $cloakingout false
+getwordpos " "&$bot~user_command_line&" " $pos " cloak "
 if ($pos > 0)
-	setVar $cloakingOut TRUE
+	setvar $cloakingout true
 end
-if ($quittingWithNoTimer)
+if ($quittingwithnotimer)
 	setvar $bot~do_not_resuscitate true
 	savevar $bot~do_not_resuscitate
 	setvar $bot~dorelog false
 	savevar $bot~dorelog
 end
-if (($cloakingOut = TRUE) AND ($PLAYER~CLOAKS > 0))
-	if ($quittingWithNoTimer)
+if (($cloakingout = true) and ($player~cloaks > 0))
+	if ($quittingwithnotimer)
 		setvar $switchboard~message "Logging and cloaking out until I am at keys to login again.*"
 		gosub :switchboard~switchboard
 	else
@@ -57,74 +57,76 @@ if (($cloakingOut = TRUE) AND ($PLAYER~CLOAKS > 0))
 		gosub :switchboard~switchboard
 	end
 	send "q q q q  * * * * q q q q y y x *"
-	waitOn "==-- Trade Wars 2002 --=="
+	waiton "==-- Trade Wars 2002 --=="
 else
-	if ($quittingWithNoTimer)
+	if ($quittingwithnotimer)
 		setvar $switchboard~message "Logging out until I am at keys to login again.*"
 		gosub :switchboard~switchboard
 	else
 		setvar $switchboard~message "Logging out for "&$hours&" hours, "&$minutes&" minutes, and "&$seconds&" seconds.*"
 		gosub :switchboard~switchboard
 	end
-	if ($startingLocation = "Citadel")
+	if ($startinglocation = "Citadel")
 		send "ryy* x *##"
-		waitOn "Game Server"
+		waiton "Game Server"
 	else
 		send "q q q q  * * * * q q q q y*"
-		waitOn "==-- Trade Wars 2002 --=="
+		waiton "==-- Trade Wars 2002 --=="
 	end
 end
 disconnect
-setVar $timer 0
-if ($quittingWithNoTimer)
+setvar $timer 0
+if ($quittingwithnotimer)
 	halt
 end
-setTextOutTrigger logearly :endLogoffGame #32
-while ($timeToLogBackIn > 0)
-	gosub :calcTime
-	echo ANSI_10 #27 & "[1A" & #27 & "[K" & $hours ":" $minutes ":" $seconds " left before entering game " GAME " (" GAMENAME ") "&ANSI_15&" ["&ANSI_14&"Spacebar to relog"&ANSI_15&"]*"
-	setDelayTrigger timeBeforeRelog :relogTimer 1000
+settextouttrigger logearly :endlogoffgame #32
+while ($timetologbackin > 0)
+	gosub :calctime
+	echo ansi_10 #27 & "[1A" & #27 & "[K" & $hours ":" $minutes ":" $seconds " left before entering game " game " (" gamename ") "&ansi_15&" ["&ansi_14&"Spacebar to relog"&ansi_15&"]*"
+	setdelaytrigger timebeforerelog :relogtimer 1000
 	pause
-		:relogTimer
-		setVar $timeToLogBackIn $timeToLogBackIn-1
+
+	:relogtimer
+	setvar $timetologbackin $timetologbackin-1
 end
-:endLogoffGame
+
+:endlogoffgame
 killtrigger logearly
-killtrigger timeBeforeRelog
+killtrigger timebeforerelog
 goto :launch_relog
 
 :launch_relog
-setVar $BOT~command "relog"
-setVar $BOT~user_command_line "relog"
-saveVar $BOT~command
-saveVar $BOT~user_command_line
+setvar $bot~command "relog"
+setvar $bot~user_command_line "relog"
+savevar $bot~command
+savevar $bot~user_command_line
 load "scripts\"&$bot~mombot_directory&"\commands\general\relog.cts"
 halt
 
-:calcTime
-setVar $hours 0
-setVar $minutes 0
-setVar $seconds 0
-setVar $testTime $timeToLogBackIn
-if ($testTime >= 3600)
-	setVar $hours ($testTime/3600)
-	setVar $testTime $testTime-($hours*3600)
+:calctime
+setvar $hours 0
+setvar $minutes 0
+setvar $seconds 0
+setvar $testtime $timetologbackin
+if ($testtime >= 3600)
+	setvar $hours ($testtime/3600)
+	setvar $testtime $testtime-($hours*3600)
 end
-if ($testTime >= 60)
-	setVar $minutes ($testTime/60)
-	setVar $testTime $testTime-($minutes*60)
+if ($testtime >= 60)
+	setvar $minutes ($testtime/60)
+	setvar $testtime $testtime-($minutes*60)
 end
-if ($testTime >= 1)
-	setVar $seconds $testTime
+if ($testtime >= 1)
+	setvar $seconds $testtime
 end
 if ($hours < 10)
-	setVar $hours "0"&$hours
+	setvar $hours "0"&$hours
 end
 if ($minutes < 10)
-	setVar $minutes "0"&$minutes
+	setvar $minutes "0"&$minutes
 end
 if ($seconds < 10)
-	setVar $seconds "0"&$seconds
+	setvar $seconds "0"&$seconds
 end
 return
 

@@ -1,1117 +1,1130 @@
 reqrecording
 logging "OFF"
-loadvar $BOT_NAME
-loadvar $UNLIMITEDGAME
-loadvar $BOT_TURN_LIMIT
-loadvar $USER_COMMAND_LINE
-loadvar $PARM1
-loadvar $PARM2
-loadvar $PARM3
-loadvar $PARM4
-loadvar $PARM5
-loadvar $PARM6
-loadvar $PARM7
-loadvar $PARM8
-loadvar $STARDOCK
-loadvar $BACKDOOR
-loadvar $LIMPET_COST
-loadvar $ARMID_COST
-loadvar $LIMPET_REMOVAL_COST
-loadvar $PASSWORD
-goto :MINESWEEP_START
+loadvar $bot_name
+loadvar $unlimitedgame
+loadvar $bot_turn_limit
+loadvar $user_command_line
+loadvar $parm1
+loadvar $parm2
+loadvar $parm3
+loadvar $parm4
+loadvar $parm5
+loadvar $parm6
+loadvar $parm7
+loadvar $parm8
+loadvar $stardock
+loadvar $backdoor
+loadvar $limpet_cost
+loadvar $armid_cost
+loadvar $limpet_removal_cost
+loadvar $password
+goto :minesweep_start
 include "source\include\mines"
-:MINESWEEP_START
-setvar $GRID_LIMPETS 1
-setvar $GRID_ARMIDS 4
-setvar $REFURB FALSE
-setvar $LONGJUMPLIMIT 5
-setvar $VERSION "1.0.5"
-getsectorparameter SECTORS "FIGSEC" $ISFIGGED
-getsectorparameter SECTORS "MINESEC" $ISARMIDED
-getsectorparameter SECTORS "LIMPSEC" $ISLIMPED
-if (($STARDOCK = 0) or ($STARDOCK = ""))
-  setvar $switchboard~message "Stardock is not defined.  Please define stardock variable in the bot.*"
-  gosub :switchboard~switchboard
-  halt
+
+:minesweep_start
+setvar $grid_limpets 1
+setvar $grid_armids 4
+setvar $refurb false
+setvar $longjumplimit 5
+setvar $version "1.0.5"
+getsectorparameter sectors "FIGSEC" $isfigged
+getsectorparameter sectors "MINESEC" $isarmided
+getsectorparameter sectors "LIMPSEC" $islimped
+if (($stardock = 0) or ($stardock = ""))
+	setvar $switchboard~message "Stardock is not defined.  Please define stardock variable in the bot.*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($ISFIGGED = "")
-  setvar $switchboard~message "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
-  gosub :switchboard~switchboard
-  halt
+if ($isfigged = "")
+	setvar $switchboard~message "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($ISARMIDED = "")
-  setvar $switchboard~message "It appears no armid data is available.  Run an armid grid checker that uses the sector parameter MINESEC. (Try armids command)*"
-  gosub :switchboard~switchboard
-  halt
+if ($isarmided = "")
+	setvar $switchboard~message "It appears no armid data is available.  Run an armid grid checker that uses the sector parameter MINESEC. (Try armids command)*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($ISLIMPED = "")
-  setvar $switchboard~message "It appears no limpet data is available.  Run a limpet grid checker that uses the sector parameter LIMPSEC. (Try limps command)*"
-  gosub :switchboard~switchboard
-  halt
+if ($islimped = "")
+	setvar $switchboard~message "It appears no limpet data is available.  Run a limpet grid checker that uses the sector parameter LIMPSEC. (Try limps command)*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-gosub :PLAYER~QUIKSTATS
-if ($PLAYER~CURRENT_PROMPT <> "Citadel")
-  setvar $switchboard~message "Must must start mine sweeper from citadel prompt.*"
-  gosub :switchboard~switchboard
-  halt
+gosub :player~quikstats
+if ($player~current_prompt <> "Citadel")
+	setvar $switchboard~message "Must must start mine sweeper from citadel prompt.*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-if ($PLAYER~PHOTONS <> 0)
-  setvar $switchboard~message "Cannot Have Fotons!*"
-  gosub :switchboard~switchboard
-  halt
+if ($player~photons <> 0)
+	setvar $switchboard~message "Cannot Have Fotons!*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-setvar $TEMP " "&$USER_COMMAND_LINE&" "
-lowercase $TEMP
+setvar $temp " "&$user_command_line&" "
+lowercase $temp
 
-getwordpos $TEMP $POS " furb "
-if ($POS = 0)
-  setvar $REFURB FALSE
+getwordpos $temp $pos " furb "
+if ($pos = 0)
+	setvar $refurb false
 else
-  setvar $REFURB TRUE
+	setvar $refurb true
 end
 
-getwordpos $TEMP $POS " disr "
-if ($POS = 0)
-  setvar $DISR FALSE
+getwordpos $temp $pos " disr "
+if ($pos = 0)
+	setvar $disr false
 else
-  setvar $DISR TRUE
+	setvar $disr true
 end
 
-getwordpos $TEMP $POS " fast "
-if ($POS = 0)
-  setvar $FAST FALSE
+getwordpos $temp $pos " fast "
+if ($pos = 0)
+	setvar $fast false
 else
-  setvar $FAST TRUE
+	setvar $fast true
 end
 
-getwordpos $TEMP $POS " nonsafe "
-if ($POS = 0)
-  setvar $NONSAFE FALSE
+getwordpos $temp $pos " nonsafe "
+if ($pos = 0)
+	setvar $nonsafe false
 else
-  if ($FAST)
-    setvar $NONSAFE FALSE
-  else
-    setvar $NONSAFE TRUE
-  end
+	if ($fast)
+		setvar $nonsafe false
+	else
+		setvar $nonsafe true
+	end
 end
 
-getwordpos $TEMP $POS " border "
-if ($POS = 0)
-  setvar $BORDER FALSE
+getwordpos $temp $pos " border "
+if ($pos = 0)
+	setvar $border false
 else
-  setvar $BORDER TRUE
+	setvar $border true
 end
 
-getwordpos $TEMP $POS " l:"
-if ($POS = 0)
-  setvar $GRID_LIMPETS 1
+getwordpos $temp $pos " l:"
+if ($pos = 0)
+	setvar $grid_limpets 1
 else
-  gettext $TEMP $GRID_LIMPETS " l:" " "
-  isnumber $TST $GRID_LIMPETS
-  if ($TST = 0)
-    setvar $GRID_LIMPETS 1
-  else
-    if ($GRID_LIMPETS > 250)
-      setvar $GRID_LIMPETS 250
-    elseif ($GRID_LIMPETS < 1)
-      setvar $GRID_LIMPETS 1
-    end
-  end
+	gettext $temp $grid_limpets " l:" " "
+	isnumber $tst $grid_limpets
+	if ($tst = 0)
+		setvar $grid_limpets 1
+	else
+		if ($grid_limpets > 250)
+			setvar $grid_limpets 250
+		elseif ($grid_limpets < 1)
+			setvar $grid_limpets 1
+		end
+	end
 end
 
-getwordpos $TEMP $POS " a:"
-if ($POS = 0)
-  setvar $GRID_ARMIDS 0
+getwordpos $temp $pos " a:"
+if ($pos = 0)
+	setvar $grid_armids 0
 else
-  gettext $TEMP $GRID_ARMIDS " a:" " "
-  isnumber $TST $GRID_ARMIDS
-  if ($TST = 0)
-    setvar $GRID_ARMIDS 0
-  else
-    if ($GRID_ARMIDS > 250)
-      setvar $GRID_ARMIDS 250
-    elseif ($GRID_ARMIDS < 0)
-      setvar $GRID_ARMIDS 0
-    end
-  end
+	gettext $temp $grid_armids " a:" " "
+	isnumber $tst $grid_armids
+	if ($tst = 0)
+		setvar $grid_armids 0
+	else
+		if ($grid_armids > 250)
+			setvar $grid_armids 250
+		elseif ($grid_armids < 0)
+			setvar $grid_armids 0
+		end
+	end
 end
 
-gosub :GETINFO
-setvar $HOMESECTOR $PLAYER~CURRENT_SECTOR
+gosub :getinfo
+setvar $homesector $player~current_sector
 
 killalltriggers
-gosub :CHECKAVOIDEDSECTORS
+gosub :checkavoidedsectors
 send "q"
-gosub :GETPLANETINFO
+gosub :getplanetinfo
 
-if (($GRID_LIMPETS = 0) and ($GRID_ARMIDS = 0))
-  setvar $switchboard~message "Nothing To Do!*"
-  gosub :switchboard~switchboard
-  halt
+if (($grid_limpets = 0) and ($grid_armids = 0))
+	setvar $switchboard~message "Nothing To Do!*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-if (($PLAYER~ORGANIC_HOLDS + ($PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS)) <> 0)
-  setvar $MAC ""
-  if ($PLAYER~ORGANIC_HOLDS <> 0)
-    setvar $MAC $MAC&" T  N  L 2* "
-  end
-  if ($PLAYER~EQUIPMENT_HOLDS <> 0)
-    setvar $MAC $MAC&" T  N  L 3* "
-  end
-  if ($PLAYER~COLONIST_HOLDS <> 0)
-    setvar $MAC $MAC&" S  N  L 1* "
-  end
-  if ($MAC <> "")
-    send $MAC&" t  n  t  1*  m  n t *  c"
-    gosub :PLAYER~QUIKSTATS
-    if (($PLAYER~ORGANIC_HOLDS + ($PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS)) <> 0)
-      setvar $switchboard~message "Holds Not Empty*"
-      gosub :switchboard~switchboard
-      halt
-    end
-  end
+if (($player~organic_holds + ($player~equipment_holds + $player~colonist_holds)) <> 0)
+	setvar $mac ""
+	if ($player~organic_holds <> 0)
+		setvar $mac $mac&" T  N  L 2* "
+	end
+	if ($player~equipment_holds <> 0)
+		setvar $mac $mac&" T  N  L 3* "
+	end
+	if ($player~colonist_holds <> 0)
+		setvar $mac $mac&" S  N  L 1* "
+	end
+	if ($mac <> "")
+		send $mac&" t  n  t  1*  m  n t *  c"
+		gosub :player~quikstats
+		if (($player~organic_holds + ($player~equipment_holds + $player~colonist_holds)) <> 0)
+			setvar $switchboard~message "Holds Not Empty*"
+			gosub :switchboard~switchboard
+			halt
+		end
+	end
 else
-  send $MAC&" t  n  t  1*  m  n t *  c"
+	send $mac&" t  n  t  1*  m  n t *  c"
 end
 
-gosub :CHECKSHIP
+gosub :checkship
 
-setvar $TEMP "{"&$BOT_NAME&"}"
-getlength $TEMP $LEN
-setvar $S ""
-setvar $I 1
-while ($I <= $LEN)
-  setvar $S $S&" "
-  add $I 1
+setvar $temp "{"&$bot_name&"}"
+getlength $temp $len
+setvar $s ""
+setvar $i 1
+while ($i <= $len)
+	setvar $s $s&" "
+	add $i 1
 end
 send "'*"
 waitfor "Type sub-space message"
-send "{" $BOT_NAME "} - Mind ()ver Matter MineSweeper v"&$VERSION&" Loading*"
-if ($REFURB)
-  send $S&" - Furbing Mines/Disruptors*"
+send "{" $bot_name "} - Mind ()ver Matter MineSweeper v"&$version&" Loading*"
+if ($refurb)
+	send $s&" - Furbing Mines/Disruptors*"
 end
-if ($DISR)
-  send $S&" - Disrupting Enemy Mines*"
+if ($disr)
+	send $s&" - Disrupting Enemy Mines*"
 end
-if ($FAST)
-  send $S&" - FAST Sector-Clear Technology!*"
+if ($fast)
+	send $s&" - FAST Sector-Clear Technology!*"
 end
-if ($NONSAFE)
-  send $S&" - SAFE Sector-Clear Technology!*"
+if ($nonsafe)
+	send $s&" - SAFE Sector-Clear Technology!*"
 end
-if ($BORDER)
-  send $S&" - Targeting Hostile Sectors!*"
+if ($border)
+	send $s&" - Targeting Hostile Sectors!*"
 else
-  send $S&" - Targeting Safe Sectors!*"
+	send $s&" - Targeting Safe Sectors!*"
 end
-send $S&" - Deploying: "&$GRID_ARMIDS&" Armids, "&$GRID_LIMPETS&" Limpets*"
+send $s&" - Deploying: "&$grid_armids&" Armids, "&$grid_limpets&" Limpets*"
 send "*"
 
-while (TRUE)
-  gosub :PLAYER~QUIKSTATS
-  if ($PLAYER~LIMPETS < $GRID_LIMPETS) or ($PLAYER~ARMIDS < $GRID_ARMIDS) or (($PLAYER~MINE_DISRUPTORS = 0) and $DISR)
-    if ($REFURB)
-      gosub :ATTEMPTREFURB
-    else
-      setvar $switchboard~message " Need to buy more mines before this script can continue.*"
-      gosub :switchboard~switchboard
-      halt
-    end
-  end
-  gosub :FINDNEXTTARGET
-  send "  sz*    "
-  waiton "Warps to Sector(s) :"
-  setvar $HAZ_BEFORE SECTOR.NAVHAZ[$PLAYER~CURRENT_SECTOR]
-  setvar $PLANETS_BEFORE SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR]
-  if (SECTOR.TRADERCOUNT[$PLAYER~CURRENT_SECTOR] <> 0)
-    setvar $switchboard~message " Trader Is In Sector. Halting!*"
-    gosub :switchboard~switchboard
-    waiton "Message sent on sub-space channel"
-    send "'"&$BOT_NAME&" pwarp "&$HOMESECTOR&"*"
-    waiton "Message sent on sub-space channel"
-    halt
-  end
-  if ($DISR)
-    gosub :DISRUPT
-  end
-  gosub :CLEARSECTOR
-  send "  sz*    "
-  waiton "Warps to Sector(s) :"
-  setvar $HAZ_AFTER SECTOR.NAVHAZ[$PLAYER~CURRENT_SECTOR]
-  setvar $PLANETS_AFTER SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR]
-  if (SECTOR.TRADERCOUNT[$PLAYER~CURRENT_SECTOR] <> 0)
-    setvar $switchboard~message " Trader Is In Sector. Halting!*"
-    gosub :switchboard~switchboard
-    waiton "Message sent on sub-space channel"
-    send "'"&$BOT_NAME&" pwarp "&$HOMESECTOR&"*"
-    waiton "Message sent on sub-space channel"
-    halt
-  end
-  if ($HAZ_BEFORE <> $HAZ_AFTER)
-    setvar $switchboard~message " NavHAZ Changed. Halting!*"
-    gosub :switchboard~switchboard
-    waiton "Message sent on sub-space channel"
-    send "'"&$BOT_NAME&" holo*"
-    waiton "Sub-space comm-link terminated"
-    send "'"&$BOT_NAME&" pwarp "&$HOMESECTOR&"*"
-    waiton "Message sent on sub-space channel"
-    halt
-  end
-  if ($PLANETS_AFTER <> $PLANETS_BEFORE)
-    setvar $switchboard~message " New Planet in Sector. Halting!*"
-    gosub :switchboard~switchboard
-    waiton "Message sent on sub-space channel"
-    send "'"&$BOT_NAME&" pwarp "&$HOMESECTOR&"*"
-    waiton "Message sent on sub-space channel"
-    halt
-  end
+while (true)
+	gosub :player~quikstats
+	if ($player~limpets < $grid_limpets) or ($player~armids < $grid_armids) or (($player~mine_disruptors = 0) and $disr)
+		if ($refurb)
+			gosub :attemptrefurb
+		else
+			setvar $switchboard~message " Need to buy more mines before this script can continue.*"
+			gosub :switchboard~switchboard
+			halt
+		end
+	end
+	gosub :findnexttarget
+	send "  sz*    "
+	waiton "Warps to Sector(s) :"
+	setvar $haz_before sector.navhaz[$player~current_sector]
+	setvar $planets_before sector.planetcount[$player~current_sector]
+	if (sector.tradercount[$player~current_sector] <> 0)
+		setvar $switchboard~message " Trader Is In Sector. Halting!*"
+		gosub :switchboard~switchboard
+		waiton "Message sent on sub-space channel"
+		send "'"&$bot_name&" pwarp "&$homesector&"*"
+		waiton "Message sent on sub-space channel"
+		halt
+	end
+	if ($disr)
+		gosub :disrupt
+	end
+	gosub :clearsector
+	send "  sz*    "
+	waiton "Warps to Sector(s) :"
+	setvar $haz_after sector.navhaz[$player~current_sector]
+	setvar $planets_after sector.planetcount[$player~current_sector]
+	if (sector.tradercount[$player~current_sector] <> 0)
+		setvar $switchboard~message " Trader Is In Sector. Halting!*"
+		gosub :switchboard~switchboard
+		waiton "Message sent on sub-space channel"
+		send "'"&$bot_name&" pwarp "&$homesector&"*"
+		waiton "Message sent on sub-space channel"
+		halt
+	end
+	if ($haz_before <> $haz_after)
+		setvar $switchboard~message " NavHAZ Changed. Halting!*"
+		gosub :switchboard~switchboard
+		waiton "Message sent on sub-space channel"
+		send "'"&$bot_name&" holo*"
+		waiton "Sub-space comm-link terminated"
+		send "'"&$bot_name&" pwarp "&$homesector&"*"
+		waiton "Message sent on sub-space channel"
+		halt
+	end
+	if ($planets_after <> $planets_before)
+		setvar $switchboard~message " New Planet in Sector. Halting!*"
+		gosub :switchboard~switchboard
+		waiton "Message sent on sub-space channel"
+		send "'"&$bot_name&" pwarp "&$homesector&"*"
+		waiton "Message sent on sub-space channel"
+		halt
+	end
 end
 halt
-:CHECKSHIP
+
+:checkship
 killalltriggers
 send "c;q"
 waitfor "Offensive Odds:"
-getwordpos CURRENTLINE $POS "Offensive"
-cuttext CURRENTLINE $ODDLINE $POS 99
-gettext $ODDLINE $OFFODD "Odds:" ":1"
-striptext $OFFODD " "
-striptext $OFFODD "."
+getwordpos currentline $pos "Offensive"
+cuttext currentline $oddline $pos 99
+gettext $oddline $offodd "Odds:" ":1"
+striptext $offodd " "
+striptext $offodd "."
 waitfor "Mine Max:"
-gettext CURRENTLINE $MAXMINES "Mine Max:" "B"
-striptext $MAXMINES " "
+gettext currentline $maxmines "Mine Max:" "B"
+striptext $maxmines " "
 waitfor "Figs Per Attack:"
-getword CURRENTLINE $FIGS 5
-multiply $OFFODD $FIGS
-divide $OFFODD 12
-gosub :PLAYER~QUIKSTATS
+getword currentline $figs 5
+multiply $offodd $figs
+divide $offodd 12
+gosub :player~quikstats
 return
-:ATTEMPTREFURB
 
-
-setvar $LIMPETCASHNEEDED ((($MAXMINES - $PLAYER~LIMPETS) * $LIMPET_COST) + $LIMPET_REMOVAL_COST)
-setvar $ARMIDCASHNEEDED (($MAXMINES - $PLAYER~ARMIDS) * $ARMID_COST)
-setvar $CASHNEEDED ($LIMPETCASHNEEDED + $ARMIDCASHNEEDED)
-if ($CASHNEEDED > $PLAYER~CREDITS)
-  send "D"
-  waiton "Citadel treasury contains "
-  getword CURRENTLINE $CITADELCASH 4
-  striptext $CITADELCASH ","
-  if ($CITADELCASH < $CASHNEEDED)
-    setvar $switchboard~message "Not enough cash for mine refurbs in treasury or on hand.*"
-    gosub :switchboard~switchboard
-    halt
-  end
-  send "t f "&($CASHNEEDED - $PLAYER~CREDITS)&"* "
+:attemptrefurb
+setvar $limpetcashneeded ((($maxmines - $player~limpets) * $limpet_cost) + $limpet_removal_cost)
+setvar $armidcashneeded (($maxmines - $player~armids) * $armid_cost)
+setvar $cashneeded ($limpetcashneeded + $armidcashneeded)
+if ($cashneeded > $player~credits)
+	send "D"
+	waiton "Citadel treasury contains "
+	getword currentline $citadelcash 4
+	striptext $citadelcash ","
+	if ($citadelcash < $cashneeded)
+		setvar $switchboard~message "Not enough cash for mine refurbs in treasury or on hand.*"
+		gosub :switchboard~switchboard
+		halt
+	end
+	send "t f "&($cashneeded - $player~credits)&"* "
 end
 
-setvar $I 1
-setvar $START_SECTOR $PLAYER~CURRENT_SECTOR
-setvar $WEAREADJDOCK FALSE
-while ($I <= SECTOR.WARPCOUNT[$START_SECTOR])
-  setvar $ADJ_START SECTOR.WARPS[$START_SECTOR][$I]
-  if ($ADJ_START = $STARDOCK)
-    setvar $WEAREADJDOCK TRUE
-  end
-  add $I 1
+setvar $i 1
+setvar $start_sector $player~current_sector
+setvar $weareadjdock false
+while ($i <= sector.warpcount[$start_sector])
+	setvar $adj_start sector.warps[$start_sector][$i]
+	if ($adj_start = $stardock)
+		setvar $weareadjdock true
+	end
+	add $i 1
 end
 
-if (($PLAYER~ALIGNMENT < 1000) and ($WEAREADJDOCK = FALSE))
-  setvar $RED_ADJ 0
-  gosub :FINDJUMPSECTOR
-  if ($RED_ADJ <> 0)
-    setvar $switchboard~message "Jump Sector Found - Using Sector "&$RED_ADJ&"**"
-    gosub :switchboard~switchboard
-  else
-    waitfor "Command [TL="
-    setvar $switchboard~message "Cannot Find Jump Sector Adjacent Dock**"
-    gosub :switchboard~switchboard
-    halt
-  end
+if (($player~alignment < 1000) and ($weareadjdock = false))
+	setvar $red_adj 0
+	gosub :findjumpsector
+	if ($red_adj <> 0)
+		setvar $switchboard~message "Jump Sector Found - Using Sector "&$red_adj&"**"
+		gosub :switchboard~switchboard
+	else
+		waitfor "Command [TL="
+		setvar $switchboard~message "Cannot Find Jump Sector Adjacent Dock**"
+		gosub :switchboard~switchboard
+		halt
+	end
 end
 
-if ($PLAYER~ALIGNMENT >= 1000)
-  if ($WEAREADJDOCK)
-    send "^F"&$STARDOCK&"*"&$START_SECTOR&"*Q/ "
-  else
-    send "^F"&$START_SECTOR&"*"&$STARDOCK&"*F"&$STARDOCK&"*"&$START_SECTOR&"*Q/ "
-  end
+if ($player~alignment >= 1000)
+	if ($weareadjdock)
+		send "^F"&$stardock&"*"&$start_sector&"*Q/ "
+	else
+		send "^F"&$start_sector&"*"&$stardock&"*F"&$stardock&"*"&$start_sector&"*Q/ "
+	end
 else
-  if ($WEAREADJDOCK)
-    send "^F"&$STARDOCK&"*"&$START_SECTOR&"*Q/ "
-  else
-    send "^F"&$START_SECTOR&"*"&$RED_ADJ&"*F"&$STARDOCK&"*"&$START_SECTOR&"*Q/ "
-  end
+	if ($weareadjdock)
+		send "^F"&$stardock&"*"&$start_sector&"*Q/ "
+	else
+		send "^F"&$start_sector&"*"&$red_adj&"*F"&$stardock&"*"&$start_sector&"*Q/ "
+	end
 end
-settextlinetrigger NOJOY :NOJOY "*** Error - No route within"
-settexttrigger CONT :CONT "(?="
+settextlinetrigger nojoy :nojoy "*** Error - No route within"
+settexttrigger cont :cont "(?="
 pause
-:NOJOY
 
+:nojoy
 killalltriggers
 setvar $switchboard~message "Cannot Find Path to StarDock!**"
 gosub :switchboard~switchboard
 halt
-:CONT
+
+:cont
 killalltriggers
-setdelaytrigger LATENCY_DELAY :LATENCY_DELAY 500
+setdelaytrigger latency_delay :latency_delay 500
 pause
-:LATENCY_DELAY
 
-
-echo "**"&ANSI_14&"Please Stand By"&ANSI_15&" - Calculating Distances...**"
-if (($PLAYER~ALIGNMENT >= 1000) or $WEAREADJDOCK)
-  getdistance $DIST1 $START_SECTOR $STARDOCK
+:latency_delay
+echo "**"&ansi_14&"Please Stand By"&ansi_15&" - Calculating Distances...**"
+if (($player~alignment >= 1000) or $weareadjdock)
+	getdistance $dist1 $start_sector $stardock
 else
-  getdistance $DIST1 $START_SECTOR $RED_ADJ
+	getdistance $dist1 $start_sector $red_adj
 end
 
-if ($DIST1 <= 0)
-  setvar $switchboard~message $TAGLINEB&" - Insufficient Warp Data Plotting Course to Dock**"
-  gosub :switchboard~switchboard
-  halt
+if ($dist1 <= 0)
+	setvar $switchboard~message $taglineb&" - Insufficient Warp Data Plotting Course to Dock**"
+	gosub :switchboard~switchboard
+	halt
 end
 
-getdistance $DIST2 $STARDOCK $START_SECTOR
-if ($DIST2 <= 0)
-  setvar $switchboard~message $TAGLINEB&" - Insufficient Warp Data Plotting Return Course From Dock**"
-  gosub :switchboard~switchboard
-  halt
+getdistance $dist2 $stardock $start_sector
+if ($dist2 <= 0)
+	setvar $switchboard~message $taglineb&" - Insufficient Warp Data Plotting Return Course From Dock**"
+	gosub :switchboard~switchboard
+	halt
 end
 
-setvar $ORE_REQ (($DIST1 + $DIST2) * 3)
+setvar $ore_req (($dist1 + $dist2) * 3)
 
-if ($PLAYER~ORE_HOLDS < $ORE_REQ)
-  setvar $switchboard~message "Not Enough ORE In Holds To Make Round Trip**"
-  gosub :switchboard~switchboard
-  halt
+if ($player~ore_holds < $ore_req)
+	setvar $switchboard~message "Not Enough ORE In Holds To Make Round Trip**"
+	gosub :switchboard~switchboard
+	halt
 end
 
-if ($PLAYER~TWARP_TYPE = "No")
-  setvar $switchboard~message "Must Have Twarp 1 or 2**"
-  gosub :switchboard~switchboard
-  halt
+if ($player~twarp_type = "No")
+	setvar $switchboard~message "Must Have Twarp 1 or 2**"
+	gosub :switchboard~switchboard
+	halt
 end
 
-if ($UNLIMITEDGAME = 0)
-  gosub :TURNSREQUIRED
-  if ($TURNSREQUIRED > $PLAYER~TURNS)
-    setvar $switchboard~message "Not Enough Turns. "&ANSI_12&$TURNSREQUIRED&ANSI_15&", Required**"
-    gosub :switchboard~switchboard
-    halt
-  elseif ($TURNSREQUIRED <= $PLAYER~TURNS)
-    setvar $TMP ($PLAYER~TURNS - $TURNSREQUIRED)
-    if ($TMP <= $BOT_TURN_LIMIT)
-      setvar $switchboard~message "Proceeding Will Leave Fewer Than "&$BOT_TURN_LIMIT&" Turns!**"
-      gosub :switchboard~switchboard
-      halt
-    end
-  end
+if ($unlimitedgame = 0)
+	gosub :turnsrequired
+	if ($turnsrequired > $player~turns)
+		setvar $switchboard~message "Not Enough Turns. "&ansi_12&$turnsrequired&ansi_15&", Required**"
+		gosub :switchboard~switchboard
+		halt
+	elseif ($turnsrequired <= $player~turns)
+		setvar $tmp ($player~turns - $turnsrequired)
+		if ($tmp <= $bot_turn_limit)
+			setvar $switchboard~message "Proceeding Will Leave Fewer Than "&$bot_turn_limit&" Turns!**"
+			gosub :switchboard~switchboard
+			halt
+		end
+	end
 end
 
-send " C R "&$STARDOCK&"*Q "
-settextlinetrigger ITSALIVE :ITSALIVE "Items     Status  Trading % of max OnBoard"
-settextlinetrigger NOSOUPFORME :NOSOUPFORME "I have no information about a port in that sector"
+send " C R "&$stardock&"*Q "
+settextlinetrigger itsalive :itsalive "Items     Status  Trading % of max OnBoard"
+settextlinetrigger nosoupforme :nosoupforme "I have no information about a port in that sector"
 pause
-:NOSOUPFORME
+
+:nosoupforme
 killalltriggers
-setvar $switchboard~message $TAGLINEB&" - StarDock appears to have been Blown Up!**"
+setvar $switchboard~message $taglineb&" - StarDock appears to have been Blown Up!**"
 gosub :switchboard~switchboard
 halt
-:ITSALIVE
+
+:itsalive
 killalltriggers
 waitfor "(?="
-setvar $MSG ""
-if (($PLAYER~ALIGNMENT >= 1000) and ($WEAREADJDOCK = FALSE))
-  setvar $TWARPTO $STARDOCK
-  gosub :DOTWARP
-elseif (($WEAREADJDOCK = FALSE) and ($RED_ADJ <> 0))
-  setvar $TWARPTO $RED_ADJ
-  gosub :DOTWARP
+setvar $msg ""
+if (($player~alignment >= 1000) and ($weareadjdock = false))
+	setvar $twarpto $stardock
+	gosub :dotwarp
+elseif (($weareadjdock = false) and ($red_adj <> 0))
+	setvar $twarpto $red_adj
+	gosub :dotwarp
 else
-  send " m "&$STARDOCK&"*  *  P  S G Y G Q "
+	send " m "&$stardock&"*  *  P  S G Y G Q "
 end
-if ($MSG = "")
-  waitfor "You leave the Galactic Bank."
+if ($msg = "")
+	waitfor "You leave the Galactic Bank."
 else
-  setvar $switchboard~message "Unknown Problem Detected. Check TA!**"
-  gosub :switchboard~switchboard
-  halt
+	setvar $switchboard~message "Unknown Problem Detected. Check TA!**"
+	gosub :switchboard~switchboard
+	halt
 end
-gosub :PLAYER~QUIKSTATS
+gosub :player~quikstats
 
-setvar $_LIMPS "Max"
-setvar $_MINES "Max"
-gosub :DOPURCHASES
-send "Q Q Q Q Z N M "&$START_SECTOR&"* Y  Y  Y  * L Z"&#8&$PLANET&"* p  s  s * * c *"
-gosub :PLAYER~QUIKSTATS
-if ($PLAYER~CURRENT_SECTOR = $STARDOCK)
-  setvar $switchboard~message "Twarp Error, Should be Hiding on Dock!**"
-  gosub :switchboard~switchboard
-  halt
+setvar $_limps "Max"
+setvar $_mines "Max"
+gosub :dopurchases
+send "Q Q Q Q Z N M "&$start_sector&"* Y  Y  Y  * L Z"&#8&$planet&"* p  s  s * * c *"
+gosub :player~quikstats
+if ($player~current_sector = $stardock)
+	setvar $switchboard~message "Twarp Error, Should be Hiding on Dock!**"
+	gosub :switchboard~switchboard
+	halt
 end
 send "q tnt1* c "
 
-
 return
-:CHECKAVOIDEDSECTORS
 
-setvar $AVOIDEDSECTORS ""
-gosub :SECTOR~GETAVOIDS
-setvar $AVOID_I 0
-while ($AVOID_I < $SECTOR~AVOIDCOUNT)
-  add $AVOID_I 1
-  setvar $AVOIDEDSECTORS $AVOIDEDSECTORS&" "&$SECTOR~AVOIDS[$AVOID_I]&" "
+:checkavoidedsectors
+setvar $avoidedsectors ""
+gosub :sector~getavoids
+setvar $avoid_i 0
+while ($avoid_i < $sector~avoidcount)
+	add $avoid_i 1
+	setvar $avoidedsectors $avoidedsectors&" "&$sector~avoids[$avoid_i]&" "
 end
 
 return
-:DELAYTRIGGER
 
-
-setdelaytrigger DELAYUNTILSAVEME :CALLSAVEME 1000
+:delaytrigger
+setdelaytrigger delayuntilsaveme :callsaveme 1000
 return
-:CALLSAVEME
 
+:callsaveme
 killalltriggers
 send "*"
 waitfor "(?="
-getword CURRENTLINE $PROMPT 1
-if ($PROMPT = "Citadel")
-  echo "**Had to halt script, check ship to see if it is valid.**"
-  goto :PAUSEGRIDDER
+getword currentline $prompt 1
+if ($prompt = "Citadel")
+	echo "**Had to halt script, check ship to see if it is valid.**"
+	goto :pausegridder
 end
-if (($PROMPT = "Computer") or ($PROMPT = "Corporate") or ($PROMPT = "NavPoint"))
-  send "q"
-  waitfor "Command [TL"
+if (($prompt = "Computer") or ($prompt = "Corporate") or ($prompt = "NavPoint"))
+	send "q"
+	waitfor "Command [TL"
 end
-gosub :PLAYER~QUIKSTATS
-setvar $FIGSTODEPLOY 1
-gosub :DEPLOYFIGS
-setvar $SAVETARGET $PLAYER~CURRENT_SECTOR
-if ($SAVETARGET < 10)
-  setvar $SAVETARGET 0000&$SAVETARGET
-elseif ($SAVETARGET < 100)
-  setvar $SAVETARGET 000&$SAVETARGET
-elseif ($SAVETARGET < 1000)
-  setvar $SAVETARGET 00&$SAVETARGET
-elseif ($SAVETARGET < 10000)
-  setvar $SAVETARGET 0&$SAVETARGET
+gosub :player~quikstats
+setvar $figstodeploy 1
+gosub :deployfigs
+setvar $savetarget $player~current_sector
+if ($savetarget < 10)
+	setvar $savetarget 0000&$savetarget
+elseif ($savetarget < 100)
+	setvar $savetarget 000&$savetarget
+elseif ($savetarget < 1000)
+	setvar $savetarget 00&$savetarget
+elseif ($savetarget < 10000)
+	setvar $savetarget 0&$savetarget
 
 end
-send "'"&$SAVETARGET&"=saveme*"
-send "'pickup "&$PLAYER~CURRENT_SECTOR&" ::*"
-:WAITFORHELP
+send "'"&$savetarget&"=saveme*"
+send "'pickup "&$player~current_sector&" ::*"
 
-
-settextlinetrigger FRIENDLYTWARP :FRIENDLYTWARP "appears in a brilliant flash of warp energies!"
-settextlinetrigger FRIENDLYPLANET :FRIENDLYPLANET "Saveme script activated - Planet "
-settextlinetrigger TOWLOCKED :TOWLOCKED "locks a tractor beam on your ship."
-setdelaytrigger TIMEOUT :TIMEOUT 30000
+:waitforhelp
+settextlinetrigger friendlytwarp :friendlytwarp "appears in a brilliant flash of warp energies!"
+settextlinetrigger friendlyplanet :friendlyplanet "Saveme script activated - Planet "
+settextlinetrigger towlocked :towlocked "locks a tractor beam on your ship."
+setdelaytrigger timeout :timeout 30000
 pause
-:TIMEOUT
 
+:timeout
 killalltriggers
 send "'30 seconds after save call, script halted.*"
-goto :PAUSEGRIDDER
-:FRIENDLYTWARP
+goto :pausegridder
 
+:friendlytwarp
 killalltriggers
-setvar $FIGSTODEPLOY "ALL"
-gosub :DEPLOYFIGS
-goto :WAITFORHELP
-:FRIENDLYPLANET
+setvar $figstodeploy "ALL"
+gosub :deployfigs
+goto :waitforhelp
 
+:friendlyplanet
 killalltriggers
-gettext CURRENTLINE $PLANET "Saveme script activated - Planet " " to "
-send "L "&$PLANET&"* C 'I landed on planet "&$PLANET&"*"
-goto :PAUSEGRIDDER
-:TOWLOCKED
+gettext currentline $planet "Saveme script activated - Planet " " to "
+send "L "&$planet&"* C 'I landed on planet "&$planet&"*"
+goto :pausegridder
 
+:towlocked
 killalltriggers
-setvar $FIGSTODEPLOY 1
-gosub :DEPLOYFIGS
+setvar $figstodeploy 1
+gosub :deployfigs
 send "'Tow locked, get us out of here!*"
-goto :PAUSEGRIDDER
-:DEPLOYFIGS
+goto :pausegridder
 
-
-if ($FIGSTODEPLOY = 0)
-  setvar $FIGSTODEPLOY 1
+:deployfigs
+if ($figstodeploy = 0)
+	setvar $figstodeploy 1
 end
-if (($PLAYER~CURRENT_SECTOR < 11) or ($PLAYER~CURRENT_SECTOR = $STARDOCK))
-  send "'Can't deploy figs in fed*"
-  return
+if (($player~current_sector < 11) or ($player~current_sector = $stardock))
+	send "'Can't deploy figs in fed*"
+	return
 end
 send "F"
-settextlinetrigger NOCONTROL :NOCONTROL "These fighters are not under your control."
-settextlinetrigger ABLETODEPLOY :ABLETODEPLOY "fighters available."
+settextlinetrigger nocontrol :nocontrol "These fighters are not under your control."
+settextlinetrigger abletodeploy :abletodeploy "fighters available."
 pause
-:NOCONTROL
 
+:nocontrol
 killalltriggers
 send "'We don't control the figs in this sector!*"
-goto :PAUSEGRIDDER
-:ABLETODEPLOY
+goto :pausegridder
 
+:abletodeploy
 killalltriggers
-getword CURRENTLINE $FIGSAVAILABLE 3
-striptext $FIGSAVAILABLE ","
-if ($FIGSTODEPLOY = "ALL")
-  setvar $FIGSTODEPLOY $FIGSAVAILABLE
+getword currentline $figsavailable 3
+striptext $figsavailable ","
+if ($figstodeploy = "ALL")
+	setvar $figstodeploy $figsavailable
 end
-if ($FIGSAVAILABLE = 0)
-  send "0* ZC D* 'I have no figs to deploy!*"
+if ($figsavailable = 0)
+	send "0* ZC D* 'I have no figs to deploy!*"
 else
-  send $FIGSTODEPLOY&"* ZC D* '"&$FIGSTODEPLOY&" figs deployed*"
+	send $figstodeploy&"* ZC D* '"&$figstodeploy&" figs deployed*"
 end
 return
-:DISRUPT
 
-if ($PLAYER~MINE_DISRUPTORS = 0)
-  return
+:disrupt
+if ($player~mine_disruptors = 0)
+	return
 end
-setdelaytrigger WHOA_WUZUP :WHOA_WUZUP 4000
-settextlinetrigger SCAN_COMPLETE :SCAN_COMPLETE "Warps to Sector(s)"
+setdelaytrigger whoa_wuzup :whoa_wuzup 4000
+settextlinetrigger scan_complete :scan_complete "Warps to Sector(s)"
 send " Q Q S  H* "
 pause
-:WHOA_WUZUP
+
+:whoa_wuzup
 killalltriggers
 send "'Unknown Problem Occured, Attempting to reach Command Prompt!*  P D 0* 0* 0* * *** * C  Q  Q  Q  Q  Q  Z  2  2  C  Q  *  Z  *  ***  *  *  ^Q"
 waitfor ": ENDINTERROG"
-gosub :PLAYER~QUIKSTATS
-send "'Unknown Problem Occured, at '"&$PLAYER~CURRENT_PROMPT&"' Prompt!*"
+gosub :player~quikstats
+send "'Unknown Problem Occured, at '"&$player~current_prompt&"' Prompt!*"
 halt
-:SCAN_COMPLETE
+
+:scan_complete
 killalltriggers
-setarray $ADJ2HIT 6 1
-setarray $MINES~ADJ2HIT 6 1
-setvar $IDX 1
+setarray $adj2hit 6 1
+setarray $mines~adj2hit 6 1
+setvar $idx 1
 
-while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$IDX] > 0)
-  setvar $ADJ SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$IDX]
-  if (SECTOR.MINES.QUANTITY[$ADJ] <> 0)
-    if ((SECTOR.MINES.OWNER[$ADJ] <> "belong to your Corp") and (SECTOR.MINES.OWNER[$ADJ] <> "yours"))
-      setvar $ADJ2HIT[$IDX] $ADJ
-      setvar $ADJ2HIT[$IDX][1] SECTOR.MINES.QUANTITY[$ADJ]
-    else
-      setvar $ADJ2HIT[$IDX][1] 0
-    end
-  end
-  add $IDX 1
+while (sector.warps[$player~current_sector][$idx] > 0)
+	setvar $adj sector.warps[$player~current_sector][$idx]
+	if (sector.mines.quantity[$adj] <> 0)
+		if ((sector.mines.owner[$adj] <> "belong to your Corp") and (sector.mines.owner[$adj] <> "yours"))
+			setvar $adj2hit[$idx] $adj
+			setvar $adj2hit[$idx][1] sector.mines.quantity[$adj]
+		else
+			setvar $adj2hit[$idx][1] 0
+		end
+	end
+	add $idx 1
 end
 
-setvar $IDX 1
-while ($IDX <= 6)
-  setvar $MINES~ADJ2HIT[$IDX] $ADJ2HIT[$IDX]
-  setvar $MINES~ADJ2HIT[$IDX][1] $ADJ2HIT[$IDX][1]
-  add $IDX 1
+setvar $idx 1
+while ($idx <= 6)
+	setvar $mines~adj2hit[$idx] $adj2hit[$idx]
+	setvar $mines~adj2hit[$idx][1] $adj2hit[$idx][1]
+	add $idx 1
 end
-setvar $MINES~BURSTING $BURSTING
-setvar $MINES~TOTAL_MINES_POOFED $TOTAL_MINES_POOFED
-gosub :MINES~STAR_BURST
-setvar $TOTAL_MINES_POOFED $MINES~TOTAL_MINES_POOFED
-send " Q Q Q Z N L Z"&#8&$PLANET&"*  *  J  C  *  * "
-settexttrigger LANDED :LANDED "Citadel command (?"
-settextlinetrigger NOTLANDED :NOTLANDED "Are you sure you want to jettison all cargo"
+setvar $mines~bursting $bursting
+setvar $mines~total_mines_poofed $total_mines_poofed
+gosub :mines~star_burst
+setvar $total_mines_poofed $mines~total_mines_poofed
+send " Q Q Q Z N L Z"&#8&$planet&"*  *  J  C  *  * "
+settexttrigger landed :landed "Citadel command (?"
+settextlinetrigger notlanded :notlanded "Are you sure you want to jettison all cargo"
 pause
-:NOTLANDED
-:NOLANDED
+
+:notlanded
+:nolanded
 killalltriggers
 send "'Unknown Problem Occured after StarBurst!*"
 halt
-:LANDED
+
+:landed
 killalltriggers
 return
-:FINDNEXTTARGET
 
+:findnexttarget
+getnearestwarps $nearest $player~current_sector
+setvar $checked ""
+setvar $i 1
+while ($i <= $nearest)
+	setvar $focus $nearest[$i]
+	setvar $checked $checked&" "&$player~current_sector&" "
 
-getnearestwarps $NEAREST $PLAYER~CURRENT_SECTOR
-setvar $CHECKED ""
-setvar $I 1
-while ($I <= $NEAREST)
-  setvar $FOCUS $NEAREST[$I]
-  setvar $CHECKED $CHECKED&" "&$PLAYER~CURRENT_SECTOR&" "
+	getwordpos $avoidedsectors $pos " "&$focus&" "
+	getsectorparameter $focus "FIGSEC" $isfigged
+	getsectorparameter $focus "MINESEC" $isarmided
+	getsectorparameter $focus "LIMPSEC" $islimped
+	isnumber $tst $isfigged
+	if ($tst = 0)
+		setvar $isfigged false
+	end
+	isnumber $tst $islimped
+	if ($tst = 0)
+		setvar $islimped false
+	end
+	isnumber $tst $isarmided
+	if ($tst = 0)
+		setvar $isarmided false
+	end
 
-  getwordpos $AVOIDEDSECTORS $POS " "&$FOCUS&" "
-  getsectorparameter $FOCUS "FIGSEC" $ISFIGGED
-  getsectorparameter $FOCUS "MINESEC" $ISARMIDED
-  getsectorparameter $FOCUS "LIMPSEC" $ISLIMPED
-  isnumber $TST $ISFIGGED
-  if ($TST = 0)
-    setvar $ISFIGGED FALSE
-  end
-  isnumber $TST $ISLIMPED
-  if ($TST = 0)
-    setvar $ISLIMPED FALSE
-  end
-  isnumber $TST $ISARMIDED
-  if ($TST = 0)
-    setvar $ISARMIDED FALSE
-  end
+	if ($border = true)
+		setvar $p 1
+		while (sector.warps[$focus][$p] > 0)
+			setvar $temp sector.warps[$focus][$p]
+			getsectorparameter $temp "FIGSEC" $isfigadjacent
+			if ($isfigadjacent <> true)
+				goto :we_got_game
+			end
+			add $p 1
+		end
+		goto :next_poss_targ
+	else
+		setvar $p 1
+		while (sector.warps[$focus][$p] > 0)
+			setvar $temp sector.warps[$focus][$p]
+			getsectorparameter $temp "FIGSEC" $isfigadjacent
+			if ($isfigadjacent <> true)
+				goto :next_poss_targ
+			end
+			add $p 1
+		end
+	end
 
-  if ($BORDER = TRUE)
-    setvar $P 1
-    while (SECTOR.WARPS[$FOCUS][$P] > 0)
-      setvar $TEMP SECTOR.WARPS[$FOCUS][$P]
-      getsectorparameter $TEMP "FIGSEC" $ISFIGADJACENT
-      if ($ISFIGADJACENT <> TRUE)
-        goto :WE_GOT_GAME
-      end
-      add $P 1
-    end
-    goto :NEXT_POSS_TARG
-  else
-    setvar $P 1
-    while (SECTOR.WARPS[$FOCUS][$P] > 0)
-      setvar $TEMP SECTOR.WARPS[$FOCUS][$P]
-      getsectorparameter $TEMP "FIGSEC" $ISFIGADJACENT
-      if ($ISFIGADJACENT <> TRUE)
-        goto :NEXT_POSS_TARG
-      end
-      add $P 1
-    end
-  end
-  :WE_GOT_GAME
+	:we_got_game
+	if ((($islimped <= 0) or ($isarmided <= 0)) and (($isfigged > 0) and ($pos <= 0)))
+		getdistance $distancethere $player~current_sector $focus
+		getdistance $distanceback $focus $player~current_sector
+		if ($distancethere < 0)
+			send "^f"&$player~current_sector&"*"&$focus&"*q"
+			waiton "ENDINTERROG"
+			getdistance $distancethere $player~current_sector $focus
+		end
+		if ($distanceback < 0)
+			send "^f"&$focus&"*"&$player~current_sector&"*q"
+			waiton "ENDINTERROG"
+			getdistance $distanceback $focus $player~current_sector
+		end
+		if (($distancethere > 30) and ($longjumplimit <> 0))
+			setvar $switchboard~message "Next fighter is over 30 hops away, stopping mine sweeper.*"
+			gosub :switchboard~switchboard
+			gosub :gohome
+			halt
+		else
+			subtract $longjumplimit 1
+		end
+		killalltriggers
+		send "p "&$focus&"*y"
+		settextlinetrigger pwarpnoship1 :pwarpnoship1 "You do not have any fighters in Sector "
+		settextlinetrigger pwarpyesship1 :pwarpyesship1 " Planetary TransWarp Drive Engaged! "
+		settextlinetrigger pwarpnofuel1 :pwarpnofuel1 "You do not have enough Fuel Ore on this planet to make the jump."
+		settextlinetrigger pwarpyesship2 :pwarpyesship1 "You are already in that sector!"
+		pause
 
-  if ((($ISLIMPED <= 0) or ($ISARMIDED <= 0)) and (($ISFIGGED > 0) and ($POS <= 0)))
-    getdistance $DISTANCETHERE $PLAYER~CURRENT_SECTOR $FOCUS
-    getdistance $DISTANCEBACK $FOCUS $PLAYER~CURRENT_SECTOR
-    if ($DISTANCETHERE < 0)
-      send "^f"&$PLAYER~CURRENT_SECTOR&"*"&$FOCUS&"*q"
-      waiton "ENDINTERROG"
-      getdistance $DISTANCETHERE $PLAYER~CURRENT_SECTOR $FOCUS
-    end
-    if ($DISTANCEBACK < 0)
-      send "^f"&$FOCUS&"*"&$PLAYER~CURRENT_SECTOR&"*q"
-      waiton "ENDINTERROG"
-      getdistance $DISTANCEBACK $FOCUS $PLAYER~CURRENT_SECTOR
-    end
-    if (($DISTANCETHERE > 30) and ($LONGJUMPLIMIT <> 0))
-      setvar $switchboard~message "Next fighter is over 30 hops away, stopping mine sweeper.*"
-      gosub :switchboard~switchboard
-      gosub :GOHOME
-      halt
-    else
-      subtract $LONGJUMPLIMIT 1
-    end
-    killalltriggers
-    send "p "&$FOCUS&"*y"
-    settextlinetrigger PWARPNOSHIP1 :PWARPNOSHIP1 "You do not have any fighters in Sector "
-    settextlinetrigger PWARPYESSHIP1 :PWARPYESSHIP1 " Planetary TransWarp Drive Engaged! "
-    settextlinetrigger PWARPNOFUEL1 :PWARPNOFUEL1 "You do not have enough Fuel Ore on this planet to make the jump."
-    settextlinetrigger PWARPYESSHIP2 :PWARPYESSHIP1 "You are already in that sector!"
-    pause
-    :PWARPNOFUEL1
-    killalltriggers
-    setvar $switchboard~message "Not enough fuel on planet "&$PLANET&". Stopping mine sweeper.*"
-    gosub :switchboard~switchboard
-    halt
-    :PWARPYESSHIP1
-    killalltriggers
-    setvar $AVOIDEDSECTORS $AVOIDEDSECTORS&" "&$FOCUS&" "
-    gosub :PLAYER~QUIKSTATS
-    return
-    :PWARPNOSHIP1
-    killalltriggers
-  end
-  :NEXT_POSS_TARG
-  add $I 1
+		:pwarpnofuel1
+		killalltriggers
+		setvar $switchboard~message "Not enough fuel on planet "&$planet&". Stopping mine sweeper.*"
+		gosub :switchboard~switchboard
+		halt
+
+		:pwarpyesship1
+		killalltriggers
+		setvar $avoidedsectors $avoidedsectors&" "&$focus&" "
+		gosub :player~quikstats
+		return
+
+		:pwarpnoship1
+		killalltriggers
+	end
+
+	:next_poss_targ
+	add $i 1
 end
 setvar $switchboard~message "All sectors possible swept. Halting mine sweeper.*"
 gosub :switchboard~switchboard
-gosub :GOHOME
+gosub :gohome
 return
-:GOHOME
 
-gosub :PLAYER~QUIKSTATS
-if ($PLAYER~CURRENT_PROMPT = "Citadel")
-  send "p"&$HOMESECTOR&"* y"
-  settextlinetrigger PWARP_LOCK :PWARP_LOCK "Locating beam pinpointed"
-  settextlinetrigger NO_PWARP_LOCK :NO_PWARP_LOCK "Your own fighters must be"
-  settextlinetrigger ALREADY :ALREADY "You are already in that sector!"
-  settextlinetrigger NO_ORE :NO_ORE "You do not have enough Fuel Ore"
-  pause
-  :NO_PWARP_LOCK
-  killalltriggers
-  setvar $switchboard~message "No fighter down at that location!*"
-  gosub :switchboard~switchboard
-  return
-  :NO_ORE
-  killalltriggers
-  setvar $switchboard~message "Not enough fuel for that pwarp.*"
-  gosub :switchboard~switchboard
-  return
-  :PWARP_LOCK
-  killalltriggers
-  waiton "Planet is now in sector"
-  setvar $switchboard~message "Planet returned Home*"
-  gosub :switchboard~switchboard
-  return
-  :ALREADY
-  killalltriggers
-  setvar $switchboard~message "Planet already in that sector!.*"
-  gosub :switchboard~switchboard
-  return
+:gohome
+gosub :player~quikstats
+if ($player~current_prompt = "Citadel")
+	send "p"&$homesector&"* y"
+	settextlinetrigger pwarp_lock :pwarp_lock "Locating beam pinpointed"
+	settextlinetrigger no_pwarp_lock :no_pwarp_lock "Your own fighters must be"
+	settextlinetrigger already :already "You are already in that sector!"
+	settextlinetrigger no_ore :no_ore "You do not have enough Fuel Ore"
+	pause
+
+	:no_pwarp_lock
+	killalltriggers
+	setvar $switchboard~message "No fighter down at that location!*"
+	gosub :switchboard~switchboard
+	return
+
+	:no_ore
+	killalltriggers
+	setvar $switchboard~message "Not enough fuel for that pwarp.*"
+	gosub :switchboard~switchboard
+	return
+
+	:pwarp_lock
+	killalltriggers
+	waiton "Planet is now in sector"
+	setvar $switchboard~message "Planet returned Home*"
+	gosub :switchboard~switchboard
+	return
+
+	:already
+	killalltriggers
+	setvar $switchboard~message "Planet already in that sector!.*"
+	gosub :switchboard~switchboard
+	return
 else
-  setvar $switchboard~message "Cannot Pwarp Home. Wrong Prompt!*"
-  gosub :switchboard~switchboard
-  halt
+	setvar $switchboard~message "Cannot Pwarp Home. Wrong Prompt!*"
+	gosub :switchboard~switchboard
+	halt
 end
 return
-:CLEARSECTOR
 
-
-setvar $LAID_ARMID FALSE
-setvar $LAID_LIMP FALSE
-setvar $BEFORESECTOR $PLAYER~CURRENT_SECTOR
-setvar $BEFORELIMPETS $PLAYER~LIMPETS
-setvar $BEFOREARMIDS $PLAYER~ARMIDS
-setvar $PLACEDLIMPET FALSE
-setvar $PLACEDARMID FALSE
+:clearsector
+setvar $laid_armid false
+setvar $laid_limp false
+setvar $beforesector $player~current_sector
+setvar $beforelimpets $player~limpets
+setvar $beforearmids $player~armids
+setvar $placedlimpet false
+setvar $placedarmid false
 
 send "   sz*    "
 
 waiton "Warps to Sector(s) :"
-setvar $LIMPETOWNER SECTOR.LIMPETS.OWNER[$PLAYER~CURRENT_SECTOR]
-setvar $ARMIDOWNER SECTOR.MINES.OWNER[$PLAYER~CURRENT_SECTOR]
-gosub :DEPLOYEQUIPMENT
+setvar $limpetowner sector.limpets.owner[$player~current_sector]
+setvar $armidowner sector.mines.owner[$player~current_sector]
+gosub :deployequipment
 
-if ($FAST or $NONSAFE)
-  while (($PLACEDLIMPET = FALSE) or ($PLACEDARMID = FALSE))
-    gosub :ATTEMPTCLEARINGMINES
-  end
-  setsectorparameter $PLAYER~CURRENT_SECTOR "MINESEC" TRUE
-  setsectorparameter $PLAYER~CURRENT_SECTOR "LIMPSEC" TRUE
+if ($fast or $nonsafe)
+	while (($placedlimpet = false) or ($placedarmid = false))
+		gosub :attemptclearingmines
+	end
+	setsectorparameter $player~current_sector "MINESEC" true
+	setsectorparameter $player~current_sector "LIMPSEC" true
 else
-  if ($PLACEDARMID)
-    setsectorparameter $PLAYER~CURRENT_SECTOR "MINESEC" TRUE
-  end
-  if ($PLACEDLIMPET)
-    setsectorparameter $PLAYER~CURRENT_SECTOR "LIMPSEC" TRUE
-  end
+	if ($placedarmid)
+		setsectorparameter $player~current_sector "MINESEC" true
+	end
+	if ($placedlimpet)
+		setsectorparameter $player~current_sector "LIMPSEC" true
+	end
 end
 
 return
-:XENTER
 
-send "q y * t* * *" PASSWORD "*    *    *       za9999*   z*   "
+:xenter
+send "q y * t* * *" password "*    *    *       za9999*   z*   "
 return
-:ATTEMPTCLEARINGMINES
 
+:attemptclearingmines
 killalltriggers
-setvar $LAID_ARMID FALSE
-setvar $LAID_LIMP FALSE
+setvar $laid_armid false
+setvar $laid_limp false
 
-if ($FAST)
-  setvar $I 0
-  send "q  q  q  z   n  *   "
-  while ($I <= 3)
-    gosub :XENTER
-    add $I 1
-  end
-  if ($GRID_ARMIDS = 0)
-    setvar $_ARMIDS_ " "
-  else
-    setvar $_ARMIDS_ " h 1 z "&$GRID_ARMIDS&"* z c * "
-  end
-  if ($GRID_LIMPETS = 0)
-    setvar $_LIMPS_ " "
-  else
-    setvar $_LIMPS_ "h 2 z "&$GRID_LIMPETS&"* z c * "
-  end
+if ($fast)
+	setvar $i 0
+	send "q  q  q  z   n  *   "
+	while ($i <= 3)
+		gosub :xenter
+		add $i 1
+	end
+	if ($grid_armids = 0)
+		setvar $_armids_ " "
+	else
+		setvar $_armids_ " h 1 z "&$grid_armids&"* z c * "
+	end
+	if ($grid_limpets = 0)
+		setvar $_limps_ " "
+	else
+		setvar $_limps_ "h 2 z "&$grid_limpets&"* z c * "
+	end
 
-  send $_ARMIDS_&$_LIMPS_&" l "&$PLANET&"*  c  "
-  settextlinetrigger LAID_LIMP :LAID_LIMP "Limpet mine(s) on board."
-  settextlinetrigger LAID_ARMID :LAID_ARMID "Armid mine(s) on board."
-  waiton "Citadel command"
+	send $_armids_&$_limps_&" l "&$planet&"*  c  "
+	settextlinetrigger laid_limp :laid_limp "Limpet mine(s) on board."
+	settextlinetrigger laid_armid :laid_armid "Armid mine(s) on board."
+	waiton "Citadel command"
 else
-  send "r y y "
-  waiton "Epic Interactive Strategy"
-  send GAME
-  waiton "[Pause]"
-  send "   *    "
-  waiton "Enter your choice:"
-  settextlinetrigger LAID_LIMP :LAID_LIMP "Limpet mine(s) on board."
-  settextlinetrigger LAID_ARMID :LAID_ARMID "Armid mine(s) on board."
-  send "t*   *    *"&PASSWORD&"*    *    *   q  *  *  h 1 z "&$GRID_ARMIDS&"* z c * h 2 z "&$GRID_LIMPETS&"* z c * l "&$PLANET&"*  c  "
-  waiton "Citadel command"
+	send "r y y "
+	waiton "Epic Interactive Strategy"
+	send game
+	waiton "[Pause]"
+	send "   *    "
+	waiton "Enter your choice:"
+	settextlinetrigger laid_limp :laid_limp "Limpet mine(s) on board."
+	settextlinetrigger laid_armid :laid_armid "Armid mine(s) on board."
+	send "t*   *    *"&password&"*    *    *   q  *  *  h 1 z "&$grid_armids&"* z c * h 2 z "&$grid_limpets&"* z c * l "&$planet&"*  c  "
+	waiton "Citadel command"
 end
-if (($LAID_ARMID <> TRUE) or ($LAID_LIMP <> TRUE))
-  goto :ATTEMPTCLEARINGMINES
+if (($laid_armid <> true) or ($laid_limp <> true))
+	goto :attemptclearingmines
 end
-setvar $PLACEDLIMPET TRUE
-setvar $PLACEDARMID TRUE
+setvar $placedlimpet true
+setvar $placedarmid true
 return
-:LAID_ARMID
-setvar $LAID_ARMID TRUE
+
+:laid_armid
+setvar $laid_armid true
 pause
-:LAID_LIMP
-setvar $LAID_LIMP TRUE
+
+:laid_limp
+setvar $laid_limp true
 pause
-:DEPLOYEQUIPMENT
 
-
-send "q  q  h  1  z "&$GRID_ARMIDS&"*  z c  *  h  2  z "&$GRID_LIMPETS&"*  z c  *   l "&$PLANET&"*  c "
-gosub :PLAYER~QUIKSTATS
-if ($BEFORESECTOR <> $PLAYER~CURRENT_SECTOR)
-  gosub :CALLSAVEME
+:deployequipment
+send "q  q  h  1  z "&$grid_armids&"*  z c  *  h  2  z "&$grid_limpets&"*  z c  *   l "&$planet&"*  c "
+gosub :player~quikstats
+if ($beforesector <> $player~current_sector)
+	gosub :callsaveme
 end
-if ($PLAYER~CURRENT_PROMPT <> "Citadel")
-  echo "**Unexpected Problem.. Halting**"
-  halt
+if ($player~current_prompt <> "Citadel")
+	echo "**Unexpected Problem.. Halting**"
+	halt
 end
-if (($BEFORELIMPETS > $PLAYER~LIMPETS) or ($PLAYER~LIMPETS < 3) or ($LIMPETOWNER = "belong to your Corp") or ($LIMPETOWNER = "yours"))
-  setvar $PLACEDLIMPET TRUE
+if (($beforelimpets > $player~limpets) or ($player~limpets < 3) or ($limpetowner = "belong to your Corp") or ($limpetowner = "yours"))
+	setvar $placedlimpet true
 end
-if (($BEFOREARMIDS > $PLAYER~ARMIDS) or ($PLAYER~ARMIDS < 3) or ($ARMIDOWNER = "belong to your Corp") or ($ARMIDOWNER = "yours"))
-  setvar $PLACEDARMID TRUE
-end
-return
-:DOTWARP
-
-setvar $MSG ""
-if ($TWARPTO > 0)
-  send "q q* mz"&$TWARPTO " * "
-  settexttrigger THERE :ADJ_WARP "You are already in that sector!"
-  settextlinetrigger ADJ_WARP :ADJ_WARP "Sector  : "&$TWARPTO&" "
-  settexttrigger LOCKING :LOCKING "Do you want to engage the TransWarp drive?"
-  settexttrigger IGD :TWARPIGD "An Interdictor Generator in this sector holds you fast!"
-  settexttrigger NOTURNS :TWARPPHOTONED "Your ship was hit by a Photon and has been disabled"
-  settexttrigger NOROUTE :TWARPNOROUTE "Do you really want to warp there? (Y/N)"
-  pause
-  :ADJ_WARP
-  killalltriggers
-  send "z*"
-  goto :TWARP_ADJ
-  :LOCKING
-  killalltriggers
-  send "y"
-  settextlinetrigger TWARP_LOCK :TWARP_LOCK "TransWarp Locked"
-  settextlinetrigger NO_TWRP_LOCK :NO_TWARP_LOCK "No locating beam found"
-  settextlinetrigger TWARP_ADJ :TWARP_ADJ "<Set NavPoint>"
-  settextlinetrigger NO_FUEL :TWARPNOFUEL "You do not have enough Fuel Ore"
-  pause
-  :TWARPNOFUEL
-  killalltriggers
-  setvar $MSG "Not enough fuel for T-warp."
-  goto :TWARPDONE
-  :TWARP_ADJ
-
-  killalltriggers
-  send " * p s"
-  goto :TWARPDONE
-  :TWARPNOROUTE
-
-  killalltriggers
-  send "n* z* "
-  setvar $MSG "No route available!"
-  goto :TWARPDONE
-  :NO_TWARP_LOCK
-
-  killalltriggers
-  send "n* z* "
-  setvar $MSG "No fighter Deployed, cannot Twarp"
-  goto :TWARPDONE
-  :TWARPIGD
-
-  killalltriggers
-  setvar $MSG "My ship is being held by Interdictor!"
-  goto :TWARPDONE
-  :TWARPPHOTONED
-
-  killalltriggers
-  setvar $MSG "I have been photoned and can not T-warp!"
-  goto :TWARPDONE
-  :TWARP_LOCK
-
-  killalltriggers
-  if ($PLAYER~ALIGNMENT >= 1000)
-    send "y * * p s g y g q "
-  else
-    send "y  *  *  m "&$STARDOCK&" *  *  p s g y g q "
-  end
-  :TWARPDONE
-  if ($MSG <> "")
-    setvar $switchboard~message "Twarp Error - "&$MSG&"**"
-    gosub :switchboard~switchboard
-  end
+if (($beforearmids > $player~armids) or ($player~armids < 3) or ($armidowner = "belong to your Corp") or ($armidowner = "yours"))
+	setvar $placedarmid true
 end
 return
-:GETINFO
-gosub :PLAYER~GETINFO
-setvar $TRADER_NAME $PLAYER~TRADER_NAME
-setvar $CORPSTRING $PLAYER~CORPSTRING
-setvar $TURNS_PER_WARP $PLAYER~TURNS_PER_WARP
-setvar $TWARP_1_RANGE $PLAYER~TWARP_1_RANGE
-setvar $TWARP_2_RANGE $PLAYER~TWARP_2_RANGE
-setvar $EMPTY_HOLDS $PLAYER~EMPTY_HOLDS
+
+:dotwarp
+setvar $msg ""
+if ($twarpto > 0)
+	send "q q* mz"&$twarpto " * "
+	settexttrigger there :adj_warp "You are already in that sector!"
+	settextlinetrigger adj_warp :adj_warp "Sector  : "&$twarpto&" "
+	settexttrigger locking :locking "Do you want to engage the TransWarp drive?"
+	settexttrigger igd :twarpigd "An Interdictor Generator in this sector holds you fast!"
+	settexttrigger noturns :twarpphotoned "Your ship was hit by a Photon and has been disabled"
+	settexttrigger noroute :twarpnoroute "Do you really want to warp there? (Y/N)"
+	pause
+
+	:adj_warp
+	killalltriggers
+	send "z*"
+	goto :twarp_adj
+
+	:locking
+	killalltriggers
+	send "y"
+	settextlinetrigger twarp_lock :twarp_lock "TransWarp Locked"
+	settextlinetrigger no_twrp_lock :no_twarp_lock "No locating beam found"
+	settextlinetrigger twarp_adj :twarp_adj "<Set NavPoint>"
+	settextlinetrigger no_fuel :twarpnofuel "You do not have enough Fuel Ore"
+	pause
+
+	:twarpnofuel
+	killalltriggers
+	setvar $msg "Not enough fuel for T-warp."
+	goto :twarpdone
+
+	:twarp_adj
+	killalltriggers
+	send " * p s"
+	goto :twarpdone
+
+	:twarpnoroute
+	killalltriggers
+	send "n* z* "
+	setvar $msg "No route available!"
+	goto :twarpdone
+
+	:no_twarp_lock
+	killalltriggers
+	send "n* z* "
+	setvar $msg "No fighter Deployed, cannot Twarp"
+	goto :twarpdone
+
+	:twarpigd
+	killalltriggers
+	setvar $msg "My ship is being held by Interdictor!"
+	goto :twarpdone
+
+	:twarpphotoned
+	killalltriggers
+	setvar $msg "I have been photoned and can not T-warp!"
+	goto :twarpdone
+
+	:twarp_lock
+	killalltriggers
+	if ($player~alignment >= 1000)
+		send "y * * p s g y g q "
+	else
+		send "y  *  *  m "&$stardock&" *  *  p s g y g q "
+	end
+
+	:twarpdone
+	if ($msg <> "")
+		setvar $switchboard~message "Twarp Error - "&$msg&"**"
+		gosub :switchboard~switchboard
+	end
+end
 return
-killtrigger GETPHOTONS
-killtrigger GETSCANTYPE
-killtrigger GETTWARPTYPE1
-killtrigger GETTWARPTYPE2
-killtrigger GETCREDITS
+
+:getinfo
+gosub :player~getinfo
+setvar $trader_name $player~trader_name
+setvar $corpstring $player~corpstring
+setvar $turns_per_warp $player~turns_per_warp
+setvar $twarp_1_range $player~twarp_1_range
+setvar $twarp_2_range $player~twarp_2_range
+setvar $empty_holds $player~empty_holds
+return
+killtrigger getphotons
+killtrigger getscantype
+killtrigger gettwarptype1
+killtrigger gettwarptype2
+killtrigger getcredits
 
 return
-:PAUSEGRIDDER
 
-
+:pausegridder
 killalltriggers
-echo ANSI_6 "*[" ANSI_14 "M()M Limpet Gridder Options" ANSI_6 "]*" ANSI_7
-echo ANSI_6 "  [" ANSI_14 "-" ANSI_6 "]" ANSI_15 " Change Gridder Settings*"
-echo ANSI_6 "  [" ANSI_14 "+" ANSI_6 "]" ANSI_15 " Continue Gridding*"
-echo ANSI_6 "[" ANSI_14 "M()M Limpet Gridder paused..." ANSI_6 "]*" ANSI_7
-settextouttrigger PAUSEGRIDDER :RESTARTINGPAUSE "+"
-settextouttrigger PAUSEGRIDDER2 :START_MENU "-"
+echo ansi_6 "*[" ansi_14 "M()M Limpet Gridder Options" ansi_6 "]*" ansi_7
+echo ansi_6 "  [" ansi_14 "-" ansi_6 "]" ansi_15 " Change Gridder Settings*"
+echo ansi_6 "  [" ansi_14 "+" ansi_6 "]" ansi_15 " Continue Gridding*"
+echo ansi_6 "[" ansi_14 "M()M Limpet Gridder paused..." ansi_6 "]*" ansi_7
+settextouttrigger pausegridder :restartingpause "+"
+settextouttrigger pausegridder2 :start_menu "-"
 pause
-:START_MENU
-goto :PAUSEGRIDDER
-:RESTARTINGPAUSE
+
+:start_menu
+goto :pausegridder
+
+:restartingpause
 killalltriggers
 send "* "
 waitfor "(?="
-getword CURRENTLINE $LOCATION 1
-if ($LOCATION = "Citadel")
-  echo ANSI_6 "*[" ANSI_14 "M()M Unlimited Gridder restarted" ANSI_6 "]*" ANSI_7
-  goto :PAUSEGRIDDER
+getword currentline $location 1
+if ($location = "Citadel")
+	echo ansi_6 "*[" ansi_14 "M()M Unlimited Gridder restarted" ansi_6 "]*" ansi_7
+	goto :pausegridder
 else
-  echo ANSI_6 "*[" ANSI_14 "M()M Unlimited Gridder not at citadel prompt, cannot restart" ANSI_6 "]*" ANSI_7
-  goto :PAUSEGRIDDER
+	echo ansi_6 "*[" ansi_14 "M()M Unlimited Gridder not at citadel prompt, cannot restart" ansi_6 "]*" ansi_7
+	goto :pausegridder
 end
-:GETPLANETINFO
-gosub :PLANET~GETPLANETINFO
-setvar $PLANET $PLANET~PLANET
-setvar $PLAYER~CURRENT_SECTOR $PLANET~CURRENT_SECTOR
-setvar $PLANET_FUEL $PLANET~PLANET_FUEL
-setvar $PLANET_FUEL_MAX $PLANET~PLANET_FUEL_MAX
-setvar $PLANET_ORGANICS $PLANET~PLANET_ORGANICS
-setvar $PLANET_ORGANICS_MAX $PLANET~PLANET_ORGANICS_MAX
-setvar $PLANET_EQUIPMENT $PLANET~PLANET_EQUIPMENT
-setvar $PLANET_EQUIPMENT_MAX $PLANET~PLANET_EQUIPMENT_MAX
-setvar $PLANET_FIGHTERS $PLANET~PLANET_FIGHTERS
-setvar $PLANET_FIGHTERS_MAX $PLANET~PLANET_FIGHTERS_MAX
-setvar $CITADEL $PLANET~CITADEL
-setvar $CITADEL_CREDITS $PLANET~CITADEL_CREDITS
-setvar $ATMOSPHERE_CANNON $PLANET~ATMOSPHERE_CANNON
-setvar $SECTOR_CANNON $PLANET~SECTOR_CANNON
+
+:getplanetinfo
+gosub :planet~getplanetinfo
+setvar $planet $planet~planet
+setvar $player~current_sector $planet~current_sector
+setvar $planet_fuel $planet~planet_fuel
+setvar $planet_fuel_max $planet~planet_fuel_max
+setvar $planet_organics $planet~planet_organics
+setvar $planet_organics_max $planet~planet_organics_max
+setvar $planet_equipment $planet~planet_equipment
+setvar $planet_equipment_max $planet~planet_equipment_max
+setvar $planet_fighters $planet~planet_fighters
+setvar $planet_fighters_max $planet~planet_fighters_max
+setvar $citadel $planet~citadel
+setvar $citadel_credits $planet~citadel_credits
+setvar $atmosphere_cannon $planet~atmosphere_cannon
+setvar $sector_cannon $planet~sector_cannon
 return
-killtrigger CITADELSTART
-killtrigger CANNON
+killtrigger citadelstart
+killtrigger cannon
 
 return
-:FINDJUMPSECTOR
 
-
-
-setvar $I 1
-setvar $RED_ADJ 0
+:findjumpsector
+setvar $i 1
+setvar $red_adj 0
 send "qq*"
-while (SECTOR.WARPSIN[$STARDOCK][$I] > 0)
-  setvar $RED_ADJ SECTOR.WARPSIN[$STARDOCK][$I]
-  send "m "&$RED_ADJ&"* y"
-  settexttrigger TWARPBLIND :TWARPBLIND "Do you want to make this jump blind? "
-  settexttrigger TWARPLOCKED :TWARPLOCKED "All Systems Ready, shall we engage? "
-  settextlinetrigger TWARPVOIDED :TWARPVOIDED "Danger Warning Overridden"
-  settextlinetrigger TWARPADJ :TWARPADJ "<Set NavPoint>"
-  pause
-  :TWARPADJ
-  killalltriggers
-  send " * "
-  return
-  :TWARPVOIDED
+while (sector.warpsin[$stardock][$i] > 0)
+	setvar $red_adj sector.warpsin[$stardock][$i]
+	send "m "&$red_adj&"* y"
+	settexttrigger twarpblind :twarpblind "Do you want to make this jump blind? "
+	settexttrigger twarplocked :twarplocked "All Systems Ready, shall we engage? "
+	settextlinetrigger twarpvoided :twarpvoided "Danger Warning Overridden"
+	settextlinetrigger twarpadj :twarpadj "<Set NavPoint>"
+	pause
 
-  killalltriggers
-  send " N N "
-  goto :TRYINGNEXTADJ
-  :TWARPLOCKED
+	:twarpadj
+	killalltriggers
+	send " * "
+	return
 
-  killalltriggers
-  send " N "
+	:twarpvoided
+	killalltriggers
+	send " N N "
+	goto :tryingnextadj
 
-  goto :SECTORLOCKED
-  :TWARPBLIND
+	:twarplocked
+	killalltriggers
+	send " N "
 
-  killalltriggers
-  send " N "
-  :TRYINGNEXTADJ
+	goto :sectorlocked
 
-  add $I 1
+	:twarpblind
+	killalltriggers
+	send " N "
+
+	:tryingnextadj
+	add $i 1
 end
-:NOADJSFOUND
 
-setvar $RED_ADJ 0
+:noadjsfound
+setvar $red_adj 0
 return
-:SECTORLOCKED
 
+:sectorlocked
 return
-:TURNSREQUIRED
 
-
+:turnsrequired
 send "i"
-settextlinetrigger TURNSREQUIRED_TPW :TURNSREQUIRED_TPW "Turns to Warp  : "
+settextlinetrigger turnsrequired_tpw :turnsrequired_tpw "Turns to Warp  : "
 pause
-:TURNSREQUIRED_TPW
 
+:turnsrequired_tpw
 killalltriggers
-getword CURRENTLINE $TURNSREQUIRED_TPW 5
+getword currentline $turnsrequired_tpw 5
 
-if ($RED_ADJ > 0)
+if ($red_adj > 0)
 
-  setvar $TURNSREQUIRED_TEMP ($TURNSREQUIRED_TPW * 3)
-  if ($_TOW > 0)
+	setvar $turnsrequired_temp ($turnsrequired_tpw * 3)
+	if ($_tow > 0)
 
-    add $TURNSREQUIRED_TEMP 2
+		add $turnsrequired_temp 2
 
-
-    add $TURNSREQUIRED_TEMP 3
-  else
-    add $TURNSREQUIRED_TEMP 1
-  end
+		add $turnsrequired_temp 3
+	else
+		add $turnsrequired_temp 1
+	end
 else
-  setvar $TURNSREQUIRED_TEMP ($TURNSREQUIRED_TPW * 2)
+	setvar $turnsrequired_temp ($turnsrequired_tpw * 2)
 
-  add $TURNSREQUIRED_TEMP 1
+	add $turnsrequired_temp 1
 end
 
-setvar $TURNSREQUIRED $TURNSREQUIRED_TEMP
+setvar $turnsrequired $turnsrequired_temp
 return
-:DOPURCHASES
 
-
+:dopurchases
 send "h "
 waitfor "<Hardware Emporium>"
 
-if ($_LIMPS <> "")
-  send "L "
-  waitfor "How many mines do you want"
-  if ($_LIMPS = "Max")
-    gettext CURRENTLINE $BUY "(Max" ")"
-    send $BUY&"* "
-  else
-    send $BUY $_LIMPS&"* "
-  end
-  waitfor "<Hardware Emporium>"
+if ($_limps <> "")
+	send "L "
+	waitfor "How many mines do you want"
+	if ($_limps = "Max")
+		gettext currentline $buy "(Max" ")"
+		send $buy&"* "
+	else
+		send $buy $_limps&"* "
+	end
+	waitfor "<Hardware Emporium>"
 end
 
-if ($_MINES <> "")
-  send "M "
-  setvar $BUY 0
-  waitfor "How many mines do you"
-  if ($_MINES = "Max")
-    gettext CURRENTLINE $BUY "(Max" ")"
-    send $BUY&"* "
-  else
-    send $_MINES&"* "
-  end
-  waitfor "<Hardware Emporium>"
+if ($_mines <> "")
+	send "M "
+	setvar $buy 0
+	waitfor "How many mines do you"
+	if ($_mines = "Max")
+		gettext currentline $buy "(Max" ")"
+		send $buy&"* "
+	else
+		send $_mines&"* "
+	end
+	waitfor "<Hardware Emporium>"
 end
 
 send "s"
 waitfor "How many Mine Disruptors"
-gettext CURRENTLINE $BUY "(Max" ")"
-send $BUY&"* "
+gettext currentline $buy "(Max" ")"
+send $buy&"* "
 waitfor "<Hardware Emporium>"
 return
 include "source\include\switchboard.ts"

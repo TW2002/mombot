@@ -1,4 +1,3 @@
-
 ###############################################################################
 #     Please leave this header intact.  This script is released for the players
 #     and scripters to use.
@@ -16,643 +15,649 @@
 #     Source Released Dec 25, 2009
 ###############################################################################
 
-setVar $game GAMENAME
-setVar $version "ProZTM 4.11"
-setVar $computerInt "n"
-setVar $useWatch "Yes"
-setVar $cim "Yes"
-setVar $ztmMode "Interrogation"
-setVar $7WarpsList "No"
-setVar $deadEndList "No"
-setVar $swathData "No"
-setVar $trafficAnalysis "No"
-setVar $ztmRange "No"
-setVar $ztmVarRefresh "No"
-setVar $7WarpsInMonitor "Yes"
-setVar $showWarpsFound "Yes"
-setVar $1stPassWarpSpec "No"
-setVar $endPassWarps FALSE
-setVar $warpsPlotted 0
-setVar $reConn 0
-loadVar $ztmMin
-loadVar $ztmMax
-loadVar $bot~folder
-setVar $warpSpecFile $bot~folder&"/"&gamename&"warpSpec.txt"
-if ($ztmMin = 0) or ($ztmMax = 0)
-   setVar $ztmMin 1
-   setVar $ztmMax SECTORS
-   saveVar $ztmMin
-   saveVar $ztmMax
+setvar $game gamename
+setvar $version "ProZTM 4.11"
+setvar $computerint "n"
+setvar $usewatch "Yes"
+setvar $cim "Yes"
+setvar $ztmmode "Interrogation"
+setvar $7WarpsList "No"
+setvar $deadendlist "No"
+setvar $swathdata "No"
+setvar $trafficanalysis "No"
+setvar $ztmrange "No"
+setvar $ztmvarrefresh "No"
+setvar $7WarpsInMonitor "Yes"
+setvar $showwarpsfound "Yes"
+setvar $1stPassWarpSpec "No"
+setvar $endpasswarps false
+setvar $warpsplotted 0
+setvar $reconn 0
+loadvar $ztmmin
+loadvar $ztmmax
+loadvar $bot~folder
+setvar $warpspecfile $bot~folder&"/"&gamename&"warpSpec.txt"
+if ($ztmmin = 0) or ($ztmmax = 0)
+	setvar $ztmmin 1
+	setvar $ztmmax sectors
+	savevar $ztmmin
+	savevar $ztmmax
 end
-setVar $ztmStart $ztmMin
-setVar $ztmSend "No"
+setvar $ztmstart $ztmmin
+setvar $ztmsend "No"
 
-setVar $BOT~command "proztm"
-gosub :HELP~INITIALIZE
-setVar $HELP~HELP[1]   $HELP~TAB&"ProZTM by Promethius "
-setVar $HELP~HELP[2]   $HELP~TAB&" - proztm {reset} {nowindow} "
-setVar $HELP~HELP[3]   $HELP~TAB&"   Options: "
-setVar $HELP~HELP[4]   $HELP~TAB&"     {reset}        - reset ztmStart/ztmMin/ztmMax for clean start  "
-setVar $HELP~HELP[5]   $HELP~TAB&"     {nowindow}     - don't pop up a status window"
-gosub :HELP~HELPFILE
+setvar $bot~command "proztm"
+gosub :help~initialize
+setvar $help~help[1]   $help~tab&"ProZTM by Promethius "
+setvar $help~help[2]   $help~tab&" - proztm {reset} {nowindow} "
+setvar $help~help[3]   $help~tab&"   Options: "
+setvar $help~help[4]   $help~tab&"     {reset}        - reset ztmStart/ztmMin/ztmMax for clean start  "
+setvar $help~help[5]   $help~tab&"     {nowindow}     - don't pop up a status window"
+gosub :help~helpfile
 
-getWordPos " "&$bot~user_command_line&" " $pos " reset"
+getwordpos " "&$bot~user_command_line&" " $pos " reset"
 if ($pos > 0)
-   setVar $ztmVarRefresh "Yes"
-   setVar $ztmMin 1
-   saveVar $ztmMin
-   setVar $ztmMax SECTORS
-   saveVar $ztmMax
-   setVar $ztmStart 0
-   saveVar $ztmStart
-   setVar $ztmEnd SECTORS
-   saveVar $ztmEnd
-   setVar $verifyStart 0
-   saveVar $verifyStart
-   setVar $verifyEnd 0
-   saveVar $verifyEnd
-   setVar $firstPassVerified 0
-   saveVar $firstPassVerified
-   setVar $sPassZTMStart $ztmMin
-   saveVar $sPassZTMStart
-   setVar $sPassZTMEnd $ztmEnd
-   saveVar $spassZTMEnd
+	setvar $ztmvarrefresh "Yes"
+	setvar $ztmmin 1
+	savevar $ztmmin
+	setvar $ztmmax sectors
+	savevar $ztmmax
+	setvar $ztmstart 0
+	savevar $ztmstart
+	setvar $ztmend sectors
+	savevar $ztmend
+	setvar $verifystart 0
+	savevar $verifystart
+	setvar $verifyend 0
+	savevar $verifyend
+	setvar $firstpassverified 0
+	savevar $firstpassverified
+	setvar $spassztmstart $ztmmin
+	savevar $spassztmstart
+	setvar $spassztmend $ztmend
+	savevar $spassztmend
 end
 
-getWordPos " "&$bot~user_command_line&" " $pos " nowindow"
+getwordpos " "&$bot~user_command_line&" " $pos " nowindow"
 if ($pos > 0)
-	setVar $nowindow TRUE
+	setvar $nowindow true
 else
-   setVar $nowindow FALSE
+	setvar $nowindow false
 end
 
 :begin
-
-setEventTrigger connLost :connLost "CONNECTION LOST"
-setTextTrigger connLost2 :connLost "Connection lost"
-getword CURRENTLINE $prompt 1
+seteventtrigger connlost :connlost "CONNECTION LOST"
+settexttrigger connlost2 :connlost "Connection lost"
+getword currentline $prompt 1
 
 # plotDisplay setting
-setVar $plotDisplay (($ztmMax - $ztmMin + 1) / 100)
-if ($plotDisplay < 100)
-    setVar $plotDisplay 100
+setvar $plotdisplay (($ztmmax - $ztmmin + 1) / 100)
+if ($plotdisplay < 100)
+	setvar $plotdisplay 100
 end
 
-if ($nowindow = FALSE)
-   gosub :windowSetup
+if ($nowindow = false)
+	gosub :windowsetup
 
-   :windowMessages
-setvar $WindowMessagePass0 "*  Game:    "& $game & "*  Sectors: " & SECTORS  & "*"
-   setVar $windowMessagepassCim "*  CIM "
-   setVar $windowMessagepass1 "*  Pass 1:  Mapping @ 0%*"
-   setVar $windowMessagePass2 "*  Pass 2: *"
-   setVar $windowMessagePass3 "*  Pass 3: *"
-   setVar $windowMessagePass4 "*  Pass 4: *"
-   setVar $windowMessagePass5 "*  Pass 5: *"
-   gosub :ztmWindowUpdate
+	:windowmessages
+	setvar $windowmessagepass0 "*  Game:    "& $game & "*  Sectors: " & sectors  & "*"
+	setvar $windowmessagepasscim "*  CIM "
+	setvar $windowmessagepass1 "*  Pass 1:  Mapping @ 0%*"
+	setvar $windowmessagepass2 "*  Pass 2: *"
+	setvar $windowmessagepass3 "*  Pass 3: *"
+	setvar $windowmessagepass4 "*  Pass 4: *"
+	setvar $windowmessagepass5 "*  Pass 5: *"
+	gosub :ztmwindowupdate
 end
 
-:intMode
-
+:intmode
 if ($cim = "Yes")
-   if ($recon = 1)
-      send "^"
-   else
-      send "^iq"
-      waitfor ": ENDINTERROG"
-      send "^"
-   end
-   setVar $cimmed 1
+	if ($recon = 1)
+		send "^"
+	else
+		send "^iq"
+		waitfor ": ENDINTERROG"
+		send "^"
+	end
+	setvar $cimmed 1
 else
-    send "^"
+	send "^"
 end
 
-:firstPass
-gosub :totalWarps
-setVar $prevWarpCnt $totalWarps
-if ($nowindow = FALSE) and ($cimmed = 1)
-setVar $windowMessagepassCim "*  CIM found: " & $totalWarps & " Warps*"
-gosub :ztmWindowUpdate
+:firstpass
+gosub :totalwarps
+setvar $prevwarpcnt $totalwarps
+if ($nowindow = false) and ($cimmed = 1)
+	setvar $windowmessagepasscim "*  CIM found: " & $totalwarps & " Warps*"
+	gosub :ztmwindowupdate
 end
-loadVar $ztmStart
-loadVar $ztmEnd
-setVar $plots 0
-setVar $burstCnt 0
-setVar $burst ""
-setVar $forwardPlot FALSE
+loadvar $ztmstart
+loadvar $ztmend
+setvar $plots 0
+setvar $burstcnt 0
+setvar $burst ""
+setvar $forwardplot false
 # was 0
-setVar $2ndIn 0
-if ($ztmStart = 0)
-setVar $ztmStart $ztmMin
+setvar $2ndIn 0
+if ($ztmstart = 0)
+	setvar $ztmstart $ztmmin
 end
-if ($ztmEnd = 0)
-setVar $ztmEnd $ztmMax
+if ($ztmend = 0)
+	setvar $ztmend $ztmmax
 end
-while ($ztmStart <= $ztmMax)
-  :ztmFirstSector
-  if ($ztmStart > $ztmMax)
-  goto :secondPass
-  end
- # changed from = 0 to <=2
- if (sector.warpcount[$ztmStart] = 0) and ($ztmStart <= $ztmMax) and (sector.explored[$ztmStart] <> YES)
-   goto :ztmSecondSector
-else
-   add $ztmStart 1
-   if ($ztmStart > $ztmMax)
-      goto :secondPass
-   end
-   goto :ztmFirstSector
-end
+while ($ztmstart <= $ztmmax)
 
-  :ztmSecondSector
-# was < 2
-  if (sector.warpInCount[$ztmEnd] <= $2ndIn) and ($ztmEnd <> $ztmStart) and ($ztmEnd > ($ztmMin-1)) and (sector.explored[$ztmEnd] <> YES)
-   setVar $burst $burst & "f" & $ztmStart & "*" & $ztmEnd & "*y"
-   if ($forwardPlot = FALSE)
-      setVar $burst $burst & "f" & $ztmEnd & "*" & $ztmStart & "*y"
-      add $plots 2
-      add $warpsPlotted 2
-   else
-      add $plots 1
-      add $warpsPlotted 1
-   end
-   add $burstCnt 1
-   if ($burstCnt > 5)
-      goto :firstPassPlot
-   else
-      subtract $ztmEnd 1
-   end
-   if ($ztmEnd < $ztmMin)
-      setVar $ztmEnd $ztmMax
-      add $2ndIn 1
-   end
-   add $ztmStart 1
-   if ($ztmStart = $ztmEnd)
-      subtract $ztmEnd 1
-      if ($ztmEnd < $ztmMin)
-         setVar $ztmMin $ztmEnd
-         add $2ndIn 1
-      end
-   end
-   add $burstCnt 1
-   goto :ztmFirstSector
+	:ztmfirstsector
+	if ($ztmstart > $ztmmax)
+		goto :secondpass
+	end
+	# changed from = 0 to <=2
+	if (sector.warpcount[$ztmstart] = 0) and ($ztmstart <= $ztmmax) and (sector.explored[$ztmstart] <> yes)
+		goto :ztmsecondsector
+	else
+		add $ztmstart 1
+		if ($ztmstart > $ztmmax)
+			goto :secondpass
+		end
+		goto :ztmfirstsector
+	end
 
-else
-   subtract $ztmEnd 1
-   if ($ztmEnd < $ztmMin)
-      setVar $ztmEnd $ztmMax
-      add $2ndIn 1
-   end
-   goto :ztmSecondSector
-end
+	:ztmsecondsector
+	# was < 2
+	if (sector.warpincount[$ztmend] <= $2ndIn) and ($ztmend <> $ztmstart) and ($ztmend > ($ztmmin-1)) and (sector.explored[$ztmend] <> yes)
+		setvar $burst $burst & "f" & $ztmstart & "*" & $ztmend & "*y"
+		if ($forwardplot = false)
+			setvar $burst $burst & "f" & $ztmend & "*" & $ztmstart & "*y"
+			add $plots 2
+			add $warpsplotted 2
+		else
+			add $plots 1
+			add $warpsplotted 1
+		end
+		add $burstcnt 1
+		if ($burstcnt > 5)
+			goto :firstpassplot
+		else
+			subtract $ztmend 1
+		end
+		if ($ztmend < $ztmmin)
+			setvar $ztmend $ztmmax
+			add $2ndIn 1
+		end
+		add $ztmstart 1
+		if ($ztmstart = $ztmend)
+			subtract $ztmend 1
+			if ($ztmend < $ztmmin)
+				setvar $ztmmin $ztmend
+				add $2ndIn 1
+			end
+		end
+		add $burstcnt 1
+		goto :ztmfirstsector
 
-  :firstPassPlot
-  if ($ztmMode = "Interrogation")
-    send $burst
-    setVar $burst ""
-    setVar $burstCnt 0
-    if ($forwardPlot = TRUE)
-       waitfor "FM > " & $ztmStart
-    else
-       waitfor "FM > " & $ztmEnd
-    end
-  else
-    send $burst
-    setVar $burst ""
-    setVar $burstCnt 0
-    setVar $chkSector $ztmStart
-    gosub :checkComp
-  end
-    saveVar $ztmStart
-    saveVar $ztmEnd
-    add $ztmStart 1
-    subtract $ztmEnd 1
-    setVar $tot_sectors $ztmStart
-    multiply $tot_sectors 100
-    divide $tot_Sectors ($ztmMax - $ztmMin)
-    if ($nowindow=FALSE)
-      if ($ckUpdate <> $tot_sectors) and ($plots >= $plotDisplay)
-      gosub :totalWarps
-      if ($warpsPlotted > 0)
-         setprecision 3
-         setVar $plotEfficiency  (($totalWarps - $prevWarpCnt) / $warpsPlotted)
-         setprecision 0
-      end
-      if ($plotEfficiency < 6.5)
-         setVar $forwardPlot TRUE
-      end
-        setVar $windowMessagePass1 "*  Pass 1:  Mapping @ " & $tot_Sectors & "%" & " Warps: " & $totalWarps & ", Warps:Plot " & $plotEfficiency & "*"
-      else
-        setVar $windowMessagePass1 "*  Pass 1:  Mapping @ " & $tot_Sectors & "%*"
-      end
-      gosub :ztmWindowUpdate
-      setVar $ckUpdate $tot_sectors
-      setVar $plots 0
-   end
+	else
+		subtract $ztmend 1
+		if ($ztmend < $ztmmin)
+			setvar $ztmend $ztmmax
+			add $2ndIn 1
+		end
+		goto :ztmsecondsector
+	end
+
+	:firstpassplot
+	if ($ztmmode = "Interrogation")
+		send $burst
+		setvar $burst ""
+		setvar $burstcnt 0
+		if ($forwardplot = true)
+			waitfor "FM > " & $ztmstart
+		else
+			waitfor "FM > " & $ztmend
+		end
+	else
+		send $burst
+		setvar $burst ""
+		setvar $burstcnt 0
+		setvar $chksector $ztmstart
+		gosub :checkcomp
+	end
+	savevar $ztmstart
+	savevar $ztmend
+	add $ztmstart 1
+	subtract $ztmend 1
+	setvar $tot_sectors $ztmstart
+	multiply $tot_sectors 100
+	divide $tot_sectors ($ztmmax - $ztmmin)
+	if ($nowindow=false)
+		if ($ckupdate <> $tot_sectors) and ($plots >= $plotdisplay)
+			gosub :totalwarps
+			if ($warpsplotted > 0)
+				setprecision 3
+				setvar $plotefficiency  (($totalwarps - $prevwarpcnt) / $warpsplotted)
+				setprecision 0
+			end
+			if ($plotefficiency < 6.5)
+				setvar $forwardplot true
+			end
+			setvar $windowmessagepass1 "*  Pass 1:  Mapping @ " & $tot_sectors & "%" & " Warps: " & $totalwarps & ", Warps:Plot " & $plotefficiency & "*"
+		else
+			setvar $windowmessagepass1 "*  Pass 1:  Mapping @ " & $tot_sectors & "%*"
+		end
+		gosub :ztmwindowupdate
+		setvar $ckupdate $tot_sectors
+		setvar $plots 0
+	end
 end
 
 #-----------------
-
-:secondPass
+:secondpass
 send $burst
 loadvar $2ndvStart
-loadVar $2ndvEnd
-setVar $burstCnt 0
-setVar $warpsPlotted 0
-setVar $windowMessagePass2 ""
-setVar $plots 0
-setVar $burst ""
-setVar $plots 0
-getTime $1PassEndTime "hh:nn:ss"
-setVar $ckUpdate 0
-setVar $tot_Sectors 0
-gosub :totalWarps
-setVar $prevWarpCnt $totalWarps
-setVar $windowMessagePass1 "*  Pass 1:  Completed @ " & $1PassEndTime & ", " & $totalWarps & " warps found*"
-if ($nowindow = FALSE) and ($1stPassWarpSpec = "Yes")
-   setVar $windowMessagePass2 "*  Writing " & $warpSpecFile & "*"
-   gosub :ztmWindowUpdate
-   gosub :writeWarpSpec
-   setVar $windowMessagePass2 "*  WarpSpec Written to " & $warpSpecFile & "*"
+loadvar $2ndvEnd
+setvar $burstcnt 0
+setvar $warpsplotted 0
+setvar $windowmessagepass2 ""
+setvar $plots 0
+setvar $burst ""
+setvar $plots 0
+gettime $1PassEndTime "hh:nn:ss"
+setvar $ckupdate 0
+setvar $tot_sectors 0
+gosub :totalwarps
+setvar $prevwarpcnt $totalwarps
+setvar $windowmessagepass1 "*  Pass 1:  Completed @ " & $1PassEndTime & ", " & $totalwarps & " warps found*"
+if ($nowindow = false) and ($1stPassWarpSpec = "Yes")
+	setvar $windowmessagepass2 "*  Writing " & $warpspecfile & "*"
+	gosub :ztmwindowupdate
+	gosub :writewarpspec
+	setvar $windowmessagepass2 "*  WarpSpec Written to " & $warpspecfile & "*"
 end
-if ($nowindow = FALSE)
-   setVar $windowMessagePass2 $windowMessagePass2 & "*  Pass 2:  Mapping @ " & $tot_Sectors & "%" & " Warps: " & $totalWarps & "*"
-   gosub :ztmWindowUpdate
+if ($nowindow = false)
+	setvar $windowmessagepass2 $windowmessagepass2 & "*  Pass 2:  Mapping @ " & $tot_sectors & "%" & " Warps: " & $totalwarps & "*"
+	gosub :ztmwindowupdate
 end
 
 if ($2ndvStart = 0)
-   setVar $2ndvStart $ztmMin
-   setVar $2ndvEnd $ztmMax
+	setvar $2ndvStart $ztmmin
+	setvar $2ndvEnd $ztmmax
 end
-while ($2ndvStart <= $ztmMax)
-      if (sector.warpcount[$2ndvStart] = 1) and (sector.explored[$2ndvStart] <> YES)
-         setVar $voidClear "c" & sector.warps[$2ndvStart][1] & "*"
-         setVar $burst $burst & "s" & sector.warps[$2ndvStart][1] & "*f" & $2ndvStart & "*"
-      elseif (sector.warpCount[$2ndvStart] = 0)
-         setVar $burst $burst & "f" & $2ndvStart & "*"
-         setVar $voidClear ""
-      else
-         goto :endSecondvPass
-      end
-      :get2ndvEnd
-      if (sector.warpInCount[$2ndvEnd] < 2)
-         setVar $burst $burst & $2ndvEnd & "*Y" & $voidClear
-         add $plots 1
-         add $burstCnt 1
-         add $warpsPlotted 1
-      else
-         subtract $2ndvEnd 1
-         if ($2ndvEnd = $2ndvStart)
-             subtract $2ndvEnd 1
-         end
-         if ($2ndvEnd < $ztmMin)
-            setVar $2ndvEnd $ztmMax
-         end
-         goto :get2ndvEnd
-      end
-      if ($burstCnt > 5)
-          send $burst
-          savevar $2ndvStart
-          saveVar $2ndvEnd
-             if ($ztmMode = "Interrogation")
-                waitfor "FM > " & $2ndvStart
-             else
-                setVar $chkSector $2ndvStart
-                gosub :checkComp
-             end
-          setVar $burst ""
-          setVar $burstCnt 0
-      end
-      subtract $2ndvEnd 1
-      if ($2ndvEnd < $ztmMin)
-         setVar $2ndvEnd $ztmMax
-      end
-      :endSecondvPass
-      add $2ndvStart 1
-      if ($2ndvStart = $2ndvEnd)
-         subtract $2ndvEnd 1
-         if ($2ndvEnd < $ztmMin)
-            setVar $2ndvEnd $2ndvMax
-         end
-      end
-   if ($nowindow = FALSE)
-      setVar $tot_sectors $2ndvStart
-            multiply $tot_sectors 100
-            divide $tot_Sectors ($ztmMax - $ztmMin)
-            if ($ckUpdate <> $tot_sectors) and ($plots >= $plotDisplay)
-               setVar $plots 1
-               gosub :totalWarps
-               setPrecision 3
-               setVar $plotEfficiency (($totalWarps - $prevWarpCnt) / $warpsPlotted)
-               setprecision 0
-            if ($showWarpsFound = "Yes")
-                setVar $windowMessagePass2 "*  Pass 2:  Mapping @ " & $tot_Sectors & "%" & " Warps: " & $totalWarps & " Warps:Plot: " & $plotEfficiency & "*"
-            else
-                setVar $windowMessagePass2 "*  Pass 2:  Mapping @ " & $tot_Sectors & "%*"
-            end
-            gosub :ztmWindowUpdate
-            setVar $ckUpdate $tot_sectors
-         end
-   end
- end
+while ($2ndvStart <= $ztmmax)
+	if (sector.warpcount[$2ndvStart] = 1) and (sector.explored[$2ndvStart] <> yes)
+		setvar $voidclear "c" & sector.warps[$2ndvStart][1] & "*"
+		setvar $burst $burst & "s" & sector.warps[$2ndvStart][1] & "*f" & $2ndvStart & "*"
+	elseif (sector.warpcount[$2ndvStart] = 0)
+		setvar $burst $burst & "f" & $2ndvStart & "*"
+		setvar $voidclear ""
+	else
+		goto :endsecondvpass
+	end
+
+	:get2ndvend
+	if (sector.warpincount[$2ndvEnd] < 2)
+		setvar $burst $burst & $2ndvEnd & "*Y" & $voidclear
+		add $plots 1
+		add $burstcnt 1
+		add $warpsplotted 1
+	else
+		subtract $2ndvEnd 1
+		if ($2ndvEnd = $2ndvStart)
+			subtract $2ndvEnd 1
+		end
+		if ($2ndvEnd < $ztmmin)
+			setvar $2ndvEnd $ztmmax
+		end
+		goto :get2ndvend
+	end
+	if ($burstcnt > 5)
+		send $burst
+		savevar $2ndvStart
+		savevar $2ndvEnd
+		if ($ztmmode = "Interrogation")
+			waitfor "FM > " & $2ndvStart
+		else
+			setvar $chksector $2ndvStart
+			gosub :checkcomp
+		end
+		setvar $burst ""
+		setvar $burstcnt 0
+	end
+	subtract $2ndvEnd 1
+	if ($2ndvEnd < $ztmmin)
+		setvar $2ndvEnd $ztmmax
+	end
+
+	:endsecondvpass
+	add $2ndvStart 1
+	if ($2ndvStart = $2ndvEnd)
+		subtract $2ndvEnd 1
+		if ($2ndvEnd < $ztmmin)
+			setvar $2ndvEnd $2ndvMax
+		end
+	end
+	if ($nowindow = false)
+		setvar $tot_sectors $2ndvStart
+		multiply $tot_sectors 100
+		divide $tot_sectors ($ztmmax - $ztmmin)
+		if ($ckupdate <> $tot_sectors) and ($plots >= $plotdisplay)
+			setvar $plots 1
+			gosub :totalwarps
+			setprecision 3
+			setvar $plotefficiency (($totalwarps - $prevwarpcnt) / $warpsplotted)
+			setprecision 0
+			if ($showwarpsfound = "Yes")
+				setvar $windowmessagepass2 "*  Pass 2:  Mapping @ " & $tot_sectors & "%" & " Warps: " & $totalwarps & " Warps:Plot: " & $plotefficiency & "*"
+			else
+				setvar $windowmessagepass2 "*  Pass 2:  Mapping @ " & $tot_sectors & "%*"
+			end
+			gosub :ztmwindowupdate
+			setvar $ckupdate $tot_sectors
+		end
+	end
+end
 send $burst
 
-
 #--------------------
-
-
-:thirdPass
-setVar $plots 0
-setVar $firstPassVerified 1
-saveVar $firstPassVerified
-getTime $1PassEndTime "hh:nn:ss"
-setVar $ckUpdate 0
-setVar $tot_Sectors 0
-setVar $endPassWarps TRUE
-gosub :totalWarps
-if ($nowindow = FALSE)
-  if ($warpsPlotted > 0)
- setPrecision 3
- setVar $plotEfficiency  ($totalWarps - $prevWarpCnt) / $warpsPlotted
- setPrecision 0
-  end
-  setVar $endPassWarps FALSE
-  setVar $windowMessagePass2 "*  Pass 2:  Completed @ " & $1PassEndTime & ", " & $totalWarps & " warps*"
-  setVar $windowMessagePass3 "*  Pass 3:  Mapping @ " & $tot_Sectors & "%*"
-  gosub :ztmWindowUpdate
+:thirdpass
+setvar $plots 0
+setvar $firstpassverified 1
+savevar $firstpassverified
+gettime $1PassEndTime "hh:nn:ss"
+setvar $ckupdate 0
+setvar $tot_sectors 0
+setvar $endpasswarps true
+gosub :totalwarps
+if ($nowindow = false)
+	if ($warpsplotted > 0)
+		setprecision 3
+		setvar $plotefficiency  ($totalwarps - $prevwarpcnt) / $warpsplotted
+		setprecision 0
+	end
+	setvar $endpasswarps false
+	setvar $windowmessagepass2 "*  Pass 2:  Completed @ " & $1PassEndTime & ", " & $totalwarps & " warps*"
+	setvar $windowmessagepass3 "*  Pass 3:  Mapping @ " & $tot_sectors & "%*"
+	gosub :ztmwindowupdate
 end
 
-loadVar $sPassZTMStart
-loadVar $sPassZTMEnd
-setVar $ckUpdate 0
-if ($sPassZTMStart = 0)
-setVar $sPassZTMStart $ztmMin
+loadvar $spassztmstart
+loadvar $spassztmend
+setvar $ckupdate 0
+if ($spassztmstart = 0)
+	setvar $spassztmstart $ztmmin
 end
-if ($sPassZTMEnd = 0)
-setVar $sPassZTMEnd $ztmMax
+if ($spassztmend = 0)
+	setvar $spassztmend $ztmmax
 end
-while ($sPassZTMStart <= $ztmMax)
-      :sPassPlotFrom
-        # added sector.warpcount = 1
-     if (sector.warpcount[$sPassZTMStart] = 6) or (sector.explored[$sPassZTMStart] = YES) or (sector.warpcount[$sPassZTMStart] = 1)
-        add $sPassZTMStart 1
-        if ($sPassZTMStart > $ztmMax)
-           goto :data
-        end
-        goto :sPassPlotFrom
-     end
-      :getAvoids
-      setVar $sendBurst ""
-      setVar $i 1
-       while ($i <= SECTOR.WARPCOUNT[$sPassZTMStart])
-             if (SECTOR.WARPS[$sPassZTMStart][$i] > 0)
-                if ($computerInt = "n")
-                   setVar $sendBurst $sendBurst & "s" & SECTOR.WARPS[$sPassZTMStart][$i] & "*"
-                else
-                   setVar $sendBurst $sendBurst & "v" & SECTOR.WARPS[$sPassZTMStart][$i] & "*"
-                end
-             end
-             add $i 1
-       end
-       :burstIt
-       if ($sPassZTMStart = $sPassZTMEnd)
-          subtract $sPassZTMEnd 1
-          if ($sPassZTMEnd < $ztmMin)
-             setVar $sPassZTMEnd $ztmMax
-          end
-       end
-       send $sendBurst "f" $sPassZTMStart "*" $sPassZTMEnd "*y"
-       setTextlineTrigger sect :addVoid $sPassZTMStart & " > "
-       setTextTrigger compClear :clearVoids "Clear Avoids"
-       pause
-     :addVoid
-  killtrigger compClear
-    getword CURRENTLINE $nVoid 3
-    stripText $nvoid ")"
-    stripText $nvoid "("
-   if ($nvoid = $sPassZTMEnd)
-      subtract $spassZTMEnd 1
-      goto :burstIt
-   end
-   # catch sectors that are next door
-   if ($ztmMode = "Interrogation")
-       setVar $sendBurst "s" & $nVoid & "*"
-   else
-       setVar $sendBurst "v" & $nVoid & "*"
-   end
-   goto :burstIt
-     :clearVoids
-   killtrigger sect
-   saveVar $sPassZTMStart
-   saveVar $sPassZTMEnd
-   add $plots 1
-   add $sPassZTMStart 1
-   subtract $sPassZTMEnd 1
-  if ($nowindow = FALSE)
-     setVar $tot_sectors $sPassZTMStart
-     multiply $tot_sectors 100
-     divide $tot_Sectors ($ztmMax - $ztmMin)
-     if ($ckUpdate <> $tot_sectors) and ($plots >= $plotDisplay)
-        gosub :totalWarps
-        setVar $windowMessagePass3 "*  Pass 3:  Mapping @ " & $tot_Sectors & "%" & " Warps: " & $totalWarps & "*"
-     else
-        setVar $windowMessagePass3 "*  Pass 3:  Mapping @ " & $tot_Sectors & "%*"
-     end
-     gosub :ztmWindowUpdate
-     setVar $ckUpdate $tot_sectors
-     setVar $plots 0
-  end
-   end
+while ($spassztmstart <= $ztmmax)
 
-  :data
-if ($nowindow = FALSE)
-   gettime $thirdPassEndTime "hh:nn:ss"
-   setVar $endPassWarps TRUE
-   gosub :totalWarps
-   setVar $endPassWarps FALSE
-   setVar $windowMessagePass3 "*  Pass 3:  Completed @ " & $thirdPassEndTime & ", " & $totalWarps & " warps found.*"
-   gosub :ztmWindowUpdate
+	:spassplotfrom
+	# added sector.warpcount = 1
+	if (sector.warpcount[$spassztmstart] = 6) or (sector.explored[$spassztmstart] = yes) or (sector.warpcount[$spassztmstart] = 1)
+		add $spassztmstart 1
+		if ($spassztmstart > $ztmmax)
+			goto :data
+		end
+		goto :spassplotfrom
+	end
+
+	:getavoids
+	setvar $sendburst ""
+	setvar $i 1
+	while ($i <= sector.warpcount[$spassztmstart])
+		if (sector.warps[$spassztmstart][$i] > 0)
+			if ($computerint = "n")
+				setvar $sendburst $sendburst & "s" & sector.warps[$spassztmstart][$i] & "*"
+			else
+				setvar $sendburst $sendburst & "v" & sector.warps[$spassztmstart][$i] & "*"
+			end
+		end
+		add $i 1
+	end
+
+	:burstit
+	if ($spassztmstart = $spassztmend)
+		subtract $spassztmend 1
+		if ($spassztmend < $ztmmin)
+			setvar $spassztmend $ztmmax
+		end
+	end
+	send $sendburst "f" $spassztmstart "*" $spassztmend "*y"
+	settextlinetrigger sect :addvoid $spassztmstart & " > "
+	settexttrigger compclear :clearvoids "Clear Avoids"
+	pause
+
+	:addvoid
+	killtrigger compclear
+	getword currentline $nvoid 3
+	striptext $nvoid ")"
+	striptext $nvoid "("
+	if ($nvoid = $spassztmend)
+		subtract $spassztmend 1
+		goto :burstit
+	end
+	# catch sectors that are next door
+	if ($ztmmode = "Interrogation")
+		setvar $sendburst "s" & $nvoid & "*"
+	else
+		setvar $sendburst "v" & $nvoid & "*"
+	end
+	goto :burstit
+
+	:clearvoids
+	killtrigger sect
+	savevar $spassztmstart
+	savevar $spassztmend
+	add $plots 1
+	add $spassztmstart 1
+	subtract $spassztmend 1
+	if ($nowindow = false)
+		setvar $tot_sectors $spassztmstart
+		multiply $tot_sectors 100
+		divide $tot_sectors ($ztmmax - $ztmmin)
+		if ($ckupdate <> $tot_sectors) and ($plots >= $plotdisplay)
+			gosub :totalwarps
+			setvar $windowmessagepass3 "*  Pass 3:  Mapping @ " & $tot_sectors & "%" & " Warps: " & $totalwarps & "*"
+		else
+			setvar $windowmessagepass3 "*  Pass 3:  Mapping @ " & $tot_sectors & "%*"
+		end
+		gosub :ztmwindowupdate
+		setvar $ckupdate $tot_sectors
+		setvar $plots 0
+	end
 end
 
- :fourthPass
- loadVar $backdoorComplete
- if ($backdoorComplete = 1)
-    goto :doneBackDoorCheck
- end
- if ($nowindow = FALSE)
-   setVar $windowMessagePass4 "*  Pass 4:  Running*"
-   gosub :ztmWindowUpdate
- end
- setVar $i $ztmMin
- setVar $burstCnt 0
- setVar $burst ""
- while ($i <= SECTORS)
-   if (sector.backDoorCount[$i] > 0)
-      setVar $backDoorCnt 0
-      :backdoor
-      if ($backdoorCnt < sector.backDoorCount[$i])
-         add $backDoorCnt 1
-         setVar $burst $burst & "f" & $i & "*" & sector.backdoors[$i][$backDoorCnt] & "*y"
-         add $burstCnt 1
-         goto :backdoor
-      end
-   end
-   if ($burstCnt > 5)
-      send $burst
-      setVar $burstCnt 0
-      setVar $burst ""
-      if ($ztmMode = "Interrogation")
-         waitfor "FM > " & $i
-      else
-         setVar $chkSector $i
-         gosub :checkComp
-     end
-   end
-   add $i 1
- end
- send $burst
- :doneBackDoorCheck
+:data
+if ($nowindow = false)
+	gettime $thirdpassendtime "hh:nn:ss"
+	setvar $endpasswarps true
+	gosub :totalwarps
+	setvar $endpasswarps false
+	setvar $windowmessagepass3 "*  Pass 3:  Completed @ " & $thirdpassendtime & ", " & $totalwarps & " warps found.*"
+	gosub :ztmwindowupdate
+end
+
+:fourthpass
+loadvar $backdoorcomplete
+if ($backdoorcomplete = 1)
+	goto :donebackdoorcheck
+end
+if ($nowindow = false)
+	setvar $windowmessagepass4 "*  Pass 4:  Running*"
+	gosub :ztmwindowupdate
+end
+setvar $i $ztmmin
+setvar $burstcnt 0
+setvar $burst ""
+while ($i <= sectors)
+	if (sector.backdoorcount[$i] > 0)
+		setvar $backdoorcnt 0
+
+		:backdoor
+		if ($backdoorcnt < sector.backdoorcount[$i])
+			add $backdoorcnt 1
+			setvar $burst $burst & "f" & $i & "*" & sector.backdoors[$i][$backdoorcnt] & "*y"
+			add $burstcnt 1
+			goto :backdoor
+		end
+	end
+	if ($burstcnt > 5)
+		send $burst
+		setvar $burstcnt 0
+		setvar $burst ""
+		if ($ztmmode = "Interrogation")
+			waitfor "FM > " & $i
+		else
+			setvar $chksector $i
+			gosub :checkcomp
+		end
+	end
+	add $i 1
+end
+send $burst
+
+:donebackdoorcheck
 gettime $4PassEndTime "hh:nn:ss"
-setVar $endPassWarps TRUE
-gosub :totalWarps
-setVar $endPassWarps FALSE
-setVar $windowMessagePass4 "*  Pass 4:  Completed @ " & $4PassEndTime & ", " & $totalWarps & " warps found.*"
-gosub :ztmWindowUpdate
-setVar $backdoorComplete 1
-saveVar $backdoorComplete
+setvar $endpasswarps true
+gosub :totalwarps
+setvar $endpasswarps false
+setvar $windowmessagepass4 "*  Pass 4:  Completed @ " & $4PassEndTime & ", " & $totalwarps & " warps found.*"
+gosub :ztmwindowupdate
+setvar $backdoorcomplete 1
+savevar $backdoorcomplete
 send "q"
-setvar $SWITCHBOARD~MESSAGE "ZTM Completed at " & $4PassEndTime & "*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "ZTM Completed at " & $4PassEndTime & "*"
+gosub :switchboard~switchboard
 halt
 
 # our padding routine
-:padLen
-setVar $padIt ""
+:padlen
+setvar $padit ""
 while ($len < 6)
-setVar $padIt $padIt & " "
-add $len 1
+	setvar $padit $padit & " "
+	add $len 1
 end
 return
- 
-:padLeftLen
-setVar $padIt ""
+
+:padleftlen
+setvar $padit ""
 while ($len < 7)
-setVar $padIt " " & $padIt
-add $len 1
+	setvar $padit " " & $padit
+	add $len 1
 end
 return
 
 # goSubs
-
-:writeWarpSpec
-setVar $i 1
-delete $warpSpecFile
+:writewarpspec
+setvar $i 1
+delete $warpspecfile
 while ($i <= sectors)
-   getLength $i $len
-   gosub :padLen
-   setVar $warpString $i & $padIt
-   setVar $warpCounter 1
-   if (sector.warpcount[$i] > 0)
-      while ($warpCounter <= sector.warpcount[$i])
-         getLength sector.warps[$i][$warpCounter] $len
-         gosub :padLen
-         setVar $warpString $warpString & sector.warps[$i][$warpCounter] & $padIt
-         add $warpCounter 1
-      end
-      write $warpSpecFile $warpString
-   end
-   add $i 1
+	getlength $i $len
+	gosub :padlen
+	setvar $warpstring $i & $padit
+	setvar $warpcounter 1
+	if (sector.warpcount[$i] > 0)
+		while ($warpcounter <= sector.warpcount[$i])
+			getlength sector.warps[$i][$warpcounter] $len
+			gosub :padlen
+			setvar $warpstring $warpstring & sector.warps[$i][$warpcounter] & $padit
+			add $warpcounter 1
+		end
+		write $warpspecfile $warpstring
+	end
+	add $i 1
 end
 return
 
-:windowSetup
-getTime $stTime "'Start time:  ' h:nn:ss"
-setVar $Window 1
-Window ZTM 475 375 "      " & $version & "  by Promethius    " & $stTime  ONTOP
-setVar $Window "*     Public Release*"
-setVar $Window $Window & "     Release Date:   Aug 2005*"
-setVar $Window $Window & "     Updated:  v.6   Oct 2005*"
-setVar $Window $Window & "     Updated:  v1.0  Aug 2006*"
-setVar $Window $Window & "     Updated:  v1.4  Nov 2006*"
-setVar $Window $Window & "     Updated:  v1.4A Jan 2007*"
-setVar $Window $Window & "     Updated:  v2.0  Apr 2008*"
-setVar $window $window & "     Updated:  v3.0  Nov 2008*"
-setVar $window $window & "     Updated:  v4.0  Dec 2008*"
-setVar $window $window & "     Updated:  v4.11 Jun 2009"
-setVar $Window $Window & " Please let me know of any issues on classicTW.com.*"
-setWindowContents ZTM $Window
-setDelayTrigger WindowSplash :windowSplash 3000
+:windowsetup
+gettime $sttime "'Start time:  ' h:nn:ss"
+setvar $window 1
+window ztm 475 375 "      " & $version & "  by Promethius    " & $sttime  ontop
+setvar $window "*     Public Release*"
+setvar $window $window & "     Release Date:   Aug 2005*"
+setvar $window $window & "     Updated:  v.6   Oct 2005*"
+setvar $window $window & "     Updated:  v1.0  Aug 2006*"
+setvar $window $window & "     Updated:  v1.4  Nov 2006*"
+setvar $window $window & "     Updated:  v1.4A Jan 2007*"
+setvar $window $window & "     Updated:  v2.0  Apr 2008*"
+setvar $window $window & "     Updated:  v3.0  Nov 2008*"
+setvar $window $window & "     Updated:  v4.0  Dec 2008*"
+setvar $window $window & "     Updated:  v4.11 Jun 2009"
+setvar $window $window & " Please let me know of any issues on classicTW.com.*"
+setwindowcontents ztm $window
+setdelaytrigger windowsplash :windowsplash 3000
 pause
-:windowSplash
+
+:windowsplash
 return
 
-:ztmWindowUpdate
-setVar $window $windowMessagePass0 & $windowMessagepassCim & $windowMessagePass1 & $windowMessagePass2
-setVar $window $window & $windowMessagePass3 & $windowMessagePass4 & $windowMessagePass5
-setWindowContents ZTM $window
+:ztmwindowupdate
+setvar $window $windowmessagepass0 & $windowmessagepasscim & $windowmessagepass1 & $windowmessagepass2
+setvar $window $window & $windowmessagepass3 & $windowmessagepass4 & $windowmessagepass5
+setwindowcontents ztm $window
 return
 
-:connLost
+:connlost
 killalltriggers
- waitfor "Command [TL"
-  loadVar $ztmMin
-  loadVar $ztmMax
-  loadVar $ztmStart
-  loadVar $ztmEnd
-  loadVar $verifyStart
-  loadVar $verifyEnd
-  loadVar $firstPassVerified
-  loadVar $sPassZTMStart
-  loadVar $spassZTMEnd
-  echo ansi_12 "*" & $version & " resuming in " ansi_14 "10 " ANSI_12 "seconds."
-  setDelayTrigger relogDelay :begin 10000
-  setVar $reConn 1
-  pause
- goto :begin
- halt
+waitfor "Command [TL"
+loadvar $ztmmin
+loadvar $ztmmax
+loadvar $ztmstart
+loadvar $ztmend
+loadvar $verifystart
+loadvar $verifyend
+loadvar $firstpassverified
+loadvar $spassztmstart
+loadvar $spassztmend
+echo ansi_12 "*" & $version & " resuming in " ansi_14 "10 " ansi_12 "seconds."
+setdelaytrigger relogdelay :begin 10000
+setvar $reconn 1
+pause
+goto :begin
+halt
 
-:totalWarps
-setVar $totalWarps 0
-setVar $ttlwrps 0
-setVar $7Ins ""
-if ($showWarpsFound = "Yes") or ($7WarpsInMonitor = "Yes") or ($endPassWarps = TRUE)
-   while ($ttlwrps < SECTORS)
-       add $ttlwrps 1
-       add $totalWarps SECTOR.WARPCOUNT[$ttlwrps]
-       if (SECTOR.WARPINCOUNT[$ttlwrps] = 7) and ($7WarpsInMonitor = "Yes")
-          if (sector.explored[$ttlwrps] = YES)
-              setVar $padIt " -e- "
-          else
-              setVar $padIt " -u- "
-          end
+:totalwarps
+setvar $totalwarps 0
+setvar $ttlwrps 0
+setvar $7Ins ""
+if ($showwarpsfound = "Yes") or ($7WarpsInMonitor = "Yes") or ($endpasswarps = true)
+	while ($ttlwrps < sectors)
+		add $ttlwrps 1
+		add $totalwarps sector.warpcount[$ttlwrps]
+		if (sector.warpincount[$ttlwrps] = 7) and ($7WarpsInMonitor = "Yes")
+			if (sector.explored[$ttlwrps] = yes)
+				setvar $padit " -e- "
+			else
+				setvar $padit " -u- "
+			end
 
-          if ($ttlWrps < 10)
-             setVar $padIt $padIt & "     BD = "
-          elseif ($ttlWrps < 100)
-             setVar $padIt $padIt & "    BD = "
-          elseif ($ttlWrps < 1000)
-             setVar $padIt $padIt & "   BD = "
-          elseif ($ttlWrps < 10000)
-             setVar $padIt $padIt & "  BD = "
-          elseif ($ttlWrps > 9999)
-          setVar $padIt $padIt & " BD = "
-          end
-          setVar $update7In 1
-          setVar $7Ins $7Ins & "*" & $ttlwrps & $padIt & SECTOR.BACKDOORS[$ttlwrps][1]
-       end
-   end
+			if ($ttlwrps < 10)
+				setvar $padit $padit & "     BD = "
+			elseif ($ttlwrps < 100)
+				setvar $padit $padit & "    BD = "
+			elseif ($ttlwrps < 1000)
+				setvar $padit $padit & "   BD = "
+			elseif ($ttlwrps < 10000)
+				setvar $padit $padit & "  BD = "
+			elseif ($ttlwrps > 9999)
+				setvar $padit $padit & " BD = "
+			end
+			setvar $update7in 1
+			setvar $7Ins $7Ins & "*" & $ttlwrps & $padit & sector.backdoors[$ttlwrps][1]
+		end
+	end
 end
 return
 
-:checkComp
-setTextTrigger intGood2 :computerDone2 $chkSector & " > "
-setTextTrigger compClear2 :clearVoids2 "Clear Avoids"
+:checkcomp
+settexttrigger intgood2 :computerdone2 $chksector & " > "
+settexttrigger compclear2 :clearvoids2 "Clear Avoids"
 pause
- :clearVoids2
- killtrigger intGood2
- send "y"
- :computerDone2
- killtrigger compClear2
+
+:clearvoids2
+killtrigger intgood2
+send "y"
+
+:computerdone2
+killtrigger compclear2
 return
 
 include "source\include\help"

@@ -1,118 +1,112 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-	setVar $HELP~HELP[1]  $HELP~TAB&"twarp {sector:#} {"&#34&"trader_name"&#34&"} {p} "
-	setVar $HELP~HELP[2]  $HELP~TAB&"      "
-	setVar $HELP~HELP[3]  $HELP~TAB&"        transwarps to sector as quickly "
-	setVar $HELP~HELP[4]  $HELP~TAB&"        and safely as possible.   "
-	setVar $HELP~HELP[5]  $HELP~TAB&"      "
-	setVar $HELP~HELP[6]  $HELP~TAB&"    Options: "
-	setVar $HELP~HELP[7]  $HELP~TAB&"           {sector:#} - sector to twarp to "
-	setVar $HELP~HELP[8]  $HELP~TAB&"      {"&#34&"trader_name"&#34&"} - trader to twarp to"
-	setVar $HELP~HELP[9]  $HELP~TAB&"                  {p} - attempt to port after twarp"
-	setVar $HELP~HELP[10] $HELP~TAB&"         "
-	setVar $HELP~HELP[11] $HELP~TAB&"    Examples:"
-	setVar $HELP~HELP[12] $HELP~TAB&"            >t 233    - normal twarp"
-	setVar $HELP~HELP[13] $HELP~TAB&"            >t 233 12 - twarp, then land on planet 12"
-	setVar $HELP~HELP[14] $HELP~TAB&"            >t 233 p  - twarp, then port"
-	setVar $HELP~HELP[15] $HELP~TAB&"         >t planet 12 - twarp to last known "
-	setVar $HELP~HELP[16] $HELP~TAB&"                        location of planet 12 and land"
-	setVar $HELP~HELP[17] $HELP~TAB&"              >t mind - twarp to a corp member with mind"
-	setVar $HELP~HELP[18] $HELP~TAB&"                        in their name"
-	setVar $HELP~HELP[19] $HELP~TAB&"     >t "&#34&"mind dagger"&#34&" - twarp to corp member"
-	gosub :HELP~HELPFILE
-
+setvar $help~help[1]  $help~tab&"twarp {sector:#} {"&#34&"trader_name"&#34&"} {p} "
+setvar $help~help[2]  $help~tab&"      "
+setvar $help~help[3]  $help~tab&"        transwarps to sector as quickly "
+setvar $help~help[4]  $help~tab&"        and safely as possible.   "
+setvar $help~help[5]  $help~tab&"      "
+setvar $help~help[6]  $help~tab&"    Options: "
+setvar $help~help[7]  $help~tab&"           {sector:#} - sector to twarp to "
+setvar $help~help[8]  $help~tab&"      {"&#34&"trader_name"&#34&"} - trader to twarp to"
+setvar $help~help[9]  $help~tab&"                  {p} - attempt to port after twarp"
+setvar $help~help[10] $help~tab&"         "
+setvar $help~help[11] $help~tab&"    Examples:"
+setvar $help~help[12] $help~tab&"            >t 233    - normal twarp"
+setvar $help~help[13] $help~tab&"            >t 233 12 - twarp, then land on planet 12"
+setvar $help~help[14] $help~tab&"            >t 233 p  - twarp, then port"
+setvar $help~help[15] $help~tab&"         >t planet 12 - twarp to last known "
+setvar $help~help[16] $help~tab&"                        location of planet 12 and land"
+setvar $help~help[17] $help~tab&"              >t mind - twarp to a corp member with mind"
+setvar $help~help[18] $help~tab&"                        in their name"
+setvar $help~help[19] $help~tab&"     >t "&#34&"mind dagger"&#34&" - twarp to corp member"
+gosub :help~helpfile
 
 # ======================     START TWARP SUBROUTINES     =================
 :twarp
 :t
-setVar $player~warpto_p ""
+setvar $player~warpto_p ""
 setvar $player~save true
-gosub :PLAYER~quikstats
-setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
-setVar $bot~validPrompts "Command <Underground> Do How Corporate Citadel Planet Computer Terra <StarDock> <FedPolice> <Tavern> <Libram <Galactic <Hardware <Shipyards>"
-gosub :PLAYER~CHECKSTARTINGPROMPT
+gosub :player~quikstats
+setvar $player~startinglocation $player~current_prompt
+setvar $bot~validprompts "Command <Underground> Do How Corporate Citadel Planet Computer Terra <StarDock> <FedPolice> <Tavern> <Libram <Galactic <Hardware <Shipyards>"
+gosub :player~checkstartingprompt
 gosub :player~checkfortravelname
-if ($PLAYER~TWARP_TYPE = "No")
-	setVar $SWITCHBOARD~message "This ship does not have a transwarp drive!*"
-	gosub :SWITCHBOARD~switchboard
+if ($player~twarp_type = "No")
+	setvar $switchboard~message "This ship does not have a transwarp drive!*"
+	gosub :switchboard~switchboard
 	goto :wait_for_command
 end
-gosub :travelProtections
+gosub :travelprotections
 gosub :move~twarp
-if ($PLAYER~twarpSuccess = FALSE)
-	if (($PLAYER~startingLocation = "Citadel") OR ($PLAYER~startingLocation = "Planet"))
+if ($player~twarpsuccess = false)
+	if (($player~startinglocation = "Citadel") or ($player~startinglocation = "Planet"))
 		if ($planet~planet <> 0)
-			gosub  :player~currentPrompt
-			if ($PLAYER~CURRENT_PROMPT = "Command")
-				gosub :PLANET~landingSub
+			gosub  :player~currentprompt
+			if ($player~current_prompt = "Command")
+				gosub :planet~landingsub
 			end
 		end
 		goto :wait_for_command
 	end
-	if (($PLAYER~startingLocation = "<StarDock>") OR ($PLAYER~startingLocation = "<FedPolice") OR ($PLAYER~startingLocation = "<Tavern>") OR ($PLAYER~startingLocation = "<Libram") OR ($PLAYER~startingLocation = "<Galact") OR ($PLAYER~startingLocation = "<Hardware") OR ($PLAYER~startingLocation = "<Shipyards>"))
+	if (($player~startinglocation = "<StarDock>") or ($player~startinglocation = "<FedPolice") or ($player~startinglocation = "<Tavern>") or ($player~startinglocation = "<Libram") or ($player~startinglocation = "<Galact") or ($player~startinglocation = "<Hardware") or ($player~startinglocation = "<Shipyards>"))
 		send "p z s h *"
 		goto :wait_for_command
 	end
-	if ($PLAYER~msg <> "You can't twarp with photons without override!")
-		setVar $SWITCHBOARD~message $PLAYER~msg&"*"
-		gosub :SWITCHBOARD~switchboard
+	if ($player~msg <> "You can't twarp with photons without override!")
+		setvar $switchboard~message $player~msg&"*"
+		gosub :switchboard~switchboard
 	end
 else
 	if ($bot~parm2 = "p")
 		send $player~warpto_p
-	elseif (($player~warpto_p <> 0) AND ($player~warpto_p <> ""))
-		setVar $planet~planet $player~warpto_p
-		gosub :PLANET~landingSub
+	elseif (($player~warpto_p <> 0) and ($player~warpto_p <> ""))
+		setvar $planet~planet $player~warpto_p
+		gosub :planet~landingsub
 	end
-	setVar $bot~target $PLAYER~warpto
-	setVar $PLAYER~target $bot~target
+	setvar $bot~target $player~warpto
+	setvar $player~target $bot~target
 	gosub :player~addfigtodata
-	setVar $SWITCHBOARD~message $PLAYER~msg&"*"
-	gosub :SWITCHBOARD~switchboard
+	setvar $switchboard~message $player~msg&"*"
+	gosub :switchboard~switchboard
 end
 goto :wait_for_command
 # ======================     END TWARP SUBROUTINES     ==========================
-:travelProtections
-isNumber $test $bot~parm1
-if ($test = FALSE)
-	setVar $SWITCHBOARD~message "Sector must be entered as a number*"
-	gosub :SWITCHBOARD~switchboard
+:travelprotections
+isnumber $test $bot~parm1
+if ($test = false)
+	setvar $switchboard~message "Sector must be entered as a number*"
+	gosub :switchboard~switchboard
 	goto :wait_for_command
 else
 	if ($bot~parm2 = "p")
-		setVar $player~warpto_p "p z t *"
-		if ($bot~parm1 = $MAP~stardock)
-			setVar $player~warpto_p "p z s h *"
+		setvar $player~warpto_p "p z t *"
+		if ($bot~parm1 = $map~stardock)
+			setvar $player~warpto_p "p z s h *"
 		end
 	else
-		isNumber $test $bot~parm2
-		if ($test = FALSE)
-			setVar $player~warpto_p ""
+		isnumber $test $bot~parm2
+		if ($test = false)
+			setvar $player~warpto_p ""
 		else
-			setVar $player~warpto_p $bot~parm2
+			setvar $player~warpto_p $bot~parm2
 		end
 	end
-	setVar $PLAYER~warpto $bot~parm1
-	if ($PLAYER~CURRENT_SECTOR = $PLAYER~warpto)
-		setVar $SWITCHBOARD~message "Already in that sector!*"
-		gosub :SWITCHBOARD~switchboard
+	setvar $player~warpto $bot~parm1
+	if ($player~current_sector = $player~warpto)
+		setvar $switchboard~message "Already in that sector!*"
+		gosub :switchboard~switchboard
 		goto :wait_for_command
-	elseif (($PLAYER~warpto <= 0) OR ($PLAYER~warpto > SECTORS))
-		setVar $SWITCHBOARD~message "Destination sector is out of range!*"
-		gosub :SWITCHBOARD~switchboard
+	elseif (($player~warpto <= 0) or ($player~warpto > sectors))
+		setvar $switchboard~message "Destination sector is out of range!*"
+		gosub :switchboard~switchboard
 		goto :wait_for_command
 	end
 end
 return
 
-
-
 :wait_for_command
 halt
-
-
-
 
 # includes:
 include "source\include\planet"

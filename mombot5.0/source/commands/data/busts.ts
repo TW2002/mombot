@@ -1,54 +1,53 @@
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-	setVar $HELP~HELP[1] $HELP~TAB&"busts -"
-	setVar $HELP~HELP[2] $HELP~TAB&"    displays all busted sectors on subspace"
-	gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&"busts -"
+setvar $help~help[2] $help~tab&"    displays all busted sectors on subspace"
+gosub :help~helpfile
 
 setvar $switchboard~message "Scanning BUSTED SectorParameter ...*"
 gosub :switchboard~switchboard
 
-setVar $IDX 11
-setVar $COUNT 0
-setVar $COLUMN 1
-setVar $STRING "      "
-while ($IDX <= SECTORS)
-	getsectorparameter $IDX "BUSTED" $BUS
-	isnumber $tst $BUS
+setvar $idx 11
+setvar $count 0
+setvar $column 1
+setvar $string "      "
+while ($idx <= sectors)
+	getsectorparameter $idx "BUSTED" $bus
+	isnumber $tst $bus
 	if ($tst = 0)
-		setVar $BUS 0
+		setvar $bus 0
 	end
-	if ($BUS <> 0)
-		add $COUNT 1
-		gosub :PAD
-		if ($COLUMN <= 10)
-			setVar $STRING ($STRING & " " & $PAD & $IDX)
-			add $COLUMN 1
+	if ($bus <> 0)
+		add $count 1
+		gosub :pad
+		if ($column <= 10)
+			setvar $string ($string & " " & $pad & $idx)
+			add $column 1
 		else
-			setVar $STRING ($STRING & "*       " & $PAD & $IDX)
-			setVar $COLUMN 1
+			setvar $string ($string & "*       " & $pad & $idx)
+			setvar $column 1
 		end
 	end
-	add $IDX 1
+	add $idx 1
 end
-setvar $switchboard~message $COUNT&" Busts Found In DataBase*"
-if ($COUNT <> 0)
-	setvar $switchboard~message $switchboard~message&$STRING&"*"
+setvar $switchboard~message $count&" Busts Found In DataBase*"
+if ($count <> 0)
+	setvar $switchboard~message $switchboard~message&$string&"*"
 end
 setvar $switchboard~message $switchboard~message&"*"
 gosub :switchboard~switchboard
 halt
 
-:PAD
-setVar $PAD ""
-getlength $IDX $LEN
-setVar $PAD_i 1
-while ($PAD_i <= (5 - $LEN))
-	setVar $PAD ($PAD & " ")
-	add $PAD_i 1
+:pad
+setvar $pad ""
+getlength $idx $len
+setvar $pad_i 1
+while ($pad_i <= (5 - $len))
+	setvar $pad ($pad & " ")
+	add $pad_i 1
 end
 return
-
 
 #INCLUDES:
 include "source\include\loadvars"

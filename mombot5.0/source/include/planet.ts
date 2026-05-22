@@ -1,982 +1,937 @@
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~COUNTPLANETS
+:planet~countplanets
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLANET~PLANETCOUNT 0
-killtrigger PLANETGRABBER
-killtrigger BEDONE
+setvar $planet~planetcount 0
+killtrigger planetgrabber
+killtrigger bedone
 send "/"
 waiton "Creds"
-settextlinetrigger PLANETGRABBER :PLANETLINE "   <"
-settextlinetrigger BEDONE :COUNTDONE "Land on which planet "
+settextlinetrigger planetgrabber :planetline "   <"
+settextlinetrigger bedone :countdone "Land on which planet "
 send "|lq*|"
 pause
-:PLANET~PLANETLINE
-killtrigger GETEND
-killtrigger GETLINE2
-killtrigger PLANETGRABBER
-killtrigger BEDONE
-getwordpos CURRENTLINE $PLANET~POS "<<<< SHIELDED"
-if ($PLANET~POS <= 0)
-  setvar $PLANET~LINE CURRENTLINE
-  replacetext $PLANET~LINE "<" " "
-  replacetext $PLANET~LINE ">" " "
-  striptext $PLANET~LINE ","
-  add $PLANET~PLANETCOUNT 1
-  getword $PLANET~LINE $PLANET~PLANETS[$PLANET~PLANETCOUNT] 1
+
+:planet~planetline
+killtrigger getend
+killtrigger getline2
+killtrigger planetgrabber
+killtrigger bedone
+getwordpos currentline $planet~pos "<<<< SHIELDED"
+if ($planet~pos <= 0)
+	setvar $planet~line currentline
+	replacetext $planet~line "<" " "
+	replacetext $planet~line ">" " "
+	striptext $planet~line ","
+	add $planet~planetcount 1
+	getword $planet~line $planet~planets[$planet~planetcount] 1
 end
-settextlinetrigger GETLINE2 :PLANETLINE "   <"
-settextlinetrigger GETEND :COUNTDONE "Land on which planet "
+settextlinetrigger getline2 :planetline "   <"
+settextlinetrigger getend :countdone "Land on which planet "
 pause
 
-:PLANET~COUNTDONE
-killtrigger GETEND
-killtrigger GETLINE2
-killtrigger PLANETGRABBER
-killtrigger BEDONE
+:planet~countdone
+killtrigger getend
+killtrigger getline2
+killtrigger planetgrabber
+killtrigger bedone
 return
 
-
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~PLANETCHECK
+:planet~planetcheck
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLANET~PLANETCHECK_I 1
-setvar $PLANET~PLANETCHECK_IGNORECOUNT 0
+setvar $planet~planetcheck_i 1
+setvar $planet~planetcheck_ignorecount 0
 
-:PLANET~PLANETCHECK_LOADIGNORE
-getword $PLANET~PLANETCHECK_IGNORELIST $PLANET~PLANETCHECK_IGNORE[$PLANET~PLANETCHECK_I] $PLANET~PLANETCHECK_I
-if ($PLANET~PLANETCHECK_IGNORE[$PLANET~PLANETCHECK_I] <> 0)
-  add $PLANET~PLANETCHECK_I 1
-  add $PLANET~PLANETCHECK_IGNORECOUNT 1
-  goto :PLANET~PLANETCHECK_LOADIGNORE
+:planet~planetcheck_loadignore
+getword $planet~planetcheck_ignorelist $planet~planetcheck_ignore[$planet~planetcheck_i] $planet~planetcheck_i
+if ($planet~planetcheck_ignore[$planet~planetcheck_i] <> 0)
+	add $planet~planetcheck_i 1
+	add $planet~planetcheck_ignorecount 1
+	goto :planet~planetcheck_loadignore
 end
 
-setvar $PLANET~PLANETCHECK_IGNORELIST ""
-setvar $PLANET~PLANETCHECK_FOUND 0
+setvar $planet~planetcheck_ignorelist ""
+setvar $planet~planetcheck_found 0
 send "l"
 
-settextlinetrigger PLANETCHECK_NOPLANET :PLANET~PLANETCHECK_NOPLANET "There isn't a planet in this sector."
-settextlinetrigger PLANETCHECK_MULTIPLEPLANETS :PLANET~PLANETCHECK_MULTIPLEPLANETS "Registry# and Planet Name"
-settextlinetrigger PLANETCHECK_SINGLEPLANET :PLANET~PLANETCHECK_SINGLEPLANET "Landing sequence engaged..."
+settextlinetrigger planetcheck_noplanet :planet~planetcheck_noplanet "There isn't a planet in this sector."
+settextlinetrigger planetcheck_multipleplanets :planet~planetcheck_multipleplanets "Registry# and Planet Name"
+settextlinetrigger planetcheck_singleplanet :planet~planetcheck_singleplanet "Landing sequence engaged..."
 pause
 
-:PLANET~PLANETCHECK_NOPLANET
-killtrigger PLANETCHECK_MULTIPLEPLANETS
-killtrigger PLANETCHECK_SINGLEPLANET
+:planet~planetcheck_noplanet
+killtrigger planetcheck_multipleplanets
+killtrigger planetcheck_singleplanet
 return
 
-:PLANET~PLANETCHECK_MULTIPLEPLANETS
-killtrigger PLANETCHECK_SINGLEPLANET
-killtrigger PLANETCHECK_NOPLANET
-setvar $PLANET~PLANETCHECK_LASTID 0
+:planet~planetcheck_multipleplanets
+killtrigger planetcheck_singleplanet
+killtrigger planetcheck_noplanet
+setvar $planet~planetcheck_lastid 0
 
-:PLANET~PLANETCHECK_NEXTPLANET
-settexttrigger PLANETCHECK_PLANETSCHECKED :PLANET~PLANETCHECK_PLANETSCHECKED "Land on which planet <Q to abort>"
-settextlinetrigger PLANETCHECK_GETID :PLANET~PLANETCHECK_GETID "<"
+:planet~planetcheck_nextplanet
+settexttrigger planetcheck_planetschecked :planet~planetcheck_planetschecked "Land on which planet <Q to abort>"
+settextlinetrigger planetcheck_getid :planet~planetcheck_getid "<"
 pause
 
-:PLANET~PLANETCHECK_GETID
-getword CURRENTLINE $PLANET~PLANETCHECK_WORD 1
-if ($PLANET~PLANETCHECK_WORD = "Owned")
-  settextlinetrigger PLANETCHECK_GETID :PLANET~PLANETCHECK_GETID "<"
-  pause
+:planet~planetcheck_getid
+getword currentline $planet~planetcheck_word 1
+if ($planet~planetcheck_word = "Owned")
+	settextlinetrigger planetcheck_getid :planet~planetcheck_getid "<"
+	pause
 end
 
-killtrigger PLANETCHECK_PLANETSCHECKED
-setvar $PLANET~PLANETCHECK_LINE CURRENTLINE
-striptext $PLANET~PLANETCHECK_LINE "<"
-striptext $PLANET~PLANETCHECK_LINE ">"
-getword $PLANET~PLANETCHECK_LINE $PLANET~PLANETCHECK_ID 1
-if ($PLANET~PLANETCHECK_ID = "Land")
-  goto :PLANET~PLANETCHECK_PLANETSCHECKED
+killtrigger planetcheck_planetschecked
+setvar $planet~planetcheck_line currentline
+striptext $planet~planetcheck_line "<"
+striptext $planet~planetcheck_line ">"
+getword $planet~planetcheck_line $planet~planetcheck_id 1
+if ($planet~planetcheck_id = "Land")
+	goto :planet~planetcheck_planetschecked
 end
 
-gosub :PLANET~PLANETCHECK_SUB_CHECKIGNORE
+gosub :planet~planetcheck_sub_checkignore
 
-if (($PLANET~PLANETCHECK_ID > $PLANET~PLANETCHECK_LASTID) and ($PLANET~PLANETCHECK_IGNORE = 0))
-  send $PLANET~PLANETCHECK_ID "*"
-  setvar $PLANET~PLANETCHECK_LASTID $PLANET~PLANETCHECK_ID
-  gosub :PLANET~PLANETCHECK_SUB_CHECK
+if (($planet~planetcheck_id > $planet~planetcheck_lastid) and ($planet~planetcheck_ignore = 0))
+	send $planet~planetcheck_id "*"
+	setvar $planet~planetcheck_lastid $planet~planetcheck_id
+	gosub :planet~planetcheck_sub_check
 
-  if ($PLANET~PLANETCHECK_FOUND <> 0)
-    return
-  end
+	if ($planet~planetcheck_found <> 0)
+		return
+	end
 
-  send "ql"
-  waitfor "Registry# and Planet Name"
+	send "ql"
+	waitfor "Registry# and Planet Name"
 end
-goto :PLANET~PLANETCHECK_NEXTPLANET
+goto :planet~planetcheck_nextplanet
 
-:PLANET~PLANETCHECK_PLANETSCHECKED
-killtrigger PLANETCHECK_GETID
+:planet~planetcheck_planetschecked
+killtrigger planetcheck_getid
 send "q*"
 return
 
-:PLANET~PLANETCHECK_SINGLEPLANET
-killtrigger PLANETCHECK_MULTIPLEPLANETS
-killtrigger PLANETCHECK_NOPLANET
-gosub :PLANET~PLANETCHECK_SUB_CHECK
-if ($PLANET~PLANETCHECK_FOUND = 0)
-  send "q"
+:planet~planetcheck_singleplanet
+killtrigger planetcheck_multipleplanets
+killtrigger planetcheck_noplanet
+gosub :planet~planetcheck_sub_check
+if ($planet~planetcheck_found = 0)
+	send "q"
 end
 return
 
-:PLANET~PLANETCHECK_SUB_CHECK
-settextlinetrigger PLANETCHECK_CHECK_GETPLANET :PLANET~PLANETCHECK_CHECK_GETPLANET "Planet #"
+:planet~planetcheck_sub_check
+settextlinetrigger planetcheck_check_getplanet :planet~planetcheck_check_getplanet "Planet #"
 pause
 
-:PLANET~PLANETCHECK_CHECK_GETPLANET
-getword CURRENTLINE $PLANET~PLANETCHECK_CHECK_PLANET 2
-striptext $PLANET~PLANETCHECK_CHECK_PLANET "#"
+:planet~planetcheck_check_getplanet
+getword currentline $planet~planetcheck_check_planet 2
+striptext $planet~planetcheck_check_planet "#"
 
-setvar $PLANET~PLANETCHECK_ID $PLANET~PLANETCHECK_CHECK_PLANET
-gosub :PLANET~PLANETCHECK_SUB_CHECKIGNORE
+setvar $planet~planetcheck_id $planet~planetcheck_check_planet
+gosub :planet~planetcheck_sub_checkignore
 
-if ($PLANET~PLANETCHECK_IGNORE = 0)
-  gosub $PLANET~PLANETCHECKSUB
+if ($planet~planetcheck_ignore = 0)
+	gosub $planet~planetchecksub
 
-  if ($PLANET~PLANETCHECK_FOUND = 1)
-    setvar $PLANET~PLANETCHECK_FOUND $PLANET~PLANETCHECK_CHECK_PLANET
-  end
+	if ($planet~planetcheck_found = 1)
+		setvar $planet~planetcheck_found $planet~planetcheck_check_planet
+	end
 end
 
 return
 
-:PLANET~PLANETCHECK_SUB_CHECKIGNORE
-setvar $PLANET~PLANETCHECK_J 1
-setvar $PLANET~PLANETCHECK_IGNORE 0
+:planet~planetcheck_sub_checkignore
+setvar $planet~planetcheck_j 1
+setvar $planet~planetcheck_ignore 0
 
-:PLANET~PLANETCHECK_CHECKIGNORE_LOOP
-if ($PLANET~PLANETCHECK_J <= $PLANET~PLANETCHECK_IGNORECOUNT)
-  if ($PLANET~PLANETCHECK_IGNORE[$PLANET~PLANETCHECK_J] = $PLANET~PLANETCHECK_ID)
-    setvar $PLANET~PLANETCHECK_IGNORE 1
-  else
-    add $PLANET~PLANETCHECK_J 1
-    goto :PLANET~PLANETCHECK_CHECKIGNORE_LOOP
-  end
+:planet~planetcheck_checkignore_loop
+if ($planet~planetcheck_j <= $planet~planetcheck_ignorecount)
+	if ($planet~planetcheck_ignore[$planet~planetcheck_j] = $planet~planetcheck_id)
+		setvar $planet~planetcheck_ignore 1
+	else
+		add $planet~planetcheck_j 1
+		goto :planet~planetcheck_checkignore_loop
+	end
 end
 
 return
-
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~GETPLANETINFO
+:planet~getplanetinfo
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLANET~NOHEADER 0
-:PLANET~PLANETINFO
-setvar $PLANET~PLANET 0
-setvar $PLANET~CURRENT_SECTOR 0
-setvar $PLANET~PLANET_FUEL 0
-setvar $PLANET~PLANET_FUEL_MAX 0
-setvar $PLANET~PLANET_ORGANICS 0
-setvar $PLANET~PLANET_ORGANICS_MAX 0
-setvar $PLANET~PLANET_EQUIPMENT 0
-setvar $PLANET~PLANET_EQUIPMENT_MAX 0
-setvar $PLANET~PLANET_FIGHTERS 0
-setvar $PLANET~PLANET_FIGHTERS_RATE 0
-setvar $PLANET~PLANET_FIGHTERS_PROD 0
-setvar $PLANET~PLANET_TRANSPORT 0
-setvar $PLANET~PLANET_FIGHTERS_MAX 0
-setvar $PLANET~CITADEL 0
-setvar $PLANET~CITADEL_CREDITS 0
-setvar $PLANET~ATMOSPHERE_CANNON 0
-setvar $PLANET~SECTOR_CANNON 0
-setvar $PLANET~BUILDTIME 0
-setvar $PLANET~MILITARYREACTION 0
-setvar $PLANET~CREATOR ""
-setvar $PLANET~OWNER ""
-setvar $PLANET~PLANET_CLASS_NAME "undefined"
-setvar $PLANET~PLANET_NAME "undefined"
-setvar $PLANET~UNDER_CONSTRUCTION FALSE
-setvar $PLANET~MAXED_LEVEL FALSE
-setvar $PLANET~COLO[1] 0
-setvar $PLANET~COLO[2] 0
-setvar $PLANET~COLO[3] 0
-setvar $PLANET~RATE[1] 0
-setvar $PLANET~RATE[2] 0
-setvar $PLANET~RATE[3] 0
-setvar $PLANET~RATE[4] 0
-setvar $PLANET~PROD[1] 0
-setvar $PLANET~PROD[2] 0
-setvar $PLANET~PROD[3] 0
-setvar $PLANET~PROD[4] 0
-setvar $PLANET~AMOUNT[1] 0
-setvar $PLANET~AMOUNT[2] 0
-setvar $PLANET~AMOUNT[3] 0
-setvar $PLANET~AMOUNT[4] 0
-setvar $PLANET~MAX[1] 0
-setvar $PLANET~MAX[2] 0
-setvar $PLANET~MAX[3] 0
-setvar $PLANET~MAX[4] 0
+setvar $planet~noheader 0
 
-if ($PLANET~NOHEADER = 0)
-  send "*"
-  killtrigger PLANETINFO2
-  settextlinetrigger PLANETINFO2 :PLANETINFO2 "Planet #"
-  pause
+:planet~planetinfo
+setvar $planet~planet 0
+setvar $planet~current_sector 0
+setvar $planet~planet_fuel 0
+setvar $planet~planet_fuel_max 0
+setvar $planet~planet_organics 0
+setvar $planet~planet_organics_max 0
+setvar $planet~planet_equipment 0
+setvar $planet~planet_equipment_max 0
+setvar $planet~planet_fighters 0
+setvar $planet~planet_fighters_rate 0
+setvar $planet~planet_fighters_prod 0
+setvar $planet~planet_transport 0
+setvar $planet~planet_fighters_max 0
+setvar $planet~citadel 0
+setvar $planet~citadel_credits 0
+setvar $planet~atmosphere_cannon 0
+setvar $planet~sector_cannon 0
+setvar $planet~buildtime 0
+setvar $planet~militaryreaction 0
+setvar $planet~creator ""
+setvar $planet~owner ""
+setvar $planet~planet_class_name "undefined"
+setvar $planet~planet_name "undefined"
+setvar $planet~under_construction false
+setvar $planet~maxed_level false
+setvar $planet~colo[1] 0
+setvar $planet~colo[2] 0
+setvar $planet~colo[3] 0
+setvar $planet~rate[1] 0
+setvar $planet~rate[2] 0
+setvar $planet~rate[3] 0
+setvar $planet~rate[4] 0
+setvar $planet~prod[1] 0
+setvar $planet~prod[2] 0
+setvar $planet~prod[3] 0
+setvar $planet~prod[4] 0
+setvar $planet~amount[1] 0
+setvar $planet~amount[2] 0
+setvar $planet~amount[3] 0
+setvar $planet~amount[4] 0
+setvar $planet~max[1] 0
+setvar $planet~max[2] 0
+setvar $planet~max[3] 0
+setvar $planet~max[4] 0
+
+if ($planet~noheader = 0)
+	send "*"
+	killtrigger planetinfo2
+	settextlinetrigger planetinfo2 :planetinfo2 "Planet #"
+	pause
 end
 
-goto :PLANETINFOSTART
+goto :planetinfostart
 
-:PLANET~PLANETINFO2
-setvar $PLANET~CITADEL 0
-setvar $PLANET~SECTOR_CANNON 0
-setvar $PLANET~ATMOSPHERE_CANNON 0
-setvar $PLANET~CITADEL_CREDITS 0
-getword CURRENTLINE $PLANET~PLANET 2
-striptext $PLANET~PLANET "#"
-isnumber $PLANET~TST $PLANET~PLANET
-if ($PLANET~TST <> TRUE)
-  settextlinetrigger PLANETINFO2 :PLANETINFO2 "Planet #"
-  pause
+:planet~planetinfo2
+setvar $planet~citadel 0
+setvar $planet~sector_cannon 0
+setvar $planet~atmosphere_cannon 0
+setvar $planet~citadel_credits 0
+getword currentline $planet~planet 2
+striptext $planet~planet "#"
+isnumber $planet~tst $planet~planet
+if ($planet~tst <> true)
+	settextlinetrigger planetinfo2 :planetinfo2 "Planet #"
+	pause
 end
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR 5
-striptext $PLAYER~CURRENT_SECTOR ":"
-getwordpos CURRENTLINE $PLANET~POS ": "
-cuttext CURRENTLINE $PLANET~PLANET_NAME ($PLANET~POS + 2) 999
-savevar $PLANET~PLANET
-savevar $PLAYER~CURRENT_SECTOR
-setsectorparameter $PLANET~PLANET "PSECTOR" $PLAYER~CURRENT_SECTOR
-:PLANETINFOSTART
-setvar $PLANET~CURRENT_SECTOR $PLAYER~CURRENT_SECTOR
-settextlinetrigger CLASS :GETCLASS "Class "
-settextlinetrigger CREATOR :CREATOR "Created by: "
-settextlinetrigger OWNER :OWNER "Claimed by: "
+getword currentline $player~current_sector 5
+striptext $player~current_sector ":"
+getwordpos currentline $planet~pos ": "
+cuttext currentline $planet~planet_name ($planet~pos + 2) 999
+savevar $planet~planet
+savevar $player~current_sector
+setsectorparameter $planet~planet "PSECTOR" $player~current_sector
+
+:planetinfostart
+setvar $planet~current_sector $player~current_sector
+settextlinetrigger class :getclass "Class "
+settextlinetrigger creator :creator "Created by: "
+settextlinetrigger owner :owner "Claimed by: "
 pause
 
-:PLANET~GETCLASS
-getword CURRENTLINE $PLANET~CODE 2
-striptext $PLANET~CODE ","
-getlength $PLANET~CODE $len
-cuttext CURRENTLINE $PLANET~PLANET_CLASS_NAME ($len + 9) 999
-setvar $PLANET~CLASS_NAME $PLANET~PLANET_CLASS_NAME
+:planet~getclass
+getword currentline $planet~code 2
+striptext $planet~code ","
+getlength $planet~code $len
+cuttext currentline $planet~planet_class_name ($len + 9) 999
+setvar $planet~class_name $planet~planet_class_name
 pause
 
-:PLANET~CREATOR
-getword CURRENTLINE $test 3
+:planet~creator
+getword currentline $test 3
 if ($test = 0)
-  setvar $PLANET~CREATOR ""
+	setvar $planet~creator ""
 else
-  cuttext CURRENTLINE $PLANET~CREATOR 13 999
+	cuttext currentline $planet~creator 13 999
 end
 pause
 
-:PLANET~OWNER
-getword CURRENTLINE $PLANET~OWNER 3
-if ($PLANET~OWNER = 0)
-  setvar $PLANET~OWNER ""
+:planet~owner
+getword currentline $planet~owner 3
+if ($planet~owner = 0)
+	setvar $planet~owner ""
 else
-  cuttext CURRENTLINE $PLANET~OWNER 13 999
+	cuttext currentline $planet~owner 13 999
 end
 
 waitfor "2 Build 1   Product    Amount     Amount     Maximum"
-gosub :KILLPLANETTRIGGERS
+gosub :killplanettriggers
 
-:PLANET~GETPLANETSTUFF
-settextlinetrigger FUELSTART :FUELSTART "Fuel Ore"
-settextlinetrigger ORGSTART :ORGSTART "Organics"
-settextlinetrigger EQUIPSTART :EQUIPSTART "Equipment"
-settextlinetrigger FIGSTART :FIGSTART "Fighters        N/A"
-settextlinetrigger TPORT :PLANETTPORT "-=-=-=-=-=- TransPort power ="
-settextlinetrigger SHIELDS :PLANETSHIELDS "Planetary Defense Shielding Power Level ="
-settextlinetrigger CITADELSTART :CITADELSTART "Planet has a level"
-settextlinetrigger CANNON :CANNONSTART ", AtmosLvl="
-settexttrigger MAXEDIG :MAXEDIG "Planetary Interdictor Generator ="
-settexttrigger UNDERCONST :UNDERCONST "under construction,"
-settexttrigger PLANETINFODONE :PLANETINFODONE "Planet command (?=help)"
+:planet~getplanetstuff
+settextlinetrigger fuelstart :fuelstart "Fuel Ore"
+settextlinetrigger orgstart :orgstart "Organics"
+settextlinetrigger equipstart :equipstart "Equipment"
+settextlinetrigger figstart :figstart "Fighters        N/A"
+settextlinetrigger tport :planettport "-=-=-=-=-=- TransPort power ="
+settextlinetrigger shields :planetshields "Planetary Defense Shielding Power Level ="
+settextlinetrigger citadelstart :citadelstart "Planet has a level"
+settextlinetrigger cannon :cannonstart ", AtmosLvl="
+settexttrigger maxedig :maxedig "Planetary Interdictor Generator ="
+settexttrigger underconst :underconst "under construction,"
+settexttrigger planetinfodone :planetinfodone "Planet command (?=help)"
 pause
 
-:PLANET~UNDERCONST
-setvar $PLANET~UNDER_CONSTRUCTION TRUE
-getwordpos CURRENTLINE $pos " under construction, "
-cuttext CURRENTLINE $line $pos 999
-getword $line $PLANET~BUILDTIME 3
+:planet~underconst
+setvar $planet~under_construction true
+getwordpos currentline $pos " under construction, "
+cuttext currentline $line $pos 999
+getword $line $planet~buildtime 3
 pause
 
-:PLANET~MAXEDIG
-setvar $PLANET~MAXED_LEVEL TRUE
+:planet~maxedig
+setvar $planet~maxed_level true
 pause
 
-:PLANET~PLANETTPORT
-gettext CURRENTLINE $PLANET~PLANET_TPAD "power =" "hops -"
-striptext $PLANET~PLANET_TPAD ","
-striptext $PLANET~PLANET_TPAD " "
-isnumber $PLANET~TST $PLANET~PLANET_TPAD
-if ($PLANET~TST = 0)
-  setvar $PLANET~PLANET_TPAD 0
+:planet~planettport
+gettext currentline $planet~planet_tpad "power =" "hops -"
+striptext $planet~planet_tpad ","
+striptext $planet~planet_tpad " "
+isnumber $planet~tst $planet~planet_tpad
+if ($planet~tst = 0)
+	setvar $planet~planet_tpad 0
 end
-setvar $PLANET~PLANET_TRANSPORT $PLANET~PLANET_TPAD
+setvar $planet~planet_transport $planet~planet_tpad
 pause
 
-:PLANET~PLANETSHIELDS
-getword CURRENTLINE $PLANET~PLANET_SHIELDS 8
-striptext $PLANET~PLANET_SHIELDS ","
-isnumber $PLANET~TST $PLANET~PLANET_SHIELDS
-if ($PLANET~TST = 0)
-  setvar $PLANET~PLANET_SHIELDS 0
+:planet~planetshields
+getword currentline $planet~planet_shields 8
+striptext $planet~planet_shields ","
+isnumber $planet~tst $planet~planet_shields
+if ($planet~tst = 0)
+	setvar $planet~planet_shields 0
 end
 pause
 
-:PLANET~FUELSTART
-getword CURRENTLINE $PLANET~PLANET_FUEL_COLONISTS 3
-getword CURRENTLINE $PLANET~PLANET_FUEL_RATE 4
-getword CURRENTLINE $PLANET~PLANET_FUEL_PROD 5
-getword CURRENTLINE $PLANET~PLANET_FUEL 6
-getword CURRENTLINE $PLAYER~ORE_HOLDS 7
-getword CURRENTLINE $PLANET~PLANET_FUEL_MAX 8
-getword CURRENTLINE $PLANET~PLANETFUEL 6
-getword CURRENTLINE $PLANET~PLANETFUELMAX 8
-striptext $PLANET~PLANETFUEL ","
-striptext $PLANET~PLANETFUELMAX ","
-striptext $PLANET~PLANET_FUEL ","
-striptext $PLANET~PLANET_FUEL_MAX ","
-striptext $PLANET~PLANET_FUEL_COLONISTS ","
-striptext $PLANET~PLANET_FUEL_PROD ","
-striptext $PLANET~PLANET_FUEL_RATE ","
+:planet~fuelstart
+getword currentline $planet~planet_fuel_colonists 3
+getword currentline $planet~planet_fuel_rate 4
+getword currentline $planet~planet_fuel_prod 5
+getword currentline $planet~planet_fuel 6
+getword currentline $player~ore_holds 7
+getword currentline $planet~planet_fuel_max 8
+getword currentline $planet~planetfuel 6
+getword currentline $planet~planetfuelmax 8
+striptext $planet~planetfuel ","
+striptext $planet~planetfuelmax ","
+striptext $planet~planet_fuel ","
+striptext $planet~planet_fuel_max ","
+striptext $planet~planet_fuel_colonists ","
+striptext $planet~planet_fuel_prod ","
+striptext $planet~planet_fuel_rate ","
 pause
 
-:PLANET~ORGSTART
-getword CURRENTLINE $PLANET~PLANET_ORGANICS_COLONISTS 2
-getword CURRENTLINE $PLANET~PLANET_ORGANICS_RATE 3
-getword CURRENTLINE $PLANET~PLANET_ORGANICS_PROD 4
-getword CURRENTLINE $PLANET~PLANET_ORGANICS 5
-getword CURRENTLINE $PLAYER~ORGANIC_HOLDS 6
-getword CURRENTLINE $PLANET~PLANET_ORGANICS_MAX 7
-getword CURRENTLINE $PLANET~PLANETORG 5
-getword CURRENTLINE $PLANET~PLANETORGMAX 7
-striptext $PLANET~PLANETORG ","
-striptext $PLANET~PLANETORGMAX ","
-striptext $PLANET~PLANET_ORGANICS ","
-striptext $PLANET~PLANET_ORGANICS_MAX ","
-striptext $PLANET~PLANET_ORGANICS_COLONISTS ","
-striptext $PLANET~PLANET_ORGANICS_PROD ","
-striptext $PLANET~PLANET_ORGANICS_RATE ","
+:planet~orgstart
+getword currentline $planet~planet_organics_colonists 2
+getword currentline $planet~planet_organics_rate 3
+getword currentline $planet~planet_organics_prod 4
+getword currentline $planet~planet_organics 5
+getword currentline $player~organic_holds 6
+getword currentline $planet~planet_organics_max 7
+getword currentline $planet~planetorg 5
+getword currentline $planet~planetorgmax 7
+striptext $planet~planetorg ","
+striptext $planet~planetorgmax ","
+striptext $planet~planet_organics ","
+striptext $planet~planet_organics_max ","
+striptext $planet~planet_organics_colonists ","
+striptext $planet~planet_organics_prod ","
+striptext $planet~planet_organics_rate ","
 pause
 
-:PLANET~EQUIPSTART
-getword CURRENTLINE $PLANET~PLANET_EQUIPMENT_COLONISTS 2
-getword CURRENTLINE $PLANET~PLANET_EQUIPMENT_RATE 3
-getword CURRENTLINE $PLANET~PLANET_EQUIPMENT_PROD 4
-getword CURRENTLINE $PLANET~PLANET_EQUIPMENT 5
-getword CURRENTLINE $PLAYER~EQUIPMENT_HOLDS 6
-getword CURRENTLINE $PLANET~PLANET_EQUIPMENT_MAX 7
-getword CURRENTLINE $PLANET~PLANETEQUIP 5
-getword CURRENTLINE $PLANET~PLANETEQUIPMAX 7
-striptext $PLANET~PLANETEQUIP ","
-striptext $PLANET~PLANETEQUIPMAX ","
-striptext $PLANET~PLANET_EQUIPMENT ","
-striptext $PLANET~PLANET_EQUIPMENT_MAX ","
-striptext $PLANET~PLANET_EQUIPMENT_COLONISTS ","
-striptext $PLANET~PLANET_EQUIPMENT_PROD ","
-striptext $PLANET~PLANET_EQUIPMENT_RATE ","
+:planet~equipstart
+getword currentline $planet~planet_equipment_colonists 2
+getword currentline $planet~planet_equipment_rate 3
+getword currentline $planet~planet_equipment_prod 4
+getword currentline $planet~planet_equipment 5
+getword currentline $player~equipment_holds 6
+getword currentline $planet~planet_equipment_max 7
+getword currentline $planet~planetequip 5
+getword currentline $planet~planetequipmax 7
+striptext $planet~planetequip ","
+striptext $planet~planetequipmax ","
+striptext $planet~planet_equipment ","
+striptext $planet~planet_equipment_max ","
+striptext $planet~planet_equipment_colonists ","
+striptext $planet~planet_equipment_prod ","
+striptext $planet~planet_equipment_rate ","
 pause
 
-:PLANET~FIGSTART
-getword CURRENTLINE $PLANET~PLANET_FIGHTERS_RATE 3
-getword CURRENTLINE $PLANET~PLANET_FIGHTERS_PROD 4
-getword CURRENTLINE $PLANET~PLANET_FIGHTERS 5
-getword CURRENTLINE $PLANET~PLANET_FIGHTERS_MAX 7
-striptext $PLANET~PLANET_FIGHTERS_RATE ","
-striptext $PLANET~PLANET_FIGHTERS_PROD ","
-striptext $PLANET~PLANET_FIGHTERS ","
-striptext $PLANET~PLANET_FIGHTERS_MAX ","
+:planet~figstart
+getword currentline $planet~planet_fighters_rate 3
+getword currentline $planet~planet_fighters_prod 4
+getword currentline $planet~planet_fighters 5
+getword currentline $planet~planet_fighters_max 7
+striptext $planet~planet_fighters_rate ","
+striptext $planet~planet_fighters_prod ","
+striptext $planet~planet_fighters ","
+striptext $planet~planet_fighters_max ","
 pause
 
-:PLANET~CITADELSTART
-getword CURRENTLINE $PLANET~CITADEL 5
-getword CURRENTLINE $PLANET~CITADEL_CREDITS 9
-striptext $PLANET~CITADEL_CREDITS ","
+:planet~citadelstart
+getword currentline $planet~citadel 5
+getword currentline $planet~citadel_credits 9
+striptext $planet~citadel_credits ","
 pause
 
-:PLANET~CANNONSTART
-getword CURRENTLINE $PLANET~MILITARYREACTION 2
-getword CURRENTLINE $PLANET~ATMOSPHERE_CANNON 5
-getword CURRENTLINE $PLANET~SECTOR_CANNON 6
-striptext $PLANET~MILITARYREACTION "reaction="
-striptext $PLANET~MILITARYREACTION "%"
-striptext $PLANET~SECTOR_CANNON "SectLvl="
-striptext $PLANET~SECTOR_CANNON "%"
-striptext $PLANET~ATMOSPHERE_CANNON "AtmosLvl="
-striptext $PLANET~ATMOSPHERE_CANNON "%"
-striptext $PLANET~ATMOSPHERE_CANNON ","
+:planet~cannonstart
+getword currentline $planet~militaryreaction 2
+getword currentline $planet~atmosphere_cannon 5
+getword currentline $planet~sector_cannon 6
+striptext $planet~militaryreaction "reaction="
+striptext $planet~militaryreaction "%"
+striptext $planet~sector_cannon "SectLvl="
+striptext $planet~sector_cannon "%"
+striptext $planet~atmosphere_cannon "AtmosLvl="
+striptext $planet~atmosphere_cannon "%"
+striptext $planet~atmosphere_cannon ","
 pause
 
-:PLANET~PLANETINFODONE
-gosub :KILLPLANETTRIGGERS
-setvar $PLANET~COLO[1] $PLANET~PLANET_FUEL_COLONISTS
-setvar $PLANET~COLO[2] $PLANET~PLANET_ORGANICS_COLONISTS
-setvar $PLANET~COLO[3] $PLANET~PLANET_EQUIPMENT_COLONISTS
-setvar $PLANET~RATE[1] $PLANET~PLANET_FUEL_RATE
-setvar $PLANET~RATE[2] $PLANET~PLANET_ORGANICS_RATE
-setvar $PLANET~RATE[3] $PLANET~PLANET_EQUIPMENT_RATE
-setvar $PLANET~RATE[4] $PLANET~PLANET_FIGHTERS_RATE
-setvar $PLANET~PROD[1] $PLANET~PLANET_FUEL_PROD
-setvar $PLANET~PROD[2] $PLANET~PLANET_ORGANICS_PROD
-setvar $PLANET~PROD[3] $PLANET~PLANET_EQUIPMENT_PROD
-setvar $PLANET~PROD[4] $PLANET~PLANET_FIGHTERS_PROD
-setvar $PLANET~AMOUNT[1] $PLANET~PLANET_FUEL
-setvar $PLANET~AMOUNT[2] $PLANET~PLANET_ORGANICS
-setvar $PLANET~AMOUNT[3] $PLANET~PLANET_EQUIPMENT
-setvar $PLANET~AMOUNT[4] $PLANET~PLANET_FIGHTERS
-setvar $PLANET~MAX[1] $PLANET~PLANET_FUEL_MAX
-setvar $PLANET~MAX[2] $PLANET~PLANET_ORGANICS_MAX
-setvar $PLANET~MAX[3] $PLANET~PLANET_EQUIPMENT_MAX
-setvar $PLANET~MAX[4] $PLANET~PLANET_FIGHTERS_MAX
-setvar $PLANET~NOHEADER 0
-setvar $PLANET~CURRENTBOTPLANET $PLANET~PLANET
-savevar $PLANET~CURRENTBOTPLANET
-savevar $PLANET~PLANET_FIGHTERS
-savevar $PLAYER~CURRENT_SECTOR
-savevar $PLANET~PLANET
-savevar $PLANET~PLANET_FUEL
-savevar $PLANET~PLANET_FUEL_MAX
-savevar $PLANET~PLANET_ORGANICS
-savevar $PLANET~PLANET_ORGANICS_MAX
-savevar $PLANET~PLANET_EQUIPMENT
-savevar $PLANET~PLANET_EQUIPMENT_MAX
-savevar $PLANET~PLANET_FIGHTERS
-savevar $PLANET~PLANET_SHIELDS
-savevar $PLANET~PLANET_TRANSPORT
-savevar $PLANET~PLANET_FIGHTERS_MAX
-savevar $PLANET~CITADEL
-savevar $PLANET~CITADEL_CREDITS
-savevar $PLANET~ATMOSPHERE_CANNON
-savevar $PLANET~SECTOR_CANNON
-savevar $PLANET~PLANET_CLASS_NAME
-savevar $PLANET~PLANET_NAME
-savevar $PLANET~UNDER_CONSTRUCTION
-savevar $PLANET~MAXED_LEVEL
+:planet~planetinfodone
+gosub :killplanettriggers
+setvar $planet~colo[1] $planet~planet_fuel_colonists
+setvar $planet~colo[2] $planet~planet_organics_colonists
+setvar $planet~colo[3] $planet~planet_equipment_colonists
+setvar $planet~rate[1] $planet~planet_fuel_rate
+setvar $planet~rate[2] $planet~planet_organics_rate
+setvar $planet~rate[3] $planet~planet_equipment_rate
+setvar $planet~rate[4] $planet~planet_fighters_rate
+setvar $planet~prod[1] $planet~planet_fuel_prod
+setvar $planet~prod[2] $planet~planet_organics_prod
+setvar $planet~prod[3] $planet~planet_equipment_prod
+setvar $planet~prod[4] $planet~planet_fighters_prod
+setvar $planet~amount[1] $planet~planet_fuel
+setvar $planet~amount[2] $planet~planet_organics
+setvar $planet~amount[3] $planet~planet_equipment
+setvar $planet~amount[4] $planet~planet_fighters
+setvar $planet~max[1] $planet~planet_fuel_max
+setvar $planet~max[2] $planet~planet_organics_max
+setvar $planet~max[3] $planet~planet_equipment_max
+setvar $planet~max[4] $planet~planet_fighters_max
+setvar $planet~noheader 0
+setvar $planet~currentbotplanet $planet~planet
+savevar $planet~currentbotplanet
+savevar $planet~planet_fighters
+savevar $player~current_sector
+savevar $planet~planet
+savevar $planet~planet_fuel
+savevar $planet~planet_fuel_max
+savevar $planet~planet_organics
+savevar $planet~planet_organics_max
+savevar $planet~planet_equipment
+savevar $planet~planet_equipment_max
+savevar $planet~planet_fighters
+savevar $planet~planet_shields
+savevar $planet~planet_transport
+savevar $planet~planet_fighters_max
+savevar $planet~citadel
+savevar $planet~citadel_credits
+savevar $planet~atmosphere_cannon
+savevar $planet~sector_cannon
+savevar $planet~planet_class_name
+savevar $planet~planet_name
+savevar $planet~under_construction
+savevar $planet~maxed_level
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~GETPLANETPRODS
+:planet~killplanettriggers
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-gosub :PLAYER~CURRENTPROMPT
-if ($PLAYER~CURRENT_PROMPT <> "Command") and ($PLAYER~CURRENT_PROMPT <> "Citadel")
-  setvar $switchboard~message "Must be at planet or citadel prompt*"
-  gosub :switchboard~switchboard
-  return
-end
-
-send "|CR*"
-
-settextlinetrigger FOUNDPORT :FOUNDPORT "Items     Status  Trading % of max OnBoard"
-settextlinetrigger NOPORT :NOPORT "I have no information about a port in that sector."
-settextlinetrigger NOPORT2 :NOPORT "You have never visted sector"
-settextlinetrigger NOPORT3 :NOPORT "credits / next hold"
-pause
-
-:NOPORT
-send "Q|"
-killtrigger FOUNDPORT
-killtrigger NOPORT
-killtrigger NOPORT2
-killtrigger NOPORT3
-setvar $PLANET~FOUNDPORT FALSE
-
-:FOUNDPORT
-killtrigger FOUNDPORT
-killtrigger NOPORT
-killtrigger NOPORT2
-killtrigger NOPORT3
-setvar $PLANET~FOUNDPORT TRUE
-settextlinetrigger PORTINFO1 :PORTINFO1 "Fuel Ore "
-settextlinetrigger PORTINFO2 :PORTINFO2 "Organics"
-settextlinetrigger PORTINFO3 :PORTINFO3 "Equipment"
-settextlinetrigger GOTCR :GOTCR "Computer command [TL="
-pause
-
-:PORTINFO1
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.OREBUYING 3
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORETRADING 4
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.OREPERCENT 5
-striptext $PLAYER~CURRENT_SECTOR.OREPERCENT "%"
-pause
-
-:PORTINFO2
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGBUYING 2
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGTRADING 3
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGPERCENT 4
-striptext $PLAYER~CURRENT_SECTOR.ORGPERCENT "%"
-pause
-
-:PORTINFO3
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUBUYING 2
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUTRADING 3
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUPERCENT 4
-striptext $PLAYER~CURRENT_SECTOR.EQUPERCENT "%"
-send "Q|"
-pause
-
-:GOTCR
-killtrigger PORTINFO1
-killtrigger PORTINFO2
-killtrigger PORTINFO3
-killtrigger GOTCR
-
+killtrigger fuelstart
+killtrigger orgstart
+killtrigger equipstart
+killtrigger figstart
+killtrigger tport
+killtrigger shields
+killtrigger citadelstart
+killtrigger cannon
+killtrigger citexists
+killtrigger maxedig
+killtrigger underconst
+killtrigger planetinfodone
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~KILLPLANETTRIGGERS
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-killtrigger FUELSTART
-killtrigger ORGSTART
-killtrigger EQUIPSTART
-killtrigger FIGSTART
-killtrigger TPORT
-killtrigger SHIELDS
-killtrigger CITADELSTART
-killtrigger CANNON
-killtrigger CITEXISTS
-killtrigger MAXEDIG
-killtrigger UNDERCONST
-killtrigger PLANETINFODONE
-return
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~GETPLANETNUMBER
+:planet~getplanetnumber
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "*"
-settextlinetrigger PLANETINFO3 :GETJUSTTHENUMBER "Planet #"
+settextlinetrigger planetinfo3 :getjustthenumber "Planet #"
 pause
 
-:PLANET~GETJUSTTHENUMBER
+:planet~getjustthenumber
 send "  "
-getword CURRENTLINE $PLANET~PLANET 2
-striptext $PLANET~PLANET "#"
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR 5
-striptext $PLAYER~CURRENT_SECTOR ":"
-savevar $PLANET~PLANET
-savevar $PLAYER~CURRENT_SECTOR
-setsectorparameter $PLANET~PLANET "PSECTOR" $PLAYER~CURRENT_SECTOR
+getword currentline $planet~planet 2
+striptext $planet~planet "#"
+getword currentline $player~current_sector 5
+striptext $player~current_sector ":"
+savevar $planet~planet
+savevar $player~current_sector
+setsectorparameter $planet~planet "PSECTOR" $player~current_sector
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~GETPLANETSTATS
+:planet~getplanetstats
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "cn"
 waiton "(2) Animation display"
-getword CURRENTLINE $PLANET~ANSI_ONOFF 5
-if ($PLANET~ANSI_ONOFF = "On")
-  send "2qq"
+getword currentline $planet~ansi_onoff 5
+if ($planet~ansi_onoff = "On")
+	send "2qq"
 else
-  send "qq"
+	send "qq"
 end
-setarray $PLANET~ALPHA 20
-delete $PLANET~PLANET_FILE
-setvar $PLANET~ALPHA[1] "A"
-setvar $PLANET~ALPHA[2] "B"
-setvar $PLANET~ALPHA[3] "C"
-setvar $PLANET~ALPHA[4] "D"
-setvar $PLANET~ALPHA[5] "E"
-setvar $PLANET~ALPHA[6] "F"
-setvar $PLANET~ALPHA[7] "G"
-setvar $PLANET~ALPHA[8] "H"
-setvar $PLANET~ALPHA[9] "I"
-setvar $PLANET~ALPHA[10] "J"
-setvar $PLANET~ALPHA[11] "K"
-setvar $PLANET~ALPHA[12] "L"
-setvar $PLANET~ALPHA[13] "M"
-setvar $PLANET~ALPHA[14] "N"
-setvar $PLANET~ALPHA[15] "O"
-setvar $PLANET~ALPHA[16] "P"
-setvar $PLANET~ALPHA[17] "R"
-setvar $PLANET~ALPHALOOP 0
-setvar $PLANET~TOTALPLANETS 0
-setvar $PLANET~FIRSTPLANETNAME ""
+setarray $planet~alpha 20
+delete $planet~planet_file
+setvar $planet~alpha[1] "A"
+setvar $planet~alpha[2] "B"
+setvar $planet~alpha[3] "C"
+setvar $planet~alpha[4] "D"
+setvar $planet~alpha[5] "E"
+setvar $planet~alpha[6] "F"
+setvar $planet~alpha[7] "G"
+setvar $planet~alpha[8] "H"
+setvar $planet~alpha[9] "I"
+setvar $planet~alpha[10] "J"
+setvar $planet~alpha[11] "K"
+setvar $planet~alpha[12] "L"
+setvar $planet~alpha[13] "M"
+setvar $planet~alpha[14] "N"
+setvar $planet~alpha[15] "O"
+setvar $planet~alpha[16] "P"
+setvar $planet~alpha[17] "R"
+setvar $planet~alphaloop 0
+setvar $planet~totalplanets 0
+setvar $planet~firstplanetname ""
 
-setvar $PLANET~NEXTPAGE 1
+setvar $planet~nextpage 1
 send "CJ@?"
 waiton "Average Interval Lag"
 waiton "Which planet type are you interested in (?=List)"
 
-:PLANET~SHP_LOOP
-settextlinetrigger GRAB_PLANET :PLANET~SHP_PLANETNAMES "> "
+:planet~shp_loop
+settextlinetrigger grab_planet :planet~shp_planetnames "> "
 pause
-:PLANET~SHP_PLANETNAMES
-if (CURRENTLINE = "")
-  goto :PLANET~SHP_LOOP
-end
-getword CURRENTLINE $PLANET~STOPPER 1
-if ($PLANET~STOPPER = "<+>")
-  send "+"
-  waiton "(?=List) ?"
-  setvar $PLANET~NEXTPAGE 1
-  goto :PLANET~SHP_LOOP
-elseif ($PLANET~STOPPER = "<Q>")
-  goto :PLANET~SHP_GETPLANETSTATS
-end
-if ($PLANET~NEXTPAGE = 1)
-  setvar $PLANET~PLANETNAME CURRENTLINE
-  striptext $PLANET~PLANETNAME "<A> "
-  if ($PLANET~PLANETNAME = $PLANET~FIRSTPLANETNAME)
-    goto :PLANET~SHP_GETPLANETSTATS
-  end
-  setvar $PLANET~NEXTPAGE 0
-end
-add $PLANET~TOTALPLANETS 1
-if ($PLANET~TOTALPLANETS = 1)
-  setvar $PLANET~FIRSTPLANETNAME CURRENTLINE
-  striptext $PLANET~FIRSTPLANETNAME "<A> "
-end
-goto :PLANET~SHP_LOOP
-:PLANET~SHP_GETPLANETSTATS
-setvar $PLANET~PLANETSTATLOOP 0
-:PLANET~SHP_PLANETSTATS
-while ($PLANET~PLANETSTATLOOP < $PLANET~TOTALPLANETS)
-  add $PLANET~PLANETSTATLOOP 1
-  add $PLANET~ALPHALOOP 1
-  if ($PLANET~ALPHALOOP > 17)
-    send "+"
-    setvar $PLANET~ALPHALOOP 1
-  end
-  send $PLANET~ALPHA[$PLANET~ALPHALOOP]
-  settextlinetrigger SN :PLANET~SN "Planet Category #"
-  pause
-  :PLANET~SN
-  setvar $PLANET~LINE CURRENTLINE
-  getwordpos $PLANET~LINE $PLANET~POS "Class"
 
-  cuttext $PLANET~LINE $PLANET~PLANET_NAME $PLANET~POS 999
-  setvar $PLANET~PLANET_FUEL_COLONISTS_MIN 50000
-  setvar $PLANET~PLANET_FUEL_COLONISTS_MAX 50000
-  setvar $PLANET~PLANET_ORG_COLONISTS_MIN 50000
-  setvar $PLANET~PLANET_ORG_COLONISTS_MAX 50000
-  setvar $PLANET~PLANET_EQUIP_COLONISTS_MIN 50000
-  setvar $PLANET~PLANET_EQUIP_COLONISTS_MAX 50000
-  gosub :PLANET~READPLANETTYPESTATS
-  write $PLANET~PLANET_FILE $PLANET~PLANET_FUEL_COLONISTS_MIN&" "&$PLANET~PLANET_FUEL_COLONISTS_MAX&" "&$PLANET~PLANET_ORG_COLONISTS_MIN&" "&$PLANET~PLANET_ORG_COLONISTS_MAX&" "&$PLANET~PLANET_EQUIP_COLONISTS_MIN&" "&$PLANET~PLANET_EQUIP_COLONISTS_MAX&" 0  "&$PLANET~PLANET_NAME
+:planet~shp_planetnames
+if (currentline = "")
+	goto :planet~shp_loop
+end
+getword currentline $planet~stopper 1
+if ($planet~stopper = "<+>")
+	send "+"
+	waiton "(?=List) ?"
+	setvar $planet~nextpage 1
+	goto :planet~shp_loop
+elseif ($planet~stopper = "<Q>")
+	goto :planet~shp_getplanetstats
+end
+if ($planet~nextpage = 1)
+	setvar $planet~planetname currentline
+	striptext $planet~planetname "<A> "
+	if ($planet~planetname = $planet~firstplanetname)
+		goto :planet~shp_getplanetstats
+	end
+	setvar $planet~nextpage 0
+end
+add $planet~totalplanets 1
+if ($planet~totalplanets = 1)
+	setvar $planet~firstplanetname currentline
+	striptext $planet~firstplanetname "<A> "
+end
+goto :planet~shp_loop
+
+:planet~shp_getplanetstats
+setvar $planet~planetstatloop 0
+
+:planet~shp_planetstats
+while ($planet~planetstatloop < $planet~totalplanets)
+	add $planet~planetstatloop 1
+	add $planet~alphaloop 1
+	if ($planet~alphaloop > 17)
+		send "+"
+		setvar $planet~alphaloop 1
+	end
+	send $planet~alpha[$planet~alphaloop]
+	settextlinetrigger sn :planet~sn "Planet Category #"
+	pause
+
+	:planet~sn
+	setvar $planet~line currentline
+	getwordpos $planet~line $planet~pos "Class"
+
+	cuttext $planet~line $planet~planet_name $planet~pos 999
+	setvar $planet~planet_fuel_colonists_min 50000
+	setvar $planet~planet_fuel_colonists_max 50000
+	setvar $planet~planet_org_colonists_min 50000
+	setvar $planet~planet_org_colonists_max 50000
+	setvar $planet~planet_equip_colonists_min 50000
+	setvar $planet~planet_equip_colonists_max 50000
+	gosub :planet~readplanettypestats
+	write $planet~planet_file $planet~planet_fuel_colonists_min&" "&$planet~planet_fuel_colonists_max&" "&$planet~planet_org_colonists_min&" "&$planet~planet_org_colonists_max&" "&$planet~planet_equip_colonists_min&" "&$planet~planet_equip_colonists_max&" 0  "&$planet~planet_name
 end
 send "qq"
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~READPLANETTYPESTATS
+:planet~readplanettypestats
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~READPLANETTYPESTATS_WAIT
-settextlinetrigger PLANETSTAT_COLS :PLANET~READPLANETTYPESTATS_COLS "Cols -"
-settexttrigger PLANETSTAT_DONE :PLANET~READPLANETTYPESTATS_DONE "Which planet type are you interested in (?=List)"
+:planet~readplanettypestats_wait
+settextlinetrigger planetstat_cols :planet~readplanettypestats_cols "Cols -"
+settexttrigger planetstat_done :planet~readplanettypestats_done "Which planet type are you interested in (?=List)"
 pause
 
-:PLANET~READPLANETTYPESTATS_COLS
+:planet~readplanettypestats_cols
 killalltriggers
-setvar $PLANET~STAT_LINE CURRENTLINE
-gosub :PLANET~GETPLANETTYPECOLS
-if ($PLANET~PARSED_COLS > 0)
-  getwordpos $PLANET~STAT_LINE $PLANET~POS "Ore"
-  if ($PLANET~POS > 0)
-    setvar $PLANET~PLANET_FUEL_COLONISTS_MIN $PLANET~PARSED_COLS
-    setvar $PLANET~PLANET_FUEL_COLONISTS_MAX $PLANET~PARSED_COLS
-  end
-  getwordpos $PLANET~STAT_LINE $PLANET~POS "Org"
-  if ($PLANET~POS > 0)
-    setvar $PLANET~PLANET_ORG_COLONISTS_MIN $PLANET~PARSED_COLS
-    setvar $PLANET~PLANET_ORG_COLONISTS_MAX $PLANET~PARSED_COLS
-  end
-  getwordpos $PLANET~STAT_LINE $PLANET~POS "Eq"
-  if ($PLANET~POS > 0)
-    setvar $PLANET~PLANET_EQUIP_COLONISTS_MIN $PLANET~PARSED_COLS
-    setvar $PLANET~PLANET_EQUIP_COLONISTS_MAX $PLANET~PARSED_COLS
-  end
+setvar $planet~stat_line currentline
+gosub :planet~getplanettypecols
+if ($planet~parsed_cols > 0)
+	getwordpos $planet~stat_line $planet~pos "Ore"
+	if ($planet~pos > 0)
+		setvar $planet~planet_fuel_colonists_min $planet~parsed_cols
+		setvar $planet~planet_fuel_colonists_max $planet~parsed_cols
+	end
+	getwordpos $planet~stat_line $planet~pos "Org"
+	if ($planet~pos > 0)
+		setvar $planet~planet_org_colonists_min $planet~parsed_cols
+		setvar $planet~planet_org_colonists_max $planet~parsed_cols
+	end
+	getwordpos $planet~stat_line $planet~pos "Eq"
+	if ($planet~pos > 0)
+		setvar $planet~planet_equip_colonists_min $planet~parsed_cols
+		setvar $planet~planet_equip_colonists_max $planet~parsed_cols
+	end
 end
-goto :PLANET~READPLANETTYPESTATS_WAIT
+goto :planet~readplanettypestats_wait
 
-:PLANET~READPLANETTYPESTATS_DONE
+:planet~readplanettypestats_done
 killalltriggers
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~GETPLANETTYPECOLS
+:planet~getplanettypecols
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLANET~PARSED_COLS 0
-gettext $PLANET~STAT_LINE $PLANET~PARSED_COLS "Cols -" "/"
-striptext $PLANET~PARSED_COLS " "
-striptext $PLANET~PARSED_COLS ","
-isnumber $PLANET~ISNUMBER $PLANET~PARSED_COLS
-if ($PLANET~ISNUMBER <> TRUE)
-  setvar $PLANET~PARSED_COLS 0
+setvar $planet~parsed_cols 0
+gettext $planet~stat_line $planet~parsed_cols "Cols -" "/"
+striptext $planet~parsed_cols " "
+striptext $planet~parsed_cols ","
+isnumber $planet~isnumber $planet~parsed_cols
+if ($planet~isnumber <> true)
+	setvar $planet~parsed_cols 0
 end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~LANDINGSUB
+:planet~landingsub
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-gosub :KILLLANDINGTRIGGERS
-send "lz" #8 $PLANET~PLANET "*"
-setvar $PLANET~SUCESSFULCITADEL FALSE
-setvar $PLANET~SUCESSFULPLANET FALSE
-settextlinetrigger NOPLANET :NOPLANET "There isn't a planet in this sector."
-settextlinetrigger NO_LAND :NO_LAND "since it couldn't possibly stand"
-settextlinetrigger PLANET :PLANET "Planet #"
-settextlinetrigger WRONGONE :WRONG_NUM "That planet is not in this sector."
-settextlinetrigger NOPLANETSCANNER :DISPLAYPLANET "<Destroy Planet>"
+gosub :killlandingtriggers
+send "lz" #8 $planet~planet "*"
+setvar $planet~sucessfulcitadel false
+setvar $planet~sucessfulplanet false
+settextlinetrigger noplanet :noplanet "There isn't a planet in this sector."
+settextlinetrigger no_land :no_land "since it couldn't possibly stand"
+settextlinetrigger planet :planet "Planet #"
+settextlinetrigger wrongone :wrong_num "That planet is not in this sector."
+settextlinetrigger noplanetscanner :displayplanet "<Destroy Planet>"
 pause
 
-:PLANET~NOPLANET
-gosub :KILLLANDINGTRIGGERS
-setvar $SWITCHBOARD~MESSAGE "No Planet in Sector!*"
-gosub :SWITCHBOARD~SWITCHBOARD
+:planet~noplanet
+gosub :killlandingtriggers
+setvar $switchboard~message "No Planet in Sector!*"
+gosub :switchboard~switchboard
 return
 
-:PLANET~NO_LAND
-gosub :KILLLANDINGTRIGGERS
-setvar $SWITCHBOARD~MESSAGE "This ship cannot land!*"
-gosub :SWITCHBOARD~SWITCHBOARD
+:planet~no_land
+gosub :killlandingtriggers
+setvar $switchboard~message "This ship cannot land!*"
+gosub :switchboard~switchboard
 return
 
-:PLANET~DISPLAYPLANET
+:planet~displayplanet
 send "*"
 waiton "Planet #"
 
-:PLANET~PLANET
-getword CURRENTLINE $PLANET~PNUM_CK 2
-striptext $PLANET~PNUM_CK "#"
-gosub :KILLLANDINGTRIGGERS
-if ($PLANET~PNUM_CK <> $PLANET~PLANET)
-  send "q"
-  goto :WRONG_NUM
+:planet~planet
+getword currentline $planet~pnum_ck 2
+striptext $planet~pnum_ck "#"
+gosub :killlandingtriggers
+if ($planet~pnum_ck <> $planet~planet)
+	send "q"
+	goto :wrong_num
 end
-settexttrigger WRONG_NUM :WRONG_NUM "That planet is not in this sector."
-settexttrigger PLANET :PLANET_PROMPT "Planet command"
+settexttrigger wrong_num :wrong_num "That planet is not in this sector."
+settexttrigger planet :planet_prompt "Planet command"
 pause
 
-:PLANET~WRONG_NUM
-killtrigger PLANET
+:planet~wrong_num
+killtrigger planet
 send "**"
-setvar $SWITCHBOARD~MESSAGE "Incorrect Planet Number*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "Incorrect Planet Number*"
+gosub :switchboard~switchboard
 return
 
-:PLANET~PLANET_PROMPT
-killtrigger WRONG_NUM
-setvar $PLANET~CURRENTBOTPLANET $PLANET~PLANET
-savevar $PLANET~CURRENTBOTPLANET
-savevar $PLANET~PLANET
-setvar $PLANET~SUCESSFULPLANET TRUE
-if ($PLANET~LAND_AND_LIFT = TRUE)
-  send "m* * * q  "
-  return
+:planet~planet_prompt
+killtrigger wrong_num
+setvar $planet~currentbotplanet $planet~planet
+savevar $planet~currentbotplanet
+savevar $planet~planet
+setvar $planet~sucessfulplanet true
+if ($planet~land_and_lift = true)
+	send "m* * * q  "
+	return
 end
 send "m* * * c*"
-settexttrigger BUILD_CIT :BUILD_CIT "Do you wish to construct one?"
-settexttrigger IN_CIT :IN_CIT "Citadel command"
-settexttrigger NOCITALLOWED :BUILD_CIT "Citadels are not allowed in FedSpace."
-settexttrigger CITNOTBUILTYET :BUILD_CIT "Be patient, your Citadel is not yet finished."
+settexttrigger build_cit :build_cit "Do you wish to construct one?"
+settexttrigger in_cit :in_cit "Citadel command"
+settexttrigger nocitallowed :build_cit "Citadels are not allowed in FedSpace."
+settexttrigger citnotbuiltyet :build_cit "Be patient, your Citadel is not yet finished."
 pause
 
-:PLANET~BUILD_CIT
-gosub :KILLLANDINGTRIGGERS
-setvar $PLANET~SUCESSFULPLANET TRUE
-setvar $PLANET~STARTINGLOCATION "Planet"
+:planet~build_cit
+gosub :killlandingtriggers
+setvar $planet~sucessfulplanet true
+setvar $planet~startinglocation "Planet"
 return
 
-:PLANET~IN_CIT
-gosub :KILLLANDINGTRIGGERS
-setvar $PLANET~SUCESSFULCITADEL TRUE
-setvar $PLANET~STARTINGLOCATION "Citadel"
+:planet~in_cit
+gosub :killlandingtriggers
+setvar $planet~sucessfulcitadel true
+setvar $planet~startinglocation "Citadel"
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~PWARP
+:planet~pwarp
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLANET~DO_SCAN FALSE
-setvar $PLANET~PWARPSUCCESS FALSE
-setvar $PLANET~MSG ""
-if ($PLANET~PWARP_SCAN = TRUE)
-	setvar $PLANET~DO_SCAN TRUE
+setvar $planet~do_scan false
+setvar $planet~pwarpsuccess false
+setvar $planet~msg ""
+if ($planet~pwarp_scan = true)
+	setvar $planet~do_scan true
 end
-setvar $PLANET~PWARP_SCAN FALSE
+setvar $planet~pwarp_scan false
 send "q *"
-waitOn "Planet #"
-getWord CURRENTLINE $planet~planet 2
-stripText $planet~planet "#"
-saveVar $planet~planet
+waiton "Planet #"
+getword currentline $planet~planet 2
+striptext $planet~planet "#"
+savevar $planet~planet
 
-send "c p" $PLANET~warpto "*"
+send "c p" $planet~warpto "*"
 
-setTextLineTrigger pwarp_lock       :pwarp_lock     "Locating beam pinpointed"
-setTextLineTrigger no_pwarp_lock    :no_pwarp_lock  "Your own fighters must be"
-setTextLineTrigger already      :already    "You are already in that sector!"
-setTextLineTrigger no_ore       :no_ore     "You do not have enough Fuel Ore"
-setTextLineTrigger No_pwarp     :noPwarp    "This Citadel does not have a Planetary TransWarp"
-setTextLineTrigger wrong_number     :wrong_number   "Invalid Sector number,"
+settextlinetrigger pwarp_lock       :pwarp_lock     "Locating beam pinpointed"
+settextlinetrigger no_pwarp_lock    :no_pwarp_lock  "Your own fighters must be"
+settextlinetrigger already      :already    "You are already in that sector!"
+settextlinetrigger no_ore       :no_ore     "You do not have enough Fuel Ore"
+settextlinetrigger no_pwarp     :nopwarp    "This Citadel does not have a Planetary TransWarp"
+settextlinetrigger wrong_number     :wrong_number   "Invalid Sector number,"
 pause
 
-	:wrong_number
-	killalltriggers
-	setvar $PLANET~MSG "Not a valid sector to pwarp to!"
-	setVar $SWITCHBOARD~message "Not a valid sector to pwarp to!*"
-	gosub :SWITCHBOARD~switchboard
-	return		
-	:noPwarp
-	killalltriggers
-	setvar $PLANET~MSG "Planet Does Not Have A Planetary TransWarp Drive!"
-	setVar $SWITCHBOARD~message "Planet Does Not Have A Planetary TransWarp Drive!*"
-	gosub :SWITCHBOARD~switchboard
-	return
-	:no_pwarp_lock
-	killalltriggers
-	setVar $PLANET~target $PLANET~warpto
-	setVar $PLAYER~target $PLANET~target
-	setvar $PLANET~MSG "No fighter down at that location!"
-	gosub :player~removefigfromdata
-	setVar $SWITCHBOARD~message "No fighter down at that location!*"
-	gosub :SWITCHBOARD~switchboard
-	return
-	:no_ore
-	killalltriggers
-	setvar $PLANET~MSG "Not enough fuel for that pwarp."
-	setVar $SWITCHBOARD~message "Not enough fuel for that pwarp.*"
-	gosub :SWITCHBOARD~switchboard
-	return
-	:pwarp_lock
-	killalltriggers
-	send "y"
-	waitOn "Planet is now in sector"
-	setvar $PLANET~PWARPSUCCESS TRUE
-	setvar $PLANET~MSG "Planet #"&$planet~planet&" moved to sector "&$PLANET~warpto&"."
-	setVar $SWITCHBOARD~message $PLANET~MSG&"*"
-	gosub :SWITCHBOARD~switchboard
-	setVar $PLANET~target $PLANET~warpto
-	setVar $PLAYER~target $PLANET~target
-	loadVar $planet~planet
-	isNumber $test $planet~planet
-	if ($test)
-		if (($planet~planet <> ".") and ($planet~planet > 0))
-			setSectorParameter $planet~planet "PSECTOR" $PLANET~target
-		end
+:wrong_number
+killalltriggers
+setvar $planet~msg "Not a valid sector to pwarp to!"
+setvar $switchboard~message "Not a valid sector to pwarp to!*"
+gosub :switchboard~switchboard
+return
+
+:nopwarp
+killalltriggers
+setvar $planet~msg "Planet Does Not Have A Planetary TransWarp Drive!"
+setvar $switchboard~message "Planet Does Not Have A Planetary TransWarp Drive!*"
+gosub :switchboard~switchboard
+return
+
+:no_pwarp_lock
+killalltriggers
+setvar $planet~target $planet~warpto
+setvar $player~target $planet~target
+setvar $planet~msg "No fighter down at that location!"
+gosub :player~removefigfromdata
+setvar $switchboard~message "No fighter down at that location!*"
+gosub :switchboard~switchboard
+return
+
+:no_ore
+killalltriggers
+setvar $planet~msg "Not enough fuel for that pwarp."
+setvar $switchboard~message "Not enough fuel for that pwarp.*"
+gosub :switchboard~switchboard
+return
+
+:pwarp_lock
+killalltriggers
+send "y"
+waiton "Planet is now in sector"
+setvar $planet~pwarpsuccess true
+setvar $planet~msg "Planet #"&$planet~planet&" moved to sector "&$planet~warpto&"."
+setvar $switchboard~message $planet~msg&"*"
+gosub :switchboard~switchboard
+setvar $planet~target $planet~warpto
+setvar $player~target $planet~target
+loadvar $planet~planet
+isnumber $test $planet~planet
+if ($test)
+	if (($planet~planet <> ".") and ($planet~planet > 0))
+		setsectorparameter $planet~planet "PSECTOR" $planet~target
 	end
-	#gosub :player~addfigtodata
-	if ($PLANET~DO_SCAN = TRUE)
-		send "s"
-		waiton "Warps to Sector(s) :"
-		send "* "
-	end
-	return
-	:already
-	killalltriggers
-	setvar $PLANET~PWARPSUCCESS TRUE
-	setvar $PLANET~MSG "Planet already in that sector!."
-	setVar $SWITCHBOARD~message "Planet already in that sector!.*"
-	gosub :SWITCHBOARD~switchboard
+end
+#gosub :player~addfigtodata
+if ($planet~do_scan = true)
+	send "s"
+	waiton "Warps to Sector(s) :"
+	send "* "
+end
+return
+
+:already
+killalltriggers
+setvar $planet~pwarpsuccess true
+setvar $planet~msg "Planet already in that sector!."
+setvar $switchboard~message "Planet already in that sector!.*"
+gosub :switchboard~switchboard
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~KILLLANDINGTRIGGERS
+:planet~killlandingtriggers
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-killtrigger NOPLANET
-killtrigger NO_LAND
-killtrigger PLANET
-killtrigger WRONGONE
-killtrigger IN_CIT
-killtrigger NOCITALLOWED
-killtrigger BUILD_CIT
-killtrigger CITNOTBUILTYET
-killtrigger NOPLANETSCANNER
+killtrigger noplanet
+killtrigger no_land
+killtrigger planet
+killtrigger wrongone
+killtrigger in_cit
+killtrigger nocitallowed
+killtrigger build_cit
+killtrigger citnotbuiltyet
+killtrigger noplanetscanner
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~LANDONPLANETENTERCITADEL
+:planet~landonplanetentercitadel
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-send "l "&$PLANET~PLANET&"*tnl1*tnl2*tnl3*snl1*snl2*snl3*c "
+send "l "&$planet~planet&"*tnl1*tnl2*tnl3*snl1*snl2*snl3*c "
 waiton "Fuel Ore"
-getword CURRENTLINE $PLANET~PLANETFUEL 6
-striptext $PLANET~PLANETFUEL ","
-getword CURRENTLINE $PLANET~PLANET_FUEL 6
-striptext $PLANET~PLANET_FUEL ","
+getword currentline $planet~planetfuel 6
+striptext $planet~planetfuel ","
+getword currentline $planet~planet_fuel 6
+striptext $planet~planet_fuel ","
 send "/"
 waiton "Creds"
-getword CURRENTLINE $PLAYER~CREDITS 4
-striptext $PLAYER~CREDITS "³Figs"
-striptext $PLAYER~CREDITS ","
+getword currentline $player~credits 4
+striptext $player~credits "³Figs"
+striptext $player~credits ","
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~LOADPLANETINFO
+:planet~loadplanetinfo
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLANET~PLANETCOUNTER 1
-loadvar $PLANET~PLANET_FILE
-fileexists $PLANET~EXISTS $PLANET~PLANET_FILE
-:PLANET~COUNT_THE_PLANETS
-if ($PLANET~EXISTS)
-  setvar $PLANET~I 1
-  readtoarray $PLANET~PLANET_FILE $PLANET~PLANET_ARRAY
-  setarray $PLANET~PLANETLIST $PLANET~PLANET_ARRAY 7
-  while ($PLANET~I <= $PLANET~PLANET_ARRAY)
-    setvar $PLANET~PLANETINF $PLANET~PLANET_ARRAY[$PLANET~I]
-    getword $PLANET~PLANETINF $PLANET~PLANET_FUEL_COLONISTS_MIN 1
-    getlength $PLANET~PLANET_FUEL_COLONISTS_MIN $PLANET~LENGTH1
-    getword $PLANET~PLANETINF $PLANET~PLANET_FUEL_COLONISTS_MAX 2
-    getlength $PLANET~PLANET_FUEL_COLONISTS_MAX $PLANET~LENGTH2
-    getword $PLANET~PLANETINF $PLANET~PLANET_ORG_COLONISTS_MIN 3
-    getlength $PLANET~PLANET_ORG_COLONISTS_MIN $PLANET~LENGTH3
-    getword $PLANET~PLANETINF $PLANET~PLANET_ORG_COLONISTS_MAX 4
-    getlength $PLANET~PLANET_ORG_COLONISTS_MAX $PLANET~LENGTH4
-    getword $PLANET~PLANETINF $PLANET~PLANET_EQUIP_COLONISTS_MIN 5
-    getlength $PLANET~PLANET_EQUIP_COLONISTS_MIN $PLANET~LENGTH5
-    getword $PLANET~PLANETINF $PLANET~PLANET_EQUIP_COLONISTS_MAX 6
-    getlength $PLANET~PLANET_EQUIP_COLONISTS_MAX $PLANET~LENGTH6
-    getword $PLANET~PLANETINF $PLANET~PLANET_IS_KEEPER 7
-    getlength $PLANET~PLANET_IS_KEEPER $PLANET~LENGTH7
-    setvar $PLANET~STARTLEN ($PLANET~LENGTH1 + ($PLANET~LENGTH2 + ($PLANET~LENGTH3 + ($PLANET~LENGTH4 + ($PLANET~LENGTH5 + ($PLANET~LENGTH6 + ($PLANET~LENGTH7 + 7)))))))
-    getlength $PLANET~PLANETINF $PLANET~LENGTH_PLANET_NAME
-    if ($PLANET~STARTLEN < $PLANET~LENGTH_PLANET_NAME)
-      cuttext $PLANET~PLANETINF $PLANET~PLANETNAME $PLANET~STARTLEN 999
-    else
-      echo "*"&$PLANET~PLANETINF&" error during processing planets.*"
-    end
-    setvar $PLANET~PLANETLIST[$PLANET~I] $PLANET~PLANETNAME
-    setvar $PLANET~PLANETLIST[$PLANET~I][1] $PLANET~PLANET_FUEL_COLONISTS_MIN
-    setvar $PLANET~PLANETLIST[$PLANET~I][2] $PLANET~PLANET_FUEL_COLONISTS_MAX
-    setvar $PLANET~PLANETLIST[$PLANET~I][3] $PLANET~PLANET_ORG_COLONISTS_MIN
-    setvar $PLANET~PLANETLIST[$PLANET~I][4] $PLANET~PLANET_ORG_COLONISTS_MAX
-    setvar $PLANET~PLANETLIST[$PLANET~I][5] $PLANET~PLANET_EQUIP_COLONISTS_MIN
-    setvar $PLANET~PLANETLIST[$PLANET~I][6] $PLANET~PLANET_EQUIP_COLONISTS_MAX
-    setvar $PLANET~PLANETLIST[$PLANET~I][7] $PLANET~PLANET_IS_KEEPER
-    add $PLANET~I 1
-  end
-  setvar $PLANET~PLANETCOUNTER $PLANET~PLANET_ARRAY
-  setvar $PLANET~PLANETSTATS TRUE
+setvar $planet~planetcounter 1
+loadvar $planet~planet_file
+fileexists $planet~exists $planet~planet_file
+
+:planet~count_the_planets
+if ($planet~exists)
+	setvar $planet~i 1
+	readtoarray $planet~planet_file $planet~planet_array
+	setarray $planet~planetlist $planet~planet_array 7
+	while ($planet~i <= $planet~planet_array)
+		setvar $planet~planetinf $planet~planet_array[$planet~i]
+		getword $planet~planetinf $planet~planet_fuel_colonists_min 1
+		getlength $planet~planet_fuel_colonists_min $planet~length1
+		getword $planet~planetinf $planet~planet_fuel_colonists_max 2
+		getlength $planet~planet_fuel_colonists_max $planet~length2
+		getword $planet~planetinf $planet~planet_org_colonists_min 3
+		getlength $planet~planet_org_colonists_min $planet~length3
+		getword $planet~planetinf $planet~planet_org_colonists_max 4
+		getlength $planet~planet_org_colonists_max $planet~length4
+		getword $planet~planetinf $planet~planet_equip_colonists_min 5
+		getlength $planet~planet_equip_colonists_min $planet~length5
+		getword $planet~planetinf $planet~planet_equip_colonists_max 6
+		getlength $planet~planet_equip_colonists_max $planet~length6
+		getword $planet~planetinf $planet~planet_is_keeper 7
+		getlength $planet~planet_is_keeper $planet~length7
+		setvar $planet~startlen ($planet~length1 + ($planet~length2 + ($planet~length3 + ($planet~length4 + ($planet~length5 + ($planet~length6 + ($planet~length7 + 7)))))))
+		getlength $planet~planetinf $planet~length_planet_name
+		if ($planet~startlen < $planet~length_planet_name)
+			cuttext $planet~planetinf $planet~planetname $planet~startlen 999
+		else
+			echo "*"&$planet~planetinf&" error during processing planets.*"
+		end
+		setvar $planet~planetlist[$planet~i] $planet~planetname
+		setvar $planet~planetlist[$planet~i][1] $planet~planet_fuel_colonists_min
+		setvar $planet~planetlist[$planet~i][2] $planet~planet_fuel_colonists_max
+		setvar $planet~planetlist[$planet~i][3] $planet~planet_org_colonists_min
+		setvar $planet~planetlist[$planet~i][4] $planet~planet_org_colonists_max
+		setvar $planet~planetlist[$planet~i][5] $planet~planet_equip_colonists_min
+		setvar $planet~planetlist[$planet~i][6] $planet~planet_equip_colonists_max
+		setvar $planet~planetlist[$planet~i][7] $planet~planet_is_keeper
+		add $planet~i 1
+	end
+	setvar $planet~planetcounter $planet~planet_array
+	setvar $planet~planetstats true
 else
-  echo "*No Planet File Found!*"
+	echo "*No Planet File Found!*"
 end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANET~LOADPLANETPRODS
+:planet~loadplanetprods
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLANET~PLANETCOUNTER 0
-setvar $PLANET~PLANETSTATS FALSE
-loadvar $PLANET~PLANET_PRODS_FILE
-fileexists $EXISTS $PLANET~PLANET_PRODS_FILE
-if ($EXISTS)
-  setvar $I 1
-  setvar $PLANET~PLANETCOUNTER 1
-  readtoarray $PLANET~PLANET_PRODS_FILE $PLANET~PLANET_PRODS_ARRAY
-  setarray $PLANET~PLANETPRODS $PLANET~PLANET_PRODS_ARRAY 3
-  while ($I <= $PLANET~PLANET_PRODS_ARRAY)
-    setvar $planetinf $PLANET~PLANET_PRODS_ARRAY[$I]
-    getword $planetinf $planet_starting_ore 1
-    getlength $planet_starting_ore $len1
-    getword $planetinf $planet_starting_org 2
-    getlength $planet_starting_org $len2
-    getword $planetinf $planet_starting_equ 3
-    getlength $planet_starting_equ $len3
-    setvar $len ($len1 + $len2 + $len3 + 3)
-    getlength $planetinf $pname_len
-    if ($len < $pname_len)
-      cuttext $planetinf $pname $len 999
-    else
-      echo "*"&$planetinf&" error during processing planets.*"
-    end
-    setvar $PLANET~PLANETPRODS[$PLANET~I] $PLANET~PLANETNAME
-    setvar $PLANET~PLANETPRODS[$PLANET~I][1] $PLANET~PLANET_FUEL_COLONISTS_MIN
-    setvar $PLANET~PLANETPRODS[$PLANET~I][2] $PLANET~PLANET_FUEL_COLONISTS_MAX
-    setvar $PLANET~PLANETPRODS[$PLANET~I][3] $PLANET~PLANET_ORG_COLONISTS_MIN
-    add $I 1
-  end
-  setvar $PLANET~PLANETCOUNTER $PLANET~PLANET_PRODS_ARRAY
-  setvar $PLANET~PLANETSTATS TRUE
+setvar $planet~planetcounter 0
+setvar $planet~planetstats false
+loadvar $planet~planet_prods_file
+fileexists $exists $planet~planet_prods_file
+if ($exists)
+	readtoarray $planet~planet_prods_file $planet~planet_prods_array
+	setvar $planet~planet_prods_capacity $planet~planet_prods_array
+	add $planet~planet_prods_capacity 100
+	if ($planet~planet_prods_capacity < 100)
+		setvar $planet~planet_prods_capacity 100
+	end
+	setarray $planet~planetprods $planet~planet_prods_capacity 3
+	setvar $i 1
+	while ($i <= $planet~planet_prods_array)
+		setvar $planetinf $planet~planet_prods_array[$i]
+		getword $planetinf $planet_starting_ore 1
+		getlength $planet_starting_ore $len1
+		getword $planetinf $planet_starting_org 2
+		getlength $planet_starting_org $len2
+		getword $planetinf $planet_starting_equ 3
+		getlength $planet_starting_equ $len3
+		setvar $len ($len1 + $len2 + $len3 + 3)
+		getlength $planetinf $pname_len
+		if ($len < $pname_len)
+			cuttext $planetinf $pname ($len + 1) 999
+			trim $pname
+			if ($pname <> "0") and ($pname <> "")
+				add $planet~planetcounter 1
+				setvar $planet~planetprods[$planet~planetcounter] $pname
+				setvar $planet~planetprods[$planet~planetcounter][1] $planet_starting_ore
+				setvar $planet~planetprods[$planet~planetcounter][2] $planet_starting_org
+				setvar $planet~planetprods[$planet~planetcounter][3] $planet_starting_equ
+			end
+		else
+			echo "*"&$planetinf&" error during processing planets.*"
+		end
+		add $i 1
+	end
+else
+	setarray $planet~planetprods 100 3
 end
+setvar $i $planet~planetcounter
+add $i 1
+setvar $planet~planetprods[$i] "0"
+setvar $planet~planetstats true
 return
 
 include "source\include\player"

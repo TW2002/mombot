@@ -1,201 +1,193 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-setVar $HELP~HELP[1]  $HELP~TAB&"Checks whether a sector is an MSL or lists all MSL sectors."
-setVar $HELP~HELP[2]  $HELP~TAB&" "
-setVar $HELP~HELP[3]  $HELP~TAB&"msl [sector|all]"
-setVar $HELP~HELP[4]  $HELP~TAB&" "
-setVar $HELP~HELP[5]  $HELP~TAB&"Options:"
-setVar $HELP~HELP[6]  $HELP~TAB&"   {sector}    Checks one sector"
-setVar $HELP~HELP[7]  $HELP~TAB&"      {all}    Outputs all MSL sectors to subspace"
-setVar $HELP~HELP[8]  $HELP~TAB&"Rylos and Alpha Centauri must be known."
-gosub :HELP~HELPFILE
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1]  $help~tab&"Checks whether a sector is an MSL or lists all MSL sectors."
+setvar $help~help[2]  $help~tab&" "
+setvar $help~help[3]  $help~tab&"msl [sector|all]"
+setvar $help~help[4]  $help~tab&" "
+setvar $help~help[5]  $help~tab&"Options:"
+setvar $help~help[6]  $help~tab&"   {sector}    Checks one sector"
+setvar $help~help[7]  $help~tab&"      {all}    Outputs all MSL sectors to subspace"
+setvar $help~help[8]  $help~tab&"Rylos and Alpha Centauri must be known."
+gosub :help~helpfile
 
-loadvar $BOT_NAME
+loadvar $bot_name
 
+loadvar $unlimitedgame
 
-loadvar $UNLIMITEDGAME
+loadvar $bot_turn_limit
 
+loadvar $user_command_line
 
-loadvar $BOT_TURN_LIMIT
+loadvar $parm1
+loadvar $player~current_sector
 
-
-loadvar $USER_COMMAND_LINE
-
-
-loadvar $PARM1
-loadvar $PLAYER~CURRENT_SECTOR
-
-if (($PARM1 = "") or ($PARM1 = 0))
-  setvar $PARM1 $PLAYER~CURRENT_SECTOR
+if (($parm1 = "") or ($parm1 = 0))
+	setvar $parm1 $player~current_sector
 end
 
-
-
-
-isnumber $TEST $PARM1
-if (($TEST = FALSE) and ($PARM1 <> "all"))
-  setvar $switchboard~message "Invalid Sector. Please enter a Sector number or 'all'.*"
-  gosub :switchboard~switchboard
-  halt
+isnumber $test $parm1
+if (($test = false) and ($parm1 <> "all"))
+	setvar $switchboard~message "Invalid Sector. Please enter a Sector number or 'all'.*"
+	gosub :switchboard~switchboard
+	halt
 end
 
 send "'Zarkahn's MSL Check, Processing Data, Stand By*"
-gosub :ZMSL
+gosub :zmsl
 
-if ($PARM1 = "all")
-  goto :REPORTALL
+if ($parm1 = "all")
+	goto :reportall
 end
 
-getsector $PARM1 $CHKSECTOR
-getsectorparameter $PARM1 "MSLSEC" $MSL
-isnumber $RESULT $MSL
-if ($RESULT > 0)
-  send "'MSL Check Completed*"
-  send "'Sector " $PARM1 " IS A MSL*"
-  halt
+getsector $parm1 $chksector
+getsectorparameter $parm1 "MSLSEC" $msl
+isnumber $result $msl
+if ($result > 0)
+	send "'MSL Check Completed*"
+	send "'Sector " $parm1 " IS A MSL*"
+	halt
 end
 
 send "'MSL Check Completed*"
-send "'Sector " $PARM1 " Is NOT a MSL*"
+send "'Sector " $parm1 " Is NOT a MSL*"
 halt
-:REPORTALL
 
+:reportall
+setvar $start 1
 
-setvar $START 1
-
-while ($START <= SECTORS)
-  getsector $START $CHKSECTOR
-  getsectorparameter $START "MSLSEC" $MSL
-  isnumber $RESULT $MSL
-  if ($RESULT > 0)
-    send "'Sector " $START " is MSL*"
-  end
-  add $START 1
+while ($start <= sectors)
+	getsector $start $chksector
+	getsectorparameter $start "MSLSEC" $msl
+	isnumber $result $msl
+	if ($result > 0)
+		send "'Sector " $start " is MSL*"
+	end
+	add $start 1
 end
 send "'MSL Output Completed, Halting*"
 halt
-:ZMSL
 
+:zmsl
+setvar $forsure 1
 
-setvar $FORSURE 1
-
-while ($FORSURE < 11)
-  setsectorparameter $FORSURE "MSLSEC" TRUE
-  add $FORSURE 1
+while ($forsure < 11)
+	setsectorparameter $forsure "MSLSEC" true
+	add $forsure 1
 end
-:CHECK_AC
 
+:check_ac
+if (alphacentauri = 0)
+	send "'AC is not known, Shutting Down*"
+	halt
+end
+setsectorparameter alphacentauri "MSLSEC" true
 
-if (ALPHACENTAURI = 0)
-  send "'AC is not known, Shutting Down*"
-  halt
+:check_rylos
+if (rylos = 0)
+	send "'Rylos not Known, Shutting Down*"
+	halt
 end
-setsectorparameter ALPHACENTAURI "MSLSEC" TRUE
-:CHECK_RYLOS
-if (RYLOS = 0)
-  send "'Rylos not Known, Shutting Down*"
-  halt
-end
-setsectorparameter RYLOS "MSLSEC" TRUE
-:RUN_TERRA1
-setvar $FROM 1
-getcourse $WARP $FROM STARDOCK
-setvar $C 1
-while ($C <= $WARP)
-  setsectorparameter $WARP[$C] "MSLSEC" TRUE
-  add $C 1
-end
-:RUN_TERRA2
+setsectorparameter rylos "MSLSEC" true
 
-getcourse $WARP $FROM ALPHACENTAURI
-setvar $C 1
-while ($C <= $WARP)
-  setsectorparameter $WARP[$C] "MSLSEC" TRUE
-  add $C 1
+:run_terra1
+setvar $from 1
+getcourse $warp $from stardock
+setvar $c 1
+while ($c <= $warp)
+	setsectorparameter $warp[$c] "MSLSEC" true
+	add $c 1
 end
-:RUN_TERRA3
 
-getcourse $WARP $FROM RYLOS
-setvar $C 1
-while ($C <= $WARP)
-  setsectorparameter $WARP[$C] "MSLSEC" TRUE
-  add $C 1
+:run_terra2
+getcourse $warp $from alphacentauri
+setvar $c 1
+while ($c <= $warp)
+	setsectorparameter $warp[$c] "MSLSEC" true
+	add $c 1
 end
-:RUN_DOCK1
 
-setsectorparameter STARDOCK "MSLSEC" TRUE
-setvar $FROM STARDOCK
-getcourse $WARP $FROM 1
-setvar $C 1
-while ($C <= $WARP)
-  setsectorparameter $WARP[$C] "MSLSEC" TRUE
-  add $C 1
+:run_terra3
+getcourse $warp $from rylos
+setvar $c 1
+while ($c <= $warp)
+	setsectorparameter $warp[$c] "MSLSEC" true
+	add $c 1
 end
-:RUN_DOCK2
 
-getcourse $WARP $FROM ALPHACENTAURI
-setvar $C 1
-while ($C <= $WARP)
-  setsectorparameter $WARP[$C] "MSLSEC" TRUE
-  add $C 1
+:run_dock1
+setsectorparameter stardock "MSLSEC" true
+setvar $from stardock
+getcourse $warp $from 1
+setvar $c 1
+while ($c <= $warp)
+	setsectorparameter $warp[$c] "MSLSEC" true
+	add $c 1
 end
-:RUN_DOCK3
 
-getcourse $WARP $FROM RYLOS
-setvar $C 1
-while ($C <= $WARP)
-  setsectorparameter $WARP[$C] "MSLSEC" TRUE
-  add $C 1
+:run_dock2
+getcourse $warp $from alphacentauri
+setvar $c 1
+while ($c <= $warp)
+	setsectorparameter $warp[$c] "MSLSEC" true
+	add $c 1
 end
-:RUN_AC1
 
-setvar $FROM ALPHACENTAURI
-getcourse $WARP $FROM 1
-setvar $C 1
-while ($C <= $WARP)
-  setsectorparameter $WARP[$C] "MSLSEC" TRUE
-  add $C 1
+:run_dock3
+getcourse $warp $from rylos
+setvar $c 1
+while ($c <= $warp)
+	setsectorparameter $warp[$c] "MSLSEC" true
+	add $c 1
 end
-:RUN_AC2
 
-getcourse $WARP $FROM STARDOCK
-setvar $C 1
-while ($C <= $WARP)
-  setsectorparameter $WARP[$C] "MSLSEC" TRUE
-  add $C 1
+:run_ac1
+setvar $from alphacentauri
+getcourse $warp $from 1
+setvar $c 1
+while ($c <= $warp)
+	setsectorparameter $warp[$c] "MSLSEC" true
+	add $c 1
 end
-:RUN_AC3
 
-getcourse $WARP $FROM RYLOS
-setvar $C 1
-while ($C <= $WARP)
-  setsectorparameter $WARP[$C] "MSLSEC" TRUE
-  add $C 1
+:run_ac2
+getcourse $warp $from stardock
+setvar $c 1
+while ($c <= $warp)
+	setsectorparameter $warp[$c] "MSLSEC" true
+	add $c 1
 end
-:RUN_RYLOS1
 
-setvar $FROM RYLOS
-getcourse $WARP $FROM 1
-setvar $C 1
-while ($C <= $WARP)
-  setsectorparameter $WARP[$C] "MSLSEC" TRUE
-  add $C 1
+:run_ac3
+getcourse $warp $from rylos
+setvar $c 1
+while ($c <= $warp)
+	setsectorparameter $warp[$c] "MSLSEC" true
+	add $c 1
 end
-:RUN_RYLOS2
 
-getcourse $WARP $FROM STARDOCK
-setvar $C 1
-while ($C <= $WARP)
-  setsectorparameter $WARP[$C] "MSLSEC" TRUE
-  add $C 1
+:run_rylos1
+setvar $from rylos
+getcourse $warp $from 1
+setvar $c 1
+while ($c <= $warp)
+	setsectorparameter $warp[$c] "MSLSEC" true
+	add $c 1
 end
-:RUN_RYLOS3
 
-getcourse $WARP $FROM ALPHACENTAURI
-setvar $C 1
-while ($C <= $WARP)
-  setsectorparameter $WARP[$C] "MSLSEC" TRUE
-  add $C 1
+:run_rylos2
+getcourse $warp $from stardock
+setvar $c 1
+while ($c <= $warp)
+	setsectorparameter $warp[$c] "MSLSEC" true
+	add $c 1
+end
+
+:run_rylos3
+getcourse $warp $from alphacentauri
+setvar $c 1
+while ($c <= $warp)
+	setsectorparameter $warp[$c] "MSLSEC" true
+	add $c 1
 end
 
 send "'MSL Search Complete Sector Parameters Set*"

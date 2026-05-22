@@ -1,296 +1,294 @@
 logging "OFF"
-loadvar $BOT_NAME
-loadvar $UNLIMITEDGAME
-loadvar $BOT_TURN_LIMIT
-loadvar $USER_COMMAND_LINE
-loadvar $PARM1
-loadvar $PARM2
-loadvar $PARM3
-loadvar $PARM4
-loadvar $PARM5
-loadvar $PARM6
-loadvar $PARM7
-loadvar $PARM8
-loadvar $STARDOCK
-loadvar $COMMAND
-goto :FIGMOVE
+loadvar $bot_name
+loadvar $unlimitedgame
+loadvar $bot_turn_limit
+loadvar $user_command_line
+loadvar $parm1
+loadvar $parm2
+loadvar $parm3
+loadvar $parm4
+loadvar $parm5
+loadvar $parm6
+loadvar $parm7
+loadvar $parm8
+loadvar $stardock
+loadvar $command
+goto :figmove
 include "source\include\planet"
 include "source\include\ship"
-:FIGMOVE
-:MOVEFIG
 
-
+:figmove
+:movefig
 killalltriggers
-gosub :PLAYER~QUIKSTATS
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $TOTAL_MOVED 0
-getword $USER_COMMAND_LINE $PARM1 1
-getword $USER_COMMAND_LINE $PARM2 2
+gosub :player~quikstats
+setvar $startinglocation $player~current_prompt
+setvar $total_moved 0
+getword $user_command_line $parm1 1
+getword $user_command_line $parm2 2
 
-if (($PARM2 = "p") or ($PARM2 = "s"))
-  setvar $MOVETOSECTOR $PARM2
-  isnumber $TEST $PARM1
-  if ($TEST or ($PARM1 = "all"))
-    if ($TEST)
-      setvar $MOVE $PARM1
-    end
-  else
-    setvar $switchboard~message "Please use movefig [p/s] [fighter amount]*"
-    gosub :switchboard~switchboard
-    halt
-  end
-elseif (($PARM1 = "p") or ($PARM1 = "s"))
-  setvar $MOVETOSECTOR $PARM1
-  isnumber $TEST $PARM2
-  if ($TEST or ($PARM2 = "all"))
-    if ($TEST)
-      setvar $MOVE $PARM2
-    end
-  else
-    setvar $switchboard~message "Please use movefig [p/s] [fighter amount]*"
-    gosub :switchboard~switchboard
-    halt
-  end
+if (($parm2 = "p") or ($parm2 = "s"))
+	setvar $movetosector $parm2
+	isnumber $test $parm1
+	if ($test or ($parm1 = "all"))
+		if ($test)
+			setvar $move $parm1
+		end
+	else
+		setvar $switchboard~message "Please use movefig [p/s] [fighter amount]*"
+		gosub :switchboard~switchboard
+		halt
+	end
+elseif (($parm1 = "p") or ($parm1 = "s"))
+	setvar $movetosector $parm1
+	isnumber $test $parm2
+	if ($test or ($parm2 = "all"))
+		if ($test)
+			setvar $move $parm2
+		end
+	else
+		setvar $switchboard~message "Please use movefig [p/s] [fighter amount]*"
+		gosub :switchboard~switchboard
+		halt
+	end
 else
-  setvar $switchboard~message "Please use movefig [p/s] [fighter amount]*"
-  gosub :switchboard~switchboard
-  halt
+	setvar $switchboard~message "Please use movefig [p/s] [fighter amount]*"
+	gosub :switchboard~switchboard
+	halt
 end
-getwordpos $USER_COMMAND_LINE $POS " all"
-setvar $ALLPLANETS FALSE
-if (($POS > 0) and ($MOVETOSECTOR = "s"))
-  setvar $ALLPLANETS TRUE
+getwordpos $user_command_line $pos " all"
+setvar $allplanets false
+if (($pos > 0) and ($movetosector = "s"))
+	setvar $allplanets true
 end
-if ($STARTINGLOCATION = "Citadel")
-  send "q"
-elseif ($STARTINGLOCATION <> "Planet")
-  setvar $switchboard~message "You must start this script from a planet!* "
-  gosub :switchboard~switchboard
-  halt
+if ($startinglocation = "Citadel")
+	send "q"
+elseif ($startinglocation <> "Planet")
+	setvar $switchboard~message "You must start this script from a planet!* "
+	gosub :switchboard~switchboard
+	halt
 end
 send "mnl*"
-gosub :PLAYER~QUIKSTATS
-gosub :PLANET~GETPLANETINFO
-setvar $PLANET $PLANET~PLANET
-setvar $SECTOR_FIGS 0
+gosub :player~quikstats
+gosub :planet~getplanetinfo
+setvar $planet $planet~planet
+setvar $sector_figs 0
 send "q  q  z  n  **   "
 waiton "Warps to Sector(s) :"
 waiton "Command [TL"
-gosub :PLAYER~QUIKSTATS
+gosub :player~quikstats
 
-if ($ALLPLANETS)
-  gosub :COUNTPLANETS
+if ($allplanets)
+	gosub :countplanets
 else
-  setvar $PLANETCOUNT 1
-  setvar $PLANETS[1] $PLANET
+	setvar $planetcount 1
+	setvar $planets[1] $planet
 end
-setvar $FIGOWNER SECTOR.FIGS.OWNER[$PLAYER~CURRENT_SECTOR]
-setvar $FIGQUANT SECTOR.FIGS.QUANTITY[$PLAYER~CURRENT_SECTOR]
+setvar $figowner sector.figs.owner[$player~current_sector]
+setvar $figquant sector.figs.quantity[$player~current_sector]
 
-setvar $SECTOR_FIGS $FIGQUANT
-setvar $STARTING_PLANET $PLANET
+setvar $sector_figs $figquant
+setvar $starting_planet $planet
 
-if (($FIGQUANT <> 0) and (($FIGOWNER <> "belong to your Corp") and ($FIGOWNER <> "yours")))
-  send "l "&$PLANET&"*"
-  waiton "Planet command (?=help) [D]"
-  if ($STARTINGLOCATION = "Citadel")
-    send "c"
-    waiton "Citadel command"
-  end
-  setvar $switchboard~message "Friendly Fighters Not Present!*"
-  gosub :switchboard~switchboard
-  halt
+if (($figquant <> 0) and (($figowner <> "belong to your Corp") and ($figowner <> "yours")))
+	send "l "&$planet&"*"
+	waiton "Planet command (?=help) [D]"
+	if ($startinglocation = "Citadel")
+		send "c"
+		waiton "Citadel command"
+	end
+	setvar $switchboard~message "Friendly Fighters Not Present!*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-setvar $PLANET_FIGS_ROOM $PLANET~PLANET_FIGHTERS_MAX
-subtract $PLANET_FIGS_ROOM $PLANET~PLANET_FIGHTERS
+setvar $planet_figs_room $planet~planet_fighters_max
+subtract $planet_figs_room $planet~planet_fighters
 
-gosub :GETSHIPSTATS
+gosub :getshipstats
 
-setvar $I 1
-while ($I <= $PLANETCOUNT)
+setvar $i 1
+while ($i <= $planetcount)
 
-  if ($ALLPLANETS)
-    setvar $MOVE 0
-  end
-  send "l " $PLANETS[$I] "*"
-  waiton "Planet command (?=help) [D]"
-  gosub :PLANET~GETPLANETINFO
-  setvar $PLANET $PLANET~PLANET
-  :START
+	if ($allplanets)
+		setvar $move 0
+	end
+	send "l " $planets[$i] "*"
+	waiton "Planet command (?=help) [D]"
+	gosub :planet~getplanetinfo
+	setvar $planet $planet~planet
 
-  killalltriggers
-  if ($MOVETOSECTOR = "s")
-    if ($MOVE = 0)
-      setvar $MOVE $PLANET~PLANET_FIGHTERS
-      setvar $TOTAL_MOVED 0
-    end
-    setvar $END_FIGS $SECTOR_FIGS
-    add $END_FIGS $MOVE
-    if ($MOVE > $PLANET~PLANET_FIGHTERS)
-      setvar $switchboard~message "Not Enough Figs on Planet*"
-      gosub :switchboard~switchboard
-      if ($STARTINGLOCATION = "Citadel")
-        send "c "
-      end
-      halt
-    end
-    while ($TOTAL_MOVED < $MOVE)
-      add $SECTOR_FIGS $SHIP_FIGHTERS_MAX
-      if ($SECTOR_FIGS > $END_FIGS)
-        setvar $SECTOR_FIGS $END_FIGS
-      end
-      send "m  n  t  *  q  f z " $SECTOR_FIGS "*  z c d  *  l " $PLANETS[$I] "*  "
-      add $TOTAL_MOVED $SHIP_FIGHTERS_MAX
-    end
-    send "q q * "
-  end
-  if ($MOVETOSECTOR = "p")
-    if ($MOVE = 0)
-      setvar $MOVE $SECTOR_FIGS
-      subtract $MOVE 500
-    end
-    setvar $END_FIGS $MOVE
-    if ($PLANET_FIGS_ROOM < $MOVE)
-      setvar $MOVE $PLANET_FIGS_ROOM
-    end
-    send "m n l * "
-    while ($MOVE > $SHIP_FIGHTERS_MAX)
-      subtract $SECTOR_FIGS $SHIP_FIGHTERS_MAX
-      send "q f z " $SECTOR_FIGS "* z c d  *  l " $PLANETS[$I] "* m n l * "
-      subtract $MOVE $SHIP_FIGHTERS_MAX
-    end
-    subtract $SECTOR_FIGS $MOVE
-    if ($SECTOR_FIGS <> 0)
-      send "q  f  z " $SECTOR_FIGS "*  z  c  d  * l " $PLANETS[$I] "*  m  n  l  * "
-    else
-      send "q  f  z * l " $PLANETS[$I] "*  m  n  l * "
-    end
-  end
+	:start
+	killalltriggers
+	if ($movetosector = "s")
+		if ($move = 0)
+			setvar $move $planet~planet_fighters
+			setvar $total_moved 0
+		end
+		setvar $end_figs $sector_figs
+		add $end_figs $move
+		if ($move > $planet~planet_fighters)
+			setvar $switchboard~message "Not Enough Figs on Planet*"
+			gosub :switchboard~switchboard
+			if ($startinglocation = "Citadel")
+				send "c "
+			end
+			halt
+		end
+		while ($total_moved < $move)
+			add $sector_figs $ship_fighters_max
+			if ($sector_figs > $end_figs)
+				setvar $sector_figs $end_figs
+			end
+			send "m  n  t  *  q  f z " $sector_figs "*  z c d  *  l " $planets[$i] "*  "
+			add $total_moved $ship_fighters_max
+		end
+		send "q q * "
+	end
+	if ($movetosector = "p")
+		if ($move = 0)
+			setvar $move $sector_figs
+			subtract $move 500
+		end
+		setvar $end_figs $move
+		if ($planet_figs_room < $move)
+			setvar $move $planet_figs_room
+		end
+		send "m n l * "
+		while ($move > $ship_fighters_max)
+			subtract $sector_figs $ship_fighters_max
+			send "q f z " $sector_figs "* z c d  *  l " $planets[$i] "* m n l * "
+			subtract $move $ship_fighters_max
+		end
+		subtract $sector_figs $move
+		if ($sector_figs <> 0)
+			send "q  f  z " $sector_figs "*  z  c  d  * l " $planets[$i] "*  m  n  l  * "
+		else
+			send "q  f  z * l " $planets[$i] "*  m  n  l * "
+		end
+	end
 
-  add $I 1
+	add $i 1
 end
-gosub :PLAYER~QUIKSTATS
-if ($PLAYER~CURRENT_PROMPT = "Planet")
-  send "m*  *  **  q q * * "
+gosub :player~quikstats
+if ($player~current_prompt = "Planet")
+	send "m*  *  **  q q * * "
 end
-setvar $PLANET $STARTING_PLANET
-gosub :LANDINGSUB
+setvar $planet $starting_planet
+gosub :landingsub
 
 setvar $switchboard~message "fighters moved*"
 gosub :switchboard~switchboard
 halt
-:LANDINGSUB
 
-
-
-send "l" $PLANET "*z  n  z  n  *  "
-setvar $SUCESSFULCITADEL FALSE
-setvar $SUCESSFULPLANET FALSE
-settextlinetrigger NOPLANET :NOPLANET "There isn't a planet in this sector."
-settextlinetrigger NO_LAND :NO_LAND "since it couldn't possibly stand"
-settextlinetrigger PLANET :PLANET "Planet #"
-settextlinetrigger WRONGONE :WRONG_NUM "That planet is not in this sector."
+:landingsub
+send "l" $planet "*z  n  z  n  *  "
+setvar $sucessfulcitadel false
+setvar $sucessfulplanet false
+settextlinetrigger noplanet :noplanet "There isn't a planet in this sector."
+settextlinetrigger no_land :no_land "since it couldn't possibly stand"
+settextlinetrigger planet :planet "Planet #"
+settextlinetrigger wrongone :wrong_num "That planet is not in this sector."
 pause
-:NOPLANET
 
-killtrigger NO_LAND
-killtrigger PLANET
-killtrigger WRONGONE
+:noplanet
+killtrigger no_land
+killtrigger planet
+killtrigger wrongone
 setvar $switchboard~message "No Planet in Sector!*"
 gosub :switchboard~switchboard
 return
-:NO_LAND
 
-killtrigger NOPLANET
-killtrigger PLANET
-killtrigger WRONGONE
+:no_land
+killtrigger noplanet
+killtrigger planet
+killtrigger wrongone
 setvar $switchboard~message "This ship cannot land!*"
 gosub :switchboard~switchboard
 return
-:PLANET
 
-getword CURRENTLINE $PNUM_CK 2
-striptext $PNUM_CK "#"
-if ($PNUM_CK <> $PLANET)
-  killtrigger NO_LAND
-  killtrigger WRONGONE
-  killtrigger NO_PLANET
-  send "q"
-  goto :WRONG_NUM
+:planet
+getword currentline $pnum_ck 2
+striptext $pnum_ck "#"
+if ($pnum_ck <> $planet)
+	killtrigger no_land
+	killtrigger wrongone
+	killtrigger no_planet
+	send "q"
+	goto :wrong_num
 end
-killtrigger NOPLANET
-killtrigger NO_LAND
-killtrigger WRONGONE
-settexttrigger WRONG_NUM :WRONG_NUM "That planet is not in this sector."
-settexttrigger PLANET :PLANET_PROMPT "Planet command"
+killtrigger noplanet
+killtrigger no_land
+killtrigger wrongone
+settexttrigger wrong_num :wrong_num "That planet is not in this sector."
+settexttrigger planet :planet_prompt "Planet command"
 pause
-:WRONG_NUM
 
-killtrigger PLANET
-send "**'{" $BOT_NAME "} - Incorrect Planet Number*"
+:wrong_num
+killtrigger planet
+send "**'{" $bot_name "} - Incorrect Planet Number*"
 return
-:PLANET_PROMPT
 
-killtrigger WRONG_NUM
-setvar $CURRENTBOTPLANET $PLANET
-savevar $CURRENTBOTPLANET
+:planet_prompt
+killtrigger wrong_num
+setvar $currentbotplanet $planet
+savevar $currentbotplanet
 send "m* * * c"
-settexttrigger BUILD_CIT :BUILD_CIT "Do you wish to construct one?"
-settexttrigger IN_CIT :IN_CIT "Citadel command"
-settexttrigger NOCITALLOWED :BUILD_CIT "Citadels are not allowed in FedSpace."
-settexttrigger CITNOTBUILTYET :BUILD_CIT "Be patient, your Citadel is not yet finished."
+settexttrigger build_cit :build_cit "Do you wish to construct one?"
+settexttrigger in_cit :in_cit "Citadel command"
+settexttrigger nocitallowed :build_cit "Citadels are not allowed in FedSpace."
+settexttrigger citnotbuiltyet :build_cit "Be patient, your Citadel is not yet finished."
 pause
-:BUILD_CIT
 
-killtrigger IN_CIT
-killtrigger NOCITALLOWED
-killtrigger BUILD_CIT
-killtrigger CITNOTBUILTYET
-setvar $SUCESSFULPLANET TRUE
+:build_cit
+killtrigger in_cit
+killtrigger nocitallowed
+killtrigger build_cit
+killtrigger citnotbuiltyet
+setvar $sucessfulplanet true
 send "n*"
-setvar $STARTINGLOCATION "Planet"
+setvar $startinglocation "Planet"
 return
-:IN_CIT
 
-killtrigger IN_CIT
-killtrigger NOCITALLOWED
-killtrigger BUILD_CIT
-killtrigger CITNOTBUILTYET
-setvar $SUCESSFULCITADEL TRUE
-setvar $STARTINGLOCATION "Citadel"
+:in_cit
+killtrigger in_cit
+killtrigger nocitallowed
+killtrigger build_cit
+killtrigger citnotbuiltyet
+setvar $sucessfulcitadel true
+setvar $startinglocation "Citadel"
 return
-:COUNTPLANETS
 
-
-
-setvar $PLANETCOUNT 0
+:countplanets
+setvar $planetcount 0
 killalltriggers
-settextlinetrigger PLANETGRABBER :PLANETLINE "   <"
-settextlinetrigger BEDONE :DONE "Land on which planet "
+settextlinetrigger planetgrabber :planetline "   <"
+settextlinetrigger bedone :done "Land on which planet "
 send "lq*"
 pause
-:PLANETLINE
+
+:planetline
 killalltriggers
-getwordpos CURRENTLINE $POS "<<<< ("
-if ($POS <= 0)
-  setvar $LINE CURRENTLINE
-  replacetext $LINE "<" " "
-  replacetext $LINE ">" " "
-  striptext $LINE ","
-  add $PLANETCOUNT 1
-  getword $LINE $PLANETS[$PLANETCOUNT] 1
+getwordpos currentline $pos "<<<< ("
+if ($pos <= 0)
+	setvar $line currentline
+	replacetext $line "<" " "
+	replacetext $line ">" " "
+	striptext $line ","
+	add $planetcount 1
+	getword $line $planets[$planetcount] 1
 end
-settextlinetrigger GETLINE2 :PLANETLINE "   <"
-settextlinetrigger GETEND :DONE "Land on which planet "
+settextlinetrigger getline2 :planetline "   <"
+settextlinetrigger getend :done "Land on which planet "
 pause
-:DONE
+
+:done
 return
-:GETSHIPSTATS
-gosub :SHIP~GETSHIPSTATS
-setvar $SHIP_OFFENSIVE_ODDS $SHIP~SHIP_OFFENSIVE_ODDS
-setvar $SHIP_FIGHTERS_MAX $SHIP~SHIP_FIGHTERS_MAX
-setvar $SHIP_MINES_MAX $SHIP~SHIP_MINES_MAX
-setvar $SHIP_MAX_ATTACK $SHIP~SHIP_MAX_ATTACK
+
+:getshipstats
+gosub :ship~getshipstats
+setvar $ship_offensive_odds $ship~ship_offensive_odds
+setvar $ship_fighters_max $ship~ship_fighters_max
+setvar $ship_mines_max $ship~ship_mines_max
+setvar $ship_max_attack $ship~ship_max_attack
 return
 include "source\include\switchboard.ts"

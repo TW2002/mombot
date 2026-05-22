@@ -1,820 +1,832 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-setvar $BUYDOWN_RESTORE_HAGGLE 0
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $buydown_restore_haggle 0
 
-setvar $HELP~HELP[1] $HELP~TAB&"BUY - Buy Product from port in Sector or Fighters and/or"
-setvar $HELP~HELP[2] $HELP~TAB&"      shields from Rylos or Alpha"
-setvar $HELP~HELP[3] $HELP~TAB&"      "
-setvar $HELP~HELP[4] $HELP~TAB&"  - buy [product] {mode} {cycles}"
-setvar $HELP~HELP[5] $HELP~TAB&"  - [product] = [f]uel or [o]rg or [e]quip"
-setvar $HELP~HELP[6] $HELP~TAB&"  - [mode]    = [b]est or [s]peed or [w]orst - default is speed"
-setvar $HELP~HELP[7] $HELP~TAB&"  - [cycles]  = number of cycles             - default is max"
-setvar $HELP~HELP[8] $HELP~TAB&"  - [override] = allows product buydowns with less than 200 holds"
-setvar $HELP~HELP[9] $HELP~TAB&"     "
-setvar $HELP~HELP[10] $HELP~TAB&"  - buy [hardware] {amount}"
-setvar $HELP~HELP[11] $HELP~TAB&"  - [hardware]= [fig]hters or [sh]ields"
-setvar $HELP~HELP[12] $HELP~TAB&"  - [amount]  = number to purchase, default is maximum"
-setvar $HELP~HELP[13] $HELP~TAB&"      "
-setvar $HELP~HELP[14] $HELP~TAB&"  - Originally written by Cherokee.     "
-setvar $HELP~HELP[15] $HELP~TAB&"  - Now integrated with EP Haggle if it is running "
-gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&"BUY - Buy Product from port in Sector or Fighters and/or"
+setvar $help~help[2] $help~tab&"      shields from Rylos or Alpha"
+setvar $help~help[3] $help~tab&"      "
+setvar $help~help[4] $help~tab&"  - buy [product] {mode} {cycles}"
+setvar $help~help[5] $help~tab&"  - [product] = [f]uel or [o]rg or [e]quip"
+setvar $help~help[6] $help~tab&"  - [mode]    = [b]est or [s]peed or [w]orst - default is speed"
+setvar $help~help[7] $help~tab&"  - [cycles]  = number of cycles             - default is max"
+setvar $help~help[8] $help~tab&"  - [override] = allows product buydowns with less than 200 holds"
+setvar $help~help[9] $help~tab&"     "
+setvar $help~help[10] $help~tab&"  - buy [hardware] {amount}"
+setvar $help~help[11] $help~tab&"  - [hardware]= [fig]hters or [sh]ields"
+setvar $help~help[12] $help~tab&"  - [amount]  = number to purchase, default is maximum"
+setvar $help~help[13] $help~tab&"      "
+setvar $help~help[14] $help~tab&"  - Originally written by Cherokee.     "
+setvar $help~help[15] $help~tab&"  - Now integrated with EP Haggle if it is running "
+gosub :help~helpfile
 
-loadvar $GAME~PORT_MAX
-setvar $OVERHAGGLEMULTIPLE 147
-setvar $CYCLEBUFFER 1
-setvar $CYCLEBUFFERLIMIT 20
+loadvar $game~port_max
+setvar $overhagglemultiple 147
+setvar $cyclebuffer 1
+setvar $cyclebufferlimit 20
 
-gosub :PLAYER~QUIKSTATS
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-if (($STARTINGLOCATION <> "Citadel") and ($STARTINGLOCATION <> "Planet"))
-  setvar $SWITCHBOARD~MESSAGE "Must start at Citadel or Planet Prompt for Buy Down*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+gosub :player~quikstats
+setvar $startinglocation $player~current_prompt
+if (($startinglocation <> "Citadel") and ($startinglocation <> "Planet"))
+	setvar $switchboard~message "Must start at Citadel or Planet Prompt for Buy Down*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-if ($BOT~PARM1 = "sh")
-  if ($STARTINGLOCATION <> "Citadel")
-    setvar $SWITCHBOARD~MESSAGE "Shield Buyer must be run from the Citadel"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
-  goto :SHIELD_START
+if ($bot~parm1 = "sh")
+	if ($startinglocation <> "Citadel")
+		setvar $switchboard~message "Shield Buyer must be run from the Citadel"
+		gosub :switchboard~switchboard
+		halt
+	end
+	goto :shield_start
 end
-if ($BOT~PARM1 = "fig")
-  if ($STARTINGLOCATION <> "Citadel")
-    setvar $SWITCHBOARD~MESSAGE "Fighter Buyer must be run from the Citadel"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
-  goto :FIGHTER_START
-end
-
-if ($PLAYER~TOTAL_HOLDS < 200)
-  getwordpos $BOT~USER_COMMAND_LINE $POS "override"
-  if ($POS = 0)
-    setvar $EXIT_MESSAGE "This ship has less than 200 holds, cannot buydown without override.*"
-    goto :BUYDOWNEXIT
-  end
+if ($bot~parm1 = "fig")
+	if ($startinglocation <> "Citadel")
+		setvar $switchboard~message "Fighter Buyer must be run from the Citadel"
+		gosub :switchboard~switchboard
+		halt
+	end
+	goto :fighter_start
 end
 
-setvar $OUTPUT ""
-setvar $EQUIPROUNDS 0
-setvar $ORGROUNDS 0
-setvar $FUELROUNDS 0
-isnumber $ISNUMBER2 $BOT~PARM2
-isnumber $ISNUMBER3 $BOT~PARM3
-if ($ISNUMBER2)
-  if ($BOT~PARM2 > 0)
-    setvar $BUYDOWNROUNDSFROMPARAM $BOT~PARM2
-  else
-    setvar $BUYDOWNROUNDSFROMPARAM 999999
-  end
-elseif ($ISNUMBER3)
-  if ($BOT~PARM3 > 0)
-    setvar $BUYDOWNROUNDSFROMPARAM $BOT~PARM3
-  else
-    setvar $BUYDOWNROUNDSFROMPARAM 999999
-  end
+if ($player~total_holds < 200)
+	getwordpos $bot~user_command_line $pos "override"
+	if ($pos = 0)
+		setvar $exit_message "This ship has less than 200 holds, cannot buydown without override.*"
+		goto :buydownexit
+	end
+end
+
+setvar $output ""
+setvar $equiprounds 0
+setvar $orgrounds 0
+setvar $fuelrounds 0
+isnumber $isnumber2 $bot~parm2
+isnumber $isnumber3 $bot~parm3
+if ($isnumber2)
+	if ($bot~parm2 > 0)
+		setvar $buydownroundsfromparam $bot~parm2
+	else
+		setvar $buydownroundsfromparam 999999
+	end
+elseif ($isnumber3)
+	if ($bot~parm3 > 0)
+		setvar $buydownroundsfromparam $bot~parm3
+	else
+		setvar $buydownroundsfromparam 999999
+	end
 else
-  setvar $BUYDOWNROUNDSFROMPARAM 999999
+	setvar $buydownroundsfromparam 999999
 end
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $ISWORST " w "
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $ISBEST " b "
-if ($ISWORST > 0)
-  setvar $BUYDOWN_MODE 3
-elseif ($ISBEST > 0)
-  setvar $BUYDOWN_MODE 2
+getwordpos " "&$bot~user_command_line&" " $isworst " w "
+getwordpos " "&$bot~user_command_line&" " $isbest " b "
+if ($isworst > 0)
+	setvar $buydown_mode 3
+elseif ($isbest > 0)
+	setvar $buydown_mode 2
 else
-  setvar $BUYDOWN_MODE 1
+	setvar $buydown_mode 1
 end
-if ($BOT~PARM1 = "e")
-  setvar $BUYDOWN_EQUIPROUNDS $BUYDOWNROUNDSFROMPARAM
-  setvar $BUYDOWN_ORGROUNDS 0
-  setvar $BUYDOWN_FUELROUNDS 0
-elseif ($BOT~PARM1 = "o")
-  setvar $BUYDOWN_EQUIPROUNDS 0
-  setvar $BUYDOWN_ORGROUNDS $BUYDOWNROUNDSFROMPARAM
-  setvar $BUYDOWN_FUELROUNDS 0
-elseif ($BOT~PARM1 = "f")
-  setvar $BUYDOWN_EQUIPROUNDS 0
-  setvar $BUYDOWN_ORGROUNDS 0
-  setvar $BUYDOWN_FUELROUNDS $BUYDOWNROUNDSFROMPARAM
+if ($bot~parm1 = "e")
+	setvar $buydown_equiprounds $buydownroundsfromparam
+	setvar $buydown_orgrounds 0
+	setvar $buydown_fuelrounds 0
+elseif ($bot~parm1 = "o")
+	setvar $buydown_equiprounds 0
+	setvar $buydown_orgrounds $buydownroundsfromparam
+	setvar $buydown_fuelrounds 0
+elseif ($bot~parm1 = "f")
+	setvar $buydown_equiprounds 0
+	setvar $buydown_orgrounds 0
+	setvar $buydown_fuelrounds $buydownroundsfromparam
 else
-  setvar $SWITCHBOARD~MESSAGE "Please use format buy [type] {speed} {#cycles} {override}*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+	setvar $switchboard~message "Please use format buy [type] {speed} {#cycles} {override}*"
+	gosub :switchboard~switchboard
+	halt
 
 end
 
-if ($STARTINGLOCATION = "Citadel")
-  send "Q  "
+if ($startinglocation = "Citadel")
+	send "Q  "
 end
 
-if (($PLAYER~ORE_HOLDS + ($PLAYER~ORGANIC_HOLDS + ($PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))) <> 0)
-  setvar $MAC ""
-  if ($PLAYER~ORE_HOLDS <> 0)
-    setvar $MAC "  T N L 1* "
-  end
-  if ($PLAYER~ORGANIC_HOLDS <> 0)
-    setvar $MAC $MAC&" T N L 2* "
-  end
-  if ($PLAYER~EQUIPMENT_HOLDS <> 0)
-    setvar $MAC $MAC&" T N L 3* "
-  end
-  if ($PLAYER~COLONIST_HOLDS <> 0)
-    setvar $MAC $MAC&" S N L 1* "
-  end
-  if ($MAC <> "")
-    send $MAC
-    gosub :PLAYER~QUIKSTATS
-    if (($PLAYER~ORE_HOLDS + ($PLAYER~ORGANIC_HOLDS + ($PLAYER~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))) <> 0)
-      setvar $SWITCHBOARD~MESSAGE "Holds Not Empty*"
-      gosub :SWITCHBOARD~SWITCHBOARD
-      halt
-    end
-  end
+if (($player~ore_holds + ($player~organic_holds + ($player~equipment_holds + $player~colonist_holds))) <> 0)
+	setvar $mac ""
+	if ($player~ore_holds <> 0)
+		setvar $mac "  T N L 1* "
+	end
+	if ($player~organic_holds <> 0)
+		setvar $mac $mac&" T N L 2* "
+	end
+	if ($player~equipment_holds <> 0)
+		setvar $mac $mac&" T N L 3* "
+	end
+	if ($player~colonist_holds <> 0)
+		setvar $mac $mac&" S N L 1* "
+	end
+	if ($mac <> "")
+		send $mac
+		gosub :player~quikstats
+		if (($player~ore_holds + ($player~organic_holds + ($player~equipment_holds + $player~colonist_holds))) <> 0)
+			setvar $switchboard~message "Holds Not Empty*"
+			gosub :switchboard~switchboard
+			halt
+		end
+	end
 end
 
-gosub :PLANET~GETPLANETINFO
+gosub :planet~getplanetinfo
 
-if ($STARTINGLOCATION = "Citadel")
-  send "C"
-  waiton "Citadel command (?=help)"
-  send "S* "
+if ($startinglocation = "Citadel")
+	send "C"
+	waiton "Citadel command (?=help)"
+	send "S* "
 else
-  send "Q D"
+	send "Q D"
 end
 
 waiton "Warps to Sector(s) :"
-gosub :PLAYER~GETINFO
+gosub :player~getinfo
 
-gosub :VOIDADJACENT
+gosub :voidadjacent
 
-setvar $port~fuelselling 0
-setvar $port~orgselling 0
-setvar $port~equipselling 0
-setvar $PORT~STARTINGLOCATION $STARTINGLOCATION
+setvar $port~startinglocation $startinglocation
 gosub :port~getportinfo
 
-if ($PORT~NOPORT = 0)
-  setvar $VALIDPORTFOUND TRUE
+if ($port~noport = 0)
+	setvar $validportfound true
 else
-  setvar $VALIDPORTFOUND FALSE
+	setvar $validportfound false
 end
 
-if ($VALIDPORTFOUND <> TRUE)
-  setvar $EXIT_MESSAGE "No valid port found"
-  if ($STARTINGLOCATION <> "Citadel")
-    gosub :PLANET~LANDINGSUB
-  end
-  gosub :CLEARADJACENT
-  goto :BUYDOWNEXIT
+if ($validportfound <> true)
+	setvar $exit_message "No valid port found"
+	if ($startinglocation <> "Citadel")
+		gosub :planet~landingsub
+	end
+	gosub :clearadjacent
+	goto :buydownexit
 end
 
-if ($STARTINGLOCATION = "Citadel")
-  send "Q"
+if ($startinglocation = "Citadel")
+	send "Q"
 else
-  send "L "&$PLANET~PLANET&"* "
+	send "L "&$planet~planet&"* "
 end
 
 waiton "Planet command (?="
-if (HAGGLE)
-  setvar $BUYDOWN_RESTORE_HAGGLE 1
-  autohaggle off
+if (haggle)
+	setvar $buydown_restore_haggle 1
+	autohaggle off
 end
 
-setvar $PLAYER~TURNS_NEEDED 0
-setvar $PLAYER~TURNS_ALLOWED $PLAYER~TURNS
-subtract $PLAYER~TURNS_ALLOWED 1
+setvar $player~turns_needed 0
+setvar $player~turns_allowed $player~turns
+subtract $player~turns_allowed 1
 
-if ($BUYDOWN_FUELROUNDS > 0)
-  setvar $FUELROUNDS 0
-  setvar $PLANET~PLANETFUELROOM $PLANET~PLANET_FUEL_MAX
-  subtract $PLANET~PLANETFUELROOM $PLANET~PLANET_FUEL
-  setvar $MAXFUELTOBUY $port~fuelselling
-  if ($port~fuelselling > $PLANET~PLANETFUELROOM)
-    setvar $MAXFUELTOBUY $PLANET~PLANETFUELROOM
-  end
-  setvar $MAXFUELROUNDS $MAXFUELTOBUY
-  divide $MAXFUELROUNDS $PLAYER~TOTAL_HOLDS
-  if ($MAXFUELROUNDS > $PLAYER~TURNS_ALLOWED)
-    setvar $MAXFUELROUNDS $PLAYER~TURNS_ALLOWED
-  end
-  if ($MAXFUELROUNDS > $BUYDOWN_FUELROUNDS)
-    setvar $MAXFUELROUNDS $BUYDOWN_FUELROUNDS
-  end
-  if ($MAXFUELROUNDS > 0)
-    setvar $FUELROUNDS $MAXFUELROUNDS
-  end
-  add $PLAYER~TURNS_NEEDED $FUELROUNDS
-  subtract $PLAYER~TURNS_ALLOWED $FUELROUNDS
-end
-
-if ($BUYDOWN_ORGROUNDS > 0)
-  setvar $ORGROUNDS 0
-  setvar $PLANET~PLANETORGROOM $PLANET~PLANET_ORGANICS_MAX
-  subtract $PLANET~PLANETORGROOM $PLANET~PLANET_ORGANICS
-  setvar $MAXORGTOBUY $port~orgselling
-  if ($port~orgselling > $PLANET~PLANETORGROOM)
-    setvar $MAXORGTOBUY $PLANET~PLANETORGROOM
-  end
-  setvar $MAXORGROUNDS $MAXORGTOBUY
-  divide $MAXORGROUNDS $PLAYER~TOTAL_HOLDS
-  if ($MAXORGROUNDS > $PLAYER~TURNS_ALLOWED)
-    setvar $MAXORGROUNDS $PLAYER~TURNS_ALLOWED
-  end
-  if ($MAXORGROUNDS > $BUYDOWN_ORGROUNDS)
-    setvar $MAXORGROUNDS $BUYDOWN_ORGROUNDS
-  end
-  if ($MAXORGROUNDS > 0)
-    setvar $ORGROUNDS $MAXORGROUNDS
-  end
-  add $PLAYER~TURNS_NEEDED $ORGROUNDS
-  subtract $PLAYER~TURNS_ALLOWED $ORGROUNDS
+if ($buydown_fuelrounds > 0)
+	setvar $fuelrounds 0
+	setvar $planet~planetfuelroom $planet~planet_fuel_max
+	subtract $planet~planetfuelroom $planet~planet_fuel
+	setvar $maxfueltobuy 0
+	if ($port~orebuying = "Selling")
+		setvar $maxfueltobuy $port~oretrading
+		if ($maxfueltobuy > $planet~planetfuelroom)
+			setvar $maxfueltobuy $planet~planetfuelroom
+		end
+	end
+	setvar $maxfuelrounds $maxfueltobuy
+	divide $maxfuelrounds $player~total_holds
+	if ($maxfuelrounds > $player~turns_allowed)
+		setvar $maxfuelrounds $player~turns_allowed
+	end
+	if ($maxfuelrounds > $buydown_fuelrounds)
+		setvar $maxfuelrounds $buydown_fuelrounds
+	end
+	if ($maxfuelrounds > 0)
+		setvar $fuelrounds $maxfuelrounds
+	end
+	add $player~turns_needed $fuelrounds
+	subtract $player~turns_allowed $fuelrounds
 end
 
-if ($BUYDOWN_EQUIPROUNDS > 0)
-  setvar $EQUIPROUNDS 0
-  setvar $PLANET~PLANETEQUIPROOM $PLANET~PLANET_EQUIPMENT_MAX
-  subtract $PLANET~PLANETEQUIPROOM $PLANET~PLANET_EQUIPMENT
-  setvar $MAXEQUIPTOBUY $port~equipselling
-  if ($port~equipselling > $PLANET~PLANETEQUIPROOM)
-    setvar $MAXEQUIPTOBUY $PLANET~PLANETEQUIPROOM
-  end
-  setvar $MAXEQUIPROUNDS $MAXEQUIPTOBUY
-  divide $MAXEQUIPROUNDS $PLAYER~TOTAL_HOLDS
-  if ($MAXEQUIPROUNDS > $PLAYER~TURNS_ALLOWED)
-    setvar $MAXEQUIPROUNDS $PLAYER~TURNS_ALLOWED
-  end
-  if ($MAXEQUIPROUNDS > $BUYDOWN_EQUIPROUNDS)
-    setvar $MAXEQUIPROUNDS $BUYDOWN_EQUIPROUNDS
-  end
-  if ($MAXEQUIPROUNDS > 0)
-    setvar $EQUIPROUNDS $MAXEQUIPROUNDS
-  end
-  add $PLAYER~TURNS_NEEDED $EQUIPROUNDS
-  subtract $PLAYER~TURNS_ALLOWED $EQUIPROUNDS
+if ($buydown_orgrounds > 0)
+	setvar $orgrounds 0
+	setvar $planet~planetorgroom $planet~planet_organics_max
+	subtract $planet~planetorgroom $planet~planet_organics
+	setvar $maxorgtobuy 0
+	if ($port~orgbuying = "Selling")
+		setvar $maxorgtobuy $port~orgtrading
+		if ($maxorgtobuy > $planet~planetorgroom)
+			setvar $maxorgtobuy $planet~planetorgroom
+		end
+	end
+	setvar $maxorgrounds $maxorgtobuy
+	divide $maxorgrounds $player~total_holds
+	if ($maxorgrounds > $player~turns_allowed)
+		setvar $maxorgrounds $player~turns_allowed
+	end
+	if ($maxorgrounds > $buydown_orgrounds)
+		setvar $maxorgrounds $buydown_orgrounds
+	end
+	if ($maxorgrounds > 0)
+		setvar $orgrounds $maxorgrounds
+	end
+	add $player~turns_needed $orgrounds
+	subtract $player~turns_allowed $orgrounds
 end
 
-if (($FUELROUNDS = 0) and (($ORGROUNDS = 0) and ($EQUIPROUNDS = 0)))
-  if ($STARTINGLOCATION = "Citadel")
-    send "C "
-  else
-    send "q "
-  end
-  setvar $EXIT_MESSAGE "Nothing to buy"
-  gosub :CLEARADJACENT
-  goto :BUYDOWNEXIT
+if ($buydown_equiprounds > 0)
+	setvar $equiprounds 0
+	setvar $planet~planetequiproom $planet~planet_equipment_max
+	subtract $planet~planetequiproom $planet~planet_equipment
+	setvar $maxequiptobuy 0
+	if ($port~equbuying = "Selling")
+		setvar $maxequiptobuy $port~equtrading
+		if ($maxequiptobuy > $planet~planetequiproom)
+			setvar $maxequiptobuy $planet~planetequiproom
+		end
+	end
+	setvar $maxequiprounds $maxequiptobuy
+	divide $maxequiprounds $player~total_holds
+	if ($maxequiprounds > $player~turns_allowed)
+		setvar $maxequiprounds $player~turns_allowed
+	end
+	if ($maxequiprounds > $buydown_equiprounds)
+		setvar $maxequiprounds $buydown_equiprounds
+	end
+	if ($maxequiprounds > 0)
+		setvar $equiprounds $maxequiprounds
+	end
+	add $player~turns_needed $equiprounds
+	subtract $player~turns_allowed $equiprounds
 end
 
-:GETMODE
-if ($BUYDOWN_MODE = 1)
-  setvar $BUYDOWN_MODE "Speedbuy"
-elseif ($BUYDOWN_MODE = 2)
-  setvar $BUYDOWN_MODE "Best Price"
-  setvar $BOT~WORSTPRICE FALSE
-  savevar $BOT~WORSTPRICE
-elseif ($BUYDOWN_MODE = 3)
-  setvar $BUYDOWN_MODE "Worst Price"
-end
-send "'*{" $BOT~BOT_NAME "}*Buying down using "&$BUYDOWN_MODE&"*" $FUELROUNDS&" rounds of fuel*" $ORGROUNDS&" rounds of org*" $EQUIPROUNDS&" rounds of equip**"
-setvar $FUELROUNDSLEFT $FUELROUNDS
-setvar $ORGROUNDSLEFT $ORGROUNDS
-setvar $EQUIPROUNDSLEFT $EQUIPROUNDS
-setvar $FUEL_CREDS_NEEDED 0
-setvar $ORG_CREDS_NEEDED 0
-setvar $EQUIP_CREDS_NEEDED 0
-
-if ($FUELROUNDS > 0)
-  setvar $FUEL_CREDS_NEEDED $FUELROUNDS
-  multiply $FUEL_CREDS_NEEDED $PLAYER~TOTAL_HOLDS
-  multiply $FUEL_CREDS_NEEDED 30
-  if ($BUYDOWN_MODE = "Worst Price")
-    multiply $FUEL_CREDS_NEEDED 3
-    divide $FUEL_CREDS_NEEDED 2
-  end
-end
-if ($ORGROUNDS > 0)
-  setvar $ORG_CREDS_NEEDED $ORGROUNDS
-  multiply $ORG_CREDS_NEEDED $PLAYER~TOTAL_HOLDS
-  multiply $ORG_CREDS_NEEDED 60
-  if ($BUYDOWN_MODE = "Worst Price")
-    multiply $ORG_CREDS_NEEDED 3
-    divide $ORG_CREDS_NEEDED 2
-  end
-end
-if ($EQUIPROUNDS > 0)
-  setvar $EQUIP_CREDS_NEEDED $EQUIPROUNDS
-  multiply $EQUIP_CREDS_NEEDED $PLAYER~TOTAL_HOLDS
-  multiply $EQUIP_CREDS_NEEDED 100
-  if ($BUYDOWN_MODE = "Worst Price")
-    multiply $EQUIP_CREDS_NEEDED 3
-    divide $EQUIP_CREDS_NEEDED 2
-  end
-end
-setvar $TOTAL_CREDS_NEEDED 0
-add $TOTAL_CREDS_NEEDED $FUEL_CREDS_NEEDED
-add $TOTAL_CREDS_NEEDED $ORG_CREDS_NEEDED
-add $TOTAL_CREDS_NEEDED $EQUIP_CREDS_NEEDED
-setvar $STARTINGCREDITS $PLAYER~CREDITS
-if ($TOTAL_CREDS_NEEDED > $PLAYER~CREDITS)
-  setvar $CASHONHAND $PLANET~CITADEL_CREDITS
-  add $CASHONHAND $PLAYER~CREDITS
-  if ($CASHONHAND > $TOTAL_CREDS_NEEDED)
-    send "C"
-    send "T T "&$PLAYER~CREDITS&"* "
-    send "T F "&$TOTAL_CREDS_NEEDED&"* "
-    setvar $PLAYER~CREDITS $TOTAL_CREDS_NEEDED
-    setvar $SWITCHBOARD~MESSAGE "Withdrew funds from the Treasury to complete the buydown*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    send "Q"
-  else
-    if ($STARTINGLOCATION = "Citadel")
-      send "C "
-    else
-      send "q "
-    end
-    setvar $EXIT_MESSAGE "Not enough cash onhand"
-    gosub :CLEARADJACENT
-    goto :BUYDOWNEXIT
-  end
-end
-setvar $INIT_CREDITS $PLAYER~CREDITS
-
-:BUYDOWNEQUIP
-if ($EQUIPROUNDSLEFT > 0)
-  if ($BUYDOWN_MODE = "Speedbuy")
-    send "Q P T  "
-  else
-    send "Q P T"
-  end
-  if ($port~fuelselling > 0)
-    send "0* "
-  end
-  if ($port~orgselling > 0)
-    send "0*"
-  end
-  gosub :CHOOSEHAGGLE
-  send "L "&$PLANET~PLANET&"* t n l 3* "
-  subtract $EQUIPROUNDSLEFT 1
-  goto :BUYDOWNEQUIP
-end
-if ($EQUIPROUNDS > 0)
-  if ($BUYDOWN_MODE = "Worst Price")
-    setvar $OUTPUT $OUTPUT&" - Equipment overhaggled at "&$OVERHAGGLEMULTIPLE&"*"
-  end
+if (($fuelrounds = 0) and (($orgrounds = 0) and ($equiprounds = 0)))
+	if ($startinglocation = "Citadel")
+		send "C "
+	else
+		send "q "
+	end
+	setvar $exit_message "Nothing to buy"
+	gosub :clearadjacent
+	goto :buydownexit
 end
 
-:BUYDOWNORG
-if ($ORGROUNDSLEFT > 0)
-  if ($BUYDOWN_MODE = "Speedbuy")
-    send "Q P T  "
-  else
-    send "Q P T"
-  end
-  if ($port~fuelselling > 0)
-    send "0*"
-  end
-  gosub :CHOOSEHAGGLE
-  send "0* L "&$PLANET~PLANET&"* t n l 2* "
-  subtract $ORGROUNDSLEFT 1
-  goto :BUYDOWNORG
+:getmode
+if ($buydown_mode = 1)
+	setvar $buydown_mode "Speedbuy"
+elseif ($buydown_mode = 2)
+	setvar $buydown_mode "Best Price"
+	setvar $bot~worstprice false
+	savevar $bot~worstprice
+elseif ($buydown_mode = 3)
+	setvar $buydown_mode "Worst Price"
 end
-if ($ORGROUNDS > 0)
-  if ($BUYDOWN_MODE = "Worst Price")
-    setvar $OUTPUT $OUTPUT&" - Organics overhaggled at "&$OVERHAGGLEMULTIPLE&"*"
-  end
-end
-:BUYDOWNFUEL
+send "'*{" $bot~bot_name "}*Buying down using "&$buydown_mode&"*" $fuelrounds&" rounds of fuel*" $orgrounds&" rounds of org*" $equiprounds&" rounds of equip**"
+setvar $fuelroundsleft $fuelrounds
+setvar $orgroundsleft $orgrounds
+setvar $equiproundsleft $equiprounds
+setvar $fuel_creds_needed 0
+setvar $org_creds_needed 0
+setvar $equip_creds_needed 0
 
-if ($FUELROUNDSLEFT > 0)
-  if ($BUYDOWN_MODE = "Speedbuy")
-    send "Q P T  "
-  else
-    send "Q P T"
-  end
-  gosub :CHOOSEHAGGLE
-  send "0* 0* L "&$PLANET~PLANET&"* t n l 1* "
-  subtract $FUELROUNDSLEFT 1
-  goto :BUYDOWNFUEL
+if ($fuelrounds > 0)
+	setvar $fuel_creds_needed $fuelrounds
+	multiply $fuel_creds_needed $player~total_holds
+	multiply $fuel_creds_needed 30
+	if ($buydown_mode = "Worst Price")
+		multiply $fuel_creds_needed 3
+		divide $fuel_creds_needed 2
+	end
 end
-if ($FUELROUNDS > 0)
-  if ($BUYDOWN_MODE = "Worst Price")
-    setvar $OUTPUT $OUTPUT&" - Fuel Ore overhaggled at "&$OVERHAGGLEMULTIPLE&"*"
-  end
+if ($orgrounds > 0)
+	setvar $org_creds_needed $orgrounds
+	multiply $org_creds_needed $player~total_holds
+	multiply $org_creds_needed 60
+	if ($buydown_mode = "Worst Price")
+		multiply $org_creds_needed 3
+		divide $org_creds_needed 2
+	end
+end
+if ($equiprounds > 0)
+	setvar $equip_creds_needed $equiprounds
+	multiply $equip_creds_needed $player~total_holds
+	multiply $equip_creds_needed 100
+	if ($buydown_mode = "Worst Price")
+		multiply $equip_creds_needed 3
+		divide $equip_creds_needed 2
+	end
+end
+setvar $total_creds_needed 0
+add $total_creds_needed $fuel_creds_needed
+add $total_creds_needed $org_creds_needed
+add $total_creds_needed $equip_creds_needed
+setvar $startingcredits $player~credits
+if ($total_creds_needed > $player~credits)
+	setvar $cashonhand $planet~citadel_credits
+	add $cashonhand $player~credits
+	if ($cashonhand > $total_creds_needed)
+		send "C"
+		send "T T "&$player~credits&"* "
+		send "T F "&$total_creds_needed&"* "
+		setvar $player~credits $total_creds_needed
+		setvar $switchboard~message "Withdrew funds from the Treasury to complete the buydown*"
+		gosub :switchboard~switchboard
+		send "Q"
+	else
+		if ($startinglocation = "Citadel")
+			send "C "
+		else
+			send "q "
+		end
+		setvar $exit_message "Not enough cash onhand"
+		gosub :clearadjacent
+		goto :buydownexit
+	end
+end
+setvar $init_credits $player~credits
+
+:buydownequip
+if ($equiproundsleft > 0)
+	if ($buydown_mode = "Speedbuy")
+		send "Q P T  "
+	else
+		send "Q P T"
+	end
+	if ($port~orebuying = "Selling")
+		send "0* "
+	end
+	if ($port~orgbuying = "Selling")
+		send "0*"
+	end
+	gosub :choosehaggle
+	send "L "&$planet~planet&"* t n l 3* "
+	subtract $equiproundsleft 1
+	goto :buydownequip
+end
+if ($equiprounds > 0)
+	if ($buydown_mode = "Worst Price")
+		setvar $output $output&" - Equipment overhaggled at "&$overhagglemultiple&"*"
+	end
 end
 
-:BUYDOWNFINISH
-if ($STARTINGLOCATION = "Citadel")
-  send "C "
-  waitfor "<Enter Citadel>"
+:buydownorg
+if ($orgroundsleft > 0)
+	if ($buydown_mode = "Speedbuy")
+		send "Q P T  "
+	else
+		send "Q P T"
+	end
+	if ($port~orebuying = "Selling")
+		send "0*"
+	end
+	gosub :choosehaggle
+	send "0* L "&$planet~planet&"* t n l 2* "
+	subtract $orgroundsleft 1
+	goto :buydownorg
+end
+if ($orgrounds > 0)
+	if ($buydown_mode = "Worst Price")
+		setvar $output $output&" - Organics overhaggled at "&$overhagglemultiple&"*"
+	end
+end
+
+:buydownfuel
+if ($fuelroundsleft > 0)
+	if ($buydown_mode = "Speedbuy")
+		send "Q P T  "
+	else
+		send "Q P T"
+	end
+	gosub :choosehaggle
+	send "0* 0* L "&$planet~planet&"* t n l 1* "
+	subtract $fuelroundsleft 1
+	goto :buydownfuel
+end
+if ($fuelrounds > 0)
+	if ($buydown_mode = "Worst Price")
+		setvar $output $output&" - Fuel Ore overhaggled at "&$overhagglemultiple&"*"
+	end
+end
+
+:buydownfinish
+if ($startinglocation = "Citadel")
+	send "C "
+	waitfor "<Enter Citadel>"
 else
-  send "Q "
-  waitfor "Command [TL="
+	send "Q "
+	waitfor "Command [TL="
 end
 
-gosub :PLAYER~QUIKSTATS
-setvar $PLAYER~CREDITS_SPENT ($INIT_CREDITS - $PLAYER~CREDITS)
+gosub :player~quikstats
+setvar $player~credits_spent ($init_credits - $player~credits)
 
-gosub :CLEARADJACENT
+gosub :clearadjacent
 
-if ($STARTINGLOCATION = "Planet")
-  send "L  Z"&#8&#8&$PLANET~PLANET&"*  "
+if ($startinglocation = "Planet")
+	send "L  Z"&#8&#8&$planet~planet&"*  "
 end
 
-if (($PLAYER~CREDITS > $STARTINGCREDITS) and ($STARTINGLOCATION = "Citadel"))
-  send "T T "&($PLAYER~CREDITS - $STARTINGCREDITS)&"* "
-  setvar $SWITCHBOARD~MESSAGE "I put back extra funds taken for buydown.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
+if (($player~credits > $startingcredits) and ($startinglocation = "Citadel"))
+	send "T T "&($player~credits - $startingcredits)&"* "
+	setvar $switchboard~message "I put back extra funds taken for buydown.*"
+	gosub :switchboard~switchboard
 end
 
-setvar $SWITCHBOARD~MESSAGE $OUTPUT&"   *"
-if ($PLAYER~UNLIMITEDGAME)
-  setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~MESSAGE&" - spent "&$PLAYER~CREDITS_SPENT&" credits - unlimited turns left.*"
+setvar $switchboard~message $output&"   *"
+if ($player~unlimitedgame)
+	setvar $switchboard~message $switchboard~message&" - spent "&$player~credits_spent&" credits - unlimited turns left.*"
 else
-  setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~MESSAGE&" - spent "&$PLAYER~CREDITS_SPENT&" credits - "&$PLAYER~TURNS&" turns left.*"
+	setvar $switchboard~message $switchboard~message&" - spent "&$player~credits_spent&" credits - "&$player~turns&" turns left.*"
 end
-if ($SWITCHBOARD~SELF_COMMAND <> TRUE)
-  setvar $SWITCHBOARD~SELF_COMMAND 2
+if ($switchboard~self_command <> true)
+	setvar $switchboard~self_command 2
 end
-gosub :SWITCHBOARD~SWITCHBOARD
-setvar $EXIT_MESSAGE "Normal Exit"
+gosub :switchboard~switchboard
+setvar $exit_message "Normal Exit"
 
-setvar $BOT~WORSTPRICE $ORIGINAL_WORSTPRICE_VALUE
-savevar $BOT~WORSTPRICE
+setvar $bot~worstprice $original_worstprice_value
+savevar $bot~worstprice
 
-:BUYDOWNEXIT
-if ($BUYDOWN_RESTORE_HAGGLE = 1)
-  autohaggle on
+:buydownexit
+if ($buydown_restore_haggle = 1)
+	autohaggle on
 end
-setvar $SWITCHBOARD~MESSAGE "Buy down exiting --- "&$EXIT_MESSAGE&"*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "Buy down exiting --- "&$exit_message&"*"
+gosub :switchboard~switchboard
 halt
 
-:CHOOSEHAGGLE
-setvar $PLAYER~BUYDOWN_RETURN_ON_ABORT TRUE
-setvar $PLAYER~BUYDOWN_ABORTED FALSE
-setvar $PLAYER~BUYDOWN_MODE $BUYDOWN_MODE
-setvar $PLAYER~OVERHAGGLEMULTIPLE $OVERHAGGLEMULTIPLE
-setvar $PLAYER~STARTINGLOCATION $STARTINGLOCATION
-setvar $PLAYER~CYCLEBUFFER $CYCLEBUFFER
-setvar $PLAYER~CYCLEBUFFERLIMIT $CYCLEBUFFERLIMIT
-setvar $PLAYER~JETBONUS $JETBONUS
+:choosehaggle
+setvar $player~buydown_return_on_abort true
+setvar $player~buydown_aborted false
+setvar $player~buydown_mode $buydown_mode
+setvar $player~overhagglemultiple $overhagglemultiple
+setvar $player~startinglocation $startinglocation
+setvar $player~cyclebuffer $cyclebuffer
+setvar $player~cyclebufferlimit $cyclebufferlimit
+setvar $player~jetbonus $jetbonus
 
-if ($BUYDOWN_MODE = "Speedbuy")
-  gosub :PLANETHAGGLE~BUYNOHAGGLE
+if ($buydown_mode = "Speedbuy")
+	gosub :planethaggle~buynohaggle
 else
-  gosub :PLANETHAGGLE~BUYHAGGLE
+	gosub :planethaggle~buyhaggle
 end
 
-setvar $CYCLEBUFFER $PLAYER~CYCLEBUFFER
-setvar $JETBONUS $PLAYER~JETBONUS
-setvar $BUYHAGGLE $PLAYER~BUYHAGGLE
-setvar $PLAYER~BUYDOWN_RETURN_ON_ABORT FALSE
+setvar $cyclebuffer $player~cyclebuffer
+setvar $jetbonus $player~jetbonus
+setvar $buyhaggle $player~buyhaggle
+setvar $player~buydown_return_on_abort false
 
-if ($PLAYER~BUYDOWN_ABORTED = TRUE)
-  setvar $PLAYER~BUYDOWN_ABORTED FALSE
-  setvar $EXIT_MESSAGE $PLAYER~EXIT_MESSAGE
-  goto :BUYDOWNEXIT
+if ($player~buydown_aborted = true)
+	setvar $player~buydown_aborted false
+	setvar $exit_message $player~exit_message
+	goto :buydownexit
 end
 return
 
-:VOIDADJACENT
-setvar $I 1
+:voidadjacent
+setvar $i 1
 send "  C  "
-while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$I] <> 0)
-  setvar $FOCUS SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$I]
-  if ($FOCUS <> 0)
-    send "V"&$FOCUS&"*"
-  end
-  add $I 1
+while (sector.warps[$player~current_sector][$i] <> 0)
+	setvar $focus sector.warps[$player~current_sector][$i]
+	if ($focus <> 0)
+		send "V"&$focus&"*"
+	end
+	add $i 1
 end
 send "  Q"
 waiton "<Computer deactivated>"
 return
-:CLEARADJACENT
-setvar $I 1
+
+:clearadjacent
+setvar $i 1
 send "  C  "
-while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$I] <> 0)
-  setvar $FOCUS SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$I]
-  if ($FOCUS <> 0)
-    send "V0*YN"&$FOCUS&"*"
-  end
-  add $I 1
+while (sector.warps[$player~current_sector][$i] <> 0)
+	setvar $focus sector.warps[$player~current_sector][$i]
+	if ($focus <> 0)
+		send "V0*YN"&$focus&"*"
+	end
+	add $i 1
 end
 send "   Q"
 waiton "<Computer deactivated>"
 return
 
-:FIGHTER_START
-setvar $BUYS FALSE
-setvar $CANBUY 0
-if ($BOT~PARM2 = "")
-  setvar $BOT~PARM2 0
+:fighter_start
+setvar $buys false
+setvar $canbuy 0
+if ($bot~parm2 = "")
+	setvar $bot~parm2 0
 end
-setvar $AMOUNTTOBUY $BOT~PARM2
-setvar $BUYALL FALSE
-setvar $TOTALFIGSPURCHASED 0
-isnumber $TEST $AMOUNTTOBUY
-if ($TEST <> TRUE)
-  setvar $BUYALL TRUE
+setvar $amounttobuy $bot~parm2
+setvar $buyall false
+setvar $totalfigspurchased 0
+isnumber $test $amounttobuy
+if ($test <> true)
+	setvar $buyall true
 else
-  if ($AMOUNTTOBUY <= 0)
-    setvar $BUYALL TRUE
-  end
+	if ($amounttobuy <= 0)
+		setvar $buyall true
+	end
 end
 send " q "
-gosub :PLANET~GETPLANETINFO
+gosub :planet~getplanetinfo
 send " c "
-gosub :SHIP~GETSHIPSTATS
-setvar $HOME $PLAYER~CURRENT_SECTOR
-if (($PLAYER~CURRENT_SECTOR = $MAP~ALPHA_CENTAURI) or ($PLAYER~CURRENT_SECTOR = $MAP~RYLOS))
-  if (PORT.CLASS[$PLAYER~CURRENT_SECTOR] = 0)
-    goto :FIGHTER_ALREADY
-  end
+gosub :ship~getshipstats
+setvar $home $player~current_sector
+if (($player~current_sector = $map~alpha_centauri) or ($player~current_sector = $map~rylos))
+	if (port.class[$player~current_sector] = 0)
+		goto :fighter_already
+	end
 end
-:FIGHTER_SUB_FIGHTERBUY
 
-if ($MAP~ALPHA_CENTAURI > 0)
-  setvar $SWITCHBOARD~MESSAGE "Warping Planet to Alpha Centauri*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  send "p"&$MAP~ALPHA_CENTAURI&"*y"
-  settextlinetrigger WARPIT :FIGHTER_WARPIT "All Systems Ready, shall we engage?"
-  settextlinetrigger NOWARP :FIGHTER_NOWARP "You do not have any fighters in Sector"
-  settextlinetrigger NOWARP2 :FIGHTER_ALREADY "You are already in that sector!"
-  pause
+:fighter_sub_fighterbuy
+if ($map~alpha_centauri > 0)
+	setvar $switchboard~message "Warping Planet to Alpha Centauri*"
+	gosub :switchboard~switchboard
+	send "p"&$map~alpha_centauri&"*y"
+	settextlinetrigger warpit :fighter_warpit "All Systems Ready, shall we engage?"
+	settextlinetrigger nowarp :fighter_nowarp "You do not have any fighters in Sector"
+	settextlinetrigger nowarp2 :fighter_already "You are already in that sector!"
+	pause
 else
-  setvar $SWITCHBOARD~MESSAGE "Alpha Centauri is not defined for this bot*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  goto :FIGHTER_NOWARP
+	setvar $switchboard~message "Alpha Centauri is not defined for this bot*"
+	gosub :switchboard~switchboard
+	goto :fighter_nowarp
 end
 
-:FIGHTER_WARPIT
+:fighter_warpit
 send "y "
-:FIGHTER_ALREADY
+
+:fighter_already
 killalltriggers
 send " s* "
-gosub :PLAYER~QUIKSTATS
-if (PORT.CLASS[$PLAYER~CURRENT_SECTOR] = 0)
-  setvar $BUYS TRUE
-  send "q m*l* q z* "
-  goto :FIGHTER_ARRIVED
+gosub :player~quikstats
+if (port.class[$player~current_sector] = 0)
+	setvar $buys true
+	send "q m*l* q z* "
+	goto :fighter_arrived
 else
-  setvar $SWITCHBOARD~MESSAGE "Sector "&$MAP~ALPHA_CENTAURI&" has no class 0 port in it!*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  goto :FIGHTER_NOWARP
+	setvar $switchboard~message "Sector "&$map~alpha_centauri&" has no class 0 port in it!*"
+	gosub :switchboard~switchboard
+	goto :fighter_nowarp
 end
-:FIGHTER_NOFIG
-setvar $SWITCHBOARD~MESSAGE "No Fighter at Alpha Centauri*"
-gosub :SWITCHBOARD~SWITCHBOARD
-:FIGHTER_NOWARP
-if ($MAP~ALPHA_CENTAURI > 0)
-  setsectorparameter $MAP~ALPHA_CENTAURI "FIGSEC" FALSE
+
+:fighter_nofig
+setvar $switchboard~message "No Fighter at Alpha Centauri*"
+gosub :switchboard~switchboard
+
+:fighter_nowarp
+if ($map~alpha_centauri > 0)
+	setsectorparameter $map~alpha_centauri "FIGSEC" false
 end
 killalltriggers
-setvar $SWITCHBOARD~MESSAGE "Trying Rylos*"
-gosub :SWITCHBOARD~SWITCHBOARD
-if ($MAP~RYLOS > 0)
-  send "p"&$MAP~RYLOS&"*y"
-  settextlinetrigger WARPIT :FIGHTER_WARPIT "All Systems Ready, shall we engage?"
-  settextlinetrigger NOWARP :FIGHTER_NOWARP2 "You do not have any fighters in Sector"
-  settextlinetrigger NOWARP2 :FIGHTER_ALREADY "You are already in that sector!"
-  pause
+setvar $switchboard~message "Trying Rylos*"
+gosub :switchboard~switchboard
+if ($map~rylos > 0)
+	send "p"&$map~rylos&"*y"
+	settextlinetrigger warpit :fighter_warpit "All Systems Ready, shall we engage?"
+	settextlinetrigger nowarp :fighter_nowarp2 "You do not have any fighters in Sector"
+	settextlinetrigger nowarp2 :fighter_already "You are already in that sector!"
+	pause
 else
-  setvar $SWITCHBOARD~MESSAGE "Rylos is not defined for this bot.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  goto :FIGHTER_END
+	setvar $switchboard~message "Rylos is not defined for this bot.*"
+	gosub :switchboard~switchboard
+	goto :fighter_end
 end
-:FIGHTER_CHECKIT
+
+:fighter_checkit
 killalltriggers
 send "s* "
-gosub :PLAYER~QUIKSTATS
-if (PORT.CLASS[$PLAYER~CURRENT_SECTOR] = 0)
-  goto :FIGHTER_ARRIVED
+gosub :player~quikstats
+if (port.class[$player~current_sector] = 0)
+	goto :fighter_arrived
 else
-  setvar $SWITCHBOARD~MESSAGE "Sector "&$MAP~RYLOS&" has no class 0 port in it!*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  goto :FIGHTER_END
+	setvar $switchboard~message "Sector "&$map~rylos&" has no class 0 port in it!*"
+	gosub :switchboard~switchboard
+	goto :fighter_end
 end
 
-:FIGHTER_NOWARP2
+:fighter_nowarp2
 killalltriggers
-if ($MAP~RYLOS > 0)
-  setsectorparameter $MAP~RYLOS "FIGSEC" FALSE
+if ($map~rylos > 0)
+	setsectorparameter $map~rylos "FIGSEC" false
 end
-setvar $SWITCHBOARD~MESSAGE "No fighter at either class 0!*"
-gosub :SWITCHBOARD~SWITCHBOARD
-setvar $BUYS FALSE
-goto :FIGHTER_END
+setvar $switchboard~message "No fighter at either class 0!*"
+gosub :switchboard~switchboard
+setvar $buys false
+goto :fighter_end
 
-:FIGHTER_ARRIVED
+:fighter_arrived
 killalltriggers
 send "q q* p t"
-settexttrigger BUYFIGLIMP :REMOVELIMP "removal? : (Y/N)"
-settexttrigger BUYFIGNOLIMP :BUYTHEFIGS "credits per fighter"
+settexttrigger buyfiglimp :removelimp "removal? : (Y/N)"
+settexttrigger buyfignolimp :buythefigs "credits per fighter"
 pause
 
-:REMOVELIMP
+:removelimp
 send "y"
 pause
 
-:BUYTHEFIGS
-killtrigger BUYFIGLIMP
-getword CURRENTLINE $CANBUY 8
-if (($CANBUY > 0) and ((($BUYALL = FALSE) and ($AMOUNTTOBUY > 0)) or ($BUYALL = TRUE)))
-  setvar $BUYS TRUE
-  if (($BUYALL = FALSE) and ($AMOUNTTOBUY < $CANBUY))
-    send "b "&$AMOUNTTOBUY&"* q"
-    add $TOTALFIGSPURCHASED $AMOUNTTOBUY
-    setvar $AMOUNTTOBUY 0
-  else
-    send "b "&$CANBUY&"* q"
-    add $TOTALFIGSPURCHASED $CANBUY
-    setvar $AMOUNTTOBUY ($AMOUNTTOBUY - $CANBUY)
-  end
+:buythefigs
+killtrigger buyfiglimp
+getword currentline $canbuy 8
+if (($canbuy > 0) and ((($buyall = false) and ($amounttobuy > 0)) or ($buyall = true)))
+	setvar $buys true
+	if (($buyall = false) and ($amounttobuy < $canbuy))
+		send "b "&$amounttobuy&"* q"
+		add $totalfigspurchased $amounttobuy
+		setvar $amounttobuy 0
+	else
+		send "b "&$canbuy&"* q"
+		add $totalfigspurchased $canbuy
+		setvar $amounttobuy ($amounttobuy - $canbuy)
+	end
 else
-  send "q  z* * l "&$PLANET~PLANET&"* c"
-  setvar $SWITCHBOARD~MESSAGE ""&$TOTALFIGSPURCHASED&" Fighters added on planet "&$PLANET~PLANET&".*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  goto :FIGHTER_END
+	send "q  z* * l "&$planet~planet&"* c"
+	setvar $switchboard~message ""&$totalfigspurchased&" Fighters added on planet "&$planet~planet&".*"
+	gosub :switchboard~switchboard
+	goto :fighter_end
 end
 
-:FIGHTER_ARRIVED2
-send "l " $PLANET~PLANET "*  mnl*"
-settexttrigger MAXPFIGHTERS :FIGHTER_MAXPFIGHTERS "You can't put more than"
-settexttrigger FIGHTERSUCCESS :FIGHTER_ARRIVED "Done!"
+:fighter_arrived2
+send "l " $planet~planet "*  mnl*"
+settexttrigger maxpfighters :fighter_maxpfighters "You can't put more than"
+settexttrigger fightersuccess :fighter_arrived "Done!"
 pause
 
-:FIGHTER_MAXPFIGHTERS
+:fighter_maxpfighters
 killalltriggers
 send "c"
-setvar $BUYS TRUE
-setvar $SWITCHBOARD~MESSAGE "Fighters maxxed out on planet "&$PLANET~PLANET&".*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $buys true
+setvar $switchboard~message "Fighters maxxed out on planet "&$planet~planet&".*"
+gosub :switchboard~switchboard
 
-:FIGHTER_END
-if ($BUYS = FALSE)
-  setvar $SWITCHBOARD~MESSAGE "No fighters able to be purchased*"
-  gosub :SWITCHBOARD~SWITCHBOARD
+:fighter_end
+if ($buys = false)
+	setvar $switchboard~message "No fighters able to be purchased*"
+	gosub :switchboard~switchboard
 else
-  gosub :PLAYER~QUIKSTATS
-  if ($HOME <> $PLAYER~CURRENT_SECTOR)
-    setvar $SWITCHBOARD~MESSAGE "Buy down exiting.  Heading Back to Start Sector*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    send "p " $HOME "* y q m * * * c "
-  else
-    send "q m* * * c '{" $BOT~BOT_NAME "} - Buy down exiting.*"
-  end
+	gosub :player~quikstats
+	if ($home <> $player~current_sector)
+		setvar $switchboard~message "Buy down exiting.  Heading Back to Start Sector*"
+		gosub :switchboard~switchboard
+		send "p " $home "* y q m * * * c "
+	else
+		send "q m* * * c '{" $bot~bot_name "} - Buy down exiting.*"
+	end
 end
 halt
 
-:SHIELD_START
-setvar $BUYS FALSE
+:shield_start
+setvar $buys false
 send "gt"
 waiton "and the Shield System"
-getword CURRENTLINE $CURRENT_SHIELDS 3
-divide $CURRENT_SHIELDS 10
-send $CURRENT_SHIELDS&"*"
+getword currentline $current_shields 3
+divide $current_shields 10
+send $current_shields&"*"
 send "q"
-gosub :PLANET~GETPLANETINFO
+gosub :planet~getplanetinfo
 send "c"
-setvar $HOME $PLAYER~CURRENT_SECTOR
-if ($PLAYER~CURRENT_SECTOR = $MAP~ALPHA_CENTAURI)
-  if (PORT.CLASS[$PLAYER~CURRENT_SECTOR] = 0)
-    goto :SHIELD_ARRIVED
-  else
-    setvar $SWITCHBOARD~MESSAGE "Sector "&$MAP~ALPHA_CENTAURI&" has no class 0 port in it!*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    goto :SHIELD_NOWARP
-  end
+setvar $home $player~current_sector
+if ($player~current_sector = $map~alpha_centauri)
+	if (port.class[$player~current_sector] = 0)
+		goto :shield_arrived
+	else
+		setvar $switchboard~message "Sector "&$map~alpha_centauri&" has no class 0 port in it!*"
+		gosub :switchboard~switchboard
+		goto :shield_nowarp
+	end
 end
 killalltriggers
 
-:SHIELD_SUB_SHIELDBUY
-if ($PLAYER~CURRENT_SECTOR = $MAP~ALPHA_CENTAURI)
-  if (PORT.CLASS[$PLAYER~CURRENT_SECTOR] = 0)
-    goto :SHIELD_ARRIVED
-  end
-elseif ($MAP~ALPHA_CENTAURI > 0)
-  setvar $SWITCHBOARD~MESSAGE "Warping Planet to ALPHA*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  send "p"&$MAP~ALPHA_CENTAURI&"*y"
-  settextlinetrigger WARPIT :SHIELD_WARPIT "All Systems Ready, shall we engage?"
-  settextlinetrigger NOWARP :SHIELD_NOFIG "You do not have any fighters in Sector"
-  pause
+:shield_sub_shieldbuy
+if ($player~current_sector = $map~alpha_centauri)
+	if (port.class[$player~current_sector] = 0)
+		goto :shield_arrived
+	end
+elseif ($map~alpha_centauri > 0)
+	setvar $switchboard~message "Warping Planet to ALPHA*"
+	gosub :switchboard~switchboard
+	send "p"&$map~alpha_centauri&"*y"
+	settextlinetrigger warpit :shield_warpit "All Systems Ready, shall we engage?"
+	settextlinetrigger nowarp :shield_nofig "You do not have any fighters in Sector"
+	pause
 else
-  setvar $SWITCHBOARD~MESSAGE "Alpha Centauri is not defined for this bot*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  goto :SHIELD_NOWARP
+	setvar $switchboard~message "Alpha Centauri is not defined for this bot*"
+	gosub :switchboard~switchboard
+	goto :shield_nowarp
 end
 
-:SHIELD_WARPIT
+:shield_warpit
 killalltriggers
 send "y  s*"
-gosub :PLAYER~QUIKSTATS
-if (PORT.CLASS[$PLAYER~CURRENT_SECTOR] = 0)
-  setvar $BUYS TRUE
-  send "q q* "
-  goto :SHIELD_ARRIVED
+gosub :player~quikstats
+if (port.class[$player~current_sector] = 0)
+	setvar $buys true
+	send "q q* "
+	goto :shield_arrived
 else
-  setvar $SWITCHBOARD~MESSAGE "Sector "&$MAP~ALPHA_CENTAURI&" has no class 0 port in it!*"
-  gosub :SWITCHBOARD~SWITCHBOARD
+	setvar $switchboard~message "Sector "&$map~alpha_centauri&" has no class 0 port in it!*"
+	gosub :switchboard~switchboard
 end
 
-:SHIELD_NOFIG
+:shield_nofig
 killalltriggers
-if ($MAP~ALPHA_CENTAURI > 0)
-  setsectorparameter $MAP~ALPHA_CENTAURI "FIGSEC" FALSE
+if ($map~alpha_centauri > 0)
+	setsectorparameter $map~alpha_centauri "FIGSEC" false
 end
-setvar $SWITCHBOARD~MESSAGE "No Fighter at Alpha Centauri*"
-gosub :SWITCHBOARD~SWITCHBOARD
-:SHIELD_NOWARP
-killtrigger WARPIT
-setvar $SWITCHBOARD~MESSAGE "Trying Rylos*"
-gosub :SWITCHBOARD~SWITCHBOARD
-if ($MAP~RYLOS > 0)
-  send "p"&$MAP~RYLOS&"*y"
-  settextlinetrigger WARPIT :SHIELD_WARPIT "All Systems Ready, shall we engage?"
-  settextlinetrigger NOWARP :SHIELD_NOWARP2 "You do not have any fighters in Sector"
-  settextlinetrigger NOWARP2 :SHIELD_CHECKIT "You are already in that sector!"
-  pause
+setvar $switchboard~message "No Fighter at Alpha Centauri*"
+gosub :switchboard~switchboard
+
+:shield_nowarp
+killtrigger warpit
+setvar $switchboard~message "Trying Rylos*"
+gosub :switchboard~switchboard
+if ($map~rylos > 0)
+	send "p"&$map~rylos&"*y"
+	settextlinetrigger warpit :shield_warpit "All Systems Ready, shall we engage?"
+	settextlinetrigger nowarp :shield_nowarp2 "You do not have any fighters in Sector"
+	settextlinetrigger nowarp2 :shield_checkit "You are already in that sector!"
+	pause
 else
-  setvar $SWITCHBOARD~MESSAGE "Rylos is not defined for this bot*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  goto :SHIELD_END
+	setvar $switchboard~message "Rylos is not defined for this bot*"
+	gosub :switchboard~switchboard
+	goto :shield_end
 end
 
-:SHIELD_CHECKIT
+:shield_checkit
 killalltriggers
 send "s* "
-gosub :PLAYER~QUIKSTATS
-if (PORT.CLASS[$PLAYER~CURRENT_SECTOR] = 0)
-  goto :SHIELD_ARRIVED
+gosub :player~quikstats
+if (port.class[$player~current_sector] = 0)
+	goto :shield_arrived
 else
-  setvar $SWITCHBOARD~MESSAGE "Sector "&$MAP~RYLOS&" has no class 0 port in it!*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  goto :SHIELD_END
+	setvar $switchboard~message "Sector "&$map~rylos&" has no class 0 port in it!*"
+	gosub :switchboard~switchboard
+	goto :shield_end
 end
 
-:SHIELD_NOWARP2
+:shield_nowarp2
 killalltriggers
-if ($MAP~RYLOS > 0)
-  setsectorparameter $MAP~RYLOS "FIGSEC" FALSE
+if ($map~rylos > 0)
+	setsectorparameter $map~rylos "FIGSEC" false
 end
-setvar $SWITCHBOARD~MESSAGE "No Fighter at either Class 0!*"
-gosub :SWITCHBOARD~SWITCHBOARD
-setvar $BUYS FALSE
-goto :SHIELD_END
+setvar $switchboard~message "No Fighter at either Class 0!*"
+gosub :switchboard~switchboard
+setvar $buys false
+goto :shield_end
 
-:SHIELD_ARRIVED
+:shield_arrived
 killalltriggers
 send "q  q  z  n  p  t  y"
 waiton "C  Shield Points   :"
-getword CURRENTLINE $CANBUY 9
-if ($CANBUY > 0)
-  send "c "&$CANBUY&"*  q"
-elseif ($CANBUY = 0)
-  setvar $BUYS TRUE
-  send "q l "&$PLANET~PLANET&"* c"
-  setvar $SWITCHBOARD~MESSAGE "Shields maxxed out on planet "&$PLANET~PLANET&".*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  goto :SHIELD_END
+getword currentline $canbuy 9
+if ($canbuy > 0)
+	send "c "&$canbuy&"*  q"
+elseif ($canbuy = 0)
+	setvar $buys true
+	send "q l "&$planet~planet&"* c"
+	setvar $switchboard~message "Shields maxxed out on planet "&$planet~planet&".*"
+	gosub :switchboard~switchboard
+	goto :shield_end
 end
 
-:SHIELD_ARRIVED2
-send "L " $PLANET~PLANET "*  cgt"
+:shield_arrived2
+send "L " $planet~planet "*  cgt"
 waiton "and the Shield System"
-getword CURRENTLINE $CURRENT_SHIELDS 3
-divide $CURRENT_SHIELDS 10
-send $CURRENT_SHIELDS "*"
-settexttrigger MAXPSHIELDS :SHIELD_MAXPSHIELDS "The planet is limited to"
-settexttrigger SHIELDSUCCESS :SHIELD_ARRIVED "Citadel command"
+getword currentline $current_shields 3
+divide $current_shields 10
+send $current_shields "*"
+settexttrigger maxpshields :shield_maxpshields "The planet is limited to"
+settexttrigger shieldsuccess :shield_arrived "Citadel command"
 pause
 
-:SHIELD_MAXPSHIELDS
+:shield_maxpshields
 killalltriggers
-getword CURRENTLINE $MAXPSHIELDS 6
-subtract $MAXPSHIELDS $CURPSHIELDS
-send "gt" $MAXPSHIELDS "*"
-setvar $BUYS TRUE
-setvar $SWITCHBOARD~MESSAGE "Shields maxxed out on planet "&$PLANET~PLANET&".*"
-gosub :SWITCHBOARD~SWITCHBOARD
-goto :SHIELD_END
+getword currentline $maxpshields 6
+subtract $maxpshields $curpshields
+send "gt" $maxpshields "*"
+setvar $buys true
+setvar $switchboard~message "Shields maxxed out on planet "&$planet~planet&".*"
+gosub :switchboard~switchboard
+goto :shield_end
 
-:SHIELD_END
-if ($BUYS = FALSE)
-  setvar $SWITCHBOARD~MESSAGE "No shields able to be purchased*"
-  gosub :SWITCHBOARD~SWITCHBOARD
+:shield_end
+if ($buys = false)
+	setvar $switchboard~message "No shields able to be purchased*"
+	gosub :switchboard~switchboard
 else
-  gosub :PLAYER~QUIKSTATS
-  if ($HOME <> $PLAYER~CURRENT_SECTOR)
-    setvar $SWITCHBOARD~MESSAGE "Buy down exiting.  Heading Back to Start Sector*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    send "p " $HOME "*  y"
-  else
-    setvar $SWITCHBOARD~MESSAGE "Buy down exiting.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-  end
+	gosub :player~quikstats
+	if ($home <> $player~current_sector)
+		setvar $switchboard~message "Buy down exiting.  Heading Back to Start Sector*"
+		gosub :switchboard~switchboard
+		send "p " $home "*  y"
+	else
+		setvar $switchboard~message "Buy down exiting.*"
+		gosub :switchboard~switchboard
+	end
 end
 halt
 

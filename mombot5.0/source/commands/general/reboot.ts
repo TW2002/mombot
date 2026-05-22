@@ -1,51 +1,49 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-	
-setVar $HELP~HELP[1] $HELP~TAB&"Reboot"
-setVar $HELP~HELP[2] $HELP~TAB&"  - Kill bot and restart it"
-gosub :HELP~HELPFILE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-if (ISNATIVEBOT = TRUE)
-	setVar $SWITCHBOARD~message "Rebooting native Mombot..*"
-	gosub :SWITCHBOARD~switchboard
+setvar $help~help[1] $help~tab&"Reboot"
+setvar $help~help[2] $help~tab&"  - Kill bot and restart it"
+gosub :help~helpfile
+
+if (isnativebot = true)
+	setvar $switchboard~message "Rebooting native Mombot..*"
+	gosub :switchboard~switchboard
 	nativebot reboot
 	halt
 end
 
-setVar $i 1
-setVar $found FALSE
-setVar $rebooted FALSE
-setVar $SWITCHBOARD~message "Rebooting Mombot..*"
-gosub :SWITCHBOARD~switchboard
+setvar $i 1
+setvar $found false
+setvar $rebooted false
+setvar $switchboard~message "Rebooting Mombot..*"
+gosub :switchboard~switchboard
 setdelaytrigger waitforrebootlist :listokaynow 1500
 pause
-	:listokaynow
-listActiveScripts $scripts
+
+:listokaynow
+listactivescripts $scripts
 while ($i <= $scripts)
-	getWordPos "<><><>"&$scripts[$i] $pos "<><><>mombot"
+	getwordpos "<><><>"&$scripts[$i] $pos "<><><>mombot"
 	if ($pos > 0)
-		if ($found = FALSE)
-			setVar $boot_this $scripts[$i]
-			setVar $found TRUE
+		if ($found = false)
+			setvar $boot_this $scripts[$i]
+			setvar $found true
 		end
 		stop $scripts[$i]
 	end
 	add $i 1
 end
-if ($FOUND = FALSE)
-	setVar $SWITCHBOARD~message "No mombot script found to reboot.*"
-	gosub :SWITCHBOARD~switchboard
+if ($found = false)
+	setvar $switchboard~message "No mombot script found to reboot.*"
+	gosub :switchboard~switchboard
 	halt
 end
 setdelaytrigger waitforreboot :okaynow 3000
 pause
-	:okaynow
+
+:okaynow
 load "scripts\"&$bot~mombot_directory&"\"&$boot_this
 halt
-
-
-
-
 
 #INCLUDES:
 include "source\include\loadvars"

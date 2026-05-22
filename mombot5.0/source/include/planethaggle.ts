@@ -1,1978 +1,1999 @@
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANETHAGGLE~PLANETNEG
+:planethaggle~planetneg
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLANETHAGGLE~OUTPUT_FILE ""
-setvar $PLANETHAGGLE~SELLDELAY 0
-setvar $PLANETHAGGLE~OREMCIC "-90"
-setvar $PLANETHAGGLE~ORGMCIC "-75"
-setvar $PLANETHAGGLE~EQUMCIC "-65"
-setvar $PLANETHAGGLE~VERSION "3.0.0"
-setvar $PLANETHAGGLE~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $PLANETHAGGLE~OREPROFIT 0
-setvar $PLANETHAGGLE~ORGPROFIT 0
-setvar $PLANETHAGGLE~EQUPROFIT 0
-setvar $PLANETHAGGLE~PROFIT 0
-setvar $PLANETHAGGLE~SELLHAGGLESUCCEEDED FALSE
-setvar $PLANETHAGGLE~RESTORE_MESSAGES FALSE
-setvar $PLANETHAGGLE~MESSAGES_SILENCED FALSE
+setvar $planethaggle~output_file ""
+setvar $planethaggle~selldelay 0
+setvar $planethaggle~oremcic "-90"
+setvar $planethaggle~orgmcic "-75"
+setvar $planethaggle~equmcic "-65"
+setvar $planethaggle~version "3.0.0"
+setvar $planethaggle~startinglocation $player~current_prompt
+setvar $planethaggle~oreprofit 0
+setvar $planethaggle~orgprofit 0
+setvar $planethaggle~equprofit 0
+setvar $planethaggle~profit 0
+setvar $planethaggle~sellhagglesucceeded false
+setvar $planethaggle~restore_messages false
+setvar $planethaggle~messages_silenced false
 
-:PLANETHAGGLE~VERIFYPROMPT
-if (($PLANETHAGGLE~STARTINGLOCATION <> "Citadel") and ($PLANETHAGGLE~STARTINGLOCATION <> "Planet"))
-  setvar $PLANETHAGGLE~EXIT_MESSAGE "Must start at Citadel or Planet Prompt for Planet Nego"
-  goto :EXITNEG
+:planethaggle~verifyprompt
+if (($planethaggle~startinglocation <> "Citadel") and ($planethaggle~startinglocation <> "Planet"))
+	setvar $planethaggle~exit_message "Must start at Citadel or Planet Prompt for Planet Nego"
+	goto :exitneg
 end
 
-setvar $PLANETHAGGLE~_CK_PTRADESETTING $GAME~PTRADESETTING
-setvar $PLANETHAGGLE~QUANTITYUNKNOWN 0
+setvar $planethaggle~_ck_ptradesetting $game~ptradesetting
+setvar $planethaggle~quantityunknown 0
 
-if ($PLANETHAGGLE~STARTINGLOCATION = "Citadel")
-  send "Q"
-elseif ($PLANETHAGGLE~STARTINGLOCATION = "Planet ")
-  setvar $PLANETHAGGLE~STARTINGLOCATION "Planet"
+if ($planethaggle~startinglocation = "Citadel")
+	send "Q"
+elseif ($planethaggle~startinglocation = "Planet ")
+	setvar $planethaggle~startinglocation "Planet"
 end
-gosub :PLANET~GETPLANETINFO
+gosub :planet~getplanetinfo
 send "Q"
-gosub :PLAYER~GETINFO
+gosub :player~getinfo
 send "*"
 
-if ($PLANETHAGGLE~HASPRODS = 0)
-  gosub :PLANET~GETPLANETPRODS
-  if ($PLANET~FOUNDPORT = FALSE)
-    gosub :NEGOTIATELAND
-    setvar $PLANETHAGGLE~EXIT_MESSAGE "No port to sell to"
-    goto :EXITNEG
-  end
+if ($planethaggle~hasprods = 0)
+	gosub :port~getportinfo
+	if ($port~foundport = false)
+		gosub :negotiateland
+		setvar $planethaggle~exit_message "No port to sell to"
+		goto :exitneg
+	end
 end
 
-:PLANETHAGGLE~INITINFO
-
-if ($PLAYER~TURNS <= 0)
-  gosub :NEGOTIATELAND
-  setvar $PLANETHAGGLE~EXIT_MESSAGE "I have no turns to negotiate this planet"
-  goto :EXITNEG
+:planethaggle~initinfo
+if ($player~turns <= 0)
+	gosub :negotiateland
+	setvar $planethaggle~exit_message "I have no turns to negotiate this planet"
+	goto :exitneg
 end
-if ($PLAYER~CREDITS > 900000000)
-  gosub :NEGOTIATELAND
-  setvar $PLANETHAGGLE~EXIT_MESSAGE "I have too much cash on hand"
-  goto :EXITNEG
+if ($player~credits > 900000000)
+	gosub :negotiateland
+	setvar $planethaggle~exit_message "I have too much cash on hand"
+	goto :exitneg
 end
 
-if ($PLANETHAGGLE~_CK_PNEGO_FUELTOSELL = "-1")
-  setvar $PLANETHAGGLE~FUELTOSELL 0
-elseif ($PLANETHAGGLE~_CK_PNEGO_FUELTOSELL = "max")
-  setvar $PLANETHAGGLE~FUELTOSELL $PLANET~PLANETFUEL
+if ($planethaggle~_ck_pnego_fueltosell = "-1")
+	setvar $planethaggle~fueltosell 0
+elseif ($planethaggle~_ck_pnego_fueltosell = "max")
+	setvar $planethaggle~fueltosell $planet~planetfuel
 else
-  setvar $PLANETHAGGLE~FUELTOSELL $PLANETHAGGLE~_CK_PNEGO_FUELTOSELL
+	setvar $planethaggle~fueltosell $planethaggle~_ck_pnego_fueltosell
 
 end
-if ($PLANETHAGGLE~FUELTOSELL > $PLANET~PLANETFUEL)
-  setvar $PLANETHAGGLE~FUELTOSELL $PLANET~PLANETFUEL
+if ($planethaggle~fueltosell > $planet~planetfuel)
+	setvar $planethaggle~fueltosell $planet~planetfuel
 end
 
-if ($PLANETHAGGLE~_CK_PNEGO_ORGTOSELL = "-1")
-  setvar $PLANETHAGGLE~ORGTOSELL 0
-elseif ($PLANETHAGGLE~_CK_PNEGO_ORGTOSELL = "max")
-  setvar $PLANETHAGGLE~ORGTOSELL $PLANET~PLANETORG
+if ($planethaggle~_ck_pnego_orgtosell = "-1")
+	setvar $planethaggle~orgtosell 0
+elseif ($planethaggle~_ck_pnego_orgtosell = "max")
+	setvar $planethaggle~orgtosell $planet~planetorg
 else
-  setvar $PLANETHAGGLE~ORGTOSELL $PLANETHAGGLE~_CK_PNEGO_ORGTOSELL
+	setvar $planethaggle~orgtosell $planethaggle~_ck_pnego_orgtosell
 
 end
-if ($PLANETHAGGLE~ORGTOSELL > $PLANET~PLANETORG)
-  setvar $PLANETHAGGLE~ORGTOSELL $PLANET~PLANETORG
+if ($planethaggle~orgtosell > $planet~planetorg)
+	setvar $planethaggle~orgtosell $planet~planetorg
 end
 
-if ($PLANETHAGGLE~_CK_PNEGO_EQUIPTOSELL = "-1")
-  setvar $PLANETHAGGLE~EQUIPTOSELL 0
-elseif ($PLANETHAGGLE~_CK_PNEGO_EQUIPTOSELL = "max")
-  setvar $PLANETHAGGLE~EQUIPTOSELL $PLANET~PLANETEQUIP
+if ($planethaggle~_ck_pnego_equiptosell = "-1")
+	setvar $planethaggle~equiptosell 0
+elseif ($planethaggle~_ck_pnego_equiptosell = "max")
+	setvar $planethaggle~equiptosell $planet~planetequip
 else
-  setvar $PLANETHAGGLE~EQUIPTOSELL $PLANETHAGGLE~_CK_PNEGO_EQUIPTOSELL
+	setvar $planethaggle~equiptosell $planethaggle~_ck_pnego_equiptosell
 
 end
-if ($PLANETHAGGLE~EQUIPTOSELL > $PLANET~PLANETEQUIP)
-  setvar $PLANETHAGGLE~EQUIPTOSELL $PLANET~PLANETEQUIP
+if ($planethaggle~equiptosell > $planet~planetequip)
+	setvar $planethaggle~equiptosell $planet~planetequip
 end
 
-if (($PLAYER~CURRENT_SECTOR.OREBUYING <> "Buying") or ($PLAYER~CURRENT_SECTOR.OREPERCENT < 15))
-  setvar $PLANETHAGGLE~FUELTOSELL 0
+if (($port~orebuying <> "Buying") or ($port~orepercent < 15))
+	setvar $planethaggle~fueltosell 0
 end
-if (($PLAYER~CURRENT_SECTOR.ORGBUYING <> "Buying") or ($PLAYER~CURRENT_SECTOR.ORGPERCENT < 15))
-  setvar $PLANETHAGGLE~ORGTOSELL 0
+if (($port~orgbuying <> "Buying") or ($port~orgpercent < 15))
+	setvar $planethaggle~orgtosell 0
 end
-if (($PLAYER~CURRENT_SECTOR.EQUBUYING <> "Buying") or ($PLAYER~CURRENT_SECTOR.EQUPERCENT < 15))
-  setvar $PLANETHAGGLE~EQUIPTOSELL 0
+if (($port~equbuying <> "Buying") or ($port~equpercent < 15))
+	setvar $planethaggle~equiptosell 0
 end
 
-:PLANETHAGGLE~SELLOFF
-if (($PLANETHAGGLE~FUELTOSELL <> 0) or ($PLANETHAGGLE~ORGTOSELL <> 0) or ($PLANETHAGGLE~EQUIPTOSELL <> 0))
-  setvar $PLANETHAGGLE~ORE_SELL_FAILURES 0
-  setvar $PLANETHAGGLE~ORG_SELL_FAILURES 0
-  setvar $PLANETHAGGLE~EQU_SELL_FAILURES 0
-  setvar $PLANETHAGGLE~ORESELLOUTPUT ""
-  setvar $PLANETHAGGLE~ORGSELLOUTPUT ""
-  setvar $PLANETHAGGLE~EQUSELLOUTPUT ""
-  setvar $PLANETHAGGLE~OREPROFIT 0
-  setvar $PLANETHAGGLE~ORGPROFIT 0
-  setvar $PLANETHAGGLE~EQUPROFIT 0
-  setvar $PLANETHAGGLE~PROFIT 0
-  setvar $PLANETHAGGLE~SELLHAGGLESUCCEEDED FALSE
+:planethaggle~selloff
+if (($planethaggle~fueltosell <> 0) or ($planethaggle~orgtosell <> 0) or ($planethaggle~equiptosell <> 0))
+	setvar $planethaggle~ore_sell_failures 0
+	setvar $planethaggle~org_sell_failures 0
+	setvar $planethaggle~equ_sell_failures 0
+	setvar $planethaggle~oreselloutput ""
+	setvar $planethaggle~orgselloutput ""
+	setvar $planethaggle~equselloutput ""
+	setvar $planethaggle~oreprofit 0
+	setvar $planethaggle~orgprofit 0
+	setvar $planethaggle~equprofit 0
+	setvar $planethaggle~profit 0
+	setvar $planethaggle~sellhagglesucceeded false
 
-  gosub :PLANETHAGGLE~MSGS_OFF
-  gosub :SELL
-  gosub :NEGOTIATELAND
-  if ($PLANETHAGGLE~STARTINGLOCATION = "Citadel")
+	gosub :planethaggle~msgs_off
+	gosub :sell
+	gosub :negotiateland
+	if ($planethaggle~startinglocation = "Citadel")
 
-    if ($PLANETHAGGLE~OREPROFIT <> 0)
-      send "TT"&$PLANETHAGGLE~OREPROFIT&"*"
-      subtract $PLAYER~CREDITS $PLANETHAGGLE~OREPROFIT
-    end
-    if ($PLANETHAGGLE~ORGPROFIT <> 0)
-      send "TT"&$PLANETHAGGLE~ORGPROFIT&"*"
-      subtract $PLAYER~CREDITS $PLANETHAGGLE~ORGPROFIT
-    end
-    if ($PLANETHAGGLE~EQUPROFIT <> 0)
-      send "TT"&$PLANETHAGGLE~EQUPROFIT&"*"
-      subtract $PLAYER~CREDITS $PLANETHAGGLE~EQUPROFIT
-    end
-  end
+		if ($planethaggle~oreprofit <> 0)
+			send "TT"&$planethaggle~oreprofit&"*"
+			subtract $player~credits $planethaggle~oreprofit
+		end
+		if ($planethaggle~orgprofit <> 0)
+			send "TT"&$planethaggle~orgprofit&"*"
+			subtract $player~credits $planethaggle~orgprofit
+		end
+		if ($planethaggle~equprofit <> 0)
+			send "TT"&$planethaggle~equprofit&"*"
+			subtract $player~credits $planethaggle~equprofit
+		end
+	end
 
-  if ($PLANETHAGGLE~RESTORE_MESSAGES = TRUE)
-    gosub :PLANETHAGGLE~MSGS_ON
-  end
+	if ($planethaggle~restore_messages = true)
+		gosub :planethaggle~msgs_on
+	end
 
-  setvar $PLANETHAGGLE~GENERALOUTPUT "*Sector "&$PLAYER~CURRENT_SECTOR&"*"
-  if ($PLANETHAGGLE~OUTPUT_FILE <> "")
-    write $PLANETHAGGLE~OUTPUT_FILE $PLANETHAGGLE~GENERALOUTPUT
-  end
+	setvar $planethaggle~generaloutput "*Sector "&$player~current_sector&"*"
+	if ($planethaggle~output_file <> "")
+		write $planethaggle~output_file $planethaggle~generaloutput
+	end
 
-  if ($PLANETHAGGLE~ORESELLOUTPUT <> "")
+	if ($planethaggle~oreselloutput <> "")
 
-    setvar $SWITCHBOARD~MESSAGE "  *"&$PLANETHAGGLE~ORESELLOUTPUT
-    if ($SWITCHBOARD~SELF_COMMAND <> TRUE)
-      setvar $SWITCHBOARD~SELF_COMMAND 2
-    end
+		setvar $switchboard~message "  *"&$planethaggle~oreselloutput
+		if ($switchboard~self_command <> true)
+			setvar $switchboard~self_command 2
+		end
 
+		if ($planethaggle~output_file <> "")
+			write $planethaggle~output_file $planethaggle~oreselloutput
+		end
+	end
+	if ($planethaggle~orgselloutput <> "")
 
-    if ($PLANETHAGGLE~OUTPUT_FILE <> "")
-      write $PLANETHAGGLE~OUTPUT_FILE $PLANETHAGGLE~ORESELLOUTPUT
-    end
-  end
-  if ($PLANETHAGGLE~ORGSELLOUTPUT <> "")
+		setvar $switchboard~message "  *"&$planethaggle~orgselloutput
+		if ($switchboard~self_command <> true)
+			setvar $switchboard~self_command 2
+		end
 
-    setvar $SWITCHBOARD~MESSAGE "  *"&$PLANETHAGGLE~ORGSELLOUTPUT
-    if ($SWITCHBOARD~SELF_COMMAND <> TRUE)
-      setvar $SWITCHBOARD~SELF_COMMAND 2
-    end
+		if ($planethaggle~output_file <> "")
+			write $planethaggle~output_file $planethaggle~orgselloutput
+		end
+	end
+	if ($planethaggle~equselloutput <> "")
 
-    if ($PLANETHAGGLE~OUTPUT_FILE <> "")
-      write $PLANETHAGGLE~OUTPUT_FILE $PLANETHAGGLE~ORGSELLOUTPUT
-    end
-  end
-  if ($PLANETHAGGLE~EQUSELLOUTPUT <> "")
+		setvar $switchboard~message "  *"&$planethaggle~equselloutput
+		if ($switchboard~self_command <> true)
+			setvar $switchboard~self_command 2
+		end
 
-    setvar $SWITCHBOARD~MESSAGE "  *"&$PLANETHAGGLE~EQUSELLOUTPUT
-    if ($SWITCHBOARD~SELF_COMMAND <> TRUE)
-      setvar $SWITCHBOARD~SELF_COMMAND 2
-    end
-
-    if ($PLANETHAGGLE~OUTPUT_FILE <> "")
-      write $PLANETHAGGLE~OUTPUT_FILE $PLANETHAGGLE~EQUSELLOUTPUT
-    end
-  end
-  setvar $PLANETHAGGLE~EXIT_MESSAGE "Done with port"
-  goto :EXITNEG
+		if ($planethaggle~output_file <> "")
+			write $planethaggle~output_file $planethaggle~equselloutput
+		end
+	end
+	#setvar $planethaggle~exit_message "Done with port"
+	goto :exitneg
 else
-  gosub :NEGOTIATELAND
-  setvar $PLANETHAGGLE~EXIT_MESSAGE "Nothing to sell"
-  goto :EXITNEG
+	gosub :negotiateland
+	#setvar $planethaggle~exit_message "Nothing to sell"
+	goto :exitneg
 end
 
-:PLANETHAGGLE~SELL
-:PLANETHAGGLE~RESELL
-
-if ($PLAYER~TURNS <= 0)
-  send "'I'm out of turns*"
-  return
+:planethaggle~sell
+:planethaggle~resell
+if ($player~turns <= 0)
+	send "'I'm out of turns*"
+	return
 end
-setvar $PLANETHAGGLE~THISOREFAILED 0
-setvar $PLANETHAGGLE~THISORGFAILED 0
-setvar $PLANETHAGGLE~THISEQUFAILED 0
-if ($PLANETHAGGLE~FUELTOSELL > 0)
-  setvar $PLANETHAGGLE~ATTEMPTORE 1
-  setvar $PLANETHAGGLE~ATTEMPTORECONFIRMED 0
+setvar $planethaggle~thisorefailed 0
+setvar $planethaggle~thisorgfailed 0
+setvar $planethaggle~thisequfailed 0
+if ($planethaggle~fueltosell > 0)
+	setvar $planethaggle~attemptore 1
+	setvar $planethaggle~attemptoreconfirmed 0
 end
-if ($PLANETHAGGLE~ORGTOSELL > 0)
-  setvar $PLANETHAGGLE~ATTEMPTORG 1
-  setvar $PLANETHAGGLE~ATTEMPTORGCONFIRMED 0
+if ($planethaggle~orgtosell > 0)
+	setvar $planethaggle~attemptorg 1
+	setvar $planethaggle~attemptorgconfirmed 0
 end
-if ($PLANETHAGGLE~EQUIPTOSELL > 0)
-  setvar $PLANETHAGGLE~ATTEMPTEQU 1
-  setvar $PLANETHAGGLE~ATTEMPTEQUCONFIRMED 0
+if ($planethaggle~equiptosell > 0)
+	setvar $planethaggle~attemptequ 1
+	setvar $planethaggle~attemptequconfirmed 0
 end
-isnumber $PLANETHAGGLE~NUMBER $PLANET~PLANET
-setvar $PLANETHAGGLE~FINDPLANET 0
-if ($PLANETHAGGLE~NUMBER = 0)
-  send "PN"
-  setvar $PLANETHAGGLE~FINDPLANET 1
+isnumber $planethaggle~number $planet~planet
+setvar $planethaggle~findplanet 0
+if ($planethaggle~number = 0)
+	send "PN"
+	setvar $planethaggle~findplanet 1
 else
-  send "PN"
+	send "PN"
 end
 
-subtract $PLAYER~TURNS 1
+subtract $player~turns 1
 
-:PLANETHAGGLE~GETPERCTS
-settextlinetrigger OREPCT :OREPCT "Fuel Ore   Buying"
-settextlinetrigger ORGPCT :ORGPCT "Organics   Buying"
-settextlinetrigger EQUPCT :EQUPCT "Equipment  Buying"
-settextlinetrigger GOTPERCTS :GOTPERCTS "Registry# and Planet Name"
+:planethaggle~getpercts
+settextlinetrigger orepct :orepct "Fuel Ore   Buying"
+settextlinetrigger orgpct :orgpct "Organics   Buying"
+settextlinetrigger equpct :equpct "Equipment  Buying"
+settextlinetrigger gotpercts :gotpercts "Registry# and Planet Name"
 pause
 
-:PLANETHAGGLE~OREPCT
-killtrigger OREPCT
-killtrigger ORGPCT
-killtrigger EQUPCT
-killtrigger GOTPERCTS
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORETRADING 4
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.OREPERCENT 5
-striptext $PLAYER~CURRENT_SECTOR.OREPERCENT "%"
-if ($PLAYER~CURRENT_SECTOR.OREPERCENT < 100)
-  add $PLAYER~CURRENT_SECTOR.OREPERCENT 1
+:planethaggle~orepct
+killtrigger orepct
+killtrigger orgpct
+killtrigger equpct
+killtrigger gotpercts
+getword currentline $port~oretrading 4
+getword currentline $port~orepercent 5
+striptext $port~orepercent "%"
+if ($port~orepercent < 100)
+	add $port~orepercent 1
 end
-goto :GETPERCTS
+goto :getpercts
 
-:PLANETHAGGLE~ORGPCT
-killtrigger OREPCT
-killtrigger ORGPCT
-killtrigger EQUPCT
-killtrigger GOTPERCTS
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGTRADING 3
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.ORGPERCENT 4
-striptext $PLAYER~CURRENT_SECTOR.ORGPERCENT "%"
-if ($PLAYER~CURRENT_SECTOR.ORGPERCENT < 100)
-  add $PLAYER~CURRENT_SECTOR.ORGPERCENT 1
+:planethaggle~orgpct
+killtrigger orepct
+killtrigger orgpct
+killtrigger equpct
+killtrigger gotpercts
+getword currentline $port~orgtrading 3
+getword currentline $port~orgpercent 4
+striptext $port~orgpercent "%"
+if ($port~orgpercent < 100)
+	add $port~orgpercent 1
 end
-goto :GETPERCTS
+goto :getpercts
 
-:PLANETHAGGLE~EQUPCT
-killtrigger OREPCT
-killtrigger ORGPCT
-killtrigger EQUPCT
-killtrigger GOTPERCTS
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUTRADING 3
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR.EQUPERCENT 4
-striptext $PLAYER~CURRENT_SECTOR.EQUPERCENT "%"
-if ($PLAYER~CURRENT_SECTOR.EQUPERCENT < 100)
-  add $PLAYER~CURRENT_SECTOR.EQUPERCENT 1
+:planethaggle~equpct
+killtrigger orepct
+killtrigger orgpct
+killtrigger equpct
+killtrigger gotpercts
+getword currentline $port~equtrading 3
+getword currentline $port~equpercent 4
+striptext $port~equpercent "%"
+if ($port~equpercent < 100)
+	add $port~equpercent 1
 end
-goto :GETPERCTS
+goto :getpercts
 
-:PLANETHAGGLE~GOTPERCTS
-isnumber $PLANETHAGGLE~TEST1 $PLAYER~CURRENT_SECTOR.ORETRADING
-isnumber $PLANETHAGGLE~TEST2 $PLAYER~CURRENT_SECTOR.OREPERCENT
-if (($PLANETHAGGLE~TEST1 = 0) or ($PLANETHAGGLE~TEST2 = 0))
-  send "'DEBUG: NAN on oretrading:"&$PLANETHAGGLE~TEST1&" orepercent:" $PLANETHAGGLE~TEST2 "*"
-  setvar $PLAYER~CURRENT_SECTOR.OREPERCENT 1
-  setvar $PLAYER~CURRENT_SECTOR.ORETRADING 1
+:planethaggle~gotpercts
+isnumber $planethaggle~test1 $port~oretrading
+isnumber $planethaggle~test2 $port~orepercent
+if (($planethaggle~test1 = 0) or ($planethaggle~test2 = 0))
+	send "'DEBUG: NAN on oretrading:"&$planethaggle~test1&" orepercent:" $planethaggle~test2 "*"
+	setvar $port~orepercent 1
+	setvar $port~oretrading 1
 end
-isnumber $PLANETHAGGLE~TEST3 $PLAYER~CURRENT_SECTOR.ORGTRADING
-isnumber $PLANETHAGGLE~TEST4 $PLAYER~CURRENT_SECTOR.ORGPERCENT
-if (($PLANETHAGGLE~TEST3 = 0) or ($PLANETHAGGLE~TEST2 = 0))
-  send "'DEBUG: NAN on orgtrading:"&$PLANETHAGGLE~TEST3&" orgpercent:" $PLANETHAGGLE~TEST4 "*"
-  setvar $PLAYER~CURRENT_SECTOR.ORGPERCENT 1
-  setvar $PLAYER~CURRENT_SECTOR.ORGTRADING 1
+isnumber $planethaggle~test3 $port~orgtrading
+isnumber $planethaggle~test4 $port~orgpercent
+if (($planethaggle~test3 = 0) or ($planethaggle~test4 = 0))
+	send "'DEBUG: NAN on orgtrading:"&$planethaggle~test3&" orgpercent:" $planethaggle~test4 "*"
+	setvar $port~orgpercent 1
+	setvar $port~orgtrading 1
 end
 
-isnumber $PLANETHAGGLE~TEST5 $PLAYER~CURRENT_SECTOR.EQUTRADING
-isnumber $PLANETHAGGLE~TEST6 $PLAYER~CURRENT_SECTOR.EQUPERCENT
-if (($PLANETHAGGLE~TEST5 = 0) or ($PLANETHAGGLE~TEST6 = 0))
-  send "'DEBUG: NAN on equtrading:"&$PLANETHAGGLE~TEST5&" equpercent:" $PLANETHAGGLE~TEST6 "*"
-  setvar $PLAYER~CURRENT_SECTOR.EQUPERCENT 1
-  setvar $PLAYER~CURRENT_SECTOR.EQUTRADING 1
+isnumber $planethaggle~test5 $port~equtrading
+isnumber $planethaggle~test6 $port~equpercent
+if (($planethaggle~test5 = 0) or ($planethaggle~test6 = 0))
+	send "'DEBUG: NAN on equtrading:"&$planethaggle~test5&" equpercent:" $planethaggle~test6 "*"
+	setvar $port~equpercent 1
+	setvar $port~equtrading 1
 end
-killtrigger OREPCT
-killtrigger ORGPCT
-killtrigger EQUPCT
-killtrigger GOTPERCTS
-if ($PLANETHAGGLE~FINDPLANET = 1)
-  settextlinetrigger PLANETNUM :PLANETNUM "> "&$PLANET~PLANET
-  setdelaytrigger NOPLANETNUM :NOPLANETNUM 3000
-  pause
-  :PLANETHAGGLE~NOPLANETNUM
-  killalltriggers
-  setvar $PLANETHAGGLE~EXIT_MESSAGE "Could not determine port number!"
-  send "q*"
-  goto :EXITNEG
-  :PLANETHAGGLE~PLANETNUM
-  killtrigger PLANETNUM
-  killtrigger NOPLANETNUM
-  getword CURRENTLINE $PLANET~PLANET 1
-  striptext $PLANET~PLANET ">"
-  send $PLANET~PLANET "*"
+killtrigger orepct
+killtrigger orgpct
+killtrigger equpct
+killtrigger gotpercts
+if ($planethaggle~findplanet = 1)
+	settextlinetrigger planetnum :planetnum "> "&$planet~planet
+	setdelaytrigger noplanetnum :noplanetnum 3000
+	pause
+
+	:planethaggle~noplanetnum
+	killalltriggers
+	setvar $planethaggle~exit_message "Could not determine port number!"
+	send "q*"
+	goto :exitneg
+
+	:planethaggle~planetnum
+	killtrigger planetnum
+	killtrigger noplanetnum
+	getword currentline $planet~planet 1
+	striptext $planet~planet ">"
+	send $planet~planet "*"
 else
-  send $PLANET~PLANET "*"
+	send $planet~planet "*"
 end
 
-:PLANETHAGGLE~SELLPRODUCT
-settexttrigger SELLFUEL :SELLFUEL "How many units of Fuel Ore"
-settexttrigger SELLORG :SELLORG "How many units of Organics"
-settexttrigger SELLEQU :SELLEQU "How many units of Equipment"
-settexttrigger DONEWITHPORT :DONEWITHPORT "Command [TL="
-killtrigger NOTOURS
-settexttrigger NOTOURS :NOTOURS "You don't own that planet!  Were you expecting us to invade it?"
+:planethaggle~sellproduct
+settexttrigger sellfuel :sellfuel "How many units of Fuel Ore"
+settexttrigger sellorg :sellorg "How many units of Organics"
+settexttrigger sellequ :sellequ "How many units of Equipment"
+settexttrigger donewithport :donewithport "Command [TL="
+killtrigger notours
+settexttrigger notours :notours "You don't own that planet!  Were you expecting us to invade it?"
 pause
 
-:PLANETHAGGLE~NOTOURS
+:planethaggle~notours
 send "*"
-setvar $PLANETHAGGLE~EXIT_MESSAGE "We don't own this planet!"
-pause
-:PLANETHAGGLE~SELLFUEL
-killtrigger SELLFUEL
-killtrigger SELLORG
-killtrigger SELLEQU
-killtrigger DONEWITHPORT
-if ($PLANETHAGGLE~QUANTITYUNKNOWN = 1)
-  getword CURRENTLINE $PLANETHAGGLE~FUELTOSELL 12
-  striptext $PLANETHAGGLE~FUELTOSELL "["
-  striptext $PLANETHAGGLE~FUELTOSELL "]"
-  striptext $PLANETHAGGLE~FUELTOSELL "?"
-end
-
-isnumber $PLANETHAGGLE~TEST $PLANETHAGGLE~FUELTOSELL
-if ($PLANETHAGGLE~TEST = 0)
-  send "'DEBUG: NAN on fueltosell:"&$PLANETHAGGLE~FUELTOSELL "*"
-  setvar $PLANETHAGGLE~FUELTOSELL 0
-end
-if (($PLAYER~CURRENT_SECTOR.OREPERCENT >= 15) and ($PLANETHAGGLE~FUELTOSELL > 0))
-  if ($PLANETHAGGLE~FUELTOSELL > $PLAYER~CURRENT_SECTOR.ORETRADING)
-    setvar $PLANETHAGGLE~FUELTOSELL $PLAYER~CURRENT_SECTOR.ORETRADING
-  end
-  setvar $PLANETHAGGLE~ATTEMPTORECONFIRMED 1
-  setvar $PLANETHAGGLE~PRODTOSELL "ore"
-  setvar $PLANETHAGGLE~PORTBUYING $PLANETHAGGLE~FUELTOSELL
-  gosub :SELLHAGGLE
-  if ($PLANETHAGGLE~CURRENTHAGGLE = "succeeded")
-    setvar $PLANETHAGGLE~OREHAGGLE "succeeded"
-    setvar $PLANETHAGGLE~FUELTOSELL 0
-  else
-    setvar $PLANETHAGGLE~OREHAGGLE "failed"
-  end
-else
-  send "az0*"
-  setvar $PLANETHAGGLE~FUELTOSELL 0
-end
-goto :SELLPRODUCT
-
-:PLANETHAGGLE~SELLORG
-killtrigger SELLFUEL
-killtrigger SELLORG
-killtrigger SELLEQU
-killtrigger DONEWITHPORT
-if ($PLANETHAGGLE~QUANTITYUNKNOWN = 1)
-  getword CURRENTLINE $PLANETHAGGLE~ORGTOSELL 11
-  striptext $PLANETHAGGLE~ORGTOSELL "["
-  striptext $PLANETHAGGLE~ORGTOSELL "]"
-  striptext $PLANETHAGGLE~ORGTOSELL "?"
-end
-
-isnumber $PLANETHAGGLE~TEST $PLANETHAGGLE~ORGTOSELL
-if ($PLANETHAGGLE~TEST = 0)
-  send "'DEBUG: NAN on orgtosell:"&$PLANETHAGGLE~ORGTOSELL "*"
-  setvar $PLANETHAGGLE~ORGTOSELL 0
-end
-if (($PLAYER~CURRENT_SECTOR.ORGPERCENT >= 15) and ($PLANETHAGGLE~ORGTOSELL > 0))
-  if ($PLANETHAGGLE~ORGTOSELL > $PLAYER~CURRENT_SECTOR.ORGTRADING)
-    setvar $PLANETHAGGLE~ORGTOSELL $PLAYER~CURRENT_SECTOR.ORGTRADING
-  end
-  setvar $PLANETHAGGLE~ATTEMPTORGCONFIRMED 1
-  setvar $PLANETHAGGLE~PRODTOSELL "org"
-  setvar $PLANETHAGGLE~PORTBUYING $PLANETHAGGLE~ORGTOSELL
-  gosub :SELLHAGGLE
-  if ($PLANETHAGGLE~CURRENTHAGGLE = "succeeded")
-    setvar $PLANETHAGGLE~ORGHAGGLE "succeeded"
-    setvar $PLANETHAGGLE~ORGTOSELL 0
-  else
-    setvar $PLANETHAGGLE~ORGHAGGLE "failed"
-  end
-else
-  send "az0*"
-  setvar $PLANETHAGGLE~ORGTOSELL 0
-end
-goto :SELLPRODUCT
-
-:PLANETHAGGLE~SELLEQU
-killtrigger SELLFUEL
-killtrigger SELLORG
-killtrigger SELLEQU
-killtrigger DONEWITHPORT
-if ($PLANETHAGGLE~QUANTITYUNKNOWN = 1)
-  getword CURRENTLINE $PLANETHAGGLE~EQUIPTOSELL 11
-  striptext $PLANETHAGGLE~EQUIPTOSELL "["
-  striptext $PLANETHAGGLE~EQUIPTOSELL "]"
-  striptext $PLANETHAGGLE~EQUIPTOSELL "?"
-end
-
-isnumber $PLANETHAGGLE~TEST $PLANETHAGGLE~EQUIPTOSELL
-if ($PLANETHAGGLE~TEST = 0)
-  send "'DEBUG: NAN on equiptosell:"&$PLANETHAGGLE~EQUIPTOSELL "*"
-  setvar $PLANETHAGGLE~EQUIPTOSELL 0
-end
-if (($PLAYER~CURRENT_SECTOR.EQUPERCENT >= 15) and ($PLANETHAGGLE~EQUIPTOSELL > 0))
-  if ($PLANETHAGGLE~EQUIPTOSELL > $PLAYER~CURRENT_SECTOR.EQUTRADING)
-    setvar $PLANETHAGGLE~EQUIPTOSELL $PLAYER~CURRENT_SECTOR.EQUTRADING
-  end
-  setvar $PLANETHAGGLE~ATTEMPTEQUCONFIRMED 1
-  setvar $PLANETHAGGLE~PRODTOSELL "equ"
-  setvar $PLANETHAGGLE~PORTBUYING $PLANETHAGGLE~EQUIPTOSELL
-  gosub :SELLHAGGLE
-  if ($PLANETHAGGLE~CURRENTHAGGLE = "succeeded")
-    setvar $PLANETHAGGLE~EQUHAGGLE "succeeded"
-    setvar $PLANETHAGGLE~EQUIPTOSELL 0
-  else
-    setvar $PLANETHAGGLE~EQUHAGGLE "failed"
-  end
-else
-  send "az0*"
-  setvar $PLANETHAGGLE~EQUIPTOSELL 0
-end
-goto :SELLPRODUCT
-
-:PLANETHAGGLE~DONEWITHPORT
-killtrigger SELLFUEL
-killtrigger SELLORG
-killtrigger SELLEQU
-killtrigger DONEWITHPORT
-
-if (($PLANETHAGGLE~ATTEMPTORE = 1) and ($PLANETHAGGLE~ATTEMPTORECONFIRMED = 0))
-
-  setvar $PLANETHAGGLE~FUELTOSELL 0
-end
-if (($PLANETHAGGLE~ATTEMPTORG = 1) and ($PLANETHAGGLE~ATTEMPTORGCONFIRMED = 0))
-  setvar $PLANETHAGGLE~ORGTOSELL 0
-end
-if (($PLANETHAGGLE~ATTEMPTEQU = 1) and ($PLANETHAGGLE~ATTEMPTEQUCONFIRMED = 0))
-  setvar $PLANETHAGGLE~EQUIPTOSELL 0
-end
-
-if (($PLANETHAGGLE~ORE_SELL_FAILURES > 1) or ($PLANETHAGGLE~ORG_SELL_FAILURES > 4) or ($PLANETHAGGLE~EQU_SELL_FAILURES > 4))
-  setvar $PLANETHAGGLE~SELLOUTPUT $PLANETHAGGLE~SELLOUTPUT&"Multiple Haggle Failures - Please cut and paste this haggling session and email to Cherokee*"
-  return
-elseif (($PLANETHAGGLE~FUELTOSELL = 0) and (($PLANETHAGGLE~ORGTOSELL = 0) and ($PLANETHAGGLE~EQUIPTOSELL = 0)))
-  if (($PLANETHAGGLE~ATTEMPTORECONFIRMED = 0) and (($PLANETHAGGLE~ATTEMPTORGCONFIRMED = 0) and ($PLANETHAGGLE~ATTEMPTEQUCONFIRMED = 0)))
-    setvar $PLANETHAGGLE~EXIT_MESSAGE "Nothing to sell here!"
-  end
-  return
-else
-  goto :RESELL
-end
-
-:PLANETHAGGLE~SELLHAGGLE
-if (HAGGLE)
-  goto :PLANETHAGGLE~SELLHAGGLENATIVE
-end
-
-killalltriggers
-settextlinetrigger SELLFIRSTOFFER :SELLFIRSTOFFER "We'll buy them for"
-send "az"&$PLANETHAGGLE~PORTBUYING&"*"
+setvar $planethaggle~exit_message "We don't own this planet!"
 pause
 
-:PLANETHAGGLE~SELLHAGGLENATIVE
-setvar $PLANETHAGGLE~CURRENTHAGGLE "pending"
-setvar $PLANETHAGGLE~OLDCREDITS $PLAYER~CREDITS
-setvar $PLANETHAGGLE~MCIC ""
-send $PLANETHAGGLE~PORTBUYING&"*"
+:planethaggle~sellfuel
+killtrigger sellfuel
+killtrigger sellorg
+killtrigger sellequ
+killtrigger donewithport
+if ($planethaggle~quantityunknown = 1)
+	getword currentline $planethaggle~fueltosell 12
+	striptext $planethaggle~fueltosell "["
+	striptext $planethaggle~fueltosell "]"
+	striptext $planethaggle~fueltosell "?"
+end
 
-:PLANETHAGGLE~SELLHAGGLENATIVEWAIT
+isnumber $planethaggle~test $planethaggle~fueltosell
+if ($planethaggle~test = 0)
+	send "'DEBUG: NAN on fueltosell:"&$planethaggle~fueltosell "*"
+	setvar $planethaggle~fueltosell 0
+end
+if (($port~orepercent >= 15) and ($planethaggle~fueltosell > 0))
+	if ($planethaggle~fueltosell > $port~oretrading)
+		setvar $planethaggle~fueltosell $port~oretrading
+	end
+	setvar $planethaggle~attemptoreconfirmed 1
+	setvar $planethaggle~prodtosell "ore"
+	setvar $planethaggle~portbuying $planethaggle~fueltosell
+	gosub :sellhaggle
+	if ($planethaggle~currenthaggle = "succeeded")
+		setvar $planethaggle~orehaggle "succeeded"
+		setvar $planethaggle~fueltosell 0
+	else
+		setvar $planethaggle~orehaggle "failed"
+	end
+else
+	send "az0*"
+	setvar $planethaggle~fueltosell 0
+end
+goto :sellproduct
+
+:planethaggle~sellorg
+killtrigger sellfuel
+killtrigger sellorg
+killtrigger sellequ
+killtrigger donewithport
+if ($planethaggle~quantityunknown = 1)
+	getword currentline $planethaggle~orgtosell 11
+	striptext $planethaggle~orgtosell "["
+	striptext $planethaggle~orgtosell "]"
+	striptext $planethaggle~orgtosell "?"
+end
+
+isnumber $planethaggle~test $planethaggle~orgtosell
+if ($planethaggle~test = 0)
+	send "'DEBUG: NAN on orgtosell:"&$planethaggle~orgtosell "*"
+	setvar $planethaggle~orgtosell 0
+end
+if (($port~orgpercent >= 15) and ($planethaggle~orgtosell > 0))
+	if ($planethaggle~orgtosell > $port~orgtrading)
+		setvar $planethaggle~orgtosell $port~orgtrading
+	end
+	setvar $planethaggle~attemptorgconfirmed 1
+	setvar $planethaggle~prodtosell "org"
+	setvar $planethaggle~portbuying $planethaggle~orgtosell
+	gosub :sellhaggle
+	if ($planethaggle~currenthaggle = "succeeded")
+		setvar $planethaggle~orghaggle "succeeded"
+		setvar $planethaggle~orgtosell 0
+	else
+		setvar $planethaggle~orghaggle "failed"
+	end
+else
+	send "az0*"
+	setvar $planethaggle~orgtosell 0
+end
+goto :sellproduct
+
+:planethaggle~sellequ
+killtrigger sellfuel
+killtrigger sellorg
+killtrigger sellequ
+killtrigger donewithport
+if ($planethaggle~quantityunknown = 1)
+	getword currentline $planethaggle~equiptosell 11
+	striptext $planethaggle~equiptosell "["
+	striptext $planethaggle~equiptosell "]"
+	striptext $planethaggle~equiptosell "?"
+end
+
+isnumber $planethaggle~test $planethaggle~equiptosell
+if ($planethaggle~test = 0)
+	send "'DEBUG: NAN on equiptosell:"&$planethaggle~equiptosell "*"
+	setvar $planethaggle~equiptosell 0
+end
+if (($port~equpercent >= 15) and ($planethaggle~equiptosell > 0))
+	if ($planethaggle~equiptosell > $port~equtrading)
+		setvar $planethaggle~equiptosell $port~equtrading
+	end
+	setvar $planethaggle~attemptequconfirmed 1
+	setvar $planethaggle~prodtosell "equ"
+	setvar $planethaggle~portbuying $planethaggle~equiptosell
+	gosub :sellhaggle
+	if ($planethaggle~currenthaggle = "succeeded")
+		setvar $planethaggle~equhaggle "succeeded"
+		setvar $planethaggle~equiptosell 0
+	else
+		setvar $planethaggle~equhaggle "failed"
+	end
+else
+	send "az0*"
+	setvar $planethaggle~equiptosell 0
+end
+goto :sellproduct
+
+:planethaggle~donewithport
+killtrigger sellfuel
+killtrigger sellorg
+killtrigger sellequ
+killtrigger donewithport
+
+if (($planethaggle~attemptore = 1) and ($planethaggle~attemptoreconfirmed = 0))
+
+	setvar $planethaggle~fueltosell 0
+end
+if (($planethaggle~attemptorg = 1) and ($planethaggle~attemptorgconfirmed = 0))
+	setvar $planethaggle~orgtosell 0
+end
+if (($planethaggle~attemptequ = 1) and ($planethaggle~attemptequconfirmed = 0))
+	setvar $planethaggle~equiptosell 0
+end
+
+if (($planethaggle~ore_sell_failures > 1) or ($planethaggle~org_sell_failures > 4) or ($planethaggle~equ_sell_failures > 4))
+	setvar $planethaggle~selloutput $planethaggle~selloutput&"Multiple Haggle Failures - Please cut and paste this haggling session and email to Cherokee*"
+	return
+elseif (($planethaggle~fueltosell = 0) and (($planethaggle~orgtosell = 0) and ($planethaggle~equiptosell = 0)))
+	if (($planethaggle~attemptoreconfirmed = 0) and (($planethaggle~attemptorgconfirmed = 0) and ($planethaggle~attemptequconfirmed = 0)))
+		setvar $planethaggle~exit_message "Nothing to sell here!"
+	end
+	return
+else
+	goto :resell
+end
+
+:planethaggle~sellhaggle
+if (haggle)
+	goto :planethaggle~sellhagglenative
+end
+
 killalltriggers
-settextlinetrigger NATIVESELLEXPERIENCE :PLANETHAGGLE~NATIVESELLEXPERIENCE "experience point(s)"
-settextlinetrigger NATIVESELLYOUHAVE :PLANETHAGGLE~NATIVESELLYOUHAVE "You have"
-settextlinetrigger NATIVESELLNOTINTERESTED :PLANETHAGGLE~NATIVESELLNOTINTERESTED "We're not interested."
-settextlinetrigger NATIVESELLPROMPT :PLANETHAGGLE~NATIVESELLPROMPT "Command [TL="
+settextlinetrigger sellfirstoffer :sellfirstoffer "We'll buy them for"
+send "az"&$planethaggle~portbuying&"*"
 pause
 
-:PLANETHAGGLE~NATIVESELLEXPERIENCE
-killalltriggers
-getword CURRENTLINE $PLANETHAGGLE~EXP_BONUS 7
-isnumber $PLANETHAGGLE~TESTEXP $PLANETHAGGLE~EXP_BONUS
-if ($PLANETHAGGLE~TESTEXP <> 0)
-  add $PLANETHAGGLE~EXPERIENCE $PLANETHAGGLE~EXP_BONUS
-end
-goto :PLANETHAGGLE~SELLHAGGLENATIVEWAIT
+:planethaggle~sellhagglenative
+setvar $planethaggle~currenthaggle "pending"
+setvar $planethaggle~oldcredits $player~credits
+setvar $planethaggle~mcic ""
+send $planethaggle~portbuying&"*"
 
-:PLANETHAGGLE~NATIVESELLYOUHAVE
+:planethaggle~sellhagglenativewait
 killalltriggers
-getword CURRENTLINE $PLANETHAGGLE~CREDITS 3
-striptext $PLANETHAGGLE~CREDITS ","
-isnumber $PLANETHAGGLE~TESTCREDITS $PLANETHAGGLE~CREDITS
-if ($PLANETHAGGLE~TESTCREDITS = 0)
-  goto :PLANETHAGGLE~SELLHAGGLENATIVEWAIT
-end
-getword CURRENTLINE $PLANETHAGGLE~CREDITLABEL 4
-if ($PLANETHAGGLE~CREDITLABEL <> "credits.")
-  goto :PLANETHAGGLE~SELLHAGGLENATIVEWAIT
-end
-setvar $PLANETHAGGLE~COUNTER $PLANETHAGGLE~CREDITS
-subtract $PLANETHAGGLE~COUNTER $PLANETHAGGLE~OLDCREDITS
-setvar $PLAYER~CREDITS $PLANETHAGGLE~CREDITS
-if ($PLANETHAGGLE~COUNTER <= 0)
-  setvar $PLANETHAGGLE~CURRENTHAGGLE "failed"
-  goto :SELLHAGGLEFAILED
-end
-setvar $PLANETHAGGLE~CURRENTHAGGLE "succeeded"
-setvar $PLANETHAGGLE~MCIC $HAGGLE~MCIC
-gosub :PLANETHAGGLE~LOADNATIVEMCIC
-goto :SELLHAGGLESUCCEEDED
+settextlinetrigger nativesellexperience :planethaggle~nativesellexperience "experience point(s)"
+settextlinetrigger nativesellyouhave :planethaggle~nativesellyouhave "You have"
+settextlinetrigger nativesellnotinterested :planethaggle~nativesellnotinterested "We're not interested."
+settextlinetrigger nativesellprompt :planethaggle~nativesellprompt "Command [TL="
+pause
 
-:PLANETHAGGLE~NATIVESELLNOTINTERESTED
+:planethaggle~nativesellexperience
 killalltriggers
-setvar $PLANETHAGGLE~CURRENTHAGGLE "failed"
-goto :SELLHAGGLEFAILED
+getword currentline $planethaggle~exp_bonus 7
+isnumber $planethaggle~testexp $planethaggle~exp_bonus
+if ($planethaggle~testexp <> 0)
+	add $planethaggle~experience $planethaggle~exp_bonus
+end
+goto :planethaggle~sellhagglenativewait
 
-:PLANETHAGGLE~NATIVESELLPROMPT
+:planethaggle~nativesellyouhave
 killalltriggers
-if ($PLANETHAGGLE~CURRENTHAGGLE <> "succeeded")
-  if ($HAGGLE~ABORT <> 1)
-    setvar $PLANETHAGGLE~CREDITS $HAGGLE~CREDITS
-    isnumber $PLANETHAGGLE~TESTCREDITS $PLANETHAGGLE~CREDITS
-    if ($PLANETHAGGLE~TESTCREDITS <> 0)
-      setvar $PLANETHAGGLE~COUNTER $PLANETHAGGLE~CREDITS
-      subtract $PLANETHAGGLE~COUNTER $PLANETHAGGLE~OLDCREDITS
-      if ($PLANETHAGGLE~COUNTER > 0)
-        setvar $PLAYER~CREDITS $PLANETHAGGLE~CREDITS
-        setvar $PLANETHAGGLE~CURRENTHAGGLE "succeeded"
-        setvar $PLANETHAGGLE~MCIC $HAGGLE~MCIC
-        gosub :PLANETHAGGLE~LOADNATIVEMCIC
-        goto :SELLHAGGLESUCCEEDED
-      end
-    end
-  end
-  setvar $PLANETHAGGLE~CURRENTHAGGLE "failed"
-  goto :SELLHAGGLEFAILED
+getword currentline $planethaggle~credits 3
+striptext $planethaggle~credits ","
+isnumber $planethaggle~testcredits $planethaggle~credits
+if ($planethaggle~testcredits = 0)
+	goto :planethaggle~sellhagglenativewait
+end
+getword currentline $planethaggle~creditlabel 4
+if ($planethaggle~creditlabel <> "credits.")
+	goto :planethaggle~sellhagglenativewait
+end
+setvar $planethaggle~counter $planethaggle~credits
+subtract $planethaggle~counter $planethaggle~oldcredits
+setvar $player~credits $planethaggle~credits
+if ($planethaggle~counter <= 0)
+	setvar $planethaggle~currenthaggle "failed"
+	goto :sellhagglefailed
+end
+setvar $planethaggle~currenthaggle "succeeded"
+setvar $planethaggle~mcic $haggle~mcic
+gosub :planethaggle~loadnativemcic
+goto :sellhagglesucceeded
+
+:planethaggle~nativesellnotinterested
+killalltriggers
+setvar $planethaggle~currenthaggle "failed"
+goto :sellhagglefailed
+
+:planethaggle~nativesellprompt
+killalltriggers
+if ($planethaggle~currenthaggle <> "succeeded")
+	if ($haggle~abort <> 1)
+		setvar $planethaggle~credits $haggle~credits
+		isnumber $planethaggle~testcredits $planethaggle~credits
+		if ($planethaggle~testcredits <> 0)
+			setvar $planethaggle~counter $planethaggle~credits
+			subtract $planethaggle~counter $planethaggle~oldcredits
+			if ($planethaggle~counter > 0)
+				setvar $player~credits $planethaggle~credits
+				setvar $planethaggle~currenthaggle "succeeded"
+				setvar $planethaggle~mcic $haggle~mcic
+				gosub :planethaggle~loadnativemcic
+				goto :sellhagglesucceeded
+			end
+		end
+	end
+	setvar $planethaggle~currenthaggle "failed"
+	goto :sellhagglefailed
 end
 return
 
-:PLANETHAGGLE~LOADNATIVEMCIC
-isnumber $PLANETHAGGLE~MCICVALID $PLANETHAGGLE~MCIC
-if ($PLANETHAGGLE~MCICVALID = 0)
-  if ($PLANETHAGGLE~PRODTOSELL = "ore")
-    getsectorparameter $PLAYER~CURRENT_SECTOR "OREMCIC" $PLANETHAGGLE~MCIC
-  elseif ($PLANETHAGGLE~PRODTOSELL = "org")
-    getsectorparameter $PLAYER~CURRENT_SECTOR "ORGMCIC" $PLANETHAGGLE~MCIC
-  elseif ($PLANETHAGGLE~PRODTOSELL = "equ")
-    getsectorparameter $PLAYER~CURRENT_SECTOR "EQUMCIC" $PLANETHAGGLE~MCIC
-  end
-  isnumber $PLANETHAGGLE~MCICVALID $PLANETHAGGLE~MCIC
+:planethaggle~loadnativemcic
+isnumber $planethaggle~mcicvalid $planethaggle~mcic
+if ($planethaggle~mcicvalid = 0)
+	if ($planethaggle~prodtosell = "ore")
+		getsectorparameter $player~current_sector "OREMCIC" $planethaggle~mcic
+	elseif ($planethaggle~prodtosell = "org")
+		getsectorparameter $player~current_sector "ORGMCIC" $planethaggle~mcic
+	elseif ($planethaggle~prodtosell = "equ")
+		getsectorparameter $player~current_sector "EQUMCIC" $planethaggle~mcic
+	end
+	isnumber $planethaggle~mcicvalid $planethaggle~mcic
 end
-if ($PLANETHAGGLE~MCICVALID = 0)
-  if ($PLANETHAGGLE~PRODTOSELL = "ore")
-    setvar $PLANETHAGGLE~MCIC $PLANETHAGGLE~OREMCIC
-  elseif ($PLANETHAGGLE~PRODTOSELL = "org")
-    setvar $PLANETHAGGLE~MCIC $PLANETHAGGLE~ORGMCIC
-  elseif ($PLANETHAGGLE~PRODTOSELL = "equ")
-    setvar $PLANETHAGGLE~MCIC $PLANETHAGGLE~EQUMCIC
-  end
-  isnumber $PLANETHAGGLE~MCICVALID $PLANETHAGGLE~MCIC
+if ($planethaggle~mcicvalid = 0)
+	if ($planethaggle~prodtosell = "ore")
+		setvar $planethaggle~mcic $planethaggle~oremcic
+	elseif ($planethaggle~prodtosell = "org")
+		setvar $planethaggle~mcic $planethaggle~orgmcic
+	elseif ($planethaggle~prodtosell = "equ")
+		setvar $planethaggle~mcic $planethaggle~equmcic
+	end
+	isnumber $planethaggle~mcicvalid $planethaggle~mcic
 end
-if ($PLANETHAGGLE~MCICVALID <> 0)
-  if ($PLANETHAGGLE~PRODTOSELL = "ore")
-    setvar $PLANETHAGGLE~OREMCIC $PLANETHAGGLE~MCIC
-    setsectorparameter $PLAYER~CURRENT_SECTOR "OREMCIC" $PLANETHAGGLE~MCIC
-  elseif ($PLANETHAGGLE~PRODTOSELL = "org")
-    setvar $PLANETHAGGLE~ORGMCIC $PLANETHAGGLE~MCIC
-    setsectorparameter $PLAYER~CURRENT_SECTOR "ORGMCIC" $PLANETHAGGLE~MCIC
-  elseif ($PLANETHAGGLE~PRODTOSELL = "equ")
-    setvar $PLANETHAGGLE~EQUMCIC $PLANETHAGGLE~MCIC
-    setsectorparameter $PLAYER~CURRENT_SECTOR "EQUMCIC" $PLANETHAGGLE~MCIC
-  end
+if ($planethaggle~mcicvalid <> 0)
+	if ($planethaggle~prodtosell = "ore")
+		setvar $planethaggle~oremcic $planethaggle~mcic
+		setsectorparameter $player~current_sector "OREMCIC" $planethaggle~mcic
+	elseif ($planethaggle~prodtosell = "org")
+		setvar $planethaggle~orgmcic $planethaggle~mcic
+		setsectorparameter $player~current_sector "ORGMCIC" $planethaggle~mcic
+	elseif ($planethaggle~prodtosell = "equ")
+		setvar $planethaggle~equmcic $planethaggle~mcic
+		setsectorparameter $player~current_sector "EQUMCIC" $planethaggle~mcic
+	end
 end
 return
 
-:PLANETHAGGLE~SELLFIRSTOFFER
-killtrigger SELLFIRSTOFFER
-getword CURRENTLINE $PLANETHAGGLE~OFFER 5
-striptext $PLANETHAGGLE~OFFER ","
+:planethaggle~sellfirstoffer
+killtrigger sellfirstoffer
+getword currentline $planethaggle~offer 5
+striptext $planethaggle~offer ","
 
-gosub :PLAYER~SWATHOFF
-if ($PLAYER~SWATHOFF = FALSE)
-  gosub :NEGOTIATELAND
-  setvar $PLANETHAGGLE~EXIT_MESSAGE $PLAYER~SWATHOFFMESSAGE
-  goto :EXITNEG
+gosub :player~swathoff
+if ($player~swathoff = false)
+	gosub :negotiateland
+	setvar $planethaggle~exit_message $player~swathoffmessage
+	goto :exitneg
 end
 
-setvar $PLANETHAGGLE~PERUNITINITOFFER $PLANETHAGGLE~OFFER
-multiply $PLANETHAGGLE~PERUNITINITOFFER 100
-divide $PLANETHAGGLE~PERUNITINITOFFER $PLANETHAGGLE~_CK_PTRADESETTING
-multiply $PLANETHAGGLE~PERUNITINITOFFER 100
-divide $PLANETHAGGLE~PERUNITINITOFFER $PLANETHAGGLE~PORTBUYING
-setvar $PLANETHAGGLE~PORTMAXINIT $PLANETHAGGLE~PERUNITINITOFFER
-divide $PLANETHAGGLE~PERUNITINITOFFER 10
+setvar $planethaggle~perunitinitoffer $planethaggle~offer
+multiply $planethaggle~perunitinitoffer 100
+divide $planethaggle~perunitinitoffer $planethaggle~_ck_ptradesetting
+multiply $planethaggle~perunitinitoffer 100
+divide $planethaggle~perunitinitoffer $planethaggle~portbuying
+setvar $planethaggle~portmaxinit $planethaggle~perunitinitoffer
+divide $planethaggle~perunitinitoffer 10
 
-if ($PLANETHAGGLE~PRODTOSELL = "ore")
-  setvar $PLANETHAGGLE~BASEVALUE 256055800
-  setvar $PLANETHAGGLE~BASEPERCENT 11725
-  setvar $PLANETHAGGLE~BASEPERCENTINVERSE 88275
-  setvar $PLANETHAGGLE~PERCENTFROMBASE $PLAYER~CURRENT_SECTOR.OREPERCENT
-elseif ($PLANETHAGGLE~PRODTOSELL = "org")
-  setvar $PLANETHAGGLE~BASEVALUE 506276400
-  setvar $PLANETHAGGLE~BASEPERCENT 11287
-  setvar $PLANETHAGGLE~BASEPERCENTINVERSE 88713
-  setvar $PLANETHAGGLE~PERCENTFROMBASE $PLAYER~CURRENT_SECTOR.ORGPERCENT
-elseif ($PLANETHAGGLE~PRODTOSELL = "equ")
-  setvar $PLANETHAGGLE~BASEVALUE 906281000
-  setvar $PLANETHAGGLE~BASEPERCENT 10989
-  setvar $PLANETHAGGLE~BASEPERCENTINVERSE 89010
-  setvar $PLANETHAGGLE~PERCENTFROMBASE $PLAYER~CURRENT_SECTOR.EQUPERCENT
+if ($planethaggle~prodtosell = "ore")
+	setvar $planethaggle~basevalue 256055800
+	setvar $planethaggle~basepercent 11725
+	setvar $planethaggle~basepercentinverse 88275
+	setvar $planethaggle~percentfrombase $port~orepercent
+elseif ($planethaggle~prodtosell = "org")
+	setvar $planethaggle~basevalue 506276400
+	setvar $planethaggle~basepercent 11287
+	setvar $planethaggle~basepercentinverse 88713
+	setvar $planethaggle~percentfrombase $port~orgpercent
+elseif ($planethaggle~prodtosell = "equ")
+	setvar $planethaggle~basevalue 906281000
+	setvar $planethaggle~basepercent 10989
+	setvar $planethaggle~basepercentinverse 89010
+	setvar $planethaggle~percentfrombase $port~equpercent
 end
 
-if ($PLANETHAGGLE~PERCENTFROMBASE = 100)
-  divide $PLANETHAGGLE~PORTMAXINIT 10
-elseif ($PLANETHAGGLE~PERCENTFROMBASE >= 15)
-  multiply $PLANETHAGGLE~PORTMAXINIT 100000
-  subtract $PLANETHAGGLE~PORTMAXINIT $PLANETHAGGLE~BASEVALUE
-  multiply $PLANETHAGGLE~PERCENTFROMBASE 1000
-  subtract $PLANETHAGGLE~PERCENTFROMBASE $PLANETHAGGLE~BASEPERCENT
-  divide $PLANETHAGGLE~PORTMAXINIT $PLANETHAGGLE~PERCENTFROMBASE
-  multiply $PLANETHAGGLE~PORTMAXINIT $PLANETHAGGLE~BASEPERCENTINVERSE
-  add $PLANETHAGGLE~PORTMAXINIT $PLANETHAGGLE~BASEVALUE
-  divide $PLANETHAGGLE~PORTMAXINIT 1000000
-elseif ($PLANETHAGGLE~PRODTOSELL = "ore")
-  setvar $PLANETHAGGLE~PORTMAXINIT 340
-elseif ($PLANETHAGGLE~PRODTOSELL = "org")
-  setvar $PLANETHAGGLE~PORTMAXINIT 635
-elseif ($PLANETHAGGLE~PRODTOSELL = "equ")
-  setvar $PLANETHAGGLE~PORTMAXINIT 1063
+if ($planethaggle~percentfrombase = 100)
+	divide $planethaggle~portmaxinit 10
+elseif ($planethaggle~percentfrombase >= 15)
+	multiply $planethaggle~portmaxinit 100000
+	subtract $planethaggle~portmaxinit $planethaggle~basevalue
+	multiply $planethaggle~percentfrombase 1000
+	subtract $planethaggle~percentfrombase $planethaggle~basepercent
+	divide $planethaggle~portmaxinit $planethaggle~percentfrombase
+	multiply $planethaggle~portmaxinit $planethaggle~basepercentinverse
+	add $planethaggle~portmaxinit $planethaggle~basevalue
+	divide $planethaggle~portmaxinit 1000000
+elseif ($planethaggle~prodtosell = "ore")
+	setvar $planethaggle~portmaxinit 340
+elseif ($planethaggle~prodtosell = "org")
+	setvar $planethaggle~portmaxinit 635
+elseif ($planethaggle~prodtosell = "equ")
+	setvar $planethaggle~portmaxinit 1063
 end
 
-if ($PLANETHAGGLE~PRODTOSELL = "ore")
-  if ($PLANETHAGGLE~PORTMAXINIT >= 436)
-    setvar $PLANETHAGGLE~MCIC "-90"
-    setvar $PLANETHAGGLE~MULTIPLE 1494
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 434)
-    setvar $PLANETHAGGLE~MCIC "-89"
-    setvar $PLANETHAGGLE~MULTIPLE 1488
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 433)
-    setvar $PLANETHAGGLE~MCIC "-88"
-    setvar $PLANETHAGGLE~MULTIPLE 1482
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 431)
-    setvar $PLANETHAGGLE~MCIC "-87"
-    setvar $PLANETHAGGLE~MULTIPLE 1476
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 429)
-    setvar $PLANETHAGGLE~MCIC "-86"
-    setvar $PLANETHAGGLE~MULTIPLE 1470
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 427)
-    setvar $PLANETHAGGLE~MCIC "-85"
-    setvar $PLANETHAGGLE~MULTIPLE 1464
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 425)
-    setvar $PLANETHAGGLE~MCIC "-84"
-    setvar $PLANETHAGGLE~MULTIPLE 1458
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 424)
-    setvar $PLANETHAGGLE~MCIC "-83"
-    setvar $PLANETHAGGLE~MULTIPLE 1452
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 422)
-    setvar $PLANETHAGGLE~MCIC "-82"
-    setvar $PLANETHAGGLE~MULTIPLE 1446
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 420)
-    setvar $PLANETHAGGLE~MCIC "-81"
-    setvar $PLANETHAGGLE~MULTIPLE 1440
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 418)
-    setvar $PLANETHAGGLE~MCIC "-80"
-    setvar $PLANETHAGGLE~MULTIPLE 1434
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 416)
-    setvar $PLANETHAGGLE~MCIC "-79"
-    setvar $PLANETHAGGLE~MULTIPLE 1428
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 414)
-    setvar $PLANETHAGGLE~MCIC "-78"
-    setvar $PLANETHAGGLE~MULTIPLE 1423
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 412)
-    setvar $PLANETHAGGLE~MCIC "-77"
-    setvar $PLANETHAGGLE~MULTIPLE 1417
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 411)
-    setvar $PLANETHAGGLE~MCIC "-76"
-    setvar $PLANETHAGGLE~MULTIPLE 1411
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 409)
-    setvar $PLANETHAGGLE~MCIC "-75"
-    setvar $PLANETHAGGLE~MULTIPLE 1405
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 407)
-    setvar $PLANETHAGGLE~MCIC "-74"
-    setvar $PLANETHAGGLE~MULTIPLE 1399
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 405)
-    setvar $PLANETHAGGLE~MCIC "-73"
-    setvar $PLANETHAGGLE~MULTIPLE 1393
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 403)
-    setvar $PLANETHAGGLE~MCIC "-72"
-    setvar $PLANETHAGGLE~MULTIPLE 1387
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 401)
-    setvar $PLANETHAGGLE~MCIC "-71"
-    setvar $PLANETHAGGLE~MULTIPLE 1381
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 399)
-    setvar $PLANETHAGGLE~MCIC "-70"
-    setvar $PLANETHAGGLE~MULTIPLE 1375
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 397)
-    setvar $PLANETHAGGLE~MCIC "-69"
-    setvar $PLANETHAGGLE~MULTIPLE 1369
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 396)
-    setvar $PLANETHAGGLE~MCIC "-68"
-    setvar $PLANETHAGGLE~MULTIPLE 1363
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 394)
-    setvar $PLANETHAGGLE~MCIC "-67"
-    setvar $PLANETHAGGLE~MULTIPLE 1357
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 392)
-    setvar $PLANETHAGGLE~MCIC "-66"
-    setvar $PLANETHAGGLE~MULTIPLE 1351
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 390)
-    setvar $PLANETHAGGLE~MCIC "-65"
-    setvar $PLANETHAGGLE~MULTIPLE 1345
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 388)
-    setvar $PLANETHAGGLE~MCIC "-64"
-    setvar $PLANETHAGGLE~MULTIPLE 1341
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 386)
-    setvar $PLANETHAGGLE~MCIC "-63"
-    setvar $PLANETHAGGLE~MULTIPLE 1336
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 384)
-    setvar $PLANETHAGGLE~MCIC "-62"
-    setvar $PLANETHAGGLE~MULTIPLE 1330
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 382)
-    setvar $PLANETHAGGLE~MCIC "-61"
-    setvar $PLANETHAGGLE~MULTIPLE 1324
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 380)
-    setvar $PLANETHAGGLE~MCIC "-60"
-    setvar $PLANETHAGGLE~MULTIPLE 1318
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 378)
-    setvar $PLANETHAGGLE~MCIC "-59"
-    setvar $PLANETHAGGLE~MULTIPLE 1312
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 376)
-    setvar $PLANETHAGGLE~MCIC "-58"
-    setvar $PLANETHAGGLE~MULTIPLE 1306
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 374)
-    setvar $PLANETHAGGLE~MCIC "-57"
-    setvar $PLANETHAGGLE~MULTIPLE 1300
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 372)
-    setvar $PLANETHAGGLE~MCIC "-56"
-    setvar $PLANETHAGGLE~MULTIPLE 1294
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 370)
-    setvar $PLANETHAGGLE~MCIC "-55"
-    setvar $PLANETHAGGLE~MULTIPLE 1291
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 368)
-    setvar $PLANETHAGGLE~MCIC "-54"
-    setvar $PLANETHAGGLE~MULTIPLE 1285
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 366)
-    setvar $PLANETHAGGLE~MCIC "-53"
-    setvar $PLANETHAGGLE~MULTIPLE 1279
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 364)
-    setvar $PLANETHAGGLE~MCIC "-52"
-    setvar $PLANETHAGGLE~MULTIPLE 1273
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 362)
-    setvar $PLANETHAGGLE~MCIC "-51"
-    setvar $PLANETHAGGLE~MULTIPLE 1267
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 360)
-    setvar $PLANETHAGGLE~MCIC "-50"
-    setvar $PLANETHAGGLE~MULTIPLE 1261
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 358)
-    setvar $PLANETHAGGLE~MCIC "-49"
-    setvar $PLANETHAGGLE~MULTIPLE 1255
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 356)
-    setvar $PLANETHAGGLE~MCIC "-48"
-    setvar $PLANETHAGGLE~MULTIPLE 1249
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 354)
-    setvar $PLANETHAGGLE~MCIC "-46"
-    setvar $PLANETHAGGLE~MULTIPLE 1246
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 352)
-    setvar $PLANETHAGGLE~MCIC "-46"
-    setvar $PLANETHAGGLE~MULTIPLE 1240
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 350)
-    setvar $PLANETHAGGLE~MCIC "-45"
-    setvar $PLANETHAGGLE~MULTIPLE 1234
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 348)
-    setvar $PLANETHAGGLE~MCIC "-44"
-    setvar $PLANETHAGGLE~MULTIPLE 1228
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 346)
-    setvar $PLANETHAGGLE~MCIC "-43"
-    setvar $PLANETHAGGLE~MULTIPLE 1222
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 344)
-    setvar $PLANETHAGGLE~MCIC "-42"
-    setvar $PLANETHAGGLE~MULTIPLE 1219
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 342)
-    setvar $PLANETHAGGLE~MCIC "-41"
-    setvar $PLANETHAGGLE~MULTIPLE 1209
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 340)
-    setvar $PLANETHAGGLE~MCIC "-40"
-    setvar $PLANETHAGGLE~MULTIPLE 1208
-  else
-    setvar $PLANETHAGGLE~MCIC 0
-    setvar $PLANETHAGGLE~MULTIPLE 1208
-  end
-elseif ($PLANETHAGGLE~PRODTOSELL = "org")
-  if ($PLANETHAGGLE~PORTMAXINIT >= 813)
-    setvar $PLANETHAGGLE~MCIC "-75"
-    setvar $PLANETHAGGLE~MULTIPLE 1405
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 810)
-    setvar $PLANETHAGGLE~MCIC "-74"
-    setvar $PLANETHAGGLE~MULTIPLE 1399
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 806)
-    setvar $PLANETHAGGLE~MCIC "-73"
-    setvar $PLANETHAGGLE~MULTIPLE 1393
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 802)
-    setvar $PLANETHAGGLE~MCIC "-72"
-    setvar $PLANETHAGGLE~MULTIPLE 1387
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 798)
-    setvar $PLANETHAGGLE~MCIC "-71"
-    setvar $PLANETHAGGLE~MULTIPLE 1381
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 795)
-    setvar $PLANETHAGGLE~MCIC "-70"
-    setvar $PLANETHAGGLE~MULTIPLE 1375
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 791)
-    setvar $PLANETHAGGLE~MCIC "-69"
-    setvar $PLANETHAGGLE~MULTIPLE 1369
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 787)
-    setvar $PLANETHAGGLE~MCIC "-68"
-    setvar $PLANETHAGGLE~MULTIPLE 1363
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 783)
-    setvar $PLANETHAGGLE~MCIC "-67"
-    setvar $PLANETHAGGLE~MULTIPLE 1357
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 779)
-    setvar $PLANETHAGGLE~MCIC "-66"
-    setvar $PLANETHAGGLE~MULTIPLE 1351
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 775)
-    setvar $PLANETHAGGLE~MCIC "-65"
-    setvar $PLANETHAGGLE~MULTIPLE 1345
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 772)
-    setvar $PLANETHAGGLE~MCIC "-64"
-    setvar $PLANETHAGGLE~MULTIPLE 1339
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 768)
-    setvar $PLANETHAGGLE~MCIC "-63"
-    setvar $PLANETHAGGLE~MULTIPLE 1336
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 764)
-    setvar $PLANETHAGGLE~MCIC "-62"
-    setvar $PLANETHAGGLE~MULTIPLE 1330
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 760)
-    setvar $PLANETHAGGLE~MCIC "-61"
-    setvar $PLANETHAGGLE~MULTIPLE 1324
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 756)
-    setvar $PLANETHAGGLE~MCIC "-60"
-    setvar $PLANETHAGGLE~MULTIPLE 1318
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 752)
-    setvar $PLANETHAGGLE~MCIC "-59"
-    setvar $PLANETHAGGLE~MULTIPLE 1312
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 748)
-    setvar $PLANETHAGGLE~MCIC "-58"
-    setvar $PLANETHAGGLE~MULTIPLE 1306
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 744)
-    setvar $PLANETHAGGLE~MCIC "-57"
-    setvar $PLANETHAGGLE~MULTIPLE 1300
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 740)
-    setvar $PLANETHAGGLE~MCIC "-56"
-    setvar $PLANETHAGGLE~MULTIPLE 1294
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 737)
-    setvar $PLANETHAGGLE~MCIC "-55"
-    setvar $PLANETHAGGLE~MULTIPLE 1291
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 733)
-    setvar $PLANETHAGGLE~MCIC "-54"
-    setvar $PLANETHAGGLE~MULTIPLE 1285
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 729)
-    setvar $PLANETHAGGLE~MCIC "-53"
-    setvar $PLANETHAGGLE~MULTIPLE 1279
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 725)
-    setvar $PLANETHAGGLE~MCIC "-52"
-    setvar $PLANETHAGGLE~MULTIPLE 1273
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 721)
-    setvar $PLANETHAGGLE~MCIC "-51"
-    setvar $PLANETHAGGLE~MULTIPLE 1267
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 717)
-    setvar $PLANETHAGGLE~MCIC "-50"
-    setvar $PLANETHAGGLE~MULTIPLE 1261
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 713)
-    setvar $PLANETHAGGLE~MCIC "-49"
-    setvar $PLANETHAGGLE~MULTIPLE 1255
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 709)
-    setvar $PLANETHAGGLE~MCIC "-48"
-    setvar $PLANETHAGGLE~MULTIPLE 1252
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 705)
-    setvar $PLANETHAGGLE~MCIC "-47"
-    setvar $PLANETHAGGLE~MULTIPLE 1246
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 701)
-    setvar $PLANETHAGGLE~MCIC "-46"
-    setvar $PLANETHAGGLE~MULTIPLE 1236
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 697)
-    setvar $PLANETHAGGLE~MCIC "-45"
-    setvar $PLANETHAGGLE~MULTIPLE 1233
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 693)
-    setvar $PLANETHAGGLE~MCIC "-44"
-    setvar $PLANETHAGGLE~MULTIPLE 1227
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 688)
-    setvar $PLANETHAGGLE~MCIC "-43"
-    setvar $PLANETHAGGLE~MULTIPLE 1224
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 684)
-    setvar $PLANETHAGGLE~MCIC "-42"
-    setvar $PLANETHAGGLE~MULTIPLE 1214
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 680)
-    setvar $PLANETHAGGLE~MCIC "-41"
-    setvar $PLANETHAGGLE~MULTIPLE 1213
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 676)
-    setvar $PLANETHAGGLE~MCIC "-40"
-    setvar $PLANETHAGGLE~MULTIPLE 1203
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 672)
-    setvar $PLANETHAGGLE~MCIC "-39"
-    setvar $PLANETHAGGLE~MULTIPLE 1200
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 668)
-    setvar $PLANETHAGGLE~MCIC "-38"
-    setvar $PLANETHAGGLE~MULTIPLE 1194
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 664)
-    setvar $PLANETHAGGLE~MCIC "-37"
-    setvar $PLANETHAGGLE~MULTIPLE 1191
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 660)
-    setvar $PLANETHAGGLE~MCIC "-36"
-    setvar $PLANETHAGGLE~MULTIPLE 1181
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 656)
-    setvar $PLANETHAGGLE~MCIC "-35"
-    setvar $PLANETHAGGLE~MULTIPLE 1178
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 651)
-    setvar $PLANETHAGGLE~MCIC "-34"
-    setvar $PLANETHAGGLE~MULTIPLE 1172
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 647)
-    setvar $PLANETHAGGLE~MCIC "-33"
-    setvar $PLANETHAGGLE~MULTIPLE 1166
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 643)
-    setvar $PLANETHAGGLE~MCIC "-32"
-    setvar $PLANETHAGGLE~MULTIPLE 1160
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 639)
-    setvar $PLANETHAGGLE~MCIC "-31"
-    setvar $PLANETHAGGLE~MULTIPLE 1157
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 635)
-    setvar $PLANETHAGGLE~MCIC "-30"
-    setvar $PLANETHAGGLE~MULTIPLE 1154
-  else
-    setvar $PLANETHAGGLE~MCIC 0
-    setvar $PLANETHAGGLE~MULTIPLE 1154
-  end
-elseif ($PLANETHAGGLE~PRODTOSELL = "equ")
-  if ($PLANETHAGGLE~PORTMAXINIT >= 1393)
-    setvar $PLANETHAGGLE~MCIC "-65"
-    setvar $PLANETHAGGLE~MULTIPLE 1347
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1386)
-    setvar $PLANETHAGGLE~MCIC "-64"
-    setvar $PLANETHAGGLE~MULTIPLE 1341
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1379)
-    setvar $PLANETHAGGLE~MCIC "-63"
-    setvar $PLANETHAGGLE~MULTIPLE 1336
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1372)
-    setvar $PLANETHAGGLE~MCIC "-62"
-    setvar $PLANETHAGGLE~MULTIPLE 1330
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1365)
-    setvar $PLANETHAGGLE~MCIC "-61"
-    setvar $PLANETHAGGLE~MULTIPLE 1324
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1358)
-    setvar $PLANETHAGGLE~MCIC "-60"
-    setvar $PLANETHAGGLE~MULTIPLE 1319
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1351)
-    setvar $PLANETHAGGLE~MCIC "-59"
-    setvar $PLANETHAGGLE~MULTIPLE 1313
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1344)
-    setvar $PLANETHAGGLE~MCIC "-58"
-    setvar $PLANETHAGGLE~MULTIPLE 1307
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1337)
-    setvar $PLANETHAGGLE~MCIC "-57"
-    setvar $PLANETHAGGLE~MULTIPLE 1302
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1329)
-    setvar $PLANETHAGGLE~MCIC "-56"
-    setvar $PLANETHAGGLE~MULTIPLE 1296
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1323)
-    setvar $PLANETHAGGLE~MCIC "-55"
-    setvar $PLANETHAGGLE~MULTIPLE 1291
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1315)
-    setvar $PLANETHAGGLE~MCIC "-54"
-    setvar $PLANETHAGGLE~MULTIPLE 1285
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1308)
-    setvar $PLANETHAGGLE~MCIC "-53"
-    setvar $PLANETHAGGLE~MULTIPLE 1279
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1301)
-    setvar $PLANETHAGGLE~MCIC "-52"
-    setvar $PLANETHAGGLE~MULTIPLE 1274
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1294)
-    setvar $PLANETHAGGLE~MCIC "-51"
-    setvar $PLANETHAGGLE~MULTIPLE 1268
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1287)
-    setvar $PLANETHAGGLE~MCIC "-50"
-    setvar $PLANETHAGGLE~MULTIPLE 1262
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1279)
-    setvar $PLANETHAGGLE~MCIC "-49"
-    setvar $PLANETHAGGLE~MULTIPLE 1254
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1272)
-    setvar $PLANETHAGGLE~MCIC "-48"
-    setvar $PLANETHAGGLE~MULTIPLE 1247
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1265)
-    setvar $PLANETHAGGLE~MCIC "-47"
-    setvar $PLANETHAGGLE~MULTIPLE 1246
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1258)
-    setvar $PLANETHAGGLE~MCIC "-46"
-    setvar $PLANETHAGGLE~MULTIPLE 1241
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1251)
-    setvar $PLANETHAGGLE~MCIC "-45"
-    setvar $PLANETHAGGLE~MULTIPLE 1235
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1243)
-    setvar $PLANETHAGGLE~MCIC "-44"
-    setvar $PLANETHAGGLE~MULTIPLE 1229
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1236)
-    setvar $PLANETHAGGLE~MCIC "-43"
-    setvar $PLANETHAGGLE~MULTIPLE 1224
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1229)
-    setvar $PLANETHAGGLE~MCIC "-42"
-    setvar $PLANETHAGGLE~MULTIPLE 1218
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1221)
-    setvar $PLANETHAGGLE~MCIC "-41"
-    setvar $PLANETHAGGLE~MULTIPLE 1213
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1214)
-    setvar $PLANETHAGGLE~MCIC "-40"
-    setvar $PLANETHAGGLE~MULTIPLE 1208
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1206)
-    setvar $PLANETHAGGLE~MCIC "-39"
-    setvar $PLANETHAGGLE~MULTIPLE 1201
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1199)
-    setvar $PLANETHAGGLE~MCIC "-38"
-    setvar $PLANETHAGGLE~MULTIPLE 1196
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1192)
-    setvar $PLANETHAGGLE~MCIC "-37"
-    setvar $PLANETHAGGLE~MULTIPLE 1190
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1184)
-    setvar $PLANETHAGGLE~MCIC "-36"
-    setvar $PLANETHAGGLE~MULTIPLE 1185
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1177)
-    setvar $PLANETHAGGLE~MCIC "-35"
-    setvar $PLANETHAGGLE~MULTIPLE 1180
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1169)
-    setvar $PLANETHAGGLE~MCIC "-34"
-    setvar $PLANETHAGGLE~MULTIPLE 1174
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1162)
-    setvar $PLANETHAGGLE~MCIC "-33"
-    setvar $PLANETHAGGLE~MULTIPLE 1169
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1154)
-    setvar $PLANETHAGGLE~MCIC "-32"
-    setvar $PLANETHAGGLE~MULTIPLE 1164
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1147)
-    setvar $PLANETHAGGLE~MCIC "-31"
-    setvar $PLANETHAGGLE~MULTIPLE 1158
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1139)
-    setvar $PLANETHAGGLE~MCIC "-30"
-    setvar $PLANETHAGGLE~MULTIPLE 1152
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1132)
-    setvar $PLANETHAGGLE~MCIC "-29"
-    setvar $PLANETHAGGLE~MULTIPLE 1149
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1124)
-    setvar $PLANETHAGGLE~MCIC "-28"
-    setvar $PLANETHAGGLE~MULTIPLE 1144
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1116)
-    setvar $PLANETHAGGLE~MCIC "-27"
-    setvar $PLANETHAGGLE~MULTIPLE 1136
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1109)
-    setvar $PLANETHAGGLE~MCIC "-26"
-    setvar $PLANETHAGGLE~MULTIPLE 1132
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1101)
-    setvar $PLANETHAGGLE~MCIC "-25"
-    setvar $PLANETHAGGLE~MULTIPLE 1126
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1093)
-    setvar $PLANETHAGGLE~MCIC "-24"
-    setvar $PLANETHAGGLE~MULTIPLE 1122
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1086)
-    setvar $PLANETHAGGLE~MCIC "-23"
-    setvar $PLANETHAGGLE~MULTIPLE 1117
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1078)
-    setvar $PLANETHAGGLE~MCIC "-22"
-    setvar $PLANETHAGGLE~MULTIPLE 1110
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1071)
-    setvar $PLANETHAGGLE~MCIC "-21"
-    setvar $PLANETHAGGLE~MULTIPLE 1105
-  elseif ($PLANETHAGGLE~PORTMAXINIT >= 1063)
-    setvar $PLANETHAGGLE~MCIC "-20"
-    setvar $PLANETHAGGLE~MULTIPLE 1102
-  else
-    setvar $PLANETHAGGLE~MCIC 0
-    setvar $PLANETHAGGLE~MULTIPLE 1102
-  end
+if ($planethaggle~prodtosell = "ore")
+	if ($planethaggle~portmaxinit >= 436)
+		setvar $planethaggle~mcic "-90"
+		setvar $planethaggle~multiple 1494
+	elseif ($planethaggle~portmaxinit >= 434)
+		setvar $planethaggle~mcic "-89"
+		setvar $planethaggle~multiple 1488
+	elseif ($planethaggle~portmaxinit >= 433)
+		setvar $planethaggle~mcic "-88"
+		setvar $planethaggle~multiple 1482
+	elseif ($planethaggle~portmaxinit >= 431)
+		setvar $planethaggle~mcic "-87"
+		setvar $planethaggle~multiple 1476
+	elseif ($planethaggle~portmaxinit >= 429)
+		setvar $planethaggle~mcic "-86"
+		setvar $planethaggle~multiple 1470
+	elseif ($planethaggle~portmaxinit >= 427)
+		setvar $planethaggle~mcic "-85"
+		setvar $planethaggle~multiple 1464
+	elseif ($planethaggle~portmaxinit >= 425)
+		setvar $planethaggle~mcic "-84"
+		setvar $planethaggle~multiple 1458
+	elseif ($planethaggle~portmaxinit >= 424)
+		setvar $planethaggle~mcic "-83"
+		setvar $planethaggle~multiple 1452
+	elseif ($planethaggle~portmaxinit >= 422)
+		setvar $planethaggle~mcic "-82"
+		setvar $planethaggle~multiple 1446
+	elseif ($planethaggle~portmaxinit >= 420)
+		setvar $planethaggle~mcic "-81"
+		setvar $planethaggle~multiple 1440
+	elseif ($planethaggle~portmaxinit >= 418)
+		setvar $planethaggle~mcic "-80"
+		setvar $planethaggle~multiple 1434
+	elseif ($planethaggle~portmaxinit >= 416)
+		setvar $planethaggle~mcic "-79"
+		setvar $planethaggle~multiple 1428
+	elseif ($planethaggle~portmaxinit >= 414)
+		setvar $planethaggle~mcic "-78"
+		setvar $planethaggle~multiple 1423
+	elseif ($planethaggle~portmaxinit >= 412)
+		setvar $planethaggle~mcic "-77"
+		setvar $planethaggle~multiple 1417
+	elseif ($planethaggle~portmaxinit >= 411)
+		setvar $planethaggle~mcic "-76"
+		setvar $planethaggle~multiple 1411
+	elseif ($planethaggle~portmaxinit >= 409)
+		setvar $planethaggle~mcic "-75"
+		setvar $planethaggle~multiple 1405
+	elseif ($planethaggle~portmaxinit >= 407)
+		setvar $planethaggle~mcic "-74"
+		setvar $planethaggle~multiple 1399
+	elseif ($planethaggle~portmaxinit >= 405)
+		setvar $planethaggle~mcic "-73"
+		setvar $planethaggle~multiple 1393
+	elseif ($planethaggle~portmaxinit >= 403)
+		setvar $planethaggle~mcic "-72"
+		setvar $planethaggle~multiple 1387
+	elseif ($planethaggle~portmaxinit >= 401)
+		setvar $planethaggle~mcic "-71"
+		setvar $planethaggle~multiple 1381
+	elseif ($planethaggle~portmaxinit >= 399)
+		setvar $planethaggle~mcic "-70"
+		setvar $planethaggle~multiple 1375
+	elseif ($planethaggle~portmaxinit >= 397)
+		setvar $planethaggle~mcic "-69"
+		setvar $planethaggle~multiple 1369
+	elseif ($planethaggle~portmaxinit >= 396)
+		setvar $planethaggle~mcic "-68"
+		setvar $planethaggle~multiple 1363
+	elseif ($planethaggle~portmaxinit >= 394)
+		setvar $planethaggle~mcic "-67"
+		setvar $planethaggle~multiple 1357
+	elseif ($planethaggle~portmaxinit >= 392)
+		setvar $planethaggle~mcic "-66"
+		setvar $planethaggle~multiple 1351
+	elseif ($planethaggle~portmaxinit >= 390)
+		setvar $planethaggle~mcic "-65"
+		setvar $planethaggle~multiple 1345
+	elseif ($planethaggle~portmaxinit >= 388)
+		setvar $planethaggle~mcic "-64"
+		setvar $planethaggle~multiple 1341
+	elseif ($planethaggle~portmaxinit >= 386)
+		setvar $planethaggle~mcic "-63"
+		setvar $planethaggle~multiple 1336
+	elseif ($planethaggle~portmaxinit >= 384)
+		setvar $planethaggle~mcic "-62"
+		setvar $planethaggle~multiple 1330
+	elseif ($planethaggle~portmaxinit >= 382)
+		setvar $planethaggle~mcic "-61"
+		setvar $planethaggle~multiple 1324
+	elseif ($planethaggle~portmaxinit >= 380)
+		setvar $planethaggle~mcic "-60"
+		setvar $planethaggle~multiple 1318
+	elseif ($planethaggle~portmaxinit >= 378)
+		setvar $planethaggle~mcic "-59"
+		setvar $planethaggle~multiple 1312
+	elseif ($planethaggle~portmaxinit >= 376)
+		setvar $planethaggle~mcic "-58"
+		setvar $planethaggle~multiple 1306
+	elseif ($planethaggle~portmaxinit >= 374)
+		setvar $planethaggle~mcic "-57"
+		setvar $planethaggle~multiple 1300
+	elseif ($planethaggle~portmaxinit >= 372)
+		setvar $planethaggle~mcic "-56"
+		setvar $planethaggle~multiple 1294
+	elseif ($planethaggle~portmaxinit >= 370)
+		setvar $planethaggle~mcic "-55"
+		setvar $planethaggle~multiple 1291
+	elseif ($planethaggle~portmaxinit >= 368)
+		setvar $planethaggle~mcic "-54"
+		setvar $planethaggle~multiple 1285
+	elseif ($planethaggle~portmaxinit >= 366)
+		setvar $planethaggle~mcic "-53"
+		setvar $planethaggle~multiple 1279
+	elseif ($planethaggle~portmaxinit >= 364)
+		setvar $planethaggle~mcic "-52"
+		setvar $planethaggle~multiple 1273
+	elseif ($planethaggle~portmaxinit >= 362)
+		setvar $planethaggle~mcic "-51"
+		setvar $planethaggle~multiple 1267
+	elseif ($planethaggle~portmaxinit >= 360)
+		setvar $planethaggle~mcic "-50"
+		setvar $planethaggle~multiple 1261
+	elseif ($planethaggle~portmaxinit >= 358)
+		setvar $planethaggle~mcic "-49"
+		setvar $planethaggle~multiple 1255
+	elseif ($planethaggle~portmaxinit >= 356)
+		setvar $planethaggle~mcic "-48"
+		setvar $planethaggle~multiple 1249
+	elseif ($planethaggle~portmaxinit >= 354)
+		setvar $planethaggle~mcic "-46"
+		setvar $planethaggle~multiple 1246
+	elseif ($planethaggle~portmaxinit >= 352)
+		setvar $planethaggle~mcic "-46"
+		setvar $planethaggle~multiple 1240
+	elseif ($planethaggle~portmaxinit >= 350)
+		setvar $planethaggle~mcic "-45"
+		setvar $planethaggle~multiple 1234
+	elseif ($planethaggle~portmaxinit >= 348)
+		setvar $planethaggle~mcic "-44"
+		setvar $planethaggle~multiple 1228
+	elseif ($planethaggle~portmaxinit >= 346)
+		setvar $planethaggle~mcic "-43"
+		setvar $planethaggle~multiple 1222
+	elseif ($planethaggle~portmaxinit >= 344)
+		setvar $planethaggle~mcic "-42"
+		setvar $planethaggle~multiple 1219
+	elseif ($planethaggle~portmaxinit >= 342)
+		setvar $planethaggle~mcic "-41"
+		setvar $planethaggle~multiple 1209
+	elseif ($planethaggle~portmaxinit >= 340)
+		setvar $planethaggle~mcic "-40"
+		setvar $planethaggle~multiple 1208
+	else
+		setvar $planethaggle~mcic 0
+		setvar $planethaggle~multiple 1208
+	end
+elseif ($planethaggle~prodtosell = "org")
+	if ($planethaggle~portmaxinit >= 813)
+		setvar $planethaggle~mcic "-75"
+		setvar $planethaggle~multiple 1405
+	elseif ($planethaggle~portmaxinit >= 810)
+		setvar $planethaggle~mcic "-74"
+		setvar $planethaggle~multiple 1399
+	elseif ($planethaggle~portmaxinit >= 806)
+		setvar $planethaggle~mcic "-73"
+		setvar $planethaggle~multiple 1393
+	elseif ($planethaggle~portmaxinit >= 802)
+		setvar $planethaggle~mcic "-72"
+		setvar $planethaggle~multiple 1387
+	elseif ($planethaggle~portmaxinit >= 798)
+		setvar $planethaggle~mcic "-71"
+		setvar $planethaggle~multiple 1381
+	elseif ($planethaggle~portmaxinit >= 795)
+		setvar $planethaggle~mcic "-70"
+		setvar $planethaggle~multiple 1375
+	elseif ($planethaggle~portmaxinit >= 791)
+		setvar $planethaggle~mcic "-69"
+		setvar $planethaggle~multiple 1369
+	elseif ($planethaggle~portmaxinit >= 787)
+		setvar $planethaggle~mcic "-68"
+		setvar $planethaggle~multiple 1363
+	elseif ($planethaggle~portmaxinit >= 783)
+		setvar $planethaggle~mcic "-67"
+		setvar $planethaggle~multiple 1357
+	elseif ($planethaggle~portmaxinit >= 779)
+		setvar $planethaggle~mcic "-66"
+		setvar $planethaggle~multiple 1351
+	elseif ($planethaggle~portmaxinit >= 775)
+		setvar $planethaggle~mcic "-65"
+		setvar $planethaggle~multiple 1345
+	elseif ($planethaggle~portmaxinit >= 772)
+		setvar $planethaggle~mcic "-64"
+		setvar $planethaggle~multiple 1339
+	elseif ($planethaggle~portmaxinit >= 768)
+		setvar $planethaggle~mcic "-63"
+		setvar $planethaggle~multiple 1336
+	elseif ($planethaggle~portmaxinit >= 764)
+		setvar $planethaggle~mcic "-62"
+		setvar $planethaggle~multiple 1330
+	elseif ($planethaggle~portmaxinit >= 760)
+		setvar $planethaggle~mcic "-61"
+		setvar $planethaggle~multiple 1324
+	elseif ($planethaggle~portmaxinit >= 756)
+		setvar $planethaggle~mcic "-60"
+		setvar $planethaggle~multiple 1318
+	elseif ($planethaggle~portmaxinit >= 752)
+		setvar $planethaggle~mcic "-59"
+		setvar $planethaggle~multiple 1312
+	elseif ($planethaggle~portmaxinit >= 748)
+		setvar $planethaggle~mcic "-58"
+		setvar $planethaggle~multiple 1306
+	elseif ($planethaggle~portmaxinit >= 744)
+		setvar $planethaggle~mcic "-57"
+		setvar $planethaggle~multiple 1300
+	elseif ($planethaggle~portmaxinit >= 740)
+		setvar $planethaggle~mcic "-56"
+		setvar $planethaggle~multiple 1294
+	elseif ($planethaggle~portmaxinit >= 737)
+		setvar $planethaggle~mcic "-55"
+		setvar $planethaggle~multiple 1291
+	elseif ($planethaggle~portmaxinit >= 733)
+		setvar $planethaggle~mcic "-54"
+		setvar $planethaggle~multiple 1285
+	elseif ($planethaggle~portmaxinit >= 729)
+		setvar $planethaggle~mcic "-53"
+		setvar $planethaggle~multiple 1279
+	elseif ($planethaggle~portmaxinit >= 725)
+		setvar $planethaggle~mcic "-52"
+		setvar $planethaggle~multiple 1273
+	elseif ($planethaggle~portmaxinit >= 721)
+		setvar $planethaggle~mcic "-51"
+		setvar $planethaggle~multiple 1267
+	elseif ($planethaggle~portmaxinit >= 717)
+		setvar $planethaggle~mcic "-50"
+		setvar $planethaggle~multiple 1261
+	elseif ($planethaggle~portmaxinit >= 713)
+		setvar $planethaggle~mcic "-49"
+		setvar $planethaggle~multiple 1255
+	elseif ($planethaggle~portmaxinit >= 709)
+		setvar $planethaggle~mcic "-48"
+		setvar $planethaggle~multiple 1252
+	elseif ($planethaggle~portmaxinit >= 705)
+		setvar $planethaggle~mcic "-47"
+		setvar $planethaggle~multiple 1246
+	elseif ($planethaggle~portmaxinit >= 701)
+		setvar $planethaggle~mcic "-46"
+		setvar $planethaggle~multiple 1236
+	elseif ($planethaggle~portmaxinit >= 697)
+		setvar $planethaggle~mcic "-45"
+		setvar $planethaggle~multiple 1233
+	elseif ($planethaggle~portmaxinit >= 693)
+		setvar $planethaggle~mcic "-44"
+		setvar $planethaggle~multiple 1227
+	elseif ($planethaggle~portmaxinit >= 688)
+		setvar $planethaggle~mcic "-43"
+		setvar $planethaggle~multiple 1224
+	elseif ($planethaggle~portmaxinit >= 684)
+		setvar $planethaggle~mcic "-42"
+		setvar $planethaggle~multiple 1214
+	elseif ($planethaggle~portmaxinit >= 680)
+		setvar $planethaggle~mcic "-41"
+		setvar $planethaggle~multiple 1213
+	elseif ($planethaggle~portmaxinit >= 676)
+		setvar $planethaggle~mcic "-40"
+		setvar $planethaggle~multiple 1203
+	elseif ($planethaggle~portmaxinit >= 672)
+		setvar $planethaggle~mcic "-39"
+		setvar $planethaggle~multiple 1200
+	elseif ($planethaggle~portmaxinit >= 668)
+		setvar $planethaggle~mcic "-38"
+		setvar $planethaggle~multiple 1194
+	elseif ($planethaggle~portmaxinit >= 664)
+		setvar $planethaggle~mcic "-37"
+		setvar $planethaggle~multiple 1191
+	elseif ($planethaggle~portmaxinit >= 660)
+		setvar $planethaggle~mcic "-36"
+		setvar $planethaggle~multiple 1181
+	elseif ($planethaggle~portmaxinit >= 656)
+		setvar $planethaggle~mcic "-35"
+		setvar $planethaggle~multiple 1178
+	elseif ($planethaggle~portmaxinit >= 651)
+		setvar $planethaggle~mcic "-34"
+		setvar $planethaggle~multiple 1172
+	elseif ($planethaggle~portmaxinit >= 647)
+		setvar $planethaggle~mcic "-33"
+		setvar $planethaggle~multiple 1166
+	elseif ($planethaggle~portmaxinit >= 643)
+		setvar $planethaggle~mcic "-32"
+		setvar $planethaggle~multiple 1160
+	elseif ($planethaggle~portmaxinit >= 639)
+		setvar $planethaggle~mcic "-31"
+		setvar $planethaggle~multiple 1157
+	elseif ($planethaggle~portmaxinit >= 635)
+		setvar $planethaggle~mcic "-30"
+		setvar $planethaggle~multiple 1154
+	else
+		setvar $planethaggle~mcic 0
+		setvar $planethaggle~multiple 1154
+	end
+elseif ($planethaggle~prodtosell = "equ")
+	if ($planethaggle~portmaxinit >= 1393)
+		setvar $planethaggle~mcic "-65"
+		setvar $planethaggle~multiple 1347
+	elseif ($planethaggle~portmaxinit >= 1386)
+		setvar $planethaggle~mcic "-64"
+		setvar $planethaggle~multiple 1341
+	elseif ($planethaggle~portmaxinit >= 1379)
+		setvar $planethaggle~mcic "-63"
+		setvar $planethaggle~multiple 1336
+	elseif ($planethaggle~portmaxinit >= 1372)
+		setvar $planethaggle~mcic "-62"
+		setvar $planethaggle~multiple 1330
+	elseif ($planethaggle~portmaxinit >= 1365)
+		setvar $planethaggle~mcic "-61"
+		setvar $planethaggle~multiple 1324
+	elseif ($planethaggle~portmaxinit >= 1358)
+		setvar $planethaggle~mcic "-60"
+		setvar $planethaggle~multiple 1319
+	elseif ($planethaggle~portmaxinit >= 1351)
+		setvar $planethaggle~mcic "-59"
+		setvar $planethaggle~multiple 1313
+	elseif ($planethaggle~portmaxinit >= 1344)
+		setvar $planethaggle~mcic "-58"
+		setvar $planethaggle~multiple 1307
+	elseif ($planethaggle~portmaxinit >= 1337)
+		setvar $planethaggle~mcic "-57"
+		setvar $planethaggle~multiple 1302
+	elseif ($planethaggle~portmaxinit >= 1329)
+		setvar $planethaggle~mcic "-56"
+		setvar $planethaggle~multiple 1296
+	elseif ($planethaggle~portmaxinit >= 1323)
+		setvar $planethaggle~mcic "-55"
+		setvar $planethaggle~multiple 1291
+	elseif ($planethaggle~portmaxinit >= 1315)
+		setvar $planethaggle~mcic "-54"
+		setvar $planethaggle~multiple 1285
+	elseif ($planethaggle~portmaxinit >= 1308)
+		setvar $planethaggle~mcic "-53"
+		setvar $planethaggle~multiple 1279
+	elseif ($planethaggle~portmaxinit >= 1301)
+		setvar $planethaggle~mcic "-52"
+		setvar $planethaggle~multiple 1274
+	elseif ($planethaggle~portmaxinit >= 1294)
+		setvar $planethaggle~mcic "-51"
+		setvar $planethaggle~multiple 1268
+	elseif ($planethaggle~portmaxinit >= 1287)
+		setvar $planethaggle~mcic "-50"
+		setvar $planethaggle~multiple 1262
+	elseif ($planethaggle~portmaxinit >= 1279)
+		setvar $planethaggle~mcic "-49"
+		setvar $planethaggle~multiple 1254
+	elseif ($planethaggle~portmaxinit >= 1272)
+		setvar $planethaggle~mcic "-48"
+		setvar $planethaggle~multiple 1247
+	elseif ($planethaggle~portmaxinit >= 1265)
+		setvar $planethaggle~mcic "-47"
+		setvar $planethaggle~multiple 1246
+	elseif ($planethaggle~portmaxinit >= 1258)
+		setvar $planethaggle~mcic "-46"
+		setvar $planethaggle~multiple 1241
+	elseif ($planethaggle~portmaxinit >= 1251)
+		setvar $planethaggle~mcic "-45"
+		setvar $planethaggle~multiple 1235
+	elseif ($planethaggle~portmaxinit >= 1243)
+		setvar $planethaggle~mcic "-44"
+		setvar $planethaggle~multiple 1229
+	elseif ($planethaggle~portmaxinit >= 1236)
+		setvar $planethaggle~mcic "-43"
+		setvar $planethaggle~multiple 1224
+	elseif ($planethaggle~portmaxinit >= 1229)
+		setvar $planethaggle~mcic "-42"
+		setvar $planethaggle~multiple 1218
+	elseif ($planethaggle~portmaxinit >= 1221)
+		setvar $planethaggle~mcic "-41"
+		setvar $planethaggle~multiple 1213
+	elseif ($planethaggle~portmaxinit >= 1214)
+		setvar $planethaggle~mcic "-40"
+		setvar $planethaggle~multiple 1208
+	elseif ($planethaggle~portmaxinit >= 1206)
+		setvar $planethaggle~mcic "-39"
+		setvar $planethaggle~multiple 1201
+	elseif ($planethaggle~portmaxinit >= 1199)
+		setvar $planethaggle~mcic "-38"
+		setvar $planethaggle~multiple 1196
+	elseif ($planethaggle~portmaxinit >= 1192)
+		setvar $planethaggle~mcic "-37"
+		setvar $planethaggle~multiple 1190
+	elseif ($planethaggle~portmaxinit >= 1184)
+		setvar $planethaggle~mcic "-36"
+		setvar $planethaggle~multiple 1185
+	elseif ($planethaggle~portmaxinit >= 1177)
+		setvar $planethaggle~mcic "-35"
+		setvar $planethaggle~multiple 1180
+	elseif ($planethaggle~portmaxinit >= 1169)
+		setvar $planethaggle~mcic "-34"
+		setvar $planethaggle~multiple 1174
+	elseif ($planethaggle~portmaxinit >= 1162)
+		setvar $planethaggle~mcic "-33"
+		setvar $planethaggle~multiple 1169
+	elseif ($planethaggle~portmaxinit >= 1154)
+		setvar $planethaggle~mcic "-32"
+		setvar $planethaggle~multiple 1164
+	elseif ($planethaggle~portmaxinit >= 1147)
+		setvar $planethaggle~mcic "-31"
+		setvar $planethaggle~multiple 1158
+	elseif ($planethaggle~portmaxinit >= 1139)
+		setvar $planethaggle~mcic "-30"
+		setvar $planethaggle~multiple 1152
+	elseif ($planethaggle~portmaxinit >= 1132)
+		setvar $planethaggle~mcic "-29"
+		setvar $planethaggle~multiple 1149
+	elseif ($planethaggle~portmaxinit >= 1124)
+		setvar $planethaggle~mcic "-28"
+		setvar $planethaggle~multiple 1144
+	elseif ($planethaggle~portmaxinit >= 1116)
+		setvar $planethaggle~mcic "-27"
+		setvar $planethaggle~multiple 1136
+	elseif ($planethaggle~portmaxinit >= 1109)
+		setvar $planethaggle~mcic "-26"
+		setvar $planethaggle~multiple 1132
+	elseif ($planethaggle~portmaxinit >= 1101)
+		setvar $planethaggle~mcic "-25"
+		setvar $planethaggle~multiple 1126
+	elseif ($planethaggle~portmaxinit >= 1093)
+		setvar $planethaggle~mcic "-24"
+		setvar $planethaggle~multiple 1122
+	elseif ($planethaggle~portmaxinit >= 1086)
+		setvar $planethaggle~mcic "-23"
+		setvar $planethaggle~multiple 1117
+	elseif ($planethaggle~portmaxinit >= 1078)
+		setvar $planethaggle~mcic "-22"
+		setvar $planethaggle~multiple 1110
+	elseif ($planethaggle~portmaxinit >= 1071)
+		setvar $planethaggle~mcic "-21"
+		setvar $planethaggle~multiple 1105
+	elseif ($planethaggle~portmaxinit >= 1063)
+		setvar $planethaggle~mcic "-20"
+		setvar $planethaggle~multiple 1102
+	else
+		setvar $planethaggle~mcic 0
+		setvar $planethaggle~multiple 1102
+	end
 end
-setvar $PLANETHAGGLE~COUNTER $PLANETHAGGLE~OFFER
-divide $PLANETHAGGLE~COUNTER 10
-multiply $PLANETHAGGLE~COUNTER $PLANETHAGGLE~MULTIPLE
-divide $PLANETHAGGLE~COUNTER 100
-send "az"&$PLANETHAGGLE~COUNTER&"*"
-setvar $PLANETHAGGLE~MIDHAGGLES 0
+setvar $planethaggle~counter $planethaggle~offer
+divide $planethaggle~counter 10
+multiply $planethaggle~counter $planethaggle~multiple
+divide $planethaggle~counter 100
+send "az"&$planethaggle~counter&"*"
+setvar $planethaggle~midhaggles 0
 
-:PLANETHAGGLE~SELLOFFERLOOP
-settextlinetrigger SELLPRICE :SELLPRICE "We'll buy them for"
-settextlinetrigger SELLFINALOFFER :SELLFINALOFFER "Our final offer"
-settextlinetrigger SELLEXPERIENCE :SELLEXPERIENCE "experience point(s)"
-settextlinetrigger SELLYOUHAVE :SELLYOUHAVE "You have"
-settextlinetrigger SELLSCREWUP1 :SELLSCREWUP "Get real ion-brain, make me a real offer."
-settextlinetrigger SELLSCREWUP2 :SELLSCREWUP "This is the big leagues Jr.  Make a real offer."
-settextlinetrigger SELLSCREWUP3 :SELLSCREWUP "My patience grows short with you."
-settextlinetrigger SELLSCREWUP4 :SELLSCREWUP "I have much better things to do than waste my time.  Try again."
-settextlinetrigger SELLSCREWUP5 :SELLSCREWUP "HA! HA, ha hahahhah hehehe hhhohhohohohh!  You choke me up!"
-settextlinetrigger SELLSCREWUP6 :SELLSCREWUP "Quit playing around, you're wasting my time!"
-settextlinetrigger SELLSCREWUP7 :SELLSCREWUP "Make a real offer or get the h"
-settextlinetrigger SELLSCREWUP8 :SELLSCREWUP "WHAT?!@!? you must be crazy!"
-settextlinetrigger SELLSCREWUP9 :SELLSCREWUP "So, you think I'm as stupid as you look? Make a real offer."
-settextlinetrigger SELLSCREWUP10 :SELLSCREWUP "What do you take me for, a fool?  Make a real offer!"
-settextlinetrigger SELLSCREWUP11 :SELLSCREWUP "Swine, go peddle your wares somewhere else, you make me sick."
-settextlinetrigger SELLSCREWUP12 :SELLSCREWUP "I see you are as stupid as you look, get lost..."
-settextlinetrigger SELLSCREWUP13 :SELLSCREWUP "HA!  You think me a fool?  Thats insane!  Get out of here!"
-settextlinetrigger SELLSCREWUP14 :SELLSCREWUP "Get lost creep, that junk isn't worth half that much!"
-settextlinetrigger SELLSCREWUP15 :SELLSCREWUP "I think you'd better leave if you value your life!"
+:planethaggle~sellofferloop
+settextlinetrigger sellprice :sellprice "We'll buy them for"
+settextlinetrigger sellfinaloffer :sellfinaloffer "Our final offer"
+settextlinetrigger sellexperience :sellexperience "experience point(s)"
+settextlinetrigger sellyouhave :sellyouhave "You have"
+settextlinetrigger sellscrewup1 :sellscrewup "Get real ion-brain, make me a real offer."
+settextlinetrigger sellscrewup2 :sellscrewup "This is the big leagues Jr.  Make a real offer."
+settextlinetrigger sellscrewup3 :sellscrewup "My patience grows short with you."
+settextlinetrigger sellscrewup4 :sellscrewup "I have much better things to do than waste my time.  Try again."
+settextlinetrigger sellscrewup5 :sellscrewup "HA! HA, ha hahahhah hehehe hhhohhohohohh!  You choke me up!"
+settextlinetrigger sellscrewup6 :sellscrewup "Quit playing around, you're wasting my time!"
+settextlinetrigger sellscrewup7 :sellscrewup "Make a real offer or get the h"
+settextlinetrigger sellscrewup8 :sellscrewup "WHAT?!@!? you must be crazy!"
+settextlinetrigger sellscrewup9 :sellscrewup "So, you think I'm as stupid as you look? Make a real offer."
+settextlinetrigger sellscrewup10 :sellscrewup "What do you take me for, a fool?  Make a real offer!"
+settextlinetrigger sellscrewup11 :sellscrewup "Swine, go peddle your wares somewhere else, you make me sick."
+settextlinetrigger sellscrewup12 :sellscrewup "I see you are as stupid as you look, get lost..."
+settextlinetrigger sellscrewup13 :sellscrewup "HA!  You think me a fool?  Thats insane!  Get out of here!"
+settextlinetrigger sellscrewup14 :sellscrewup "Get lost creep, that junk isn't worth half that much!"
+settextlinetrigger sellscrewup15 :sellscrewup "I think you'd better leave if you value your life!"
 pause
 pause
 
-:PLANETHAGGLE~SELLSCREWUP
-killtrigger SELLPRICE
-killtrigger SELLFINALOFFER
-killtrigger SELLEXPERIENCE
-killtrigger SELLYOUHAVE
-killtrigger SELLSCREWUP1
-killtrigger SELLSCREWUP2
-killtrigger SELLSCREWUP3
-killtrigger SELLSCREWUP4
-killtrigger SELLSCREWUP5
-killtrigger SELLSCREWUP6
-killtrigger SELLSCREWUP7
-killtrigger SELLSCREWUP8
-killtrigger SELLSCREWUP9
-killtrigger SELLSCREWUP10
-killtrigger SELLSCREWUP11
-killtrigger SELLSCREWUP12
-killtrigger SELLSCREWUP13
-killtrigger SELLSCREWUP14
-killtrigger SELLSCREWUP15
+:planethaggle~sellscrewup
+killtrigger sellprice
+killtrigger sellfinaloffer
+killtrigger sellexperience
+killtrigger sellyouhave
+killtrigger sellscrewup1
+killtrigger sellscrewup2
+killtrigger sellscrewup3
+killtrigger sellscrewup4
+killtrigger sellscrewup5
+killtrigger sellscrewup6
+killtrigger sellscrewup7
+killtrigger sellscrewup8
+killtrigger sellscrewup9
+killtrigger sellscrewup10
+killtrigger sellscrewup11
+killtrigger sellscrewup12
+killtrigger sellscrewup13
+killtrigger sellscrewup14
+killtrigger sellscrewup15
 echo "*## PICKUP up sell fail"
-goto :SELLHAGGLEFAILED
+goto :sellhagglefailed
 echo "*### HSOULD NOT GET HERE NOW"
-multiply $PLANETHAGGLE~COUNTER 98
-divide $PLANETHAGGLE~COUNTER 100
-send "az"&$PLANETHAGGLE~COUNTER&"*"
-goto :SELLOFFERLOOP
+multiply $planethaggle~counter 98
+divide $planethaggle~counter 100
+send "az"&$planethaggle~counter&"*"
+goto :sellofferloop
 
-:PLANETHAGGLE~SELLPRICE
-killtrigger SELLPRICE
-killtrigger SELLFINALOFFER
-killtrigger SELLEXPERIENCE
-killtrigger SELLYOUHAVE
-killtrigger SELLSCREWUP1
-killtrigger SELLSCREWUP2
-killtrigger SELLSCREWUP3
-killtrigger SELLSCREWUP4
-killtrigger SELLSCREWUP5
-killtrigger SELLSCREWUP6
-killtrigger SELLSCREWUP7
-killtrigger SELLSCREWUP8
-killtrigger SELLSCREWUP9
-killtrigger SELLSCREWUP10
-killtrigger SELLSCREWUP11
-killtrigger SELLSCREWUP12
-killtrigger SELLSCREWUP13
-killtrigger SELLSCREWUP14
-killtrigger SELLSCREWUP15
-add $PLANETHAGGLE~MIDHAGGLES 1
-setvar $PLANETHAGGLE~OLD_OFFER $PLANETHAGGLE~OFFER
-setvar $PLANETHAGGLE~OLD_COUNTER $PLANETHAGGLE~COUNTER
-getword CURRENTLINE $PLANETHAGGLE~OFFER 5
-striptext $PLANETHAGGLE~OFFER ","
-setvar $PLANETHAGGLE~OFFER_CHANGE $PLANETHAGGLE~OFFER
-subtract $PLANETHAGGLE~OFFER_CHANGE $PLANETHAGGLE~OLD_OFFER
-if ($PLANETHAGGLE~MCIC > "-35")
-  multiply $PLANETHAGGLE~OFFER_CHANGE 75
-  divide $PLANETHAGGLE~OFFER_CHANGE 100
-  subtract $PLANETHAGGLE~COUNTER $PLANETHAGGLE~OFFER_CHANGE
-  subtract $PLANETHAGGLE~COUNTER 25
-elseif ($PLANETHAGGLE~MCIC > "-55")
-  multiply $PLANETHAGGLE~OFFER_CHANGE 65
-  divide $PLANETHAGGLE~OFFER_CHANGE 100
-  subtract $PLANETHAGGLE~COUNTER $PLANETHAGGLE~OFFER_CHANGE
-  subtract $PLANETHAGGLE~COUNTER 25
+:planethaggle~sellprice
+killtrigger sellprice
+killtrigger sellfinaloffer
+killtrigger sellexperience
+killtrigger sellyouhave
+killtrigger sellscrewup1
+killtrigger sellscrewup2
+killtrigger sellscrewup3
+killtrigger sellscrewup4
+killtrigger sellscrewup5
+killtrigger sellscrewup6
+killtrigger sellscrewup7
+killtrigger sellscrewup8
+killtrigger sellscrewup9
+killtrigger sellscrewup10
+killtrigger sellscrewup11
+killtrigger sellscrewup12
+killtrigger sellscrewup13
+killtrigger sellscrewup14
+killtrigger sellscrewup15
+add $planethaggle~midhaggles 1
+setvar $planethaggle~old_offer $planethaggle~offer
+setvar $planethaggle~old_counter $planethaggle~counter
+getword currentline $planethaggle~offer 5
+striptext $planethaggle~offer ","
+setvar $planethaggle~offer_change $planethaggle~offer
+subtract $planethaggle~offer_change $planethaggle~old_offer
+if ($planethaggle~mcic > "-35")
+	multiply $planethaggle~offer_change 75
+	divide $planethaggle~offer_change 100
+	subtract $planethaggle~counter $planethaggle~offer_change
+	subtract $planethaggle~counter 25
+elseif ($planethaggle~mcic > "-55")
+	multiply $planethaggle~offer_change 65
+	divide $planethaggle~offer_change 100
+	subtract $planethaggle~counter $planethaggle~offer_change
+	subtract $planethaggle~counter 25
 else
-  multiply $PLANETHAGGLE~OFFER_CHANGE 60
-  divide $PLANETHAGGLE~OFFER_CHANGE 100
-  subtract $PLANETHAGGLE~COUNTER $PLANETHAGGLE~OFFER_CHANGE
-  subtract $PLANETHAGGLE~COUNTER 10
+	multiply $planethaggle~offer_change 60
+	divide $planethaggle~offer_change 100
+	subtract $planethaggle~counter $planethaggle~offer_change
+	subtract $planethaggle~counter 10
 end
-send "az"&$PLANETHAGGLE~COUNTER&"*"
-goto :SELLOFFERLOOP
+send "az"&$planethaggle~counter&"*"
+goto :sellofferloop
 
-:PLANETHAGGLE~SELLFINALOFFER
-killtrigger SELLPRICE
-killtrigger SELLFINALOFFER
-killtrigger SELLEXPERIENCE
-killtrigger SELLYOUHAVE
-killtrigger SELLSCREWUP1
-killtrigger SELLSCREWUP2
-killtrigger SELLSCREWUP3
-killtrigger SELLSCREWUP4
-killtrigger SELLSCREWUP5
-killtrigger SELLSCREWUP6
-killtrigger SELLSCREWUP7
-killtrigger SELLSCREWUP8
-killtrigger SELLSCREWUP9
-killtrigger SELLSCREWUP10
-killtrigger SELLSCREWUP11
-killtrigger SELLSCREWUP12
-killtrigger SELLSCREWUP13
-killtrigger SELLSCREWUP14
-killtrigger SELLSCREWUP15
+:planethaggle~sellfinaloffer
+killtrigger sellprice
+killtrigger sellfinaloffer
+killtrigger sellexperience
+killtrigger sellyouhave
+killtrigger sellscrewup1
+killtrigger sellscrewup2
+killtrigger sellscrewup3
+killtrigger sellscrewup4
+killtrigger sellscrewup5
+killtrigger sellscrewup6
+killtrigger sellscrewup7
+killtrigger sellscrewup8
+killtrigger sellscrewup9
+killtrigger sellscrewup10
+killtrigger sellscrewup11
+killtrigger sellscrewup12
+killtrigger sellscrewup13
+killtrigger sellscrewup14
+killtrigger sellscrewup15
 
-if (($PLANETHAGGLE~PRODTOSELL = "ore") and (($PLANETHAGGLE~MCIC <= "-75") and (($PLANETHAGGLE~PORTBUYING >= 25000) and (($PLANETHAGGLE~MIDHAGGLES < 1) and ($PLANETHAGGLE~ORE_SELL_FAILURES < 2)))))
-  setvar $PLANETHAGGLE~FORCEFAIL 1
-  setvar $PLANETHAGGLE~THISOREFAILED 1
-elseif (($PLANETHAGGLE~PRODTOSELL = "org") and ((($PLANETHAGGLE~MCIC <= "-60") and ((($PLANETHAGGLE~PORTBUYING >= 25000) and ((($PLANETHAGGLE~MIDHAGGLES < 2) and (($PLANETHAGGLE~THISOREFAILED = 1) or ($PLANETHAGGLE~ORG_SELL_FAILURES < 4)))))))))
-  setvar $PLANETHAGGLE~FORCEFAIL 1
-  setvar $PLANETHAGGLE~THISORGFAILED 1
-elseif (($PLANETHAGGLE~PRODTOSELL = "org") and ((($PLANETHAGGLE~MCIC <= "-60") and ((($PLANETHAGGLE~PORTBUYING >= 15000) and ((($PLANETHAGGLE~MIDHAGGLES < 1) and (($PLANETHAGGLE~THISOREFAILED = 1) or ($PLANETHAGGLE~ORG_SELL_FAILURES < 2)))))))))
-  setvar $PLANETHAGGLE~FORCEFAIL 1
-  setvar $PLANETHAGGLE~THISORGFAILED 1
-elseif (($PLANETHAGGLE~PRODTOSELL = "equ") and ((($PLANETHAGGLE~MCIC <= "-55") and ((($PLANETHAGGLE~PORTBUYING >= 20000) and ((($PLANETHAGGLE~MIDHAGGLES < 2) and (($PLANETHAGGLE~THISOREFAILED = 1) or ($PLANETHAGGLE~THISORGFAILED = 1) or ($PLANETHAGGLE~EQU_SELL_FAILURES < 4)))))))))
-  setvar $PLANETHAGGLE~FORCEFAIL 1
-  setvar $PLANETHAGGLE~THISEQUFAILED 1
-elseif (($PLANETHAGGLE~PRODTOSELL = "equ") and ((($PLANETHAGGLE~MCIC <= "-55") and ((($PLANETHAGGLE~PORTBUYING >= 12000) and ((($PLANETHAGGLE~MIDHAGGLES < 1) and (($PLANETHAGGLE~THISOREFAILED = 1) or ($PLANETHAGGLE~THISORGFAILED = 1) or ($PLANETHAGGLE~EQU_SELL_FAILURES < 2)))))))))
-  setvar $PLANETHAGGLE~FORCEFAIL 1
-  setvar $PLANETHAGGLE~THISEQUFAILED 1
+if (($planethaggle~prodtosell = "ore") and (($planethaggle~mcic <= "-75") and (($planethaggle~portbuying >= 25000) and (($planethaggle~midhaggles < 1) and ($planethaggle~ore_sell_failures < 2)))))
+	setvar $planethaggle~forcefail 1
+	setvar $planethaggle~thisorefailed 1
+elseif (($planethaggle~prodtosell = "org") and ((($planethaggle~mcic <= "-60") and ((($planethaggle~portbuying >= 25000) and ((($planethaggle~midhaggles < 2) and (($planethaggle~thisorefailed = 1) or ($planethaggle~org_sell_failures < 4)))))))))
+	setvar $planethaggle~forcefail 1
+	setvar $planethaggle~thisorgfailed 1
+elseif (($planethaggle~prodtosell = "org") and ((($planethaggle~mcic <= "-60") and ((($planethaggle~portbuying >= 15000) and ((($planethaggle~midhaggles < 1) and (($planethaggle~thisorefailed = 1) or ($planethaggle~org_sell_failures < 2)))))))))
+	setvar $planethaggle~forcefail 1
+	setvar $planethaggle~thisorgfailed 1
+elseif (($planethaggle~prodtosell = "equ") and ((($planethaggle~mcic <= "-55") and ((($planethaggle~portbuying >= 20000) and ((($planethaggle~midhaggles < 2) and (($planethaggle~thisorefailed = 1) or ($planethaggle~thisorgfailed = 1) or ($planethaggle~equ_sell_failures < 4)))))))))
+	setvar $planethaggle~forcefail 1
+	setvar $planethaggle~thisequfailed 1
+elseif (($planethaggle~prodtosell = "equ") and ((($planethaggle~mcic <= "-55") and ((($planethaggle~portbuying >= 12000) and ((($planethaggle~midhaggles < 1) and (($planethaggle~thisorefailed = 1) or ($planethaggle~thisorgfailed = 1) or ($planethaggle~equ_sell_failures < 2)))))))))
+	setvar $planethaggle~forcefail 1
+	setvar $planethaggle~thisequfailed 1
 else
-  setvar $PLANETHAGGLE~FORCEFAIL 0
+	setvar $planethaggle~forcefail 0
 end
-if ($PLANETHAGGLE~PRODTOSELL = "ore")
-  setsectorparameter $PLAYER~CURRENT_SECTOR "OREMCIC" $PLANETHAGGLE~MCIC
-elseif ($PLANETHAGGLE~PRODTOSELL = "org")
-  setsectorparameter $PLAYER~CURRENT_SECTOR "ORGMCIC" $PLANETHAGGLE~MCIC
-elseif ($PLANETHAGGLE~PRODTOSELL = "equ")
-  setsectorparameter $PLAYER~CURRENT_SECTOR "EQUMCIC" $PLANETHAGGLE~MCIC
+if ($planethaggle~prodtosell = "ore")
+	setsectorparameter $player~current_sector "OREMCIC" $planethaggle~mcic
+elseif ($planethaggle~prodtosell = "org")
+	setsectorparameter $player~current_sector "ORGMCIC" $planethaggle~mcic
+elseif ($planethaggle~prodtosell = "equ")
+	setsectorparameter $player~current_sector "EQUMCIC" $planethaggle~mcic
 end
-if ($PLANETHAGGLE~FORCEFAIL = 0)
-  setvar $PLANETHAGGLE~OLD_OFFER $PLANETHAGGLE~OFFER
-  setvar $PLANETHAGGLE~OLD_COUNTER $PLANETHAGGLE~COUNTER
-  getword CURRENTLINE $PLANETHAGGLE~OFFER 5
-  striptext $PLANETHAGGLE~OFFER ","
-  setvar $PLANETHAGGLE~OFFER_CHANGE $PLANETHAGGLE~OFFER
-  subtract $PLANETHAGGLE~OFFER_CHANGE $PLANETHAGGLE~OLD_OFFER
-  if ($PLANETHAGGLE~PRODTOSELL = "ore")
-    multiply $PLANETHAGGLE~OFFER_CHANGE 30
-  elseif ($PLANETHAGGLE~PRODTOSELL = "org")
-    multiply $PLANETHAGGLE~OFFER_CHANGE 27
-  elseif ($PLANETHAGGLE~PRODTOSELL = "equ")
-    multiply $PLANETHAGGLE~OFFER_CHANGE 25
-  end
-  divide $PLANETHAGGLE~OFFER_CHANGE 10
-  subtract $PLANETHAGGLE~COUNTER $PLANETHAGGLE~OFFER_CHANGE
-  subtract $PLANETHAGGLE~COUNTER 10
-  send "az"&$PLANETHAGGLE~COUNTER&"*"
+if ($planethaggle~forcefail = 0)
+	setvar $planethaggle~old_offer $planethaggle~offer
+	setvar $planethaggle~old_counter $planethaggle~counter
+	getword currentline $planethaggle~offer 5
+	striptext $planethaggle~offer ","
+	setvar $planethaggle~offer_change $planethaggle~offer
+	subtract $planethaggle~offer_change $planethaggle~old_offer
+	if ($planethaggle~prodtosell = "ore")
+		multiply $planethaggle~offer_change 30
+	elseif ($planethaggle~prodtosell = "org")
+		multiply $planethaggle~offer_change 27
+	elseif ($planethaggle~prodtosell = "equ")
+		multiply $planethaggle~offer_change 25
+	end
+	divide $planethaggle~offer_change 10
+	subtract $planethaggle~counter $planethaggle~offer_change
+	subtract $planethaggle~counter 10
+	send "az"&$planethaggle~counter&"*"
 else
 
-  send "az"&$PLANETHAGGLE~COUNTER&"*"
+	send "az"&$planethaggle~counter&"*"
 end
-goto :SELLOFFERLOOP
+goto :sellofferloop
 
-:PLANETHAGGLE~SELLNOTINTERESTED
-killtrigger SELLPRICE
-killtrigger SELLFINALOFFER
-killtrigger SELLEXPERIENCE
-killtrigger SELLYOUHAVE
-killtrigger SELLSCREWUP1
-killtrigger SELLSCREWUP2
-killtrigger SELLSCREWUP3
-killtrigger SELLSCREWUP4
-killtrigger SELLSCREWUP5
-killtrigger SELLSCREWUP6
-killtrigger SELLSCREWUP7
-killtrigger SELLSCREWUP8
-killtrigger SELLSCREWUP9
-killtrigger SELLSCREWUP10
-killtrigger SELLSCREWUP11
-killtrigger SELLSCREWUP12
-killtrigger SELLSCREWUP13
-killtrigger SELLSCREWUP14
-killtrigger SELLSCREWUP15
-goto :SELLHAGGLEFAILED
+:planethaggle~sellnotinterested
+killtrigger sellprice
+killtrigger sellfinaloffer
+killtrigger sellexperience
+killtrigger sellyouhave
+killtrigger sellscrewup1
+killtrigger sellscrewup2
+killtrigger sellscrewup3
+killtrigger sellscrewup4
+killtrigger sellscrewup5
+killtrigger sellscrewup6
+killtrigger sellscrewup7
+killtrigger sellscrewup8
+killtrigger sellscrewup9
+killtrigger sellscrewup10
+killtrigger sellscrewup11
+killtrigger sellscrewup12
+killtrigger sellscrewup13
+killtrigger sellscrewup14
+killtrigger sellscrewup15
+goto :sellhagglefailed
 
-:PLANETHAGGLE~SELLEXPERIENCE
-killtrigger SELLPRICE
-killtrigger SELLFINALOFFER
-killtrigger SELLEXPERIENCE
-killtrigger SELLYOUHAVE
-killtrigger SELLSCREWUP1
-killtrigger SELLSCREWUP2
-killtrigger SELLSCREWUP3
-killtrigger SELLSCREWUP4
-killtrigger SELLSCREWUP5
-killtrigger SELLSCREWUP6
-killtrigger SELLSCREWUP7
-killtrigger SELLSCREWUP8
-killtrigger SELLSCREWUP9
-killtrigger SELLSCREWUP10
-killtrigger SELLSCREWUP11
-killtrigger SELLSCREWUP12
-killtrigger SELLSCREWUP13
-killtrigger SELLSCREWUP14
-getword CURRENTLINE $PLANETHAGGLE~EXP_BONUS 7
-add $PLANETHAGGLE~EXPERIENCE $PLANETHAGGLE~EXP_BONUS
-goto :SELLOFFERLOOP
+:planethaggle~sellexperience
+killtrigger sellprice
+killtrigger sellfinaloffer
+killtrigger sellexperience
+killtrigger sellyouhave
+killtrigger sellscrewup1
+killtrigger sellscrewup2
+killtrigger sellscrewup3
+killtrigger sellscrewup4
+killtrigger sellscrewup5
+killtrigger sellscrewup6
+killtrigger sellscrewup7
+killtrigger sellscrewup8
+killtrigger sellscrewup9
+killtrigger sellscrewup10
+killtrigger sellscrewup11
+killtrigger sellscrewup12
+killtrigger sellscrewup13
+killtrigger sellscrewup14
+getword currentline $planethaggle~exp_bonus 7
+add $planethaggle~experience $planethaggle~exp_bonus
+goto :sellofferloop
 
-:PLANETHAGGLE~SELLYOUHAVE
-killtrigger SELLPRICE
-killtrigger SELLFINALOFFER
-killtrigger SELLEXPERIENCE
-killtrigger SELLYOUHAVE
-killtrigger SELLSCREWUP1
-killtrigger SELLSCREWUP2
-killtrigger SELLSCREWUP3
-killtrigger SELLSCREWUP4
-killtrigger SELLSCREWUP5
-killtrigger SELLSCREWUP6
-killtrigger SELLSCREWUP7
-killtrigger SELLSCREWUP8
-killtrigger SELLSCREWUP9
-killtrigger SELLSCREWUP10
-killtrigger SELLSCREWUP11
-killtrigger SELLSCREWUP12
-killtrigger SELLSCREWUP13
-killtrigger SELLSCREWUP14
-killtrigger SELLSCREWUP15
+:planethaggle~sellyouhave
+killtrigger sellprice
+killtrigger sellfinaloffer
+killtrigger sellexperience
+killtrigger sellyouhave
+killtrigger sellscrewup1
+killtrigger sellscrewup2
+killtrigger sellscrewup3
+killtrigger sellscrewup4
+killtrigger sellscrewup5
+killtrigger sellscrewup6
+killtrigger sellscrewup7
+killtrigger sellscrewup8
+killtrigger sellscrewup9
+killtrigger sellscrewup10
+killtrigger sellscrewup11
+killtrigger sellscrewup12
+killtrigger sellscrewup13
+killtrigger sellscrewup14
+killtrigger sellscrewup15
 
-setvar $PLANETHAGGLE~OLDCREDITS $PLAYER~CREDITS
-getword CURRENTLINE $PLANETHAGGLE~CREDITS 3
-striptext $PLANETHAGGLE~CREDITS ","
+setvar $planethaggle~oldcredits $player~credits
+getword currentline $planethaggle~credits 3
+striptext $planethaggle~credits ","
 
-if ($PLANETHAGGLE~OLDCREDITS = $PLANETHAGGLE~CREDITS)
-  setvar $PLANETHAGGLE~CURRENTHAGGLE "failed"
-  goto :SELLHAGGLEFAILED
+if ($planethaggle~oldcredits = $planethaggle~credits)
+	setvar $planethaggle~currenthaggle "failed"
+	goto :sellhagglefailed
 else
-  setvar $PLANETHAGGLE~CURRENTHAGGLE "succeeded"
-  goto :SELLHAGGLESUCCEEDED
+	setvar $planethaggle~currenthaggle "succeeded"
+	goto :sellhagglesucceeded
 end
-:PLANETHAGGLE~SELLHAGGLEFAILED
-if ($PLANETHAGGLE~PRODTOSELL = "ore")
-  add $PLANETHAGGLE~ORE_SELL_FAILURES 1
-elseif ($PLANETHAGGLE~PRODTOSELL = "org")
-  add $PLANETHAGGLE~ORG_SELL_FAILURES 1
-elseif ($PLANETHAGGLE~PRODTOSELL = "equ")
-  add $PLANETHAGGLE~EQU_SELL_FAILURES 1
+
+:planethaggle~sellhagglefailed
+if ($planethaggle~prodtosell = "ore")
+	add $planethaggle~ore_sell_failures 1
+elseif ($planethaggle~prodtosell = "org")
+	add $planethaggle~org_sell_failures 1
+elseif ($planethaggle~prodtosell = "equ")
+	add $planethaggle~equ_sell_failures 1
 end
-if ($PLANETHAGGLE~SELLDELAY > 99)
-  setdelaytrigger SELLDELAY :SELLDELAY $PLANETHAGGLE~SELLDELAY
-  pause
-  :PLANETHAGGLE~SELLDELAY
+if ($planethaggle~selldelay > 99)
+	setdelaytrigger selldelay :selldelay $planethaggle~selldelay
+	pause
+
+	:planethaggle~selldelay
 end
 return
 
-:PLANETHAGGLE~SELLHAGGLESUCCEEDED
-setvar $PLANETHAGGLE~SELLHAGGLESUCCEEDED TRUE
-add $PLANETHAGGLE~PROFIT $PLANETHAGGLE~COUNTER
-setvar $PLANETHAGGLE~PERUNIT $PLANETHAGGLE~COUNTER
-divide $PLANETHAGGLE~PERUNIT $PLANETHAGGLE~PORTBUYING
-setvar $PLANETHAGGLE~SELLOUTPUT ""
-setvar $PLANETHAGGLE~SELLOUTPUT $PLANETHAGGLE~SELLOUTPUT&$PLANETHAGGLE~PORTBUYING&" "&$PLANETHAGGLE~PRODTOSELL&" for "&$PLANETHAGGLE~COUNTER&" cr"
-setvar $PLANETHAGGLE~SELLOUTPUT $PLANETHAGGLE~SELLOUTPUT&" - "
-if ($PLANETHAGGLE~PRODTOSELL = "ore")
-  setvar $PLANETHAGGLE~SELLOUTPUT $PLANETHAGGLE~SELLOUTPUT&$PLANETHAGGLE~ORE_SELL_FAILURES
-elseif ($PLANETHAGGLE~PRODTOSELL = "org")
-  setvar $PLANETHAGGLE~SELLOUTPUT $PLANETHAGGLE~SELLOUTPUT&$PLANETHAGGLE~ORG_SELL_FAILURES
-elseif ($PLANETHAGGLE~PRODTOSELL = "equ")
-  setvar $PLANETHAGGLE~SELLOUTPUT $PLANETHAGGLE~SELLOUTPUT&$PLANETHAGGLE~EQU_SELL_FAILURES
+:planethaggle~sellhagglesucceeded
+setvar $planethaggle~sellhagglesucceeded true
+add $planethaggle~profit $planethaggle~counter
+setvar $planethaggle~perunit $planethaggle~counter
+divide $planethaggle~perunit $planethaggle~portbuying
+setvar $planethaggle~selloutput ""
+setvar $planethaggle~selloutput $planethaggle~selloutput&$planethaggle~portbuying&" "&$planethaggle~prodtosell&" for "&$planethaggle~counter&" cr"
+setvar $planethaggle~selloutput $planethaggle~selloutput&" - "
+if ($planethaggle~prodtosell = "ore")
+	setvar $planethaggle~selloutput $planethaggle~selloutput&$planethaggle~ore_sell_failures
+elseif ($planethaggle~prodtosell = "org")
+	setvar $planethaggle~selloutput $planethaggle~selloutput&$planethaggle~org_sell_failures
+elseif ($planethaggle~prodtosell = "equ")
+	setvar $planethaggle~selloutput $planethaggle~selloutput&$planethaggle~equ_sell_failures
 end
-setvar $PLANETHAGGLE~SELLOUTPUT $PLANETHAGGLE~SELLOUTPUT&" fails"
-setvar $PLANETHAGGLE~SELLOUTPUT $PLANETHAGGLE~SELLOUTPUT&" - "&$PLANETHAGGLE~PERUNIT&"/unit"
-setvar $PLANETHAGGLE~SELLOUTPUT $PLANETHAGGLE~SELLOUTPUT&" - MCIC "&$PLANETHAGGLE~MCIC
-if ($PLANETHAGGLE~PRODTOSELL = "ore")
-  setvar $PLANETHAGGLE~SELLOUTPUT $PLANETHAGGLE~SELLOUTPUT&"/-90*"
-  setvar $PLANETHAGGLE~ORESELLOUTPUT $PLANETHAGGLE~SELLOUTPUT
-  setvar $PLANETHAGGLE~OREPROFIT $PLANETHAGGLE~COUNTER
-elseif ($PLANETHAGGLE~PRODTOSELL = "org")
-  setvar $PLANETHAGGLE~SELLOUTPUT $PLANETHAGGLE~SELLOUTPUT&"/-75*"
-  setvar $PLANETHAGGLE~ORGSELLOUTPUT $PLANETHAGGLE~SELLOUTPUT
-  setvar $PLANETHAGGLE~ORGPROFIT $PLANETHAGGLE~COUNTER
-elseif ($PLANETHAGGLE~PRODTOSELL = "equ")
-  setvar $PLANETHAGGLE~SELLOUTPUT $PLANETHAGGLE~SELLOUTPUT&"/-65*"
-  setvar $PLANETHAGGLE~EQUSELLOUTPUT $PLANETHAGGLE~SELLOUTPUT
-  setvar $PLANETHAGGLE~EQUPROFIT $PLANETHAGGLE~COUNTER
+setvar $planethaggle~selloutput $planethaggle~selloutput&" fails"
+setvar $planethaggle~selloutput $planethaggle~selloutput&" - "&$planethaggle~perunit&"/unit"
+setvar $planethaggle~selloutput $planethaggle~selloutput&" - MCIC "&$planethaggle~mcic
+if ($planethaggle~prodtosell = "ore")
+	setvar $planethaggle~selloutput $planethaggle~selloutput&"/-90*"
+	setvar $planethaggle~oreselloutput $planethaggle~selloutput
+	setvar $planethaggle~oreprofit $planethaggle~counter
+elseif ($planethaggle~prodtosell = "org")
+	setvar $planethaggle~selloutput $planethaggle~selloutput&"/-75*"
+	setvar $planethaggle~orgselloutput $planethaggle~selloutput
+	setvar $planethaggle~orgprofit $planethaggle~counter
+elseif ($planethaggle~prodtosell = "equ")
+	setvar $planethaggle~selloutput $planethaggle~selloutput&"/-65*"
+	setvar $planethaggle~equselloutput $planethaggle~selloutput
+	setvar $planethaggle~equprofit $planethaggle~counter
 end
-if ($PLANETHAGGLE~SELLDELAY > 99)
-  setdelaytrigger SELLDELAY :SELLDELAY2 $PLANETHAGGLE~SELLDELAY
-  pause
-  pause
-  :PLANETHAGGLE~SELLDELAY2
+if ($planethaggle~selldelay > 99)
+	setdelaytrigger selldelay :selldelay2 $planethaggle~selldelay
+	pause
+	pause
+
+	:planethaggle~selldelay2
 end
 return
 
-:PLANETHAGGLE~MSGS_OFF
-setvar $PLANETHAGGLE~MSGS_OFF_FIRST TRUE
+:planethaggle~msgs_off
+setvar $planethaggle~msgs_off_first true
 
-:PLANETHAGGLE~MSGS_OFF_AGAIN
-settexttrigger PLANETHAGGLE_MSGS_OFF :PLANETHAGGLE~MSGS_OFF_CONFIRMED "Silencing all messages."
-settexttrigger PLANETHAGGLE_MSGS_ON :PLANETHAGGLE~MSGS_OFF_WAS_ON "Displaying all messages."
+:planethaggle~msgs_off_again
+settexttrigger planethaggle_msgs_off :planethaggle~msgs_off_confirmed "Silencing all messages."
+settexttrigger planethaggle_msgs_on :planethaggle~msgs_off_was_on "Displaying all messages."
 send "|"
 pause
 
-:PLANETHAGGLE~MSGS_OFF_WAS_ON
-killtrigger PLANETHAGGLE_MSGS_OFF
-killtrigger PLANETHAGGLE_MSGS_ON
-if ($PLANETHAGGLE~MSGS_OFF_FIRST = TRUE)
-  setvar $PLANETHAGGLE~RESTORE_MESSAGES FALSE
-  setvar $PLANETHAGGLE~MSGS_OFF_FIRST FALSE
+:planethaggle~msgs_off_was_on
+killtrigger planethaggle_msgs_off
+killtrigger planethaggle_msgs_on
+if ($planethaggle~msgs_off_first = true)
+	setvar $planethaggle~restore_messages false
+	setvar $planethaggle~msgs_off_first false
 end
-goto :PLANETHAGGLE~MSGS_OFF_AGAIN
+goto :planethaggle~msgs_off_again
 
-:PLANETHAGGLE~MSGS_OFF_CONFIRMED
-killtrigger PLANETHAGGLE_MSGS_OFF
-killtrigger PLANETHAGGLE_MSGS_ON
-if ($PLANETHAGGLE~MSGS_OFF_FIRST = TRUE)
-  setvar $PLANETHAGGLE~RESTORE_MESSAGES TRUE
+:planethaggle~msgs_off_confirmed
+killtrigger planethaggle_msgs_off
+killtrigger planethaggle_msgs_on
+if ($planethaggle~msgs_off_first = true)
+	setvar $planethaggle~restore_messages true
 end
-setvar $PLANETHAGGLE~MESSAGES_SILENCED TRUE
+setvar $planethaggle~messages_silenced true
 return
 
-:PLANETHAGGLE~MSGS_ON
-settexttrigger PLANETHAGGLE_MSGS_ON_DONE :PLANETHAGGLE~MSGS_ON_CONFIRMED "Displaying all messages."
-settexttrigger PLANETHAGGLE_MSGS_ON_OFF :PLANETHAGGLE~MSGS_ON_WAS_OFF "Silencing all messages."
+:planethaggle~msgs_on
+settexttrigger planethaggle_msgs_on_done :planethaggle~msgs_on_confirmed "Displaying all messages."
+settexttrigger planethaggle_msgs_on_off :planethaggle~msgs_on_was_off "Silencing all messages."
 send "|"
 pause
 
-:PLANETHAGGLE~MSGS_ON_WAS_OFF
-killtrigger PLANETHAGGLE_MSGS_ON_DONE
-killtrigger PLANETHAGGLE_MSGS_ON_OFF
-goto :PLANETHAGGLE~MSGS_ON
+:planethaggle~msgs_on_was_off
+killtrigger planethaggle_msgs_on_done
+killtrigger planethaggle_msgs_on_off
+goto :planethaggle~msgs_on
 
-:PLANETHAGGLE~MSGS_ON_CONFIRMED
-killtrigger PLANETHAGGLE_MSGS_ON_DONE
-killtrigger PLANETHAGGLE_MSGS_ON_OFF
-setvar $PLANETHAGGLE~MESSAGES_SILENCED FALSE
+:planethaggle~msgs_on_confirmed
+killtrigger planethaggle_msgs_on_done
+killtrigger planethaggle_msgs_on_off
+setvar $planethaggle~messages_silenced false
 return
 
-:PLANETHAGGLE~NEGOTIATELAND
-if ($PLANETHAGGLE~STARTINGLOCATION = "Citadel")
-  send "L "&$PLANET~PLANET&"* "
-  gosub :PLANET~GETPLANETINFO
-  send "c "
-elseif ($PLANETHAGGLE~STARTINGLOCATION = "Planet")
-  send "L "&$PLANET~PLANET&"* "
-  gosub :PLANET~GETPLANETINFO
+:planethaggle~negotiateland
+if ($planethaggle~startinglocation = "Citadel")
+	send "L "&$planet~planet&"* "
+	gosub :planet~getplanetinfo
+	send "c "
+elseif ($planethaggle~startinglocation = "Planet")
+	send "L "&$planet~planet&"* "
+	gosub :planet~getplanetinfo
 end
 return
 
-:PLANETHAGGLE~EXITNEG
-if (($PLANETHAGGLE~RESTORE_MESSAGES = TRUE) and ($PLANETHAGGLE~MESSAGES_SILENCED = TRUE))
-  gosub :PLANETHAGGLE~MSGS_ON
+:planethaggle~exitneg
+if (($planethaggle~restore_messages = true) and ($planethaggle~messages_silenced = true))
+	gosub :planethaggle~msgs_on
 end
-setvar $switchboard~message $PLANETHAGGLE~EXIT_MESSAGE & "*"
-gosub :SWITCHBOARD~SWITCHBOARD
+#setvar $switchboard~message $planethaggle~exit_message & "*"
+#gosub :switchboard~switchboard
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLANETHAGGLE~BUY
+:planethaggle~buy
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLAYER~OVERHAGGLEMULTIPLE 147
-setvar $PLAYER~CYCLEBUFFER 1
-setvar $PLAYER~CYCLEBUFFERLIMIT 20
-setvar $PLAYER~BUYDOWN_RESTORE_HAGGLE 0
-setvar $PLAYER~BUYDOWN_USENATIVEHAGGLE 0
+setvar $player~overhagglemultiple 147
+setvar $player~cyclebuffer 1
+setvar $player~cyclebufferlimit 20
+setvar $player~buydown_restore_haggle 0
+setvar $player~buydown_usenativehaggle 0
 
-if (HAGGLE)
-  if ($PLAYER~BUYTYPE = "s")
-    setvar $PLAYER~BUYDOWN_RESTORE_HAGGLE 1
-    autohaggle off
-  else
-    setvar $PLAYER~BUYDOWN_USENATIVEHAGGLE 1
-  end
+if (haggle)
+	if ($player~buytype = "s")
+		setvar $player~buydown_restore_haggle 1
+		autohaggle off
+	else
+		setvar $player~buydown_usenativehaggle 1
+	end
 end
 
-if ($PLAYER~BUYDOWN_USENATIVEHAGGLE = 0)
-  send "@"
-  waiton "Average Interval Lag:"
+if ($player~buydown_usenativehaggle = 0)
+	send "@"
+	waiton "Average Interval Lag:"
 end
-gosub :PLAYER~QUIKSTATS
-setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+gosub :player~quikstats
+setvar $player~startinglocation $player~current_prompt
 
-setvar $PLAYER~OUTPUT ""
-setvar $PLAYER~EQUIPROUNDS 0
-setvar $PLAYER~ORGROUNDS 0
-setvar $PLAYER~FUELROUNDS 0
-if ($PLAYER~BUYDOWNROUNDSFROMPARAM <= 0)
-  setvar $PLAYER~BUYDOWNROUNDSFROMPARAM 999999
+setvar $player~output ""
+setvar $player~equiprounds 0
+setvar $player~orgrounds 0
+setvar $player~fuelrounds 0
+if ($player~buydownroundsfromparam <= 0)
+	setvar $player~buydownroundsfromparam 999999
 end
-if ($PLAYER~BUYTYPE = "w")
-  setvar $PLAYER~BUYDOWN_MODE 3
-elseif ($PLAYER~BUYTYPE = "b")
-  setvar $PLAYER~BUYDOWN_MODE 2
+if ($player~buytype = "w")
+	setvar $player~buydown_mode 3
+elseif ($player~buytype = "b")
+	setvar $player~buydown_mode 2
 else
-  setvar $PLAYER~BUYDOWN_MODE 1
+	setvar $player~buydown_mode 1
 end
-if ($PLAYER~BUYOBJECT = "e")
-  setvar $PLAYER~BUYDOWN_EQUIPROUNDS $PLAYER~BUYDOWNROUNDSFROMPARAM
-  setvar $PLAYER~BUYDOWN_ORGROUNDS 0
-  setvar $PLAYER~BUYDOWN_FUELROUNDS 0
-elseif ($PLAYER~BUYOBJECT = "o")
-  setvar $PLAYER~BUYDOWN_EQUIPROUNDS 0
-  setvar $PLAYER~BUYDOWN_ORGROUNDS $PLAYER~BUYDOWNROUNDSFROMPARAM
-  setvar $PLAYER~BUYDOWN_FUELROUNDS 0
-elseif ($PLAYER~BUYOBJECT = "f")
-  setvar $PLAYER~BUYDOWN_EQUIPROUNDS 0
-  setvar $PLAYER~BUYDOWN_ORGROUNDS 0
-  setvar $PLAYER~BUYDOWN_FUELROUNDS $PLAYER~BUYDOWNROUNDSFROMPARAM
+if ($player~buyobject = "e")
+	setvar $player~buydown_equiprounds $player~buydownroundsfromparam
+	setvar $player~buydown_orgrounds 0
+	setvar $player~buydown_fuelrounds 0
+elseif ($player~buyobject = "o")
+	setvar $player~buydown_equiprounds 0
+	setvar $player~buydown_orgrounds $player~buydownroundsfromparam
+	setvar $player~buydown_fuelrounds 0
+elseif ($player~buyobject = "f")
+	setvar $player~buydown_equiprounds 0
+	setvar $player~buydown_orgrounds 0
+	setvar $player~buydown_fuelrounds $player~buydownroundsfromparam
 else
-  setvar $PLAYER~EXIT_MESSAGE "Please use format buy [type] {speed} {#cycles} {override}*"
-  return
+	setvar $player~exit_message "Please use format buy [type] {speed} {#cycles} {override}*"
+	return
 
 end
-if ($PLAYER~STARTINGLOCATION = "Citadel")
-  send "Q"
+if ($player~startinglocation = "Citadel")
+	send "Q"
 end
 send "t n l 1* t n l 2* t n l 3* s n l1*"
 waiton "How many groups of Colonists do you want to leave"
-gosub :PLANET~GETPLANETINFO
-if ($PLAYER~STARTINGLOCATION = "Citadel")
-  send "C s* "
+gosub :planet~getplanetinfo
+if ($player~startinglocation = "Citadel")
+	send "C s* "
 else
-  send "Q D"
+	send "Q D"
 end
-gosub :PLAYER~GETINFO
-if ($PLAYER~TOTAL_HOLDS <> $PLAYER~EMPTY_HOLDS)
-  if ($PLAYER~STARTINGLOCATION <> "Citadel")
-    gosub :PLANET~LANDINGSUB
-  end
-  setvar $SWITCHBOARD~MESSAGE "Planet full, cannot empty ship holds*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  goto :PLANETHAGGLE~BUYEXIT
+gosub :player~getinfo
+if ($player~total_holds <> $player~empty_holds)
+	if ($player~startinglocation <> "Citadel")
+		gosub :planet~landingsub
+	end
+	setvar $switchboard~message "Planet full, cannot empty ship holds*"
+	gosub :switchboard~switchboard
+	goto :planethaggle~buyexit
 end
-gosub :SECTOR~VOIDADJACENT
-setvar $PORT~STARTINGLOCATION $PLAYER~STARTINGLOCATION
-gosub :PORT~GETPORTINFO
-if ($PORT~NOPORT = 1)
-  echo "*No valid port found*"
-  if ($PLAYER~STARTINGLOCATION <> "Citadel")
-    gosub :PLANET~LANDINGSUB
-  end
-  gosub :SECTOR~CLEARVOIDADJACENT
-  goto :PLANETHAGGLE~BUYEXIT
+gosub :sector~voidadjacent
+setvar $port~startinglocation $player~startinglocation
+gosub :port~getportinfo
+if ($port~noport = 1)
+	echo "*No valid port found*"
+	if ($player~startinglocation <> "Citadel")
+		gosub :planet~landingsub
+	end
+	gosub :sector~clearvoidadjacent
+	goto :planethaggle~buyexit
 end
-if ($PLAYER~STARTINGLOCATION = "Citadel")
-  send "Q"
+if ($player~startinglocation = "Citadel")
+	send "Q"
 else
-  send "L "&$PLANET~PLANET&"* "
+	send "L "&$planet~planet&"* "
 end
-setdelaytrigger PLANETBUYINITPAUSE :PLANETHAGGLE~BUYINITPAUSE 500
+setdelaytrigger planetbuyinitpause :planethaggle~buyinitpause 500
 pause
-:PLANETHAGGLE~BUYINITPAUSE
-:PLANETHAGGLE~BUYGETINPUTS
-if ($PLAYER~BUYDOWN_USENATIVEHAGGLE = 0)
-  echo "*Buying down product, please wait...*"
-  gosub :PLAYER~ENTER_MENU_DEAF
+
+:planethaggle~buyinitpause
+:planethaggle~buygetinputs
+if ($player~buydown_usenativehaggle = 0)
+	echo "*Buying down product, please wait...*"
+	gosub :player~enter_menu_deaf
 end
 
-setvar $PLAYER~TURNS_NEEDED 0
-setvar $PLAYER~TURNS_ALLOWED $PLAYER~TURNS
-subtract $PLAYER~TURNS_ALLOWED 1
+setvar $player~turns_needed 0
+setvar $player~turns_allowed $player~turns
+subtract $player~turns_allowed 1
 
-if ($PLAYER~BUYDOWN_FUELROUNDS > 0)
-  setvar $PLAYER~FUELROUNDS 0
-  setvar $PLAYER~PLANETFUELROOM $PLANET~PLANET_FUEL_MAX
-  subtract $PLAYER~PLANETFUELROOM $PLANET~PLANET_FUEL
-  setvar $PLAYER~MAXFUELTOBUY $PORT~FUELSELLING
-  if ($PORT~FUELSELLING > $PLAYER~PLANETFUELROOM)
-    setvar $PLAYER~MAXFUELTOBUY $PLAYER~PLANETFUELROOM
-  end
-  setvar $PLAYER~MAXFUELROUNDS $PLAYER~MAXFUELTOBUY
-  divide $PLAYER~MAXFUELROUNDS $PLAYER~TOTAL_HOLDS
-  if ($PLAYER~MAXFUELROUNDS > $PLAYER~TURNS_ALLOWED)
-    setvar $PLAYER~MAXFUELROUNDS $PLAYER~TURNS_ALLOWED
-  end
-  if ($PLAYER~MAXFUELROUNDS > $PLAYER~BUYDOWN_FUELROUNDS)
-    setvar $PLAYER~MAXFUELROUNDS $PLAYER~BUYDOWN_FUELROUNDS
-  end
-  if ($PLAYER~MAXFUELROUNDS > 0)
-    setvar $PLAYER~FUELROUNDS $PLAYER~MAXFUELROUNDS
-  end
-  add $PLAYER~TURNS_NEEDED $PLAYER~FUELROUNDS
-  subtract $PLAYER~TURNS_ALLOWED $PLAYER~FUELROUNDS
-end
-
-if ($PLAYER~BUYDOWN_ORGROUNDS > 0)
-  setvar $PLAYER~ORGROUNDS 0
-  setvar $PLAYER~PLANETORGROOM $PLANET~PLANET_ORGANICS_MAX
-  subtract $PLAYER~PLANETORGROOM $PLANET~PLANET_ORGANICS
-  setvar $PLAYER~MAXORGTOBUY $PORT~ORGSELLING
-  if ($PORT~ORGSELLING > $PLAYER~PLANETORGROOM)
-    setvar $PLAYER~MAXORGTOBUY $PLAYER~PLANETORGROOM
-  end
-  setvar $PLAYER~MAXORGROUNDS $PLAYER~MAXORGTOBUY
-  divide $PLAYER~MAXORGROUNDS $PLAYER~TOTAL_HOLDS
-  if ($PLAYER~MAXORGROUNDS > $PLAYER~TURNS_ALLOWED)
-    setvar $PLAYER~MAXORGROUNDS $PLAYER~TURNS_ALLOWED
-  end
-  if ($PLAYER~MAXORGROUNDS > $PLAYER~BUYDOWN_ORGROUNDS)
-    setvar $PLAYER~MAXORGROUNDS $PLAYER~BUYDOWN_ORGROUNDS
-  end
-  if ($PLAYER~MAXORGROUNDS > 0)
-    setvar $PLAYER~ORGROUNDS $PLAYER~MAXORGROUNDS
-  end
-  add $PLAYER~TURNS_NEEDED $PLAYER~ORGROUNDS
-  subtract $PLAYER~TURNS_ALLOWED $PLAYER~ORGROUNDS
+if ($player~buydown_fuelrounds > 0)
+	setvar $player~fuelrounds 0
+	setvar $player~planetfuelroom $planet~planet_fuel_max
+	subtract $player~planetfuelroom $planet~planet_fuel
+	setvar $player~maxfueltobuy 0
+	if ($port~orebuying = "Selling")
+		setvar $player~maxfueltobuy $port~oretrading
+		if ($player~maxfueltobuy > $player~planetfuelroom)
+			setvar $player~maxfueltobuy $player~planetfuelroom
+		end
+	end
+	setvar $player~maxfuelrounds $player~maxfueltobuy
+	divide $player~maxfuelrounds $player~total_holds
+	if ($player~maxfuelrounds > $player~turns_allowed)
+		setvar $player~maxfuelrounds $player~turns_allowed
+	end
+	if ($player~maxfuelrounds > $player~buydown_fuelrounds)
+		setvar $player~maxfuelrounds $player~buydown_fuelrounds
+	end
+	if ($player~maxfuelrounds > 0)
+		setvar $player~fuelrounds $player~maxfuelrounds
+	end
+	add $player~turns_needed $player~fuelrounds
+	subtract $player~turns_allowed $player~fuelrounds
 end
 
-if ($PLAYER~BUYDOWN_EQUIPROUNDS > 0)
-  setvar $PLAYER~EQUIPROUNDS 0
-  setvar $PLAYER~PLANETEQUIPROOM $PLANET~PLANET_EQUIPMENT_MAX
-  subtract $PLAYER~PLANETEQUIPROOM $PLANET~PLANET_EQUIPMENT
-  setvar $PLAYER~MAXEQUIPTOBUY $PORT~EQUIPSELLING
-  if ($PORT~EQUIPSELLING > $PLAYER~PLANETEQUIPROOM)
-    setvar $PLAYER~MAXEQUIPTOBUY $PLAYER~PLANETEQUIPROOM
-  end
-  setvar $PLAYER~MAXEQUIPROUNDS $PLAYER~MAXEQUIPTOBUY
-  divide $PLAYER~MAXEQUIPROUNDS $PLAYER~TOTAL_HOLDS
-  if ($PLAYER~MAXEQUIPROUNDS > $PLAYER~TURNS_ALLOWED)
-    setvar $PLAYER~MAXEQUIPROUNDS $PLAYER~TURNS_ALLOWED
-  end
-  if ($PLAYER~MAXEQUIPROUNDS > $PLAYER~BUYDOWN_EQUIPROUNDS)
-    setvar $PLAYER~MAXEQUIPROUNDS $PLAYER~BUYDOWN_EQUIPROUNDS
-  end
-  if ($PLAYER~MAXEQUIPROUNDS > 0)
-    setvar $PLAYER~EQUIPROUNDS $PLAYER~MAXEQUIPROUNDS
-  end
-  add $PLAYER~TURNS_NEEDED $PLAYER~EQUIPROUNDS
-  subtract $PLAYER~TURNS_ALLOWED $PLAYER~EQUIPROUNDS
-end
-if (($PLAYER~FUELROUNDS = 0) and (($PLAYER~ORGROUNDS = 0) and ($PLAYER~EQUIPROUNDS = 0)))
-  if ($PLAYER~STARTINGLOCATION = "Citadel")
-    send "C "
-  else
-    send "q "
-  end
-  echo "*Nothing to buy*"
-  gosub :SECTOR~CLEARVOIDADJACENT
-  goto :PLANETHAGGLE~BUYEXIT
+if ($player~buydown_orgrounds > 0)
+	setvar $player~orgrounds 0
+	setvar $player~planetorgroom $planet~planet_organics_max
+	subtract $player~planetorgroom $planet~planet_organics
+	setvar $player~maxorgtobuy 0
+	if ($port~orgbuying = "Selling")
+		setvar $player~maxorgtobuy $port~orgtrading
+		if ($player~maxorgtobuy > $player~planetorgroom)
+			setvar $player~maxorgtobuy $player~planetorgroom
+		end
+	end
+	setvar $player~maxorgrounds $player~maxorgtobuy
+	divide $player~maxorgrounds $player~total_holds
+	if ($player~maxorgrounds > $player~turns_allowed)
+		setvar $player~maxorgrounds $player~turns_allowed
+	end
+	if ($player~maxorgrounds > $player~buydown_orgrounds)
+		setvar $player~maxorgrounds $player~buydown_orgrounds
+	end
+	if ($player~maxorgrounds > 0)
+		setvar $player~orgrounds $player~maxorgrounds
+	end
+	add $player~turns_needed $player~orgrounds
+	subtract $player~turns_allowed $player~orgrounds
 end
 
-:PLANETHAGGLE~BUYGETMODE
-if ($PLAYER~BUYDOWN_MODE = 1)
-  setvar $PLAYER~BUYDOWN_MODE "Speedbuy"
-elseif ($PLAYER~BUYDOWN_MODE = 2)
-  setvar $PLAYER~BUYDOWN_MODE "Best Price"
-elseif ($PLAYER~BUYDOWN_MODE = 3)
-  setvar $PLAYER~BUYDOWN_MODE "Worst Price"
+if ($player~buydown_equiprounds > 0)
+	setvar $player~equiprounds 0
+	setvar $player~planetequiproom $planet~planet_equipment_max
+	subtract $player~planetequiproom $planet~planet_equipment
+	setvar $player~maxequiptobuy 0
+	if ($port~equbuying = "Selling")
+		setvar $player~maxequiptobuy $port~equtrading
+		if ($player~maxequiptobuy > $player~planetequiproom)
+			setvar $player~maxequiptobuy $player~planetequiproom
+		end
+	end
+	setvar $player~maxequiprounds $player~maxequiptobuy
+	divide $player~maxequiprounds $player~total_holds
+	if ($player~maxequiprounds > $player~turns_allowed)
+		setvar $player~maxequiprounds $player~turns_allowed
+	end
+	if ($player~maxequiprounds > $player~buydown_equiprounds)
+		setvar $player~maxequiprounds $player~buydown_equiprounds
+	end
+	if ($player~maxequiprounds > 0)
+		setvar $player~equiprounds $player~maxequiprounds
+	end
+	add $player~turns_needed $player~equiprounds
+	subtract $player~turns_allowed $player~equiprounds
 end
-setvar $PLAYER~FUELROUNDSLEFT $PLAYER~FUELROUNDS
-setvar $PLAYER~ORGROUNDSLEFT $PLAYER~ORGROUNDS
-setvar $PLAYER~EQUIPROUNDSLEFT $PLAYER~EQUIPROUNDS
-setvar $PLAYER~FUEL_CREDS_NEEDED 0
-setvar $PLAYER~ORG_CREDS_NEEDED 0
-setvar $PLAYER~EQUIP_CREDS_NEEDED 0
-
-if ($PLAYER~FUELROUNDS > 0)
-  setvar $PLAYER~FUEL_CREDS_NEEDED $PLAYER~FUELROUNDS
-  multiply $PLAYER~FUEL_CREDS_NEEDED $PLAYER~TOTAL_HOLDS
-  multiply $PLAYER~FUEL_CREDS_NEEDED 30
-  if ($PLAYER~BUYDOWN_MODE = "Worst Price")
-    multiply $PLAYER~FUEL_CREDS_NEEDED 3
-    divide $PLAYER~FUEL_CREDS_NEEDED 2
-  end
-end
-if ($PLAYER~ORGROUNDS > 0)
-  setvar $PLAYER~ORG_CREDS_NEEDED $PLAYER~ORGROUNDS
-  multiply $PLAYER~ORG_CREDS_NEEDED $PLAYER~TOTAL_HOLDS
-  multiply $PLAYER~ORG_CREDS_NEEDED 60
-  if ($PLAYER~BUYDOWN_MODE = "Worst Price")
-    multiply $PLAYER~ORG_CREDS_NEEDED 3
-    divide $PLAYER~ORG_CREDS_NEEDED 2
-  end
-end
-if ($PLAYER~EQUIPROUNDS > 0)
-  setvar $PLAYER~EQUIP_CREDS_NEEDED $PLAYER~EQUIPROUNDS
-  multiply $PLAYER~EQUIP_CREDS_NEEDED $PLAYER~TOTAL_HOLDS
-  multiply $PLAYER~EQUIP_CREDS_NEEDED 100
-  if ($PLAYER~BUYDOWN_MODE = "Worst Price")
-    multiply $PLAYER~EQUIP_CREDS_NEEDED 3
-    divide $PLAYER~EQUIP_CREDS_NEEDED 2
-  end
-end
-setvar $PLAYER~TOTAL_CREDS_NEEDED 0
-add $PLAYER~TOTAL_CREDS_NEEDED $PLAYER~FUEL_CREDS_NEEDED
-add $PLAYER~TOTAL_CREDS_NEEDED $PLAYER~ORG_CREDS_NEEDED
-add $PLAYER~TOTAL_CREDS_NEEDED $PLAYER~EQUIP_CREDS_NEEDED
-setvar $PLAYER~STARTINGCREDITS $PLAYER~CREDITS
-if ($PLAYER~TOTAL_CREDS_NEEDED > $PLAYER~CREDITS)
-  setvar $PLAYER~CASHONHAND $PLANET~CITADEL_CREDITS
-  add $PLAYER~CASHONHAND $PLAYER~CREDITS
-  if ($PLAYER~CASHONHAND > $PLAYER~TOTAL_CREDS_NEEDED)
-    send "C"
-    send "T T "&$PLAYER~CREDITS&"* "
-    send "T F "&$PLAYER~TOTAL_CREDS_NEEDED&"* "
-    setvar $PLAYER~CREDITS $PLAYER~TOTAL_CREDS_NEEDED
-    send "Q"
-  else
-    if ($PLAYER~STARTINGLOCATION = "Citadel")
-      send "C "
-    else
-      send "q "
-    end
-    setvar $PLAYER~EXIT_MESSAGE "Not enough cash onhand"
-    gosub :SECTOR~CLEARVOIDADJACENT
-    goto :PLANETHAGGLE~BUYEXIT
-  end
-end
-setvar $PLAYER~INIT_CREDITS $PLAYER~CREDITS
-
-:PLANETHAGGLE~BUYDOWNEQUIP
-if ($PLAYER~EQUIPROUNDSLEFT > 0)
-  send "Q P T  "
-  if ($PORT~FUELSELLING > 0)
-    send "0* "
-  end
-  if ($PORT~ORGSELLING > 0)
-    send "0*"
-  end
-  gosub :PLANETHAGGLE~BUYCHOOSEHAGGLE
-  send "L "&$PLANET~PLANET&"* t n l 3* "
-  subtract $PLAYER~EQUIPROUNDSLEFT 1
-  goto :PLANETHAGGLE~BUYDOWNEQUIP
-end
-if ($PLAYER~EQUIPROUNDS > 0)
-  if ($PLAYER~BUYDOWN_MODE = "Worst Price")
-    setvar $PLAYER~OUTPUT $PLAYER~OUTPUT&" - Equipment overhaggled at "&$PLAYER~OVERHAGGLEMULTIPLE&"*"
-  end
+if (($player~fuelrounds = 0) and (($player~orgrounds = 0) and ($player~equiprounds = 0)))
+	if ($player~startinglocation = "Citadel")
+		send "C "
+	else
+		send "q "
+	end
+	echo "*Nothing to buy*"
+	gosub :sector~clearvoidadjacent
+	goto :planethaggle~buyexit
 end
 
-:PLANETHAGGLE~BUYDOWNORG
-if ($PLAYER~ORGROUNDSLEFT > 0)
-  send "Q P T  "
-  if ($PORT~FUELSELLING > 0)
-    send "0*"
-  end
-  gosub :PLANETHAGGLE~BUYCHOOSEHAGGLE
-  send "0* L "&$PLANET~PLANET&"* t n l 2* "
-  subtract $PLAYER~ORGROUNDSLEFT 1
-  goto :PLANETHAGGLE~BUYDOWNORG
+:planethaggle~buygetmode
+if ($player~buydown_mode = 1)
+	setvar $player~buydown_mode "Speedbuy"
+elseif ($player~buydown_mode = 2)
+	setvar $player~buydown_mode "Best Price"
+elseif ($player~buydown_mode = 3)
+	setvar $player~buydown_mode "Worst Price"
 end
-if ($PLAYER~ORGROUNDS > 0)
-  if ($PLAYER~BUYDOWN_MODE = "Worst Price")
-    setvar $PLAYER~OUTPUT $PLAYER~OUTPUT&" - Organics overhaggled at "&$PLAYER~OVERHAGGLEMULTIPLE&"*"
-  end
+setvar $player~fuelroundsleft $player~fuelrounds
+setvar $player~orgroundsleft $player~orgrounds
+setvar $player~equiproundsleft $player~equiprounds
+setvar $player~fuel_creds_needed 0
+setvar $player~org_creds_needed 0
+setvar $player~equip_creds_needed 0
+
+if ($player~fuelrounds > 0)
+	setvar $player~fuel_creds_needed $player~fuelrounds
+	multiply $player~fuel_creds_needed $player~total_holds
+	multiply $player~fuel_creds_needed 30
+	if ($player~buydown_mode = "Worst Price")
+		multiply $player~fuel_creds_needed 3
+		divide $player~fuel_creds_needed 2
+	end
+end
+if ($player~orgrounds > 0)
+	setvar $player~org_creds_needed $player~orgrounds
+	multiply $player~org_creds_needed $player~total_holds
+	multiply $player~org_creds_needed 60
+	if ($player~buydown_mode = "Worst Price")
+		multiply $player~org_creds_needed 3
+		divide $player~org_creds_needed 2
+	end
+end
+if ($player~equiprounds > 0)
+	setvar $player~equip_creds_needed $player~equiprounds
+	multiply $player~equip_creds_needed $player~total_holds
+	multiply $player~equip_creds_needed 100
+	if ($player~buydown_mode = "Worst Price")
+		multiply $player~equip_creds_needed 3
+		divide $player~equip_creds_needed 2
+	end
+end
+setvar $player~total_creds_needed 0
+add $player~total_creds_needed $player~fuel_creds_needed
+add $player~total_creds_needed $player~org_creds_needed
+add $player~total_creds_needed $player~equip_creds_needed
+setvar $player~startingcredits $player~credits
+if ($player~total_creds_needed > $player~credits)
+	setvar $player~cashonhand $planet~citadel_credits
+	add $player~cashonhand $player~credits
+	if ($player~cashonhand > $player~total_creds_needed)
+		send "C"
+		send "T T "&$player~credits&"* "
+		send "T F "&$player~total_creds_needed&"* "
+		setvar $player~credits $player~total_creds_needed
+		send "Q"
+	else
+		if ($player~startinglocation = "Citadel")
+			send "C "
+		else
+			send "q "
+		end
+		setvar $player~exit_message "Not enough cash onhand"
+		gosub :sector~clearvoidadjacent
+		goto :planethaggle~buyexit
+	end
+end
+setvar $player~init_credits $player~credits
+
+:planethaggle~buydownequip
+if ($player~equiproundsleft > 0)
+	send "Q P T  "
+	if ($port~orebuying = "Selling")
+		send "0* "
+	end
+	if ($port~orgbuying = "Selling")
+		send "0*"
+	end
+	gosub :planethaggle~buychoosehaggle
+	send "L "&$planet~planet&"* t n l 3* "
+	subtract $player~equiproundsleft 1
+	goto :planethaggle~buydownequip
+end
+if ($player~equiprounds > 0)
+	if ($player~buydown_mode = "Worst Price")
+		setvar $player~output $player~output&" - Equipment overhaggled at "&$player~overhagglemultiple&"*"
+	end
 end
 
-:PLANETHAGGLE~BUYDOWNFUEL
-if ($PLAYER~FUELROUNDSLEFT > 0)
-  send "Q P T "
-  gosub :PLANETHAGGLE~BUYCHOOSEHAGGLE
-  send "0* 0* L "&$PLANET~PLANET&"* t n l 1* "
-  subtract $PLAYER~FUELROUNDSLEFT 1
-  goto :PLANETHAGGLE~BUYDOWNFUEL
+:planethaggle~buydownorg
+if ($player~orgroundsleft > 0)
+	send "Q P T  "
+	if ($port~orebuying = "Selling")
+		send "0*"
+	end
+	gosub :planethaggle~buychoosehaggle
+	send "0* L "&$planet~planet&"* t n l 2* "
+	subtract $player~orgroundsleft 1
+	goto :planethaggle~buydownorg
 end
-if ($PLAYER~FUELROUNDS > 0)
-  if ($PLAYER~BUYDOWN_MODE = "Worst Price")
-    setvar $PLAYER~OUTPUT $PLAYER~OUTPUT&" - Fuel Ore overhaggled at "&$PLAYER~OVERHAGGLEMULTIPLE&"*"
-  end
+if ($player~orgrounds > 0)
+	if ($player~buydown_mode = "Worst Price")
+		setvar $player~output $player~output&" - Organics overhaggled at "&$player~overhagglemultiple&"*"
+	end
 end
 
-:PLANETHAGGLE~BUYDOWNFINISH
-if ($PLAYER~BUYDOWN_USENATIVEHAGGLE = 0)
-  gosub :PLAYER~EXIT_MENU_DEAF
+:planethaggle~buydownfuel
+if ($player~fuelroundsleft > 0)
+	send "Q P T "
+	gosub :planethaggle~buychoosehaggle
+	send "0* 0* L "&$planet~planet&"* t n l 1* "
+	subtract $player~fuelroundsleft 1
+	goto :planethaggle~buydownfuel
 end
-if ($PLAYER~STARTINGLOCATION = "Citadel")
-  send "C "
+if ($player~fuelrounds > 0)
+	if ($player~buydown_mode = "Worst Price")
+		setvar $player~output $player~output&" - Fuel Ore overhaggled at "&$player~overhagglemultiple&"*"
+	end
 end
-gosub :PLAYER~GETINFO
-setvar $PLAYER~CREDITS_SPENT $PLAYER~INIT_CREDITS
-subtract $PLAYER~CREDITS_SPENT $PLAYER~CREDITS
-gosub :SECTOR~CLEARVOIDADJACENT
-if ($PLAYER~STARTINGLOCATION = "Planet")
-  send "L "&$PLANET~PLANET&"* "
-end
-if ($PLAYER~CREDITS > $PLAYER~STARTINGCREDITS)
-  if ($PLAYER~STARTINGLOCATION = "Citadel")
-    send "T T "&($PLAYER~CREDITS - $PLAYER~STARTINGCREDITS)&"* "
-  end
-end
-setvar $PLAYER~EXIT_MESSAGE "Normal Exit"
 
-:PLANETHAGGLE~BUYEXIT
-if ($PLAYER~BUYDOWN_RESTORE_HAGGLE = 1)
-  autohaggle on
-  setvar $PLAYER~BUYDOWN_RESTORE_HAGGLE 0
+:planethaggle~buydownfinish
+if ($player~buydown_usenativehaggle = 0)
+	gosub :player~exit_menu_deaf
+end
+if ($player~startinglocation = "Citadel")
+	send "C "
+end
+gosub :player~getinfo
+setvar $player~credits_spent $player~init_credits
+subtract $player~credits_spent $player~credits
+gosub :sector~clearvoidadjacent
+if ($player~startinglocation = "Planet")
+	send "L "&$planet~planet&"* "
+end
+if ($player~credits > $player~startingcredits)
+	if ($player~startinglocation = "Citadel")
+		send "T T "&($player~credits - $player~startingcredits)&"* "
+	end
+end
+setvar $player~exit_message "Normal Exit"
+
+:planethaggle~buyexit
+if ($player~buydown_restore_haggle = 1)
+	autohaggle on
+	setvar $player~buydown_restore_haggle 0
 end
 return
 
-:PLANETHAGGLE~BUYCHOOSEHAGGLE
-if ($PLAYER~BUYDOWN_USENATIVEHAGGLE = 1)
-  gosub :PLANETHAGGLE~BUYNATIVEHAGGLE
-elseif ($PLAYER~BUYDOWN_MODE = "Speedbuy")
-  gosub :PLANETHAGGLE~BUYNOHAGGLE
+:planethaggle~buychoosehaggle
+if ($player~buydown_usenativehaggle = 1)
+	gosub :planethaggle~buynativehaggle
+elseif ($player~buydown_mode = "Speedbuy")
+	gosub :planethaggle~buynohaggle
 else
-  gosub :PLANETHAGGLE~BUYHAGGLE
+	gosub :planethaggle~buyhaggle
 end
 return
 
-:PLANETHAGGLE~BUYNATIVEHAGGLE
-setvar $PLAYER~EMPTY $PLAYER~TOTAL_HOLDS
+:planethaggle~buynativehaggle
+setvar $player~empty $player~total_holds
 send "*"
-settextlinetrigger PLANETBUYEMPTY :PLANETHAGGLE~BUYEMPTY "empty cargo holds"
-settextlinetrigger PLANETBUYNOTINTERESTED :PLANETHAGGLE~BUYNOTINTERESTED "We're not interested."
-settexttrigger PLANETBUYNATIVEDONE :PLANETHAGGLE~BUYHAGGLESUCCEEDED "Command [TL="
+settextlinetrigger planetbuyempty :planethaggle~buyempty "empty cargo holds"
+settextlinetrigger planetbuynotinterested :planethaggle~buynotinterested "We're not interested."
+settexttrigger planetbuynativedone :planethaggle~buyhagglesucceeded "Command [TL="
 pause
 
-:PLANETHAGGLE~BUYHAGGLE
-killtrigger PLANETBUYFIRSTOFFER
-setvar $PLAYER~EMPTY $PLAYER~TOTAL_HOLDS
+:planethaggle~buyhaggle
+killtrigger planetbuyfirstoffer
+setvar $player~empty $player~total_holds
 send "*"
-settextlinetrigger PLANETBUYFIRSTOFFER :PLANETHAGGLE~BUYFIRSTOFFER "We'll sell them for"
+settextlinetrigger planetbuyfirstoffer :planethaggle~buyfirstoffer "We'll sell them for"
 pause
 
-:PLANETHAGGLE~BUYFIRSTOFFER
-gosub :PLANETHAGGLE~BUYKILLTRIGGERS
-getword CURRENTLINE $PLAYER~OFFER 5
-striptext $PLAYER~OFFER ","
-gosub :PLAYER~SWATHOFF
-if ($PLAYER~SWATHOFF = 0)
-  send "L "&$PLANET~PLANET&"* "
-  if ($PLAYER~STARTINGLOCATION = "Citadel")
-    send "C "
-  end
-  setvar $PLAYER~EXIT_MESSAGE $PLAYER~SWATHOFFMESSAGE
-  if ($PLAYER~BUYDOWN_RETURN_ON_ABORT = TRUE)
-    setvar $PLAYER~BUYDOWN_ABORTED TRUE
-    return
-  end
-  goto :PLANETHAGGLE~BUYEXIT
+:planethaggle~buyfirstoffer
+gosub :planethaggle~buykilltriggers
+getword currentline $player~offer 5
+striptext $player~offer ","
+gosub :player~swathoff
+if ($player~swathoff = 0)
+	send "L "&$planet~planet&"* "
+	if ($player~startinglocation = "Citadel")
+		send "C "
+	end
+	setvar $player~exit_message $player~swathoffmessage
+	if ($player~buydown_return_on_abort = true)
+		setvar $player~buydown_aborted true
+		return
+	end
+	goto :planethaggle~buyexit
 end
 
-setvar $PLAYER~COUNTER $PLAYER~OFFER
-if ($PLAYER~BUYDOWN_MODE = "Best Price")
-  multiply $PLAYER~COUNTER 92
-  divide $PLAYER~COUNTER 100
-elseif ($PLAYER~BUYDOWN_MODE = "Worst Price")
-  multiply $PLAYER~COUNTER $PLAYER~OVERHAGGLEMULTIPLE
-  divide $PLAYER~COUNTER 100
+setvar $player~counter $player~offer
+if ($player~buydown_mode = "Best Price")
+	multiply $player~counter 92
+	divide $player~counter 100
+elseif ($player~buydown_mode = "Worst Price")
+	multiply $player~counter $player~overhagglemultiple
+	divide $player~counter 100
 end
-send $PLAYER~COUNTER&"*"
+send $player~counter&"*"
 
-:PLANETHAGGLE~BUYOFFERLOOP
-settextlinetrigger PLANETBUYPRICE :PLANETHAGGLE~BUYPRICE "We'll sell them for"
-settextlinetrigger PLANETBUYFINALOFFER :PLANETHAGGLE~BUYFINALOFFER "Our final offer"
-settextlinetrigger PLANETBUYNOTINTERESTED :PLANETHAGGLE~BUYNOTINTERESTED "We're not interested."
-settextlinetrigger PLANETBUYEXPERIENCE :PLANETHAGGLE~BUYEXPERIENCE "experience point(s)"
-settextlinetrigger PLANETBUYEMPTY :PLANETHAGGLE~BUYEMPTY "empty cargo holds"
-settextlinetrigger PLANETBUYSCREWUP1 :PLANETHAGGLE~BUYSCREWUP "Get real ion-brain, make me a real offer."
-settextlinetrigger PLANETBUYSCREWUP2 :PLANETHAGGLE~BUYSCREWUP "This is the big leagues Jr.  Make a real offer."
-settextlinetrigger PLANETBUYSCREWUP3 :PLANETHAGGLE~BUYSCREWUP "My patience grows short with you."
-settextlinetrigger PLANETBUYSCREWUP4 :PLANETHAGGLE~BUYSCREWUP "I have much better things to do than waste my time.  Try again."
-settextlinetrigger PLANETBUYSCREWUP5 :PLANETHAGGLE~BUYSCREWUP "HA! HA, ha hahahhah hehehe hhhohhohohohh!  You choke me up!"
-settextlinetrigger PLANETBUYSCREWUP6 :PLANETHAGGLE~BUYSCREWUP "Quit playing around, you're wasting my time!"
-settextlinetrigger PLANETBUYSCREWUP7 :PLANETHAGGLE~BUYSCREWUP "Make a real offer or get the "
-settextlinetrigger PLANETBUYSCREWUP8 :PLANETHAGGLE~BUYSCREWUP "WHAT?!@!? you must be crazy!"
-settextlinetrigger PLANETBUYSCREWUP9 :PLANETHAGGLE~BUYSCREWUP "So, you think I'm as stupid as you look? Make a real offer."
-settextlinetrigger PLANETBUYSCREWUP10 :PLANETHAGGLE~BUYSCREWUP "What do you take me for, a fool?  Make a real offer!"
+:planethaggle~buyofferloop
+settextlinetrigger planetbuyprice :planethaggle~buyprice "We'll sell them for"
+settextlinetrigger planetbuyfinaloffer :planethaggle~buyfinaloffer "Our final offer"
+settextlinetrigger planetbuynotinterested :planethaggle~buynotinterested "We're not interested."
+settextlinetrigger planetbuyexperience :planethaggle~buyexperience "experience point(s)"
+settextlinetrigger planetbuyempty :planethaggle~buyempty "empty cargo holds"
+settextlinetrigger planetbuyscrewup1 :planethaggle~buyscrewup "Get real ion-brain, make me a real offer."
+settextlinetrigger planetbuyscrewup2 :planethaggle~buyscrewup "This is the big leagues Jr.  Make a real offer."
+settextlinetrigger planetbuyscrewup3 :planethaggle~buyscrewup "My patience grows short with you."
+settextlinetrigger planetbuyscrewup4 :planethaggle~buyscrewup "I have much better things to do than waste my time.  Try again."
+settextlinetrigger planetbuyscrewup5 :planethaggle~buyscrewup "HA! HA, ha hahahhah hehehe hhhohhohohohh!  You choke me up!"
+settextlinetrigger planetbuyscrewup6 :planethaggle~buyscrewup "Quit playing around, you're wasting my time!"
+settextlinetrigger planetbuyscrewup7 :planethaggle~buyscrewup "Make a real offer or get the "
+settextlinetrigger planetbuyscrewup8 :planethaggle~buyscrewup "WHAT?!@!? you must be crazy!"
+settextlinetrigger planetbuyscrewup9 :planethaggle~buyscrewup "So, you think I'm as stupid as you look? Make a real offer."
+settextlinetrigger planetbuyscrewup10 :planethaggle~buyscrewup "What do you take me for, a fool?  Make a real offer!"
 pause
 pause
-:PLANETHAGGLE~BUYSCREWUP
-gosub :PLANETHAGGLE~BUYKILLTRIGGERS
-if ($PLAYER~BUYDOWN_MODE = "Best Price")
-  multiply $PLAYER~COUNTER 102
-  divide $PLAYER~COUNTER 100
-elseif ($PLAYER~BUYDOWN_MODE = "Worst Price")
-  subtract $PLAYER~OVERHAGGLEMULTIPLE 1
-  setvar $PLAYER~COUNTER $PLAYER~OFFER
-  multiply $PLAYER~COUNTER $PLAYER~OVERHAGGLEMULTIPLE
-  divide $PLAYER~COUNTER 100
+
+:planethaggle~buyscrewup
+gosub :planethaggle~buykilltriggers
+if ($player~buydown_mode = "Best Price")
+	multiply $player~counter 102
+	divide $player~counter 100
+elseif ($player~buydown_mode = "Worst Price")
+	subtract $player~overhagglemultiple 1
+	setvar $player~counter $player~offer
+	multiply $player~counter $player~overhagglemultiple
+	divide $player~counter 100
 end
-send $PLAYER~COUNTER&"*"
-goto :PLANETHAGGLE~BUYOFFERLOOP
-:PLANETHAGGLE~BUYPRICE
-gosub :PLANETHAGGLE~BUYKILLTRIGGERS
-setvar $PLAYER~OLD_OFFER $PLAYER~OFFER
-setvar $PLAYER~OLD_COUNTER $PLAYER~COUNTER
-getword CURRENTLINE $PLAYER~OFFER 5
-striptext $PLAYER~OFFER ","
-setvar $PLAYER~OFFER_PCT $PLAYER~OFFER
-multiply $PLAYER~OFFER_PCT 1000
-divide $PLAYER~OFFER_PCT $PLAYER~OLD_OFFER
-if ($PLAYER~OFFER_PCT > 990)
-  setvar $PLAYER~OFFER_PCT 990
+send $player~counter&"*"
+goto :planethaggle~buyofferloop
+
+:planethaggle~buyprice
+gosub :planethaggle~buykilltriggers
+setvar $player~old_offer $player~offer
+setvar $player~old_counter $player~counter
+getword currentline $player~offer 5
+striptext $player~offer ","
+setvar $player~offer_pct $player~offer
+multiply $player~offer_pct 1000
+divide $player~offer_pct $player~old_offer
+if ($player~offer_pct > 990)
+	setvar $player~offer_pct 990
 end
-multiply $PLAYER~COUNTER 1000
-divide $PLAYER~COUNTER $PLAYER~OFFER_PCT
-if ($PLAYER~COUNTER <= $PLAYER~OLD_COUNTER)
-  add $PLAYER~COUNTER 1
+multiply $player~counter 1000
+divide $player~counter $player~offer_pct
+if ($player~counter <= $player~old_counter)
+	add $player~counter 1
 end
-send $PLAYER~COUNTER&"*"
-goto :PLANETHAGGLE~BUYOFFERLOOP
-:PLANETHAGGLE~BUYFINALOFFER
-gosub :PLANETHAGGLE~BUYKILLTRIGGERS
-setvar $PLAYER~OLD_OFFER $PLAYER~OFFER
-setvar $PLAYER~OLD_COUNTER $PLAYER~COUNTER
-getword CURRENTLINE $PLAYER~OFFER 5
-striptext $PLAYER~OFFER ","
-setvar $PLAYER~OFFER_CHANGE $PLAYER~OFFER
-subtract $PLAYER~OFFER_CHANGE $PLAYER~OLD_OFFER
-subtract $PLAYER~OFFER_CHANGE 1
-multiply $PLAYER~OFFER_CHANGE 25
-divide $PLAYER~OFFER_CHANGE 10
-subtract $PLAYER~COUNTER $PLAYER~OFFER_CHANGE
-if ($PLAYER~COUNTER = $PLAYER~OLD_COUNTER)
-  add $PLAYER~COUNTER 1
+send $player~counter&"*"
+goto :planethaggle~buyofferloop
+
+:planethaggle~buyfinaloffer
+gosub :planethaggle~buykilltriggers
+setvar $player~old_offer $player~offer
+setvar $player~old_counter $player~counter
+getword currentline $player~offer 5
+striptext $player~offer ","
+setvar $player~offer_change $player~offer
+subtract $player~offer_change $player~old_offer
+subtract $player~offer_change 1
+multiply $player~offer_change 25
+divide $player~offer_change 10
+subtract $player~counter $player~offer_change
+if ($player~counter = $player~old_counter)
+	add $player~counter 1
 end
-add $PLAYER~COUNTER 1
-send $PLAYER~COUNTER&"*"
-goto :PLANETHAGGLE~BUYOFFERLOOP
-:PLANETHAGGLE~BUYNOTINTERESTED
-gosub :PLANETHAGGLE~BUYKILLTRIGGERS
+add $player~counter 1
+send $player~counter&"*"
+goto :planethaggle~buyofferloop
+
+:planethaggle~buynotinterested
+gosub :planethaggle~buykilltriggers
 send "0* "
 send "0* "
-goto :PLANETHAGGLE~BUYHAGGLEFAILED
-:PLANETHAGGLE~BUYEXPERIENCE
-gosub :PLANETHAGGLE~BUYKILLTRIGGERS
-getword CURRENTLINE $PLAYER~EXP_BONUS 7
-add $PLAYER~EXP $PLAYER~EXP_BONUS
-add $PLAYER~JETBONUS $PLAYER~EXP_BONUS
-goto :PLANETHAGGLE~BUYOFFERLOOP
-:PLANETHAGGLE~BUYEMPTY
-gosub :PLANETHAGGLE~BUYKILLTRIGGERS
-getword CURRENTLINE $PLAYER~CREDITS 3
-striptext $PLAYER~CREDITS ","
-setvar $PLAYER~OLDEMPTY $PLAYER~EMPTY
-getword CURRENTLINE $PLAYER~EMPTY 6
-if ($PLAYER~OLDEMPTY = $PLAYER~EMPTY)
-  goto :PLANETHAGGLE~BUYHAGGLEFAILED
+goto :planethaggle~buyhagglefailed
+
+:planethaggle~buyexperience
+gosub :planethaggle~buykilltriggers
+getword currentline $player~exp_bonus 7
+add $player~exp $player~exp_bonus
+add $player~jetbonus $player~exp_bonus
+goto :planethaggle~buyofferloop
+
+:planethaggle~buyempty
+gosub :planethaggle~buykilltriggers
+getword currentline $player~credits 3
+striptext $player~credits ","
+setvar $player~oldempty $player~empty
+getword currentline $player~empty 6
+if ($player~oldempty = $player~empty)
+	goto :planethaggle~buyhagglefailed
 else
-  goto :PLANETHAGGLE~BUYHAGGLESUCCEEDED
+	goto :planethaggle~buyhagglesucceeded
 end
-:PLANETHAGGLE~BUYHAGGLEFAILED
-setvar $PLAYER~BUYHAGGLE 0
-return
-:PLANETHAGGLE~BUYHAGGLESUCCEEDED
-setvar $PLAYER~BUYHAGGLE 1
+
+:planethaggle~buyhagglefailed
+setvar $player~buyhaggle 0
 return
 
-:PLANETHAGGLE~BUYNOHAGGLE
-if ($PLAYER~SWATHOFF = 0)
+:planethaggle~buyhagglesucceeded
+setvar $player~buyhaggle 1
+return
 
-  waiton "How many holds of"
-  send "*"
-  gosub :PLAYER~SWATHOFF
-  send "*"
+:planethaggle~buynohaggle
+if ($player~swathoff = 0)
+
+	waiton "How many holds of"
+	send "*"
+	gosub :player~swathoff
+	send "*"
 else
-  send "**"
+	send "**"
 end
-setvar $PLAYER~CYCLEBUFFERLIMIT 20
-add $PLAYER~CYCLEBUFFER 1
-if ($PLAYER~CYCLEBUFFER = $PLAYER~CYCLEBUFFERLIMIT)
-  setvar $PLAYER~CYCLEBUFFER 1
-  send "/"
-  waiton " Sect "
+setvar $player~cyclebufferlimit 20
+add $player~cyclebuffer 1
+if ($player~cyclebuffer = $player~cyclebufferlimit)
+	setvar $player~cyclebuffer 1
+	send "/"
+	waiton " Sect "
 end
 return
 
-:PLANETHAGGLE~BUYKILLTRIGGERS
-killtrigger PLANETBUYPRICE
-killtrigger PLANETBUYFINALOFFER
-killtrigger PLANETBUYNOTINTERESTED
-killtrigger PLANETBUYEXPERIENCE
-killtrigger PLANETBUYEMPTY
-killtrigger PLANETBUYNATIVEDONE
-killtrigger PLANETBUYSCREWUP1
-killtrigger PLANETBUYSCREWUP2
-killtrigger PLANETBUYSCREWUP3
-killtrigger PLANETBUYSCREWUP4
-killtrigger PLANETBUYSCREWUP5
-killtrigger PLANETBUYSCREWUP6
-killtrigger PLANETBUYSCREWUP7
-killtrigger PLANETBUYSCREWUP8
-killtrigger PLANETBUYSCREWUP9
-killtrigger PLANETBUYSCREWUP10
+:planethaggle~buykilltriggers
+killtrigger planetbuyprice
+killtrigger planetbuyfinaloffer
+killtrigger planetbuynotinterested
+killtrigger planetbuyexperience
+killtrigger planetbuyempty
+killtrigger planetbuynativedone
+killtrigger planetbuyscrewup1
+killtrigger planetbuyscrewup2
+killtrigger planetbuyscrewup3
+killtrigger planetbuyscrewup4
+killtrigger planetbuyscrewup5
+killtrigger planetbuyscrewup6
+killtrigger planetbuyscrewup7
+killtrigger planetbuyscrewup8
+killtrigger planetbuyscrewup9
+killtrigger planetbuyscrewup10
 return
 
 include "source\include\player"

@@ -1,385 +1,376 @@
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+setvar $help~help[1]  $help~tab&"       Buys minimum Ore/Org/Equip and dumps to planet "
+setvar $help~help[2]  $help~tab&"       of jets to gain experience from a SSS Port.  "
+setvar $help~help[3]  $help~tab&"       "
+setvar $help~help[4]  $help~tab&" bbb [expstop] {upport}"
+setvar $help~help[5]  $help~tab&"       "
+setvar $help~help[6]  $help~tab&" Options:"
+setvar $help~help[7]  $help~tab&"    [expstop]     STOP when you get to this exp."
+setvar $help~help[8]  $help~tab&"	   {upport}      When port empties upgrades the minimum "
+setvar $help~help[9]  $help~tab&"                  to continue  "
+setvar $help~help[9]  $help~tab&"     "
+setvar $help~help[9]  $help~tab&"    Script uses internal Haggle. "
+setvar $help~help[10] $help~tab&"    Start from planet to dump to planet. Start in sector"
+setvar $help~help[10] $help~tab&"    and it will jettison."
+gosub :help~helpfile
 
+setvar $switchboard~message "Buy Buy Buy starting up!*"
+gosub :switchboard~switchboard
 
-	setVar $HELP~HELP[1]  $HELP~TAB&"       Buys minimum Ore/Org/Equip and dumps to planet "
-	setVar $HELP~HELP[2]  $HELP~TAB&"       of jets to gain experience from a SSS Port.  "
-	setVar $HELP~HELP[3]  $HELP~TAB&"       "
-	setVar $HELP~HELP[4]  $HELP~TAB&" bbb [expstop] {upport}"
-	setVar $HELP~HELP[5]  $HELP~TAB&"       "
-	setVar $HELP~HELP[6]  $HELP~TAB&" Options:"
-	setVar $HELP~HELP[7]  $HELP~TAB&"    [expstop]     STOP when you get to this exp."
-	setVar $HELP~HELP[8]  $HELP~TAB&"	   {upport}      When port empties upgrades the minimum "
-	setVar $HELP~HELP[9]  $HELP~TAB&"                  to continue  "
-	setVar $HELP~HELP[9]  $HELP~TAB&"     "
-	setVar $HELP~HELP[9]  $HELP~TAB&"    Script uses internal Haggle. "
-	setVar $HELP~HELP[10] $HELP~TAB&"    Start from planet to dump to planet. Start in sector"
-	setVar $HELP~HELP[10] $HELP~TAB&"    and it will jettison."
-	gosub :HELP~HELPFILE
+setvar $useplanet true
 
-	setvar $SWITCHBOARD~MESSAGE "Buy Buy Buy starting up!*"
-	gosub :SWITCHBOARD~SWITCHBOARD
+gosub :player~quikstats
 
+setvar $startexp $player~experience
+setvar $startturns $player~turns
 
+setvar $startinglocation $player~current_prompt
+if ($startinglocation = "Command")
+	setvar $useplanet false
+elseif ($startinglocation = "Planet")
+	setvar $useplanet true
+else
+	setvar $switchboard~message "Start at command or planet prompt.*"
+	gosub :switchboard~switchboard
+	halt
+end
 
-	setVar $useplanet TRUE
+setvar $halt_exp $bot~parm1
+isnumber $number $halt_exp
 
+if ($number <> 1)
+	setvar $switchboard~message "Please select what experience to halt at.*"
+	gosub :switchboard~switchboard
+	halt
 
-	gosub :player~quikstats
-	
-	setvar $startexp $player~experience
-	setvar $startturns $player~turns
+end
 
-	setVar $startingLocation $PLAYER~CURRENT_PROMPT
-	if ($startingLocation = "Command")
-		setVar $useplanet FALSE
-	elseif ($startingLocation = "Planet")  
-		setVar $useplanet TRUE
-	else
-		setVar $SWITCHBOARD~message "Start at command or planet prompt.*"
-		gosub :SWITCHBOARD~switchboard
-		halt
-	end
+if ($halt_exp <= 0)
+	setvar $switchboard~message "Halt experience must be greater than 0.*"
+	gosub :switchboard~switchboard
+	halt
+end
 
-	
-	setVar $halt_exp $bot~parm1
-	isNumber $number $halt_exp
+setvar $oreholds 12
+setvar $org_holds 6
+setvar $equip_holds 3
+setvar $rebuy 0
 
-	if ($number <> 1)
-		setvar $switchboard~message "Please select what experience to halt at.*"
-		gosub :switchboard~switchboard
-		halt
-	
-	end
+getwordpos $bot~user_command_line $pos "upport"
+if ($pos > 0)
+	setvar $rebuy 1
+	setvar $switchboard~message "Upgrading port if it runs low on any product.*"
+	gosub :switchboard~switchboard
 
-	if ($halt_exp <= 0)
-		setvar $switchboard~message "Halt experience must be greater than 0.*"
-		gosub :switchboard~switchboard
-		halt
-	end
+else
+	setvar $rebuy 0
+end
 
-	setVar $oreholds 12
-	setVar $org_holds 6
-	setVar $equip_holds 3
-	setVar $rebuy 0
-	
-	getWordPos $bot~user_command_line $pos "upport"
-	if ($pos > 0)
-		setVar $rebuy 1
-		setvar $switchboard~message "Upgrading port if it runs low on any product.*"
-		gosub :switchboard~switchboard
-		
-	else
-		setVar $rebuy 0
-	end
+if ($useplanet = true)
+	send "snl1*snl2*snl3*tnl1*tnl2*tnl3*"
+else
+	send "J    y    *"
+end
 
-	if ($useplanet = TRUE)
-		send "snl1*snl2*snl3*tnl1*tnl2*tnl3*"
-	else
-		send "J    y    *"
-	end
-
-if ($useplanet = TRUE)
+if ($useplanet = true)
 	send "d"
 	waitfor "Planet #"
-	getword CURRENTLINE $pnum 2
-	stripText $pnum "#"
+	getword currentline $pnum 2
+	striptext $pnum "#"
 	send "q"
 end
 
-gosub :SECTOR~VOIDADJACENT
+gosub :sector~voidadjacent
 
-
-setVar $i 1
+setvar $i 1
 
 # just put this in because it should probably stop eventually, particularly when I program in a infinite loop... 10 times in a row... painful
 setvar $trips 1000
-setVar $notifyi 0
-setVar $notifyi1st 1
+setvar $notifyi 0
+setvar $notifyi1st 1
 while ($y < $trips)
-	
 
-	setVar $cred1 $player~credits
+	setvar $cred1 $player~credits
 
 	send "p t"
 	waitfor "Items     Status  Trading"
+
 	:portwaitagain
-	setTextLineTrigger ore1 :ore1 "Fuel Ore"
-	setTextLineTrigger org1 :org1 "Organics"
-	setTextLineTrigger equ1 :equ1 "Equipment"
+	settextlinetrigger ore1 :ore1 "Fuel Ore"
+	settextlinetrigger org1 :org1 "Organics"
+	settextlinetrigger equ1 :equ1 "Equipment"
 	pause
+
 	:ore1
 	killalltriggers
-	getWord CURRENTLINE $oreLeft 5
+	getword currentline $oreleft 5
 	goto :portwaitagain
+
 	:org1
 	killalltriggers
-	getWord CURRENTLINE $orgLeft 4
+	getword currentline $orgleft 4
 	goto :portwaitagain
+
 	:equ1
 	killalltriggers
-	getWord CURRENTLINE $equipLeft 4
-		
-	striptext $oreLeft "%"
-	striptext $orgLeft "%"
-	striptext $equipLeft "%"
+	getword currentline $equipleft 4
 
-	if ($oreLeft <= 2)
-	setVar $restockOre 1
+	striptext $oreleft "%"
+	striptext $orgleft "%"
+	striptext $equipleft "%"
+
+	if ($oreleft <= 2)
+		setvar $restockore 1
 	end
-	if ($orgLeft <= 2)
-	setVar $restockOrg 1
+	if ($orgleft <= 2)
+		setvar $restockorg 1
 	end
-	if ($equipLeft <= 2)
-	setVar $restockEqu 1
+	if ($equipleft <= 2)
+		setvar $restockequ 1
 	end
 
-	setVar $quant 0
+	setvar $quant 0
 	gosub :weareselling
-	
+
 	send $oreholds "*"
 
-	if (HAGGLE = FALSE)
-	gosub :HAGGLE~startHaggle
-	setVar $cred2 $PLAYER~nCredits
+	if (haggle = false)
+		gosub :haggle~starthaggle
+		setvar $cred2 $player~ncredits
 	else
-	killalltriggers
-	settextlinetrigger oredone :oredone "credits and"
-	pause
+		killalltriggers
+		settextlinetrigger oredone :oredone "credits and"
+		pause
+
 		:oredone
-		getword CURRENTLINE $cred2 3
-		stripText $cred2 ","
-		isNumber $isnum $cred2
+		getword currentline $cred2 3
+		striptext $cred2 ","
+		isnumber $isnum $cred2
 		if ($isnum <> 1)
-			setVar $cred2 $cred1
+			setvar $cred2 $cred1
 		end
 	end
 
 	send $org_holds "*"
 
-	if (HAGGLE = FALSE)
-		gosub :HAGGLE~startHaggle
-		setVar $cred3 $PLAYER~nCredits
+	if (haggle = false)
+		gosub :haggle~starthaggle
+		setvar $cred3 $player~ncredits
 	else
 		killalltriggers
 		settextlinetrigger orgdone :orgdone "credits and"
 		pause
+
 		:orgdone
-		getword CURRENTLINE $cred3 3
-		stripText $cred3 ","
-		isNumber $isnum $cred3
+		getword currentline $cred3 3
+		striptext $cred3 ","
+		isnumber $isnum $cred3
 		if ($isnum <> 1)
-			setVar $cred3 $cred2
+			setvar $cred3 $cred2
 		end
 	end
 
 	send $equip_holds "*"
 
-	if (HAGGLE = FALSE)
-		gosub :HAGGLE~startHaggle
-		setVar $cred4 $PLAYER~nCredits
+	if (haggle = false)
+		gosub :haggle~starthaggle
+		setvar $cred4 $player~ncredits
 	else
 		killalltriggers
 		settextlinetrigger equdone :equdone "credits and"
 		pause
+
 		:equdone
-		getword CURRENTLINE $cred4 3
-		stripText $cred4 ","
-		isNumber $isnum $cred4
+		getword currentline $cred4 3
+		striptext $cred4 ","
+		isnumber $isnum $cred4
 		if ($isnum <> 1)
-			setVar $cred4 $cred3
+			setvar $cred4 $cred3
 		end
 	end
 
-	goSub :checkSizing
+	gosub :checksizing
 	gosub :player~quikstats
-	
 
-	setVar $totalholds ($oreholds + $org_holds + $equip_holds)
-	setVar $empty_holds ($PLAYER~TOTAL_HOLDS - ($player~ORE_HOLDS + $player~ORGANIC_HOLDS + $player~EQUIPMENT_HOLDS + $PLAYER~COLONIST_HOLDS))
-	
+	setvar $totalholds ($oreholds + $org_holds + $equip_holds)
+	setvar $empty_holds ($player~total_holds - ($player~ore_holds + $player~organic_holds + $player~equipment_holds + $player~colonist_holds))
+
 	if ($empty_holds < $totalholds)
 
-		if ($useplanet = TRUE)
+		if ($useplanet = true)
 			send "l" $pnum "*tnl1*tnl2*tnl3*q"
 		else
 			send "j  y  *  "
-		end 
+		end
 	end
-	
-	
+
 	add $notifyi 1
 	if (($notifyi1st > 0) and ($notifyi = 5))
 		add $notifyi1st 1
 		gosub :calcstats
-		setVar $notifyi 0
+		setvar $notifyi 0
 		if ($notifyi1st = 4)
 			setvar $notifyi1st 0
 		end
 	end
 	if ($notifyi > 30)
 		gosub :calcstats
-		setVar $notifyi 0
+		setvar $notifyi 0
 	end
 	if ($player~credits < 5000)
 		setvar $switchboard~message "Low on cash, Halting...*"
 		gosub :switchboard~switchboard
-		gosub :SECTOR~CLEARVOIDADJACENT
+		gosub :sector~clearvoidadjacent
 		halt
 	end
 	if ($player~turns < 50)
 		setvar $switchboard~message "Turns low.. keeping a few up our sleeve.. halting*"
 		gosub :switchboard~switchboard
-		gosub :SECTOR~CLEARVOIDADJACENT
+		gosub :sector~clearvoidadjacent
 		halt
 	end
-	if ($player~EXPERIENCE > $halt_exp)
+	if ($player~experience > $halt_exp)
 		setvar $switchboard~message "Experience target met.. halting*"
 		gosub :switchboard~switchboard
-		gosub :SECTOR~CLEARVOIDADJACENT
+		gosub :sector~clearvoidadjacent
 		halt
 	end
 
 	if ($rebuy = 0)
-		if ($restockOre = 1)
+		if ($restockore = 1)
 			setvar $switchboard~message "Low on available fuel ore, Halting...*"
 			gosub :switchboard~switchboard
-			gosub :SECTOR~CLEARVOIDADJACENT
+			gosub :sector~clearvoidadjacent
 			halt
 		end
 
-		if ($restockOrg = 1)
+		if ($restockorg = 1)
 			setvar $switchboard~message "Low on available Organics, Halting...*"
 			gosub :switchboard~switchboard
-			gosub :SECTOR~CLEARVOIDADJACENT
+			gosub :sector~clearvoidadjacent
 			halt
 		end
 
-		if ($restockEqu = 1)
+		if ($restockequ = 1)
 			setvar $switchboard~message "Low on available Equipment, Halting...*"
 			gosub :switchboard~switchboard
-			gosub :SECTOR~CLEARVOIDADJACENT
+			gosub :sector~clearvoidadjacent
 			halt
 		end
 	else
-		if ($restockOre = 1)
-			setVar $restockOre 0
-			getsectorparameter $PLAYER~current_sector "FUELL" $LOWPRODUCTIVITY
-			getsectorparameter $PLAYER~current_sector "FUELH" $HIGHPRODUCTIVITY
-			setVar $a ($HIGHPRODUCTIVITY/100)
+		if ($restockore = 1)
+			setvar $restockore 0
+			getsectorparameter $player~current_sector "FUELL" $lowproductivity
+			getsectorparameter $player~current_sector "FUELH" $highproductivity
+			setvar $a ($highproductivity/100)
 			send "o   1" $a "*  q  "
-			add $LOWPRODUCTIVITY $a
-			add $HIGHPRODUCTIVITY $a
-			setsectorparameter $PLAYER~current_sector "FUELL" $LOWPRODUCTIVITY
-			setsectorparameter $PLAYER~current_sector "FUELH" $HIGHPRODUCTIVITY
-			
+			add $lowproductivity $a
+			add $highproductivity $a
+			setsectorparameter $player~current_sector "FUELL" $lowproductivity
+			setsectorparameter $player~current_sector "FUELH" $highproductivity
+
 		end
-		if ($restockOrg = 1)
-			setVar $restockOrg 0
-			getsectorparameter $PLAYER~current_sector "ORGANICSL" $LOWPRODUCTIVITY
-			getsectorparameter $PLAYER~current_sector "ORGANICSH" $HIGHPRODUCTIVITY
-			setVar $a ($HIGHPRODUCTIVITY/100)
+		if ($restockorg = 1)
+			setvar $restockorg 0
+			getsectorparameter $player~current_sector "ORGANICSL" $lowproductivity
+			getsectorparameter $player~current_sector "ORGANICSH" $highproductivity
+			setvar $a ($highproductivity/100)
 			send "o   2" $a "*  q  "
-			add $LOWPRODUCTIVITY $a
-			add $HIGHPRODUCTIVITY $a
-			setsectorparameter $PLAYER~current_sector "ORGANICSL" $LOWPRODUCTIVITY
-			setsectorparameter $PLAYER~current_sector "ORGANICSH" $HIGHPRODUCTIVITY
+			add $lowproductivity $a
+			add $highproductivity $a
+			setsectorparameter $player~current_sector "ORGANICSL" $lowproductivity
+			setsectorparameter $player~current_sector "ORGANICSH" $highproductivity
 		end
-		if ($restockEqu = 1)
-			setVar $restockEqu 0
-			getsectorparameter $PLAYER~current_sector "EQUIPMENTL" $LOWPRODUCTIVITY
-			getsectorparameter $PLAYER~current_sector "EQUIPMENTH" $HIGHPRODUCTIVITY
-			setVar $a ($HIGHPRODUCTIVITY/100)
+		if ($restockequ = 1)
+			setvar $restockequ 0
+			getsectorparameter $player~current_sector "EQUIPMENTL" $lowproductivity
+			getsectorparameter $player~current_sector "EQUIPMENTH" $highproductivity
+			setvar $a ($highproductivity/100)
 			send "o   3" $a "*  q  "
-			add $LOWPRODUCTIVITY $a
-			add $HIGHPRODUCTIVITY $a
-			setsectorparameter $PLAYER~current_sector "EQUIPMENTL" $LOWPRODUCTIVITY
-			setsectorparameter $PLAYER~current_sector "EQUIPMENTH" $HIGHPRODUCTIVITY
+			add $lowproductivity $a
+			add $highproductivity $a
+			setsectorparameter $player~current_sector "EQUIPMENTL" $lowproductivity
+			setsectorparameter $player~current_sector "EQUIPMENTH" $highproductivity
 		end
 	end
 
 end
-
-
-
 
 halt
 
-:checkSizing
+:checksizing
 # maths just has to be rough
 
-setVar $oreCost (0 - ($cred2 - $cred1))
-setVar $orgCost (0 - ($cred3 - $cred2))
-setVar $equCost (0 - ($cred4 - $cred3))
-	
-if (($oreCost = 0) or ($orgCost = 0) or ($equCost = 0))
+setvar $orecost (0 - ($cred2 - $cred1))
+setvar $orgcost (0 - ($cred3 - $cred2))
+setvar $equcost (0 - ($cred4 - $cred3))
+
+if (($orecost = 0) or ($orgcost = 0) or ($equcost = 0))
 	return
 end
-setVar $oreunit ($oreCost/$oreholds)
-setVar $orgunit ($orgCost/$org_holds)
-setVar $equunit ($equCost/$equip_holds)
-	
+setvar $oreunit ($orecost/$oreholds)
+setvar $orgunit ($orgcost/$org_holds)
+setvar $equunit ($equcost/$equip_holds)
 
-if ($oreCost < 100)
-	setVar $min_ore $oreholds
-	setVar $unitprice $oreunit
-	setVar $currentcost $oreCost
-	goSub :getAdd
-	add $oreholds $unitsToAdd
+if ($orecost < 100)
+	setvar $min_ore $oreholds
+	setvar $unitprice $oreunit
+	setvar $currentcost $orecost
+	gosub :getadd
+	add $oreholds $unitstoadd
 else
-	setvar $test ($oreCost - $oreunit)
+	setvar $test ($orecost - $oreunit)
 	if ($test > 100)
 		#if (($oreholds - 1) > $min_ore)
-			subtract $oreholds 1
+		subtract $oreholds 1
 		#end
 	end
 end
-	
 
+if ($orgcost < 100)
+	setvar $min_org $org_holds
 
-if ($orgCost < 100)
-	setVar $min_org $org_holds
-		
-	setVar $unitprice $orgunit
-	setVar $currentcost $orgCost
-	goSub :getAdd
-	add $org_holds $unitsToAdd
+	setvar $unitprice $orgunit
+	setvar $currentcost $orgcost
+	gosub :getadd
+	add $org_holds $unitstoadd
 else
-	setvar $test ($orgCost - $orgunit)
+	setvar $test ($orgcost - $orgunit)
 	if ($test > 100)
 		#if (($org_holds - 1) > $min_org)
-			subtract $org_holds 1
+		subtract $org_holds 1
 		#end
 	end
 end
 
-if ($equCost < 100)
-	setVar $min_equip $equip_holds
-	setVar $unitprice $equunit
-	setVar $currentcost $equCost
-	goSub :getAdd
-	add $equip_holds $unitsToAdd
+if ($equcost < 100)
+	setvar $min_equip $equip_holds
+	setvar $unitprice $equunit
+	setvar $currentcost $equcost
+	gosub :getadd
+	add $equip_holds $unitstoadd
 else
-		
-	setvar $test ($equCost - $equunit)
+
+	setvar $test ($equcost - $equunit)
 	if ($test > 100)
 		#if (($equip_holds - 1) > $min_equip)
-			subtract $equip_holds 1
+		subtract $equip_holds 1
 		#end
 	end
 end
 
 return
 
-:getAdd
-setVar $v 1
-setVar $go 1
+:getadd
+setvar $v 1
+setvar $go 1
 while ($go = 1)
-	setVar $newcost ($currentcost + ($v * $unitprice))
+	setvar $newcost ($currentcost + ($v * $unitprice))
 	if ($newcost > 100)
-		setVar $go 0
-		setVar $unitsToAdd $v
+		setvar $go 0
+		setvar $unitstoadd $v
 	else
 		add $v 1
 	end
@@ -388,32 +379,26 @@ end
 
 return
 
-
 :weareselling
 waitfor "We are selling up to"
-getword CURRENTLINE $quant 6
-stripText $quant "."
+getword currentline $quant 6
+striptext $quant "."
 return
 
-
 :calcstats
-	
-setVar $expdiff ($player~experience - $startexp)
-setVar $turndiff ($startturns - $player~turns)
+setvar $expdiff ($player~experience - $startexp)
+setvar $turndiff ($startturns - $player~turns)
 if ($turndiff <= 0)
 	send "'Experience gained: " $expdiff "; exp @ " $player~experience "*"
 	return
 end
-setPrecision 2
-setVar $expperturn ($expdiff/$turndiff)
-setPrecision 0
+setprecision 2
+setvar $expperturn ($expdiff/$turndiff)
+setprecision 0
 
 send "'We are making " $expperturn " per turn; exp @ " $player~experience "*"
 
 return
-
-
-
 
 halt
 

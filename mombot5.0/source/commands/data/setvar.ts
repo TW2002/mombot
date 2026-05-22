@@ -1,107 +1,106 @@
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
+setvar $help~help[1]  $help~tab&"setvar"
+setvar $help~help[2]  $help~tab&"  Sets bot variables"
+setvar $help~help[3]  $help~tab&"    s - stardock"
+setvar $help~help[4]  $help~tab&"    r - rylos"
+setvar $help~help[5]  $help~tab&"    a - alpha centauri"
+setvar $help~help[6]  $help~tab&"    b - backdoor"
+setvar $help~help[7]  $help~tab&"    x - safe ship"
+setvar $help~help[8]  $help~tab&"   tl - turn limit"
+setvar $help~help[9]  $help~tab&"    h - home sector"
+gosub :help~helpfile
 
-	setVar $HELP~HELP[1]  $HELP~TAB&"setvar"
-	setVar $HELP~HELP[2]  $HELP~TAB&"  Sets bot variables"
-	setVar $HELP~HELP[3]  $HELP~TAB&"    s - stardock"
-	setVar $HELP~HELP[4]  $HELP~TAB&"    r - rylos"
-	setVar $HELP~HELP[5]  $HELP~TAB&"    a - alpha centauri"
-	setVar $HELP~HELP[6]  $HELP~TAB&"    b - backdoor"
-	setVar $HELP~HELP[7]  $HELP~TAB&"    x - safe ship"
-	setVar $HELP~HELP[8]  $HELP~TAB&"   tl - turn limit"
-	setVar $HELP~HELP[9]  $HELP~TAB&"    h - home sector"
-	gosub :HELP~HELPFILE
-
-	getWord $BOT~user_command_line $BOT~parm1 1
-	isNumber $test $BOT~parm2
-	if (($BOT~parm1 = "h") OR ($BOT~parm1 = "home"))
-		if ($test)
-			if (($BOT~parm2 <= SECTORS) AND ($BOT~parm2 >= 1))
-				setVar $MAP~home_sector $BOT~parm2
-				savevar $map~home_sector
-				setVar $SWITCHBOARD~message "Home Sector variable set to: "&$MAP~home_sector&".*"
-			else
-				setVar $SWITCHBOARD~message "Variable entered not valid, keeping old value.*"
-			end
-		end
-	elseif (($BOT~parm1 = "s") OR ($BOT~parm1 = "stardock"))
-		if ($test)
-			if (($BOT~parm2 <= SECTORS) AND ($BOT~parm2 >= 1))
-				setVar $MAP~stardock $BOT~parm2
-				savevar $map~stardock
-				setVar $SWITCHBOARD~message "Stardock variable set to: "&$MAP~stardock&".*"
-			else
-				setVar $SWITCHBOARD~message "Variable entered not valid, keeping old value.*"
-			end
-		end
-	elseif (($BOT~parm1 = "r") OR ($BOT~parm1 = "rylos"))
-		if ($test)
-			if (($BOT~parm2 <= SECTORS) AND ($BOT~parm2 >= 1))
-				setVar $MAP~rylos $BOT~parm2
-				savevar $map~rylos
-				setVar $SWITCHBOARD~message "Rylos variable set to: "&$MAP~rylos&".*"
-			else
-				setVar $SWITCHBOARD~message "Variable entered not valid, keeping old value.*"
-			end
-		end
-	elseif (($BOT~parm1 = "a") OR ($BOT~parm1 = "alpha"))
-		if ($test)
-			if (($BOT~parm2 <= SECTORS) AND ($BOT~parm2 >= 1))
-				setVar $MAP~alpha_centauri $BOT~parm2
-				savevar $MAP~alpha_centauri
-				setVar $SWITCHBOARD~message "Alpha Centauri variable set to: "&$MAP~alpha_centauri&".*"
-			else
-				setVar $SWITCHBOARD~message "Variable entered not valid, keeping old value.*"
-			end
-		end
-	elseif (($BOT~parm1 = "b") OR ($BOT~parm1 = "backdoor"))
-		if ($test)
-			if (($BOT~parm2 <= SECTORS) AND ($BOT~parm2 >= 1))
-				setVar $MAP~backdoor $BOT~parm2
-				savevar $MAP~backdoor 
-				setVar $SWITCHBOARD~message "Backdoor Sector variable set to: "&$MAP~backdoor&".*"
-			else
-				setVar $SWITCHBOARD~message "Variable entered not valid, keeping old value.*"
-			end
-		end
-	elseif (($BOT~parm1 = "x") OR ($BOT~parm1 = "safeship"))
-		if ($test)
-			if ($BOT~parm2 >= 1)
-				setVar $BOT~safe_ship $BOT~parm2
-				savevar $bot~safe_ship
-				setVar $SWITCHBOARD~message "Safe Ship variable set to: "&$BOT~safe_ship&".*"
-			else
-				setVar $SWITCHBOARD~message "Variable entered not valid, keeping old value.*"
-			end
-		end
-	elseif (($BOT~parm1 = "tl") OR ($BOT~parm1 = "turnlimit"))
-		if ($test)
-			if ($BOT~parm2 >= 0)
-				setVar $BOT~bot_turn_limit $BOT~parm2
-				savevar $BOT~bot_turn_limit
-				setVar $SWITCHBOARD~message "Turn Limit variable set to: "&$BOT~bot_turn_limit&".*"
-			else
-				setVar $SWITCHBOARD~message "Variable entered not valid, keeping old value.*"
-			end
-		end
-	elseif (($BOT~parm1 = "pgridbot") OR ($BOT~parm1 = "pbot"))
-		if ($BOT~parm2 <> 0)
-			setVar $BOT~pgrid_bot $BOT~parm2
-			savevar $BOT~pgrid_bot
-			setVar $SWITCHBOARD~message "PGrid Bot has been set.*"
+getword $bot~user_command_line $bot~parm1 1
+isnumber $test $bot~parm2
+if (($bot~parm1 = "h") or ($bot~parm1 = "home"))
+	if ($test)
+		if (($bot~parm2 <= sectors) and ($bot~parm2 >= 1))
+			setvar $map~home_sector $bot~parm2
+			savevar $map~home_sector
+			setvar $switchboard~message "Home Sector variable set to: "&$map~home_sector&".*"
 		else
-			setVar $BOT~pgrid_bot ""
-			savevar $BOT~pgrid_bot
-			setVar $SWITCHBOARD~message "PGrid Bot has been cleared.*"
+			setvar $switchboard~message "Variable entered not valid, keeping old value.*"
 		end
+	end
+elseif (($bot~parm1 = "s") or ($bot~parm1 = "stardock"))
+	if ($test)
+		if (($bot~parm2 <= sectors) and ($bot~parm2 >= 1))
+			setvar $map~stardock $bot~parm2
+			savevar $map~stardock
+			setvar $switchboard~message "Stardock variable set to: "&$map~stardock&".*"
+		else
+			setvar $switchboard~message "Variable entered not valid, keeping old value.*"
+		end
+	end
+elseif (($bot~parm1 = "r") or ($bot~parm1 = "rylos"))
+	if ($test)
+		if (($bot~parm2 <= sectors) and ($bot~parm2 >= 1))
+			setvar $map~rylos $bot~parm2
+			savevar $map~rylos
+			setvar $switchboard~message "Rylos variable set to: "&$map~rylos&".*"
+		else
+			setvar $switchboard~message "Variable entered not valid, keeping old value.*"
+		end
+	end
+elseif (($bot~parm1 = "a") or ($bot~parm1 = "alpha"))
+	if ($test)
+		if (($bot~parm2 <= sectors) and ($bot~parm2 >= 1))
+			setvar $map~alpha_centauri $bot~parm2
+			savevar $map~alpha_centauri
+			setvar $switchboard~message "Alpha Centauri variable set to: "&$map~alpha_centauri&".*"
+		else
+			setvar $switchboard~message "Variable entered not valid, keeping old value.*"
+		end
+	end
+elseif (($bot~parm1 = "b") or ($bot~parm1 = "backdoor"))
+	if ($test)
+		if (($bot~parm2 <= sectors) and ($bot~parm2 >= 1))
+			setvar $map~backdoor $bot~parm2
+			savevar $map~backdoor
+			setvar $switchboard~message "Backdoor Sector variable set to: "&$map~backdoor&".*"
+		else
+			setvar $switchboard~message "Variable entered not valid, keeping old value.*"
+		end
+	end
+elseif (($bot~parm1 = "x") or ($bot~parm1 = "safeship"))
+	if ($test)
+		if ($bot~parm2 >= 1)
+			setvar $bot~safe_ship $bot~parm2
+			savevar $bot~safe_ship
+			setvar $switchboard~message "Safe Ship variable set to: "&$bot~safe_ship&".*"
+		else
+			setvar $switchboard~message "Variable entered not valid, keeping old value.*"
+		end
+	end
+elseif (($bot~parm1 = "tl") or ($bot~parm1 = "turnlimit"))
+	if ($test)
+		if ($bot~parm2 >= 0)
+			setvar $bot~bot_turn_limit $bot~parm2
+			savevar $bot~bot_turn_limit
+			setvar $switchboard~message "Turn Limit variable set to: "&$bot~bot_turn_limit&".*"
+		else
+			setvar $switchboard~message "Variable entered not valid, keeping old value.*"
+		end
+	end
+elseif (($bot~parm1 = "pgridbot") or ($bot~parm1 = "pbot"))
+	if ($bot~parm2 <> 0)
+		setvar $bot~pgrid_bot $bot~parm2
+		savevar $bot~pgrid_bot
+		setvar $switchboard~message "PGrid Bot has been set.*"
 	else
-		setVar $SWITCHBOARD~message "Unknown variable name entered.*"
+		setvar $bot~pgrid_bot ""
+		savevar $bot~pgrid_bot
+		setvar $switchboard~message "PGrid Bot has been cleared.*"
 	end
-	if (($switchboard~message = "0") or ($switchboard~message = ""))
-		setVar $SWITCHBOARD~message "Setvar must have a valid value to set.*"
-	end
-	gosub :SWITCHBOARD~switchboard
+else
+	setvar $switchboard~message "Unknown variable name entered.*"
+end
+if (($switchboard~message = "0") or ($switchboard~message = ""))
+	setvar $switchboard~message "Setvar must have a valid value to set.*"
+end
+gosub :switchboard~switchboard
 halt
 
 # includes:

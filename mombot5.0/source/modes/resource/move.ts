@@ -1,259 +1,258 @@
-
 logging off
-gosub :LOADVARS~LOADVARS
+gosub :loadvars~loadvars
 
-gosub :HELP~INITIALIZE
-setVar $HELP~HELP[1]  $HELP~TAB&"MOVE - Product Mover"
-setVar $HELP~HELP[2]  $HELP~TAB&" "
-setVar $HELP~HELP[3]  $HELP~TAB&"    move [type] [planet] [rounds]"
-setVar $HELP~HELP[4]  $HELP~TAB&" "
-setVar $HELP~HELP[5]  $HELP~TAB&"    [type] - use [f]uel, [o]rg, [e]quip"
-setVar $HELP~HELP[6]  $HELP~TAB&"    [type] - use [fc] fuel colo, [oc] org colo, [ec] equip colo"
-setVar $HELP~HELP[7]  $HELP~TAB&"    [planet] planet to move to"
-setVar $HELP~HELP[8]  $HELP~TAB&"    [rounds] number of rounds to move product / colonists"
-gosub :HELP~HELPFILE
+gosub :help~initialize
+setvar $help~help[1]  $help~tab&"MOVE - Product Mover"
+setvar $help~help[2]  $help~tab&" "
+setvar $help~help[3]  $help~tab&"    move [type] [planet] [rounds]"
+setvar $help~help[4]  $help~tab&" "
+setvar $help~help[5]  $help~tab&"    [type] - use [f]uel, [o]rg, [e]quip"
+setvar $help~help[6]  $help~tab&"    [type] - use [fc] fuel colo, [oc] org colo, [ec] equip colo"
+setvar $help~help[7]  $help~tab&"    [planet] planet to move to"
+setvar $help~help[8]  $help~tab&"    [rounds] number of rounds to move product / colonists"
+gosub :help~helpfile
 
 killalltriggers
-setvar $STUFFMOVED ""
-setvar $ROUNDS 0
+setvar $stuffmoved ""
+setvar $rounds 0
 setvar $moveextra 0
-gosub :PLAYER~QUIKSTATS
-setvar $STARTLOCATION $PLAYER~CURRENT_PROMPT
-if (($STARTLOCATION <> "Citadel") and ($STARTLOCATION <> "Planet"))
-  setvar $switchboard~message "Mover must be run from Citadel or Planet prompt.*"
-  gosub :switchboard~switchboard
-  halt
+gosub :player~quikstats
+setvar $startlocation $player~current_prompt
+if (($startlocation <> "Citadel") and ($startlocation <> "Planet"))
+	setvar $switchboard~message "Mover must be run from Citadel or Planet prompt.*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($PARM1 = "f")
-  setvar $STUFFMOVED "Fuel"
-elseif ($PARM1 = "o")
-  setvar $STUFFMOVED "Organics"
-elseif ($PARM1 = "e")
-  setvar $STUFFMOVED "Equipment"
-elseif ($PARM1 = "fc")
-  setvar $STUFFMOVED "Fuel Colonists"
-elseif ($PARM1 = "oc")
-  setvar $STUFFMOVED "Organic Colonists"
-elseif ($PARM1 = "ec")
-  setvar $STUFFMOVED "Equipment Colonists"
+if ($parm1 = "f")
+	setvar $stuffmoved "Fuel"
+elseif ($parm1 = "o")
+	setvar $stuffmoved "Organics"
+elseif ($parm1 = "e")
+	setvar $stuffmoved "Equipment"
+elseif ($parm1 = "fc")
+	setvar $stuffmoved "Fuel Colonists"
+elseif ($parm1 = "oc")
+	setvar $stuffmoved "Organic Colonists"
+elseif ($parm1 = "ec")
+	setvar $stuffmoved "Equipment Colonists"
 else
-  setvar $switchboard~message "Please use move [f/o/e/fc/oc/ec/] [planet] {[rounds]|[amount]} format*"
-  gosub :switchboard~switchboard
-  halt
+	setvar $switchboard~message "Please use move [f/o/e/fc/oc/ec/] [planet] {[rounds]|[amount]} format*"
+	gosub :switchboard~switchboard
+	halt
 end
-isnumber $TEST $PARM2
-if ($TEST = FALSE)
-  setvar $switchboard~message "Mover Planet Parameter in-valid*"
-  gosub :switchboard~switchboard
-  halt
+isnumber $test $parm2
+if ($test = false)
+	setvar $switchboard~message "Mover Planet Parameter in-valid*"
+	gosub :switchboard~switchboard
+	halt
 end
-setvar $moveall FALSE
-isnumber $TEST $PARM3
-if ($TEST = FALSE)
-  if ($PARM3 = "")
-    setvar $moveall TRUE
-  else
-    setvar $switchboard~message "Mover Rounds Parameter in-valid*"
-    gosub :switchboard~switchboard
-    halt
-  end
-elseif ($PARM3 <= 0)
-  setvar $switchboard~message "Must choose more than 0 rounds to move*"
-  gosub :switchboard~switchboard
-  halt
-elseif ($PARM3 > 1000)
-  gosub :PLAYER~QUIKSTATS
-  if ($PLAYER~TOTAL_HOLDS <= 0)
-    setvar $switchboard~message "Unable to determine ship holds from stats.*"
-    gosub :switchboard~switchboard
-    halt
-  end
-  setvar $MOVEHOLDS ($PARM3 / $PLAYER~TOTAL_HOLDS)
-  setvar $moveextra ($PARM3 - ($PLAYER~TOTAL_HOLDS * $MOVEHOLDS))
-  setvar $movetrips $MOVEHOLDS
-  if ($moveextra > 0)
-    add $movetrips 1
-  end
-  setvar $switchboard~message "Moving " & $movetrips & " holds (" & $PARM3 & " total).*"
-  gosub :switchboard~switchboard
+setvar $moveall false
+isnumber $test $parm3
+if ($test = false)
+	if ($parm3 = "")
+		setvar $moveall true
+	else
+		setvar $switchboard~message "Mover Rounds Parameter in-valid*"
+		gosub :switchboard~switchboard
+		halt
+	end
+elseif ($parm3 <= 0)
+	setvar $switchboard~message "Must choose more than 0 rounds to move*"
+	gosub :switchboard~switchboard
+	halt
+elseif ($parm3 > 1000)
+	gosub :player~quikstats
+	if ($player~total_holds <= 0)
+		setvar $switchboard~message "Unable to determine ship holds from stats.*"
+		gosub :switchboard~switchboard
+		halt
+	end
+	setvar $moveholds ($parm3 / $player~total_holds)
+	setvar $moveextra ($parm3 - ($player~total_holds * $moveholds))
+	setvar $movetrips $moveholds
+	if ($moveextra > 0)
+		add $movetrips 1
+	end
+	setvar $switchboard~message "Moving " & $movetrips & " holds (" & $parm3 & " total).*"
+	gosub :switchboard~switchboard
 else
-   setvar $MOVEHOLDS $PARM3
-   setvar $moveextra 0
+	setvar $moveholds $parm3
+	setvar $moveextra 0
 end
-if ($STARTLOCATION = "Citadel")
-  send "q"
+if ($startlocation = "Citadel")
+	send "q"
 end
 
-:STARTMOVER
-gosub :GETPLANETINFO
-if (($moveall = TRUE) and (($STUFFMOVED = "Fuel Colonists") or ($STUFFMOVED = "Organic Colonists") or ($STUFFMOVED = "Equipment Colonists")))
-  gosub :GETPLANETCOLONISTINFO
+:startmover
+gosub :getplanetinfo
+if (($moveall = true) and (($stuffmoved = "Fuel Colonists") or ($stuffmoved = "Organic Colonists") or ($stuffmoved = "Equipment Colonists")))
+	gosub :getplanetcolonistinfo
 end
-if ($STUFFMOVED = "Fighters")
-  goto :MOVEFIGHTERS
-elseif (($STUFFMOVED = "Fuel") or ($STUFFMOVED = "Fuel Colonists"))
-  setvar $STUFF 1
-  if ($moveall = TRUE)
-    if ($STUFFMOVED = "Fuel Colonists")
-      setvar $MOVEHOLDS ($PLANET_FUEL_COLONISTS / $PLAYER~TOTAL_HOLDS)
-      setvar $moveextra $PLANET_FUEL_COLONISTS - ($MOVEHOLDS * $PLAYER~TOTAL_HOLDS)
-    else
-      setvar $MOVEHOLDS ($PLANET_FUEL / $PLAYER~TOTAL_HOLDS)
-      setvar $moveextra $PLANET_FUEL - ($MOVEHOLDS * $PLAYER~TOTAL_HOLDS)
-    end
-  end
-elseif (($STUFFMOVED = "Organics") or ($STUFFMOVED = "Organic Colonists"))
-  setvar $STUFF 2
-  if ($moveall = TRUE)
-    if ($STUFFMOVED = "Organic Colonists")
-      setvar $MOVEHOLDS ($PLANET_ORGANICS_COLONISTS / $PLAYER~TOTAL_HOLDS)
-      setvar $moveextra $PLANET_ORGANICS_COLONISTS - ($MOVEHOLDS * $PLAYER~TOTAL_HOLDS)
-    else
-      setvar $MOVEHOLDS ($PLANET_ORGANICS / $PLAYER~TOTAL_HOLDS)
-      setvar $moveextra $PLANET_ORGANICS - ($MOVEHOLDS * $PLAYER~TOTAL_HOLDS)
-    end
-  end
-elseif (($STUFFMOVED = "Equipment") or ($STUFFMOVED = "Equipment Colonists"))
-  setvar $STUFF 3
-  if ($moveall = TRUE)
-    if ($STUFFMOVED = "Equipment Colonists")
-      setvar $MOVEHOLDS ($PLANET_EQUIPMENT_COLONISTS / $PLAYER~TOTAL_HOLDS)
-      setvar $moveextra $PLANET_EQUIPMENT_COLONISTS - ($MOVEHOLDS * $PLAYER~TOTAL_HOLDS)
-    else
-      setvar $MOVEHOLDS ($PLANET_EQUIPMENT / $PLAYER~TOTAL_HOLDS)
-      setvar $moveextra $PLANET_EQUIPMENT - ($MOVEHOLDS * $PLAYER~TOTAL_HOLDS)
-    end
-  end
+if ($stuffmoved = "Fighters")
+	goto :movefighters
+elseif (($stuffmoved = "Fuel") or ($stuffmoved = "Fuel Colonists"))
+	setvar $stuff 1
+	if ($moveall = true)
+		if ($stuffmoved = "Fuel Colonists")
+			setvar $moveholds ($planet_fuel_colonists / $player~total_holds)
+			setvar $moveextra $planet_fuel_colonists - ($moveholds * $player~total_holds)
+		else
+			setvar $moveholds ($planet_fuel / $player~total_holds)
+			setvar $moveextra $planet_fuel - ($moveholds * $player~total_holds)
+		end
+	end
+elseif (($stuffmoved = "Organics") or ($stuffmoved = "Organic Colonists"))
+	setvar $stuff 2
+	if ($moveall = true)
+		if ($stuffmoved = "Organic Colonists")
+			setvar $moveholds ($planet_organics_colonists / $player~total_holds)
+			setvar $moveextra $planet_organics_colonists - ($moveholds * $player~total_holds)
+		else
+			setvar $moveholds ($planet_organics / $player~total_holds)
+			setvar $moveextra $planet_organics - ($moveholds * $player~total_holds)
+		end
+	end
+elseif (($stuffmoved = "Equipment") or ($stuffmoved = "Equipment Colonists"))
+	setvar $stuff 3
+	if ($moveall = true)
+		if ($stuffmoved = "Equipment Colonists")
+			setvar $moveholds ($planet_equipment_colonists / $player~total_holds)
+			setvar $moveextra $planet_equipment_colonists - ($moveholds * $player~total_holds)
+		else
+			setvar $moveholds ($planet_equipment / $player~total_holds)
+			setvar $moveextra $planet_equipment - ($moveholds * $player~total_holds)
+		end
+	end
 end
-getwordpos $BOT~USER_COMMAND_LINE $POS "c"
-if ($POS > 0)
-  send "q  j  y l "&$PLANET&" *  "
-  goto :MOVECOLONISTS
+getwordpos $bot~user_command_line $pos "c"
+if ($pos > 0)
+	send "q  j  y l "&$planet&" *  "
+	goto :movecolonists
 else
-  send "q  j  y l "&$PLANET&" *  "
-  goto :MOVEPRODUCT
+	send "q  j  y l "&$planet&" *  "
+	goto :moveproduct
 end
 
-:MOVEPRODUCT
+:moveproduct
 #echo "moveholds " $MOVEHOLDS " rounds " $ROUNDS "*"
-if ($ROUNDS >= $MOVEHOLDS)
-  goto :MOVEPRODUCTEXTRA
+if ($rounds >= $moveholds)
+	goto :moveproductextra
 end
-send "t  n  t  "&$STUFF&"*  q  l "&$PARM2&"*  t  n  l "&$STUFF&"*  q  l "&$PLANET&"*  "
-add $ROUNDS 1
-goto :MOVEPRODUCT
+send "t  n  t  "&$stuff&"*  q  l "&$parm2&"*  t  n  l "&$stuff&"*  q  l "&$planet&"*  "
+add $rounds 1
+goto :moveproduct
 
-:MOVEPRODUCTEXTRA
+:moveproductextra
 if ($moveextra <= 0)
-  goto :MOVEDONE
+	goto :movedone
 end
-send "t  n  t  "&$STUFF&" "&$moveextra&"*  q  l "&$PARM2&"*  t  n  l "&$STUFF&"*  q  l "&$PLANET&"*  "
-goto :MOVEDONE
+send "t  n  t  "&$stuff&" "&$moveextra&"*  q  l "&$parm2&"*  t  n  l "&$stuff&"*  q  l "&$planet&"*  "
+goto :movedone
 
-:MOVECOLONISTS
-if ($ROUNDS >= $MOVEHOLDS)
-  goto :MOVECOLONISTSEXTRA
+:movecolonists
+if ($rounds >= $moveholds)
+	goto :movecolonistsextra
 end
-send "s  n  t  "&$STUFF&"*  q  l "&$PARM2&"*  s  n  l "&$STUFF&"*  q  l "&$PLANET&"*  "
-add $ROUNDS 1
-goto :MOVECOLONISTS
+send "s  n  t  "&$stuff&"*  q  l "&$parm2&"*  s  n  l "&$stuff&"*  q  l "&$planet&"*  "
+add $rounds 1
+goto :movecolonists
 
-:MOVECOLONISTSEXTRA
+:movecolonistsextra
 if ($moveextra <= 0)
-  goto :MOVEDONE
+	goto :movedone
 end
-send "s  n  t  "&$STUFF&" "&$moveextra&"*  q  l "&$PARM2&"*  s  n  l "&$STUFF&"*  q  l "&$PLANET&"*  "
-goto :MOVEDONE
+send "s  n  t  "&$stuff&" "&$moveextra&"*  q  l "&$parm2&"*  s  n  l "&$stuff&"*  q  l "&$planet&"*  "
+goto :movedone
 
-:MOVEFIGHTERS
-if ($ROUNDS <= $PARM3)
-  send "m  n  *  *  q  l  "&$PARM2&"*  m  n  l  *  q  l  "&$PLANET&"*  "
-  add $ROUNDS 1
-  goto :MOVEFIGHTERS
-elseif ($ROUNDS < 1)
-  goto :MOVEDONE
+:movefighters
+if ($rounds <= $parm3)
+	send "m  n  *  *  q  l  "&$parm2&"*  m  n  l  *  q  l  "&$planet&"*  "
+	add $rounds 1
+	goto :movefighters
+elseif ($rounds < 1)
+	goto :movedone
 end
 
-:MOVEDONE
-if ($STARTLOCATION = "Citadel")
-  send "c"
+:movedone
+if ($startlocation = "Citadel")
+	send "c"
 end
-if ($moveall = TRUE)
-  setvar $switchboard~message "Moved all "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
-  gosub :switchboard~switchboard
-elseif ($PARM3 > 1000)
-  setvar $switchboard~message "Moved "&$PARM3&" total "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
-  gosub :switchboard~switchboard
+if ($moveall = true)
+	setvar $switchboard~message "Moved all "&$stuffmoved&" from "&$planet&" to "&$parm2&".*"
+	gosub :switchboard~switchboard
+elseif ($parm3 > 1000)
+	setvar $switchboard~message "Moved "&$parm3&" total "&$stuffmoved&" from "&$planet&" to "&$parm2&".*"
+	gosub :switchboard~switchboard
 else
-  setvar $switchboard~message "Moved "&$PARM3&" loads of "&$STUFFMOVED&" from "&$PLANET&" to "&$PARM2&".*"
-  gosub :switchboard~switchboard
+	setvar $switchboard~message "Moved "&$parm3&" loads of "&$stuffmoved&" from "&$planet&" to "&$parm2&".*"
+	gosub :switchboard~switchboard
 end
 halt
 
-:GETINFO
-gosub :PLAYER~GETINFO
-setvar $TRADER_NAME $PLAYER~TRADER_NAME
-setvar $CORPSTRING $PLAYER~CORPSTRING
-setvar $IGSTAT $PLAYER~IGSTAT
-setvar $TURNS_PER_WARP $PLAYER~TURNS_PER_WARP
-setvar $TWARP_1_RANGE $PLAYER~TWARP_1_RANGE
-setvar $TWARP_2_RANGE $PLAYER~TWARP_2_RANGE
-setvar $EMPTY_HOLDS $PLAYER~EMPTY_HOLDS
+:getinfo
+gosub :player~getinfo
+setvar $trader_name $player~trader_name
+setvar $corpstring $player~corpstring
+setvar $igstat $player~igstat
+setvar $turns_per_warp $player~turns_per_warp
+setvar $twarp_1_range $player~twarp_1_range
+setvar $twarp_2_range $player~twarp_2_range
+setvar $empty_holds $player~empty_holds
 return
 
-:GETPLANETINFO
-gosub :PLANET~GETPLANETINFO
-setvar $PLANET $PLANET~PLANET
-setvar $PLAYER~CURRENT_SECTOR $PLANET~CURRENT_SECTOR
-setvar $PLANET_FUEL $PLANET~PLANET_FUEL
-setvar $PLANET_FUEL_MAX $PLANET~PLANET_FUEL_MAX
-setvar $PLANET_ORGANICS $PLANET~PLANET_ORGANICS
-setvar $PLANET_ORGANICS_MAX $PLANET~PLANET_ORGANICS_MAX
-setvar $PLANET_EQUIPMENT $PLANET~PLANET_EQUIPMENT
-setvar $PLANET_EQUIPMENT_MAX $PLANET~PLANET_EQUIPMENT_MAX
-setvar $PLANET_FIGHTERS $PLANET~PLANET_FIGHTERS
-setvar $PLANET_FIGHTERS_MAX $PLANET~PLANET_FIGHTERS_MAX
-setvar $CITADEL $PLANET~CITADEL
-setvar $CITADEL_CREDITS $PLANET~CITADEL_CREDITS
-setvar $ATMOSPHERE_CANNON $PLANET~ATMOSPHERE_CANNON
-setvar $SECTOR_CANNON $PLANET~SECTOR_CANNON
+:getplanetinfo
+gosub :planet~getplanetinfo
+setvar $planet $planet~planet
+setvar $player~current_sector $planet~current_sector
+setvar $planet_fuel $planet~planet_fuel
+setvar $planet_fuel_max $planet~planet_fuel_max
+setvar $planet_organics $planet~planet_organics
+setvar $planet_organics_max $planet~planet_organics_max
+setvar $planet_equipment $planet~planet_equipment
+setvar $planet_equipment_max $planet~planet_equipment_max
+setvar $planet_fighters $planet~planet_fighters
+setvar $planet_fighters_max $planet~planet_fighters_max
+setvar $citadel $planet~citadel
+setvar $citadel_credits $planet~citadel_credits
+setvar $atmosphere_cannon $planet~atmosphere_cannon
+setvar $sector_cannon $planet~sector_cannon
 return
 
-:GETPLANETCOLONISTINFO
-gosub :PLANET~GETPLANETINFO
-setvar $PLANET_FUEL_COLONISTS $PLANET~PLANET_FUEL_COLONISTS
-setvar $PLANET_ORGANICS_COLONISTS $PLANET~PLANET_ORGANICS_COLONISTS
-setvar $PLANET_EQUIPMENT_COLONISTS $PLANET~PLANET_EQUIPMENT_COLONISTS
+:getplanetcolonistinfo
+gosub :planet~getplanetinfo
+setvar $planet_fuel_colonists $planet~planet_fuel_colonists
+setvar $planet_organics_colonists $planet~planet_organics_colonists
+setvar $planet_equipment_colonists $planet~planet_equipment_colonists
 return
 
-:SETPLANETNUMBER
-getwordpos RAWPACKET $POS "Planet "&#27&"[1;33m#"&#27&"[36m"
-if ($POS > 0)
-  gettext RAWPACKET $PLANET "Planet "&#27&"[1;33m#"&#27&"[36m" #27&"[0;32m in sector "
+:setplanetnumber
+getwordpos rawpacket $pos "Planet "&#27&"[1;33m#"&#27&"[36m"
+if ($pos > 0)
+	gettext rawpacket $planet "Planet "&#27&"[1;33m#"&#27&"[36m" #27&"[0;32m in sector "
 end
-settextlinetrigger GETPLANETNUMBER :SETPLANETNUMBER " in sector "
+settextlinetrigger getplanetnumber :setplanetnumber " in sector "
 pause
 
-:SETSHIPOFFENSIVEODDS
-getwordpos CURRENTANSILINE $POS "[0;31m:[1;36m1"
-if ($POS > 0)
-  gettext CURRENTANSILINE $SHIP_OFFENSIVE_ODDS "Offensive Odds[1;33m:[36m " "[0;31m:[1;36m1"
-  striptext $SHIP_OFFENSIVE_ODDS "."
-  striptext $SHIP_OFFENSIVE_ODDS " "
-  gettext CURRENTANSILINE $SHIP_FIGHTERS_MAX "Max Fighters[1;33m:[36m" "[0;32m Offensive Odds"
-  striptext $SHIP_FIGHTERS_MAX ","
-  striptext $SHIP_FIGHTERS_MAX " "
+:setshipoffensiveodds
+getwordpos currentansiline $pos "[0;31m:[1;36m1"
+if ($pos > 0)
+	gettext currentansiline $ship_offensive_odds "Offensive Odds[1;33m:[36m " "[0;31m:[1;36m1"
+	striptext $ship_offensive_odds "."
+	striptext $ship_offensive_odds " "
+	gettext currentansiline $ship_fighters_max "Max Fighters[1;33m:[36m" "[0;32m Offensive Odds"
+	striptext $ship_fighters_max ","
+	striptext $ship_fighters_max " "
 end
-settextlinetrigger GETSHIPSTATS :SETSHIPOFFENSIVEODDS "Offensive Odds: "
+settextlinetrigger getshipstats :setshipoffensiveodds "Offensive Odds: "
 pause
 
-:SETSHIPMAXFIGATTACK
-getwordpos CURRENTANSILINE $POS "[0m[32m Max Figs Per Attack[1;33m:[36m"
-if ($POS > 0)
-  gettext CURRENTANSILINE $SHIP_MAX_ATTACK "[0m[32m Max Figs Per Attack[1;33m:[36m" "[0;32mTransWarp"
-  striptext $SHIP_MAX_ATTACK " "
+:setshipmaxfigattack
+getwordpos currentansiline $pos "[0m[32m Max Figs Per Attack[1;33m:[36m"
+if ($pos > 0)
+	gettext currentansiline $ship_max_attack "[0m[32m Max Figs Per Attack[1;33m:[36m" "[0;32mTransWarp"
+	striptext $ship_max_attack " "
 end
-settextlinetrigger GETSHIPMAXFIGHTERS :SETSHIPMAXFIGATTACK " TransWarp Drive:   "
+settextlinetrigger getshipmaxfighters :setshipmaxfigattack " TransWarp Drive:   "
 pause
 
 include "source\include\planet"

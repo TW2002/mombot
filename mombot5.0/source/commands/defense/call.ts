@@ -1,12 +1,12 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-loadVar $BOT~ARMID_COUNT_FILE
+gosub :loadvars~loadvars
+gosub :help~initialize
+loadvar $bot~armid_count_file
 
-setVar $HELP~HELP[1] $HELP~TAB&"CALL - Call SaveMe Command"
-setVar $HELP~HELP[2] $HELP~TAB&"       Used to trigger a SaveMe Script"
-setVar $HELP~HELP[3] $HELP~TAB&"     "
-setVar $HELP~HELP[4] $HELP~TAB&"       - Originally written by Cherokee"
-gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&"CALL - Call SaveMe Command"
+setvar $help~help[2] $help~tab&"       Used to trigger a SaveMe Script"
+setvar $help~help[3] $help~tab&"     "
+setvar $help~help[4] $help~tab&"       - Originally written by Cherokee"
+gosub :help~helpfile
 
 getwordpos " "&$bot~user_command_line&" " $pos " kill "
 if ($pos > 0)

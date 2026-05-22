@@ -1,82 +1,83 @@
-setVar $includesDir ".\includes"
+setvar $includesdir ".\includes"
 
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-setVar $HELP~HELP[1] $HELP~TAB&"keep {amount} "
-setVar $HELP~HELP[2] $HELP~TAB&"   Will withdraw or deposit to/from citadel so you"
-setVar $HELP~HELP[3] $HELP~TAB&"   have the amount of credits requested."
-setVar $HELP~HELP[4] $HELP~TAB&"     "
-setVar $HELP~HELP[5] $HELP~TAB&"   Examples:"
-setVar $HELP~HELP[6] $HELP~TAB&"      >keep 500k"
-setVar $HELP~HELP[7] $HELP~TAB&"      >keep 2m"
-setVar $HELP~HELP[8] $HELP~TAB&"      >keep 200000"
-setVar $HELP~HELP[8] $HELP~TAB&"     "
-setVar $HELP~HELP[8] $HELP~TAB&"                     - Author: Deign "
-gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&"keep {amount} "
+setvar $help~help[2] $help~tab&"   Will withdraw or deposit to/from citadel so you"
+setvar $help~help[3] $help~tab&"   have the amount of credits requested."
+setvar $help~help[4] $help~tab&"     "
+setvar $help~help[5] $help~tab&"   Examples:"
+setvar $help~help[6] $help~tab&"      >keep 500k"
+setvar $help~help[7] $help~tab&"      >keep 2m"
+setvar $help~help[8] $help~tab&"      >keep 200000"
+setvar $help~help[8] $help~tab&"     "
+setvar $help~help[8] $help~tab&"                     - Author: Deign "
+gosub :help~helpfile
 
 gosub :player~quikstats
-setVar $loc $player~CURRENT_PROMPT
-setVar $roll $player~CREDITS
+setvar $loc $player~current_prompt
+setvar $roll $player~credits
 
-IF ($loc <> "Citadel")
-     setvar $switchboard~message "Must be at the Citadel prompt (not " & $loc & ")*"
-     gosub :switchboard~switchboard
-     halt
-END
+if ($loc <> "Citadel")
+	setvar $switchboard~message "Must be at the Citadel prompt (not " & $loc & ")*"
+	gosub :switchboard~switchboard
+	halt
+end
 
-replaceText $bot~parm1 "m" "000000"
-replaceText $bot~parm1 "M" "000000"
-replaceText $bot~parm1 "k" "000"
-replaceText $bot~parm1 "K" "000"
+replacetext $bot~parm1 "m" "000000"
+replacetext $bot~parm1 "M" "000000"
+replacetext $bot~parm1 "k" "000"
+replacetext $bot~parm1 "K" "000"
 
-IF ($bot~parm1 > 0)
-     setVar $k $bot~parm1
-ELSE
-     setVar $k 500000
-END
+if ($bot~parm1 > 0)
+	setvar $k $bot~parm1
+else
+	setvar $k 500000
+end
 
-setTextLineTrigger treas :checkBalance "You have"
+settextlinetrigger treas :checkbalance "You have"
 
-IF ($roll > $k)
-  setVar $cmd "tt"
-ELSEIF ($roll < $k)
-  setVar $cmd "tf"
-ELSE
+if ($roll > $k)
+	setvar $cmd "tt"
+elseif ($roll < $k)
+	setvar $cmd "tf"
+else
 	setvar $switchboard~message "No transaction required*"
 	gosub :switchboard~switchboard
 	halt
-END
+end
 
 send $cmd
 pause
-:treasReturn
-IF ($roll > $k)
-  setVar $x $roll-$k
-  format $x $formatted_x NUMBER
-  setvar $switchboard~message $formatted_x & " credits deposited into citadel*"
-ELSEIF ($roll < $k)
-  setVar $x $k-$roll
-  format $x $formatted_x NUMBER
-  setvar $switchboard~message $formatted_x & " credits taken from citadel*"
-  IF ($x > $balance)
-    setVar $x 0
-    setvar $switchboard~message "NSF error*"
-  END
-END
+
+:treasreturn
+if ($roll > $k)
+	setvar $x $roll-$k
+	format $x $formatted_x number
+	setvar $switchboard~message $formatted_x & " credits deposited into citadel*"
+elseif ($roll < $k)
+	setvar $x $k-$roll
+	format $x $formatted_x number
+	setvar $switchboard~message $formatted_x & " credits taken from citadel*"
+	if ($x > $balance)
+		setvar $x 0
+		setvar $switchboard~message "NSF error*"
+	end
+end
 send $x "*"
 gosub :switchboard~switchboard
 
 halt
 
-:checkBalance
-setVar $treasLine CURRENTLINE
-replaceText $treasLine "," ""
-replaceText $treasLine "." ""
-getWord $treasLine $roll 3
-getWord $treasLine $balance 9
-killTrigger treas
-goto :treasReturn
+:checkbalance
+setvar $treasline currentline
+replacetext $treasline "," ""
+replacetext $treasline "." ""
+getword $treasline $roll 3
+getword $treasline $balance 9
+killtrigger treas
+goto :treasreturn
 
 #includes
 include "source\include\player"

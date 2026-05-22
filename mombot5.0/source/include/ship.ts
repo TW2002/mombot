@@ -1,484 +1,512 @@
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:SHIP~GETSHIPCAPSTATS
+:ship~getshipcapstats
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "cn"
 waiton "(2) Animation display"
-getword CURRENTLINE $SHIP~ANSI_ONOFF 5
-if ($SHIP~ANSI_ONOFF = "On")
-  send "2qq"
+getword currentline $ship~ansi_onoff 5
+if ($ship~ansi_onoff = "On")
+	send "2qq"
 else
-  send "qq"
+	send "qq"
 end
-setarray $SHIP~ALPHA 20
-delete $SHIP~CAP_FILE
-setvar $SHIP~ALPHA[1] "A"
-setvar $SHIP~ALPHA[2] "B"
-setvar $SHIP~ALPHA[3] "C"
-setvar $SHIP~ALPHA[4] "D"
-setvar $SHIP~ALPHA[5] "E"
-setvar $SHIP~ALPHA[6] "F"
-setvar $SHIP~ALPHA[7] "G"
-setvar $SHIP~ALPHA[8] "H"
-setvar $SHIP~ALPHA[9] "I"
-setvar $SHIP~ALPHA[10] "J"
-setvar $SHIP~ALPHA[11] "K"
-setvar $SHIP~ALPHA[12] "L"
-setvar $SHIP~ALPHA[13] "M"
-setvar $SHIP~ALPHA[14] "N"
-setvar $SHIP~ALPHA[15] "O"
-setvar $SHIP~ALPHA[16] "P"
-setvar $SHIP~ALPHA[17] "R"
-setvar $SHIP~ALPHALOOP 0
-setvar $SHIP~TOTALSHIPS 0
-setvar $SHIP~FIRSTSHIPNAME ""
-setvar $SHIP~NEXTPAGE 1
+setarray $ship~alpha 20
+delete $ship~cap_file
+setvar $ship~alpha[1] "A"
+setvar $ship~alpha[2] "B"
+setvar $ship~alpha[3] "C"
+setvar $ship~alpha[4] "D"
+setvar $ship~alpha[5] "E"
+setvar $ship~alpha[6] "F"
+setvar $ship~alpha[7] "G"
+setvar $ship~alpha[8] "H"
+setvar $ship~alpha[9] "I"
+setvar $ship~alpha[10] "J"
+setvar $ship~alpha[11] "K"
+setvar $ship~alpha[12] "L"
+setvar $ship~alpha[13] "M"
+setvar $ship~alpha[14] "N"
+setvar $ship~alpha[15] "O"
+setvar $ship~alpha[16] "P"
+setvar $ship~alpha[17] "R"
+setvar $ship~alphaloop 0
+setvar $ship~totalships 0
+setvar $ship~firstshipname ""
+setvar $ship~nextpage 1
 send "CC@?"
 waiton "Average Interval Lag"
 
-:SHIP~SHP_LOOP
-settextlinetrigger GRAB_SHIP :SHIP~SHP_SHIPNAMES "> "
+:ship~shp_loop
+settextlinetrigger grab_ship :ship~shp_shipnames "> "
 pause
 
-:SHIP~SHP_SHIPNAMES
-if (CURRENTLINE = "")
-  goto :SHIP~SHP_LOOP
+:ship~shp_shipnames
+if (currentline = "")
+	goto :ship~shp_loop
 end
-getword CURRENTLINE $SHIP~STOPPER 1
-if ($SHIP~STOPPER = "<+>")
-  send "+"
-  waiton "(?=List) ?"
-  setvar $SHIP~NEXTPAGE 1
-  goto :SHIP~SHP_LOOP
-elseif ($SHIP~STOPPER = "<Q>")
-  goto :SHIP~SHP_GETSHIPSTATS
+getword currentline $ship~stopper 1
+if ($ship~stopper = "<+>")
+	send "+"
+	waiton "(?=List) ?"
+	setvar $ship~nextpage 1
+	goto :ship~shp_loop
+elseif ($ship~stopper = "<Q>")
+	goto :ship~shp_getshipstats
 end
-if ($SHIP~NEXTPAGE = 1)
-  setvar $SHIP~SHIPNAME CURRENTLINE
-  striptext $SHIP~SHIPNAME "<A> "
-  if ($SHIP~SHIPNAME = $SHIP~FIRSTSHIPNAME)
-    goto :SHIP~SHP_GETSHIPSTATS
-  end
-  setvar $SHIP~NEXTPAGE 0
+if ($ship~nextpage = 1)
+	setvar $ship~shipname currentline
+	striptext $ship~shipname "<A> "
+	if ($ship~shipname = $ship~firstshipname)
+		goto :ship~shp_getshipstats
+	end
+	setvar $ship~nextpage 0
 end
-add $SHIP~TOTALSHIPS 1
-if ($SHIP~TOTALSHIPS = 1)
-  setvar $SHIP~FIRSTSHIPNAME CURRENTLINE
-  striptext $SHIP~FIRSTSHIPNAME "<A> "
+add $ship~totalships 1
+if ($ship~totalships = 1)
+	setvar $ship~firstshipname currentline
+	striptext $ship~firstshipname "<A> "
 end
-goto :SHIP~SHP_LOOP
+goto :ship~shp_loop
 
-:SHIP~SHP_GETSHIPSTATS
-setvar $SHIP~SHIPSTATLOOP 0
-:SHIP~SHP_SHIPSTATS
-while ($SHIP~SHIPSTATLOOP < $SHIP~TOTALSHIPS)
-  add $SHIP~SHIPSTATLOOP 1
-  add $SHIP~ALPHALOOP 1
-  if ($SHIP~ALPHALOOP > 17)
-    send "+"
-    setvar $SHIP~ALPHALOOP 1
-  end
-  send $SHIP~ALPHA[$SHIP~ALPHALOOP]
-  settextlinetrigger SN :SHIP~SN "Ship Class :"
-  pause
-  :SHIP~SN
-  setvar $SHIP~LINE CURRENTLINE
-  getwordpos $SHIP~LINE $SHIP~POS ":"
-  add $SHIP~POS 2
-  cuttext $SHIP~LINE $SHIP~SHIP_NAME $SHIP~POS 999
-  settextlinetrigger HC :SHIP~HC "Basic Hold Cost:"
-  pause
-  :SHIP~HC
-  setvar $SHIP~LINE CURRENTLINE
-  striptext $SHIP~LINE "Basic Hold Cost:"
-  striptext $SHIP~LINE "Initial Holds:"
-  striptext $SHIP~LINE "Maximum Shields:"
-  getword $SHIP~LINE $SHIP~INIT_HOLDS 2
-  getword $SHIP~LINE $SHIP~MAX_SHIELDS 3
-  striptext $SHIP~MAX_SHIELDS ","
-  settextlinetrigger OO :SHIP~OO2 "Offensive Odds:"
-  pause
-  :SHIP~OO2
-  setvar $SHIP~LINE CURRENTLINE
-  striptext $SHIP~LINE "Main Drive Cost:"
-  striptext $SHIP~LINE "Max Fighters:"
-  striptext $SHIP~LINE "Offensive Odds:"
-  getword $SHIP~LINE $SHIP~MAX_FIGS 2
-  getword $SHIP~LINE $SHIP~OFF_ODDS 3
-  striptext $SHIP~MAX_FIGS ","
-  striptext $SHIP~OFF_ODDS ":1"
-  striptext $SHIP~OFF_ODDS "."
-  settextlinetrigger DO :SHIP~DO "Defensive Odds:"
-  pause
-  :SHIP~DO
-  setvar $SHIP~LINE CURRENTLINE
-  striptext $SHIP~LINE "Computer Cost:"
-  striptext $SHIP~LINE "Turns Per Warp:"
-  striptext $SHIP~LINE "Defensive Odds:"
-  getword $SHIP~LINE $SHIP~DEF_ODDS 3
-  striptext $SHIP~DEF_ODDS ":1"
-  striptext $SHIP~DEF_ODDS "."
-  getword $SHIP~LINE $SHIP~TPW 2
-  settextlinetrigger SC :SHIP~SC "Ship Base Cost:"
-  pause
-  :SHIP~SC
-  setvar $SHIP~LINE CURRENTLINE
-  striptext $SHIP~LINE "Ship Base Cost:"
-  getword $SHIP~LINE $SHIP~COST 1
-  striptext $SHIP~COST ","
-  getlength $SHIP~COST $SHIP~COSTLEN
-  if ($SHIP~COSTLEN = 7)
-    add $SHIP~COST 10000000
-  end
-  settextlinetrigger MH :SHIP~MH "Maximum Holds:"
-  pause
-  :SHIP~MH
-  setvar $SHIP~LINE CURRENTLINE
-  striptext $SHIP~LINE "Maximum Holds:"
-  getword $SHIP~LINE $SHIP~MAX_HOLDS 1
-  setvar $SHIP~ISDEFENDER FALSE
-  write $SHIP~CAP_FILE $SHIP~MAX_SHIELDS&" "&$SHIP~DEF_ODDS&" "&$SHIP~OFF_ODDS&" "&$SHIP~COST&" "&$SHIP~MAX_HOLDS&" "&$SHIP~MAX_FIGS&" "&$SHIP~INIT_HOLDS&" "&$SHIP~TPW&" "&$SHIP~ISDEFENDER&" "&$SHIP~SHIP_NAME
+:ship~shp_getshipstats
+setvar $ship~shipstatloop 0
+
+:ship~shp_shipstats
+while ($ship~shipstatloop < $ship~totalships)
+	add $ship~shipstatloop 1
+	add $ship~alphaloop 1
+	if ($ship~alphaloop > 17)
+		send "+"
+		setvar $ship~alphaloop 1
+	end
+	send $ship~alpha[$ship~alphaloop]
+	settextlinetrigger sn :ship~sn "Ship Class :"
+	pause
+
+	:ship~sn
+	setvar $ship~line currentline
+	getwordpos $ship~line $ship~pos ":"
+	add $ship~pos 2
+	cuttext $ship~line $ship~ship_name $ship~pos 999
+	settextlinetrigger hc :ship~hc "Basic Hold Cost:"
+	pause
+
+	:ship~hc
+	setvar $ship~line currentline
+	striptext $ship~line "Basic Hold Cost:"
+	striptext $ship~line "Initial Holds:"
+	striptext $ship~line "Maximum Shields:"
+	getword $ship~line $ship~init_holds 2
+	getword $ship~line $ship~max_shields 3
+	striptext $ship~max_shields ","
+	settextlinetrigger oo :ship~oo2 "Offensive Odds:"
+	pause
+
+	:ship~oo2
+	setvar $ship~line currentline
+	striptext $ship~line "Main Drive Cost:"
+	striptext $ship~line "Max Fighters:"
+	striptext $ship~line "Offensive Odds:"
+	getword $ship~line $ship~max_figs 2
+	getword $ship~line $ship~off_odds 3
+	striptext $ship~max_figs ","
+	striptext $ship~off_odds ":1"
+	striptext $ship~off_odds "."
+	settextlinetrigger do :ship~do "Defensive Odds:"
+	pause
+
+	:ship~do
+	setvar $ship~line currentline
+	striptext $ship~line "Computer Cost:"
+	striptext $ship~line "Turns Per Warp:"
+	striptext $ship~line "Defensive Odds:"
+	getword $ship~line $ship~def_odds 3
+	striptext $ship~def_odds ":1"
+	striptext $ship~def_odds "."
+	getword $ship~line $ship~tpw 2
+	settextlinetrigger sc :ship~sc "Ship Base Cost:"
+	pause
+
+	:ship~sc
+	setvar $ship~line currentline
+	striptext $ship~line "Ship Base Cost:"
+	getword $ship~line $ship~cost 1
+	striptext $ship~cost ","
+	getlength $ship~cost $ship~costlen
+	if ($ship~costlen = 7)
+		add $ship~cost 10000000
+	end
+	settextlinetrigger mh :ship~mh "Maximum Holds:"
+	pause
+
+	:ship~mh
+	setvar $ship~line currentline
+	striptext $ship~line "Maximum Holds:"
+	getword $ship~line $ship~max_holds 1
+	setvar $ship~isdefender false
+	write $ship~cap_file $ship~max_shields&" "&$ship~def_odds&" "&$ship~off_odds&" "&$ship~cost&" "&$ship~max_holds&" "&$ship~max_figs&" "&$ship~init_holds&" "&$ship~tpw&" "&$ship~isdefender&" "&$ship~ship_name
 end
 send "qq"
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:SHIP~GETSHIPSTATS
+:ship~getshipstats
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "c;"
-settextlinetrigger GETSHIPOFFENSE :SHIP~SHIPOFFENSEODDS "Offensive Odds: "
-settextlinetrigger GETSHIPFIGHTERS :SHIP~SHIPMAXFIGSPERATTACK " TransWarp Drive:   "
-settextlinetrigger GETSHIPMINES :SHIP~SHIPMAXMINES " Mine Max:  "
-settextlinetrigger GETSHIPGENESIS :SHIP~SHIPMAXGENESIS " Genesis Max:  "
-settextlinetrigger GETSHIPSHIELDS :SHIP~SHIPMAXSHIELDS "Maximum Shields:"
-settextlinetrigger GETSHIPRANGE :SHIP~SHIPTRANSPORTRANGE "Transport Range:"
+settextlinetrigger getshipoffense :ship~shipoffenseodds "Offensive Odds: "
+settextlinetrigger getshipfighters :ship~shipmaxfigsperattack " TransWarp Drive:   "
+settextlinetrigger getshipmines :ship~shipmaxmines " Mine Max:  "
+settextlinetrigger getshipgenesis :ship~shipmaxgenesis " Genesis Max:  "
+settextlinetrigger getshipshields :ship~shipmaxshields "Maximum Shields:"
+settextlinetrigger getshiprange :ship~shiptransportrange "Transport Range:"
 pause
 
-:SHIP~SHIPMAXSHIELDS
-setvar $SHIP~SHIELD_LINE CURRENTLINE
-replacetext $SHIP~SHIELD_LINE ":" "  "
-replacetext $SHIP~SHIELD_LINE "," ""
-getword $SHIP~SHIELD_LINE $SHIP~SHIP_SHIELD_MAX 10
-savevar $SHIP~SHIP_SHIELD_MAX
+:ship~shipmaxshields
+setvar $ship~shield_line currentline
+replacetext $ship~shield_line ":" "  "
+replacetext $ship~shield_line "," ""
+getword $ship~shield_line $ship~ship_shield_max 10
+savevar $ship~ship_shield_max
 pause
 
-:SHIP~SHIPOFFENSEODDS
-getwordpos CURRENTANSILINE $SHIP~POS "[0;31m:[1;36m1"
-if ($SHIP~POS > 0)
-  gettext CURRENTANSILINE $SHIP~SHIP_OFFENSIVE_ODDS "Offensive Odds[1;33m:[36m " "[0;31m:[1;36m1"
-  striptext $SHIP~SHIP_OFFENSIVE_ODDS "."
-  striptext $SHIP~SHIP_OFFENSIVE_ODDS " "
-  gettext CURRENTANSILINE $SHIP~SHIP_FIGHTERS_MAX "Max Fighters[1;33m:[36m" "[0;32m Offensive Odds"
-  striptext $SHIP~SHIP_FIGHTERS_MAX ","
-  striptext $SHIP~SHIP_FIGHTERS_MAX " "
-  savevar $SHIP~SHIP_FIGHTERS_MAX
-  savevar $SHIP~SHIP_OFFENSIVE_ODDS
+:ship~shipoffenseodds
+getwordpos currentansiline $ship~pos "[0;31m:[1;36m1"
+if ($ship~pos > 0)
+	gettext currentansiline $ship~ship_offensive_odds "Offensive Odds[1;33m:[36m " "[0;31m:[1;36m1"
+	striptext $ship~ship_offensive_odds "."
+	striptext $ship~ship_offensive_odds " "
+	gettext currentansiline $ship~ship_fighters_max "Max Fighters[1;33m:[36m" "[0;32m Offensive Odds"
+	striptext $ship~ship_fighters_max ","
+	striptext $ship~ship_fighters_max " "
+	savevar $ship~ship_fighters_max
+	savevar $ship~ship_offensive_odds
 else
-  getwordpos CURRENTLINE $SHIP~POS "Offensive Odds:"
-  if ($SHIP~POS > 0)
-    gettext CURRENTLINE $SHIP~SHIP_OFFENSIVE_ODDS "Offensive Odds:" ":1"
-    striptext $SHIP~SHIP_OFFENSIVE_ODDS "."
-    striptext $SHIP~SHIP_OFFENSIVE_ODDS " "
-    gettext CURRENTLINE $SHIP~SHIP_FIGHTERS_MAX "Max Fighters:" "Offensive Odds:"
-    striptext $SHIP~SHIP_FIGHTERS_MAX ","
-    striptext $SHIP~SHIP_FIGHTERS_MAX " "
-    savevar $SHIP~SHIP_FIGHTERS_MAX
-    savevar $SHIP~SHIP_OFFENSIVE_ODDS
-  end
+	getwordpos currentline $ship~pos "Offensive Odds:"
+	if ($ship~pos > 0)
+		gettext currentline $ship~ship_offensive_odds "Offensive Odds:" ":1"
+		striptext $ship~ship_offensive_odds "."
+		striptext $ship~ship_offensive_odds " "
+		gettext currentline $ship~ship_fighters_max "Max Fighters:" "Offensive Odds:"
+		striptext $ship~ship_fighters_max ","
+		striptext $ship~ship_fighters_max " "
+		savevar $ship~ship_fighters_max
+		savevar $ship~ship_offensive_odds
+	end
 end
 pause
 
-:SHIP~SHIPMAXMINES
-gettext CURRENTLINE $SHIP~SHIP_MINES_MAX "Mine Max:" "Beacon Max:"
-striptext $SHIP~SHIP_MINES_MAX " "
-savevar $SHIP~SHIP_MINES_MAX
+:ship~shipmaxmines
+gettext currentline $ship~ship_mines_max "Mine Max:" "Beacon Max:"
+striptext $ship~ship_mines_max " "
+savevar $ship~ship_mines_max
 pause
 
-:SHIP~SHIPMAXGENESIS
-gettext CURRENTLINE $SHIP~SHIP_GENESIS_MAX "Genesis Max:" "Long Range Scan:"
-striptext $SHIP~SHIP_GENESIS_MAX " "
-savevar $SHIP~SHIP_GENESIS_MAX
+:ship~shipmaxgenesis
+gettext currentline $ship~ship_genesis_max "Genesis Max:" "Long Range Scan:"
+striptext $ship~ship_genesis_max " "
+savevar $ship~ship_genesis_max
 pause
 
-:SHIP~SHIPMAXFIGSPERATTACK
-getwordpos CURRENTANSILINE $SHIP~POS "[0m[32m Max Figs Per Attack[1;33m:[36m"
-if ($SHIP~POS > 0)
-  gettext CURRENTANSILINE $SHIP~SHIP_MAX_ATTACK "[0m[32m Max Figs Per Attack[1;33m:[36m" "[0;32mTransWarp"
-  striptext $SHIP~SHIP_MAX_ATTACK " "
+:ship~shipmaxfigsperattack
+getwordpos currentansiline $ship~pos "[0m[32m Max Figs Per Attack[1;33m:[36m"
+if ($ship~pos > 0)
+	gettext currentansiline $ship~ship_max_attack "[0m[32m Max Figs Per Attack[1;33m:[36m" "[0;32mTransWarp"
+	striptext $ship~ship_max_attack " "
 else
-  getwordpos CURRENTLINE $SHIP~POS "Max Figs Per Attack:"
-  if ($SHIP~POS > 0)
-    gettext CURRENTLINE $SHIP~SHIP_MAX_ATTACK "Max Figs Per Attack:" "TransWarp Drive:"
-    striptext $SHIP~SHIP_MAX_ATTACK " "
-  end
+	getwordpos currentline $ship~pos "Max Figs Per Attack:"
+	if ($ship~pos > 0)
+		gettext currentline $ship~ship_max_attack "Max Figs Per Attack:" "TransWarp Drive:"
+		striptext $ship~ship_max_attack " "
+	end
 end
-savevar $SHIP~SHIP_MAX_ATTACK
+savevar $ship~ship_max_attack
 pause
 
-:SHIP~SHIPTRANSPORTRANGE
-gettext CURRENTLINE $SHIP~SHIP_MAX_HOLDS "Maximum Holds:" "Transport Range:"
-striptext $SHIP~SHIP_MAX_HOLDS " "
-	gettext CURRENTLINE $SHIP~SHIP_XPORT_RANGE "Transport Range:" "Photon Missiles:"
-	striptext $SHIP~SHIP_XPORT_RANGE " "
-	savevar $SHIP~SHIP_XPORT_RANGE
-	send "q"
-	settexttrigger WAITON45 :SHIP~GETSHIPSTATS_RETURNPROMPT "Command [TL="
-	settexttrigger WAITON45CITADEL :SHIP~GETSHIPSTATS_RETURNPROMPT "Citadel command (?=help)"
-	pause
-	:SHIP~GETSHIPSTATS_RETURNPROMPT
-	killalltriggers
-	return
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:SHIP~LOADSHIPINFO
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $SHIP~SHIPCOUNTER 1
-:SHIP~COUNT_THE_SHIPS
-loadvar $SHIP~CAP_FILE
-fileexists $SHIP~EXISTS $SHIP~CAP_FILE
-if ($SHIP~EXISTS)
-  read $SHIP~CAP_FILE $SHIP~SHIPINF $SHIP~SHIPCOUNTER
-  if ($SHIP~SHIPINF <> "EOF")
-    add $SHIP~SHIPCOUNTER 1
-    goto :SHIP~COUNT_THE_SHIPS
-  end
-  setarray $SHIP~SHIPLIST $SHIP~SHIPCOUNTER 9
-  setvar $SHIP~SHIPCOUNTER 1
-  :SHIP~READSHIPLIST
-  read $SHIP~CAP_FILE $SHIP~SHIPINF $SHIP~SHIPCOUNTER
-  if ($SHIP~SHIPINF <> "EOF")
-    gosub :SHIP~PROCESS_SHIP_LINE
-    setvar $SHIP~SHIP[$SHIP~SHIPNAME] $SHIP~SHIELDS&" "&$SHIP~DEFODD
-    setvar $SHIP~SHIPLIST[$SHIP~SHIPCOUNTER] $SHIP~SHIPNAME
-    setvar $SHIP~SHIPLIST[$SHIP~SHIPCOUNTER][1] $SHIP~SHIELDS
-    setvar $SHIP~SHIPLIST[$SHIP~SHIPCOUNTER][2] $SHIP~DEFODD
-    setvar $SHIP~SHIPLIST[$SHIP~SHIPCOUNTER][3] $SHIP~OFF_ODDS
-    setvar $SHIP~SHIPLIST[$SHIP~SHIPCOUNTER][4] $SHIP~MAX_HOLDS
-    setvar $SHIP~SHIPLIST[$SHIP~SHIPCOUNTER][5] $SHIP~MAX_FIGHTERS
-    setvar $SHIP~SHIPLIST[$SHIP~SHIPCOUNTER][6] $SHIP~INIT_HOLDS
-    setvar $SHIP~SHIPLIST[$SHIP~SHIPCOUNTER][7] $SHIP~TPW
-    setvar $SHIP~SHIPLIST[$SHIP~SHIPCOUNTER][8] $SHIP~ISDEFENDER
-    setvar $SHIP~SHIPLIST[$SHIP~SHIPCOUNTER][9] $SHIP~SHIP_COST
-    add $SHIP~SHIPCOUNTER 1
-    goto :SHIP~READSHIPLIST
-  end
-  setvar $SHIP~SHIPSTATS TRUE
-end
-return
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:SHIP~PROCESS_SHIP_LINE
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-getword $SHIP~SHIPINF $SHIP~SHIELDS 1
-getlength $SHIP~SHIELDS $SHIP~SHIELDLEN
-getword $SHIP~SHIPINF $SHIP~DEFODD 2
-getlength $SHIP~DEFODD $SHIP~DEFODDLEN
-getword $SHIP~SHIPINF $SHIP~OFF_ODDS 3
-getlength $SHIP~OFF_ODDS $SHIP~FILLER1LEN
-getword $SHIP~SHIPINF $SHIP~SHIP_COST 4
-getlength $SHIP~SHIP_COST $SHIP~FILLER2LEN
-getword $SHIP~SHIPINF $SHIP~MAX_HOLDS 5
-getlength $SHIP~MAX_HOLDS $SHIP~FILLER3LEN
-getword $SHIP~SHIPINF $SHIP~MAX_FIGHTERS 6
-getlength $SHIP~MAX_FIGHTERS $SHIP~FILLER4LEN
-getword $SHIP~SHIPINF $SHIP~INIT_HOLDS 7
-getlength $SHIP~INIT_HOLDS $SHIP~FILLER5LEN
-getword $SHIP~SHIPINF $SHIP~TPW 8
-getlength $SHIP~TPW $SHIP~FILLER6LEN
-getword $SHIP~SHIPINF $SHIP~ISDEFENDER 9
-getlength $SHIP~ISDEFENDER $SHIP~FILLER7LEN
-setvar $SHIP~STARTLEN ($SHIP~SHIELDLEN + ($SHIP~DEFODDLEN + ($SHIP~FILLER1LEN + ($SHIP~FILLER2LEN + ($SHIP~FILLER3LEN + ($SHIP~FILLER4LEN + ($SHIP~FILLER5LEN + ($SHIP~FILLER6LEN + ($SHIP~FILLER7LEN + 10)))))))))
-cuttext $SHIP~SHIPINF $SHIP~SHIPNAME $SHIP~STARTLEN 999
-return
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:SHIP~SAVETHESHIP
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $SHIP~SHIPCOUNTER 1
-:SHIP~SAVETHESHIP_READSHIPLIST
-loadvar $SHIP~CAP_FILE
-read $SHIP~CAP_FILE $SHIP~SHIPINF $SHIP~SHIPCOUNTER
-if ($SHIP~SHIPINF <> "EOF")
-  gosub :SHIP~PROCESS_SHIP_LINE
-  setvar $SHIP~DATABASE $SHIP~DATABASE&"^^^^^^"&$SHIP~SHIPNAME&"^^^^^^"
-  add $SHIP~SHIPCOUNTER 1
-  goto :SHIP~SAVETHESHIP_READSHIPLIST
-end
-send "c"
-waiton "Computer command"
-send ";"
-:SHIP~SAVETHESHIP_KEEPLOOKINGSHIPNAME
-killalltriggers
-settextlinetrigger CHECKINGFORSHIPNAME :SHIP~SAVETHESHIP_CHECKSHIPNAME
-pause
-:SHIP~SAVETHESHIP_CHECKSHIPNAME
-if (CURRENTLINE = "")
-  goto :SHIP~SAVETHESHIP_KEEPLOOKINGSHIPNAME
-else
-  setvar $SHIP~CURRENT_LINE CURRENTLINE
-  getword $SHIP~CURRENT_LINE $SHIP~TEMP 1
-  cuttext $SHIP~TEMP $SHIP~FRONTLETTER 1 1
-  gettext $SHIP~CURRENT_LINE $SHIP~SHIP_NAME $SHIP~FRONTLETTER "          "
-  setvar $SHIP~SHIP_NAME $SHIP~FRONTLETTER&$SHIP~SHIP_NAME
-  getwordpos $SHIP~DATABASE $SHIP~POS "^^^^^^"&$SHIP~SHIP_NAME&"^^^^^^"
-  if ($SHIP~POS > 0)
-    setvar $SWITCHBOARD~MESSAGE "This ship is already stored in bot file.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    send "q "
-    return
-  end
-end
-:SHIP~SAVETHESHIP_SN
-settextlinetrigger HC :SHIP~SAVETHESHIP_HC "Basic Hold Cost:"
-pause
-:SHIP~SAVETHESHIP_HC
-setvar $SHIP~LINE CURRENTLINE
-striptext $SHIP~LINE "Basic Hold Cost:"
-striptext $SHIP~LINE "Initial Holds:"
-striptext $SHIP~LINE "Maximum Shields:"
-getword $SHIP~LINE $SHIP~INIT_HOLDS 2
-getword $SHIP~LINE $SHIP~MAX_SHIELDS 3
-striptext $SHIP~MAX_SHIELDS ","
-settextlinetrigger OO :SHIP~SAVETHESHIP_OO2 "Offensive Odds:"
-pause
-:SHIP~SAVETHESHIP_OO2
-setvar $SHIP~LINE CURRENTLINE
-striptext $SHIP~LINE "Main Drive Cost:"
-striptext $SHIP~LINE "Max Fighters:"
-striptext $SHIP~LINE "Offensive Odds:"
-getword $SHIP~LINE $SHIP~MAX_FIGS 2
-getword $SHIP~LINE $SHIP~OFF_ODDS 3
-striptext $SHIP~MAX_FIGS ","
-striptext $SHIP~OFF_ODDS ":1"
-striptext $SHIP~OFF_ODDS "."
-settextlinetrigger DO :SHIP~SAVETHESHIP_DO "Defensive Odds:"
-pause
-:SHIP~SAVETHESHIP_DO
-setvar $SHIP~LINE CURRENTLINE
-striptext $SHIP~LINE "Computer Cost:"
-striptext $SHIP~LINE "Turns Per Warp:"
-striptext $SHIP~LINE "Defensive Odds:"
-getword $SHIP~LINE $SHIP~DEF_ODDS 3
-striptext $SHIP~DEF_ODDS ":1"
-striptext $SHIP~DEF_ODDS "."
-getword $SHIP~LINE $SHIP~TPW 2
-settextlinetrigger SC :SHIP~SAVETHESHIP_SC "Ship Base Cost:"
-pause
-:SHIP~SAVETHESHIP_SC
-setvar $SHIP~LINE CURRENTLINE
-striptext $SHIP~LINE "Ship Base Cost:"
-getword $SHIP~LINE $SHIP~COST 1
-striptext $SHIP~COST ","
-getlength $SHIP~COST $SHIP~COSTLEN
-if ($SHIP~COSTLEN = 7)
-  add $SHIP~COST 10000000
-end
-settextlinetrigger MH :SHIP~SAVETHESHIP_MH "Maximum Holds:"
-pause
-:SHIP~SAVETHESHIP_MH
-setvar $SHIP~LINE CURRENTLINE
-striptext $SHIP~LINE "Maximum Holds:"
-getword $SHIP~LINE $SHIP~MAX_HOLDS 1
-setvar $SHIP~ISDEFENDER FALSE
-write $SHIP~CAP_FILE $SHIP~MAX_SHIELDS&" "&$SHIP~DEF_ODDS&" "&$SHIP~OFF_ODDS&" "&$SHIP~COST&" "&$SHIP~MAX_HOLDS&" "&$SHIP~MAX_FIGS&" "&$SHIP~INIT_HOLDS&" "&$SHIP~TPW&" "&$SHIP~ISDEFENDER&" "&$SHIP~SHIP_NAME
-setvar $SWITCHBOARD~MESSAGE $SHIP~SHIP_NAME&" added to bot's ship file.*"
-gosub :SWITCHBOARD~SWITCHBOARD
+:ship~shiptransportrange
+gettext currentline $ship~ship_max_holds "Maximum Holds:" "Transport Range:"
+striptext $ship~ship_max_holds " "
+gettext currentline $ship~ship_xport_range "Transport Range:" "Photon Missiles:"
+striptext $ship~ship_xport_range " "
+savevar $ship~ship_xport_range
 send "q"
-gosub :SHIP~LOADSHIPINFO
+settexttrigger waiton45 :ship~getshipstats_returnprompt "Command [TL="
+settexttrigger waiton45citadel :ship~getshipstats_returnprompt "Citadel command (?=help)"
+pause
+
+:ship~getshipstats_returnprompt
+killalltriggers
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:SHIP~SAVE_THE_SHIP
+:ship~loadshipinfo
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $SHIP~SHIPCOUNTER 1
-:SHIP~SAVE_THE_SHIP_READSHIPLIST
-loadvar $SHIP~CAP_FILE
-read $SHIP~CAP_FILE $SHIP~SHIPINF $SHIP~SHIPCOUNTER
-if ($SHIP~SHIPINF <> "EOF")
-  gosub :SHIP~PROCESS_SHIP_LINE
-  setvar $SHIP~DATABASE $SHIP~DATABASE&"^^^^^^"&$SHIP~SHIPNAME&"^^^^^^"
-  add $SHIP~SHIPCOUNTER 1
-  goto :SHIP~SAVE_THE_SHIP_READSHIPLIST
+setvar $ship~shipcounter 1
+
+:ship~count_the_ships
+loadvar $ship~cap_file
+fileexists $ship~exists $ship~cap_file
+if ($ship~exists)
+	read $ship~cap_file $ship~shipinf $ship~shipcounter
+	if ($ship~shipinf <> "EOF")
+		add $ship~shipcounter 1
+		goto :ship~count_the_ships
+	end
+	setarray $ship~shiplist $ship~shipcounter 9
+	setvar $ship~shipcounter 1
+
+	:ship~readshiplist
+	read $ship~cap_file $ship~shipinf $ship~shipcounter
+	if ($ship~shipinf <> "EOF")
+		gosub :ship~process_ship_line
+		setvar $ship~ship[$ship~shipname] $ship~shields&" "&$ship~defodd
+		setvar $ship~shiplist[$ship~shipcounter] $ship~shipname
+		setvar $ship~shiplist[$ship~shipcounter][1] $ship~shields
+		setvar $ship~shiplist[$ship~shipcounter][2] $ship~defodd
+		setvar $ship~shiplist[$ship~shipcounter][3] $ship~off_odds
+		setvar $ship~shiplist[$ship~shipcounter][4] $ship~max_holds
+		setvar $ship~shiplist[$ship~shipcounter][5] $ship~max_fighters
+		setvar $ship~shiplist[$ship~shipcounter][6] $ship~init_holds
+		setvar $ship~shiplist[$ship~shipcounter][7] $ship~tpw
+		setvar $ship~shiplist[$ship~shipcounter][8] $ship~isdefender
+		setvar $ship~shiplist[$ship~shipcounter][9] $ship~ship_cost
+		add $ship~shipcounter 1
+		goto :ship~readshiplist
+	end
+	setvar $ship~shipstats true
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:ship~process_ship_line
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+getword $ship~shipinf $ship~shields 1
+getlength $ship~shields $ship~shieldlen
+getword $ship~shipinf $ship~defodd 2
+getlength $ship~defodd $ship~defoddlen
+getword $ship~shipinf $ship~off_odds 3
+getlength $ship~off_odds $ship~filler1len
+getword $ship~shipinf $ship~ship_cost 4
+getlength $ship~ship_cost $ship~filler2len
+getword $ship~shipinf $ship~max_holds 5
+getlength $ship~max_holds $ship~filler3len
+getword $ship~shipinf $ship~max_fighters 6
+getlength $ship~max_fighters $ship~filler4len
+getword $ship~shipinf $ship~init_holds 7
+getlength $ship~init_holds $ship~filler5len
+getword $ship~shipinf $ship~tpw 8
+getlength $ship~tpw $ship~filler6len
+getword $ship~shipinf $ship~isdefender 9
+getlength $ship~isdefender $ship~filler7len
+setvar $ship~startlen ($ship~shieldlen + ($ship~defoddlen + ($ship~filler1len + ($ship~filler2len + ($ship~filler3len + ($ship~filler4len + ($ship~filler5len + ($ship~filler6len + ($ship~filler7len + 10)))))))))
+cuttext $ship~shipinf $ship~shipname $ship~startlen 999
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:ship~savetheship
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $ship~shipcounter 1
+
+:ship~savetheship_readshiplist
+loadvar $ship~cap_file
+read $ship~cap_file $ship~shipinf $ship~shipcounter
+if ($ship~shipinf <> "EOF")
+	gosub :ship~process_ship_line
+	setvar $ship~database $ship~database&"^^^^^^"&$ship~shipname&"^^^^^^"
+	add $ship~shipcounter 1
+	goto :ship~savetheship_readshiplist
 end
 send "c"
 waiton "Computer command"
 send ";"
-:SHIP~SAVE_THE_SHIP_KEEPLOOKINGSHIPNAME
+
+:ship~savetheship_keeplookingshipname
 killalltriggers
-settextlinetrigger CHECKINGFORSHIPNAME :SHIP~SAVE_THE_SHIP_CHECKSHIPNAME
+settextlinetrigger checkingforshipname :ship~savetheship_checkshipname
 pause
-:SHIP~SAVE_THE_SHIP_CHECKSHIPNAME
-if (CURRENTLINE = "")
-  goto :SHIP~SAVE_THE_SHIP_KEEPLOOKINGSHIPNAME
+
+:ship~savetheship_checkshipname
+if (currentline = "")
+	goto :ship~savetheship_keeplookingshipname
 else
-  setvar $SHIP~CURRENT_LINE CURRENTLINE
-  getword $SHIP~CURRENT_LINE $SHIP~TEMP 1
-  cuttext $SHIP~TEMP $SHIP~FRONTLETTER 1 1
-  gettext $SHIP~CURRENT_LINE $SHIP~SHIP_NAME $SHIP~FRONTLETTER "          "
-  setvar $SHIP~SHIP_NAME $SHIP~FRONTLETTER&$SHIP~SHIP_NAME
-  getwordpos $SHIP~DATABASE $SHIP~POS "^^^^^^"&$SHIP~SHIP_NAME&"^^^^^^"
-  if ($SHIP~POS > 0)
-    setvar $switchboard~message "This ship is already stored in bot file.*"
-    gosub :switchboard~switchboard
-    return
-  end
+	setvar $ship~current_line currentline
+	getword $ship~current_line $ship~temp 1
+	cuttext $ship~temp $ship~frontletter 1 1
+	gettext $ship~current_line $ship~ship_name $ship~frontletter "          "
+	setvar $ship~ship_name $ship~frontletter&$ship~ship_name
+	getwordpos $ship~database $ship~pos "^^^^^^"&$ship~ship_name&"^^^^^^"
+	if ($ship~pos > 0)
+		setvar $switchboard~message "This ship is already stored in bot file.*"
+		gosub :switchboard~switchboard
+		send "q "
+		return
+	end
 end
-:SHIP~SAVE_THE_SHIP_SN
-settextlinetrigger HC :SHIP~SAVE_THE_SHIP_HC "Basic Hold Cost:"
+
+:ship~savetheship_sn
+settextlinetrigger hc :ship~savetheship_hc "Basic Hold Cost:"
 pause
-:SHIP~SAVE_THE_SHIP_HC
-setvar $SHIP~LINE CURRENTLINE
-striptext $SHIP~LINE "Basic Hold Cost:"
-striptext $SHIP~LINE "Initial Holds:"
-striptext $SHIP~LINE "Maximum Shields:"
-getword $SHIP~LINE $SHIP~INIT_HOLDS 2
-getword $SHIP~LINE $SHIP~MAX_SHIELDS 3
-striptext $SHIP~MAX_SHIELDS ","
-settextlinetrigger OO :SHIP~SAVE_THE_SHIP_OO2 "Offensive Odds:"
+
+:ship~savetheship_hc
+setvar $ship~line currentline
+striptext $ship~line "Basic Hold Cost:"
+striptext $ship~line "Initial Holds:"
+striptext $ship~line "Maximum Shields:"
+getword $ship~line $ship~init_holds 2
+getword $ship~line $ship~max_shields 3
+striptext $ship~max_shields ","
+settextlinetrigger oo :ship~savetheship_oo2 "Offensive Odds:"
 pause
-:SHIP~SAVE_THE_SHIP_OO2
-setvar $SHIP~LINE CURRENTLINE
-striptext $SHIP~LINE "Main Drive Cost:"
-striptext $SHIP~LINE "Max Fighters:"
-striptext $SHIP~LINE "Offensive Odds:"
-getword $SHIP~LINE $SHIP~MAX_FIGS 2
-getword $SHIP~LINE $SHIP~OFF_ODDS 3
-striptext $SHIP~MAX_FIGS ","
-striptext $SHIP~OFF_ODDS ":1"
-striptext $SHIP~OFF_ODDS "."
-settextlinetrigger DO :SHIP~SAVE_THE_SHIP_DO "Defensive Odds:"
+
+:ship~savetheship_oo2
+setvar $ship~line currentline
+striptext $ship~line "Main Drive Cost:"
+striptext $ship~line "Max Fighters:"
+striptext $ship~line "Offensive Odds:"
+getword $ship~line $ship~max_figs 2
+getword $ship~line $ship~off_odds 3
+striptext $ship~max_figs ","
+striptext $ship~off_odds ":1"
+striptext $ship~off_odds "."
+settextlinetrigger do :ship~savetheship_do "Defensive Odds:"
 pause
-:SHIP~SAVE_THE_SHIP_DO
-setvar $SHIP~LINE CURRENTLINE
-striptext $SHIP~LINE "Computer Cost:"
-striptext $SHIP~LINE "Turns Per Warp:"
-striptext $SHIP~LINE "Defensive Odds:"
-getword $SHIP~LINE $SHIP~DEF_ODDS 3
-striptext $SHIP~DEF_ODDS ":1"
-striptext $SHIP~DEF_ODDS "."
-getword $SHIP~LINE $SHIP~TPW 2
-settextlinetrigger SC :SHIP~SAVE_THE_SHIP_SC "Ship Base Cost:"
+
+:ship~savetheship_do
+setvar $ship~line currentline
+striptext $ship~line "Computer Cost:"
+striptext $ship~line "Turns Per Warp:"
+striptext $ship~line "Defensive Odds:"
+getword $ship~line $ship~def_odds 3
+striptext $ship~def_odds ":1"
+striptext $ship~def_odds "."
+getword $ship~line $ship~tpw 2
+settextlinetrigger sc :ship~savetheship_sc "Ship Base Cost:"
 pause
-:SHIP~SAVE_THE_SHIP_SC
-setvar $SHIP~LINE CURRENTLINE
-striptext $SHIP~LINE "Ship Base Cost:"
-getword $SHIP~LINE $SHIP~COST 1
-striptext $SHIP~COST ","
-getlength $SHIP~COST $SHIP~COSTLEN
-if ($SHIP~COSTLEN = 7)
-  add $SHIP~COST 10000000
+
+:ship~savetheship_sc
+setvar $ship~line currentline
+striptext $ship~line "Ship Base Cost:"
+getword $ship~line $ship~cost 1
+striptext $ship~cost ","
+getlength $ship~cost $ship~costlen
+if ($ship~costlen = 7)
+	add $ship~cost 10000000
 end
-settextlinetrigger MH :SHIP~SAVE_THE_SHIP_MH "Maximum Holds:"
+settextlinetrigger mh :ship~savetheship_mh "Maximum Holds:"
 pause
-:SHIP~SAVE_THE_SHIP_MH
-setvar $SHIP~LINE CURRENTLINE
-striptext $SHIP~LINE "Maximum Holds:"
-getword $SHIP~LINE $SHIP~MAX_HOLDS 1
-setvar $SHIP~ISDEFENDER FALSE
-write $SHIP~CAP_FILE $SHIP~MAX_SHIELDS&" "&$SHIP~DEF_ODDS&" "&$SHIP~OFF_ODDS&" "&$SHIP~COST&" "&$SHIP~MAX_HOLDS&" "&$SHIP~MAX_FIGS&" "&$SHIP~INIT_HOLDS&" "&$SHIP~TPW&" "&$SHIP~ISDEFENDER&" "&$SHIP~SHIP_NAME
-setvar $switchboard~message ""&$SHIP~SHIP_NAME&" added to bot's ship file.*"
+
+:ship~savetheship_mh
+setvar $ship~line currentline
+striptext $ship~line "Maximum Holds:"
+getword $ship~line $ship~max_holds 1
+setvar $ship~isdefender false
+write $ship~cap_file $ship~max_shields&" "&$ship~def_odds&" "&$ship~off_odds&" "&$ship~cost&" "&$ship~max_holds&" "&$ship~max_figs&" "&$ship~init_holds&" "&$ship~tpw&" "&$ship~isdefender&" "&$ship~ship_name
+setvar $switchboard~message $ship~ship_name&" added to bot's ship file.*"
 gosub :switchboard~switchboard
 send "q"
-gosub :SHIP~LOADSHIPINFO
+gosub :ship~loadshipinfo
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:ship~save_the_ship
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $ship~shipcounter 1
+
+:ship~save_the_ship_readshiplist
+loadvar $ship~cap_file
+read $ship~cap_file $ship~shipinf $ship~shipcounter
+if ($ship~shipinf <> "EOF")
+	gosub :ship~process_ship_line
+	setvar $ship~database $ship~database&"^^^^^^"&$ship~shipname&"^^^^^^"
+	add $ship~shipcounter 1
+	goto :ship~save_the_ship_readshiplist
+end
+send "c"
+waiton "Computer command"
+send ";"
+
+:ship~save_the_ship_keeplookingshipname
+killalltriggers
+settextlinetrigger checkingforshipname :ship~save_the_ship_checkshipname
+pause
+
+:ship~save_the_ship_checkshipname
+if (currentline = "")
+	goto :ship~save_the_ship_keeplookingshipname
+else
+	setvar $ship~current_line currentline
+	getword $ship~current_line $ship~temp 1
+	cuttext $ship~temp $ship~frontletter 1 1
+	gettext $ship~current_line $ship~ship_name $ship~frontletter "          "
+	setvar $ship~ship_name $ship~frontletter&$ship~ship_name
+	getwordpos $ship~database $ship~pos "^^^^^^"&$ship~ship_name&"^^^^^^"
+	if ($ship~pos > 0)
+		setvar $switchboard~message "This ship is already stored in bot file.*"
+		gosub :switchboard~switchboard
+		return
+	end
+end
+
+:ship~save_the_ship_sn
+settextlinetrigger hc :ship~save_the_ship_hc "Basic Hold Cost:"
+pause
+
+:ship~save_the_ship_hc
+setvar $ship~line currentline
+striptext $ship~line "Basic Hold Cost:"
+striptext $ship~line "Initial Holds:"
+striptext $ship~line "Maximum Shields:"
+getword $ship~line $ship~init_holds 2
+getword $ship~line $ship~max_shields 3
+striptext $ship~max_shields ","
+settextlinetrigger oo :ship~save_the_ship_oo2 "Offensive Odds:"
+pause
+
+:ship~save_the_ship_oo2
+setvar $ship~line currentline
+striptext $ship~line "Main Drive Cost:"
+striptext $ship~line "Max Fighters:"
+striptext $ship~line "Offensive Odds:"
+getword $ship~line $ship~max_figs 2
+getword $ship~line $ship~off_odds 3
+striptext $ship~max_figs ","
+striptext $ship~off_odds ":1"
+striptext $ship~off_odds "."
+settextlinetrigger do :ship~save_the_ship_do "Defensive Odds:"
+pause
+
+:ship~save_the_ship_do
+setvar $ship~line currentline
+striptext $ship~line "Computer Cost:"
+striptext $ship~line "Turns Per Warp:"
+striptext $ship~line "Defensive Odds:"
+getword $ship~line $ship~def_odds 3
+striptext $ship~def_odds ":1"
+striptext $ship~def_odds "."
+getword $ship~line $ship~tpw 2
+settextlinetrigger sc :ship~save_the_ship_sc "Ship Base Cost:"
+pause
+
+:ship~save_the_ship_sc
+setvar $ship~line currentline
+striptext $ship~line "Ship Base Cost:"
+getword $ship~line $ship~cost 1
+striptext $ship~cost ","
+getlength $ship~cost $ship~costlen
+if ($ship~costlen = 7)
+	add $ship~cost 10000000
+end
+settextlinetrigger mh :ship~save_the_ship_mh "Maximum Holds:"
+pause
+
+:ship~save_the_ship_mh
+setvar $ship~line currentline
+striptext $ship~line "Maximum Holds:"
+getword $ship~line $ship~max_holds 1
+setvar $ship~isdefender false
+write $ship~cap_file $ship~max_shields&" "&$ship~def_odds&" "&$ship~off_odds&" "&$ship~cost&" "&$ship~max_holds&" "&$ship~max_figs&" "&$ship~init_holds&" "&$ship~tpw&" "&$ship~isdefender&" "&$ship~ship_name
+setvar $switchboard~message ""&$ship~ship_name&" added to bot's ship file.*"
+gosub :switchboard~switchboard
+send "q"
+gosub :ship~loadshipinfo
 return
 
 include "source\include\switchboard"

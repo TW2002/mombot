@@ -1,80 +1,77 @@
 logging "OFF"
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-loadvar $SHIP~CAP_FILE
-loadvar $PLAYER~ONLYALIENS
-loadvar $PLAYER~CAPPINGALIENS
-loadvar $PLAYER~EMPTY_SHIPS_ONLY
-loadvar $PLAYER~DEFENDERCAPPING
+gosub :loadvars~loadvars
+gosub :help~initialize
+loadvar $ship~cap_file
+loadvar $player~onlyaliens
+loadvar $player~cappingaliens
+loadvar $player~empty_ships_only
+loadvar $player~defendercapping
 
+setvar $help~help[1] $help~tab&"cap   "
+setvar $help~help[2] $help~tab&"    Captures enemy ships and attempts to not destroy them.   "
+gosub :help~helpfile
 
+gosub :combat~init
 
-setvar $HELP~HELP[1] $HELP~TAB&"cap   "
-setvar $HELP~HELP[2] $HELP~TAB&"    Captures enemy ships and attempts to not destroy them.   "
-gosub :HELP~HELPFILE
-
-gosub :COMBAT~INIT
-
-loadvar $SHIP~CAP_FILE
-fileexists $CAP_FILE_CHK $SHIP~CAP_FILE
-if ($CAP_FILE_CHK)
-  gosub :SHIP~LOADSHIPINFO
+loadvar $ship~cap_file
+fileexists $cap_file_chk $ship~cap_file
+if ($cap_file_chk)
+	gosub :ship~loadshipinfo
 else
-  gosub :SHIP~GETSHIPCAPSTATS
-  gosub :SHIP~LOADSHIPINFO
+	gosub :ship~getshipcapstats
+	gosub :ship~loadshipinfo
 end
-:AUTOCAP
-:CAP
 
-
-gosub :PLAYER~QUIKSTATS
-setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-if ($PLAYER~STARTINGLOCATION <> "Command")
-  if ($PLAYER~STARTINGLOCATION = "Citadel")
-    loadvar $BOT~MODE
-    if ($BOT~MODE <> "Citcap")
-      setvar $BOT~COMMAND "citcap"
-      setvar $BOT~USER_COMMAND_LINE " citcap on "
-      setvar $BOT~PARM1 "on"
-      savevar $BOT~PARM1
-      savevar $BOT~COMMAND
-      savevar $BOT~USER_COMMAND_LINE
-      setvar $BOT~MODE "Citcap"
-      savevar $BOT~MODE
-      load "scripts\mombot\modes\offense\citcap.cts"
-    else
-      setvar $BOT~MODE "General"
-      savevar $BOT~MODE
-      stop "scripts\mombot\modes\offense\citcap.cts"
-      setvar $SWITCHBOARD~MESSAGE "Citcap off.*"
-      gosub :SWITCHBOARD~SWITCHBOARD
-    end
-    halt
-  end
-  setvar $SWITCHBOARD~MESSAGE "Wrong prompt for auto capture.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+:autocap
+:cap
+gosub :player~quikstats
+setvar $player~startinglocation $player~current_prompt
+if ($player~startinglocation <> "Command")
+	if ($player~startinglocation = "Citadel")
+		loadvar $bot~mode
+		if ($bot~mode <> "Citcap")
+			setvar $bot~command "citcap"
+			setvar $bot~user_command_line " citcap on "
+			setvar $bot~parm1 "on"
+			savevar $bot~parm1
+			savevar $bot~command
+			savevar $bot~user_command_line
+			setvar $bot~mode "Citcap"
+			savevar $bot~mode
+			load "scripts\mombot\modes\offense\citcap.cts"
+		else
+			setvar $bot~mode "General"
+			savevar $bot~mode
+			stop "scripts\mombot\modes\offense\citcap.cts"
+			setvar $switchboard~message "Citcap off.*"
+			gosub :switchboard~switchboard
+		end
+		halt
+	end
+	setvar $switchboard~message "Wrong prompt for auto capture.*"
+	gosub :switchboard~switchboard
+	halt
 end
-getwordpos $BOT~USER_COMMAND_LINE $POS "alien"
-if ($POS > 0)
-  setvar $PLAYER~ONLYALIENS TRUE
+getwordpos $bot~user_command_line $pos "alien"
+if ($pos > 0)
+	setvar $player~onlyaliens true
 else
-  setvar $PLAYER~ONLYALIENS FALSE
+	setvar $player~onlyaliens false
 end
-fileexists $SHIP~CAP_FILE_CHK $SHIP~CAP_FILE
-if ($SHIP~CAP_FILE_CHK <> TRUE)
-  gosub :SHIP~GETSHIPCAPSTATS
+fileexists $ship~cap_file_chk $ship~cap_file
+if ($ship~cap_file_chk <> true)
+	gosub :ship~getshipcapstats
 end
-loadvar $SHIP~SHIP_MAX_ATTACK
-loadvar $SHIP~SHIP_FIGHTERS_MAX
-loadvar $SHIP~SHIP_OFFENSIVE_ODDS
-if ($SHIP~SHIP_OFFENSIVE_ODDS <= 0)
-  gosub :SHIP~GETSHIPSTATS
+loadvar $ship~ship_max_attack
+loadvar $ship~ship_fighters_max
+loadvar $ship~ship_offensive_odds
+if ($ship~ship_offensive_odds <= 0)
+	gosub :ship~getshipstats
 end
-setvar $LASTTARGET ""
-setvar $THISTARGET ""
-gosub :SECTOR~GETSECTORDATA
-gosub :COMBAT~FASTCAPTURE
+setvar $lasttarget ""
+setvar $thistarget ""
+gosub :sector~getsectordata
+gosub :combat~fastcapture
 halt
 
 # includes:

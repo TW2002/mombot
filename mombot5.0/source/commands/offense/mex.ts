@@ -1,220 +1,229 @@
-loadvar $USER_COMMAND_LINE
-loadvar $BOT_NAME
+loadvar $user_command_line
+loadvar $bot_name
 
-gosub :PLAYER~QUIKSTATS
-if (($PLAYER~CURRENT_PROMPT <> "Citadel") and ($PLAYER~CURRENT_PROMPT <> "Command"))
-  setvar $switchboard~message "Must start MEX From Citadel or Command Prompts!*"
-  gosub :switchboard~switchboard
-  halt
+gosub :player~quikstats
+if (($player~current_prompt <> "Citadel") and ($player~current_prompt <> "Command"))
+	setvar $switchboard~message "Must start MEX From Citadel or Command Prompts!*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-setvar $STARTPROMPT $PLAYER~CURRENT_PROMPT
+setvar $startprompt $player~current_prompt
 
-if ($STARTPROMPT = "Citadel")
-  send "qdc"
-  waiton "Planet #"
-  getword CURRENTLINE $PLANET 2
-  striptext $PLANET "#"
-  isnumber $TST $PLANET
-  if ($TST = 0)
-    setvar $switchboard~message "Unable To Obtain Planet Number*"
-    gosub :switchboard~switchboard
-    halt
-  end
-  waiton "Citadel command"
-  send "sz*"
-  waiton "Warps to Sector(s) :"
-  waiton "Citadel command"
+if ($startprompt = "Citadel")
+	send "qdc"
+	waiton "Planet #"
+	getword currentline $planet 2
+	striptext $planet "#"
+	isnumber $tst $planet
+	if ($tst = 0)
+		setvar $switchboard~message "Unable To Obtain Planet Number*"
+		gosub :switchboard~switchboard
+		halt
+	end
+	waiton "Citadel command"
+	send "sz*"
+	waiton "Warps to Sector(s) :"
+	waiton "Citadel command"
 else
-  send "  **  "
-  waiton "Warps to Sector(s) :"
-  waiton "Command [TL="
+	send "  **  "
+	waiton "Warps to Sector(s) :"
+	waiton "Command [TL="
 end
-setvar $NOJOY FALSE
-getword $USER_COMMAND_LINE $PARM1 1
-isnumber $TST $PARM1
-if ($TST = 0)
-  setvar $NOJOY TRUE
-elseif ($PARM1 < 1)
-  setvar $NOJOY TRUE
+setvar $nojoy false
+getword $user_command_line $parm1 1
+isnumber $tst $parm1
+if ($tst = 0)
+	setvar $nojoy true
+elseif ($parm1 < 1)
+	setvar $nojoy true
 end
-getword $USER_COMMAND_LINE $PARM2 2
-isnumber $TST $PARM2
-if ($TST = 0)
-  setvar $NOJOY TRUE
-elseif ($PARM2 < 1)
-  setvar $NOJOY TRUE
+getword $user_command_line $parm2 2
+isnumber $tst $parm2
+if ($tst = 0)
+	setvar $nojoy true
+elseif ($parm2 < 1)
+	setvar $nojoy true
 end
-getword $USER_COMMAND_LINE $PARM3 3
-isnumber $TST $PARM3
-if ($TST = 0)
-  setvar $NOJOY TRUE
+getword $user_command_line $parm3 3
+isnumber $tst $parm3
+if ($tst = 0)
+	setvar $nojoy true
 end
 
-if ($NOJOY)
-  setvar $switchboard~message "Command Parameters Missing or Incorrect*"
-  gosub :switchboard~switchboard
-  halt
+if ($nojoy)
+	setvar $switchboard~message "Command Parameters Missing or Incorrect*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($PARM2 = $PARM3)
-  setvar $switchboard~message "SAFE-Ship Number Cannot Be Same As Tow-Ship*"
-  gosub :switchboard~switchboard
-  halt
+if ($parm2 = $parm3)
+	setvar $switchboard~message "SAFE-Ship Number Cannot Be Same As Tow-Ship*"
+	gosub :switchboard~switchboard
+	halt
 end
-setvar $IDX 1
-while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$IDX] <> 0)
-  if (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$IDX] = $PARM1)
-    goto :ADJ_FOUND
-  end
-  add $IDX 1
+setvar $idx 1
+while (sector.warps[$player~current_sector][$idx] <> 0)
+	if (sector.warps[$player~current_sector][$idx] = $parm1)
+		goto :adj_found
+	end
+	add $idx 1
 end
 setvar $switchboard~message "Not Adjacent To Target Sector*"
 gosub :switchboard~switchboard
 halt
-:ADJ_FOUND
 
-setvar $SAFE_GOOD FALSE
-setvar $TOW_GOOD FALSE
+:adj_found
+setvar $safe_good false
+setvar $tow_good false
 
-if ($STARTPROMPT = "Citadel")
-  send "cv*yn"&$PARM1&"*q  q  q  wn*l "&$PLANET&"*c "
+if ($startprompt = "Citadel")
+	send "cv*yn"&$parm1&"*q  q  q  wn*l "&$planet&"*c "
 else
-  send "cv*yn"&$PARM1&"*q  wn*"
+	send "cv*yn"&$parm1&"*q  wn*"
 end
 
-gosub :PAD
-settextlinetrigger NADDA :NADDA "You do not own any other ships in this sector!"
-settextlinetrigger SAFE :SAFE $PARM2&" "&$PAD&$PLAYER~CURRENT_SECTOR&" "
-if ($PARM3 >= 1)
-  gosub :PAD
-  settextlinetrigger TOWN :TOWN $PARM3&" "&$PAD&$PLAYER~CURRENT_SECTOR&" "
+gosub :pad
+settextlinetrigger nadda :nadda "You do not own any other ships in this sector!"
+settextlinetrigger safe :safe $parm2&" "&$pad&$player~current_sector&" "
+if ($parm3 >= 1)
+	gosub :pad
+	settextlinetrigger town :town $parm3&" "&$pad&$player~current_sector&" "
 end
-settextlinetrigger DONE :DONE "Choose which ship to tow (Q=Quit)"
+settextlinetrigger done :done "Choose which ship to tow (Q=Quit)"
 pause
-:NADDA
+
+:nadda
 killalltriggers
 setvar $switchboard~message "No empty ships in Current Sector*"
 gosub :switchboard~switchboard
 halt
-:SAFE
 
-setvar $SAFE_GOOD TRUE
+:safe
+setvar $safe_good true
 pause
-:TOWN
-setvar $TOW_GOOD TRUE
+
+:town
+setvar $tow_good true
 pause
-:DONE
+
+:done
 killalltriggers
 
-if ($STARTPROMPT = "Citadel")
-  waiton "Citadel command"
+if ($startprompt = "Citadel")
+	waiton "Citadel command"
 else
-  waiton "Command [TL="
+	waiton "Command [TL="
 end
-if ($SAFE_GOOD = FALSE)
-  setvar $switchboard~message "SAFE ship doesn't appear to be in sector*"
-  gosub :switchboard~switchboard
-  halt
+if ($safe_good = false)
+	setvar $switchboard~message "SAFE ship doesn't appear to be in sector*"
+	gosub :switchboard~switchboard
+	halt
 end
-if (($PARM3 >= 1) and ($TOW_GOOD = FALSE))
-  setvar $switchboard~message "Tow Ship doesn't appears to be in sector*"
-  gosub :switchboard~switchboard
-  halt
+if (($parm3 >= 1) and ($tow_good = false))
+	setvar $switchboard~message "Tow Ship doesn't appears to be in sector*"
+	gosub :switchboard~switchboard
+	halt
 end
-gosub :STATUS
+gosub :status
 
-
-if ($STARTPROMPT = "Citadel")
-  setvar $MAC "Q  Q   "
+if ($startprompt = "Citadel")
+	setvar $mac "Q  Q   "
 else
-  setvar $MAC "  "
+	setvar $mac "  "
 end
 
-if ($PARM3 >= 1)
-  setvar $MAC $MAC&"W N "&$PARM3&"*  "
+if ($parm3 >= 1)
+	setvar $mac $mac&"W N "&$parm3&"*  "
 end
 
-setvar $MAC $MAC&"Mz "&$PARM1&"**             * R     *    "
-if ($STARTPROMPT = "Citadel")
-  setvar $MAC $MAC&"X    "&$PARM2&"*    *    *   L "&$PLANET&"* c @"
+setvar $mac $mac&"Mz "&$parm1&"**             * R     *    "
+if ($startprompt = "Citadel")
+	setvar $mac $mac&"X    "&$parm2&"*    *    *   L "&$planet&"* c @"
 else
-  setvar $MAC $MAC&"X    "&$PARM2&"*    *    *   @"
+	setvar $mac $mac&"X    "&$parm2&"*    *    *   @"
 end
-:RELOAD
 
-settextlinetrigger GOGO :GOGO "just launched a Photon Torpedo!"
-settextlinetrigger SCRIPT :SCRIPT "script?"
-setdelaytrigger ABORT :ABORT 300000
+:reload
+settextlinetrigger gogo :gogo "just launched a Photon Torpedo!"
+settextlinetrigger script :script "script?"
+setdelaytrigger abort :abort 300000
 pause
-:ABORT
+
+:abort
 killalltriggers
 setvar $switchboard~message "5mins Expired. Halting MEX!*"
 gosub :switchboard~switchboard
 halt
-:SCRIPT
-killalltriggers
-gosub :STATUS
-goto :RELOAD
-:GOGO
-killalltriggers
-setvar $IDX 1
-setarray $SCANARRAY 1000
-setvar $TMP CURRENTANSILINE
 
-getwordpos $TMP $POS "[0;32m just"
-if ($POS = 0)
-  goto :RELOAD
-end
-settextlinetrigger DAMAGE :COLLECT_DAMAGE "The console reports damages of "
-settextlinetrigger DAMAGE_DONE :DAMAGE_DONE "Average Interval Lag:"
-settextlinetrigger DAMAGE_POD :COLLECT_POD "You rush to an escape pod and abandon ship..."
-send $MAC
-pause
-:COLLECT_DAMAGE
-setvar $SCANARRAY[$IDX] CURRENTLINE
-add $IDX 1
-settextlinetrigger DAMAGE :COLLECT_DAMAGE "The console reports damages of "
-pause
-:COLLECT_POD
-setvar $SCAN_ARRAY[$IDX] CURRENTLINE
-add $IDX 1
-:DAMAGE_DONE
+:script
 killalltriggers
-if ($IDX > 1)
-  send "'*"
-  waiton "Comm-link open on sub-space band"
-  setvar $J 1
-  while ($J < $IDX)
-    send $SCANARRAY[$J]&"*"
-    add $J 1
-  end
-  send "*"
-  waiton "Sub-space comm-link terminated"
+gosub :status
+goto :reload
+
+:gogo
+killalltriggers
+setvar $idx 1
+setarray $scanarray 1000
+setvar $tmp currentansiline
+
+getwordpos $tmp $pos "[0;32m just"
+if ($pos = 0)
+	goto :reload
+end
+settextlinetrigger damage :collect_damage "The console reports damages of "
+settextlinetrigger damage_done :damage_done "Average Interval Lag:"
+settextlinetrigger damage_pod :collect_pod "You rush to an escape pod and abandon ship..."
+send $mac
+pause
+
+:collect_damage
+setvar $scanarray[$idx] currentline
+add $idx 1
+settextlinetrigger damage :collect_damage "The console reports damages of "
+pause
+
+:collect_pod
+setvar $scan_array[$idx] currentline
+add $idx 1
+
+:damage_done
+killalltriggers
+if ($idx > 1)
+	send "'*"
+	waiton "Comm-link open on sub-space band"
+	setvar $j 1
+	while ($j < $idx)
+		send $scanarray[$j]&"*"
+		add $j 1
+	end
+	send "*"
+	waiton "Sub-space comm-link terminated"
 end
 halt
-:STATUS
 
+:status
 send "'*"
 waiton "Type sub-space message"
-send "{" $BOT_NAME "} - MEX Attacking: "&$PARM1&", SAFE Ship: "&$PARM2
-if ($PARM3 >= 1)
-  send ", Towing Ship: "&$PARM3
+send "{" $bot_name "} - MEX Attacking: "&$parm1&", SAFE Ship: "&$parm2
+if ($parm3 >= 1)
+	send ", Towing Ship: "&$parm3
 end
 send "**"
 waiton "Sub-space comm-link terminated"
 return
 include "source\include\player"
-:PAD
-setvar $PAD ""
-getlength $PLAYER~CURRENT_SECTOR $LEN
-if ($LEN = 1)
-  setvar $PAD "    "
-elseif ($LEN = 2)
-  setvar $PAD "   "
-elseif ($LEN = 3)
-  setvar $PAD "  "
-elseif ($LEN = 4)
-  setvar $PAD " "
+
+:pad
+setvar $pad ""
+getlength $player~current_sector $len
+if ($len = 1)
+	setvar $pad "    "
+elseif ($len = 2)
+	setvar $pad "   "
+elseif ($len = 3)
+	setvar $pad "  "
+elseif ($len = 4)
+	setvar $pad " "
 end
 return
 include "source\include\switchboard.ts"

@@ -1,146 +1,146 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-
-
-if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
-	goto :wait_for_command
-end
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1]  $help~tab&"tow [ship number | list]"
+setvar $help~help[2]  $help~tab&"      "
+setvar $help~help[3]  $help~tab&"  Tow ships and display tow list"
+setvar $help~help[4]  $help~tab&"      "
+setvar $help~help[5]  $help~tab&"    {ship number}  ship number to tow"
+setvar $help~help[6]  $help~tab&"           {list}  list all tow ships in sector"
+gosub :help~helpfile
 
 if ($bot~parm1 = "list")
 	goto :tow_list
 end
 # ============================== START TOW (TOW) ==============================
 :tow
-gosub :PLAYER~quikstats
-setVar $bot~validPrompts "Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-isNumber $test $bot~parm1
-if ($test = FALSE)
-	setVar $SWITCHBOARD~message "Ship to tow must be entered as a number*"
-	gosub :SWITCHBOARD~switchboard
+gosub :player~quikstats
+setvar $bot~validprompts "Command"
+gosub :player~checkstartingprompt
+isnumber $test $bot~parm1
+if ($test = false)
+	setvar $switchboard~message "Ship to tow must be entered as a number*"
+	gosub :switchboard~switchboard
 	goto :wait_for_command
 elseif ($bot~parm1 < 1)
-	setVar $SWITCHBOARD~message "Ship to tow must be entered as a number*"
-	gosub :SWITCHBOARD~switchboard
+	setvar $switchboard~message "Ship to tow must be entered as a number*"
+	gosub :switchboard~switchboard
 	goto :wait_for_command
 else
-	setVar $shipToTow $bot~parm1
+	setvar $shiptotow $bot~parm1
 end
-	:towCheck
-	killalltriggers
-	send "w"
-	SetTextTrigger towOffContinue   :towCheck "You shut off your Tractor Beam."
-		SetTextTrigger towOff           :towContinue "Do you wish to tow a manned ship? (Y/N)"
-		pause
-		:towContinue
-		killalltriggers
-		send "*"
-		SetTextTrigger towNoGo          :towNoGo "You do not own any other ships in this sector!"
-		SetTextTrigger towReady         :towOff "Choose which ship to tow (Q=Quit)"
-		pause
-	:towOff
-	killalltriggers
-	send $shipToTow & "*"
-			setTextTrigger towNoGo2           :towNoGo2 "Command [TL="
-		setTextTrigger Tow_PassWord   :Tow_PassWord "Enter the password for"
-		setTextLineTrigger waitOnTow      :goodTow "You lock your Tractor Beam on "
-		pause
-	:Tow_PassWord
-	killalltriggers
-	send "*"
-	setVar $SWITCHBOARD~message "That ship has a PassWord Set.*"
-	gosub :SWITCHBOARD~switchboard
-	goto :wait_for_command
-	:towNoGo
-	killalltriggers
-	setVar $SWITCHBOARD~message "There are no ships in the sector I can tow.*"
-	gosub :SWITCHBOARD~switchboard
-	goto :wait_for_command
-	:towNoGo2
-	killalltriggers
-	setVar $SWITCHBOARD~message "That ship number is not in the sector.*"
-	gosub :SWITCHBOARD~switchboard
-	goto :wait_for_command
-	:goodTow
-	killalltriggers
-	setVar $SWITCHBOARD~message "Tow locked onto ship number " & $shipToTow & "*"
-	gosub :SWITCHBOARD~switchboard
-	goto :wait_for_command
+
+:towcheck
+killalltriggers
+send "w"
+settexttrigger towoffcontinue   :towcheck "You shut off your Tractor Beam."
+settexttrigger towoff           :towcontinue "Do you wish to tow a manned ship? (Y/N)"
+pause
+
+:towcontinue
+killalltriggers
+send "*"
+settexttrigger townogo          :townogo "You do not own any other ships in this sector!"
+settexttrigger towready         :towoff "Choose which ship to tow (Q=Quit)"
+pause
+
+:towoff
+killalltriggers
+send $shiptotow & "*"
+settexttrigger townogo2           :townogo2 "Command [TL="
+settexttrigger tow_password   :tow_password "Enter the password for"
+settextlinetrigger waitontow      :goodtow "You lock your Tractor Beam on "
+pause
+
+:tow_password
+killalltriggers
+send "*"
+setvar $switchboard~message "That ship has a PassWord Set.*"
+gosub :switchboard~switchboard
+goto :wait_for_command
+
+:townogo
+killalltriggers
+setvar $switchboard~message "There are no ships in the sector I can tow.*"
+gosub :switchboard~switchboard
+goto :wait_for_command
+
+:townogo2
+killalltriggers
+setvar $switchboard~message "That ship number is not in the sector.*"
+gosub :switchboard~switchboard
+goto :wait_for_command
+
+:goodtow
+killalltriggers
+setvar $switchboard~message "Tow locked onto ship number " & $shiptotow & "*"
+gosub :switchboard~switchboard
+goto :wait_for_command
 # ============================== END TOW (TOW) ==============================
-
 :wait_for_command
-
-setVar $HELP~HELP[1]  $HELP~TAB&"tow [ship number | list]"
-setVar $HELP~HELP[2]  $HELP~TAB&"      "
-setVar $HELP~HELP[3]  $HELP~TAB&"  Tow ships and display tow list"
-setVar $HELP~HELP[4]  $HELP~TAB&"      "
-setVar $HELP~HELP[5]  $HELP~TAB&"    {ship number}  ship number to tow"
-setVar $HELP~HELP[6]  $HELP~TAB&"           {list}  list all tow ships in sector"
-gosub :HELP~HELPFILE
-
 halt
 
-
 :tow_list
-
 :slist
-setVar $scan_macro "w** * "
-gosub :PLAYER~quikstats
-setArray $scan_array 1000
-setVar $player~startingLocation $PLAYER~CURRENT_PROMPT
-setVar $bot~validPrompts "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-if ($PLAYER~startingLocation = "Citadel")
+setvar $scan_macro "w** * "
+gosub :player~quikstats
+setarray $scan_array 1000
+setvar $player~startinglocation $player~current_prompt
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
+if ($player~startinglocation = "Citadel")
 	send " q "
-	gosub :PLANET~getPlanetInfo
+	gosub :planet~getplanetinfo
 	send " q "
 end
-setVar $idx 0
+setvar $idx 0
 send $scan_macro
-waitOn "Ship  Sect Name                  Fighters Shields Hops Type"
-waitOn "--------------------------------------------------------------------------"
+waiton "Ship  Sect Name                  Fighters Shields Hops Type"
+waiton "--------------------------------------------------------------------------"
 
-setTextTrigger end_of_line4 :end_of_lines "<I> Ship details"
+settexttrigger end_of_line4 :end_of_lines "<I> Ship details"
 add $idx 1
-setVar $scan_array[$idx] "                 --<  Available Ship Scan  >--"
+setvar $scan_array[$idx] "                 --<  Available Ship Scan  >--"
 add $idx 1
-setVar $scan_array[$idx] "Ship  Sect Name                  Fighters Shields Hops Type"
+setvar $scan_array[$idx] "Ship  Sect Name                  Fighters Shields Hops Type"
 add $idx 1
-setVar $scan_array[$idx] "-----------------------------------------------------------------"
+setvar $scan_array[$idx] "-----------------------------------------------------------------"
 
-setTextLineTrigger line_trig :parse_scan_line
+settextlinetrigger line_trig :parse_scan_line
 pause
-	:parse_scan_line
-	setVar $current_line CURRENTLINE
-	if ($idx >= 1000)
-			goto :end_of_lines
-	end
-	getWordPos $current_line $em_end "(?=Help)? :"
-	if ($em_end > 0)
-			goto :end_of_lines
-	end
-	getWordPos $current_line $em_end "<I> Ship details"
-	if ($em_end > 0)
-		goto :end_of_lines
-	end
-	getLength $current_line $length
-	if ($length > 70)
-		cutText $current_line $current_line 1 70
-	end
-	if ($current_line <> "")
-		add $idx 1
-		setVar $scan_array[$idx] $current_line
-	end
-	setTextLineTrigger line_trig :parse_scan_line
-	pause
-	:end_of_lines
-	killalltriggers
-	if ($PLAYER~startingLocation = "Citadel")
-		send " l " & $planet~planet & "* c s* "
-	end
-	gosub :spitItOut
-	halt
-:SpitItOut
+
+:parse_scan_line
+setvar $current_line currentline
+if ($idx >= 1000)
+	goto :end_of_lines
+end
+getwordpos $current_line $em_end "(?=Help)? :"
+if ($em_end > 0)
+	goto :end_of_lines
+end
+getwordpos $current_line $em_end "<I> Ship details"
+if ($em_end > 0)
+	goto :end_of_lines
+end
+getlength $current_line $length
+if ($length > 70)
+	cuttext $current_line $current_line 1 70
+end
+if ($current_line <> "")
+	add $idx 1
+	setvar $scan_array[$idx] $current_line
+end
+settextlinetrigger line_trig :parse_scan_line
+pause
+
+:end_of_lines
+killalltriggers
+if ($player~startinglocation = "Citadel")
+	send " l " & $planet~planet & "* c s* "
+end
+gosub :spititout
+halt
+
+:spititout
 setvar $switchboard~message ""
 setvar $i 1
 while ($i <= $idx)
@@ -150,7 +150,8 @@ while ($i <= $idx)
 	add $i 1
 end
 gosub :switchboard~switchboard
-	:continuecommpscan2
+
+:continuecommpscan2
 return
 
 # includes:

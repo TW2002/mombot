@@ -1,108 +1,112 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-setvar $BOT~COMMAND "scrub"
-setVar $HELP~HELP[1]  $HELP~TAB&"scrub {seek} "
-setVar $HELP~HELP[2]  $HELP~TAB&"     "
-setVar $HELP~HELP[3]  $HELP~TAB&"   Gets rid of limpets off of your hull"
-setVar $HELP~HELP[4]  $HELP~TAB&"     "
-setVar $HELP~HELP[5]  $HELP~TAB&"   {seek} - twarp to class 9 or 0 port and back"
-gosub :HELP~HELPFILE
+setvar $bot~command "scrub"
+setvar $help~help[1]  $help~tab&"scrub {seek} "
+setvar $help~help[2]  $help~tab&"     "
+setvar $help~help[3]  $help~tab&"   Gets rid of limpets off of your hull"
+setvar $help~help[4]  $help~tab&"     "
+setvar $help~help[5]  $help~tab&"   {seek} - twarp to class 9 or 0 port and back"
+gosub :help~helpfile
 
-:SCRUB
-setVar $MESSAGE ""
-setVar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-setVar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-if ((CURRENTSECTOR = 1) OR (PORT.CLASS[CURRENTSECTOR] = 0) or (CURRENTSECTOR = $MAP~RYLOS) or (CURRENTSECTOR = $MAP~ALPHA_CENTAURI))
-  if ($STARTINGLOCATION = "Citadel")
-    send "q t*t1* "
-    gosub :PLANET~GETPLANETINFO
-    send "q "
-  end
-  send "p ty"
-elseif (CURRENTSECTOR = $MAP~STARDOCK)
-  send "p ss ys *p"
+:scrub
+setvar $message ""
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
+setvar $startinglocation $player~current_prompt
+if ((currentsector = 1) or (port.class[currentsector] = 0) or (currentsector = $map~rylos) or (currentsector = $map~alpha_centauri))
+	if ($startinglocation = "Citadel")
+		send "q t*t1* "
+		gosub :planet~getplanetinfo
+		send "q "
+	end
+	send "p ty"
+elseif (currentsector = $map~stardock)
+	send "p ss ys *p"
 else
-  if ($BOT~PARM1 = "seek")
-    if ($STARTINGLOCATION = "Citadel")
-      send "q t*t1* "
-      gosub :PLANET~GETPLANETINFO
-      send "c "
-    end
-    gosub :PLAYER~QUIKSTATS
-    setVar $BACK $PLAYER~CURRENT_SECTOR
-    setVar $PLAYER~WARPTO 1
-    gosub :MOVE~TWARP
-    gosub :PLAYER~CURRENTPROMPT
-    if ($PLAYER~TWARPSUCCESS = TRUE)
-      send "p ty"
-    else
-      send " C R " & $MAP~STARDOCK & "*"
-      setTextLineTrigger 1 :ITSALIVE "Items     Status  Trading % of max OnBoard"
-      setTextLineTrigger 2 :NOSOUPFORME "I have no information about a port in that sector"
-      pause
-      :NOSOUPFORME
-      killtrigger 1
-      setvar $SWITCHBOARD~MESSAGE "StarDock appears to have been Blown Up!*"
-      gosub :SWITCHBOARD~SWITCHBOARD
-      goto :WAIT_FOR_COMMAND
-      :ITSALIVE
-      killtrigger 2
-      send "q "
-      setVar $PLAYER~WARPTO $MAP~STARDOCK
-      gosub :MOVE~TWARP
-      gosub :PLAYER~CURRENTPROMPT
-      if ($PLAYER~TWARPSUCCESS = TRUE)
-        send "P  S G YG Q s p"
-      else
-        setVar $SWITCHBOARD~MESSAGE $PLAYER~MSG&"*"
-        gosub :SWITCHBOARD~SWITCHBOARD
-        goto :WAIT_FOR_COMMAND
-      end
-    end
-  else
-    setVar $SWITCHBOARD~MESSAGE "Not currently at a class 0 or 9 port. Use the seek option to twarp to a known class 0 or 9 port and back.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    goto :WAIT_FOR_COMMAND
-  end
+	if ($bot~parm1 = "seek")
+		if ($startinglocation = "Citadel")
+			send "q t*t1* "
+			gosub :planet~getplanetinfo
+			send "c "
+		end
+		gosub :player~quikstats
+		setvar $back $player~current_sector
+		setvar $player~warpto 1
+		gosub :move~twarp
+		gosub :player~currentprompt
+		if ($player~twarpsuccess = true)
+			send "p ty"
+		else
+			send " C R " & $map~stardock & "*"
+			settextlinetrigger 1 :itsalive "Items     Status  Trading % of max OnBoard"
+			settextlinetrigger 2 :nosoupforme "I have no information about a port in that sector"
+			pause
+
+			:nosoupforme
+			killtrigger 1
+			setvar $switchboard~message "StarDock appears to have been Blown Up!*"
+			gosub :switchboard~switchboard
+			goto :wait_for_command
+
+			:itsalive
+			killtrigger 2
+			send "q "
+			setvar $player~warpto $map~stardock
+			gosub :move~twarp
+			gosub :player~currentprompt
+			if ($player~twarpsuccess = true)
+				send "P  S G YG Q s p"
+			else
+				setvar $switchboard~message $player~msg&"*"
+				gosub :switchboard~switchboard
+				goto :wait_for_command
+			end
+		end
+	else
+		setvar $switchboard~message "Not currently at a class 0 or 9 port. Use the seek option to twarp to a known class 0 or 9 port and back.*"
+		gosub :switchboard~switchboard
+		goto :wait_for_command
+	end
 end
-setVar $MESSAGE "No limpet on my ship.*"
-setTextLineTrigger LIMPET   :MARKLIMPET   "After an intensive scanning search, they find and remove the Limpet"
-setTextLineTrigger LIMPETNO :MARKLIMPETNO "The port official frowns at you (you haven't the funds!) and storms"
-setTextLineTrigger FIGHTER  :BUYFIGHTERS  "B  Fighters        :"
+setvar $message "No limpet on my ship.*"
+settextlinetrigger limpet   :marklimpet   "After an intensive scanning search, they find and remove the Limpet"
+settextlinetrigger limpetno :marklimpetno "The port official frowns at you (you haven't the funds!) and storms"
+settextlinetrigger fighter  :buyfighters  "B  Fighters        :"
 pause
-:MARKLIMPET
-setVar $MESSAGE "Limpet scrubbed off of hull.*"
+
+:marklimpet
+setvar $message "Limpet scrubbed off of hull.*"
 pause
-:MARKLIMPETNO
-setVar $MESSAGE "Limpet exists, but not enough cash to get scrubbed.*"
+
+:marklimpetno
+setvar $message "Limpet exists, but not enough cash to get scrubbed.*"
 pause
-:BUYFIGHTERS
+
+:buyfighters
 killalltriggers
 send "b 0* c 0* q q q * "
-if ($BOT~PARM1 = "seek")
-  gosub :PLAYER~QUIKSTATS
-  setVar $PLAYER~WARPTO $BACK
-  gosub :MOVE~TWARP
-  if ($PLAYER~TWARPSUCCESS <> TRUE)
-    setVar $SWITCHBOARD~MESSAGE $PLAYER~MSG&"*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    goto :WAIT_FOR_COMMAND
-  end
+if ($bot~parm1 = "seek")
+	gosub :player~quikstats
+	setvar $player~warpto $back
+	gosub :move~twarp
+	if ($player~twarpsuccess <> true)
+		setvar $switchboard~message $player~msg&"*"
+		gosub :switchboard~switchboard
+		goto :wait_for_command
+	end
 end
-if ($STARTINGLOCATION = "Citadel")
-  gosub :PLANET~LANDINGSUB
+if ($startinglocation = "Citadel")
+	gosub :planet~landingsub
 end
-gosub :PLAYER~QUIKSTATS
-if ($MESSAGE <> "")
-  setVar $SWITCHBOARD~MESSAGE $MESSAGE
-  gosub :SWITCHBOARD~SWITCHBOARD
+gosub :player~quikstats
+if ($message <> "")
+	setvar $switchboard~message $message
+	gosub :switchboard~switchboard
 end
 
-:WAIT_FOR_COMMAND
+:wait_for_command
 halt
-
 
 # includes:
 include "source\include\planet"

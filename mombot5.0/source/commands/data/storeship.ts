@@ -1,14 +1,13 @@
 # ============================== START STORE SHIP ====================================
 :storeship
 :shipstore
+gosub :loadvars~loadvars
 
-gosub :LOADVARS~LOADVARS
-
-		gosub  :player~currentPrompt
-		setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
-		setVar $BOT~validPrompts "Command Citadel"
-		gosub :PLAYER~CHECKSTARTINGPROMPT
-		gosub :ship~savetheship
+gosub  :player~currentprompt
+setvar $player~startinglocation $player~current_prompt
+setvar $bot~validprompts "Command Citadel"
+gosub :player~checkstartingprompt
+gosub :ship~savetheship
 # ================================== END STORE SHIP ==============================================
 
 halt

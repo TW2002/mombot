@@ -1,1022 +1,1036 @@
 :deploy
 if ($personal)
-	setVar $mine "p"
+	setvar $mine "p"
 else
-	setVar $mine "c"
+	setvar $mine "c"
 end
 
-gosub :mineProtections
-if ($mines~ready <> TRUE)
+gosub :mineprotections
+if ($mines~ready <> true)
 	return
 end
 
-setVar $preDeployArmids $PLAYER~ARMIDS
-setVar $preDeployLimpets $PLAYER~LIMPETS
-if ($bot~startingLocation = "Citadel")
+setvar $predeployarmids $player~armids
+setvar $predeploylimpets $player~limpets
+if ($bot~startinglocation = "Citadel")
 	send "s"
-	setVar $start_mac "q q "
-	setVar $end_mac "l "&$PLANET~PLANET&"* c s"
+	setvar $start_mac "q q "
+	setvar $end_mac "l "&$planet~planet&"* c s"
 else
 	send "*"
-	setVar $start_mac ""
-	setVar $end_mac "*"
+	setvar $start_mac ""
+	setvar $end_mac "*"
 end
-waitOn "Warps to Sector(s) :"
+waiton "Warps to Sector(s) :"
 send "* "
 
-setVar $armid_count SECTOR.MINES.QUANTITY[$PLAYER~CURRENT_SECTOR]
-setVar $limpet_count SECTOR.LIMPETS.QUANTITY[$PLAYER~CURRENT_SECTOR]
-setVar $limpetOwner SECTOR.LIMPETS.OWNER[$PLAYER~CURRENT_SECTOR]
-setVar $armidOwner SECTOR.MINES.OWNER[$PLAYER~CURRENT_SECTOR]
+setvar $armid_count sector.mines.quantity[$player~current_sector]
+setvar $limpet_count sector.limpets.quantity[$player~current_sector]
+setvar $limpetowner sector.limpets.owner[$player~current_sector]
+setvar $armidowner sector.mines.owner[$player~current_sector]
 
-if (($PLAYER~ARMIDS <= 0) AND (($armidOwner <> "belong to your Corp") AND ($armidOwner <> "yours")))
-	setVar $SWITCHBOARD~message "Out of armids!*"
-	gosub :SWITCHBOARD~switchboard
+if (($player~armids <= 0) and (($armidowner <> "belong to your Corp") and ($armidowner <> "yours")))
+	setvar $switchboard~message "Out of armids!*"
+	gosub :switchboard~switchboard
 	return
-elseif ($amount > $PLAYER~ARMIDS)
-	setVar $amount $PLAYER~ARMIDS
+elseif ($amount > $player~armids)
+	setvar $amount $player~armids
 end
 
-if (($PLAYER~LIMPETS <= 0) AND (($limpetOwner <> "belong to your Corp") AND ($limpetOwner <> "yours")))
-	setVar $SWITCHBOARD~message "Out of limpets!*"
-	gosub :SWITCHBOARD~switchboard
+if (($player~limpets <= 0) and (($limpetowner <> "belong to your Corp") and ($limpetowner <> "yours")))
+	setvar $switchboard~message "Out of limpets!*"
+	gosub :switchboard~switchboard
 	return
-elseif ($amount > $PLAYER~LIMPETS)
-	setVar $amount $PLAYER~LIMPETS
+elseif ($amount > $player~limpets)
+	setvar $amount $player~limpets
 end
 
-if ((($armidOwner <> "belong to your Corp") AND ($armidOwner <> "yours")) AND (($limpetOwner <> "belong to your Corp") AND ($limpetOwner <> "yours")) AND ($limpet_count >= $amount) AND ($armid_count >= $amount))
-	setVar $SWITCHBOARD~message "Armid and limpet mines already deployed into this sector!*"
-	gosub :SWITCHBOARD~switchboard
+if ((($armidowner <> "belong to your Corp") and ($armidowner <> "yours")) and (($limpetowner <> "belong to your Corp") and ($limpetowner <> "yours")) and ($limpet_count >= $amount) and ($armid_count >= $amount))
+	setvar $switchboard~message "Armid and limpet mines already deployed into this sector!*"
+	gosub :switchboard~switchboard
 	return
 end
 
 send $start_mac "z n h 2 z " $amount "*  z" $mine "* h 1 z " $amount "*  z " $mine "* q q * " $end_mac
-waitOn "Warps to Sector(s) :"
-gosub :PLAYER~quikstats
+waiton "Warps to Sector(s) :"
+gosub :player~quikstats
 send "* "
 
-if ((($preDeployArmids > $PLAYER~ARMIDS) AND ($preDeployLimpets > $PLAYER~LIMPETS)) OR (($preDeployLimpets = $PLAYER~LIMPETS) AND (($limpetOwner = "belong to your Corp") OR ($limpetOwner = "yours")) AND ($preDeployArmids = $PLAYER~ARMIDS) AND (($armidOwner = "belong to your Corp") OR ($armidOwner = "yours"))))
-	setVar $SWITCHBOARD~message $amount&" Armid and Limpet mines deployed into the sector!*"
-	gosub :SWITCHBOARD~switchboard
-	setSectorParameter $PLAYER~CURRENT_SECTOR "LIMPSEC" TRUE
-	setSectorParameter $PLAYER~CURRENT_SECTOR "MINESEC" TRUE
+if ((($predeployarmids > $player~armids) and ($predeploylimpets > $player~limpets)) or (($predeploylimpets = $player~limpets) and (($limpetowner = "belong to your Corp") or ($limpetowner = "yours")) and ($predeployarmids = $player~armids) and (($armidowner = "belong to your Corp") or ($armidowner = "yours"))))
+	setvar $switchboard~message $amount&" Armid and Limpet mines deployed into the sector!*"
+	gosub :switchboard~switchboard
+	setsectorparameter $player~current_sector "LIMPSEC" true
+	setsectorparameter $player~current_sector "MINESEC" true
 else
-	if ($preDeployArmids > $PLAYER~ARMIDS)
-		setVar $SWITCHBOARD~message $SWITCHBOARD~message&$amount&" Armid mine(s) deployed into the sector!*"
-		setSectorParameter $PLAYER~CURRENT_SECTOR "MINESEC" TRUE
+	if ($predeployarmids > $player~armids)
+		setvar $switchboard~message $switchboard~message&$amount&" Armid mine(s) deployed into the sector!*"
+		setsectorparameter $player~current_sector "MINESEC" true
 	end
-	if ($preDeployLimpets > $PLAYER~LIMPETS)
-		setVar $SWITCHBOARD~message $SWITCHBOARD~message&$amount&" Limpet mine(s) deployed into the sector!*"
-		setSectorParameter $PLAYER~CURRENT_SECTOR "LIMPSEC" TRUE
+	if ($predeploylimpets > $player~limpets)
+		setvar $switchboard~message $switchboard~message&$amount&" Limpet mine(s) deployed into the sector!*"
+		setsectorparameter $player~current_sector "LIMPSEC" true
 	end
-	gosub :SWITCHBOARD~switchboard
+	gosub :switchboard~switchboard
 end
 
-if ($preDeployArmids < $PLAYER~ARMIDS)
-	setVar $SWITCHBOARD~message ($PLAYER~ARMIDS - $preDeployArmids)&" Armid mines picked up from sector!*"
-elseif (($preDeployArmids = $PLAYER~ARMIDS) AND (($armidOwner <> "belong to your Corp") AND ($armidOwner <> "yours")))
-	setVar $SWITCHBOARD~message "Enemy armid(s) present in sector, cannot deploy!*"
+if ($predeployarmids < $player~armids)
+	setvar $switchboard~message ($player~armids - $predeployarmids)&" Armid mines picked up from sector!*"
+elseif (($predeployarmids = $player~armids) and (($armidowner <> "belong to your Corp") and ($armidowner <> "yours")))
+	setvar $switchboard~message "Enemy armid(s) present in sector, cannot deploy!*"
 end
-gosub :SWITCHBOARD~switchboard
+gosub :switchboard~switchboard
 
-if ($preDeployLimpets < $PLAYER~LIMPETS)
-	setVar $SWITCHBOARD~message ($PLAYER~LIMPETS - $preDeployLimpets)&" Limpet mines picked up from sector!*"
-elseif (($preDeployLimpets = $PLAYER~LIMPETS) AND (($limpetOwner <> "belong to your Corp") AND ($limpetOwner <> "yours")))
-	setVar $SWITCHBOARD~message "Enemy limpet(s) present in sector, cannot deploy!*"
+if ($predeploylimpets < $player~limpets)
+	setvar $switchboard~message ($player~limpets - $predeploylimpets)&" Limpet mines picked up from sector!*"
+elseif (($predeploylimpets = $player~limpets) and (($limpetowner <> "belong to your Corp") and ($limpetowner <> "yours")))
+	setvar $switchboard~message "Enemy limpet(s) present in sector, cannot deploy!*"
 end
-gosub :SWITCHBOARD~switchboard
+gosub :switchboard~switchboard
 return
 # ============================== END MINES (ARMID AND LIMP) SUB ==============================
-
-:deployArmid
+:deployarmid
 if ($personal)
-	setVar $mine "p"
+	setvar $mine "p"
 else
-	setVar $mine "c"
+	setvar $mine "c"
 end
 
-gosub :mineProtections
-if ($mines~ready <> TRUE)
+gosub :mineprotections
+if ($mines~ready <> true)
 	return
 end
-if ($PLAYER~ARMIDS <= 0)
-	if ($PLAYER~startingLocation = "Citadel")
+if ($player~armids <= 0)
+	if ($player~startinglocation = "Citadel")
 		send "s* "
-		waitFor "Warps to Sector(s) :"
-	elseif ($PLAYER~startingLocation = "Command")
+		waitfor "Warps to Sector(s) :"
+	elseif ($player~startinglocation = "Command")
 		send "d* "
 	end
-	if ((SECTOR.MINES.OWNER[$PLAYER~CURRENT_SECTOR] = "belong to your Corp") OR (SECTOR.MINES.OWNER[$PLAYER~CURRENT_SECTOR] = "yours"))
-		if ($amount > SECTOR.MINES.QUANTITY[$PLAYER~CURRENT_SECTOR])
-			setVar $amount SECTOR.MINES.QUANTITY[$PLAYER~CURRENT_SECTOR]
+	if ((sector.mines.owner[$player~current_sector] = "belong to your Corp") or (sector.mines.owner[$player~current_sector] = "yours"))
+		if ($amount > sector.mines.quantity[$player~current_sector])
+			setvar $amount sector.mines.quantity[$player~current_sector]
 		end
 	else
-		setVar $SWITCHBOARD~message "Out of Armid Mines!*"
-		gosub :SWITCHBOARD~switchboard
+		setvar $switchboard~message "Out of Armid Mines!*"
+		gosub :switchboard~switchboard
 		return
 	end
-elseif ($amount > $PLAYER~ARMIDS)
-	setVar $amount $PLAYER~ARMIDS
+elseif ($amount > $player~armids)
+	setvar $amount $player~armids
 end
 
-:retryArmid
-killAllTriggers
+:retryarmid
+killalltriggers
 
-if ($PLAYER~startingLocation = "Citadel")
-	send "q q z n h1 z " $amount "*  z" $mine " z n n  *l " $PLANET~PLANET "* c"
+if ($player~startinglocation = "Citadel")
+	send "q q z n h1 z " $amount "*  z" $mine " z n n  *l " $planet~planet "* c"
 else
 	send "z n h1 z " $amount "*  z" $mine " z n"
 end
-setTextLineTrigger tooManyArmid :tooManyArmid "!  You are limited to "
-setTextLineTrigger armidDone :armidDone "Done. You have "
-setTextLineTrigger armidEnemy :armidBlocked "These mines are not under your control."
-setTextLineTrigger armidNotEnough :armidNotEnough "You don't have that many mines available."
+settextlinetrigger toomanyarmid :toomanyarmid "!  You are limited to "
+settextlinetrigger armiddone :armiddone "Done. You have "
+settextlinetrigger armidenemy :armidblocked "These mines are not under your control."
+settextlinetrigger armidnotenough :armidnotenough "You don't have that many mines available."
 pause
 
-:armidDone
-killAllTriggers
-setVar $isMined TRUE
-if ($PLAYER~startingLocation = "Citadel")
-	waitOn "Citadel command (?=help)"
+:armiddone
+killalltriggers
+setvar $ismined true
+if ($player~startinglocation = "Citadel")
+	waiton "Citadel command (?=help)"
 	send "s*"
 else
-	waitOn "Command [TL="
+	waiton "Command [TL="
 	send "d*"
 end
-setTextLineTrigger armidPersonal :armidPersonal "(Type 1 Armid) (yours)"
-setTextLineTrigger armidCorp :armidCorp "(Type 1 Armid) (belong to your Corp)"
-setTextLineTrigger armidBlocked :armidBlocked "Citadel treasury contains"
+settextlinetrigger armidpersonal :armidpersonal "(Type 1 Armid) (yours)"
+settextlinetrigger armidcorp :armidcorp "(Type 1 Armid) (belong to your Corp)"
+settextlinetrigger armidblocked :armidblocked "Citadel treasury contains"
 pause
 
-:armidCorp
-setVar $SWITCHBOARD~message $amount&" Corporate Mines Deployed!*"
-gosub :SWITCHBOARD~switchboard
-goto :doneArmidDeploy
+:armidcorp
+setvar $switchboard~message $amount&" Corporate Mines Deployed!*"
+gosub :switchboard~switchboard
+goto :donearmiddeploy
 
-:armidPersonal
-setVar $SWITCHBOARD~message $amount&" Personal Mines Deployed!*"
-gosub :SWITCHBOARD~switchboard
-goto :doneArmidDeploy
+:armidpersonal
+setvar $switchboard~message $amount&" Personal Mines Deployed!*"
+gosub :switchboard~switchboard
+goto :donearmiddeploy
 
-:armidBlocked
-setVar $SWITCHBOARD~message "Sector already has enemy Armid Mines present!*"
-gosub :SWITCHBOARD~switchboard
-setVar $isMined FALSE
-goto :doneArmidDeploy
+:armidblocked
+setvar $switchboard~message "Sector already has enemy Armid Mines present!*"
+gosub :switchboard~switchboard
+setvar $ismined false
+goto :donearmiddeploy
 
-:tooManyArmid
-getWord CURRENTLINE $max_mines 11
+:toomanyarmid
+getword currentline $max_mines 11
 
-if ((SECTOR.MINES.OWNER[$PLAYER~CURRENT_SECTOR] = "belong to your Corp") OR (SECTOR.MINES.OWNER[$PLAYER~CURRENT_SECTOR] = "yours"))
-	setVar $SWITCHBOARD~message "Your ship only holds "&$max_mines&", retrying!*"
-	gosub :SWITCHBOARD~switchboard
-	setVar $amount ((SECTOR.MINES.QUANTITY[$PLAYER~CURRENT_SECTOR] + $PLAYER~ARMIDS) - $max_mines)
-	goto :retryArmid
+if ((sector.mines.owner[$player~current_sector] = "belong to your Corp") or (sector.mines.owner[$player~current_sector] = "yours"))
+	setvar $switchboard~message "Your ship only holds "&$max_mines&", retrying!*"
+	gosub :switchboard~switchboard
+	setvar $amount ((sector.mines.quantity[$player~current_sector] + $player~armids) - $max_mines)
+	goto :retryarmid
 else
-	setVar $SWITCHBOARD~message "Too many mines in the sector!*"
-	gosub :SWITCHBOARD~switchboard
-	goto :doneArmidDeploy
+	setvar $switchboard~message "Too many mines in the sector!*"
+	gosub :switchboard~switchboard
+	goto :donearmiddeploy
 end
 
-:armidNotEnough
-setVar $SWITCHBOARD~message "You don't have that many available!*"
-gosub :SWITCHBOARD~switchboard
+:armidnotenough
+setvar $switchboard~message "You don't have that many available!*"
+gosub :switchboard~switchboard
 
-:doneArmidDeploy
-if ($isMined)
-	setSectorParameter $PLAYER~CURRENT_SECTOR "MINESEC" TRUE
+:donearmiddeploy
+if ($ismined)
+	setsectorparameter $player~current_sector "MINESEC" true
 else
-	setSectorParameter $PLAYER~CURRENT_SECTOR "MINESEC" FALSE
+	setsectorparameter $player~current_sector "MINESEC" false
 end
-killAllTriggers
+killalltriggers
 return
 
-:deployLimp
+:deploylimp
 if ($personal)
-	setVar $mine "p"
+	setvar $mine "p"
 else
-	setVar $mine "c"
+	setvar $mine "c"
 end
 
-gosub :mineProtections
-if ($mines~ready <> TRUE)
+gosub :mineprotections
+if ($mines~ready <> true)
 	return
 end
-if ($PLAYER~LIMPETS <= 0)
-	if ($PLAYER~startingLocation = "Citadel")
+if ($player~limpets <= 0)
+	if ($player~startinglocation = "Citadel")
 		send "s* "
-		waitFor "Warps to Sector(s) :"
-	elseif ($PLAYER~startingLocation = "Command")
+		waitfor "Warps to Sector(s) :"
+	elseif ($player~startinglocation = "Command")
 		send "d* "
 	end
-	if ((SECTOR.LIMPETS.OWNER[$PLAYER~CURRENT_SECTOR] = "belong to your Corp") OR (SECTOR.LIMPETS.OWNER[$PLAYER~CURRENT_SECTOR] = "yours"))
-		if ($amount > SECTOR.LIMPETS.QUANTITY[$PLAYER~CURRENT_SECTOR])
-			setVar $amount SECTOR.LIMPETS.QUANTITY[$PLAYER~CURRENT_SECTOR]
+	if ((sector.limpets.owner[$player~current_sector] = "belong to your Corp") or (sector.limpets.owner[$player~current_sector] = "yours"))
+		if ($amount > sector.limpets.quantity[$player~current_sector])
+			setvar $amount sector.limpets.quantity[$player~current_sector]
 		end
 	else
-		setVar $SWITCHBOARD~message "Out of limpets!*"
-		gosub :SWITCHBOARD~switchboard
+		setvar $switchboard~message "Out of limpets!*"
+		gosub :switchboard~switchboard
 		return
 	end
-elseif ($amount > $PLAYER~LIMPETS)
-	setVar $amount $PLAYER~LIMPETS
+elseif ($amount > $player~limpets)
+	setvar $amount $player~limpets
 end
 
-:retryLimp
-killAllTriggers
+:retrylimp
+killalltriggers
 
-if ($PLAYER~startingLocation = "Citadel")
-	send "q q z* h2z" $amount "* z " $mine " z * * *l " $PLANET~PLANET "* c"
+if ($player~startinglocation = "Citadel")
+	send "q q z* h2z" $amount "* z " $mine " z * * *l " $planet~planet "* c"
 else
 	send "z* h2z" $amount "* z " $mine " z * *"
 end
-setTextLineTrigger tooManyLimp :tooManyLimp "!  You are limited to "
-setTextLineTrigger limpDone :limpDone "Done. You have "
-setTextLineTrigger limpEnemy :limpBlocked "These mines are not under your control."
-setTextLineTrigger limpNotEnough :limpNotEnough "You don't have that many mines available."
+settextlinetrigger toomanylimp :toomanylimp "!  You are limited to "
+settextlinetrigger limpdone :limpdone "Done. You have "
+settextlinetrigger limpenemy :limpblocked "These mines are not under your control."
+settextlinetrigger limpnotenough :limpnotenough "You don't have that many mines available."
 pause
 
-:limpDone
-killAllTriggers
-setVar $isLimped TRUE
-if ($PLAYER~startingLocation = "Citadel")
-	waitOn "Citadel command (?=help)"
+:limpdone
+killalltriggers
+setvar $islimped true
+if ($player~startinglocation = "Citadel")
+	waiton "Citadel command (?=help)"
 	send "s* "
 else
 	send "d* "
 end
-setTextLineTrigger limpPersonal :limpPersonal "(Type 2 Limpet) (yours)"
-setTextLineTrigger limpCorp :limpCorp "(Type 2 Limpet) (belong to your Corp)"
-setTextLineTrigger limpBlocked :limpBlocked "Warps to Sector(s) :"
+settextlinetrigger limppersonal :limppersonal "(Type 2 Limpet) (yours)"
+settextlinetrigger limpcorp :limpcorp "(Type 2 Limpet) (belong to your Corp)"
+settextlinetrigger limpblocked :limpblocked "Warps to Sector(s) :"
 pause
 
-:limpCorp
-killAllTriggers
-setVar $SWITCHBOARD~message $amount&" Corporate Limpets Deployed!*"
-gosub :SWITCHBOARD~switchboard
-goto :doneLimpDeploy
+:limpcorp
+killalltriggers
+setvar $switchboard~message $amount&" Corporate Limpets Deployed!*"
+gosub :switchboard~switchboard
+goto :donelimpdeploy
 
-:limpPersonal
-killAllTriggers
-setVar $SWITCHBOARD~message $amount&" Personal Limpet Deployed!*"
-gosub :SWITCHBOARD~switchboard
-goto :doneLimpDeploy
+:limppersonal
+killalltriggers
+setvar $switchboard~message $amount&" Personal Limpet Deployed!*"
+gosub :switchboard~switchboard
+goto :donelimpdeploy
 
-:limpBlocked
-killAllTriggers
-setVar $SWITCHBOARD~message "Sector already has enemy limpets present!*"
-gosub :SWITCHBOARD~switchboard
-setVar $isLimped FALSE
-goto :doneLimpDeploy
+:limpblocked
+killalltriggers
+setvar $switchboard~message "Sector already has enemy limpets present!*"
+gosub :switchboard~switchboard
+setvar $islimped false
+goto :donelimpdeploy
 
-:tooManyLimp
-getWord CURRENTLINE $max_mines 11
+:toomanylimp
+getword currentline $max_mines 11
 
-if ((SECTOR.LIMPETS.OWNER[$PLAYER~CURRENT_SECTOR] = "belong to your Corp") OR (SECTOR.LIMPETS.OWNER[$PLAYER~CURRENT_SECTOR] = "yours"))
-	setVar $SWITCHBOARD~message "Your ship only holds "&$max_mines&", retrying!*"
-	gosub :SWITCHBOARD~switchboard
-	setVar $amount ((SECTOR.LIMPETS.QUANTITY[$PLAYER~CURRENT_SECTOR] + $PLAYER~LIMPETS) - $max_mines)
-	goto :retryLimp
+if ((sector.limpets.owner[$player~current_sector] = "belong to your Corp") or (sector.limpets.owner[$player~current_sector] = "yours"))
+	setvar $switchboard~message "Your ship only holds "&$max_mines&", retrying!*"
+	gosub :switchboard~switchboard
+	setvar $amount ((sector.limpets.quantity[$player~current_sector] + $player~limpets) - $max_mines)
+	goto :retrylimp
 else
-	setVar $SWITCHBOARD~message "Too many mines in the sector!*"
-	gosub :SWITCHBOARD~switchboard
-	goto :doneLimpDeploy
+	setvar $switchboard~message "Too many mines in the sector!*"
+	gosub :switchboard~switchboard
+	goto :donelimpdeploy
 end
 
-:limpNotEnough
-setVar $SWITCHBOARD~message "You don't have that many available!*"
-gosub :SWITCHBOARD~switchboard
+:limpnotenough
+setvar $switchboard~message "You don't have that many available!*"
+gosub :switchboard~switchboard
 
-:doneLimpDeploy
-if ($isLimped)
-	setSectorParameter $PLAYER~CURRENT_SECTOR "LIMPSEC" TRUE
+:donelimpdeploy
+if ($islimped)
+	setsectorparameter $player~current_sector "LIMPSEC" true
 else
-	setSectorParameter $PLAYER~CURRENT_SECTOR "LIMPSEC" FALSE
+	setsectorparameter $player~current_sector "LIMPSEC" false
 end
-killAllTriggers
+killalltriggers
 return
 
-:updateArmids
-setVar $SWITCHBOARD~message "Loading current armid locations. . .*"
-gosub :SWITCHBOARD~switchboard
-fileExists $gfile_chk $BOT~ARMID_COUNT_FILE
+:updatearmids
+setvar $switchboard~message "Loading current armid locations. . .*"
+gosub :switchboard~switchboard
+fileexists $gfile_chk $bot~armid_count_file
 if ($gfile_chk = 1)
-	read $BOT~ARMID_COUNT_FILE $previousCount 1
+	read $bot~armid_count_file $previouscount 1
 else
-	setVar $previousCount 0
+	setvar $previouscount 0
 end
-setArray $pmines SECTORS
+setarray $pmines sectors
 
-:readArmidList
-setVar $count 0
-setVar $personalCount 0
+:readarmidlist
+setvar $count 0
+setvar $personalcount 0
 send "k1"
-setVar $i 1
-setVar $limpetOutput ""
-setVar $personalOutput " "
-setVar $output " "
+setvar $i 1
+setvar $limpetoutput ""
+setvar $personaloutput " "
+setvar $output " "
 
-:keepCountingArmids
-killTrigger corporate
-killTrigger personal
-killTrigger doneCountingFigs
-killTrigger doneNoFigs
-setTextLineTrigger corporate :corpCountArmids " Corp"
-setTextLineTrigger personal :personalCountArmids "Personal "
-setTextLineTrigger doneCountingFigs :doneCountingArmids "Total"
-setTextLineTrigger doneNoFigs :doneCountingArmids "No mines deployed"
+:keepcountingarmids
+killtrigger corporate
+killtrigger personal
+killtrigger donecountingfigs
+killtrigger donenofigs
+settextlinetrigger corporate :corpcountarmids " Corp"
+settextlinetrigger personal :personalcountarmids "Personal "
+settextlinetrigger donecountingfigs :donecountingarmids "Total"
+settextlinetrigger donenofigs :donecountingarmids "No mines deployed"
 pause
 
-:personalCountArmids
+:personalcountarmids
 add $count 1
-add $personalCount 1
-getWord CURRENTLINE $sector 1
-getWord CURRENTLINE $numMines 2
-setVar $personalOutput $personalOutput&$sector&"  "
-setVar $pmines[$sector] $numMines
-setTextLineTrigger personal :personalCountArmids "Personal "
+add $personalcount 1
+getword currentline $sector 1
+getword currentline $nummines 2
+setvar $personaloutput $personaloutput&$sector&"  "
+setvar $pmines[$sector] $nummines
+settextlinetrigger personal :personalcountarmids "Personal "
 pause
 
-:corpCountArmids
+:corpcountarmids
 add $count 1
-add $player~corpCount 1
-getWord CURRENTLINE $sector 1
-getWord CURRENTLINE $numMines 2
+add $player~corpcount 1
+getword currentline $sector 1
+getword currentline $nummines 2
 while ($i <= $sector)
-	getWordPos $personalOutput $pos " "&$i&" "
-	if (($sector = $i) OR ($pos > 0))
+	getwordpos $personaloutput $pos " "&$i&" "
+	if (($sector = $i) or ($pos > 0))
 		if ($pos > 0)
-			setVar $output $output&$pmines[$i]&"*"
+			setvar $output $output&$pmines[$i]&"*"
 		else
-			setVar $output $output&$numMines&"*"
+			setvar $output $output&$nummines&"*"
 		end
-		setSectorParameter $i "MINESEC" TRUE
+		setsectorparameter $i "MINESEC" true
 	else
-		setVar $output $output&"0*"
-		setSectorParameter $i "MINESEC" FALSE
+		setvar $output $output&"0*"
+		setsectorparameter $i "MINESEC" false
 	end
 	add $i 1
 end
-setTextLineTrigger corporate :corpCountArmids " Corp"
+settextlinetrigger corporate :corpcountarmids " Corp"
 pause
 
-:doneCountingArmids
-killTrigger corporate
-killTrigger personal
-killTrigger doneCountingFigs
-killTrigger doneNoFigs
+:donecountingarmids
+killtrigger corporate
+killtrigger personal
+killtrigger donecountingfigs
+killtrigger donenofigs
 
-while ($i <= SECTORS)
-	getWordPos $personalOutput $pos " "&$i&" "
+while ($i <= sectors)
+	getwordpos $personaloutput $pos " "&$i&" "
 	if ($pos > 0)
-		setVar $output $output&$numMines&"*"
-		setSectorParameter $i "MINESEC" TRUE
+		setvar $output $output&$nummines&"*"
+		setsectorparameter $i "MINESEC" true
 	else
-		setVar $output $output&"0*"
-		setSectorParameter $i "MINESEC" FALSE
+		setvar $output $output&"0*"
+		setsectorparameter $i "MINESEC" false
 	end
 	add $i 1
 end
-delete $BOT~ARMID_FILE
-write $BOT~ARMID_FILE $output
-delete $BOT~ARMID_COUNT_FILE
-write $BOT~ARMID_COUNT_FILE $count
+delete $bot~armid_file
+write $bot~armid_file $output
+delete $bot~armid_count_file
+write $bot~armid_count_file $count
 return
 
-:reportArmids
-setVar $percent (($count * 100) / SECTORS)
-setVar $gridChange $count - $previousCount
-if ($gridChange > 0)
-	setVar $gridChange "+"&$gridChange
+:reportarmids
+setvar $percent (($count * 100) / sectors)
+setvar $gridchange $count - $previouscount
+if ($gridchange > 0)
+	setvar $gridchange "+"&$gridchange
 end
-setVar $SWITCHBOARD~message $SWITCHBOARD~message&"          - Armid Grid Report -*          - "&$count&" sectors, "&$personalCount&" personal. ("&$percent&"%) ("&$gridChange&" Change)**"
+setvar $switchboard~message $switchboard~message&"          - Armid Grid Report -*          - "&$count&" sectors, "&$personalcount&" personal. ("&$percent&"%) ("&$gridchange&" Change)**"
 return
 
-:updateLimps
-setArray $plimps SECTORS
+:updatelimps
+setarray $plimps sectors
 
-setVar $SWITCHBOARD~message "Loading current limpet locations. . .*"
-gosub :SWITCHBOARD~switchboard
-fileExists $gfile_chk $BOT~LIMP_COUNT_FILE
+setvar $switchboard~message "Loading current limpet locations. . .*"
+gosub :switchboard~switchboard
+fileexists $gfile_chk $bot~limp_count_file
 if ($gfile_chk = 1)
-	read $BOT~LIMP_COUNT_FILE $previousCount 1
+	read $bot~limp_count_file $previouscount 1
 else
-	setVar $previousCount 0
+	setvar $previouscount 0
 end
 
-:readLimpList
-setVar $count 0
-setVar $personalCount 0
+:readlimplist
+setvar $count 0
+setvar $personalcount 0
 send "k2"
-setVar $i 1
-setVar $limpetOutput ""
-setVar $personalOutput " "
-setVar $output " "
+setvar $i 1
+setvar $limpetoutput ""
+setvar $personaloutput " "
+setvar $output " "
 
-:keepCountingLimps
-killTrigger corporate
-killTrigger personal
-killTrigger doneCountingFigs
-killTrigger doneNoFigs
-setTextLineTrigger corporate :corpCountLimps " Corp"
-setTextLineTrigger personal :personalCountLimps "Personal "
-setTextLineTrigger doneCountingFigs :doneCountingLimps "Total"
-setTextLineTrigger doneNoFigs :doneCountingLimps "No Limpet mines deployed"
+:keepcountinglimps
+killtrigger corporate
+killtrigger personal
+killtrigger donecountingfigs
+killtrigger donenofigs
+settextlinetrigger corporate :corpcountlimps " Corp"
+settextlinetrigger personal :personalcountlimps "Personal "
+settextlinetrigger donecountingfigs :donecountinglimps "Total"
+settextlinetrigger donenofigs :donecountinglimps "No Limpet mines deployed"
 pause
 
-:personalCountLimps
+:personalcountlimps
 add $count 1
-add $personalCount 1
-getWord CURRENTLINE $sector 1
-getWord CURRENTLINE $numMines 2
-setVar $personalOutput $personalOutput&$sector&"  "
-setVar $plimps[$sector] $numMines
-setTextLineTrigger personal :personalCountLimps "Personal "
+add $personalcount 1
+getword currentline $sector 1
+getword currentline $nummines 2
+setvar $personaloutput $personaloutput&$sector&"  "
+setvar $plimps[$sector] $nummines
+settextlinetrigger personal :personalcountlimps "Personal "
 pause
 
-:corpCountLimps
+:corpcountlimps
 add $count 1
-add $player~corpCount 1
-getWord CURRENTLINE $sector 1
-getWord CURRENTLINE $numMines 2
+add $player~corpcount 1
+getword currentline $sector 1
+getword currentline $nummines 2
 while ($i <= $sector)
-	getWordPos $personalOutput $pos " "&$i&" "
-	if (($sector = $i) OR ($pos > 0))
+	getwordpos $personaloutput $pos " "&$i&" "
+	if (($sector = $i) or ($pos > 0))
 		if ($pos > 0)
-			setVar $output $output& $plimps[$i] &"*"
+			setvar $output $output& $plimps[$i] &"*"
 		else
-			setVar $output $output&$numMines&"*"
+			setvar $output $output&$nummines&"*"
 		end
-		setSectorParameter $i "LIMPSEC" TRUE
+		setsectorparameter $i "LIMPSEC" true
 	else
-		setVar $output $output&"0*"
-		setSectorParameter $i "LIMPSEC" FALSE
+		setvar $output $output&"0*"
+		setsectorparameter $i "LIMPSEC" false
 	end
 	add $i 1
 end
-setTextLineTrigger corporate :corpCountLimps " Corp"
+settextlinetrigger corporate :corpcountlimps " Corp"
 pause
 
-:doneCountingLimps
-killTrigger corporate
-killTrigger personal
-killTrigger doneCountingFigs
-killTrigger doneNoFigs
-setTextTrigger checkLimps :checkMarkedLimps "Activated  Limpet  Scan"
+:donecountinglimps
+killtrigger corporate
+killtrigger personal
+killtrigger donecountingfigs
+killtrigger donenofigs
+settexttrigger checklimps :checkmarkedlimps "Activated  Limpet  Scan"
 pause
 
-:checkMarkedLimps
-setTextLineTrigger donechecking :doneCheckingLimps "Total"
-setTextLineTrigger donecheckingtoo :doneCheckingLimps "No Active Limpet mines detected"
-setTextLineTrigger corporate :markLimpet " Corp"
-setTextLineTrigger personal :markLimpet "Personal "
+:checkmarkedlimps
+settextlinetrigger donechecking :donecheckinglimps "Total"
+settextlinetrigger donecheckingtoo :donecheckinglimps "No Active Limpet mines detected"
+settextlinetrigger corporate :marklimpet " Corp"
+settextlinetrigger personal :marklimpet "Personal "
 pause
 
-:markLimpet
-killTrigger corporate
-killTrigger personal
-	setVar $temp CURRENTLINE
-	stripText $temp #42
-	setVar $limpetOutput $limpetOutput&"             "&$temp&"*"
-	killTrigger unfreezingTrigger
-	setDelayTrigger unfreezingTrigger :unfreezebot 10000
-setTextLineTrigger corporate :markLimpet " Corp"
-setTextLineTrigger personal :markLimpet "Personal "
+:marklimpet
+killtrigger corporate
+killtrigger personal
+setvar $temp currentline
+striptext $temp #42
+setvar $limpetoutput $limpetoutput&"             "&$temp&"*"
+killtrigger unfreezingtrigger
+setdelaytrigger unfreezingtrigger :unfreezebot 10000
+settextlinetrigger corporate :marklimpet " Corp"
+settextlinetrigger personal :marklimpet "Personal "
 pause
 
-:doneCheckingLimps
-killTrigger donechecking
-killTrigger donecheckingtoo
-while ($i <= SECTORS)
-	getWordPos $personalOutput $pos " "&$i&" "
+:donecheckinglimps
+killtrigger donechecking
+killtrigger donecheckingtoo
+while ($i <= sectors)
+	getwordpos $personaloutput $pos " "&$i&" "
 	if ($pos > 0)
-		setVar $output $output&$numMines&"*"
-		setSectorParameter $i "LIMPSEC" TRUE
+		setvar $output $output&$nummines&"*"
+		setsectorparameter $i "LIMPSEC" true
 	else
-		setVar $output $output&"0*"
-		setSectorParameter $i "LIMPSEC" FALSE
+		setvar $output $output&"0*"
+		setsectorparameter $i "LIMPSEC" false
 	end
 	add $i 1
 end
-delete $BOT~LIMP_FILE
-write $BOT~LIMP_FILE $output
-delete $BOT~LIMP_COUNT_FILE
-write $BOT~LIMP_COUNT_FILE $count
+delete $bot~limp_file
+write $bot~limp_file $output
+delete $bot~limp_count_file
+write $bot~limp_count_file $count
 return
 
-	:reportLimps
-	setVar $percent (($count * 100) / SECTORS)
-	setVar $gridChange ($count - $previousCount)
-	if ($gridChange > 0)
-	setVar $gridChange "+"&$gridChange
-	end
-	setVar $player~limpetsGridded TRUE
-	setVar $switchboard~message $SWITCHBOARD~message&"          - Limpet Grid Report -*          - "&$count&" sectors, "&$personalCount&" personal. ("&$percent&"%) ("&$gridChange&" Change)*          - Activated  Limpet  Scan*            *             Sector    Personal/Corp*            ========================*"&$limpetOutput&"*"
-	return
-
-	:unfreezebot
-	echo "*Bot timed out, unfreezing..*"
-	setDeafClients false
-	halt
-
-	:mineProtections
-	setVar $mines~ready FALSE
-	killAllTriggers
-	gosub :PLAYER~quikstats
-	if (($PLAYER~CURRENT_SECTOR < 10) OR ($PLAYER~CURRENT_SECTOR = $MAP~stardock))
-		setVar $SWITCHBOARD~message "Cannot deploy in FedSpace!*"
-		gosub :SWITCHBOARD~switchboard
-		return
-	end
-	if ($PLAYER~CURRENT_PROMPT = 0)
-		gosub :PLAYER~CURRENTPROMPT
-	end
-	setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
-	isNumber $test $amount
-	if (($test = FALSE) OR ($amount = 0))
-		setVar $amount 1
-	end
-	setVar $bot~startingLocation $PLAYER~CURRENT_PROMPT
-	setVar $bot~validPrompts "Command Citadel"
-	getWordPos " "&$bot~validPrompts&" " $bot~pos $PLAYER~CURRENT_PROMPT
-	if ($bot~pos <= 0)
-		setVar $SWITCHBOARD~message "Invalid starting prompt: ["&$PLAYER~CURRENT_PROMPT&"]. Valid prompt(s) for this command: ["&$BOT~VALIDPROMPTS&"]*"
-		gosub :SWITCHBOARD~switchboard
-		return
-	end
-	if ($PLAYER~startingLocation = "Citadel")
-		send "q"
-		gosub :PLANET~getPlanetInfo
-		send "c"
-	end
-	setVar $mines~ready TRUE
-	return
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:MINES~CLEAR
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-loadvar $GAME~GAME_MENU_PROMPT
-gosub :PLAYER~QUIKSTATS
-setvar $MINES~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-if ((CURRENTSECTOR = $MAP~STARDOCK) or (CURRENTSECTOR <= 10))
-  setvar $SWITCHBOARD~MESSAGE "Can't clear fedspace.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  return
+:reportlimps
+setvar $percent (($count * 100) / sectors)
+setvar $gridchange ($count - $previouscount)
+if ($gridchange > 0)
+	setvar $gridchange "+"&$gridchange
 end
-setvar $BOT~VALIDPROMPTS "Command Citadel"
-gosub :PLAYER~CHECKSTARTINGPROMPT
+setvar $player~limpetsgridded true
+setvar $switchboard~message $switchboard~message&"          - Limpet Grid Report -*          - "&$count&" sectors, "&$personalcount&" personal. ("&$percent&"%) ("&$gridchange&" Change)*          - Activated  Limpet  Scan*            *             Sector    Personal/Corp*            ========================*"&$limpetoutput&"*"
+return
 
-setvar $MINES~BWARP FALSE
-if ($MINES~STARTINGLOCATION = "Citadel")
-  send "q"
-  gosub :PLANET~GETPLANETINFO
-  send "c  s*"
-  if (($PLANET~PLANET_TRANSPORT >= 1) and ($PLAYER~UNLIMITEDGAME = TRUE))
-    setvar $MINES~BWARP TRUE
-  end
+:unfreezebot
+echo "*Bot timed out, unfreezing..*"
+setdeafclients false
+halt
+
+:mineprotections
+setvar $mines~ready false
+killalltriggers
+gosub :player~quikstats
+if (($player~current_sector < 10) or ($player~current_sector = $map~stardock))
+	setvar $switchboard~message "Cannot deploy in FedSpace!*"
+	gosub :switchboard~switchboard
+	return
+end
+if ($player~current_prompt = 0)
+	gosub :player~currentprompt
+end
+setvar $player~startinglocation $player~current_prompt
+isnumber $test $amount
+if (($test = false) or ($amount = 0))
+	setvar $amount 1
+end
+setvar $bot~startinglocation $player~current_prompt
+setvar $bot~validprompts "Command Citadel"
+getwordpos " "&$bot~validprompts&" " $bot~pos $player~current_prompt
+if ($bot~pos <= 0)
+	setvar $switchboard~message "Invalid starting prompt: ["&$player~current_prompt&"]. Valid prompt(s) for this command: ["&$bot~validprompts&"]*"
+	gosub :switchboard~switchboard
+	return
+end
+if ($player~startinglocation = "Citadel")
+	send "q"
+	gosub :planet~getplanetinfo
+	send "c"
+end
+setvar $mines~ready true
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:mines~clear
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+loadvar $game~game_menu_prompt
+gosub :player~quikstats
+setvar $mines~startinglocation $player~current_prompt
+if ((currentsector = $map~stardock) or (currentsector <= 10))
+	setvar $switchboard~message "Can't clear fedspace.*"
+	gosub :switchboard~switchboard
+	return
+end
+setvar $bot~validprompts "Command Citadel"
+gosub :player~checkstartingprompt
+
+setvar $mines~bwarp false
+if ($mines~startinglocation = "Citadel")
+	send "q"
+	gosub :planet~getplanetinfo
+	send "c  s*"
+	if (($planet~planet_transport >= 1) and ($player~unlimitedgame = true))
+		setvar $mines~bwarp true
+	end
 else
-  send "*"
+	send "*"
 end
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $MINES~POS " bwarp "
-if ($MINES~POS > 0)
-  setvar $MINES~BWARP TRUE
+getwordpos " "&$bot~user_command_line&" " $mines~pos " bwarp "
+if ($mines~pos > 0)
+	setvar $mines~bwarp true
 end
 
-setvar $MINES~BEFORELIMPETS $PLAYER~LIMPETS
-setvar $MINES~BEFOREARMIDS $PLAYER~ARMIDS
-setvar $MINES~PLACEDLIMPET FALSE
-setvar $MINES~PLACEDARMID FALSE
+setvar $mines~beforelimpets $player~limpets
+setvar $mines~beforearmids $player~armids
+setvar $mines~placedlimpet false
+setvar $mines~placedarmid false
 waiton "Warps to Sector(s) :"
-gosub :REFRESH_CLEAR_SECTOR_STATE
-if ($MINES~SECTORCLEAR = TRUE)
-  setvar $SWITCHBOARD~MESSAGE "Current Sector Already Clear of Enemy Mines!*"
-  return
+gosub :refresh_clear_sector_state
+if ($mines~sectorclear = true)
+	setvar $switchboard~message "Current Sector Already Clear of Enemy Mines!*"
+	return
 end
-if (($PLAYER~LIMPETS <= 0) and ($MINES~LIMPETCOUNT > 0) and (($MINES~LIMPETOWNER <> "belong to your Corp") and ($MINES~LIMPETOWNER <> "yours")))
-  setvar $SWITCHBOARD~MESSAGE "Need limpets to clear this sector*"
-  return
+if (($player~limpets <= 0) and ($mines~limpetcount > 0) and (($mines~limpetowner <> "belong to your Corp") and ($mines~limpetowner <> "yours")))
+	setvar $switchboard~message "Need limpets to clear this sector*"
+	return
 end
-if (($PLAYER~ARMIDS <= 0) and ($MINES~ARMIDCOUNT > 0) and (($MINES~ARMIDOWNER <> "belong to your Corp") and ($MINES~ARMIDOWNER <> "yours")))
-  setvar $SWITCHBOARD~MESSAGE "Need armids to clear this sector*"
-  return
-end
-
-gosub :ATTEMPTCLEARINGMINES
-while (($MINES~PLACEDLIMPET = FALSE) or ($MINES~PLACEDARMID = FALSE))
-  gosub :ATTEMPTCLEARINGMINES
+if (($player~armids <= 0) and ($mines~armidcount > 0) and (($mines~armidowner <> "belong to your Corp") and ($mines~armidowner <> "yours")))
+	setvar $switchboard~message "Need armids to clear this sector*"
+	return
 end
 
-setsectorparameter $PLAYER~CURRENT_SECTOR "LIMPSEC" TRUE
-setsectorparameter $PLAYER~CURRENT_SECTOR "MINESEC" TRUE
-setvar $SWITCHBOARD~MESSAGE "Sector Cleared*"
+gosub :attemptclearingmines
+while (($mines~placedlimpet = false) or ($mines~placedarmid = false))
+	gosub :attemptclearingmines
+end
+
+setsectorparameter $player~current_sector "LIMPSEC" true
+setsectorparameter $player~current_sector "MINESEC" true
+setvar $switchboard~message "Sector Cleared*"
 return
 
-:MINES~ATTEMPTCLEARINGMINES
-killtrigger LAID_LIMP
-killtrigger LAID_ARMID
-setvar $MINES~LAID_ARMID $MINES~PLACEDARMID
-setvar $MINES~LAID_LIMP $MINES~PLACEDLIMPET
+:mines~attemptclearingmines
+killtrigger laid_limp
+killtrigger laid_armid
+setvar $mines~laid_armid $mines~placedarmid
+setvar $mines~laid_limp $mines~placedlimpet
 
-if ($MINES~BWARP = TRUE)
-  setvar $MINES~I 0
-  setvar $MINES~BWARP_MOVE "b"&$PLAYER~CURRENT_SECTOR&"*"
-  setvar $MINES~BWARP_CLEAR "y   *  l j"&#8&#8&#8&#8&#8&$PLANET~PLANET&"*  j  c  *  "
+if ($mines~bwarp = true)
+	setvar $mines~i 0
+	setvar $mines~bwarp_move "b"&$player~current_sector&"*"
+	setvar $mines~bwarp_clear "y   *  l j"&#8&#8&#8&#8&#8&$planet~planet&"*  j  c  *  "
 
-  if ($MINES~RECKLESS <> TRUE)
-    while ($MINES~I <= 5)
-      killtrigger 1
-      killtrigger 2
-      killtrigger 3
-      killtrigger 4
-      settexttrigger 1 :NO_BWARP_LOCK "Do you want to make this transport blind?"
-      settexttrigger 2 :BWARP_LOCK "All Systems Ready, shall we engage?"
-      settextlinetrigger 3 :BWARPNOFUEL "This planet does not have enough Fuel Ore to transport you."
-      settexttrigger 4 :SWITCHTONONBWARP "Your ship was hit by a Photon and has been disabled."
-      send $MINES~BWARP_MOVE
-      pause
-      :MINES~NO_BWARP_LOCK
+	if ($mines~reckless <> true)
+		while ($mines~i <= 5)
+			killtrigger 1
+			killtrigger 2
+			killtrigger 3
+			killtrigger 4
+			settexttrigger 1 :no_bwarp_lock "Do you want to make this transport blind?"
+			settexttrigger 2 :bwarp_lock "All Systems Ready, shall we engage?"
+			settextlinetrigger 3 :bwarpnofuel "This planet does not have enough Fuel Ore to transport you."
+			settexttrigger 4 :switchtononbwarp "Your ship was hit by a Photon and has been disabled."
+			send $mines~bwarp_move
+			pause
 
-      killalltriggers
-      send "n "
-      setvar $SWITCHBOARD~MESSAGE "Fighter is gone from sector!  Stopping, check for enemies!*"
-      gosub :SWITCHBOARD~SWITCHBOARD
-      halt
-      :MINES~BWARPNOFUEL
+			:mines~no_bwarp_lock
+			killalltriggers
+			send "n "
+			setvar $switchboard~message "Fighter is gone from sector!  Stopping, check for enemies!*"
+			gosub :switchboard~switchboard
+			halt
 
-      killalltriggers
-      setvar $SWITCHBOARD~MESSAGE "Not enough fuel on the planet! Stopping.*"
-      gosub :SWITCHBOARD~SWITCHBOARD
-      halt
-      :MINES~BWARP_LOCK
-      send $MINES~BWARP_CLEAR
+			:mines~bwarpnofuel
+			killalltriggers
+			setvar $switchboard~message "Not enough fuel on the planet! Stopping.*"
+			gosub :switchboard~switchboard
+			halt
 
-      add $MINES~I 1
-    end
-  else
-    send $MINES~BWARP_MOVE "  " $MINES~BWARP_CLEAR $MINES~BWARP_MOVE "  " $MINES~BWARP_CLEAR $MINES~BWARP_MOVE "  " $MINES~BWARP_CLEAR $MINES~BWARP_MOVE "  " $MINES~BWARP_CLEAR $MINES~BWARP_MOVE "  " $MINES~BWARP_CLEAR
-  end
+			:mines~bwarp_lock
+			send $mines~bwarp_clear
 
-  killtrigger 1
-  killtrigger 2
-  killtrigger 3
-  if ($PLAYER~SURROUNDMINE <= 0)
-    setvar $PLAYER~SURROUNDMINE 3
-  end
-  if ($PLAYER~SURROUNDLIMP <= 0)
-    setvar $PLAYER~SURROUNDLIMP 3
-  end
-  setvar $MINES~GRID_ARMIDS $PLAYER~SURROUNDMINE
-  setvar $MINES~GRID_LIMPETS $PLAYER~SURROUNDLIMP
-  if ($MINES~GRID_ARMIDS = 0)
-    setvar $MINES~_ARMIDS_ " "
-    setvar $MINES~PLACEDARMID TRUE
-  else
-    setvar $MINES~_ARMIDS_ " h 1 z "&$MINES~GRID_ARMIDS&"* z c * "
-    settextlinetrigger LAID_ARMID :LAID_ARMID "Armid mine(s) on board."
-  end
-  if ($MINES~GRID_LIMPETS = 0)
-    setvar $MINES~_LIMPS_ " "
-    setvar $MINES~PLACEDLIMPET TRUE
-  else
-    setvar $MINES~_LIMPS_ "h 2 z "&$MINES~GRID_LIMPETS&"* z c * "
-    settextlinetrigger LAID_LIMP :LAID_LIMP "Limpet mine(s) on board."
-  end
+			add $mines~i 1
+		end
+	else
+		send $mines~bwarp_move "  " $mines~bwarp_clear $mines~bwarp_move "  " $mines~bwarp_clear $mines~bwarp_move "  " $mines~bwarp_clear $mines~bwarp_move "  " $mines~bwarp_clear $mines~bwarp_move "  " $mines~bwarp_clear
+	end
 
-  send "q  q  "&$MINES~_ARMIDS_&$MINES~_LIMPS_&" l "&$PLANET~PLANET&"*  c  "
+	killtrigger 1
+	killtrigger 2
+	killtrigger 3
+	if ($player~surroundmine <= 0)
+		setvar $player~surroundmine 3
+	end
+	if ($player~surroundlimp <= 0)
+		setvar $player~surroundlimp 3
+	end
+	setvar $mines~grid_armids $player~surroundmine
+	setvar $mines~grid_limpets $player~surroundlimp
+	if ($mines~grid_armids = 0)
+		setvar $mines~_armids_ " "
+		setvar $mines~placedarmid true
+	else
+		setvar $mines~_armids_ " h 1 z "&$mines~grid_armids&"* z c * "
+		settextlinetrigger laid_armid :laid_armid "Armid mine(s) on board."
+	end
+	if ($mines~grid_limpets = 0)
+		setvar $mines~_limps_ " "
+		setvar $mines~placedlimpet true
+	else
+		setvar $mines~_limps_ "h 2 z "&$mines~grid_limpets&"* z c * "
+		settextlinetrigger laid_limp :laid_limp "Limpet mine(s) on board."
+	end
 
-  gosub :PLAYER~QUIKSTATS
-  waiton "Citadel command"
+	send "q  q  "&$mines~_armids_&$mines~_limps_&" l "&$planet~planet&"*  c  "
+
+	gosub :player~quikstats
+	waiton "Citadel command"
 
 else
-  :MINES~SWITCHTONONBWARP
-  setvar $MINES~MINESTODEPLOY $MINES~GRID_ARMIDS
-  setvar $MINES~LIMPSTODEPLOY $MINES~GRID_LIMPETS
-  gosub :PLAYER~QUIKSTATS
-  if ($PLAYER~CURRENT_PROMPT = "Qcannon")
-    send "s" $MINES~PERCENTTOSET "* "
-    gosub :PLAYER~QUIKSTATS
-  end
-  gosub :CLEAR_SECTOR_ATTEMPTCLEARINGMINES
-  gosub :PLAYER~QUIKSTATS
-  setsectorparameter $PLAYER~CURRENT_SECTOR "MINESEC" TRUE
-  setsectorparameter $PLAYER~CURRENT_SECTOR "LIMPSEC" TRUE
-  setvar $MINES~LAID_ARMID TRUE
-  setvar $MINES~LAID_LIMP TRUE
-  setvar $MINES~PLACEDLIMPET TRUE
-  setvar $MINES~PLACEDARMID TRUE
+
+	:mines~switchtononbwarp
+	setvar $mines~minestodeploy $mines~grid_armids
+	setvar $mines~limpstodeploy $mines~grid_limpets
+	gosub :player~quikstats
+	if ($player~current_prompt = "Qcannon")
+		send "s" $mines~percenttoset "* "
+		gosub :player~quikstats
+	end
+	gosub :clear_sector_attemptclearingmines
+	gosub :player~quikstats
+	setsectorparameter $player~current_sector "MINESEC" true
+	setsectorparameter $player~current_sector "LIMPSEC" true
+	setvar $mines~laid_armid true
+	setvar $mines~laid_limp true
+	setvar $mines~placedlimpet true
+	setvar $mines~placedarmid true
 end
 return
-:MINES~LAID_ARMID
-setvar $MINES~LAID_ARMID TRUE
-setvar $MINES~PLACEDARMID TRUE
+
+:mines~laid_armid
+setvar $mines~laid_armid true
+setvar $mines~placedarmid true
 pause
-:MINES~LAID_LIMP
-setvar $MINES~LAID_LIMP TRUE
-setvar $MINES~PLACEDLIMPET TRUE
+
+:mines~laid_limp
+setvar $mines~laid_limp true
+setvar $mines~placedlimpet true
 pause
-:MINES~REFRESH_CLEAR_SECTOR_STATE
-setvar $MINES~LIMPETOWNER SECTOR.LIMPETS.OWNER[$PLAYER~CURRENT_SECTOR]
-setvar $MINES~ARMIDOWNER SECTOR.MINES.OWNER[$PLAYER~CURRENT_SECTOR]
-setvar $MINES~LIMPETCOUNT SECTOR.LIMPETS.QUANTITY[$PLAYER~CURRENT_SECTOR]
-setvar $MINES~ARMIDCOUNT SECTOR.MINES.QUANTITY[$PLAYER~CURRENT_SECTOR]
-setvar $MINES~SECTORCLEAR FALSE
-if ((($MINES~LIMPETCOUNT <= 0) or (($MINES~LIMPETOWNER = "belong to your Corp") or ($MINES~LIMPETOWNER = "yours"))) and ((($MINES~ARMIDCOUNT <= 0) or (($MINES~ARMIDOWNER = "belong to your Corp") or ($MINES~ARMIDOWNER = "yours")))))
-  setvar $MINES~SECTORCLEAR TRUE
+
+:mines~refresh_clear_sector_state
+setvar $mines~limpetowner sector.limpets.owner[$player~current_sector]
+setvar $mines~armidowner sector.mines.owner[$player~current_sector]
+setvar $mines~limpetcount sector.limpets.quantity[$player~current_sector]
+setvar $mines~armidcount sector.mines.quantity[$player~current_sector]
+setvar $mines~sectorclear false
+if ((($mines~limpetcount <= 0) or (($mines~limpetowner = "belong to your Corp") or ($mines~limpetowner = "yours"))) and ((($mines~armidcount <= 0) or (($mines~armidowner = "belong to your Corp") or ($mines~armidowner = "yours")))))
+	setvar $mines~sectorclear true
 end
 return
 
-:MINES~CLEAR_SECTOR_ATTEMPTCLEARINGMINES
-setvar $MINES~I 0
-gosub :REFRESH_CLEAR_SECTOR_STATE
-while (($MINES~I < 10) and ($MINES~SECTORCLEAR <> TRUE))
-  gosub :XENTER~XENTER
-  add $MINES~I 1
-  gosub :REFRESH_CLEAR_SECTOR_STATE
+:mines~clear_sector_attemptclearingmines
+setvar $mines~i 0
+gosub :refresh_clear_sector_state
+while (($mines~i < 10) and ($mines~sectorclear <> true))
+	gosub :xenter~xenter
+	add $mines~i 1
+	gosub :refresh_clear_sector_state
 end
-gosub :PLAYER~QUIKSTATS
+gosub :player~quikstats
 
-if ($MINES~STARTINGLOCATION = "Citadel")
-  send "q qq z n *  "
+if ($mines~startinglocation = "Citadel")
+	send "q qq z n *  "
 end
-if ($PLAYER~SURROUNDMINE <= 0)
-  setvar $PLAYER~SURROUNDMINE 3
+if ($player~surroundmine <= 0)
+	setvar $player~surroundmine 3
 end
-if ($PLAYER~SURROUNDLIMP <= 0)
-  setvar $PLAYER~SURROUNDLIMP 3
+if ($player~surroundlimp <= 0)
+	setvar $player~surroundlimp 3
 end
-if ($MINES~MINESTODEPLOY <= 0)
-  if ($PLAYER~ARMIDS < $PLAYER~SURROUNDMINE)
-    setvar $MINES~MINESTODEPLOY $PLAYER~ARMIDS
-  else
-    setvar $MINES~MINESTODEPLOY $PLAYER~SURROUNDMINE
-  end
+if ($mines~minestodeploy <= 0)
+	if ($player~armids < $player~surroundmine)
+		setvar $mines~minestodeploy $player~armids
+	else
+		setvar $mines~minestodeploy $player~surroundmine
+	end
 end
-if ($MINES~LIMPSTODEPLOY <= 0)
-  if ($PLAYER~LIMPETS < $PLAYER~SURROUNDLIMP)
-    setvar $MINES~LIMPSTODEPLOY $PLAYER~LIMPETS
-  else
-    setvar $MINES~LIMPSTODEPLOY $PLAYER~SURROUNDLIMP
-  end
+if ($mines~limpstodeploy <= 0)
+	if ($player~limpets < $player~surroundlimp)
+		setvar $mines~limpstodeploy $player~limpets
+	else
+		setvar $mines~limpstodeploy $player~surroundlimp
+	end
 end
-setvar $MINES~CLEARMAC ""
-if (($MINES~ARMIDOWNER <> "belong to your Corp") and ($MINES~ARMIDOWNER <> "yours"))
-  setvar $MINES~CLEARMAC $MINES~CLEARMAC&"h  1  z "&$MINES~MINESTODEPLOY&"*  z c  *  "
+setvar $mines~clearmac ""
+if (($mines~armidowner <> "belong to your Corp") and ($mines~armidowner <> "yours"))
+	setvar $mines~clearmac $mines~clearmac&"h  1  z "&$mines~minestodeploy&"*  z c  *  "
 end
-if (($MINES~LIMPETOWNER <> "belong to your Corp") and ($MINES~LIMPETOWNER <> "yours"))
-  setvar $MINES~CLEARMAC $MINES~CLEARMAC&"h  2  z "&$MINES~LIMPSTODEPLOY&"*  z c  *   "
+if (($mines~limpetowner <> "belong to your Corp") and ($mines~limpetowner <> "yours"))
+	setvar $mines~clearmac $mines~clearmac&"h  2  z "&$mines~limpstodeploy&"*  z c  *   "
 end
-send $MINES~CLEARMAC
-gosub :PLAYER~QUIKSTATS
-if (($MINES~BEFORELIMPETS > $PLAYER~LIMPETS) or ($MINES~LIMPETOWNER = "belong to your Corp") or ($MINES~LIMPETOWNER = "yours"))
-  setvar $MINES~PLACEDLIMPET TRUE
+send $mines~clearmac
+gosub :player~quikstats
+if (($mines~beforelimpets > $player~limpets) or ($mines~limpetowner = "belong to your Corp") or ($mines~limpetowner = "yours"))
+	setvar $mines~placedlimpet true
 end
-if (($MINES~BEFOREARMIDS > $PLAYER~ARMIDS) or ($MINES~ARMIDOWNER = "belong to your Corp") or ($MINES~ARMIDOWNER = "yours"))
-  setvar $MINES~PLACEDARMID TRUE
+if (($mines~beforearmids > $player~armids) or ($mines~armidowner = "belong to your Corp") or ($mines~armidowner = "yours"))
+	setvar $mines~placedarmid true
 end
-if ($MINES~STARTINGLOCATION = "Citadel")
-  send "l j"&#8&$PLANET~PLANET&"* c  "
+if ($mines~startinglocation = "Citadel")
+	send "l j"&#8&$planet~planet&"* c  "
 end
 return
 
-:MINES~DISR
-:MINES~DISRUPT
-
+:mines~disr
+:mines~disrupt
 # $SCANIT = TRUE or FALSE
 # $BURSTING = TRUE or FALSE
 # $TARGET = TARGET SECTOR
 
-setarray $ADJ2HIT 6 1
+setarray $adj2hit 6 1
 
-if (($TARGET = 0) and ($SCANIT = 0))
-  setvar $IDX 1
-  while (SECTOR.WARPS[CURRENTSECTOR][$IDX] > 0)
-    setvar $ADJ SECTOR.WARPS[CURRENTSECTOR][$IDX]
-    setvar $ADJ2HIT[$IDX] $ADJ
-    setvar $ADJ2HIT[$IDX][1] 1
-    add $IDX 1
-  end
-elseif ($TARGET > 0)
-  setvar $ADJ2HIT[1] $TARGET
-  setvar $ADJ2HIT[1][1] 1
-  setvar $SCANIT FALSE
+if (($target = 0) and ($scanit = 0))
+	setvar $idx 1
+	while (sector.warps[currentsector][$idx] > 0)
+		setvar $adj sector.warps[currentsector][$idx]
+		setvar $adj2hit[$idx] $adj
+		setvar $adj2hit[$idx][1] 1
+		add $idx 1
+	end
+elseif ($target > 0)
+	setvar $adj2hit[1] $target
+	setvar $adj2hit[1][1] 1
+	setvar $scanit false
 end
 
-gosub :PLAYER~QUIKSTATS
+gosub :player~quikstats
 
-if ($PLAYER~MINE_DISRUPTORS = 0)
-  setvar $MINES~RESULT "No Disruptors On Board!"
-  #gosub :switchboard~switchboard
-  return
+if ($player~mine_disruptors = 0)
+	setvar $mines~result "No Disruptors On Board!"
+	#gosub :switchboard~switchboard
+	return
 end
 
-setvar $PLANET~PLANET 0
-if ($PLAYER~CURRENT_PROMPT = "Planet")
-  setvar $PLANET~NOHEADER 1
-  gosub :PLANET~PLANETINFO
-  if ($PLANET~PLANET = 0)
-    setvar $MINES~RESULT "Unable To Obtain Planet Number!"
-    #gosub :switchboard~switchboard
-    return
-  end
-  send "  Q  "
-elseif ($PLAYER~CURRENT_PROMPT = "Citadel")
-  send "  Q  "
-  setvar $PLANET~NOHEADER 1
-  gosub :PLANET~PLANETINFO
-  if ($PLANET~PLANET = 0)
-    setvar $MINES~RESULT "Unable To Obtain Planet Number!"
-    #gosub :switchboard~switchboard
-    return
-  end
-elseif ($PLAYER~CURRENT_PROMPT = "Command")
+setvar $planet~planet 0
+if ($player~current_prompt = "Planet")
+	setvar $planet~noheader 1
+	gosub :planet~planetinfo
+	if ($planet~planet = 0)
+		setvar $mines~result "Unable To Obtain Planet Number!"
+		#gosub :switchboard~switchboard
+		return
+	end
+	send "  Q  "
+elseif ($player~current_prompt = "Citadel")
+	send "  Q  "
+	setvar $planet~noheader 1
+	gosub :planet~planetinfo
+	if ($planet~planet = 0)
+		setvar $mines~result "Unable To Obtain Planet Number!"
+		#gosub :switchboard~switchboard
+		return
+	end
+elseif ($player~current_prompt = "Command")
 
-elseif ($PLAYER~CURRENT_PROMPT = "Computer")
-  send "  Q  "
-  gosub :PLAYER~CURRENTPROMPT
-elseif (($PLAYER~CURRENT_PROMPT = "StarDock") or ($PLAYER~CURRENT_PROMPT = "Stardock"))
-  send "Q  "
-  gosub :PLAYER~CURRENTPROMPT
-elseif ($PLAYER~CURRENT_PROMPT = "Port")
-  send " 0*  0*  0*  0*  "
-  gosub :PLAYER~CURRENTPROMPT
+elseif ($player~current_prompt = "Computer")
+	send "  Q  "
+	gosub :player~currentprompt
+elseif (($player~current_prompt = "StarDock") or ($player~current_prompt = "Stardock"))
+	send "Q  "
+	gosub :player~currentprompt
+elseif ($player~current_prompt = "Port")
+	send " 0*  0*  0*  0*  "
+	gosub :player~currentprompt
 else
-  setvar $switchboard~message "Unknown Prompt!*"
-  gosub :switchboard~switchboard
-  return
+	setvar $switchboard~message "Unknown Prompt!*"
+	gosub :switchboard~switchboard
+	return
 end
-setvar $START_PROMPT $PLAYER~CURRENT_PROMPT
+setvar $start_prompt $player~current_prompt
 
-if ($SCANIT)
-  gosub :DO_SCAN
-  setvar $IDX 1
+if ($scanit)
+	gosub :do_scan
+	setvar $idx 1
 
-  while (SECTOR.WARPS[CURRENTSECTOR][$IDX] > 0)
-    setvar $ADJ SECTOR.WARPS[CURRENTSECTOR][$IDX]
-    if (SECTOR.MINES.QUANTITY[$ADJ] <> 0)
-      if ((SECTOR.MINES.OWNER[$ADJ] <> "belong to your Corp") and (SECTOR.MINES.OWNER[$ADJ] <> "yours"))
-        setvar $ADJ2HIT[$IDX] $ADJ
-        setvar $ADJ2HIT[$IDX][1] SECTOR.MINES.QUANTITY[$ADJ]
-      else
-        setvar $ADJ2HIT[$IDX][1] 0
-      end
-    end
-    add $IDX 1
-  end
-end
-
-gosub :STAR_BURST
-
-if ($PLANET~PLANET <> 0)
-  if ($START_PROMPT = "Citadel")
-    send " Q Q Q Z N L Z"&#8&$PLANET~PLANET&"*  *  J  C  *  * "
-  else
-    send " Q Q Q Z N L Z"&#8&$PLANET~PLANET&"*  *  "
-  end
-elseif (($START_PROMPT = "StarDock") or ($START_PROMPT = "Stardock"))
-  settextlinetrigger LIMPET_FOUND :LIMPET_FOUND "A port official runs up to you as you dock and informs you that"
-  settexttrigger ON_DOCK :ON_DOCK "<StarDock> Where to?"
-  send " P  S"
-  pause
-  :LIMPET_FOUND
-  send " Y "
-  pause
-  :ON_DOCK
-  killalltriggers
-elseif ($START_PROMPT = "Port")
-  send " P  T  "
-end
-setvar $IDX 1
-setvar $STR ""
-while ($IDX <= 6)
-  if ($ADJ2HIT[$IDX][1] <> 0)
-    setvar $STR $STR&"        Sector "&$ADJ2HIT[$IDX]&", "&$ADJ2HIT[$IDX][1]&" Mines Remain*"
-  end
-  add $IDX 1
+	while (sector.warps[currentsector][$idx] > 0)
+		setvar $adj sector.warps[currentsector][$idx]
+		if (sector.mines.quantity[$adj] <> 0)
+			if ((sector.mines.owner[$adj] <> "belong to your Corp") and (sector.mines.owner[$adj] <> "yours"))
+				setvar $adj2hit[$idx] $adj
+				setvar $adj2hit[$idx][1] sector.mines.quantity[$adj]
+			else
+				setvar $adj2hit[$idx][1] 0
+			end
+		end
+		add $idx 1
+	end
 end
 
-if ($STR = "")
-  setvar $MINES~RESULT "Disr - Disrupted "&$TOTAL_MINES_POOFED&" Mines!"
-  return
+gosub :star_burst
+
+if ($planet~planet <> 0)
+	if ($start_prompt = "Citadel")
+		send " Q Q Q Z N L Z"&#8&$planet~planet&"*  *  J  C  *  * "
+	else
+		send " Q Q Q Z N L Z"&#8&$planet~planet&"*  *  "
+	end
+elseif (($start_prompt = "StarDock") or ($start_prompt = "Stardock"))
+	settextlinetrigger limpet_found :limpet_found "A port official runs up to you as you dock and informs you that"
+	settexttrigger on_dock :on_dock "<StarDock> Where to?"
+	send " P  S"
+	pause
+
+	:limpet_found
+	send " Y "
+	pause
+
+	:on_dock
+	killalltriggers
+elseif ($start_prompt = "Port")
+	send " P  T  "
+end
+setvar $idx 1
+setvar $str ""
+while ($idx <= 6)
+	if ($adj2hit[$idx][1] <> 0)
+		setvar $str $str&"        Sector "&$adj2hit[$idx]&", "&$adj2hit[$idx][1]&" Mines Remain*"
+	end
+	add $idx 1
+end
+
+if ($str = "")
+	setvar $mines~result "Disr - Disrupted "&$total_mines_poofed&" Mines!"
+	return
 else
-  setvar $MINES~RESULT "Disr - Status Report:**"
-  setvar $MINES~RESULT $MINES~RESULT&$STR
-  setvar $MINES~RESULT $MINES~RESULT&"        Disrupted: "&$TOTAL_MINES_POOFED&"**"
-  return
+	setvar $mines~result "Disr - Status Report:**"
+	setvar $mines~result $mines~result&$str
+	setvar $mines~result $mines~result&"        Disrupted: "&$total_mines_poofed&"**"
+	return
 end
 halt
 
-:DO_SCAN
-setdelaytrigger WHOA_WUZUP :WHOA_WUZUP 4000
-settextlinetrigger SCAN_COMPLETE :SCAN_COMPLETE "Warps to Sector(s)"
-if ($START_PROMPT = "Citadel")
-  send " S  H"
-elseif ($START_PROMPT = "Planet")
-  send " S  H"
-elseif (($START_PROMPT = "StarDock") or ($START_PROMPT = "Stardock"))
-  send "  S  H"
-elseif ($START_PROMPT = "Command")
-  send "  S  H"
-elseif ($START_PROMPT = "Port")
-  send " S   H"
+:do_scan
+setdelaytrigger whoa_wuzup :whoa_wuzup 4000
+settextlinetrigger scan_complete :scan_complete "Warps to Sector(s)"
+if ($start_prompt = "Citadel")
+	send " S  H"
+elseif ($start_prompt = "Planet")
+	send " S  H"
+elseif (($start_prompt = "StarDock") or ($start_prompt = "Stardock"))
+	send "  S  H"
+elseif ($start_prompt = "Command")
+	send "  S  H"
+elseif ($start_prompt = "Port")
+	send " S   H"
 else
-  gosub :PLAYER~QUIKSTATS
-  setvar $switchboard~message "Disr - Unknown Problem Occured, at '"&$PLAYER~CURRENT_PROMPT&"' Prompt!*"
-  gosub :switchboard~switchboard
-  halt
+	gosub :player~quikstats
+	setvar $switchboard~message "Disr - Unknown Problem Occured, at '"&$player~current_prompt&"' Prompt!*"
+	gosub :switchboard~switchboard
+	halt
 end
 pause
-:WHOA_WUZUP
+
+:whoa_wuzup
 killalltriggers
 setvar $switchboard~message "Disr - Unknown Problem Occurred, Attempting to reach Command Prompt!*"
 gosub :switchboard~switchboard
 send "*  P D 0* 0* 0* * *** * C  Q  Q  Q  Q  Q  Z  2  2  C  Q  *  Z  *  ***  *  *  ^Q"
 waitfor ": ENDINTERROG"
-gosub :PLAYER~QUIKSTATS
-setvar $switchboard~message "Disr - Unknown Problem Occurred, at '"&$PLAYER~CURRENT_PROMPT&"' Prompt!*"
+gosub :player~quikstats
+setvar $switchboard~message "Disr - Unknown Problem Occurred, at '"&$player~current_prompt&"' Prompt!*"
 gosub :switchboard~switchboard
 return
-:SCAN_COMPLETE
+
+:scan_complete
 killalltriggers
 return
-:PLANET_INFO
-settextlinetrigger PLANET :PLANET "Planet #"
+
+:planet_info
+settextlinetrigger planet :planet "Planet #"
 send "D"
 pause
-:PLANET
-killtrigger PLANET
-getword CURRENTLINE $PLANET 2
-striptext $PLANET "#"
-isnumber $TST $PLANET
-if ($TST = 0)
-  setvar $PLANET 0
+
+:planet
+killtrigger planet
+getword currentline $planet 2
+striptext $planet "#"
+isnumber $tst $planet
+if ($tst = 0)
+	setvar $planet 0
 end
 return
-gosub :PLAYER~QUIKSTATS
-setvar $SCAN_TYPE $PLAYER~SCAN_TYPE
-setvar $MINE_DISRUPTORS $PLAYER~MINE_DISRUPTORS
-striptext $PLAYER~CURRENT_PROMPT "<"
-striptext $PLAYER~CURRENT_PROMPT ">"
+gosub :player~quikstats
+setvar $scan_type $player~scan_type
+setvar $mine_disruptors $player~mine_disruptors
+striptext $player~current_prompt "<"
+striptext $player~current_prompt ">"
 return
 
-:STAR_BURST
-setvar $DISRUPTORS $PLAYER~MINE_DISRUPTORS
+:star_burst
+setvar $disruptors $player~mine_disruptors
 send " C "
-:LETS_GO_AGAIN
-setvar $IDX 1
-setvar $ADJ_HITS 0
-while ($IDX <= 6)
-  if ($ADJ2HIT[$IDX][1] <> 0)
-    settextlinetrigger NOMINES :NOMINES "There were no mines in sector "&$ADJ2HIT[$IDX]
-    settextlinetrigger MINESGONE :MINESGONE "of the mines in sector "&$ADJ2HIT[$IDX]&"!"
-    settextlinetrigger NOTADJ :NOTADJ "That is not an adjacent sector"
-    send " W Y "&$ADJ2HIT[$IDX]&"*"
-    pause
-    :NOMINES
-    killalltriggers
-    setvar $DISRUPTORS ($DISRUPTORS - 1)
-    setvar $ADJ2HIT[$IDX][1] 0
-    goto :LOOP_D_LOU
-    :NOTADJ
-    killalltriggers
-    send " Q"
-    setvar $ADJ2HIT[$IDX][1] 0
-    goto :LOOP_D_LOU
-    :MINESGONE
-    killalltriggers
-    setvar $TEMP CURRENTLINE
-    getwordpos $TEMP $POS "remain)"
-    setvar $DISRUPTORS ($DISRUPTORS - 1)
-    if ($POS = 0)
-      getword $TEMP $TEMP 4
-      isnumber $TST $TEMP
-      if ($TST)
-        setvar $TOTAL_MINES_POOFED ($TOTAL_MINES_POOFED + $TEMP)
-      end
-      setvar $ADJ2HIT[$IDX][1] 0
-    else
-      getword $TEMP $TEMP2 3
-      isnumber $TST $TEMP2
-      if ($TST)
-        setvar $TOTAL_MINES_POOFED ($TOTAL_MINES_POOFED + $TEMP2)
-      end
-      gettext $TEMP $TEMP $ADJ2HIT[$IDX]&"! (" " remain)"
-      isnumber $TST $TEMP
-      if ($TST = 0)
-        setvar $TEMP 0
-      end
-      setvar $ADJ2HIT[$IDX][1] $TEMP
-      setvar $ADJ_HITS ($ADJ_HITS + 1)
-    end
-    :LOOP_D_LOU
-    if ($DISRUPTORS < 1)
-      setvar $IDX 6
-    end
-  end
-  add $IDX 1
+
+:lets_go_again
+setvar $idx 1
+setvar $adj_hits 0
+while ($idx <= 6)
+	if ($adj2hit[$idx][1] <> 0)
+		settextlinetrigger nomines :nomines "There were no mines in sector "&$adj2hit[$idx]
+		settextlinetrigger minesgone :minesgone "of the mines in sector "&$adj2hit[$idx]&"!"
+		settextlinetrigger notadj :notadj "That is not an adjacent sector"
+		send " W Y "&$adj2hit[$idx]&"*"
+		pause
+
+		:nomines
+		killalltriggers
+		setvar $disruptors ($disruptors - 1)
+		setvar $adj2hit[$idx][1] 0
+		goto :loop_d_lou
+
+		:notadj
+		killalltriggers
+		send " Q"
+		setvar $adj2hit[$idx][1] 0
+		goto :loop_d_lou
+
+		:minesgone
+		killalltriggers
+		setvar $temp currentline
+		getwordpos $temp $pos "remain)"
+		setvar $disruptors ($disruptors - 1)
+		if ($pos = 0)
+			getword $temp $temp 4
+			isnumber $tst $temp
+			if ($tst)
+				setvar $total_mines_poofed ($total_mines_poofed + $temp)
+			end
+			setvar $adj2hit[$idx][1] 0
+		else
+			getword $temp $temp2 3
+			isnumber $tst $temp2
+			if ($tst)
+				setvar $total_mines_poofed ($total_mines_poofed + $temp2)
+			end
+			gettext $temp $temp $adj2hit[$idx]&"! (" " remain)"
+			isnumber $tst $temp
+			if ($tst = 0)
+				setvar $temp 0
+			end
+			setvar $adj2hit[$idx][1] $temp
+			setvar $adj_hits ($adj_hits + 1)
+		end
+
+		:loop_d_lou
+		if ($disruptors < 1)
+			setvar $idx 6
+		end
+	end
+	add $idx 1
 end
-if (($ADJ_HITS <> 0) and (($DISRUPTORS > 0) and ($BURSTING = 0)))
-  goto :LETS_GO_AGAIN
+if (($adj_hits <> 0) and (($disruptors > 0) and ($bursting = 0)))
+	goto :lets_go_again
 end
 send " Q "
 return

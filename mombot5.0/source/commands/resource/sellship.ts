@@ -1,16 +1,16 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-setvar $HELP~HELP[1] $HELP~TAB&"  sellship   "
-setvar $HELP~HELP[2] $HELP~TAB&"  "
-setvar $HELP~HELP[3] $HELP~TAB&"     Sells all the ships at dock it can "
-gosub :HELP~HELPFILE
-:SELLSHIP
-:SHIPSELL
+setvar $help~help[1] $help~tab&"  sellship   "
+setvar $help~help[2] $help~tab&"  "
+setvar $help~help[3] $help~tab&"     Sells all the ships at dock it can "
+gosub :help~helpfile
 
+:sellship
+:shipsell
 killalltriggers
-gosub :PLAYER~QUIKSTATS
-gosub :PORT~SHIPSELL
+gosub :player~quikstats
+gosub :port~shipsell
 halt
 
 # includes:

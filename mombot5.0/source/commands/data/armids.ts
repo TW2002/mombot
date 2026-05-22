@@ -1,72 +1,70 @@
 logging "OFF"
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-loadvar $BOT~ARMID_COUNT_FILE
+gosub :loadvars~loadvars
+gosub :help~initialize
+loadvar $bot~armid_count_file
 
-setvar $HELP~HELP[1] $HELP~TAB&"Refreshes Deployed Armid List"
-setvar $HELP~HELP[2] $HELP~TAB&"  - Will show difference since last command was run."
-gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&"Refreshes Deployed Armid List"
+setvar $help~help[2] $help~tab&"  - Will show difference since last command was run."
+gosub :help~helpfile
 
-setvar $SWITCHBOARD~MESSAGE "Armid Report starting up!*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "Armid Report starting up!*"
+gosub :switchboard~switchboard
 
-loadvar $ARMID_COUNT_FILE
-loadvar $BOT~ARMID_FILE
-:ARMIDS
+loadvar $armid_count_file
+loadvar $bot~armid_file
 
-
-
-gosub :PLAYER~CURRENTPROMPT
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-if ($STARTINGLOCATION = "Command")
-  goto :START_ARMIDS
-elseif ($STARTINGLOCATION = "Citadel")
-  send "q"
-  gosub :PLANET~GETPLANETINFO
-  send "q"
-elseif ($STARTINGLOCATION = "Planet")
-  gosub :PLANET~GETPLANETINFO
-  send "q"
+:armids
+gosub :player~currentprompt
+setvar $startinglocation $player~current_prompt
+if ($startinglocation = "Command")
+	goto :start_armids
+elseif ($startinglocation = "Citadel")
+	send "q"
+	gosub :planet~getplanetinfo
+	send "q"
+elseif ($startinglocation = "Planet")
+	gosub :planet~getplanetinfo
+	send "q"
 else
-  setvar $SWITCHBOARD~MESSAGE "Unknown Prompt*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+	setvar $switchboard~message "Unknown Prompt*"
+	gosub :switchboard~switchboard
+	halt
 end
-:START_ARMIDS
 
-gosub :PLAYER~TURNOFFANSI
-setvar $SWITCHBOARD~MESSAGE "Loading current armid locations. . .*"
-gosub :SWITCHBOARD~SWITCHBOARD
-fileexists $GFILE_CHK $BOT~ARMID_COUNT_FILE
-if ($GFILE_CHK = 1)
-  read $BOT~ARMID_COUNT_FILE $PREVIOUSCOUNT 1
+:start_armids
+gosub :player~turnoffansi
+setvar $switchboard~message "Loading current armid locations. . .*"
+gosub :switchboard~switchboard
+fileexists $gfile_chk $bot~armid_count_file
+if ($gfile_chk = 1)
+	read $bot~armid_count_file $previouscount 1
 else
-  setvar $PREVIOUSCOUNT 0
+	setvar $previouscount 0
 end
-gosub :REFRESHARMIDS
-gosub :PLAYER~TURNONANSI
-setvar $PERCENT (($COUNT * 100) / SECTORS)
-setvar $GRIDCHANGE ($COUNT - $PREVIOUSCOUNT)
-if ($GRIDCHANGE > 0)
-  setvar $GRIDCHANGE "+"&$GRIDCHANGE
+gosub :refresharmids
+gosub :player~turnonansi
+setvar $percent (($count * 100) / sectors)
+setvar $gridchange ($count - $previouscount)
+if ($gridchange > 0)
+	setvar $gridchange "+"&$gridchange
 end
 
-
-setvar $PLAYER~LIMPETSGRIDDED TRUE
-if (($STARTINGLOCATION = "Citadel") or ($STARTINGLOCATION = "Planet"))
-  gosub :PLANET~LANDINGSUB
+setvar $player~limpetsgridded true
+if (($startinglocation = "Citadel") or ($startinglocation = "Planet"))
+	gosub :planet~landingsub
 end
-if ($SWITCHBOARD~SELF_COMMAND = FALSE)
-  setvar $SWITCHBOARD~SELF_COMMAND 2
+if ($switchboard~self_command = false)
+	setvar $switchboard~self_command 2
 end
-setvar $SWITCHBOARD~MESSAGE "          - Armid Grid Report -*          - "&$COUNT&" sectors, "&$PERSONALCOUNT&" personal. ("&$PERCENT&"%) ("&$GRIDCHANGE&" Change)**"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "          - Armid Grid Report -*          - "&$count&" sectors, "&$personalcount&" personal. ("&$percent&"%) ("&$gridchange&" Change)**"
+gosub :switchboard~switchboard
 
 halt
-:REFRESHARMIDS
-gosub :MINES~READARMIDLIST
-setvar $COUNT $MINES~COUNT
-setvar $PERSONALCOUNT $MINES~PERSONALCOUNT
+
+:refresharmids
+gosub :mines~readarmidlist
+setvar $count $mines~count
+setvar $personalcount $mines~personalcount
 return
 
 # includes:

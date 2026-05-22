@@ -1,263 +1,263 @@
 logging off
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-loadVar $PLAYER~unlimitedGame
+gosub :loadvars~loadvars
+gosub :help~initialize
+loadvar $player~unlimitedgame
 
-setVar $HELP~HELP[1]  $HELP~TAB&"              PATP - Pay At The Pump               "
-setVar $HELP~HELP[2]  $HELP~TAB&"  patp [min port fuel] {turbo} {upgrade} {buyhalf}"
-setVar $HELP~HELP[3]  $HELP~TAB&"       {docim} {destroyports}"
-setVar $HELP~HELP[4]  $HELP~TAB&"       "
-setVar $HELP~HELP[5]  $HELP~TAB&"        "
-setVar $HELP~HELP[6]  $HELP~TAB&"Options:"
-setVar $HELP~HELP[7]  $HELP~TAB&"    [min port fuel]  minimum fuel a port must have to visit it"
-setVar $HELP~HELP[8]  $HELP~TAB&"    [turbo]          puts all buydowns in a burst"
-setVar $HELP~HELP[9]  $HELP~TAB&"    [upgrade]        upgrades fuel in each port"
-setVar $HELP~HELP[10] $HELP~TAB&"    [buyhalf]        empties ports halfway"
-setVar $HELP~HELP[11] $HELP~TAB&"    [docim]          does cim check before patp"
-setVar $HELP~HELP[12] $HELP~TAB&"    [destroyports]   destroys every port it drains if you "
-setVar $HELP~HELP[13] $HELP~TAB&"                     have enough fighters"
-setVar $HELP~HELP[14] $HELP~TAB&"    [bubble]         only visits bubble sectors  "
-gosub :HELP~HELPFILE
+setvar $help~help[1]  $help~tab&"              PATP - Pay At The Pump               "
+setvar $help~help[2]  $help~tab&"  patp [min port fuel] {turbo} {upgrade} {buyhalf}"
+setvar $help~help[3]  $help~tab&"       {docim} {destroyports}"
+setvar $help~help[4]  $help~tab&"       "
+setvar $help~help[5]  $help~tab&"        "
+setvar $help~help[6]  $help~tab&"Options:"
+setvar $help~help[7]  $help~tab&"    [min port fuel]  minimum fuel a port must have to visit it"
+setvar $help~help[8]  $help~tab&"    [turbo]          puts all buydowns in a burst"
+setvar $help~help[9]  $help~tab&"    [upgrade]        upgrades fuel in each port"
+setvar $help~help[10] $help~tab&"    [buyhalf]        empties ports halfway"
+setvar $help~help[11] $help~tab&"    [docim]          does cim check before patp"
+setvar $help~help[12] $help~tab&"    [destroyports]   destroys every port it drains if you "
+setvar $help~help[13] $help~tab&"                     have enough fighters"
+setvar $help~help[14] $help~tab&"    [bubble]         only visits bubble sectors  "
+gosub :help~helpfile
 
-setVar $switchboard~bot_name $SWITCHBOARD~bot_name
+setvar $switchboard~bot_name $switchboard~bot_name
 
-lowerCase $bot~parm1
-setVar $minimumFuel $bot~parm1
-isNumber $number $minimumFuel
+lowercase $bot~parm1
+setvar $minimumfuel $bot~parm1
+isnumber $number $minimumfuel
 if ($number <> 1)
-	setVar $SWITCHBOARD~message "Minimum Port Fuel entered is not a number!*"
-	gosub :SWITCHBOARD~switchboard
+	setvar $switchboard~message "Minimum Port Fuel entered is not a number!*"
+	gosub :switchboard~switchboard
 	halt
 end
-if ($minimumFuel <  0)
-	setVar $SWITCHBOARD~message "Minimum Port Fuel must be greater than or equal to 0.*"
-	gosub :SWITCHBOARD~switchboard
+if ($minimumfuel <  0)
+	setvar $switchboard~message "Minimum Port Fuel must be greater than or equal to 0.*"
+	gosub :switchboard~switchboard
 	halt
 end
-getWordPos $bot~user_command_line $pos "destroyports"
+getwordpos $bot~user_command_line $pos "destroyports"
 if ($pos > 0)
-	setVar $destroyPorts TRUE
+	setvar $destroyports true
 else
-	setVar $destroyPorts FALSE
+	setvar $destroyports false
 end
-getWordPos $bot~user_command_line $pos "upgrade"
+getwordpos $bot~user_command_line $pos "upgrade"
 if ($pos > 0)
-	setVar $upgrade TRUE
+	setvar $upgrade true
 else
-	setVar $upgrade FALSE
+	setvar $upgrade false
 end
-getWordPos $bot~user_command_line $pos "turbo"
+getwordpos $bot~user_command_line $pos "turbo"
 if ($pos > 0)
-	setVar $turbo TRUE
+	setvar $turbo true
 else
-	setVar $turbo FALSE
+	setvar $turbo false
 end
-getWordPos $bot~user_command_line $pos "half"
+getwordpos $bot~user_command_line $pos "half"
 if ($pos > 0)
-	setVar $buyHalf TRUE
+	setvar $buyhalf true
 else
-	setVar $buyHalf FALSE
+	setvar $buyhalf false
 end
-getWordPos $bot~user_command_line $pos "docim"
+getwordpos $bot~user_command_line $pos "docim"
 if ($pos > 0)
-	setVar $docim TRUE
+	setvar $docim true
 else
-	setVar $docim FALSE
+	setvar $docim false
 end
-getWordPos $bot~user_command_line $pos "bubble"
+getwordpos $bot~user_command_line $pos "bubble"
 if ($pos > 0)
-	setVar $bubble TRUE
+	setvar $bubble true
 else
-	setVar $bubble FALSE
+	setvar $bubble false
 end
 
-gosub :PLAYER~quikstats
-setVar $startingLocation $PLAYER~CURRENT_PROMPT
-if ($startingLocation <> "Citadel")
-	setVar $SWITCHBOARD~message "You must run Pay At The Pump command from a Citadel prompt.*"
-	gosub :SWITCHBOARD~switchboard
+gosub :player~quikstats
+setvar $startinglocation $player~current_prompt
+if ($startinglocation <> "Citadel")
+	setvar $switchboard~message "You must run Pay At The Pump command from a Citadel prompt.*"
+	gosub :switchboard~switchboard
 	halt
 end
 
 send "qsnl1*tnl1*tnl2*tnl3*"
-waitOn "Planet command (?"
-gosub :PLANET~getPlanetInfo
-setVar $startingSector $PLAYER~CURRENT_SECTOR
+waiton "Planet command (?"
+gosub :planet~getplanetinfo
+setvar $startingsector $player~current_sector
 
-if ($planet~CITADEL < 4)
-	setVar $SWITCHBOARD~message "You must run Pay At The Pump from at least a level 4 planet.*"
-	gosub :SWITCHBOARD~switchboard
+if ($planet~citadel < 4)
+	setvar $switchboard~message "You must run Pay At The Pump from at least a level 4 planet.*"
+	gosub :switchboard~switchboard
 	halt
 end
-if (($planet~CITADEL_CREDITS + $PLAYER~CREDITS) < 5000000)
-	setVar $SWITCHBOARD~message "You must have at least 5 million credits in the citadel or on hand for patp.*"
-	gosub :SWITCHBOARD~switchboard
+if (($planet~citadel_credits + $player~credits) < 5000000)
+	setvar $switchboard~message "You must have at least 5 million credits in the citadel or on hand for patp.*"
+	gosub :switchboard~switchboard
 	halt
 end
 
-Window patp_script 560 170 ("PATP - " & GAMENAME) ONTOP
+window patp_script 560 170 ("PATP - " & gamename) ontop
 gosub :setwindow
 
 send "qjy l "&$planet~planet&"* c"
 
-setvar $SWITCHBOARD~MESSAGE "Pay At The Pump starting on planet " & $planet~planet & "!*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "Pay At The Pump starting on planet " & $planet~planet & "!*"
+gosub :switchboard~switchboard
 
 gosub :ship~getshipstats
-setVar $totalHolds 0
-setVar $spentCredits 0
-setArray $checkedPorts SECTORS
-setArray $que SECTORS
-setArray $checked SECTORS
-setVar $restoreAutoHaggleState 0
+setvar $totalholds 0
+setvar $spentcredits 0
+setarray $checkedports sectors
+setarray $que sectors
+setarray $checked sectors
+setvar $restoreautohagglestate 0
 
-if (($turbo = TRUE) AND (HAGGLE))
-	autohaggle off
-	setVar $restoreAutoHaggleState 1
+if ($turbo = true)
+	setvar $haggle~nativehagglemode false
+	gosub :haggle~configurenativehaggle
 end
 
-if ($docim = TRUE)
-	setVar $SWITCHBOARD~message "PATP Downloading Current Port CIM Data - Comms Off*"
-	gosub :SWITCHBOARD~switchboard
+if ($docim = true)
+	setvar $switchboard~message "PATP Downloading Current Port CIM Data - Comms Off*"
+	gosub :switchboard~switchboard
 	send "^rq"
 	killalltriggers
-	waitFor ": ENDINTERROG"
-	setVar $SWITCHBOARD~message "PATP CIM Port Data Complete - Comms Back On*"
-	gosub :SWITCHBOARD~switchboard
+	waitfor ": ENDINTERROG"
+	setvar $switchboard~message "PATP CIM Port Data Complete - Comms Back On*"
+	gosub :switchboard~switchboard
 end
 
-setVar $isDone FALSE
-setVar $player~turnsTooLow FALSE
+setvar $isdone false
+setvar $player~turnstoolow false
 killalltriggers
-while ($isDone <> TRUE)
-	loadVar $BOT~botIsDeaf
-	loadVar $BOT~silent_running
-	if (($PLAYER~unlimitedGame = FALSE) AND ($PLAYER~TURNS <= $BOT~bot_turn_limit))
-		setVar $SWITCHBOARD~message "Turns too low to continue.*"
-		gosub :SWITCHBOARD~switchboard
-		goto :donePATP
+while ($isdone <> true)
+	loadvar $bot~botisdeaf
+	loadvar $bot~silent_running
+	if (($player~unlimitedgame = false) and ($player~turns <= $bot~bot_turn_limit))
+		setvar $switchboard~message "Turns too low to continue.*"
+		gosub :switchboard~switchboard
+		goto :donepatp
 	end
-	setVar $bottom 1
-	setVar $top 1
-	setArray $checked SECTORS
-	setVar $que[1] $PLAYER~CURRENT_SECTOR
-	setVar $checked[$PLAYER~CURRENT_SECTOR] 1
+	setvar $bottom 1
+	setvar $top 1
+	setarray $checked sectors
+	setvar $que[1] $player~current_sector
+	setvar $checked[$player~current_sector] 1
 
-	:tryAgain2
+	:tryagain2
 	while ($bottom <= $top)
 		# Now, pull out the next sector in the que, and make it our focus
-		setVar $focus $que[$bottom]
-		getSectorParameter $focus "BUSTED" $isBusted
+		setvar $focus $que[$bottom]
+		getsectorparameter $focus "BUSTED" $isbusted
 		# If this sector is our Sxx, we're done!
 		if ($bubble)
-			getsectorparameter $focus "BUBBLE" $isBubble
+			getsectorparameter $focus "BUBBLE" $isbubble
 		else
-			setVar $isBubble TRUE
+			setvar $isbubble true
 		end
-		if ($docim = FALSE)
-			if (($checkedPorts[$focus] <> TRUE) AND (PORT.EXISTS[$focus] = TRUE) AND (PORT.CLASS[$focus] > 0) AND (SECTOR.EXPLORED[$focus] = "YES") AND (((PORT.FUEL[$focus] >= $minimumFuel) AND (PORT.BUYFUEL[$focus] = FALSE)) AND ($isBusted <> TRUE) AND ($isBubble = TRUE)))
+		if ($docim = false)
+			if (($checkedports[$focus] <> true) and (port.exists[$focus] = true) and (port.class[$focus] > 0) and (sector.explored[$focus] = "YES") and (((port.fuel[$focus] >= $minimumfuel) and (port.buyfuel[$focus] = false)) and ($isbusted <> true) and ($isbubble = true)))
 				send "cr"&$focus&"*q"
-				gosub :PLAYER~quikstats
+				gosub :player~quikstats
 			end
 		end
-		if (($checkedPorts[$focus] <> TRUE) AND (PORT.EXISTS[$focus] = TRUE) AND (PORT.CLASS[$focus] > 0) AND (((PORT.FUEL[$focus] >= $minimumFuel) AND (PORT.BUYFUEL[$focus] = FALSE)) AND ($isBusted <> TRUE) AND ($isBubble = TRUE)))
+		if (($checkedports[$focus] <> true) and (port.exists[$focus] = true) and (port.class[$focus] > 0) and (((port.fuel[$focus] >= $minimumfuel) and (port.buyfuel[$focus] = false)) and ($isbusted <> true) and ($isbubble = true)))
 			# fig found 0 hops
-			setVar $NearFig $focus
-			setVar $checkedPorts[$NearFig] TRUE
-			setVar $totalPortFuel PORT.FUEL[$focus]
-			goto :continueOn2
+			setvar $nearfig $focus
+			setvar $checkedports[$nearfig] true
+			setvar $totalportfuel port.fuel[$focus]
+			goto :continueon2
 		else
-			setVar $nearfig 0
+			setvar $nearfig 0
 		end
 		# That wasn't it, so let's add all the adjacents to the que for future testing.
-		setVar $a 1
-		while (SECTOR.WARPS[$focus][$a] > 0)
-			setVar $adjacent SECTOR.WARPS[$focus][$a]
+		setvar $a 1
+		while (sector.warps[$focus][$a] > 0)
+			setvar $adjacent sector.warps[$focus][$a]
 			# But only add them if they haven't been added previously
 			if ($checked[$adjacent] = 0)
 				# Okay, this one hasn't been checked, so tag it and que it.
-				setVar $checked[$adjacent] 1
+				setvar $checked[$adjacent] 1
 				add $top 1
-				setVar $que[$top] $adjacent
+				setvar $que[$top] $adjacent
 			end
 			add $a 1
 		end
 		# The adjacents of $focus were all queued, now on to the next one.
 		add $bottom 1
 	end
-	setVar $SWITCHBOARD~message "Can't find a route to any other ports.*"
-	gosub :SWITCHBOARD~switchboard
-	goto :donePATP
+	setvar $switchboard~message "Can't find a route to any other ports.*"
+	gosub :switchboard~switchboard
+	goto :donepatp
 
-	:continueOn2
-	if ($NearFig > 0)
-		killAllTriggers
-		send "p"&$NearFig&"*"
-		setTextLineTrigger warped :emptyPort2 "Locating beam pinpointed, TransWarp Locked."
-		setTextLineTrigger same :emptyPort2 "You are already in that sector!"
-		setTextLineTrigger didnotwarp :noFigAtLocation "Your own fighters must be in the destination to make a safe jump."
-		setTextLineTrigger notEnoughFuel :doneNoFuel2 "You do not have enough Fuel Ore on this planet to make the jump."
+	:continueon2
+	if ($nearfig > 0)
+		killalltriggers
+		send "p"&$nearfig&"*"
+		settextlinetrigger warped :emptyport2 "Locating beam pinpointed, TransWarp Locked."
+		settextlinetrigger same :emptyport2 "You are already in that sector!"
+		settextlinetrigger didnotwarp :nofigatlocation "Your own fighters must be in the destination to make a safe jump."
+		settextlinetrigger notenoughfuel :donenofuel2 "You do not have enough Fuel Ore on this planet to make the jump."
 		pause
 
-		:emptyPort2
+		:emptyport2
 		send "y "
-		setSectorParameter $NearFig "FIGSEC" TRUE
+		setsectorparameter $nearfig "FIGSEC" true
 
-		killAllTriggers
+		killalltriggers
 
 		if ($upgrade)
-			gosub :PLAYER~quikstats
+			gosub :player~quikstats
 			send "q"
-			waitOn "Planet command (?"
-			gosub :PLANET~getPlanetInfo
+			waiton "Planet command (?"
+			gosub :planet~getplanetinfo
 			gosub :setwindow
 			send "c"
-			setVar $total_creds_needed (300*7000)
-			if ($total_creds_needed > $PLAYER~CREDITS)
-				setVar $cashonhand $planet~CITADEL_CREDITS
-				add $cashonhand $PLAYER~CREDITS
+			setvar $total_creds_needed (300*7000)
+			if ($total_creds_needed > $player~credits)
+				setvar $cashonhand $planet~citadel_credits
+				add $cashonhand $player~credits
 				if ($cashonhand > $total_creds_needed)
-					send "T T " & $PLAYER~CREDITS & "* "
+					send "T T " & $player~credits & "* "
 					send "T F " & $total_creds_needed & "* "
-					setVar $PLAYER~CREDITS $total_creds_needed
+					setvar $player~credits $total_creds_needed
 				end
 			end
 			send "q q *O 1"
-			waitOn ", 0 to quit)"
-			getWord CURRENTLINE $upgradeAmount 9
-			stripText $upgradeAmount "("
-			send $upgradeAmount&"* * *CR*Q"
-			waitOn "What sector is the port in? ["&$PLAYER~CURRENT_SECTOR&"]"
-			setTextLineTrigger getFuel2 :fuelDuring "Fuel Ore"
+			waiton ", 0 to quit)"
+			getword currentline $upgradeamount 9
+			striptext $upgradeamount "("
+			send $upgradeamount&"* * *CR*Q"
+			waiton "What sector is the port in? ["&$player~current_sector&"]"
+			settextlinetrigger getfuel2 :fuelduring "Fuel Ore"
 			pause
 
-			:fuelDuring
+			:fuelduring
 			killalltriggers
-			getWord CURRENTLINE $totalPortFuel 4
-			waitOn "<Computer deactivated>"
-			gosub :PLAYER~quikstats
-			gosub :PLANET~landOnPlanetEnterCitadel
+			getword currentline $totalportfuel 4
+			waiton "<Computer deactivated>"
+			gosub :player~quikstats
+			gosub :planet~landonplanetentercitadel
 		end
-		if ($buyHalf)
-			divide $totalPortFuel 2
+		if ($buyhalf)
+			divide $totalportfuel 2
 		end
-		if (($planet~planet_fuel_max-$planet~planet_fuel) < $totalPortFuel)
-			setVar $player~turnsToEmpty (($planet~planet_fuel_max-$planet~planet_fuel)/$player~total_holds)
-			add $totalHolds ($planet~planet_fuel_max-$planet~planet_fuel)
-			setVar $isDone TRUE
+		if (($planet~planet_fuel_max-$planet~planet_fuel) < $totalportfuel)
+			setvar $player~turnstoempty (($planet~planet_fuel_max-$planet~planet_fuel)/$player~total_holds)
+			add $totalholds ($planet~planet_fuel_max-$planet~planet_fuel)
+			setvar $isdone true
 		else
-			setVar $player~turnsToEmpty ($totalPortFuel/$player~total_holds)
-			add $totalHolds $totalPortFuel
+			setvar $player~turnstoempty ($totalportfuel/$player~total_holds)
+			add $totalholds $totalportfuel
 		end
-		setVar $PLAYER~buyobject "f"
-		if ($turbo = TRUE)
-			setVar $PLAYER~buytype "s"
+		setvar $player~buyobject "f"
+		if ($turbo = true)
+			setvar $player~buytype "s"
 		else
-			setVar $PLAYER~buytype "b"
+			setvar $player~buytype "b"
 		end
-		setVar $PLAYER~buydownRoundsFromParam $player~turnsToEmpty
+		setvar $player~buydownroundsfromparam $player~turnstoempty
 		gosub :planethaggle~buy
-		gosub :PLAYER~quikstats
+		gosub :player~quikstats
 		send "q"
 		gosub :planet~getplanetinfo
 		send "c"
@@ -266,146 +266,143 @@ while ($isDone <> TRUE)
 		waiton "Computer command ["
 		send "q "
 
-		if ($PLAYER~exit_message <> "Normal Exit")
-			setVar $SWITCHBOARD~message $PLAYER~exit_message&"*"
-			gosub :SWITCHBOARD~switchboard
-			goto :donePATP
+		if ($player~exit_message <> "Normal Exit")
+			setvar $switchboard~message $player~exit_message&"*"
+			gosub :switchboard~switchboard
+			goto :donepatp
 		end
-		if (($PLAYER~unlimitedGame = FALSE) AND (($PLAYER~turns-$player~turnsToEmpty) <= $BOT~bot_turn_limit))
-			setVar $player~turnsTooLow TRUE
-			goto :donePATP
+		if (($player~unlimitedgame = false) and (($player~turns-$player~turnstoempty) <= $bot~bot_turn_limit))
+			setvar $player~turnstoolow true
+			goto :donepatp
 		end
 
-		if ($buyHalf)
-			setVar $SWITCHBOARD~message "Port half emptied in sector "&$NearFig&".*"
-			gosub :SWITCHBOARD~switchboard
+		if ($buyhalf)
+			setvar $switchboard~message "Port half emptied in sector "&$nearfig&".*"
+			gosub :switchboard~switchboard
 		else
-			setVar $SWITCHBOARD~message "Port emptied in sector "&$NearFig&".*"
-			gosub :SWITCHBOARD~switchboard
+			setvar $switchboard~message "Port emptied in sector "&$nearfig&".*"
+			gosub :switchboard~switchboard
 		end
-		gosub :PLAYER~quikstats
-		if ((($PLAYER~TURNS < 50) AND ($PLAYER~unlimitedGame = FALSE)))
-			goto :donePATP
+		gosub :player~quikstats
+		if ((($player~turns < 50) and ($player~unlimitedgame = false)))
+			goto :donepatp
 		end
-		add $spentCredits $PLAYER~credits_spent
-		if ($destroyPorts)
+		add $spentcredits $player~credits_spent
+		if ($destroyports)
 			send "q q "
 
-			:keepDestroying
+			:keepdestroying
 			killalltriggers
-			gosub :PLAYER~quikstats
-			if ($PLAYER~FIGHTERS > $SHIP~maxFigAttack)
+			gosub :player~quikstats
+			if ($player~fighters > $ship~maxfigattack)
 				send "p"
-				setTextTrigger portAlreadyGone :doneDestroying "Captain! Are you sure you want to port here?"
-				setTextTrigger portHere :continueDestroy "<A> Attack this Port"
+				settexttrigger portalreadygone :donedestroying "Captain! Are you sure you want to port here?"
+				settexttrigger porthere :continuedestroy "<A> Attack this Port"
 				pause
 
-				:continueDestroy
+				:continuedestroy
 				killalltriggers
-				send " a y "&$SHIP~maxFigAttack&"*l "&$planet~planet&"* m * * * q "
-				setTextTrigger notDestroyed :keepDestroying "Incoming laser barrage from"
-				setTextTrigger DestoryedPort :doneDestroying "You destroyed the Star Port!"
+				send " a y "&$ship~maxfigattack&"*l "&$planet~planet&"* m * * * q "
+				settexttrigger notdestroyed :keepdestroying "Incoming laser barrage from"
+				settexttrigger destoryedport :donedestroying "You destroyed the Star Port!"
 				pause
 
-				:doneDestroying
+				:donedestroying
 				killalltriggers
 				send "*"
-				setVar $SWITCHBOARD~message "Port destroyed in sector "&$sectorCount&".*"
-				gosub :SWITCHBOARD~switchboard
-				gosub :PLAYER~quikstats
+				setvar $switchboard~message "Port destroyed in sector "&$sectorcount&".*"
+				gosub :switchboard~switchboard
+				gosub :player~quikstats
 			end
 			gosub :planet~getplanetinfo
 			gosub :setwindow
 			send "c r*"
 			waiton "Computer command ["
 			send "q "
-			gosub :PLANET~landOnPlanetEnterCitadel
+			gosub :planet~landonplanetentercitadel
 		end
 	end
-	if (($PLAYER~CREDITS + $planet~CITADEL_CREDITS) < 1000000)
-		setVar $isDone TRUE
+	if (($player~credits + $planet~citadel_credits) < 1000000)
+		setvar $isdone true
 	end
 
-	:tryAgain
-	if (($PLAYER~turns < 50) AND ($PLAYER~unlimitedGame <> TRUE))
-		setVar $isDone TRUE
+	:tryagain
+	if (($player~turns < 50) and ($player~unlimitedgame <> true))
+		setvar $isdone true
 	end
 end
 
-:donePATP
-if ($restoreAutoHaggleState = 1)
-	autohaggle on
-	setVar $restoreAutoHaggleState 0
-end
-send "p"&$startingSector&"*y"
-setVar $formattedSpentCredits ""
-getLength $spentCredits $length
+:donepatp
+gosub :haggle~restoreautohaggle
+send "p"&$startingsector&"*y"
+setvar $formattedspentcredits ""
+getlength $spentcredits $length
 while ($length > 3)
-	cutText $spentCredits $snippet $length-2 9999
-	cutText $spentCredits $spentCredits 1 $length-3
-	getLength $spentCredits $length
-	setVar $formattedSpentCredits ","&$snippet&$formattedSpentCredits
+	cuttext $spentcredits $snippet $length-2 9999
+	cuttext $spentcredits $spentcredits 1 $length-3
+	getlength $spentcredits $length
+	setvar $formattedspentcredits ","&$snippet&$formattedspentcredits
 end
-setVar $formattedSpentCredits $spentCredits&$formattedSpentCredits
+setvar $formattedspentcredits $spentcredits&$formattedspentcredits
 
-setVar $formattedHolds ""
-getLength $totalHolds $length
+setvar $formattedholds ""
+getlength $totalholds $length
 while ($length > 3)
-	cutText $totalHolds $snippet $length-2 9999
-	cutText $totalHolds $totalHolds 1 $length-3
-	getLength $totalHolds $length
-	setVar $formattedHolds ","&$snippet&$formattedHolds
+	cuttext $totalholds $snippet $length-2 9999
+	cuttext $totalholds $totalholds 1 $length-3
+	getlength $totalholds $length
+	setvar $formattedholds ","&$snippet&$formattedholds
 end
-setVar $formattedHolds $totalHolds&$formattedHolds
+setvar $formattedholds $totalholds&$formattedholds
 
-send "'*{" $SWITCHBOARD~bot_name "} Pay At The Pump - Completion Report {" $SWITCHBOARD~bot_name "}*  "&$formattedHolds&" total holds of fuel ore purchased.*  Credits spent: "&$formattedSpentCredits&" credits*"
-if (($PLAYER~credits+$planet~CITADEL_CREDITS) < 1000000)
+send "'*{" $switchboard~bot_name "} Pay At The Pump - Completion Report {" $switchboard~bot_name "}*  "&$formattedholds&" total holds of fuel ore purchased.*  Credits spent: "&$formattedspentcredits&" credits*"
+if (($player~credits+$planet~citadel_credits) < 1000000)
 	send "  Credits are below 1,000,000.*"
 end
-if ($player~turnsTooLow)
-	send "  Low on turns! (Turns: "&$PLAYER~TURNS&")*"
+if ($player~turnstoolow)
+	send "  Low on turns! (Turns: "&$player~turns&")*"
 end
 if ($planet~planet_fuel >= ($planet~planet_fuel_max-2000))
 	send "  Planet "&$planet~planet&" is full.*"
 end
-send  "{" $SWITCHBOARD~bot_name "} Pay At The Pump - Completion Report {" $SWITCHBOARD~bot_name "}**"
+send  "{" $switchboard~bot_name "} Pay At The Pump - Completion Report {" $switchboard~bot_name "}**"
 halt
 
-:getFuelCash
+:getfuelcash
 send "l " $planet~planet "*   c t f"&$total_creds_needed&"*qq"
-gosub :PLAYER~quikstats
+gosub :player~quikstats
 return
 
-:noFigAtLocation
-setSectorParameter $NearFig "FIGSEC" FALSE
-goto :tryAgain2
+:nofigatlocation
+setsectorparameter $nearfig "FIGSEC" false
+goto :tryagain2
 
-:doneNoFuel2
-setVar $SWITCHBOARD~message "Not enough fuel to continue.*"
-gosub :SWITCHBOARD~switchboard
-goto :donePATP
+:donenofuel2
+setvar $switchboard~message "Not enough fuel to continue.*"
+gosub :switchboard~switchboard
+goto :donepatp
 
-:setWindow
+:setwindow
 setarray $window_lines 8
 setvar $window_lines[1] "* PATP Planet: " & $planet~planet
 setvar $window_lines[2] "* ---------------------------------------------------------------"
-setvar $window_lines[3] "* Current Sector: " & $PLAYER~CURRENT_SECTOR&"                            "
-cutText $window_lines[3] $window_lines[3] 1 30
-if ($player~unlimitedGame = true)
+setvar $window_lines[3] "* Current Sector: " & $player~current_sector&"                            "
+cuttext $window_lines[3] $window_lines[3] 1 30
+if ($player~unlimitedgame = true)
 	setvar $window_lines[4] "   Turns: Unlimited"
 else
-	format $player~turns $player~value NUMBER
-	setvar $window_lines[4] "   Turns: " & $PLAYER~value
+	format $player~turns $player~value number
+	setvar $window_lines[4] "   Turns: " & $player~value
 end
-format $planet~planet_fuel $player~value NUMBER
+format $planet~planet_fuel $player~value number
 setvar $window_lines[5] "*    Planet Fuel: " & $player~value&"                          "
-cutText $window_lines[5] $window_lines[5] 1 30
-format $planet~planet_fighters $player~value NUMBER
+cuttext $window_lines[5] $window_lines[5] 1 30
+format $planet~planet_fighters $player~value number
 setvar $window_lines[6] "   Planet Fighters: " & $player~value
-format $planet~planet_shields $player~value NUMBER
+format $planet~planet_shields $player~value number
 setvar $window_lines[7] "* Planet Shields: " & $player~value&"                          "
-cutText $window_lines[7] $window_lines[7] 1 30
-format $planet~citadel_credits $player~value NUMBER
+cuttext $window_lines[7] $window_lines[7] 1 30
+format $planet~citadel_credits $player~value number
 setvar $window_lines[8] "   Citadel Credits: " & $player~value&"*"
 
 setvar $i 1
@@ -414,16 +411,17 @@ while ($i <= 8)
 	setvar $msg $msg&$window_lines[$i]
 	add $i 1
 end
-setWindowContents patp_script $msg
-setVar $window_content $msg
-replaceText $window_content "*" "[][]"
-saveVar $window_content
+setwindowcontents patp_script $msg
+setvar $window_content $msg
+replacetext $window_content "*" "[][]"
+savevar $window_content
 
 return
 
 #INCLUDES:
 include "source\include\loadvars"
 include "source\include\planethaggle"
+include "source\include\haggle"
 include "source\include\sector"
 include "source\include\help"
 include "source\include\switchboard.ts"

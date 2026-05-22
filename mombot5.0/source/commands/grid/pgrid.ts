@@ -1,124 +1,123 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-setVar $HELP~HELP[1]  $HELP~TAB&"pgrid - planet grid into sector "
-setVar $HELP~HELP[2]  $HELP~TAB&"   "
-setVar $HELP~HELP[3]  $HELP~TAB&"  Usage: pgrid <sector> [wave count] [options]"
-setVar $HELP~HELP[4]  $HELP~TAB&"   "
-setVar $HELP~HELP[5]  $HELP~TAB&"       Options: "
-setVar $HELP~HELP[6]  $HELP~TAB&"   "
-setVar $HELP~HELP[7]  $HELP~TAB&"         {scan} - Do a density scan of the sector before gridding"
-setVar $HELP~HELP[8]  $HELP~TAB&"       {unsafe} - Send fast macro, don't wait for planet"
-setVar $HELP~HELP[9]  $HELP~TAB&"          {f:x} - Drop x fighters after gridding into sector"
-setVar $HELP~HELP[10] $HELP~TAB&"          {x:y} - xport to ship y after gridding"
-setVar $HELP~HELP[11] $HELP~TAB&"          {d:x} - Maximum density to grid into"
-setVar $HELP~HELP[12] $HELP~TAB&"            {r} - Move and immediately retreat from sector"
-setVar $HELP~HELP[13] $HELP~TAB&"        {nosur} - Don't surrender on retreat"
-gosub :HELP~HELPFILE
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1]  $help~tab&"pgrid - planet grid into sector "
+setvar $help~help[2]  $help~tab&"   "
+setvar $help~help[3]  $help~tab&"  Usage: pgrid <sector> [wave count] [options]"
+setvar $help~help[4]  $help~tab&"   "
+setvar $help~help[5]  $help~tab&"       Options: "
+setvar $help~help[6]  $help~tab&"   "
+setvar $help~help[7]  $help~tab&"         {scan} - Do a density scan of the sector before gridding"
+setvar $help~help[8]  $help~tab&"       {unsafe} - Send fast macro, don't wait for planet"
+setvar $help~help[9]  $help~tab&"          {f:x} - Drop x fighters after gridding into sector"
+setvar $help~help[10] $help~tab&"          {x:y} - xport to ship y after gridding"
+setvar $help~help[11] $help~tab&"          {d:x} - Maximum density to grid into"
+setvar $help~help[12] $help~tab&"            {r} - Move and immediately retreat from sector"
+setvar $help~help[13] $help~tab&"        {nosur} - Don't surrender on retreat"
+gosub :help~helpfile
 
-getWordPos " "&$bot~user_command_line&" " $pos "scan"
+getwordpos " "&$bot~user_command_line&" " $pos "scan"
 if ($pos > 0)
-	setVar $grid~pgrid_scan TRUE
+	setvar $grid~pgrid_scan true
 else
-	setVar $grid~pgrid_scan FALSE
+	setvar $grid~pgrid_scan false
 end
 
-getWordPos " "&$bot~user_command_line&" " $pos "unsafe"
+getwordpos " "&$bot~user_command_line&" " $pos "unsafe"
 if ($pos > 0)
-	setVar $grid~pgrid_unsafe TRUE
+	setvar $grid~pgrid_unsafe true
 else
-	setVar $grid~pgrid_unsafe FALSE
+	setvar $grid~pgrid_unsafe false
 end
 
-getWordPos " " & $bot~user_command_line & " " $pos " wave:"
+getwordpos " " & $bot~user_command_line & " " $pos " wave:"
 if ($pos > 0)
-	getText $bot~user_command_line $wave "wave:" " "
-	isNumber $test $wave
+	gettext $bot~user_command_line $wave "wave:" " "
+	isnumber $test $wave
 	if ($test)
-		setVar $grid~pgrid_waves $wave
+		setvar $grid~pgrid_waves $wave
 	else
-		setVar $grid~pgrid_waves 0
-	end     
+		setvar $grid~pgrid_waves 0
+	end
 else
-	setVar $grid~pgrid_waves 0
+	setvar $grid~pgrid_waves 0
 end
 
-getWordPos " " & $bot~user_command_line & " " $pos " f:"
+getwordpos " " & $bot~user_command_line & " " $pos " f:"
 if ($pos > 0)
-	getText $bot~user_command_line $grid~pgrid_fighterDrop "f:" " "
-	isNumber $test $grid~pgrid_fighterDrop
+	gettext $bot~user_command_line $grid~pgrid_fighterdrop "f:" " "
+	isnumber $test $grid~pgrid_fighterdrop
 	if ($test)
-		setVar $grid~pgrid_fighterDrop $grid~pgrid_fighterDrop
+		setvar $grid~pgrid_fighterdrop $grid~pgrid_fighterdrop
 	else
-		setVar $grid~pgrid_fighterDrop 1
-	end     
+		setvar $grid~pgrid_fighterdrop 1
+	end
 else
-	setVar $grid~pgrid_fighterDrop 1
+	setvar $grid~pgrid_fighterdrop 1
 end
 
-getWordPos " "&$bot~user_command_line&" " $pos1 " nosur"
-getWordPos " "&$bot~user_command_line&" " $pos2 " nosurrender"
+getwordpos " "&$bot~user_command_line&" " $pos1 " nosur"
+getwordpos " "&$bot~user_command_line&" " $pos2 " nosurrender"
 if (($pos1 > 0) or ($pos2 > 0))
-	setVar $grid~pgrid_surrender FALSE	
+	setvar $grid~pgrid_surrender false
 else
-	setVar $grid~pgrid_surrender TRUE
+	setvar $grid~pgrid_surrender true
 end
 
-getWordPos " " & $bot~user_command_line & " " $pos " x:"
+getwordpos " " & $bot~user_command_line & " " $pos " x:"
 if ($pos > 0)
-	setVar $xline $bot~user_command_line&" t"
-	getText $xline $grid~pgrid_xportShip "x:" " "
-	isNumber $test $grid~pgrid_xportShip
+	setvar $xline $bot~user_command_line&" t"
+	gettext $xline $grid~pgrid_xportship "x:" " "
+	isnumber $test $grid~pgrid_xportship
 	if ($test)
-		setVar $grid~pgrid_xporting TRUE
+		setvar $grid~pgrid_xporting true
 	else
 		setvar $grid~pgrid_xportship 0
 	end
 end
 
-setVar $grid~pgrid_surrender TRUE
+setvar $grid~pgrid_surrender true
 
-getWordPos " "&$bot~user_command_line&" " $pos " d:"
-setVar $validDesignatedDen FALSE
+getwordpos " "&$bot~user_command_line&" " $pos " d:"
+setvar $validdesignatedden false
 
 if ($pos > 0)
-	setVar $grid~pgrid_scan TRUE
+	setvar $grid~pgrid_scan true
 
+	gettext $bot~user_command_line $designatedden "d:" " "
 
-	getText $bot~user_command_line $designatedDen "d:" " "
-	
-	isNumber $test $designatedDen
+	isnumber $test $designatedden
 	if ($test)
-		setVar $grid~pgrid_maxdensity $designatedDen
+		setvar $grid~pgrid_maxdensity $designatedden
 	else
-		setVar $SWITCHBOARD~message "invalid#"&$designatedDen&"# designated density*"
-		gosub :SWITCHBOARD~switchboard
+		setvar $switchboard~message "invalid#"&$designatedden&"# designated density*"
+		gosub :switchboard~switchboard
 		halt
-	end		
+	end
 else
-	setVar $grid~pgrid_maxdensity 0
+	setvar $grid~pgrid_maxdensity 0
 end
 
-getWordPos " "&$bot~user_command_line&" " $pos " r "
+getwordpos " "&$bot~user_command_line&" " $pos " r "
 if ($pos > 0)
-	setVar $grid~pgrid_retreat TRUE
+	setvar $grid~pgrid_retreat true
 else
-	setVar $grid~pgrid_retreat FALSE
+	setvar $grid~pgrid_retreat false
 end
-setVar $grid~pgridSector $bot~parm1
-isNumber $test $grid~pgridSector
+setvar $grid~pgridsector $bot~parm1
+isnumber $test $grid~pgridsector
 if ($test = 0)
-	setVar $SWITCHBOARD~message "Invalid sector number.*"
-	gosub :SWITCHBOARD~switchboard
+	setvar $switchboard~message "Invalid sector number.*"
+	gosub :switchboard~switchboard
 	halt
 end
-isNumber $test $bot~parm2
+isnumber $test $bot~parm2
 if ($test = 0)
-	setVar $grid~pgrid_waves 1
+	setvar $grid~pgrid_waves 1
 else
 	if ($bot~parm2 > 0)
-		setVar $grid~pgrid_waves $bot~parm2
+		setvar $grid~pgrid_waves $bot~parm2
 	else
-		setVar $grid~pgrid_waves 1
+		setvar $grid~pgrid_waves 1
 	end
 end
 

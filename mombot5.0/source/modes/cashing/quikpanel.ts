@@ -1,240 +1,244 @@
-loadVar $bot_name
-loadVar $user_command_line
-loadVar $bot_turn_limit
-loadVar $steal_factor
-loadVar $rob_factor
-loadVar $unlimitedGame
-loadVar $PTRADESETTING
+loadvar $bot_name
+loadvar $user_command_line
+loadvar $bot_turn_limit
+loadvar $steal_factor
+loadvar $rob_factor
+loadvar $unlimitedgame
+loadvar $ptradesetting
 loadvar $bot~folder
-setVar $CURRENT_PROMPT 		"Undefined"
-setVar $PSYCHIC_PROBE 		"No"
-setVar $PLANET_SCANNER 		"No"
-setVar $SCAN_TYPE 		"None"
-setVar $CURRENT_SECTOR 		0
-setVar $TURNS 			0
-setVar $CREDITS 		0
-setVar $FIGHTERS 		0
-setVar $SHIELDS 		0
-setVar $TOTAL_HOLDS 		0
-setVar $ORE_HOLDS 		0
-setVar $ORGANIC_HOLDS 		0
-setVar $EQUIPMENT_HOLDS 	0
-setVar $COLONIST_HOLDS		0
-setVar $PHOTONS 		0
-setVar $ARMIDS 			0
-setVar $LIMPETS 		0
-setVar $GENESIS 		0
-setVar $TWARP_TYPE 		0
-setVar $CLOAKS 			0
-setVar $BEACONS 		0
-setVar $ATOMIC 			0
-setVar $CORBO 			0
-setVar $EPROBES 		0
-setVar $MINE_DISRUPTORS 	0
-setVar $ALIGNMENT 		0
-setVar $EXPERIENCE		0
-setVar $CORP 			0
-setVar $SHIP_NUMBER		0
-setVar $TURNS_PER_WARP 		0
+setvar $current_prompt 		"Undefined"
+setvar $psychic_probe 		"No"
+setvar $planet_scanner 		"No"
+setvar $scan_type 		"None"
+setvar $current_sector 		0
+setvar $turns 			0
+setvar $credits 		0
+setvar $fighters 		0
+setvar $shields 		0
+setvar $total_holds 		0
+setvar $ore_holds 		0
+setvar $organic_holds 		0
+setvar $equipment_holds 	0
+setvar $colonist_holds		0
+setvar $photons 		0
+setvar $armids 			0
+setvar $limpets 		0
+setvar $genesis 		0
+setvar $twarp_type 		0
+setvar $cloaks 			0
+setvar $beacons 		0
+setvar $atomic 			0
+setvar $corbo 			0
+setvar $eprobes 		0
+setvar $mine_disruptors 	0
+setvar $alignment 		0
+setvar $experience		0
+setvar $corp 			0
+setvar $ship_number		0
+setvar $turns_per_warp 		0
 systemscript
 reqrecording
-setVar $file $bot~folder&"/_MOM_" & GAMENAME & "_QUIK.txt"
-setVar $bustfile $bot~folder&"/_MOM_" & GAMENAME & "_BUST.txt"
-setVar $mcicfile $bot~folder&"/"&GAMENAME & "_MCIC.txt"
-fileExists $chk $file
-IF ($chk = 1)
-	gosub :readFile
+setvar $file $bot~folder&"/_MOM_" & gamename & "_QUIK.txt"
+setvar $bustfile $bot~folder&"/_MOM_" & gamename & "_BUST.txt"
+setvar $mcicfile $bot~folder&"/"&gamename & "_MCIC.txt"
+fileexists $chk $file
+if ($chk = 1)
+	gosub :readfile
 	gosub :save
 	delete $file
-END
-loadVar $quikSaved
-IF ($quikSaved)
-	loadVar $quik_ahaggle
-	loadVar $quik_hfactor
-	loadVar $quik_sfactor
-	loadVar $quik_rfactor
-	loadVar $quik_figkill
-	loadVar $quik_pptstop
-	loadVar $quik_bwarn
-	loadVar $quik_bwarp
-	loadVar $quik_asteal
-	loadVar $quik_arob
-	loadVar $quik_lsteal
-	loadVar $quik_lbust
-	loadVar $quik_showSSM
-	loadVar $quik_showOre
-	loadVar $quik_showOrg
-	loadVAr $quik_showEqu
-ELSE
-	setVar $quik_ahaggle "Off"
-	setVar $quik_hfactor 5
-	setVar $quik_sfactor 21
-	setVar $quik_rfactor 6
-	setVar $quik_pptstop 25
-	setVar $quik_figkill "Off"
-	setVar $quik_bwarn "Off"
-	setVar $quik_bwarp "Off"
-	setVar $quik_asteal "Off"
-	setVar $quik_arob "Off"
-	setVar $quik_lsteal 0
-	setVar $quik_lbust 0
-	setVar $quik_showSSM "Yes"
-	setVar $quik_showOre "Yes"
-	setVAr $quik_showOrg "Yes"
-	setVar $quik_showEqu "Yes"
-END
-setVar $ahaggle $quik_ahaggle
-setVar $hfactor $quik_hfactor
-setVar $sfactor $quik_sfactor
-setVar $rfactor $quik_rfactor
-setVar $figkill $quik_figkill
-setVar $bwarn $quik_bwarn
-setVar $bwarp $quik_bwarp
-setVar $asteal $quik_asteal
-setVar $arob $quik_arob
-setVar $lsteal $quik_lsteal
-setVar $lbust $quik_lbust
+end
+loadvar $quiksaved
+if ($quiksaved)
+	loadvar $quik_ahaggle
+	loadvar $quik_hfactor
+	loadvar $quik_sfactor
+	loadvar $quik_rfactor
+	loadvar $quik_figkill
+	loadvar $quik_pptstop
+	loadvar $quik_bwarn
+	loadvar $quik_bwarp
+	loadvar $quik_asteal
+	loadvar $quik_arob
+	loadvar $quik_lsteal
+	loadvar $quik_lbust
+	loadvar $quik_showssm
+	loadvar $quik_showore
+	loadvar $quik_showorg
+	loadvar $quik_showequ
+else
+	setvar $quik_ahaggle "Off"
+	setvar $quik_hfactor 5
+	setvar $quik_sfactor 21
+	setvar $quik_rfactor 6
+	setvar $quik_pptstop 25
+	setvar $quik_figkill "Off"
+	setvar $quik_bwarn "Off"
+	setvar $quik_bwarp "Off"
+	setvar $quik_asteal "Off"
+	setvar $quik_arob "Off"
+	setvar $quik_lsteal 0
+	setvar $quik_lbust 0
+	setvar $quik_showssm "Yes"
+	setvar $quik_showore "Yes"
+	setvar $quik_showorg "Yes"
+	setvar $quik_showequ "Yes"
+end
+setvar $ahaggle $quik_ahaggle
+setvar $hfactor $quik_hfactor
+setvar $sfactor $quik_sfactor
+setvar $rfactor $quik_rfactor
+setvar $figkill $quik_figkill
+setvar $bwarn $quik_bwarn
+setvar $bwarp $quik_bwarp
+setvar $asteal $quik_asteal
+setvar $arob $quik_arob
+setvar $lsteal $quik_lsteal
+setvar $lbust $quik_lbust
 gosub :save
-IF ($bwarn = "On")
-	fileExists $chk $bustfile
-	IF ($chk = 1)
-	:abust
-	echo ansi_15 "**Would You like to clear your busts?**"
-	getConsoleInput $clear singlekey
-	IF ($clear = "y") or ($clear = "Y")
-		delete $bustfile
-	ELSEIF ($clear = "n") or ($clear = "N")
-		setArray $busts SECTORS
-		setVar $read 1
-	:rbust
-	read $bustfile $bustsec $read
-	IF ($bustsec <> "EOF")
-		setVar $busts[$bustsec] 1
-		add $read 1
-		goto :rbust
-	END
-	ELSE
-	goto :abust
-	END
-	END
-END
+if ($bwarn = "On")
+	fileexists $chk $bustfile
+	if ($chk = 1)
+
+		:abust
+		echo ansi_15 "**Would You like to clear your busts?**"
+		getconsoleinput $clear singlekey
+		if ($clear = "y") or ($clear = "Y")
+			delete $bustfile
+		elseif ($clear = "n") or ($clear = "N")
+			setarray $busts sectors
+			setvar $read 1
+
+			:rbust
+			read $bustfile $bustsec $read
+			if ($bustsec <> "EOF")
+				setvar $busts[$bustsec] 1
+				add $read 1
+				goto :rbust
+			end
+		else
+			goto :abust
+		end
+	end
+end
 
 :setmenu
 echo "[2J"
-setVar $scriptName "SupGQuikPanel"
+setvar $scriptname "SupGQuikPanel"
 
 :menu
 gosub :signature
-echo ANSI_15 "Settings for " GAMENAME "*"
-echo ANSI_14 "1." ANSI_15 " Haggle Factor         " ANSI_10 "["
-echo ANSI_6 $hfactor
-echo ANSI_10 "]*"
-echo ANSI_14 "2." ANSI_15 " Bust Warning          " ANSI_10 "["
-echo ANSI_6 $bwarn
-echo ANSI_10 "]*"
-echo ANSI_14 "3." ANSI_15 " PPT Stop Percentage   " ANSI_10 "["
-echo ANSI_6 $quik_pptstop
-echo ANSI_10 "]*"
-echo ANSI_14 "D." ANSI_15 " Display Options*"
-echo ANSI_5 "*Press the number of the option you*wish to change, or press" ANSI_14 " C" ANSI_5 " to continue.**"
-getConsoleInput $choice singlekey
+echo ansi_15 "Settings for " gamename "*"
+echo ansi_14 "1." ansi_15 " Haggle Factor         " ansi_10 "["
+echo ansi_6 $hfactor
+echo ansi_10 "]*"
+echo ansi_14 "2." ansi_15 " Bust Warning          " ansi_10 "["
+echo ansi_6 $bwarn
+echo ansi_10 "]*"
+echo ansi_14 "3." ansi_15 " PPT Stop Percentage   " ansi_10 "["
+echo ansi_6 $quik_pptstop
+echo ansi_10 "]*"
+echo ansi_14 "D." ansi_15 " Display Options*"
+echo ansi_5 "*Press the number of the option you*wish to change, or press" ansi_14 " C" ansi_5 " to continue.**"
+getconsoleinput $choice singlekey
 lowercase $choice
-IF ($choice = 1)
-	getInput $hfactor "Enter Haggle Factor (Setting to 0 will turn Haggle Off)"
-	isNumber $chk $hfactor
+if ($choice = 1)
+	getinput $hfactor "Enter Haggle Factor (Setting to 0 will turn Haggle Off)"
+	isnumber $chk $hfactor
 	if ($hfactor = 0)
-	       setVar $ahaggle "Off"
+		setvar $ahaggle "Off"
 	end
-IF ($chk = 0)
-		setVar $hfactor 5
-	END
-ELSEIF ($choice = 2)
-	IF ($bwarn = "Off")
-		setVar $bwarn "On"
-		fileExists $chk $bustfile
-		IF ($chk = 1)
-		:askbust
-		echo ansi_15 "*Would You like to clear your busts?*"
-		getConsoleInput $clear singlekey
-		IF ($clear = "y") or ($clear = "Y")
-			delete $bustfile
-		ELSEIF ($clear = "n") or ($clear = "N")
-			setArray $busts SECTORS
-			setVar $read 1
-			:readbust
-			read $bustfile $bustsec $read
-			IF ($bustsec <> "EOF")
-				setVar $busts[$bustsec] 1
-				add $read 1
-				goto :readbust
-			END
-			ELSE
-			goto :askbust
-			END
-		END
-	ELSE
-		setVar $bwarn "Off"
-	END
-ELSEIF ($choice = 3)
-	getInput $quik_pptstop "PPT stop percentage"
-	isNumber $chk $quik_pptstop
-	IF ($chk = 0) OR ($quik_pptstop < 0) OR ($quik_pptstop > 100)
-		setVar $quik_pptstop 25
-	END
-ELSEIF ($choice = "d")
-	gosub :displayOptions
-ELSEIF ($choice = "c")
+	if ($chk = 0)
+		setvar $hfactor 5
+	end
+elseif ($choice = 2)
+	if ($bwarn = "Off")
+		setvar $bwarn "On"
+		fileexists $chk $bustfile
+		if ($chk = 1)
+
+			:askbust
+			echo ansi_15 "*Would You like to clear your busts?*"
+			getconsoleinput $clear singlekey
+			if ($clear = "y") or ($clear = "Y")
+				delete $bustfile
+			elseif ($clear = "n") or ($clear = "N")
+				setarray $busts sectors
+				setvar $read 1
+
+				:readbust
+				read $bustfile $bustsec $read
+				if ($bustsec <> "EOF")
+					setvar $busts[$bustsec] 1
+					add $read 1
+					goto :readbust
+				end
+			else
+				goto :askbust
+			end
+		end
+	else
+		setvar $bwarn "Off"
+	end
+elseif ($choice = 3)
+	getinput $quik_pptstop "PPT stop percentage"
+	isnumber $chk $quik_pptstop
+	if ($chk = 0) or ($quik_pptstop < 0) or ($quik_pptstop > 100)
+		setvar $quik_pptstop 25
+	end
+elseif ($choice = "d")
+	gosub :displayoptions
+elseif ($choice = "c")
 	gosub :save
 	goto :wait
-ELSE
+else
 	goto :setmenu
-END
+end
 goto :setmenu
 
 :wait
 killalltriggers
-setTextTrigger autooff :autooff "SUPGSCRIPT_AUTO_OFF"
-setTextTrigger bwarpoff :bwarpoff "SUPGSCRIPT_BWARP_OFF"
-setTextTrigger figkilloff :killoff "SUPGSCRIPT_KILL_OFF"
-IF ($ahaggle = "On")
-    SetTextTrigger ptrade :bunits "do you want to buy"
-    SetTextTrigger strade :sunits "do you want to sell"
-    setTextTrigger planettrade :plnttrade "<Negotiate Planetary TradeAgreement>"
-END
-IF ($asteal = "On")
-    setTextTrigger steal :steals "to swipe? ["
-END
-IF ($arob = "On")
-    setTextLineTrigger rob :rob "has in excess of"
-END
-IF ($figkill = "On")
-	setTextTrigger moving :moving "You have to destroy the fighters"
-	setTextTrigger mines :moving "<Re-Display>"
-	setTextTrigger citmine :moving "<Scan Sector>"
-END
-IF ($bwarp = "On")
-	setTextTrigger bwarp :bwarp "Do you want to make this jump blind?"
-	setTextTrigger bbwar :bwarp "Do you want to make this transport blind?"
-END
-setTextTrigger busted :busted "Suddenly you're Busted"
-setTextTrigger nobust :ssteal "Success!"
-setTextTrigger chkbust :chkbust "] (?=Help)?"
-setTextTrigger info :get_info "<Info>"
-setTextOutTrigger sets :optmenu "~"
+settexttrigger autooff :autooff "SUPGSCRIPT_AUTO_OFF"
+settexttrigger bwarpoff :bwarpoff "SUPGSCRIPT_BWARP_OFF"
+settexttrigger figkilloff :killoff "SUPGSCRIPT_KILL_OFF"
+if ($ahaggle = "On")
+	settexttrigger ptrade :bunits "do you want to buy"
+	settexttrigger strade :sunits "do you want to sell"
+	settexttrigger planettrade :plnttrade "<Negotiate Planetary TradeAgreement>"
+end
+if ($asteal = "On")
+	settexttrigger steal :steals "to swipe? ["
+end
+if ($arob = "On")
+	settextlinetrigger rob :rob "has in excess of"
+end
+if ($figkill = "On")
+	settexttrigger moving :moving "You have to destroy the fighters"
+	settexttrigger mines :moving "<Re-Display>"
+	settexttrigger citmine :moving "<Scan Sector>"
+end
+if ($bwarp = "On")
+	settexttrigger bwarp :bwarp "Do you want to make this jump blind?"
+	settexttrigger bbwar :bwarp "Do you want to make this transport blind?"
+end
+settexttrigger busted :busted "Suddenly you're Busted"
+settexttrigger nobust :ssteal "Success!"
+settexttrigger chkbust :chkbust "] (?=Help)?"
+settexttrigger info :get_info "<Info>"
+settextouttrigger sets :optmenu "~"
 pause
 
 :get_info
 killalltriggers
-setTextLineTrigger alnexp :alnexp "Rank "
-setTextTrigger gotinf :wait "(?=Help)?"
+settextlinetrigger alnexp :alnexp "Rank "
+settexttrigger gotinf :wait "(?=Help)?"
 pause
 
 :alnexp
-getText CURRENTLINE $knownexp ": " " points,"
-stripText $knownexp ","
-getWord CURRENTLINE $knownalign 7
-stripText $knownalign "Alignment="
-stripText $knownalign ","
+gettext currentline $knownexp ": " " points,"
+striptext $knownexp ","
+getword currentline $knownalign 7
+striptext $knownalign "Alignment="
+striptext $knownalign ","
 pause
 
 :plnttrade
@@ -243,21 +247,21 @@ gosub :planet_neg
 goto :wait
 
 :bunits
-setVar $multiplier (100 - $hfactor)
+setvar $multiplier (100 - $hfactor)
 goto :units
 
 :sunits
-setVar $multiplier (100 + $hfactor)
+setvar $multiplier (100 + $hfactor)
 
 :units
 killtrigger ptrade
 killtrigger strade
 killtrigger go
 killtrigger done
-SetTextTrigger ptrade :bunits "do you want to buy ["
-SetTextTrigger strade :sunits "do you want to sell ["
-setTextLineTrigger go :finishhaggle "Agreed, "
-setTextLineTrigger done :donehaggle "empty cargo holds."
+settexttrigger ptrade :bunits "do you want to buy ["
+settexttrigger strade :sunits "do you want to sell ["
+settextlinetrigger go :finishhaggle "Agreed, "
+settextlinetrigger done :donehaggle "empty cargo holds."
 pause
 
 :finishhaggle
@@ -268,69 +272,69 @@ gosub :haggle
 goto :wait
 
 :moving
-setVar $singlestep 1
+setvar $singlestep 1
 gosub :clear_sector
 goto :wait
 
 :steals
-getText CURRENTLINE $maxholds "[" "]"
-setVar $stealholds ($knownExp / $steal_factor)
-IF ($stealholds > $maxholds)
-   send $maxholds "*"
-ELSE
-   send $stealholds "*"
-END
+gettext currentline $maxholds "[" "]"
+setvar $stealholds ($knownexp / $steal_factor)
+if ($stealholds > $maxholds)
+	send $maxholds "*"
+else
+	send $stealholds "*"
+end
 pause
 
 :rob
-getWord CURRENTLINE $cop 11
-stripText $cop ","
-IF ($cop = 0)
-    send "*"
-ELSE
-	setVar $robamount ($knownExp * $rob_factor)
-	IF ($robamount > $cop)
-		setVar $cop (($cop * 110) / 100)
+getword currentline $cop 11
+striptext $cop ","
+if ($cop = 0)
+	send "*"
+else
+	setvar $robamount ($knownexp * $rob_factor)
+	if ($robamount > $cop)
+		setvar $cop (($cop * 110) / 100)
 		send $cop "*"
-	ELSE
+	else
 		send $robamount "*"
-	END
-END
+	end
+end
 pause
 
 :chkbust
-getText CURRENTLINE $cursec "]:[" "] ("
-IF ($bwarn = "On")
-	IF ($lbust = $cursec)
-		echo ANSI_5 "[" ANSI_12 "LAST BUST" ANSI_5 "] : "
-	ELSEIF ($busts[$cursec] = 1)
-		echo ANSI_5 "[" ANSI_12 "BUSTED" ANSI_5 "] : "
-	ELSEIF ($lsteal = $cursec)
-		echo ANSI_5 "[" ANSI_14 "LAST STEAL" ANSI_5 "] : "
-	END
-END
+gettext currentline $cursec "]:[" "] ("
+if ($bwarn = "On")
+	if ($lbust = $cursec)
+		echo ansi_5 "[" ansi_12 "LAST BUST" ansi_5 "] : "
+	elseif ($busts[$cursec] = 1)
+		echo ansi_5 "[" ansi_12 "BUSTED" ansi_5 "] : "
+	elseif ($lsteal = $cursec)
+		echo ansi_5 "[" ansi_14 "LAST STEAL" ansi_5 "] : "
+	end
+end
 goto :wait
 
 :busted
-waitFor "(?=Help)? :"
-getText CURRENTLINE $cursec "]:[" "] ("
-setVar $busts[$cursec] 1
+waitfor "(?=Help)? :"
+gettext currentline $cursec "]:[" "] ("
+setvar $busts[$cursec] 1
 write $bustfile $cursec
-setVar $lbust $cursec
+setvar $lbust $cursec
 gosub :save
-IF ($bwarn = "On")
-   echo ANSI_5 "[" ANSI_12 "LAST BUST" ANSI_5 "] : "
-END
+if ($bwarn = "On")
+	echo ansi_5 "[" ansi_12 "LAST BUST" ansi_5 "] : "
+end
 goto :wait
 
 :ssteal
-waitFor "(?=Help)? :"
-getText CURRENTLINE $cursec "]:[" "] ("
-setVar $lsteal $cursec
+waitfor "(?=Help)? :"
+gettext currentline $cursec "]:[" "] ("
+setvar $lsteal $cursec
 gosub :save
-IF ($bwarn = "On")
-   echo ANSI_5 "[" ANSI_14 "LAST STEAL" ANSI_5 "] : "
-END
+if ($bwarn = "On")
+	echo ansi_5 "[" ansi_14 "LAST STEAL" ansi_5 "] : "
+end
 goto :wait
 
 :bwarp
@@ -338,182 +342,183 @@ send "n"
 goto :wait
 
 :optmenu
-cutText CURRENTLINE $location 1 7
-IF ($location = "Command") OR ($location = "Citadel") OR ($location = "Compute") OR ($location = "Corpora") OR ($location = "<StarDo") OR ($location = "Planet ") OR ($location = "Engage ") OR ($location = "Option?") OR ($location = "<Tavern")
+cuttext currentline $location 1 7
+if ($location = "Command") or ($location = "Citadel") or ($location = "Compute") or ($location = "Corpora") or ($location = "<StarDo") or ($location = "Planet ") or ($location = "Engage ") or ($location = "Option?") or ($location = "<Tavern")
 	gosub :quikstats
-	setVar $cursec $CURRENT_SECTOR
-	setVar $align $ALIGNMENT
-ELSE
-	setVar $align $knownalign
-END
+	setvar $cursec $current_sector
+	setvar $align $alignment
+else
+	setvar $align $knownalign
+end
 
 :alnmenu
 echo "[2J"
-setVar $scriptName "SupGQuikPanel"
+setvar $scriptname "SupGQuikPanel"
 gosub :signature
-echo ANSI_15 "*Option Menu *"
-IF (PORT.CLASS[$cursec] <> "-1")
-	setVar $round 0
-	setVar $menuitem 0
+echo ansi_15 "*Option Menu *"
+if (port.class[$cursec] <> "-1")
+	setvar $round 0
+	setvar $menuitem 0
+
 	:round
-	IF ($round < SECTOR.WARPCOUNT[$cursec])
+	if ($round < sector.warpcount[$cursec])
 		add $round 1
-		setVar $adjsec SECTOR.WARPS[$cursec][$round]
-		IF (PORT.CLASS[$adjsec] = "-1")
+		setvar $adjsec sector.warps[$cursec][$round]
+		if (port.class[$adjsec] = "-1")
 			goto :round
-		END
-		IF ((PORT.BUYEQUIP[$cursec] = 1) AND (PORT.BUYEQUIP[$adjsec] = 0) AND ($quik_showEqu = "Yes")) OR ((PORT.BUYORG[$cursec] = 0) AND (PORT.BUYORG[$adjsec] = 1) AND ($quik_showOrg = "Yes")) OR ((PORT.BUYEQUIP[$cursec] = 0) AND (PORT.BUYEQUIP[$adjsec] = 1) AND ($quik_showEqu = "Yes")) OR ((PORT.BUYORG[$cursec] = 1) AND (PORT.BUYORG[$adjsec] = 0) AND ($quik_showOrg = "Yes")) OR ((PORT.BUYFUEL[$cursec] = 1) AND (PORT.BUYFUEL[$adjsec] = 0) AND ($quik_showOre = "Yes")) OR ((PORT.BUYFUEL[$cursec] = 0) AND (PORT.BUYFUEL[$adjsec] = 1) AND ($quik_showOre = "Yes"))
-			IF (PORT.CLASS[$cursec] <> 9) AND (PORT.CLASS[$adjsec] <> 9) AND (PORT.CLASS[$cursec] <> 0) AND (PORT.CLASS[$adjsec] <> 0) AND ($location = "Command")
+		end
+		if ((port.buyequip[$cursec] = 1) and (port.buyequip[$adjsec] = 0) and ($quik_showequ = "Yes")) or ((port.buyorg[$cursec] = 0) and (port.buyorg[$adjsec] = 1) and ($quik_showorg = "Yes")) or ((port.buyequip[$cursec] = 0) and (port.buyequip[$adjsec] = 1) and ($quik_showequ = "Yes")) or ((port.buyorg[$cursec] = 1) and (port.buyorg[$adjsec] = 0) and ($quik_showorg = "Yes")) or ((port.buyfuel[$cursec] = 1) and (port.buyfuel[$adjsec] = 0) and ($quik_showore = "Yes")) or ((port.buyfuel[$cursec] = 0) and (port.buyfuel[$adjsec] = 1) and ($quik_showore = "Yes"))
+			if (port.class[$cursec] <> 9) and (port.class[$adjsec] <> 9) and (port.class[$cursec] <> 0) and (port.class[$adjsec] <> 0) and ($location = "Command")
 				add $menuitem 1
-				setVar $classchk PORT.CLASS[$cursec]
+				setvar $classchk port.class[$cursec]
 				gosub :chkclass
-        				setVar $class1 $class
-				setVar $classchk PORT.CLASS[$adjsec]
+				setvar $class1 $class
+				setvar $classchk port.class[$adjsec]
 				gosub :chkclass
-				setVar $class2 $class
-				setVar $makemenu[$menuitem] "PPT " & $cursec & " " & $adjsec
-				echo ANSI_14 $menuitem ". " ANSI_15 "PPT - " $cursec & " (" & $class1 & ")"
-				IF ($busts[$cursec] = 1)
-					echo ANSI_15 " (" ANSI_12 "Busted" ANSI_15 ") "
-				END
-				IF ($lbust = $cursec)
-					echo ANSI_15 " (" ANSI_12 "Last Bust" ANSI_15 ") "
-				END
-				IF ($lsteal = $cursec)
-					echo ANSI_15 " (" ANSI_14 "Last Steal" ANSI_15 ") "
-				END
+				setvar $class2 $class
+				setvar $makemenu[$menuitem] "PPT " & $cursec & " " & $adjsec
+				echo ansi_14 $menuitem ". " ansi_15 "PPT - " $cursec & " (" & $class1 & ")"
+				if ($busts[$cursec] = 1)
+					echo ansi_15 " (" ansi_12 "Busted" ansi_15 ") "
+				end
+				if ($lbust = $cursec)
+					echo ansi_15 " (" ansi_12 "Last Bust" ansi_15 ") "
+				end
+				if ($lsteal = $cursec)
+					echo ansi_15 " (" ansi_14 "Last Steal" ansi_15 ") "
+				end
 				echo "and " $adjsec  & " (" & $class2 & ")"
-				IF ($busts[$adjsec] = 1)
-					echo ANSI_15 " (" ANSI_12 "Busted" ANSI_15 ") "
-				END
-				IF ($lbust = $adjsec)
-					echo ANSI_15 " (" ANSI_12 "Last Bust" ANSI_15 ") "
-				END
-				IF ($lsteal = $adjsec)
-					echo ANSI_15 " (" ANSI_14 "Last Steal" ANSI_15 ") "
-				END
+				if ($busts[$adjsec] = 1)
+					echo ansi_15 " (" ansi_12 "Busted" ansi_15 ") "
+				end
+				if ($lbust = $adjsec)
+					echo ansi_15 " (" ansi_12 "Last Bust" ansi_15 ") "
+				end
+				if ($lsteal = $adjsec)
+					echo ansi_15 " (" ansi_14 "Last Steal" ansi_15 ") "
+				end
 				echo "*"
-			END
-		END
-		IF (PORT.BUYEQUIP[$cursec] = 1) AND (PORT.BUYEQUIP[$adjsec] = 1) AND ($align < "-100") AND ($quik_showSSM = "Yes") AND ($location = "Command")
+			end
+		end
+		if (port.buyequip[$cursec] = 1) and (port.buyequip[$adjsec] = 1) and ($align < "-100") and ($quik_showssm = "Yes") and ($location = "Command")
 			add $menuitem 1
-			setVar $makemenu[$menuitem] "SSM " & $cursec & " " & $adjsec
-       			echo ANSI_14 $menuitem ". " ANSI_15 "SSM - " $cursec
-			IF ($busts[$cursec] = 1)
-				echo ANSI_15 " (" ANSI_12 "Busted" ANSI_15 ") "
-        			END
-			IF ($lbust = $cursec)
-				echo ANSI_15 " (" ANSI_12 "Last Bust" ANSI_15 ") "
-			END
-			IF ($lsteal = $cursec)
-				echo ANSI_15 " (" ANSI_14 "Last Steal" ANSI_15 ") "
-			END
+			setvar $makemenu[$menuitem] "SSM " & $cursec & " " & $adjsec
+			echo ansi_14 $menuitem ". " ansi_15 "SSM - " $cursec
+			if ($busts[$cursec] = 1)
+				echo ansi_15 " (" ansi_12 "Busted" ansi_15 ") "
+			end
+			if ($lbust = $cursec)
+				echo ansi_15 " (" ansi_12 "Last Bust" ansi_15 ") "
+			end
+			if ($lsteal = $cursec)
+				echo ansi_15 " (" ansi_14 "Last Steal" ansi_15 ") "
+			end
 			echo " and " $adjsec
-			IF ($busts[$adjsec] = 1)
-				echo ANSI_15 " (" ANSI_12 "Busted" ANSI_15 ") "
-			END
-			IF ($lbust = $adjsec)
-				echo ANSI_15 " (" ANSI_12 "Last Bust" ANSI_15 " )"
-			END
-			IF ($lsteal = $adjsec)
-				echo ANSI_15 " (" ANSI_14 "Last Steal" ANSI_15 ") "
-			END
+			if ($busts[$adjsec] = 1)
+				echo ansi_15 " (" ansi_12 "Busted" ansi_15 ") "
+			end
+			if ($lbust = $adjsec)
+				echo ansi_15 " (" ansi_12 "Last Bust" ansi_15 " )"
+			end
+			if ($lsteal = $adjsec)
+				echo ansi_15 " (" ansi_14 "Last Steal" ansi_15 ") "
+			end
 			echo "*"
-		END
+		end
 		goto :round
-	END
-END
-echo ANSI_14 "S. " ANSI_15 "Settings*"
-echo ANSI_14 "Q. " ANSI_15 "Close Menu*"
-IF ($menuitem < 10)
-	getConsoleInput $optchoice singlekey
-ELSE
-	getConsoleInput $optchoice
-END
+	end
+end
+echo ansi_14 "S. " ansi_15 "Settings*"
+echo ansi_14 "Q. " ansi_15 "Close Menu*"
+if ($menuitem < 10)
+	getconsoleinput $optchoice singlekey
+else
+	getconsoleinput $optchoice
+end
 lowercase $optchoice
-isNumber $num $optchoice
-IF ($optchoice = "s")
+isnumber $num $optchoice
+if ($optchoice = "s")
 	goto :setmenu
-ELSEIF ($optchoice = "q")
+elseif ($optchoice = "q")
 	goto :wait
-ELSEIF ($num = 1)
-	IF ($optchoice <= $menuitem) AND ($optchoice > 0)
-		getWord $makemenu[$optchoice] $sub 1
-       		getWord $makemenu[$optchoice] $port1 2
-		getWord $makemenu[$optchoice] $port2 3
-	ELSE
+elseif ($num = 1)
+	if ($optchoice <= $menuitem) and ($optchoice > 0)
+		getword $makemenu[$optchoice] $sub 1
+		getword $makemenu[$optchoice] $port1 2
+		getword $makemenu[$optchoice] $port2 3
+	else
 		goto :alnmenu
-	END
-	IF ($sub = "PPT")
+	end
+	if ($sub = "PPT")
 		killalltriggers
-		setVar $port1 $port1
-		setVar $port2 $port2
-		setVar $haggle $hfactor
-		setVAr $stopperc $quik_pptstop
-		setTextOutTrigger abort :return "~"
+		setvar $port1 $port1
+		setvar $port2 $port2
+		setvar $haggle $hfactor
+		setvar $stopperc $quik_pptstop
+		settextouttrigger abort :return "~"
 		gosub :ppt
-	ELSEIF ($sub = "SSM")
+	elseif ($sub = "SSM")
 		killalltriggers
 		send "jy"
-		setVar $port1 $port1
-		setVar $port2 $port2
-		setVar $haggle $hfactor
-		setVar $hag 1
-		setTextOutTrigger abort :return "~"
+		setvar $port1 $port1
+		setvar $port2 $port2
+		setvar $haggle $hfactor
+		setvar $hag 1
+		settextouttrigger abort :return "~"
 		gosub :ssm
 		killtrigger abort
-		setVar $busts[$busted] 1
+		setvar $busts[$busted] 1
 		write $bustfile $busted
-		setVar $lbust $busted
-		IF ($port1 = $busted)
-			setVar $lsteal $port2
-		ELSE
-			setVar $lsteal $port1
-		END
+		setvar $lbust $busted
+		if ($port1 = $busted)
+			setvar $lsteal $port2
+		else
+			setvar $lsteal $port1
+		end
 		gosub :save
-	END
+	end
 	goto :wait
-ELSE
+else
 	goto :alnmenu
-END
+end
 
 :return
-Echo ANSI_15 "*Returning to Normal Operation*"
+echo ansi_15 "*Returning to Normal Operation*"
 goto :wait
 
 :save
-setVar $quik_ahaggle $ahaggle
-setVar $quik_hfactor $hfactor
-setVar $quik_sfactor $steal_factor
-setVar $quik_rfactor $rob_factor
-setVar $quik_figkill $figkill
-setVar $quik_bwarn $bwarn
-setVar $quik_bwarp $bwarp
-setVar $quik_asteal $asteal
-setVar $quik_arob $arob
-setVar $quik_lsteal $lsteal
-setVar $quik_lbust $lbust
-saveVar $quik_ahaggle
-saveVar $quik_pptstop
-saveVar $quik_hfactor
-saveVar $quik_sfactor
-saveVar $quik_rfactor
-saveVar $quik_figkill
-saveVar $quik_bwarn
-saveVar $quik_bwarp
-saveVar $quik_asteal
-saveVar $quik_arob
-saveVar $quik_lsteal
-saveVar $quik_lbust
-saveVar $quik_showSSM
-saveVar $quik_showOre
-saveVar $quik_showOrg
-saveVar $quik_showEqu
-setVar $quikSaved 1
-saveVar $quikSaved
+setvar $quik_ahaggle $ahaggle
+setvar $quik_hfactor $hfactor
+setvar $quik_sfactor $steal_factor
+setvar $quik_rfactor $rob_factor
+setvar $quik_figkill $figkill
+setvar $quik_bwarn $bwarn
+setvar $quik_bwarp $bwarp
+setvar $quik_asteal $asteal
+setvar $quik_arob $arob
+setvar $quik_lsteal $lsteal
+setvar $quik_lbust $lbust
+savevar $quik_ahaggle
+savevar $quik_pptstop
+savevar $quik_hfactor
+savevar $quik_sfactor
+savevar $quik_rfactor
+savevar $quik_figkill
+savevar $quik_bwarn
+savevar $quik_bwarp
+savevar $quik_asteal
+savevar $quik_arob
+savevar $quik_lsteal
+savevar $quik_lbust
+savevar $quik_showssm
+savevar $quik_showore
+savevar $quik_showorg
+savevar $quik_showequ
+setvar $quiksaved 1
+savevar $quiksaved
 return
 
-:readFile
+:readfile
 read $file $ahaggle 1
 read $file $hfactor 2
 read $file $steal_factor 3
@@ -529,148 +534,147 @@ return
 
 :autooff
 echo "*heh"
-IF ($ahaggle = "On") OR ($asteal = "On") OR ($arob = "On")
-   clientMessage "(SupGQuikPanel) - SupGCashing script started, turning off auto haggle, rob, steal."
-   setVar $ahaggle "Off"
-   setVar $asteal "Off"
-   setVar $arob "Off"
-END
+if ($ahaggle = "On") or ($asteal = "On") or ($arob = "On")
+	clientmessage "(SupGQuikPanel) - SupGCashing script started, turning off auto haggle, rob, steal."
+	setvar $ahaggle "Off"
+	setvar $asteal "Off"
+	setvar $arob "Off"
+end
 goto :wait
 
 :bwarpoff
-IF ($bwarp = "On")
-   clientMessage "(SupGQuikPanel) - SupGMove/Colo script started, turning off blind warp protection."
-   setVar $bwarp "Off"
-END
+if ($bwarp = "On")
+	clientmessage "(SupGQuikPanel) - SupGMove/Colo script started, turning off blind warp protection."
+	setvar $bwarp "Off"
+end
 goto :wait
 
 :killoff
-IF ($figkill = "On")
-   clientMessage "(SupGQuikPanel) - SupGClearing script started, turning off auto fighter killing."
-   setVar $figkill "Off"
-END
+if ($figkill = "On")
+	clientmessage "(SupGQuikPanel) - SupGClearing script started, turning off auto fighter killing."
+	setvar $figkill "Off"
+end
 goto :wait
 
-:displayOptions
-
+:displayoptions
 :setdisplaymenu
 echo "[2J"
-setVar $scriptName "SupGQuikPanel"
+setvar $scriptname "SupGQuikPanel"
 
 :displaymenu
 gosub :signature
-echo ANSI_15 "Display Options*"
-echo ANSI_14 "1." ANSI_15 " Display SSM Pairs      " ANSI_10 "["
-echo ANSI_6 $quik_showSSM
-echo ANSI_10 "]*"
-echo ANSI_14 "2." ANSI_15 " Display Fuel Pairs     " ANSI_10 "["
-echo ANSI_6 $quik_showOre
-echo ANSI_10 "]*"
-echo ANSI_14 "3." ANSI_15 " Display Organics Pairs " ANSI_10 "["
-echo ANSI_6 $quik_showOrg
-echo ANSI_10 "]*"
-echo ANSI_14 "4." ANSI_15 " Display Equipment Pairs" ANSI_10 "["
-echo ANSI_6 $quik_showEqu
-echo ANSI_10 "]*"
-echo ANSI_14 "D." ANSI_15 " Done"
-echo ANSI_5 "*Press the number of the option you*wish to change, or press" ANSI_14 " D" ANSI_5 " when you are done.**"
-getConsoleInput $displaychoice singlekey
+echo ansi_15 "Display Options*"
+echo ansi_14 "1." ansi_15 " Display SSM Pairs      " ansi_10 "["
+echo ansi_6 $quik_showssm
+echo ansi_10 "]*"
+echo ansi_14 "2." ansi_15 " Display Fuel Pairs     " ansi_10 "["
+echo ansi_6 $quik_showore
+echo ansi_10 "]*"
+echo ansi_14 "3." ansi_15 " Display Organics Pairs " ansi_10 "["
+echo ansi_6 $quik_showorg
+echo ansi_10 "]*"
+echo ansi_14 "4." ansi_15 " Display Equipment Pairs" ansi_10 "["
+echo ansi_6 $quik_showequ
+echo ansi_10 "]*"
+echo ansi_14 "D." ansi_15 " Done"
+echo ansi_5 "*Press the number of the option you*wish to change, or press" ansi_14 " D" ansi_5 " when you are done.**"
+getconsoleinput $displaychoice singlekey
 lowercase $displaychoice
-IF ($displaychoice = 1)
-   IF ($quik_showSSM = "No")
-        setVar $quik_showSSM "Yes"
-   ELSE
-        setVar $quik_showSSM "No"
-   END
-ELSEIF ($displaychoice = 2)
-   IF ($quik_showOre = "No")
-        setVar $quik_showore "Yes"
-   ELSE
-        setVar $quik_showore "No"
-   END
-ELSEIF ($displaychoice = 3)
-   IF ($quik_showorg = "No")
-        setVar $quik_showorg "Yes"
-   ELSE
-        setVar $quik_showorg "No"
-   END
-ELSEIF ($displaychoice = 4)
-   IF ($quik_showequ = "No")
-        setVar $quik_showequ "Yes"
-   	       ELSE
-        setVar $quik_showequ "No"
-   END
-ELSEIF ($displaychoice = "d")
-return
-ELSE
-   goto :setdisplaymenu
-END
+if ($displaychoice = 1)
+	if ($quik_showssm = "No")
+		setvar $quik_showssm "Yes"
+	else
+		setvar $quik_showssm "No"
+	end
+elseif ($displaychoice = 2)
+	if ($quik_showore = "No")
+		setvar $quik_showore "Yes"
+	else
+		setvar $quik_showore "No"
+	end
+elseif ($displaychoice = 3)
+	if ($quik_showorg = "No")
+		setvar $quik_showorg "Yes"
+	else
+		setvar $quik_showorg "No"
+	end
+elseif ($displaychoice = 4)
+	if ($quik_showequ = "No")
+		setvar $quik_showequ "Yes"
+	else
+		setvar $quik_showequ "No"
+	end
+elseif ($displaychoice = "d")
+	return
+else
+	goto :setdisplaymenu
+end
 goto :setdisplaymenu
 
 :signature
-echo ANSI_6 "**-" ansi_5 "=" ansi_6 "-" ansi_5 "=" ansi_10 "("
-setVar $text $scriptName
+echo ansi_6 "**-" ansi_5 "=" ansi_6 "-" ansi_5 "=" ansi_10 "("
+setvar $text $scriptname
 gosub :addspc
-setVar $scriptName $text
-echo ansi_15 $scriptName ansi_10 ")" ANSI_5 "=" ansi_6 "-" ansi_5 "=" ansi_6 "-*"
+setvar $scriptname $text
+echo ansi_15 $scriptname ansi_10 ")" ansi_5 "=" ansi_6 "-" ansi_5 "=" ansi_6 "-*"
 gosub :addspc
 return
 
 :addspc
-getLength $text $len
-IF ($len < $max)
-   setVar $spaces ($max - $len)
-   IF ($spaces = 1)
-        setVar $text " " & $text
-   ELSE
-        setVar $spaces ($spaces / 2)
-        setVar $cnt 0
+getlength $text $len
+if ($len < $max)
+	setvar $spaces ($max - $len)
+	if ($spaces = 1)
+		setvar $text " " & $text
+	else
+		setvar $spaces ($spaces / 2)
+		setvar $cnt 0
 
-        :addfront
-       IF ($cnt < $spaces)
-           add $cnt 1
-           setVar $text " " & $text
-           goto :addfront
-       END
-        setVar $cnt 0
+		:addfront
+		if ($cnt < $spaces)
+			add $cnt 1
+			setvar $text " " & $text
+			goto :addfront
+		end
+		setvar $cnt 0
 
-        :addback
-       IF ($cnt < $spaces)
-           add $cnt 1
-           setVar $text $text & " "
-           goto :addback
-       END
-        getLength $text $len
-        IF ($len < $max)
-       setVar $text " " & $text
-        END
-   END
-END
+		:addback
+		if ($cnt < $spaces)
+			add $cnt 1
+			setvar $text $text & " "
+			goto :addback
+		end
+		getlength $text $len
+		if ($len < $max)
+			setvar $text " " & $text
+		end
+	end
+end
 return
 
-:checkMax
-IF ($len > $max)
-   setVar $max $len
-END
+:checkmax
+if ($len > $max)
+	setvar $max $len
+end
 return
 
 :planet_neg
-setVar $ni 0
-setVar $ore 0
-setVar $org 0
-setVar $equ 0
-setVar $oreMCIC "-90"
-setVar $orgMCIC "-75"
-setVar $equMCIC "-65"
-IF ($sdt = 1) or ($selloff = 1)
-   send "PN"
-   waitFor "<Negotiate Planetary TradeAgreement>"
-END
-setTextLineTrigger orepct :orepct "Fuel Ore   Buying"
-setTextLineTrigger orgpct :orgpct "Organics   Buying"
-setTextLineTrigger equpct :equpct "Equipment  Buying"
-setTextTrigger gotpercts :gotpercts "Registry# and Planet Name"
-setTextTrigger noplninf :noplninf "Negotiate agreement"
+setvar $ni 0
+setvar $ore 0
+setvar $org 0
+setvar $equ 0
+setvar $oremcic "-90"
+setvar $orgmcic "-75"
+setvar $equmcic "-65"
+if ($sdt = 1) or ($selloff = 1)
+	send "PN"
+	waitfor "<Negotiate Planetary TradeAgreement>"
+end
+settextlinetrigger orepct :orepct "Fuel Ore   Buying"
+settextlinetrigger orgpct :orgpct "Organics   Buying"
+settextlinetrigger equpct :equpct "Equipment  Buying"
+settexttrigger gotpercts :gotpercts "Registry# and Planet Name"
+settexttrigger noplninf :noplninf "Negotiate agreement"
 pause
 
 :noplninf
@@ -679,116 +683,116 @@ killtrigger orgpct
 killtrigger equpct
 killtrigger gotpercts
 killtrigger noplninf
-echo ANSI_15 "Could not obtain port information, unable to use Advanced Planet Trading."
+echo ansi_15 "Could not obtain port information, unable to use Advanced Planet Trading."
 return
 
 :orepct
 killtrigger noplninf
-getWord CURRENTLINE $oretrading 4
-getWord CURRENTLINE $orepercent 5
+getword currentline $oretrading 4
+getword currentline $orepercent 5
 striptext $orepercent "%"
-IF ($orepercent < 100)
-   add $orepercent 1
-END
+if ($orepercent < 100)
+	add $orepercent 1
+end
 pause
 
 :orgpct
 killtrigger noplninf
-getWord CURRENTLINE $orgtrading 3
-getWord CURRENTLINE $orgpercent 4
+getword currentline $orgtrading 3
+getword currentline $orgpercent 4
 striptext $orgpercent "%"
-IF ($orgpercent < 100)
-   add $orgpercent 1
-END
+if ($orgpercent < 100)
+	add $orgpercent 1
+end
 pause
 
 :equpct
 killtrigger noplninf
-getWord CURRENTLINE $equtrading 3
-getWord CURRENTLINE $equpercent 4
+getword currentline $equtrading 3
+getword currentline $equpercent 4
 striptext $equpercent "%"
-IF ($equpercent < 100)
-   add $equpercent 1
-END
+if ($equpercent < 100)
+	add $equpercent 1
+end
 pause
 
 :gotpercts
 killtrigger orepct
 killtrigger orgpct
 killtrigger equpct
-IF ($sdt =1)
-   IF ($pnum = "Auto") OR ($pnum = 0)
+if ($sdt =1)
+	if ($pnum = "Auto") or ($pnum = 0)
 
-         :sdt_pnum
-         waitfor "-----------------"
-         setTextLineTrigger num :num "<"
-         pause
+		:sdt_pnum
+		waitfor "-----------------"
+		settextlinetrigger num :num "<"
+		pause
 
-         :num
-         getText CURRENTLINE $pnum "<" ">"
-         stripText $pnum " "
-         send $pnum "*"
-   ELSE
-         send $pnum "*"
-   END
-END
-IF ($selloff = 1)
-   send $pnum "*"
-END
+		:num
+		gettext currentline $pnum "<" ">"
+		striptext $pnum " "
+		send $pnum "*"
+	else
+		send $pnum "*"
+	end
+end
+if ($selloff = 1)
+	send $pnum "*"
+end
 
 :sellproduct
 echo "*Sell product*"
-setTextTrigger sellfuel :sellfuel "How many units of Fuel Ore"
-setTextTrigger sellorg :sellorg "How many units of Organics"
-setTextTrigger sellequ :sellequ "How many units of Equipment"
-setTextLineTrigger selling :amnt_selling "Agreed, "
-setTextTrigger donewithport :donewithport "] (?=Help)"
+settexttrigger sellfuel :sellfuel "How many units of Fuel Ore"
+settexttrigger sellorg :sellorg "How many units of Organics"
+settexttrigger sellequ :sellequ "How many units of Equipment"
+settextlinetrigger selling :amnt_selling "Agreed, "
+settexttrigger donewithport :donewithport "] (?=Help)"
 pause
 
 :sellfuel
 killtrigger ni
-setVar $prodtosell "ore"
-IF ($sdt = 1) or ($selloff = 1)
-   send "0*"
-END
+setvar $prodtosell "ore"
+if ($sdt = 1) or ($selloff = 1)
+	send "0*"
+end
 pause
 
-:sellorg 
+:sellorg
 killtrigger ni
-setVar $prodtosell "org"
-IF ($sdt = 1)
-   send "0*"
-END
-IF ($selloff = 1)
-   IF ($sellprod = "Organics") OR ($sellprod = "Both")
-         IF ($orgpercent < $minPerc)
-	         send "0*"
-         ELSE
-	         send "*"
-         END
-    ELSE
-         send "0*"
-    END
-END
+setvar $prodtosell "org"
+if ($sdt = 1)
+	send "0*"
+end
+if ($selloff = 1)
+	if ($sellprod = "Organics") or ($sellprod = "Both")
+		if ($orgpercent < $minperc)
+			send "0*"
+		else
+			send "*"
+		end
+	else
+		send "0*"
+	end
+end
 pause
 
 :sellequ
 killtrigger ni
-IF ($sdt = 1)
-   send "*"
-END
-IF ($selloff = 1)
-   IF ($sellprod = "Equipment") OR ($sellprod = "Both")
-         IF ($equpercent < $minPerc)
-	          send "0*"
-         ELSE
-	          send "*"
-         END
-   ELSE
-         send "0*"
-   END
-END
-setVar $prodtosell "equ"
+if ($sdt = 1)
+	send "*"
+end
+if ($selloff = 1)
+	if ($sellprod = "Equipment") or ($sellprod = "Both")
+		if ($equpercent < $minperc)
+			send "0*"
+		else
+			send "*"
+		end
+	else
+		send "0*"
+	end
+end
+setvar $prodtosell "equ"
 pause
 
 :amnt_selling
@@ -797,706 +801,706 @@ killtrigger sellfuel
 killtrigger sellorg
 killtrigger sellequ
 killtrigger donewithport
-getWord CURRENTLINE $amnt_sell 2
+getword currentline $amnt_sell 2
 striptext $amnt_sell ","
 
 :sellhaggle
 killalltriggers
 echo "*Sell haggle*"
-setTextTrigger sellfirstoffer :sellfirstoffer "Your offer ["
+settexttrigger sellfirstoffer :sellfirstoffer "Your offer ["
 pause
 
 :sellfirstoffer
 killtrigger sellfirstoffer
-setTextLineTrigger bad_offer_1 :sellhaggle "This is the big leagues Jr.  Make a real offer."
-setTextLineTrigger bad_offer_2 :sellhaggle "What do you take me for, a fool?  Make a real offer!"
-setTextLineTrigger bad_offer_3 :sellhaggle "WHAT?!@!? you must be crazy!"
-getText CURRENTLINE $offer "[" "]?"
+settextlinetrigger bad_offer_1 :sellhaggle "This is the big leagues Jr.  Make a real offer."
+settextlinetrigger bad_offer_2 :sellhaggle "What do you take me for, a fool?  Make a real offer!"
+settextlinetrigger bad_offer_3 :sellhaggle "WHAT?!@!? you must be crazy!"
+gettext currentline $offer "[" "]?"
 striptext $offer ","
 echo "*First offer*"
 echo "*Offer: " $offer "*"
-setVar $perunitinitoffer $offer
+setvar $perunitinitoffer $offer
 multiply $perunitinitoffer 100
 divide $perunitinitoffer $amnt_sell
-setVar $portmaxinit $perunitinitoffer
+setvar $portmaxinit $perunitinitoffer
 divide $perunitinitoffer 10
-IF ($prodtosell = "ore")
-   	       setVar $basevalue 256055800
-   setVar $basepercent 11725
-       setVar $basepercentinverse 88275
-   setVar $percentfrombase $orepercent
-ELSEIF ($prodtosell = "org")
-   setVar $basevalue 506276400
-   setVar $basepercent 11287
-   setVar $basepercentinverse 88713
-   setVar $percentfrombase $orgpercent
-ELSEIF ($prodtosell = "equ")
-   setVar $basevalue 906281000
-   setVar $basepercent 10989
-   setVar $basepercentinverse 89010
-   setVar $percentfrombase $equpercent
-END
+if ($prodtosell = "ore")
+	setvar $basevalue 256055800
+	setvar $basepercent 11725
+	setvar $basepercentinverse 88275
+	setvar $percentfrombase $orepercent
+elseif ($prodtosell = "org")
+	setvar $basevalue 506276400
+	setvar $basepercent 11287
+	setvar $basepercentinverse 88713
+	setvar $percentfrombase $orgpercent
+elseif ($prodtosell = "equ")
+	setvar $basevalue 906281000
+	setvar $basepercent 10989
+	setvar $basepercentinverse 89010
+	setvar $percentfrombase $equpercent
+end
 
-IF ($percentfrombase >= 15)
-   multiply $portmaxinit 100000
-   subtract $portmaxinit $basevalue
-   multiply $percentfrombase 1000
-   subtract $percentfrombase $basepercent
-   divide $portmaxinit $percentfrombase
-   multiply $portmaxinit $basepercentinverse
-   add $portmaxinit $basevalue
-   divide $portmaxinit 1000000
-ELSEIF ($prodtosell = "ore")
-   setVar $portmaxinit 340
-ELSEIF ($prodtosell = "org")
-   setVar $portmaxinit 635
-ELSEIF ($prodtosell = "equ")
-   setVar $portmaxinit 1063
-END
-   IF ($prodtosell = "ore")
-IF ($portmaxinit >= 436)
-setVar $MCIC "-90"
-setVar $multiple "1494"
-ELSEIF ($portmaxinit >= 434)
-setVar $MCIC "-89"
-setVar $multiple "1488"
-ELSEIF ($portmaxinit >= 433)
-setVar $MCIC "-88"
-setVar $multiple "1482"
-ELSEIF ($portmaxinit >= 431)
-setVar $MCIC "-87"
-setVar $multiple "1476"
-ELSEIF ($portmaxinit >= 429)
-setVar $MCIC "-86"
-setVar $multiple "1470"
-ELSEIF ($portmaxinit >= 427)
-setVar $MCIC "-85"
-setVar $multiple "1464"
-ELSEIF ($portmaxinit >= 425)
-setVar $MCIC "-84"
-setVar $multiple "1458"
-ELSEIF ($portmaxinit >= 424)
-setVar $MCIC "-83"
-setVar $multiple "1452"
-ELSEIF ($portmaxinit >= 422)
-setVar $MCIC "-82"
-setVar $multiple "1446"
-ELSEIF ($portmaxinit >= 420)
-setVar $MCIC "-81"
-setVar $multiple "1440"
-ELSEIF ($portmaxinit >= 418)
-setVar $MCIC "-80"
-setVar $multiple "1434"
-ELSEIF ($portmaxinit >= 416)
-setVar $MCIC "-79"
-setVar $multiple "1429"
-ELSEIF ($portmaxinit >= 414)
-setVar $MCIC "-78"
-setVar $multiple "1423"
-ELSEIF ($portmaxinit >= 412)
-setVar $MCIC "-77"
-setVar $multiple "1417"
-ELSEIF ($portmaxinit >= 411)
-setVar $MCIC "-76"
-setVar $multiple "1411"
-ELSEIF ($portmaxinit >= 409)
-setVar $MCIC "-75"
-setVar $multiple "1405"
-ELSEIF ($portmaxinit >= 407)
-setVar $MCIC "-74"
-setVar $multiple "1399"
-ELSEIF ($portmaxinit >= 405)
-setVar $MCIC "-73"
-setVar $multiple "1393"
-ELSEIF ($portmaxinit >= 403)
-setVar $MCIC "-72"
-setVar $multiple "1387"
-ELSEIF ($portmaxinit >= 401)
-setVar $MCIC "-71"
-setVar $multiple "1381"
-ELSEIF ($portmaxinit >= 399)
-setVar $MCIC "-70"
-setVar $multiple "1375"
-ELSEIF ($portmaxinit >= 397)
-setVar $MCIC "-69"
-setVar $multiple "1369"
-ELSEIF ($portmaxinit >= 396)
-setVar $MCIC "-68"
-setVar $multiple "1363"
-ELSEIF ($portmaxinit >= 394)
-setVar $MCIC "-67"
-setVar $multiple "1357"
-ELSEIF ($portmaxinit >= 392)
-setVar $MCIC "-66"
-setVar $multiple "1351"
-ELSEIF ($portmaxinit >= 390)
-setVar $MCIC "-65"
-setVar $multiple "1345"
-ELSEIF ($portmaxinit >= 388)
-setVar $MCIC "-64"
-setVar $multiple "1342"
-ELSEIF ($portmaxinit >= 386)
-setVar $MCIC "-63"
-setVar $multiple "1336"
-ELSEIF ($portmaxinit >= 384)
-setVar $MCIC "-62"
-setVar $multiple "1330"
-ELSEIF ($portmaxinit >= 382)
-setVar $MCIC "-61"
-setVar $multiple "1324"
-ELSEIF ($portmaxinit >= 380)
-setVar $MCIC "-60"
-setVar $multiple "1318"
-ELSEIF ($portmaxinit >= 378)
-setVar $MCIC "-59"
-setVar $multiple "1312"
-ELSEIF ($portmaxinit >= 376)
-setVar $MCIC "-58"
-setVar $multiple "1306"
-ELSEIF ($portmaxinit >= 374)
-setVar $MCIC "-57"
-setVar $multiple "1300"
-ELSEIF ($portmaxinit >= 372)
-setVar $MCIC "-56"
-setVar $multiple "1294"
-ELSEIF ($portmaxinit >= 370)
-setVar $MCIC "-55"
-setVar $multiple "1291"
-ELSEIF ($portmaxinit >= 368)
-setVar $MCIC "-54"
-setVar $multiple "1285"
-ELSEIF ($portmaxinit >= 366)
-setVar $MCIC "-53"
-setVar $multiple "1279"
-ELSEIF ($portmaxinit >= 364)
-setVar $MCIC "-52"
-setVar $multiple "1273"
-ELSEIF ($portmaxinit >= 362)
-setVar $MCIC "-51"
-setVar $multiple "1267"
-ELSEIF ($portmaxinit >= 360)
-setVar $MCIC "-50"
-setVar $multiple "1261"
-ELSEIF ($portmaxinit >= 358)
-setVar $MCIC "-49"
-setVar $multiple "1255"
-ELSEIF ($portmaxinit >= 356)
-setVar $MCIC "-48"
-setVar $multiple "1249"
-ELSEIF ($portmaxinit >= 354)
-setVar $MCIC "-46"
-setVar $multiple "1246"
-ELSEIF ($portmaxinit >= 352)
-setVar $MCIC "-46"
-setVar $multiple "1240"
-ELSEIF ($portmaxinit >= 350)
-setVar $MCIC "-45"
-setVar $multiple "1234"
-ELSEIF ($portmaxinit >= 348)
-setVar $MCIC "-44"
-setVar $multiple "1228"
-ELSEIF ($portmaxinit >= 346)
-setVar $MCIC "-43"
-setVar $multiple "1222"
-ELSEIF ($portmaxinit >= 344)
-setVar $MCIC "-42"
-setVar $multiple "1219"
-ELSEIF ($portmaxinit >= 342)
-setVar $MCIC "-41"
-setVar $multiple "1209"
-ELSEIF ($portmaxinit >= 340)
-setVar $MCIC "-40"
-setVar $multiple "1208"
-ELSE
-setVar $MCIC 0
-setVar $multiple "1208"
-END
-   ELSEIF ($prodtosell = "org")
-IF ($portmaxinit >= 813)
-setVar $MCIC "-75"
-setVar $multiple "1405"
-ELSEIF ($portmaxinit >= 810)
-setVar $MCIC "-74"
-setVar $multiple 1399
-ELSEIF ($portmaxinit >= 806)
-setVar $MCIC "-73"
-setVar $multiple 1393
-ELSEIF ($portmaxinit >= 802)
-setVar $MCIC "-72"
-setVar $multiple 1387
-ELSEIF ($portmaxinit >= 798)
-setVar $MCIC "-71"
-setVar $multiple 1381
-ELSEIF ($portmaxinit >= 795)
-setVar $MCIC "-70"
-setVar $multiple 1375
-ELSEIF ($portmaxinit >= 791)
-setVar $MCIC "-69"
-setVar $multiple 1369
-ELSEIF ($portmaxinit >= 787)
-setVar $MCIC "-68"
-setVar $multiple 1363
-ELSEIF ($portmaxinit >= 783)
-setVar $MCIC "-67"
-setVar $multiple 1357
-ELSEIF ($portmaxinit >= 779)
-setVar $MCIC "-66"
-setVar $multiple 1351
-ELSEIF ($portmaxinit >= 775)
-setVar $MCIC "-65"
-setVar $multiple 1345
-ELSEIF ($portmaxinit >= 772)
-setVar $MCIC "-64"
-setVar $multiple 1339
-ELSEIF ($portmaxinit >= 768)
-setVar $MCIC "-63"
-setVar $multiple 1336
-ELSEIF ($portmaxinit >= 764)
-setVar $MCIC "-62"
-setVar $multiple 1330
-ELSEIF ($portmaxinit >= 760)
-setVar $MCIC "-61"
-setVar $multiple 1324
-ELSEIF ($portmaxinit >= 756)
-setVar $MCIC "-60"
-setVar $multiple 1318
-ELSEIF ($portmaxinit >= 752)
-setVar $MCIC "-59"
-setVar $multiple 1312
-ELSEIF ($portmaxinit >= 748)
-setVar $MCIC "-58"
-setVar $multiple 1306
-ELSEIF ($portmaxinit >= 744)
-setVar $MCIC "-57"
-setVar $multiple 1300
-ELSEIF ($portmaxinit >= 740)
-setVar $MCIC "-56"
-setVar $multiple 1294
-ELSEIF ($portmaxinit >= 737)
-setVar $MCIC "-55"
-setVar $multiple 1291
-ELSEIF ($portmaxinit >= 733)
-setVar $MCIC "-54"
-setVar $multiple 1285
-ELSEIF ($portmaxinit >= 729)
-setVar $MCIC "-53"
-setVar $multiple 1279
-ELSEIF ($portmaxinit >= 725)
-setVar $MCIC "-52"
-setVar $multiple 1273
-ELSEIF ($portmaxinit >= 721)
-setVar $MCIC "-51"
-setVar $multiple 1267
-ELSEIF ($portmaxinit >= 717)
-setVar $MCIC "-50"
-setVar $multiple 1261
-ELSEIF ($portmaxinit >= 713)
-setVar $MCIC "-49"
-setVar $multiple 1255
-ELSEIF ($portmaxinit >= 709)
-setVar $MCIC "-48"
-setVar $multiple 1252
-ELSEIF ($portmaxinit >= 705)
-setVar $MCIC "-47"
-setVar $multiple 1246
-ELSEIF ($portmaxinit >= 701)
-setVar $MCIC "-46"
-setVar $multiple 1236
-ELSEIF ($portmaxinit >= 697)
-setVar $MCIC "-45"
-setVar $multiple 1233
-ELSEIF ($portmaxinit >= 693)
-setVar $MCIC "-44"
-setVar $multiple 1227
-ELSEIF ($portmaxinit >= 688)
-setVar $MCIC "-43"
-setVar $multiple 1224
-ELSEIF ($portmaxinit >= 684)
-setVar $MCIC "-42"
-setVar $multiple 1214
-ELSEIF ($portmaxinit >= 680)
-setVar $MCIC "-41"
-setVar $multiple 1213
-ELSEIF ($portmaxinit >= 676)
-setVar $MCIC "-40"
-setVar $multiple 1203
-ELSEIF ($portmaxinit >= 672)
-setVar $MCIC "-39"
-setVar $multiple 1200
-ELSEIF ($portmaxinit >= 668)
-setVar $MCIC "-38"
-setVar $multiple 1194
-ELSEIF ($portmaxinit >= 664)
-setVar $MCIC "-37"
-setVar $multiple 1191
-ELSEIF ($portmaxinit >= 660)
-setVar $MCIC "-36"
-setVar $multiple 1181
-ELSEIF ($portmaxinit >= 656)
-setVar $MCIC "-35"
-setVar $multiple 1178
-ELSEIF ($portmaxinit >= 651)
-setVar $MCIC "-34"
-setVar $multiple 1172
-ELSEIF ($portmaxinit >= 647)
-setVar $MCIC "-33"
-setVar $multiple 1166
-ELSEIF ($portmaxinit >= 643)
-setVar $MCIC "-32"
-setVar $multiple 1160
-ELSEIF ($portmaxinit >= 639)
-setVar $MCIC "-31"
-setVar $multiple 1157
-ELSEIF ($portmaxinit >= 635)
-setVar $MCIC "-30"
-setVar $multiple 1154
-ELSE
-setVar $MCIC 0
-setVar $multiple "1154"
-END
-   ELSEIF ($prodtosell = "equ")
-IF ($portmaxinit >= 1393)
-setVar $MCIC "-65"
-setVar $multiple 1347
-ELSEIF ($portmaxinit >= 1386)
-setVar $MCIC "-64"
-setVar $multiple 1341
-ELSEIF ($portmaxinit >= 1379)
-setVar $MCIC "-63"
-setVar $multiple 1336
-ELSEIF ($portmaxinit >= 1372)
-setVar $MCIC "-62"
-setVar $multiple 1330
-ELSEIF ($portmaxinit >= 1365)
-setVar $MCIC "-61"
-setVar $multiple 1324
-ELSEIF ($portmaxinit >= 1358)
-setVar $MCIC "-60"
-setVar $multiple 1319
-ELSEIF ($portmaxinit >= 1351)
-setVar $MCIC "-59"
-setVar $multiple 1313
-ELSEIF ($portmaxinit >= 1344)
-setVar $MCIC "-58"
-setVar $multiple 1307
-ELSEIF ($portmaxinit >= 1337)
-setVar $MCIC "-57"
-setVar $multiple 1302
-ELSEIF ($portmaxinit >= 1329)
-setVar $MCIC "-56"
-setVar $multiple 1296
-ELSEIF ($portmaxinit >= 1323)
-setVar $MCIC "-55"
-setVar $multiple 1291
-ELSEIF ($portmaxinit >= 1315)
-setVar $MCIC "-54"
-setVar $multiple 1285
-ELSEIF ($portmaxinit >= 1308)
-setVar $MCIC "-53"
-setVar $multiple 1279
-ELSEIF ($portmaxinit >= 1301)
-setVar $MCIC "-52"
-setVar $multiple 1274
-ELSEIF ($portmaxinit >= 1294)
-setVar $MCIC "-51"
-setVar $multiple 1268
-ELSEIF ($portmaxinit >= 1287)
-setVar $MCIC "-50"
-setVar $multiple 1262
-ELSEIF ($portmaxinit >= 1279)
-setVar $MCIC "-49"
-setVar $multiple 1254
-ELSEIF ($portmaxinit >= 1272)
-setVar $MCIC "-48"
-setVar $multiple 1247
-ELSEIF ($portmaxinit >= 1265)
-setVar $MCIC "-47"
-setVar $multiple 1246
-ELSEIF ($portmaxinit >= 1258)
-setVar $MCIC "-46"
-setVar $multiple 1241
-ELSEIF ($portmaxinit >= 1251)
-setVar $MCIC "-45"
-setVar $multiple 1235
-ELSEIF ($portmaxinit >= 1243)
-setVar $MCIC "-44"
-setVar $multiple 1229
-ELSEIF ($portmaxinit >= 1236)
-setVar $MCIC "-43"
-setVar $multiple 1224
-ELSEIF ($portmaxinit >= 1229)
-setVar $MCIC "-42"
-setVar $multiple 1218
-ELSEIF ($portmaxinit >= 1221)
-setVar $MCIC "-41"
-setVar $multiple 1213
-ELSEIF ($portmaxinit >= 1214)
-setVar $MCIC "-40"
-setVar $multiple 1208
-ELSEIF ($portmaxinit >= 1206)
-setVar $MCIC "-39"
-setVar $multiple 1201
-ELSEIF ($portmaxinit >= 1199)
-setVar $MCIC "-38"
-setVar $multiple 1196
-ELSEIF ($portmaxinit >= 1192)
-setVar $MCIC "-37"
-setVar $multiple 1190
-ELSEIF ($portmaxinit >= 1184)
-setVar $MCIC "-36"
-setVar $multiple 1185
-ELSEIF ($portmaxinit >= 1177)
-setVar $MCIC "-35"
-setVar $multiple 1180
-ELSEIF ($portmaxinit >= 1169)
-setVar $MCIC "-34"
-setVar $multiple 1174
-ELSEIF ($portmaxinit >= 1162)
-setVar $MCIC "-33"
-setVar $multiple 1169
-ELSEIF ($portmaxinit >= 1154)
-setVar $MCIC "-32"
-setVar $multiple 1164
-ELSEIF ($portmaxinit >= 1147)
-setVar $MCIC "-31"
-setVar $multiple 1158
-ELSEIF ($portmaxinit >= 1139)
-setVar $MCIC "-30"
-setVar $multiple 1152
-ELSEIF ($portmaxinit >= 1132)
-setVar $MCIC "-29"
-setVar $multiple 1149
-ELSEIF ($portmaxinit >= 1124)
-setVar $MCIC "-28"
-setVar $multiple 1144
-ELSEIF ($portmaxinit >= 1116)
-setVar $MCIC "-27"
-setVar $multiple 1136
-ELSEIF ($portmaxinit >= 1109)
-setVar $MCIC "-26"
-setVar $multiple 1132
-ELSEIF ($portmaxinit >= 1101)
-setVar $MCIC "-25"
-setVar $multiple 1126
-ELSEIF ($portmaxinit >= 1093)
-setVar $MCIC "-24"
-setVar $multiple 1122
-ELSEIF ($portmaxinit >= 1086)
-setVar $MCIC "-23"
-setVar $multiple 1117
-ELSEIF ($portmaxinit >= 1078)
-setVar $MCIC "-22"
-setVar $multiple 1110
-ELSEIF ($portmaxinit >= 1071)
-setVar $MCIC "-21"
-setVar $multiple 1105
-ELSEIF ($portmaxinit >= 1063)
-setVar $MCIC "-20"
-setVar $multiple 1102
-ELSE
-setVar $MCIC "0"
-setVar $multiple 1102
-END
-   END
-setVar $counter $offer
+if ($percentfrombase >= 15)
+	multiply $portmaxinit 100000
+	subtract $portmaxinit $basevalue
+	multiply $percentfrombase 1000
+	subtract $percentfrombase $basepercent
+	divide $portmaxinit $percentfrombase
+	multiply $portmaxinit $basepercentinverse
+	add $portmaxinit $basevalue
+	divide $portmaxinit 1000000
+elseif ($prodtosell = "ore")
+	setvar $portmaxinit 340
+elseif ($prodtosell = "org")
+	setvar $portmaxinit 635
+elseif ($prodtosell = "equ")
+	setvar $portmaxinit 1063
+end
+if ($prodtosell = "ore")
+	if ($portmaxinit >= 436)
+		setvar $mcic "-90"
+		setvar $multiple "1494"
+	elseif ($portmaxinit >= 434)
+		setvar $mcic "-89"
+		setvar $multiple "1488"
+	elseif ($portmaxinit >= 433)
+		setvar $mcic "-88"
+		setvar $multiple "1482"
+	elseif ($portmaxinit >= 431)
+		setvar $mcic "-87"
+		setvar $multiple "1476"
+	elseif ($portmaxinit >= 429)
+		setvar $mcic "-86"
+		setvar $multiple "1470"
+	elseif ($portmaxinit >= 427)
+		setvar $mcic "-85"
+		setvar $multiple "1464"
+	elseif ($portmaxinit >= 425)
+		setvar $mcic "-84"
+		setvar $multiple "1458"
+	elseif ($portmaxinit >= 424)
+		setvar $mcic "-83"
+		setvar $multiple "1452"
+	elseif ($portmaxinit >= 422)
+		setvar $mcic "-82"
+		setvar $multiple "1446"
+	elseif ($portmaxinit >= 420)
+		setvar $mcic "-81"
+		setvar $multiple "1440"
+	elseif ($portmaxinit >= 418)
+		setvar $mcic "-80"
+		setvar $multiple "1434"
+	elseif ($portmaxinit >= 416)
+		setvar $mcic "-79"
+		setvar $multiple "1429"
+	elseif ($portmaxinit >= 414)
+		setvar $mcic "-78"
+		setvar $multiple "1423"
+	elseif ($portmaxinit >= 412)
+		setvar $mcic "-77"
+		setvar $multiple "1417"
+	elseif ($portmaxinit >= 411)
+		setvar $mcic "-76"
+		setvar $multiple "1411"
+	elseif ($portmaxinit >= 409)
+		setvar $mcic "-75"
+		setvar $multiple "1405"
+	elseif ($portmaxinit >= 407)
+		setvar $mcic "-74"
+		setvar $multiple "1399"
+	elseif ($portmaxinit >= 405)
+		setvar $mcic "-73"
+		setvar $multiple "1393"
+	elseif ($portmaxinit >= 403)
+		setvar $mcic "-72"
+		setvar $multiple "1387"
+	elseif ($portmaxinit >= 401)
+		setvar $mcic "-71"
+		setvar $multiple "1381"
+	elseif ($portmaxinit >= 399)
+		setvar $mcic "-70"
+		setvar $multiple "1375"
+	elseif ($portmaxinit >= 397)
+		setvar $mcic "-69"
+		setvar $multiple "1369"
+	elseif ($portmaxinit >= 396)
+		setvar $mcic "-68"
+		setvar $multiple "1363"
+	elseif ($portmaxinit >= 394)
+		setvar $mcic "-67"
+		setvar $multiple "1357"
+	elseif ($portmaxinit >= 392)
+		setvar $mcic "-66"
+		setvar $multiple "1351"
+	elseif ($portmaxinit >= 390)
+		setvar $mcic "-65"
+		setvar $multiple "1345"
+	elseif ($portmaxinit >= 388)
+		setvar $mcic "-64"
+		setvar $multiple "1342"
+	elseif ($portmaxinit >= 386)
+		setvar $mcic "-63"
+		setvar $multiple "1336"
+	elseif ($portmaxinit >= 384)
+		setvar $mcic "-62"
+		setvar $multiple "1330"
+	elseif ($portmaxinit >= 382)
+		setvar $mcic "-61"
+		setvar $multiple "1324"
+	elseif ($portmaxinit >= 380)
+		setvar $mcic "-60"
+		setvar $multiple "1318"
+	elseif ($portmaxinit >= 378)
+		setvar $mcic "-59"
+		setvar $multiple "1312"
+	elseif ($portmaxinit >= 376)
+		setvar $mcic "-58"
+		setvar $multiple "1306"
+	elseif ($portmaxinit >= 374)
+		setvar $mcic "-57"
+		setvar $multiple "1300"
+	elseif ($portmaxinit >= 372)
+		setvar $mcic "-56"
+		setvar $multiple "1294"
+	elseif ($portmaxinit >= 370)
+		setvar $mcic "-55"
+		setvar $multiple "1291"
+	elseif ($portmaxinit >= 368)
+		setvar $mcic "-54"
+		setvar $multiple "1285"
+	elseif ($portmaxinit >= 366)
+		setvar $mcic "-53"
+		setvar $multiple "1279"
+	elseif ($portmaxinit >= 364)
+		setvar $mcic "-52"
+		setvar $multiple "1273"
+	elseif ($portmaxinit >= 362)
+		setvar $mcic "-51"
+		setvar $multiple "1267"
+	elseif ($portmaxinit >= 360)
+		setvar $mcic "-50"
+		setvar $multiple "1261"
+	elseif ($portmaxinit >= 358)
+		setvar $mcic "-49"
+		setvar $multiple "1255"
+	elseif ($portmaxinit >= 356)
+		setvar $mcic "-48"
+		setvar $multiple "1249"
+	elseif ($portmaxinit >= 354)
+		setvar $mcic "-46"
+		setvar $multiple "1246"
+	elseif ($portmaxinit >= 352)
+		setvar $mcic "-46"
+		setvar $multiple "1240"
+	elseif ($portmaxinit >= 350)
+		setvar $mcic "-45"
+		setvar $multiple "1234"
+	elseif ($portmaxinit >= 348)
+		setvar $mcic "-44"
+		setvar $multiple "1228"
+	elseif ($portmaxinit >= 346)
+		setvar $mcic "-43"
+		setvar $multiple "1222"
+	elseif ($portmaxinit >= 344)
+		setvar $mcic "-42"
+		setvar $multiple "1219"
+	elseif ($portmaxinit >= 342)
+		setvar $mcic "-41"
+		setvar $multiple "1209"
+	elseif ($portmaxinit >= 340)
+		setvar $mcic "-40"
+		setvar $multiple "1208"
+	else
+		setvar $mcic 0
+		setvar $multiple "1208"
+	end
+elseif ($prodtosell = "org")
+	if ($portmaxinit >= 813)
+		setvar $mcic "-75"
+		setvar $multiple "1405"
+	elseif ($portmaxinit >= 810)
+		setvar $mcic "-74"
+		setvar $multiple 1399
+	elseif ($portmaxinit >= 806)
+		setvar $mcic "-73"
+		setvar $multiple 1393
+	elseif ($portmaxinit >= 802)
+		setvar $mcic "-72"
+		setvar $multiple 1387
+	elseif ($portmaxinit >= 798)
+		setvar $mcic "-71"
+		setvar $multiple 1381
+	elseif ($portmaxinit >= 795)
+		setvar $mcic "-70"
+		setvar $multiple 1375
+	elseif ($portmaxinit >= 791)
+		setvar $mcic "-69"
+		setvar $multiple 1369
+	elseif ($portmaxinit >= 787)
+		setvar $mcic "-68"
+		setvar $multiple 1363
+	elseif ($portmaxinit >= 783)
+		setvar $mcic "-67"
+		setvar $multiple 1357
+	elseif ($portmaxinit >= 779)
+		setvar $mcic "-66"
+		setvar $multiple 1351
+	elseif ($portmaxinit >= 775)
+		setvar $mcic "-65"
+		setvar $multiple 1345
+	elseif ($portmaxinit >= 772)
+		setvar $mcic "-64"
+		setvar $multiple 1339
+	elseif ($portmaxinit >= 768)
+		setvar $mcic "-63"
+		setvar $multiple 1336
+	elseif ($portmaxinit >= 764)
+		setvar $mcic "-62"
+		setvar $multiple 1330
+	elseif ($portmaxinit >= 760)
+		setvar $mcic "-61"
+		setvar $multiple 1324
+	elseif ($portmaxinit >= 756)
+		setvar $mcic "-60"
+		setvar $multiple 1318
+	elseif ($portmaxinit >= 752)
+		setvar $mcic "-59"
+		setvar $multiple 1312
+	elseif ($portmaxinit >= 748)
+		setvar $mcic "-58"
+		setvar $multiple 1306
+	elseif ($portmaxinit >= 744)
+		setvar $mcic "-57"
+		setvar $multiple 1300
+	elseif ($portmaxinit >= 740)
+		setvar $mcic "-56"
+		setvar $multiple 1294
+	elseif ($portmaxinit >= 737)
+		setvar $mcic "-55"
+		setvar $multiple 1291
+	elseif ($portmaxinit >= 733)
+		setvar $mcic "-54"
+		setvar $multiple 1285
+	elseif ($portmaxinit >= 729)
+		setvar $mcic "-53"
+		setvar $multiple 1279
+	elseif ($portmaxinit >= 725)
+		setvar $mcic "-52"
+		setvar $multiple 1273
+	elseif ($portmaxinit >= 721)
+		setvar $mcic "-51"
+		setvar $multiple 1267
+	elseif ($portmaxinit >= 717)
+		setvar $mcic "-50"
+		setvar $multiple 1261
+	elseif ($portmaxinit >= 713)
+		setvar $mcic "-49"
+		setvar $multiple 1255
+	elseif ($portmaxinit >= 709)
+		setvar $mcic "-48"
+		setvar $multiple 1252
+	elseif ($portmaxinit >= 705)
+		setvar $mcic "-47"
+		setvar $multiple 1246
+	elseif ($portmaxinit >= 701)
+		setvar $mcic "-46"
+		setvar $multiple 1236
+	elseif ($portmaxinit >= 697)
+		setvar $mcic "-45"
+		setvar $multiple 1233
+	elseif ($portmaxinit >= 693)
+		setvar $mcic "-44"
+		setvar $multiple 1227
+	elseif ($portmaxinit >= 688)
+		setvar $mcic "-43"
+		setvar $multiple 1224
+	elseif ($portmaxinit >= 684)
+		setvar $mcic "-42"
+		setvar $multiple 1214
+	elseif ($portmaxinit >= 680)
+		setvar $mcic "-41"
+		setvar $multiple 1213
+	elseif ($portmaxinit >= 676)
+		setvar $mcic "-40"
+		setvar $multiple 1203
+	elseif ($portmaxinit >= 672)
+		setvar $mcic "-39"
+		setvar $multiple 1200
+	elseif ($portmaxinit >= 668)
+		setvar $mcic "-38"
+		setvar $multiple 1194
+	elseif ($portmaxinit >= 664)
+		setvar $mcic "-37"
+		setvar $multiple 1191
+	elseif ($portmaxinit >= 660)
+		setvar $mcic "-36"
+		setvar $multiple 1181
+	elseif ($portmaxinit >= 656)
+		setvar $mcic "-35"
+		setvar $multiple 1178
+	elseif ($portmaxinit >= 651)
+		setvar $mcic "-34"
+		setvar $multiple 1172
+	elseif ($portmaxinit >= 647)
+		setvar $mcic "-33"
+		setvar $multiple 1166
+	elseif ($portmaxinit >= 643)
+		setvar $mcic "-32"
+		setvar $multiple 1160
+	elseif ($portmaxinit >= 639)
+		setvar $mcic "-31"
+		setvar $multiple 1157
+	elseif ($portmaxinit >= 635)
+		setvar $mcic "-30"
+		setvar $multiple 1154
+	else
+		setvar $mcic 0
+		setvar $multiple "1154"
+	end
+elseif ($prodtosell = "equ")
+	if ($portmaxinit >= 1393)
+		setvar $mcic "-65"
+		setvar $multiple 1347
+	elseif ($portmaxinit >= 1386)
+		setvar $mcic "-64"
+		setvar $multiple 1341
+	elseif ($portmaxinit >= 1379)
+		setvar $mcic "-63"
+		setvar $multiple 1336
+	elseif ($portmaxinit >= 1372)
+		setvar $mcic "-62"
+		setvar $multiple 1330
+	elseif ($portmaxinit >= 1365)
+		setvar $mcic "-61"
+		setvar $multiple 1324
+	elseif ($portmaxinit >= 1358)
+		setvar $mcic "-60"
+		setvar $multiple 1319
+	elseif ($portmaxinit >= 1351)
+		setvar $mcic "-59"
+		setvar $multiple 1313
+	elseif ($portmaxinit >= 1344)
+		setvar $mcic "-58"
+		setvar $multiple 1307
+	elseif ($portmaxinit >= 1337)
+		setvar $mcic "-57"
+		setvar $multiple 1302
+	elseif ($portmaxinit >= 1329)
+		setvar $mcic "-56"
+		setvar $multiple 1296
+	elseif ($portmaxinit >= 1323)
+		setvar $mcic "-55"
+		setvar $multiple 1291
+	elseif ($portmaxinit >= 1315)
+		setvar $mcic "-54"
+		setvar $multiple 1285
+	elseif ($portmaxinit >= 1308)
+		setvar $mcic "-53"
+		setvar $multiple 1279
+	elseif ($portmaxinit >= 1301)
+		setvar $mcic "-52"
+		setvar $multiple 1274
+	elseif ($portmaxinit >= 1294)
+		setvar $mcic "-51"
+		setvar $multiple 1268
+	elseif ($portmaxinit >= 1287)
+		setvar $mcic "-50"
+		setvar $multiple 1262
+	elseif ($portmaxinit >= 1279)
+		setvar $mcic "-49"
+		setvar $multiple 1254
+	elseif ($portmaxinit >= 1272)
+		setvar $mcic "-48"
+		setvar $multiple 1247
+	elseif ($portmaxinit >= 1265)
+		setvar $mcic "-47"
+		setvar $multiple 1246
+	elseif ($portmaxinit >= 1258)
+		setvar $mcic "-46"
+		setvar $multiple 1241
+	elseif ($portmaxinit >= 1251)
+		setvar $mcic "-45"
+		setvar $multiple 1235
+	elseif ($portmaxinit >= 1243)
+		setvar $mcic "-44"
+		setvar $multiple 1229
+	elseif ($portmaxinit >= 1236)
+		setvar $mcic "-43"
+		setvar $multiple 1224
+	elseif ($portmaxinit >= 1229)
+		setvar $mcic "-42"
+		setvar $multiple 1218
+	elseif ($portmaxinit >= 1221)
+		setvar $mcic "-41"
+		setvar $multiple 1213
+	elseif ($portmaxinit >= 1214)
+		setvar $mcic "-40"
+		setvar $multiple 1208
+	elseif ($portmaxinit >= 1206)
+		setvar $mcic "-39"
+		setvar $multiple 1201
+	elseif ($portmaxinit >= 1199)
+		setvar $mcic "-38"
+		setvar $multiple 1196
+	elseif ($portmaxinit >= 1192)
+		setvar $mcic "-37"
+		setvar $multiple 1190
+	elseif ($portmaxinit >= 1184)
+		setvar $mcic "-36"
+		setvar $multiple 1185
+	elseif ($portmaxinit >= 1177)
+		setvar $mcic "-35"
+		setvar $multiple 1180
+	elseif ($portmaxinit >= 1169)
+		setvar $mcic "-34"
+		setvar $multiple 1174
+	elseif ($portmaxinit >= 1162)
+		setvar $mcic "-33"
+		setvar $multiple 1169
+	elseif ($portmaxinit >= 1154)
+		setvar $mcic "-32"
+		setvar $multiple 1164
+	elseif ($portmaxinit >= 1147)
+		setvar $mcic "-31"
+		setvar $multiple 1158
+	elseif ($portmaxinit >= 1139)
+		setvar $mcic "-30"
+		setvar $multiple 1152
+	elseif ($portmaxinit >= 1132)
+		setvar $mcic "-29"
+		setvar $multiple 1149
+	elseif ($portmaxinit >= 1124)
+		setvar $mcic "-28"
+		setvar $multiple 1144
+	elseif ($portmaxinit >= 1116)
+		setvar $mcic "-27"
+		setvar $multiple 1136
+	elseif ($portmaxinit >= 1109)
+		setvar $mcic "-26"
+		setvar $multiple 1132
+	elseif ($portmaxinit >= 1101)
+		setvar $mcic "-25"
+		setvar $multiple 1126
+	elseif ($portmaxinit >= 1093)
+		setvar $mcic "-24"
+		setvar $multiple 1122
+	elseif ($portmaxinit >= 1086)
+		setvar $mcic "-23"
+		setvar $multiple 1117
+	elseif ($portmaxinit >= 1078)
+		setvar $mcic "-22"
+		setvar $multiple 1110
+	elseif ($portmaxinit >= 1071)
+		setvar $mcic "-21"
+		setvar $multiple 1105
+	elseif ($portmaxinit >= 1063)
+		setvar $mcic "-20"
+		setvar $multiple 1102
+	else
+		setvar $mcic "0"
+		setvar $multiple 1102
+	end
+end
+setvar $counter $offer
 divide $counter 10
 multiply $counter $multiple
 divide $counter 100
 send $counter & "*"
 echo "*Line 791 - Waitfor counter*"
 waitfor $counter
-setVar $midhaggles 0
+setvar $midhaggles 0
 
 :sellofferloop
 killalltriggers
 echo "*Sell offer loop*"
-setTextLineTrigger donehag :pdone_haggle "You have"
-SetTextLineTrigger offerme :prehaggle "We'll buy them for"
-setTextLineTrigger final :finaloffer "Our final offer is"
-setTextTrigger ni :ni "We're not interested."
+settextlinetrigger donehag :pdone_haggle "You have"
+settextlinetrigger offerme :prehaggle "We'll buy them for"
+settextlinetrigger final :finaloffer "Our final offer is"
+settexttrigger ni :ni "We're not interested."
 pause
 
 :prehaggle
-getWord CURRENTLINE $new_offer 5
+getword currentline $new_offer 5
 striptext $new_offer ","
-IF ($new_offer = $offer)
-   multiply $counter 98
-       divide $counter 100
-       send $counter & "*"
-   waitFor $counter
-       goto :sellofferloop
-ELSE
-   getText CURRENTLINE $new_offer "for " " credits."
-   stripText $new_offer ","
-   setVar $offer_change $new_offer
-       subtract $offer_change $offer
-       IF ($MCIC > "-35")
-                multiply $offer_change 75
-                divide $offer_change 100
-                subtract $counter $offer_change
-                subtract $counter 25
-       ELSEIF ($MCIC > "-55")
-                multiply $offer_change 65
-                divide $offer_change 100
-                subtract $counter $offer_change
-                subtract $counter 25
-       ELSE
-        multiply $offer_change 60
-                divide $offer_change 100
-                subtract $counter $offer_change
-                subtract $counter 10
-       END
-       send $counter & "*"
-   setVar $offer $new_offer
-   waitfor $counter
-   add $midhaggles 1
-   setTextTrigger offerme :prehaggle "We'll buy them for"
-   pause
-END
+if ($new_offer = $offer)
+	multiply $counter 98
+	divide $counter 100
+	send $counter & "*"
+	waitfor $counter
+	goto :sellofferloop
+else
+	gettext currentline $new_offer "for " " credits."
+	striptext $new_offer ","
+	setvar $offer_change $new_offer
+	subtract $offer_change $offer
+	if ($mcic > "-35")
+		multiply $offer_change 75
+		divide $offer_change 100
+		subtract $counter $offer_change
+		subtract $counter 25
+	elseif ($mcic > "-55")
+		multiply $offer_change 65
+		divide $offer_change 100
+		subtract $counter $offer_change
+		subtract $counter 25
+	else
+		multiply $offer_change 60
+		divide $offer_change 100
+		subtract $counter $offer_change
+		subtract $counter 10
+	end
+	send $counter & "*"
+	setvar $offer $new_offer
+	waitfor $counter
+	add $midhaggles 1
+	settexttrigger offerme :prehaggle "We'll buy them for"
+	pause
+end
 
 :finaloffer
 killtrigger offerme
-IF (($prodtosell = "ore") and ($MCIC <= "-75") and ($amnt_sell >= 25000) and ($midhaggles < 1))
-       setVar $forcefail 1
-       setVar $thisorefailed 1
-ELSEIF (($prodtosell = "org") and ($MCIC <= "-60") and ($amnt_sell >= 25000) and ($midhaggles < 2) and ($thisorefailed = 1))
-       setVar $forcefail 1
-   setVar $thisorgfailed 1
-ELSEIF (($prodtosell = "org") and ($MCIC <= "-60") and ($amnt_sell >= 15000) and ($midhaggles < 1) and ($thisorefailed = 1))
-       setVar $forcefail 1
-   setVar $thisorgfailed 1
-ELSEIF (($prodtosell = "equ") and ($MCIC <= "-55") and ($amnt_sell >= 20000) and ($midhaggles < 2) and (($thisorefailed = 1) or ($thisorgfailed = 1)))
-   setVar $forcefail 1
-       setVar $thisequfailed 1
-ELSEIF (($prodtosell = "equ") and ($MCIC <= "-55") and ($amnt_sell >= 12000) and ($midhaggles < 1) and (($thisorefailed = 1) or ($thisorgfailed = 1)))
-       setVar $forcefail 1
-       setVar $thisequfailed 1
-ELSE
-   setVar $forcefail 0
-END
-IF ($forcefail = 0)
-   getWord CURRENTLINE $new_offer 5
-   striptext $new_offer ","
-   setVar $offer_change $new_offer
-   subtract $offer_change $offer
-   IF ($prodtosell = "ore")
-        multiply $offer_change 30
-   ELSEIF ($prodtosell = "org")
-        multiply $offer_change 27
-   ELSEIF ($prodtosell = "equ")
-        multiply $offer_change 25
-   END
-   divide $offer_change 10
-   subtract $counter $offer_change
-   subtract $counter 10
-   send $counter & "*"
-   pause
-ELSE
-       setTextTrigger donewithport :donewithport "] (?=Help)"
-   send $counter & " * * * * * n n q z n q z n "
-   pause
-END
+if (($prodtosell = "ore") and ($mcic <= "-75") and ($amnt_sell >= 25000) and ($midhaggles < 1))
+	setvar $forcefail 1
+	setvar $thisorefailed 1
+elseif (($prodtosell = "org") and ($mcic <= "-60") and ($amnt_sell >= 25000) and ($midhaggles < 2) and ($thisorefailed = 1))
+	setvar $forcefail 1
+	setvar $thisorgfailed 1
+elseif (($prodtosell = "org") and ($mcic <= "-60") and ($amnt_sell >= 15000) and ($midhaggles < 1) and ($thisorefailed = 1))
+	setvar $forcefail 1
+	setvar $thisorgfailed 1
+elseif (($prodtosell = "equ") and ($mcic <= "-55") and ($amnt_sell >= 20000) and ($midhaggles < 2) and (($thisorefailed = 1) or ($thisorgfailed = 1)))
+	setvar $forcefail 1
+	setvar $thisequfailed 1
+elseif (($prodtosell = "equ") and ($mcic <= "-55") and ($amnt_sell >= 12000) and ($midhaggles < 1) and (($thisorefailed = 1) or ($thisorgfailed = 1)))
+	setvar $forcefail 1
+	setvar $thisequfailed 1
+else
+	setvar $forcefail 0
+end
+if ($forcefail = 0)
+	getword currentline $new_offer 5
+	striptext $new_offer ","
+	setvar $offer_change $new_offer
+	subtract $offer_change $offer
+	if ($prodtosell = "ore")
+		multiply $offer_change 30
+	elseif ($prodtosell = "org")
+		multiply $offer_change 27
+	elseif ($prodtosell = "equ")
+		multiply $offer_change 25
+	end
+	divide $offer_change 10
+	subtract $counter $offer_change
+	subtract $counter 10
+	send $counter & "*"
+	pause
+else
+	settexttrigger donewithport :donewithport "] (?=Help)"
+	send $counter & " * * * * * n n q z n q z n "
+	pause
+end
 
 :ni
-setVar $ni 1
+setvar $ni 1
 killtrigger donehag
 goto :sellproduct
 
 :pdone_haggle
 killtrigger ni
-IF ($prodtosell = "ore")
-   setVar $ore 1
-   setVar $credperoreunit ($counter/$amnt_sell)
-   setVar $oreamount $amnt_sell
-   setVar $oreprice $counter
-   setVar $fuelMCIC $MCIC
-ELSEIF ($prodtosell = "org")
-   setVar $org 1
-   setVar $credperorgunit ($counter/$amnt_sell)
-   setVar $orgamount $amnt_sell
-   setVar $orgprice $counter
-   setVar $orgsMCIC $MCIC
-ELSEIF ($prodtosell = "equ")
-   setVar $equ 1
-   setVar $credperequunit ($counter/$amnt_sell)
-   setVar $equamount $amnt_sell
-   setVar $equprice $counter
-   setVar $equipMCIC $MCIC
-END
+if ($prodtosell = "ore")
+	setvar $ore 1
+	setvar $credperoreunit ($counter/$amnt_sell)
+	setvar $oreamount $amnt_sell
+	setvar $oreprice $counter
+	setvar $fuelmcic $mcic
+elseif ($prodtosell = "org")
+	setvar $org 1
+	setvar $credperorgunit ($counter/$amnt_sell)
+	setvar $orgamount $amnt_sell
+	setvar $orgprice $counter
+	setvar $orgsmcic $mcic
+elseif ($prodtosell = "equ")
+	setvar $equ 1
+	setvar $credperequunit ($counter/$amnt_sell)
+	setvar $equamount $amnt_sell
+	setvar $equprice $counter
+	setvar $equipmcic $mcic
+end
 goto :sellproduct
 
 :donewithport
 killalltriggers
-getText CURRENTLINE $sec "]:[" "] ("
+gettext currentline $sec "]:[" "] ("
 setvar $switchboard~message "CAP Trade, sold units at " & $sec & ":*"
 gosub :switchboard~switchboard
-IF ($ore = 1)
-   send "   Ore : " $oreamount " units for " $oreprice ", (" $credperoreunit "ppu) (mcic: " $fuelMCIC ")*"
-   write $mcicfile $sec & " - Ore - " & $fuelMCIC
-END
-IF ($org = 1)
-   send "   Orgs : " $orgamount " units for " $orgprice ", (" $credperorgunit "ppu) (mcic: " $orgsMCIC ")*"
-   write $mcicfile $sec & " - Orgs - " & $orgsMCIC
-END
-IF ($equ = 1)
-   send "   Equip : " $equamount " units for " $equprice ", (" $credperequunit "ppu) (mcic: " $equipMCIC ")*"
-   write $mcicfile $sec & " - Equip - " & $equipMCIC
-END
+if ($ore = 1)
+	send "   Ore : " $oreamount " units for " $oreprice ", (" $credperoreunit "ppu) (mcic: " $fuelmcic ")*"
+	write $mcicfile $sec & " - Ore - " & $fuelmcic
+end
+if ($org = 1)
+	send "   Orgs : " $orgamount " units for " $orgprice ", (" $credperorgunit "ppu) (mcic: " $orgsmcic ")*"
+	write $mcicfile $sec & " - Orgs - " & $orgsmcic
+end
+if ($equ = 1)
+	send "   Equip : " $equamount " units for " $equprice ", (" $credperequunit "ppu) (mcic: " $equipmcic ")*"
+	write $mcicfile $sec & " - Equip - " & $equipmcic
+end
 send "*"
 return
 
 :fix_lockup
 killtrigger donewithport
-setTextTrigger donewithport :donewithport "] (?=Help)"
+settexttrigger donewithport :donewithport "] (?=Help)"
 send "*"
 pause
 
 :haggle
-setVar $ni 0
-setVar $midhag "-1"
-setVar $nocred 0
+setvar $ni 0
+setvar $midhag "-1"
+setvar $nocred 0
 killtrigger 1
 killtrigger 0
 killtrigger donehaggling
-setTextTrigger donehag :done_haggle "Command [TL="
-SetTextTrigger donehaggling :done_haggle "empty cargo holds."
-SetTextTrigger offerme :offerme "Your offer"
+settexttrigger donehag :done_haggle "Command [TL="
+settexttrigger donehaggling :done_haggle "empty cargo holds."
+settexttrigger offerme :offerme "Your offer"
 pause
 
 :offerme
-getWord CURRENTLINE $offer 3
-stripText $offer "["
-stripText $offer "]"
-stripText $offer ","
-stripText $offer "?"
-setVar $orig_offer $offer
+getword currentline $offer 3
+striptext $offer "["
+striptext $offer "]"
+striptext $offer ","
+striptext $offer "?"
+setvar $orig_offer $offer
 
 :rehaggle
 killtrigger 0
 killtrigger 2
 killtrigger 3
-setVar $offer (($orig_offer * $multiplier) / 100)
+setvar $offer (($orig_offer * $multiplier) / 100)
 send $offer "*"
 add $midhag 1
-waitFor $offer
-IF ($multiplier > 100)
-   subtract $multiplier 1
-ELSE
-   add $multiplier 1
-END
-setTextTrigger 0 :done_haggle "How many holds of"
-setTextTrigger 1 :rehaggle "Your offer"
-setTextTrigger 2 :donehag "We're not interested."
-setTextTrigger 3 :nocreds "You only have"
+waitfor $offer
+if ($multiplier > 100)
+	subtract $multiplier 1
+else
+	add $multiplier 1
+end
+settexttrigger 0 :done_haggle "How many holds of"
+settexttrigger 1 :rehaggle "Your offer"
+settexttrigger 2 :donehag "We're not interested."
+settexttrigger 3 :nocreds "You only have"
 pause
 
 :nocreds
-setVAr $nocred 1
+setvar $nocred 1
 send "0*0*"
 goto :done_haggle
 
 :donehag
-setVar $ni 1
+setvar $ni 1
 
 :done_haggle
 killtrigger donehag
@@ -1510,42 +1514,42 @@ killtrigger offerme
 return
 
 :ppt
-setVar $sec $port1
-setVar $other $port2
-setVar $stopper 0
+setvar $sec $port1
+setvar $other $port2
+setvar $stopper 0
 gosub :quikstats
-setVar $maxholds $HOLDS
-setVAr $finholds $ORE_HOLDS
-setVar $oinholds $ORGANIC_HOLDS
-setVar $einholds $EQUIPMENT_HOLDS
-setVar $totalinholds ($finholds + $oinholds + $einholds)
-       IF ($totalinholds = $maxholds)
-            IF (PORT.BUYORE[$sec] = 1)
-                 setVar $finholds 0
-            END
-   IF (PORT.BUYORG[$sec] = 1)
-        setVar $oinholds 0
-   END
-   IF (PORT.BUYEQUIP[$sec] = 1)
-        setVar $einholds 0
-END
-   setVar $totalinholds ($finholds + $oinholds + $einholds)
-   IF ($totalinholds = $maxholds)
-        goto :nxtport
-   END
-END
+setvar $maxholds $holds
+setvar $finholds $ore_holds
+setvar $oinholds $organic_holds
+setvar $einholds $equipment_holds
+setvar $totalinholds ($finholds + $oinholds + $einholds)
+if ($totalinholds = $maxholds)
+	if (port.buyore[$sec] = 1)
+		setvar $finholds 0
+	end
+	if (port.buyorg[$sec] = 1)
+		setvar $oinholds 0
+	end
+	if (port.buyequip[$sec] = 1)
+		setvar $einholds 0
+	end
+	setvar $totalinholds ($finholds + $oinholds + $einholds)
+	if ($totalinholds = $maxholds)
+		goto :nxtport
+	end
+end
 
-:supg_PPT
+:supg_ppt
 killtrigger sell
 killtrigger buy
 killtrigger offport
 send "pt"
 waitfor "<Port>"
-setTextTrigger nomore :nomore "You don't have anything they want,"
-setTextLineTrigger fuel :fuelamt "Fuel Ore"
-setTextLineTrigger orgs :orgsamt "Organics"
-setTextLineTrigger equip :equipamt "Equipment"
-setTextTrigger moretrade :traders "You have"
+settexttrigger nomore :nomore "You don't have anything they want,"
+settextlinetrigger fuel :fuelamt "Fuel Ore"
+settextlinetrigger orgs :orgsamt "Organics"
+settextlinetrigger equip :equipamt "Equipment"
+settexttrigger moretrade :traders "You have"
 pause
 
 :nomore
@@ -1556,173 +1560,173 @@ killtrigger moretrade
 return
 
 :fuelamt
-getWord CURRENTLINE $fuelamt 5
-stripText $fuelamt "%"
+getword currentline $fuelamt 5
+striptext $fuelamt "%"
 pause
 
 :orgsamt
-getWord CURRENTLINE $orgamt 4
-stripText $orgamt "%"
+getword currentline $orgamt 4
+striptext $orgamt "%"
 pause
 
 :equipamt
-getWord CURRENTLINE $equipamt 4
-stripText $equipamt "%"
+getword currentline $equipamt 4
+striptext $equipamt "%"
 pause
 
 :traders
 killtrigger nomore
-setTextTrigger sellorbuy :sellorbuy "]?"
-setTextTrigger offport :offport "Command [TL="
+settexttrigger sellorbuy :sellorbuy "]?"
+settexttrigger offport :offport "Command [TL="
 pause
 
 :sellorbuy
-getText CURRENTLINE $slloby "to " " ["
-IF ($slloby = "sell")
-   goto :sell
-ELSE
-   goto :buy
-END
+gettext currentline $slloby "to " " ["
+if ($slloby = "sell")
+	goto :sell
+else
+	goto :buy
+end
 
 :sell
 killtrigger offport
-getWord CURRENTLINE $product 5
+getword currentline $product 5
 send "*"
-setVar $multiplier (100 + $haggle)
+setvar $multiplier (100 + $haggle)
 gosub :haggle
-IF ($ni = 1)
-   goto :supg_PPT
-END
+if ($ni = 1)
+	goto :supg_ppt
+end
 gosub :stopper
-setTextTrigger sellorbuy :sellorbuy "]?"
+settexttrigger sellorbuy :sellorbuy "]?"
 pause
 
 :buy
 killtrigger offport
 killtrigger sellorbuy
-getWord CURRENTLINE $product 5
-IF ($product = "Fuel")
-   IF ((PORT.BUYEQUIP[$sec] = 0) AND (PORT.BUYEQUIP[$other] = 1)) OR ((PORT.BUYORG[$sec] = 0) AND (PORT.BUYORG[$other] = 1)) or (PORT.BUYFUEL[$other] = 0)
-        send "0*"
-        gosub :stopper
-        goto :traders
-       ELSE
-        gosub :buyit
-   END
-ELSEIF ($product = "Organics")
-   IF ((PORT.BUYEQUIP[$sec] = 0) AND (PORT.BUYEQUIP[$other] = 1)) or (PORT.BUYORG[$other] = 0)
-        send "0*"
-        gosub :stopper
-        goto :traders
-   ELSE
-        gosub :buyit
-   END
-ELSE
-   IF (PORT.BUYEQUIP[$other] = 0)
-        send "0*"
-   ELSE
-        gosub :buyit
-   	       END
-END
-IF ($ni = 1)
-   goto :supg_PPT
-END
+getword currentline $product 5
+if ($product = "Fuel")
+	if ((port.buyequip[$sec] = 0) and (port.buyequip[$other] = 1)) or ((port.buyorg[$sec] = 0) and (port.buyorg[$other] = 1)) or (port.buyfuel[$other] = 0)
+		send "0*"
+		gosub :stopper
+		goto :traders
+	else
+		gosub :buyit
+	end
+elseif ($product = "Organics")
+	if ((port.buyequip[$sec] = 0) and (port.buyequip[$other] = 1)) or (port.buyorg[$other] = 0)
+		send "0*"
+		gosub :stopper
+		goto :traders
+	else
+		gosub :buyit
+	end
+else
+	if (port.buyequip[$other] = 0)
+		send "0*"
+	else
+		gosub :buyit
+	end
+end
+if ($ni = 1)
+	goto :supg_ppt
+end
 
 :offport
 killtrigger sellorbuy
 gosub :stopper
 
 :nxtport
-IF ($stopper = 0)
-   setVar $other $sec
-   IF ($sec = $port1)
-        setVar $sec $port2
-   ELSE
-        setVar $sec $port1
-   END
-            send "m" $sec "**  "
-   goto :supg_PPT
-ELSE
-   killtrigger sell
-   killtrigger buy
-return
-END
+if ($stopper = 0)
+	setvar $other $sec
+	if ($sec = $port1)
+		setvar $sec $port2
+	else
+		setvar $sec $port1
+	end
+	send "m" $sec "**  "
+	goto :supg_ppt
+else
+	killtrigger sell
+	killtrigger buy
+	return
+end
 
 :stopper
-IF ($product = "Fuel")
-   IF ($fuelamt <= $stopperc)
-        IF ((PORT.BUYEQUIP[$sec] = 0) AND (PORT.BUYEQUIP[$other] = 1)) OR ((PORT.BUYEQUIP[$sec] = 1) AND (PORT.BUYEQUIP[$other] = 0)) OR ((PORT.BUYORG[$sec] = 0) AND (PORT.BUYORG[$other] = 1)) OR ((PORT.BUYORG[$sec] = 1) AND (PORT.BUYORG[$other] = 0))
-	       IF ($fuelamt = 0)
-		        setVar $stopper 1
-	       ELSE
-		        setVar $stopper 0
-	       END
-        ELSE
-	       setVar $stopper 1
-        END
-   END
-ELSEIF ($product = "Organics")
-   IF ($orgamt <= $stopperc)
-        IF ((PORT.BUYEQUIP[$sec] = 0) AND (PORT.BUYEQUIP[$other] = 1)) OR ((PORT.BUYEQUIP[$sec] = 1) AND (PORT.BUYEQUIP[$other] = 0))
-	       IF ($orgamt = 0)
-		        setVar $stopper 1
-	       ELSE
-		        setVar $stopper 0
-	       END
-        ELSE
-	       setVar $stopper 1
-        END
-   END
-ELSEIF ($product = "Equipment")
-   IF ($equipamt <= $stopperc)
-        setVar $stopper 1
-   	       END
-END
+if ($product = "Fuel")
+	if ($fuelamt <= $stopperc)
+		if ((port.buyequip[$sec] = 0) and (port.buyequip[$other] = 1)) or ((port.buyequip[$sec] = 1) and (port.buyequip[$other] = 0)) or ((port.buyorg[$sec] = 0) and (port.buyorg[$other] = 1)) or ((port.buyorg[$sec] = 1) and (port.buyorg[$other] = 0))
+			if ($fuelamt = 0)
+				setvar $stopper 1
+			else
+				setvar $stopper 0
+			end
+		else
+			setvar $stopper 1
+		end
+	end
+elseif ($product = "Organics")
+	if ($orgamt <= $stopperc)
+		if ((port.buyequip[$sec] = 0) and (port.buyequip[$other] = 1)) or ((port.buyequip[$sec] = 1) and (port.buyequip[$other] = 0))
+			if ($orgamt = 0)
+				setvar $stopper 1
+			else
+				setvar $stopper 0
+			end
+		else
+			setvar $stopper 1
+		end
+	end
+elseif ($product = "Equipment")
+	if ($equipamt <= $stopperc)
+		setvar $stopper 1
+	end
+end
 return
 
 :buyit
 send "*"
-setVar $multiplier (100 - $haggle)
+setvar $multiplier (100 - $haggle)
 gosub :haggle
 return
 
 :done_read
-killtrigger getLine
-setVar $hcount 0
+killtrigger getline
+setvar $hcount 0
 
 :hcount
-IF ($hcount < 27)
-   add $hcount 1
-   setVar $lncount 1
+if ($hcount < 27)
+	add $hcount 1
+	setvar $lncount 1
 
-:lncount
-IF ($lncount < $cnt)
-add $lncount 1
-getWordPos $line[$lncount] $pos $h[$hcount]
-IF ($pos > 0)
-  setVar $work $line[$lncount]
-  cutText $work $work $pos 9999
-  upperCase $h[$hcount]
-  getWord $work $quikstats[$h[$hcount]] 2
-  stripText $quikstats[$h[$hcount]] ","
-ELSE
-  goto :lncount
-END
-END
-goto :hcount
-END
+	:lncount
+	if ($lncount < $cnt)
+		add $lncount 1
+		getwordpos $line[$lncount] $pos $h[$hcount]
+		if ($pos > 0)
+			setvar $work $line[$lncount]
+			cuttext $work $work $pos 9999
+			uppercase $h[$hcount]
+			getword $work $quikstats[$h[$hcount]] 2
+			striptext $quikstats[$h[$hcount]] ","
+		else
+			goto :lncount
+		end
+	end
+	goto :hcount
+end
 return
 
 :express
 send "m" $expressto "*"
-setTextTrigger twarp :no_twarp "Do you want to engage the TransWarp drive?"
-setTextTrigger express :express_warp "Engage the Autopilot?"
-setTextTrigger in_adj :there "Sector  : " & $expressto
-setTextTrigger voided_sec :voided "Do you really want to warp there?"
-setTextTrigger insec :there "You are already in that sector!"
-setTextTrigger ig :igd "An Interdictor Generator in this sector holds you fast!"
-setTextTrigger ig2 :igd "<Re-Display>"
-setTextTrigger noturns :exp_noturns "You don't have enough turns left."
+settexttrigger twarp :no_twarp "Do you want to engage the TransWarp drive?"
+settexttrigger express :express_warp "Engage the Autopilot?"
+settexttrigger in_adj :there "Sector  : " & $expressto
+settexttrigger voided_sec :voided "Do you really want to warp there?"
+settexttrigger insec :there "You are already in that sector!"
+settexttrigger ig :igd "An Interdictor Generator in this sector holds you fast!"
+settexttrigger ig2 :igd "<Re-Display>"
+settexttrigger noturns :exp_noturns "You don't have enough turns left."
 pause
 
 :voided
@@ -1738,9 +1742,9 @@ killtrigger done
 killtrigger continue
 killtrigger in_adj
 killtrigger insec
-getWord CURRENTLINE $void 7
+getword currentline $void 7
 send "n"
-setVar $expressto "-2"
+setvar $expressto "-2"
 return
 
 :exp_noturns
@@ -1756,7 +1760,7 @@ killtrigger done
 killtrigger continue
 killtrigger in_adj
 killtrigger insec
-setVar $expressto "-3"
+setvar $expressto "-3"
 return
 
 :no_twarp
@@ -1789,38 +1793,38 @@ gosub :clear_sector
 return
 
 :clear_sector
-setTextTrigger hitfig :hit_fig "Your fighters:"
-setTextTrigger hitmine :hit_mine "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
-setTextTrigger clear :ready_state "Autopilot disengaging."
-setTextTrigger done :ready_state "Command [TL="
-IF ($singlestep = 1)
-   setTextTrigger continue :ready_state "Stop in this sector"
-ELSE
-   setTextTrigger continue :keep_rollin "Stop in this sector"
-END
-setTextTrigger ig :igd "An Interdictor Generator in this sector holds you fast!"
-setTextTrigger pause :pause "[Pause]"
-setTextTrigger noturns :exp_noturns "You don't have enough turns left."
+settexttrigger hitfig :hit_fig "Your fighters:"
+settexttrigger hitmine :hit_mine "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
+settexttrigger clear :ready_state "Autopilot disengaging."
+settexttrigger done :ready_state "Command [TL="
+if ($singlestep = 1)
+	settexttrigger continue :ready_state "Stop in this sector"
+else
+	settexttrigger continue :keep_rollin "Stop in this sector"
+end
+settexttrigger ig :igd "An Interdictor Generator in this sector holds you fast!"
+settexttrigger pause :pause "[Pause]"
+settexttrigger noturns :exp_noturns "You don't have enough turns left."
 pause
 
 :pause
 send "*"
-setTextTrigger pause :pause "[Pause]"
+settexttrigger pause :pause "[Pause]"
 pause
 
 :keep_rollin
 send "n"
-setTextTrigger continue :keep_rollin "Stop in this sector"
+settexttrigger continue :keep_rollin "Stop in this sector"
 pause
 
 :hit_fig
 send "a999989796954939291911*"
-setTextTrigger hitfig :hit_fig "Your fighters:"
+settexttrigger hitfig :hit_fig "Your fighters:"
 pause
 
 :hit_mine
 send "n"
-setTextTrigger hitmine :hit_mine "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
+settexttrigger hitmine :hit_mine "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
 pause
 
 :ready_state
@@ -1853,18 +1857,18 @@ killtrigger continue
 killtrigger in_adj
 killtrigger insec
 killtrigger pause
-setVar $expressto "-1"
+setvar $expressto "-1"
 return
 
 :twarp
 send "m" $twarpto "*"
-setTextTrigger twarp :tw_twarp "Do you want to engage the TransWarp drive?"
-setTextTrigger notwarp :tw_notwarp "The shortest path ("
-setTextTrigger adjacent :tw_there "Sector  : " & $twarpto
-setTextTrigger ig :tw_ig "An Interdictor Generator in this sector holds you fast!"
-setTextTrigger nomove :tw_there "You are already in that sector!"
-setTextTrigger noturns :tw_noturns "You don't have enough turns left."
-setTextTrigger voided :tw_notwarp "No route within"
+settexttrigger twarp :tw_twarp "Do you want to engage the TransWarp drive?"
+settexttrigger notwarp :tw_notwarp "The shortest path ("
+settexttrigger adjacent :tw_there "Sector  : " & $twarpto
+settexttrigger ig :tw_ig "An Interdictor Generator in this sector holds you fast!"
+settexttrigger nomove :tw_there "You are already in that sector!"
+settexttrigger noturns :tw_noturns "You don't have enough turns left."
+settexttrigger voided :tw_notwarp "No route within"
 pause
 
 :tw_twarp
@@ -1875,9 +1879,9 @@ killtrigger notwarp
 killtrigger adjacent
 killtrigger ig
 send "y"
-setTextTrigger gogo :tw_safe "All Systems Ready, shall we engage?"
-setTextTrigger outafuel :tw_outafuel "You do not have enough Fuel Ore to make the jump."
-setTextTrigger nogo :tw_blind "Do you want to make this jump blind?"
+settexttrigger gogo :tw_safe "All Systems Ready, shall we engage?"
+settexttrigger outafuel :tw_outafuel "You do not have enough Fuel Ore to make the jump."
+settexttrigger nogo :tw_blind "Do you want to make this jump blind?"
 pause
 
 :tw_safe
@@ -1906,7 +1910,7 @@ killtrigger adjacent
 killtrigger ig
 killtrigger twarp
 send "n"
-setVar $twarpto "-1"
+setvar $twarpto "-1"
 return
 
 :tw_ig
@@ -1917,7 +1921,7 @@ killtrigger notwarp
 killtrigger adjacent
 killtrigger ig
 killtrigger twarp
-setVar $twarpto "-2"
+setvar $twarpto "-2"
 return
 
 :tw_noturns
@@ -1928,7 +1932,7 @@ killtrigger notwarp
 killtrigger adjacent
 killtrigger ig
 killtrigger twarp
-setVar $twarpto "-1"
+setvar $twarpto "-1"
 return
 
 :tw_outafuel
@@ -1938,7 +1942,7 @@ killtrigger nomove
 killtrigger gogo
 killtrigger outafuel
 killtrigger nogo
-setVar $twarpto "-3"
+setvar $twarpto "-3"
 return
 
 :tw_blind
@@ -1949,26 +1953,26 @@ killtrigger gogo
 killtrigger outafuel
 killtrigger nogo
 send "n"
-setVar $twarpto "-4"
+setvar $twarpto "-4"
 return
 
 :xport
 send "x  "
-setTextTrigger choose :xp_choose "Choose which ship to"
-setTextTrigger noships :xp_noships "You do not own any other ships!"
+settexttrigger choose :xp_choose "Choose which ship to"
+settexttrigger noships :xp_noships "You do not own any other ships!"
 pause
 
 :xp_choose
 killtrigger noships
 send $xportto "*  q"
-setTextTrigger noturns :xp_noturns "You don't have any turns left!"
-setTextTrigger noship :xp_noship "That is not an available ship."
-setTextTrigger xport :xp_xport "Security code accepted,"
-setTextTrigger noceo :xp_noceo "Your retinal scan does not match"
-setTextTrigger range :xp_range "only has a transport range of"
-setTextTrigger comm :xp_commish "You are not commissioned by the"
-setTextTrigger exp :xp_experience "You need "
-setTextTrigger noships :xp_noship "You do not own any other ships!"
+settexttrigger noturns :xp_noturns "You don't have any turns left!"
+settexttrigger noship :xp_noship "That is not an available ship."
+settexttrigger xport :xp_xport "Security code accepted,"
+settexttrigger noceo :xp_noceo "Your retinal scan does not match"
+settexttrigger range :xp_range "only has a transport range of"
+settexttrigger comm :xp_commish "You are not commissioned by the"
+settexttrigger exp :xp_experience "You need "
+settexttrigger noships :xp_noship "You do not own any other ships!"
 pause
 
 :xp_noturns
@@ -1980,7 +1984,7 @@ killtrigger noceo
 killtrigger range
 killtrigger comm
 killtrigger exp
-setVar $xportto "-1"
+setvar $xportto "-1"
 return
 
 :xp_noship
@@ -1994,7 +1998,7 @@ killtrigger noceo
 killtrigger range
 killtrigger comm
 killtrigger exp
-setVar $xportto "-2"
+setvar $xportto "-2"
 return
 
 :xp_noceo
@@ -2006,7 +2010,7 @@ killtrigger noceo
 killtrigger range
 killtrigger comm
 killtrigger exp
-setVar $xportto "-3"
+setvar $xportto "-3"
 return
 
 :xp_noships
@@ -2020,7 +2024,7 @@ killtrigger noceo
 killtrigger range
 killtrigger comm
 killtrigger exp
-setVar $xportto "-7"
+setvar $xportto "-7"
 return
 
 :xp_range
@@ -2032,7 +2036,7 @@ killtrigger noceo
 killtrigger range
 killtrigger comm
 killtrigger exp
-setVar $xportto "-4"
+setvar $xportto "-4"
 return
 
 :xp_commish
@@ -2044,7 +2048,7 @@ killtrigger range
 killtrigger comm
 killtrigger exp
 killtrigger noships
-setVar $xportto "-5"
+setvar $xportto "-5"
 return
 
 :xp_experience
@@ -2056,7 +2060,7 @@ killtrigger noceo
 killtrigger range
 killtrigger comm
 killtrigger exp
-setVar $xportto "-6"
+setvar $xportto "-6"
 return
 
 :xp_xport
@@ -2071,12 +2075,12 @@ killtrigger exp
 return
 
 :ptorp
-setTextTrigger fired :pt_fired "Photon Wave Duration"
-setTextTrigger notadj :pt_notadj "That is not an adjacent sector"
-setTextTrigger ptordis :pt_disable "Photon Missiles are disabled."
-setTextTrigger nofire :pt_nofire "<Computer deactivated>"
-setTextTrigger fed :pt_fed "The Feds do not permit"
-setTextTrigger notorps :pt_notorps "You do not have any Photon Missiles!"
+settexttrigger fired :pt_fired "Photon Wave Duration"
+settexttrigger notadj :pt_notadj "That is not an adjacent sector"
+settexttrigger ptordis :pt_disable "Photon Missiles are disabled."
+settexttrigger nofire :pt_nofire "<Computer deactivated>"
+settexttrigger fed :pt_fed "The Feds do not permit"
+settexttrigger notorps :pt_notorps "You do not have any Photon Missiles!"
 send "cpy  " $photonto "*q"
 pause
 
@@ -2094,7 +2098,7 @@ killtrigger ptordis
 killtrigger nofire
 killtrigger fed
 killtrigger notorps
-setVar $photonto "-1"
+setvar $photonto "-1"
 send "q"
 return
 
@@ -2104,7 +2108,7 @@ killtrigger nofire
 killtrigger fed
 killtrigger notadj
 killtrigger notorps
-setVar $photonto "-2"
+setvar $photonto "-2"
 return
 
 :pt_nofire
@@ -2113,7 +2117,7 @@ killtrigger fed
 killtrigger notadj
 killtrigger ptordis
 killtrigger notorps
-setVar $photonto "-3"
+setvar $photonto "-3"
 return
 
 :pt_fed
@@ -2122,7 +2126,7 @@ killtrigger nofire
 killtrigger notadj
 killtrigger ptordis
 killtrigger notorps
-setVar $photonto "-4"
+setvar $photonto "-4"
 return
 
 :pt_notorps
@@ -2131,121 +2135,121 @@ killtrigger nofire
 killtrigger notadj
 killtrigger ptordis
 killtrigger fed
-setVar $photonto "-5"
+setvar $photonto "-5"
 return
 
-:setVoids
+:setvoids
 send "d"
 waitfor "<Re-Display>"
-setTextTrigger cursec :void_cursec "] (?=Help)? :"
+settexttrigger cursec :void_cursec "] (?=Help)? :"
 pause
 
 :void_cursec
-getText CURRENTLINE $cursec "]:[" "] (?=Help)? :"
-setVar $setVoids 1
+gettext currentline $cursec "]:[" "] (?=Help)? :"
+setvar $setvoids 1
 send "c"
-while ($setVoids <= SECTOR.WARPCOUNT[$cursec])
-   send "v" SECTOR.WARPS[$cursec][$setVoids] "*"
-   add $setVoids 1
-END
+while ($setvoids <= sector.warpcount[$cursec])
+	send "v" sector.warps[$cursec][$setvoids] "*"
+	add $setvoids 1
+end
 send "q"
 return
 
-:clearVoids
+:clearvoids
 send "d"
 waitfor "<Re-Display>"
-setTextTrigger cursec :clearvoid_cursec "] (?=Help)? :"
+settexttrigger cursec :clearvoid_cursec "] (?=Help)? :"
 pause
 
 :clearvoid_cursec
-getText CURRENTLINE $cursec "]:[" "] (?=Help)? :"
-setVar $setVoids 1
+gettext currentline $cursec "]:[" "] (?=Help)? :"
+setvar $setvoids 1
 send "c"
-while ($setVoids <= SECTOR.WARPCOUNT[$cursec])
-   echo " " $setVoids " "
-       send "v0*yn" SECTOR.WARPS[$cursec][$setVoids] "*"
-   add $setVoids 1
-END
+while ($setvoids <= sector.warpcount[$cursec])
+	echo " " $setvoids " "
+	send "v0*yn" sector.warps[$cursec][$setvoids] "*"
+	add $setvoids 1
+end
 send "q"
 return
 
 :ssm
-setVar $noexp 0
-setVar $sec $port1
+setvar $noexp 0
+setvar $sec $port1
 gosub :quikstats
-setVar $exp $EXPERIENCE
-setVar $thold $TOTAL_HOLDS
+setvar $exp $experience
+setvar $thold $total_holds
 
 :steal
-setVar $maxhold $exp
+setvar $maxhold $exp
 divide $maxhold $steal_factor
-IF ($maxhold > $thold)
-   setVar $maxhold $thold
-END
+if ($maxhold > $thold)
+	setvar $maxhold $thold
+end
 
 :sport
 send "p  r  *  s  t  "
-setTextTrigger fake :fbusted "Corporate command [TL="
-setTextTrigger good :cont "Which product?"
+settexttrigger fake :fbusted "Corporate command [TL="
+settexttrigger good :cont "Which product?"
 pause
 
 :cont
 killtrigger fake
-setTextTrigger success :success "Success!"
-setTextTrigger busted :busted "Suddenly you're Busted"
-setTextTrigger upgrade :upgrade "There aren't that many holds"
+settexttrigger success :success "Success!"
+settexttrigger busted :busted "Suddenly you're Busted"
+settexttrigger upgrade :upgrade "There aren't that many holds"
 send "  3  " $maxhold "   *   "
 pause
 
 :upgrade
 killtrigger success
 killtrigger busted
-setVar $upgrade (($maxhold / 10) + 1)
-setVar $upg_amnt $upgrade
-setVAr $upg_prod 3
-gosub :upgradePort
-IF ($upg_amnt = "-1")
-   setvar $switchboard~message "SSM - Could not upgrade port, it's either maxed or I don't have enough money*"
-   gosub :switchboard~switchboard
-   goto :wait
-END
+setvar $upgrade (($maxhold / 10) + 1)
+setvar $upg_amnt $upgrade
+setvar $upg_prod 3
+gosub :upgradeport
+if ($upg_amnt = "-1")
+	setvar $switchboard~message "SSM - Could not upgrade port, it's either maxed or I don't have enough money*"
+	gosub :switchboard~switchboard
+	goto :wait
+end
 goto :sport
 
 :success
 killtrigger busted
 killtrigger upgrade
-setVar $addexp $maxhold
+setvar $addexp $maxhold
 multiply $addexp 90
-IF ($addexp < 1000)
-   goto :norec
-END
+if ($addexp < 1000)
+	goto :norec
+end
 divide $addexp 1000
 add $exp $addexp
 
 :rhag
 send "  p  t  *  "
-setVar $multiplier (100 + $haggle)
-IF ($hag = 1) and ($multiplier <> 100)
-   waitFor "How many holds of"
-   setVar $ni 0
-   gosub :haggle
-   IF ($ni = 1)
-         goto :rhag
-   END
-ELSE
-   send "*"
-END
-IF (PORT.BUYFUEL[$sec] = 0)
-   send "  0*  "
-END
-IF (PORT.BUYORG[$sec] = 0)
-   send "  0*  "
-END
-IF ($sec = $port1)
-   setVar $sec $port2
-ELSE
-   setVar $sec $port1
-END
+setvar $multiplier (100 + $haggle)
+if ($hag = 1) and ($multiplier <> 100)
+	waitfor "How many holds of"
+	setvar $ni 0
+	gosub :haggle
+	if ($ni = 1)
+		goto :rhag
+	end
+else
+	send "*"
+end
+if (port.buyfuel[$sec] = 0)
+	send "  0*  "
+end
+if (port.buyorg[$sec] = 0)
+	send "  0*  "
+end
+if ($sec = $port1)
+	setvar $sec $port2
+else
+	setvar $sec $port1
+end
 send "   m   " $sec "*   z   a   9999   *   z   r   *   "
 goto :steal
 
@@ -2256,62 +2260,62 @@ send "   q   q   z   n   *   "
 :busted
 killtrigger success
 killtrigger upgrade
-setVar $busted $sec
+setvar $busted $sec
 return
 
 :norec
 echo "*Not enough experience*"
-setVar $noexp 1
+setvar $noexp 1
 return
 
 :haggle
-setVar $ni 0
-setVar $midhag "-1"
-setVar $nocred 0
+setvar $ni 0
+setvar $midhag "-1"
+setvar $nocred 0
 killtrigger 1
 killtrigger 0
 killtrigger donehaggling
-setTextTrigger donehag :done_haggle "Command [TL="
-SetTextTrigger donehaggling :done_haggle "empty cargo holds."
-SetTextTrigger offerme :offerme "Your offer"
+settexttrigger donehag :done_haggle "Command [TL="
+settexttrigger donehaggling :done_haggle "empty cargo holds."
+settexttrigger offerme :offerme "Your offer"
 pause
 
 :offerme
-getWord CURRENTLINE $offer 3
-stripText $offer "["
-stripText $offer "]"
-stripText $offer ","
-stripText $offer "?"
-setVar $orig_offer $offer
+getword currentline $offer 3
+striptext $offer "["
+striptext $offer "]"
+striptext $offer ","
+striptext $offer "?"
+setvar $orig_offer $offer
 
 :rehaggle
 killtrigger 0
 killtrigger 2
 killtrigger 3
-setVar $offer (($orig_offer * $multiplier) / 100)
+setvar $offer (($orig_offer * $multiplier) / 100)
 send $offer "*"
 add $midhag 1
-waitFor $offer
-IF ($multiplier > 100)
-   subtract $multiplier 1
-ELSE
-   add $multiplier 1
-END
-setTextTrigger 0 :done_haggle "How many holds of"
-setTextTrigger 1 :rehaggle "Your offer"
-setTextTrigger 2 :donehag "We're not interested."
-setTextTrigger 3 :nocreds "You only have"
+waitfor $offer
+if ($multiplier > 100)
+	subtract $multiplier 1
+else
+	add $multiplier 1
+end
+settexttrigger 0 :done_haggle "How many holds of"
+settexttrigger 1 :rehaggle "Your offer"
+settexttrigger 2 :donehag "We're not interested."
+settexttrigger 3 :nocreds "You only have"
 pause
 
 :nocreds
 echo "No creds*"
-setVar $nocred 1
+setvar $nocred 1
 send "   0*   0*   "
 goto :done_haggle
 
 :donehag
 echo "Done hag*"
-setVar $ni 1
+setvar $ni 1
 
 :done_haggle
 killtrigger donehag
@@ -2324,24 +2328,24 @@ killtrigger donehaggling
 killtrigger offerme
 return
 
-:upgradePort
+:upgradeport
 send "   o   " $upg_prod
-setTextTrigger maxupg :maxupg "to quit)"
+settexttrigger maxupg :maxupg "to quit)"
 pause
 
 :maxupg
-getWord CURRENTLINE $upg_maxupg 9
+getword currentline $upg_maxupg 9
 striptext $upg_maxupg "("
-IF ($upg_maxupg < $upg_amnt)
-   setVar $upg_amnt "-1"
-ELSE
-   send $upg_amnt "  *  q  "
-END
+if ($upg_maxupg < $upg_amnt)
+	setvar $upg_amnt "-1"
+else
+	send $upg_amnt "  *  q  "
+end
 return
 
 #=================================QUIKSTATS================================================
 :quikstats
-setVar $CURRENT_PROMPT 		"Undefined"
+setvar $current_prompt 		"Undefined"
 killtrigger noprompt
 killtrigger prompt
 killtrigger prompt1
@@ -2349,175 +2353,174 @@ killtrigger prompt2
 killtrigger prompt3
 killtrigger prompt4
 killtrigger statlinetrig
-killtrigger getLine2
-setTextLineTrigger 	prompt		:allPrompts	 	#145 & #8
-setTextLineTrigger 	statlinetrig 	:statStart 		#179
+killtrigger getline2
+settextlinetrigger 	prompt		:allprompts	 	#145 & #8
+settextlinetrigger 	statlinetrig 	:statstart 		#179
 send #145&"/"
 pause
 
-:allPrompts
-getWord CURRENTLINE $CURRENT_PROMPT 1
-stripText $CURRENT_PROMPT #145
-stripText $CURRENT_PROMPT #8
-setTextLineTrigger 	prompt		:allPrompts	 	#145 & #8
+:allprompts
+getword currentline $current_prompt 1
+striptext $current_prompt #145
+striptext $current_prompt #8
+settextlinetrigger 	prompt		:allprompts	 	#145 & #8
 pause
 
-:statStart
+:statstart
 killtrigger prompt
 killtrigger prompt2
 killtrigger prompt3
 killtrigger prompt4
 killtrigger noprompt
-setVar $stats ""
-setVar $wordy ""
-
+setvar $stats ""
+setvar $wordy ""
 
 :statsline
 killtrigger statlinetrig
-killtrigger getLine2
-setVar $line2 CURRENTLINE
+killtrigger getline2
+setvar $line2 currentline
 replacetext $line2 #179 " "
 striptext $line2 ","
-setVar $stats $stats & $line2
-getWordPos $line2 $pos "Ship"
+setvar $stats $stats & $line2
+getwordpos $line2 $pos "Ship"
 if ($pos > 0)
-	goto :gotStats
+	goto :gotstats
 else
-	setTextLineTrigger getLine2 :statsline
+	settextlinetrigger getline2 :statsline
 	pause
 end
 
-:gotStats
-setVar $stats $stats & " @@@"
+:gotstats
+setvar $stats $stats & " @@@"
 
-setVar $current_word 0
+setvar $current_word 0
 while ($wordy <> "@@@")
 	if ($wordy = "Sect")
-		getWord $stats $CURRENT_SECTOR   	($current_word + 1)
+		getword $stats $current_sector   	($current_word + 1)
 	elseif ($wordy = "Turns")
-		getWord $stats $TURNS  			($current_word + 1)
+		getword $stats $turns  			($current_word + 1)
 	elseif ($wordy = "Creds")
-		getWord $stats $CREDITS  		($current_word + 1)
+		getword $stats $credits  		($current_word + 1)
 	elseif ($wordy = "Figs")
-		getWord $stats $FIGHTERS   		($current_word + 1)
+		getword $stats $fighters   		($current_word + 1)
 	elseif ($wordy = "Shlds")
-		getWord $stats $SHIELDS  		($current_word + 1)
+		getword $stats $shields  		($current_word + 1)
 	elseif ($wordy = "Hlds")
-		getWord $stats $TOTAL_HOLDS   		($current_word + 1)
+		getword $stats $total_holds   		($current_word + 1)
 	elseif ($wordy = "Ore")
-		getWord $stats $ORE_HOLDS    		($current_word + 1)
+		getword $stats $ore_holds    		($current_word + 1)
 	elseif ($wordy = "Org")
-		getWord $stats $ORGANIC_HOLDS    	($current_word + 1)
+		getword $stats $organic_holds    	($current_word + 1)
 	elseif ($wordy = "Equ")
-		getWord $stats $EQUIPMENT_HOLDS    	($current_word + 1)
+		getword $stats $equipment_holds    	($current_word + 1)
 	elseif ($wordy = "Col")
-		getWord $stats $COLONIST_HOLDS    	($current_word + 1)
+		getword $stats $colonist_holds    	($current_word + 1)
 	elseif ($wordy = "Phot")
-		getWord $stats $PHOTONS   		($current_word + 1)
+		getword $stats $photons   		($current_word + 1)
 	elseif ($wordy = "Armd")
-		getWord $stats $ARMIDS   		($current_word + 1)
+		getword $stats $armids   		($current_word + 1)
 	elseif ($wordy = "Lmpt")
-		getWord $stats $LIMPETS   		($current_word + 1)
+		getword $stats $limpets   		($current_word + 1)
 	elseif ($wordy = "GTorp")
-		getWord $stats $GENESIS  		($current_word + 1)
+		getword $stats $genesis  		($current_word + 1)
 	elseif ($wordy = "TWarp")
-		getWord $stats $TWARP_TYPE  		($current_word + 1)
+		getword $stats $twarp_type  		($current_word + 1)
 	elseif ($wordy = "Clks")
-		getWord $stats $CLOAKS   		($current_word + 1)
+		getword $stats $cloaks   		($current_word + 1)
 	elseif ($wordy = "Beacns")
-		getWord $stats $BEACONS 		($current_word + 1)
+		getword $stats $beacons 		($current_word + 1)
 	elseif ($wordy = "AtmDt")
-		getWord $stats $ATOMIC  		($current_word + 1)
+		getword $stats $atomic  		($current_word + 1)
 	elseif ($wordy = "Corbo")
-		getWord $stats $CORBO   		($current_word + 1)
+		getword $stats $corbo   		($current_word + 1)
 	elseif ($wordy = "EPrb")
-		getWord $stats $EPROBES   		($current_word + 1)
+		getword $stats $eprobes   		($current_word + 1)
 	elseif ($wordy = "MDis")
-		getWord $stats $MINE_DISRUPTORS   	($current_word + 1)
+		getword $stats $mine_disruptors   	($current_word + 1)
 	elseif ($wordy = "PsPrb")
-		getWord $stats $PSYCHIC_PROBE  		($current_word + 1)
+		getword $stats $psychic_probe  		($current_word + 1)
 	elseif ($wordy = "PlScn")
-		getWord $stats $PLANET_SCANNER  	($current_word + 1)
+		getword $stats $planet_scanner  	($current_word + 1)
 	elseif ($wordy = "LRS")
-		getWord $stats $SCAN_TYPE    		($current_word + 1)
+		getword $stats $scan_type    		($current_word + 1)
 	elseif ($wordy = "Aln")
-		getWord $stats $ALIGNMENT    		($current_word + 1)
+		getword $stats $alignment    		($current_word + 1)
 	elseif ($wordy = "Exp")
-		getWord $stats $EXPERIENCE    		($current_word + 1)
+		getword $stats $experience    		($current_word + 1)
 	elseif ($wordy = "Corp")
-		getWord $stats $CORP   			($current_word + 1)
+		getword $stats $corp   			($current_word + 1)
 	elseif ($wordy = "Ship")
-		getWord $stats $SHIP_NUMBER   		($current_word + 1)
+		getword $stats $ship_number   		($current_word + 1)
 	end
 	add $current_word 1
-	getWord $stats $wordy $current_word
+	getword $stats $wordy $current_word
 end
-:doneQuikstats
+
+:donequikstats
 killtrigger prompt1
 killtrigger prompt2
 killtrigger prompt3
 killtrigger prompt4
 killtrigger statlinetrig
-killtrigger getLine2
+killtrigger getline2
 
 return
 # ============================== END QUICKSTATS SUB==============================
-
-:upgradePort
+:upgradeport
 send "o" $upg_prod
-setTextTrigger maxupg :maxupg "to quit)"
+settexttrigger maxupg :maxupg "to quit)"
 pause
 
 :maxupg
-getWord CURRENTLINE $upg_maxupg 9
+getword currentline $upg_maxupg 9
 striptext $upg_maxupg "("
 
-IF ($upg_maxupg < $upg_amnt)
-   setVar $upg_amnt "-1"
-ELSE
-   send $upg_amnt "*q"
-END
+if ($upg_maxupg < $upg_amnt)
+	setvar $upg_amnt "-1"
+else
+	send $upg_amnt "*q"
+end
 return
 
 :chkclass
-IF ($classchk = 0)
-   setvar $class "Class 0"
-ELSEIF ($classchk = 1)
-   setvar $class "BBS"
-ELSEIF ($classchk = 2)
-   setvar $class "BSB"
-ELSEIF ($classchk = 3)
-   setvar $class "SBB"
-ELSEIF ($classchk = 4)
-   setvar $class "SSB"
-ELSEIF ($classchk = 5)
-   setvar $class "SBS"
-ELSEIF ($classchk = 6)
-   setvar $class "BSS"
-ELSEIF ($classchk = 7)
-   setvar $class "SSS"
-ELSEIF ($classchk = 8)
-   setvar $class "BBB"
-ELSEIF ($classchk = 9)
-   setvar $class "StarDock"
-ELSE
-   setvar $class "Unknown"
-END
+if ($classchk = 0)
+	setvar $class "Class 0"
+elseif ($classchk = 1)
+	setvar $class "BBS"
+elseif ($classchk = 2)
+	setvar $class "BSB"
+elseif ($classchk = 3)
+	setvar $class "SBB"
+elseif ($classchk = 4)
+	setvar $class "SSB"
+elseif ($classchk = 5)
+	setvar $class "SBS"
+elseif ($classchk = 6)
+	setvar $class "BSS"
+elseif ($classchk = 7)
+	setvar $class "SSS"
+elseif ($classchk = 8)
+	setvar $class "BBB"
+elseif ($classchk = 9)
+	setvar $class "StarDock"
+else
+	setvar $class "Unknown"
+end
 return
 
 :update_cim
 send "^r"
 
 :cim_trig
-setTextLineTrigger next :next
+settextlinetrigger next :next
 pause
 
 :next
-setVar $info CURRENTLINE
-getWord $info $END_test 1
-IF ($END_test = "0")
-   goto :done
-END
+setvar $info currentline
+getword $info $end_test 1
+if ($end_test = "0")
+	goto :done
+end
 goto :cim_trig
 
 :done
@@ -2525,129 +2528,129 @@ send "Q"
 return
 
 :cn
-setTextLineTrigger cn1 :cn1 "(1) ANSI graphics"
-setTextLineTrigger cn2 :cn2 "(2) Animation display"
-setTextLineTrigger cn3 :cn3 "(3) Page on messages"
-setTextLineTrigger cn4 :cn4 "(4) Sub-space radio channel"
-setTextLineTrigger cn5 :cn5 "(5) Federation comm-link"
-setTextLineTrigger cn6 :cn6 "(6) Receive private hails"
-setTextLineTrigger cn7 :cn7 "(7) Silence ALL messages"
-setTextLineTrigger cn9 :cn9 "(9) Abort display on keys"
-setTextLineTrigger cna :cna "(A) Message Display Mode"
-setTextLineTrigger cnb :cnb "(B) Screen Pauses"
-setTextLineTrigger cnc :cnc "(C) Online Auto Flee"
+settextlinetrigger cn1 :cn1 "(1) ANSI graphics"
+settextlinetrigger cn2 :cn2 "(2) Animation display"
+settextlinetrigger cn3 :cn3 "(3) Page on messages"
+settextlinetrigger cn4 :cn4 "(4) Sub-space radio channel"
+settextlinetrigger cn5 :cn5 "(5) Federation comm-link"
+settextlinetrigger cn6 :cn6 "(6) Receive private hails"
+settextlinetrigger cn7 :cn7 "(7) Silence ALL messages"
+settextlinetrigger cn9 :cn9 "(9) Abort display on keys"
+settextlinetrigger cna :cna "(A) Message Display Mode"
+settextlinetrigger cnb :cnb "(B) Screen Pauses"
+settextlinetrigger cnc :cnc "(C) Online Auto Flee"
 send "cn"
 pause
 
 :cn1
-getWord CURRENTLINE $set1 5
+getword currentline $set1 5
 pause
 
 :cn2
-getWord CURRENTLINE $set2 5
+getword currentline $set2 5
 pause
 
 :cn3
-getWord CURRENTLINE $set3 6
+getword currentline $set3 6
 pause
 
 :cn4
-getWord CURRENTLINE $set4 6
+getword currentline $set4 6
 pause
 
 :cn5
-getWord CURRENTLINE $set5 5
+getword currentline $set5 5
 pause
 
 :cn6
-getWord CURRENTLINE $set6 6
+getword currentline $set6 6
 pause
 
 :cn7
-getWord CURRENTLINE $set7 6
+getword currentline $set7 6
 pause
 
 :cn9
-getWord CURRENTLINE $set9 7
+getword currentline $set9 7
 pause
 
 :cna
-getWord CURRENTLINE $seta 6
+getword currentline $seta 6
 pause
 
 :cnb
-getWord CURRENTLINE $setb 5
+getword currentline $setb 5
 pause
 
 :cnc
-getWord CURRENTLINE $setc 6
-IF ($cn1 <> 0)
-   IF ($set1 <> $cn1)
-	setVar $cn1change 1
-	send "1"
-   END
-END
-IF ($cn2 <> 0)
-   IF ($set2 <> $cn2)
-	 setVar $cn2change 1
-	 send "2"
-   END
-END
-IF ($cn3 <> 0)
-   IF ($set3 <> $cn3)
-	 setVar $cn3change 1
- 	 send "3"
-   END
-END
-IF ($cn4 <> 0)
-   IF ($set4 <> $cn4)
-         setVar $cn4change 1
-         send "4" $cn4 "*"
-   END
-END
-IF ($cn5 <> 0)
-   IF ($set5 <> $cn5)
-         setVar $cn5change 1
-         send "5"
-   END
-END
-IF ($cn6 <> 0)
-   IF ($set6 <> $cn6)
-         setVar $cn6change 1
- 	         send "6"
-   END
-END
-IF ($cn7 <> 0)
-   IF ($set7 <> $cn7)
-         setVar $cn7change 1
-         send "7"
-   END
-END
-IF ($cn9 <> 0)
-   setVar $cn9change 0
-       IF ($set9 <> $cn9)
-         setVar $cn9change 1
-         send "9"
-   END
-END
-IF ($cna <> 0)
-   IF ($seta <> $cna)
-         setVar $cnachange 1
-         send "a"
-   END
-END
-IF ($cnb <> 0)
-   IF ($setb <> $cnb)
-         setVar $cnbchange 1
-         send "b"
-   END
-END
-IF ($cnc <> 0)
-   IF ($setc <> $cnc)
-	 setVar $cncchange 1
-	 send "c"
-   END
-END
+getword currentline $setc 6
+if ($cn1 <> 0)
+	if ($set1 <> $cn1)
+		setvar $cn1change 1
+		send "1"
+	end
+end
+if ($cn2 <> 0)
+	if ($set2 <> $cn2)
+		setvar $cn2change 1
+		send "2"
+	end
+end
+if ($cn3 <> 0)
+	if ($set3 <> $cn3)
+		setvar $cn3change 1
+		send "3"
+	end
+end
+if ($cn4 <> 0)
+	if ($set4 <> $cn4)
+		setvar $cn4change 1
+		send "4" $cn4 "*"
+	end
+end
+if ($cn5 <> 0)
+	if ($set5 <> $cn5)
+		setvar $cn5change 1
+		send "5"
+	end
+end
+if ($cn6 <> 0)
+	if ($set6 <> $cn6)
+		setvar $cn6change 1
+		send "6"
+	end
+end
+if ($cn7 <> 0)
+	if ($set7 <> $cn7)
+		setvar $cn7change 1
+		send "7"
+	end
+end
+if ($cn9 <> 0)
+	setvar $cn9change 0
+	if ($set9 <> $cn9)
+		setvar $cn9change 1
+		send "9"
+	end
+end
+if ($cna <> 0)
+	if ($seta <> $cna)
+		setvar $cnachange 1
+		send "a"
+	end
+end
+if ($cnb <> 0)
+	if ($setb <> $cnb)
+		setvar $cnbchange 1
+		send "b"
+	end
+end
+if ($cnc <> 0)
+	if ($setc <> $cnc)
+		setvar $cncchange 1
+		send "c"
+	end
+end
 send "qq"
 return
 include "source\include\switchboard.ts"

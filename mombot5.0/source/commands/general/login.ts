@@ -1,11 +1,11 @@
 :login
-gosub  :player~currentPrompt
-setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
-setVar $BOT~validPrompts "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-if ($PLAYER~startingLocation = "Command")
+gosub  :player~currentprompt
+setvar $player~startinglocation $player~current_prompt
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
+if ($player~startinglocation = "Command")
 	send "t tLogin** q "
-elseif ($PLAYER~startingLocation = "Citadel")
+elseif ($player~startinglocation = "Citadel")
 	send "x tLogin** q "
 end
 

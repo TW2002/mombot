@@ -1,22 +1,17 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-setVar $HELP~HELP[1]  $HELP~TAB&"Displays system's local time "
-setVar $HELP~HELP[2]  $HELP~TAB&"      "
-setVar $HELP~HELP[3]  $HELP~TAB&"  time "
-setVar $HELP~HELP[4]  $HELP~TAB&"         "
-gosub :HELP~HELPFILE
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1]  $help~tab&"Displays system's local time "
+setvar $help~help[2]  $help~tab&"      "
+setvar $help~help[3]  $help~tab&"  time "
+setvar $help~help[4]  $help~tab&"         "
+gosub :help~helpfile
 
-
-loadVar $bot~bot_name
-loadVar $bot~parm1
-loadVar $bot~user_command_line
+loadvar $bot~bot_name
+loadvar $bot~parm1
+loadvar $bot~user_command_line
 loadvar $bot~timer_file
 
-
-
-
-
-setvar $switchboard~message "Current system time - "&TIME&"*"
+setvar $switchboard~message "Current system time - "&time&"*"
 gosub :switchboard~switchboard
 halt
 

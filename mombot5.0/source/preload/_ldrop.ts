@@ -1,172 +1,171 @@
-loadvar $BOT_NAME
-loadvar $USER_COMMAND_LINE
-loadvar $PARM1
-loadvar $PARM2
-loadvar $PARM3
-loadvar $PARM4
-loadvar $PARM5
-loadvar $PARM6
-loadvar $PARM7
-loadvar $PARM8
-setarray $DROPSECTOR 1000
+loadvar $bot_name
+loadvar $user_command_line
+loadvar $parm1
+loadvar $parm2
+loadvar $parm3
+loadvar $parm4
+loadvar $parm5
+loadvar $parm6
+loadvar $parm7
+loadvar $parm8
+setarray $dropsector 1000
 
-
-
-getwordpos $USER_COMMAND_LINE $POS "direct"
-if ($POS > 0)
-  setvar $DIRECT TRUE
+getwordpos $user_command_line $pos "direct"
+if ($pos > 0)
+	setvar $direct true
 else
-  setvar $DIRECT FALSE
+	setvar $direct false
 end
-:LDROP_START
 
-
-isnumber $TEST $PARM1
-if ($TEST = TRUE)
-  setvar $DELAY $PARM1
+:ldrop_start
+isnumber $test $parm1
+if ($test = true)
+	setvar $delay $parm1
 else
-  setvar $DELAY 0
+	setvar $delay 0
 end
-gosub :PLAYER~QUIKSTATS
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-if ($STARTINGLOCATION <> "Citadel")
-  setvar $switchboard~message "Must start from Citadel*"
-  gosub :switchboard~switchboard
-  halt
+gosub :player~quikstats
+setvar $startinglocation $player~current_prompt
+if ($startinglocation <> "Citadel")
+	setvar $switchboard~message "Must start from Citadel*"
+	gosub :switchboard~switchboard
+	halt
 end
 send "q"
-gosub :PLANET~GETPLANETINFO
+gosub :planet~getplanetinfo
 send "q"
-getwordpos $USER_COMMAND_LINE $POS "kill"
-if ($POS > 0)
-  setvar $KILL TRUE
-  gosub :COMBAT~INIT
+getwordpos $user_command_line $pos "kill"
+if ($pos > 0)
+	setvar $kill true
+	gosub :combat~init
 else
-  setvar $KILL FALSE
+	setvar $kill false
 end
 
-setvar $HOME $PLAYER~CURRENT_SECTOR
-:LDROP_RE_SCAN
+setvar $home $player~current_sector
 
-setvar $I 0
-setvar $R 0
-:LDROP_SCAN
+:ldrop_re_scan
+setvar $i 0
+setvar $r 0
 
+:ldrop_scan
 killalltriggers
 send "q q q * k2"
 waitfor "Activated  Limpet  Scan"
-settextlinetrigger CORP_LIMP :LDROP_CORP_LIMP "Corporate"
-settextlinetrigger PERS_LIMP :LDROP_PERS_LIMP "Personal "
-settextlinetrigger NO_LIMP :LDROP_NO_LIMP "No Active Limpet"
-settexttrigger LETS_MOVE :LDROP_RE_SCAN "Command [TL="
+settextlinetrigger corp_limp :ldrop_corp_limp "Corporate"
+settextlinetrigger pers_limp :ldrop_pers_limp "Personal "
+settextlinetrigger no_limp :ldrop_no_limp "No Active Limpet"
+settexttrigger lets_move :ldrop_re_scan "Command [TL="
 pause
-:LDROP_CORP_LIMP
 
-add $I 1
-setvar $TEMP $DROPSECTOR[$I]
-getword CURRENTLINE $DROPSECTOR[$I] 1
-if ($TEMP <> 0)
-  if ($DROPSECTOR[$I] <> $TEMP)
-    getsectorparameter $DROPSECTOR[$I] "FIGSEC" $ISFIGGED
-    if ($ISFIGGED)
-      if ($DIRECT)
-        setvar $ADJSEC $DROPSECTOR[$I]
-        goto :DROPTOSECTOR
-      else
-        goto :LDROP_RE_SCAN
-      end
-    end
-    goto :LDROP_LETS_MOVE
-  end
+:ldrop_corp_limp
+add $i 1
+setvar $temp $dropsector[$i]
+getword currentline $dropsector[$i] 1
+if ($temp <> 0)
+	if ($dropsector[$i] <> $temp)
+		getsectorparameter $dropsector[$i] "FIGSEC" $isfigged
+		if ($isfigged)
+			if ($direct)
+				setvar $adjsec $dropsector[$i]
+				goto :droptosector
+			else
+				goto :ldrop_re_scan
+			end
+		end
+		goto :ldrop_lets_move
+	end
 end
-settextlinetrigger CORP_LIMP :LDROP_CORP_LIMP "Corporate"
+settextlinetrigger corp_limp :ldrop_corp_limp "Corporate"
 pause
-:LDROP_PERS_LIMP
 
-add $I 1
-setvar $TEMP $DROPSECTOR[$I]
-getword CURRENTLINE $DROPSECTOR[$I] 1
-if ($TEMP <> 0)
-  if ($DROPSECTOR[$I] <> $TEMP)
-    getsectorparameter $DROPSECTOR[$I] "FIGSEC" $ISFIGGED
-    if ($ISFIGGED)
-      if ($DIRECT)
-        setvar $ADJSEC $DROPSECTOR[$I]
-        goto :DROPTOSECTOR
-      else
-        goto :LDROP_RE_SCAN
-      end
-    end
-    goto :LDROP_LETS_MOVE
-  end
+:ldrop_pers_limp
+add $i 1
+setvar $temp $dropsector[$i]
+getword currentline $dropsector[$i] 1
+if ($temp <> 0)
+	if ($dropsector[$i] <> $temp)
+		getsectorparameter $dropsector[$i] "FIGSEC" $isfigged
+		if ($isfigged)
+			if ($direct)
+				setvar $adjsec $dropsector[$i]
+				goto :droptosector
+			else
+				goto :ldrop_re_scan
+			end
+		end
+		goto :ldrop_lets_move
+	end
 end
-settextlinetrigger PERS_LIMP :LDROP_PERS_LIMP "Personal"
+settextlinetrigger pers_limp :ldrop_pers_limp "Personal"
 pause
-:LDROP_NO_LIMP
 
+:ldrop_no_limp
 killalltriggers
-goto :LDROP_SCAN
-:LDROP_LETS_MOVE
+goto :ldrop_scan
 
+:ldrop_lets_move
 killalltriggers
 
-gosub :LDROP_GET_ADJ
-:DROPTOSECTOR
+gosub :ldrop_get_adj
+
+:droptosector
 killalltriggers
-if ($DELAY > 0)
-  setdelaytrigger DELAY_DROP :GO_GO_GO $DELAY
-  pause
+if ($delay > 0)
+	setdelaytrigger delay_drop :go_go_go $delay
+	pause
 end
-:GO_GO_GO
-send "l "&$PLANET~PLANET&"* cp "&$ADJSEC&"*y"
-settextlinetrigger NO_FIG :LDROP_NO_FIG "Your own fighters must be in the destination"
-settextlinetrigger IN_SECTOR :LDROP_IN_SECTOR "-=-=-=- Planetary TransWarp Drive Engaged! -=-=-=-"
-pause
-:LDROP_NO_FIG
 
-killtrigger IN_SECTOR
+:go_go_go
+send "l "&$planet~planet&"* cp "&$adjsec&"*y"
+settextlinetrigger no_fig :ldrop_no_fig "Your own fighters must be in the destination"
+settextlinetrigger in_sector :ldrop_in_sector "-=-=-=- Planetary TransWarp Drive Engaged! -=-=-=-"
+pause
+
+:ldrop_no_fig
+killtrigger in_sector
 setvar $switchboard~message "No Adjacent fig in drop sector*"
 gosub :switchboard~switchboard
-goto :LDROP_SCAN
-:LDROP_IN_SECTOR
+goto :ldrop_scan
 
+:ldrop_in_sector
 killalltriggers
-if ($KILL)
-  gosub :SCANITCITKILL
+if ($kill)
+	gosub :scanitcitkill
 else
-  send "s* "
+	send "s* "
 end
 halt
-:LDROP_RETURN_HOME
 
-send "p "&$HOME&"* "
-goto :LDROP_SCAN
-:LDROP_GET_ADJ
+:ldrop_return_home
+send "p "&$home&"* "
+goto :ldrop_scan
 
-setvar $ADJSEC 0
-setvar $S 1
-while (SECTOR.WARPS[$DROPSECTOR[$I]][$S] > 0)
-  setvar $CHECKSECTOR SECTOR.WARPS[$DROPSECTOR[$I]][$S]
-  getsectorparameter $CHECKSECTOR "FIGSEC" $ISFIGGED
-  if ($ISFIGGED)
-    setvar $ADJSEC $CHECKSECTOR
-    return
-  end
-  add $S 1
+:ldrop_get_adj
+setvar $adjsec 0
+setvar $s 1
+while (sector.warps[$dropsector[$i]][$s] > 0)
+	setvar $checksector sector.warps[$dropsector[$i]][$s]
+	getsectorparameter $checksector "FIGSEC" $isfigged
+	if ($isfigged)
+		setvar $adjsec $checksector
+		return
+	end
+	add $s 1
 end
-goto :LDROP_RE_SCAN
+goto :ldrop_re_scan
 
 return
 
-:SCANITCITKILL
-gosub :PLAYER~QUIKSTATS
-setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-gosub :SECTOR~GETSECTORDATA
-if ($SECTOR~CORPIECOUNT < $SECTOR~REALTRADERCOUNT)
-  gosub :COMBAT~FASTCITADELATTACK
-  goto :SCANITCITKILL
+:scanitcitkill
+gosub :player~quikstats
+setvar $player~startinglocation $player~current_prompt
+gosub :sector~getsectordata
+if ($sector~corpiecount < $sector~realtradercount)
+	gosub :combat~fastcitadelattack
+	goto :scanitcitkill
 end
-echo ANSI_12 "*NO Targets*"
+echo ansi_12 "*NO Targets*"
 return
 
 # includes:

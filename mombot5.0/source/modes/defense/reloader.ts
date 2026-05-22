@@ -1,59 +1,58 @@
-	logging off
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
+logging off
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-	setVar $HELP~HELP[1]  $HELP~TAB&"reloader [on/off] [fig minimum] {ig} {topoff} {fig}"
-	setVar $HELP~HELP[2]  $HELP~TAB&"  - Sector Reloader Mode"
-	setVar $HELP~HELP[3]  $HELP~TAB&"    Sits above planet and lands/reloads fighters when hit."
-	setVar $HELP~HELP[4]  $HELP~TAB&"  "
-	setVar $HELP~HELP[5]  $HELP~TAB&"    Options: "
-	setVar $HELP~HELP[6]  $HELP~TAB&"           [on/off]   Turns Reloader On or Off"
-	setVar $HELP~HELP[7]  $HELP~TAB&"      [fig minimum]   Number of ship fighters to lose before "
-	setVar $HELP~HELP[8]  $HELP~TAB&"                      landing and refilling"
-	setVar $HELP~HELP[9]  $HELP~TAB&"               [ig]   Reset IG if photoned "
-	setVar $HELP~HELP[10] $HELP~TAB&"           [topoff]   Uses fighters in sector first "
-	setVar $HELP~HELP[11] $HELP~TAB&"              [fig]   Place fighter if sector figs attacked "
-	setVar $HELP~HELP[11] $HELP~TAB&"           [noland]   Do not land - should be running citfill "
-	gosub :HELP~HELPFILE
+setvar $help~help[1]  $help~tab&"reloader [on/off] [fig minimum] {ig} {topoff} {fig}"
+setvar $help~help[2]  $help~tab&"  - Sector Reloader Mode"
+setvar $help~help[3]  $help~tab&"    Sits above planet and lands/reloads fighters when hit."
+setvar $help~help[4]  $help~tab&"  "
+setvar $help~help[5]  $help~tab&"    Options: "
+setvar $help~help[6]  $help~tab&"           [on/off]   Turns Reloader On or Off"
+setvar $help~help[7]  $help~tab&"      [fig minimum]   Number of ship fighters to lose before "
+setvar $help~help[8]  $help~tab&"                      landing and refilling"
+setvar $help~help[9]  $help~tab&"               [ig]   Reset IG if photoned "
+setvar $help~help[10] $help~tab&"           [topoff]   Uses fighters in sector first "
+setvar $help~help[11] $help~tab&"              [fig]   Place fighter if sector figs attacked "
+setvar $help~help[11] $help~tab&"           [noland]   Do not land - should be running citfill "
+gosub :help~helpfile
 
-	setvar $SWITCHBOARD~MESSAGE "Reloader starting up!*"
-	gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "Reloader starting up!*"
+gosub :switchboard~switchboard
 
+gosub :player~quikstats
+loadvar $planet~planet
 
-	gosub :player~quikstats
-	loadvar $planet~planet
+if ($bot~parm1 = "on")
 
-	if ($bot~parm1 = "on")
+else
+	setvar $bot~parm2 $bot~parm1
+end
 
-	else
-		setvar $bot~parm2 $bot~parm1
-	end
+getwordpos " "&$bot~user_command_line&" " $pos " ig "
+if ($pos > 0)
+	setvar $ig true
+else
+	setvar $ig false
+end
 
-	getwordpos " "&$bot~user_command_line&" " $pos " ig "
-	if ($pos > 0)
-		setvar $ig true
-	else
-		setvar $ig false
-	end
+getwordpos " "&$bot~user_command_line&" " $pos " topoff "
+if ($pos > 0)
+	setvar $topoff true
+else
+	setvar $topoff false
+end
 
-	getwordpos " "&$bot~user_command_line&" " $pos " topoff "
-	if ($pos > 0)
-		setvar $topoff true
-	else
-		setvar $topoff false
-	end
+getwordpos " "&$bot~user_command_line&" " $pos " fig "
+if ($pos > 0)
+	setvar $replace_fig true
+else
+	setvar $replace_fig false
+end
 
-	getwordpos " "&$bot~user_command_line&" " $pos " fig "
-	if ($pos > 0)
-		setvar $replace_fig true
-	else
-		setvar $replace_fig false
-	end
-
-	send "\"
-	setTextLineTrigger flee_off :flee_off "Online Auto Flee is disabled."
-	setTextLineTrigger flee_on :flee_on "Online Auto Flee is enabled."
-	pause
+send "\"
+settextlinetrigger flee_off :flee_off "Online Auto Flee is disabled."
+settextlinetrigger flee_on :flee_on "Online Auto Flee is enabled."
+pause
 
 :flee_on
 killtrigger flee_off
@@ -61,39 +60,38 @@ send "\"
 
 :flee_off
 killtrigger flee_on
-isNumber $number $bot~parm2
+isnumber $number $bot~parm2
 if ($number = 0) or ($bot~parm2 = 0)
-	setVar $threshold $player~fighters
+	setvar $threshold $player~fighters
 	divide $threshold 2
 else
-		setVar $threshold $bot~parm2
+	setvar $threshold $bot~parm2
 end
 
-
 setvar $version "1.7"
-goto :_START_
+goto :_start_
 
 :settriggers
 killtrigger 1
 killtrigger 2
 killtrigger 3
 killtrigger 4
-setTextLineTrigger 1 :sub_reload "Shipboard Computers"
-setTextLineTrigger 2 :landed		"{"&$bot~bot_name&"} - In Cit - Planet"
+settextlinetrigger 1 :sub_reload "Shipboard Computers"
+settextlinetrigger 2 :landed		"{"&$bot~bot_name&"} - In Cit - Planet"
 if ($ig = true)
-	setTextLineTrigger 3 :ig_turn_it_on " damaging your ship."
+	settextlinetrigger 3 :ig_turn_it_on " damaging your ship."
 end
 if ($replace_fig)
-	setTextLineTrigger 4 :replace_fig " of your fighters in sector "&$player~current_sector
+	settextlinetrigger 4 :replace_fig " of your fighters in sector "&$player~current_sector
 end
 pause
 
 :replace_fig
 setvar $line currentline
-getWord $line $test 1
+getword $line $test 1
 getwordpos " "&$line&" " $pos " "&$player~current_sector&" "
 if (($test = "F") or ($test = "R") or ($test = "P") or ($pos <= 0))
-	setTextLineTrigger 4 :replace_fig " of your fighters in sector "&$player~current_sector
+	settextlinetrigger 4 :replace_fig " of your fighters in sector "&$player~current_sector
 	pause
 end
 killtrigger 1
@@ -102,7 +100,6 @@ killtrigger 3
 gosub :topoff
 add $loss 1
 goto :settriggers
-
 
 :landed
 killtrigger 1
@@ -118,38 +115,39 @@ if ($player~current_prompt <> "Command")
 	halt
 end
 goto :settriggers
+
 :sub_reload
-getWord CURRENTANSILINE $ck 1
-getWord CURRENTLINE $ck2 4
-getWord CURRENTLINE $ck3 5
-getWord CURRENTLINE $ck4 6
-getWord CURRENTLINE $ck5 7
+getword currentansiline $ck 1
+getword currentline $ck2 4
+getword currentline $ck3 5
+getword currentline $ck4 6
+getword currentline $ck5 7
 if ($ck <> "[K[1A[1;33mShipboard")
 	echo "spoof"
-	setTextLineTrigger 1 :sub_reload "Shipboard Computers"
+	settextlinetrigger 1 :sub_reload "Shipboard Computers"
 	pause
 end
-setVar $reloaderline CURRENTLINE
-GetWordPos $reloaderLine $reloaderCheck "destroyed"
-if ($reloaderCheck = 0)
+setvar $reloaderline currentline
+getwordpos $reloaderline $reloadercheck "destroyed"
+if ($reloadercheck = 0)
 	echo "Found no damage*"
-	setTextLineTrigger 1 :sub_reload "Shipboard Computers"
+	settextlinetrigger 1 :sub_reload "Shipboard Computers"
 	pause
 end
 killtrigger 2
 killtrigger 3
 killtrigger 4
-While ($reloaderCheck <> 0)
-	SetVar $PreviousreloaderLine $reloaderLine
-	CutText $PreviousreloaderLine $reloaderLine ($reloaderCheck + 10) 999
-	GetWordPos $reloaderLine $reloaderCheck "destroyed"
+while ($reloadercheck <> 0)
+	setvar $previousreloaderline $reloaderline
+	cuttext $previousreloaderline $reloaderline ($reloadercheck + 10) 999
+	getwordpos $reloaderline $reloadercheck "destroyed"
 end
-GetWordPos $PreviousreloaderLine $reloaderCheck "destroyed"
-CutText $PreviousreloaderLine $PreviousreloaderLine $reloaderCheck 9999
-getText $PreviousreloaderLine $FigDamage "destroyed" "fighters."
-stripText $FigDamage "shield points and"
-getWord $FigDamage $Shield_pnts 1
-getWord $FigDamage $Fig_pnts 2
+getwordpos $previousreloaderline $reloadercheck "destroyed"
+cuttext $previousreloaderline $previousreloaderline $reloadercheck 9999
+gettext $previousreloaderline $figdamage "destroyed" "fighters."
+striptext $figdamage "shield points and"
+getword $figdamage $shield_pnts 1
+getword $figdamage $fig_pnts 2
 if ($shield_pnts > 0)
 	add $loss $shield_pnts
 end
@@ -168,7 +166,7 @@ if ($topoff = true)
 else
 	send "l " $planet~planet "*  m  *  *  *  q "
 end
-setVar $loss 0
+setvar $loss 0
 gosub :player~quikstats
 if ($player~fighters < $ship~ship_fighters_max)
 	if ($topoff = true)
@@ -185,12 +183,11 @@ if ($player~fighters < $ship~ship_fighters_max)
 end
 goto :settriggers
 
-:_START_
-
+:_start_
 # ============================== RELOADER (RELOAD) ==============================
 :reloader
-setVar $startingLocation $player~current_prompt
-if ($startingLocation <> "Citadel") and ($startingLocation <> "Planet")
+setvar $startinglocation $player~current_prompt
+if ($startinglocation <> "Citadel") and ($startinglocation <> "Planet")
 	if ($planet~planet = 0)
 		setvar $switchboard~message "Must start at planet or cit prompt*"
 		gosub :switchboard~switchboard
@@ -198,14 +195,14 @@ if ($startingLocation <> "Citadel") and ($startingLocation <> "Planet")
 	else
 		setvar $switchboard~message "Attempting to use planet "&$planet~planet&".*"
 		setvar $planet~land_and_lift true
-		gosub :planet~landingsub 
-		if ($planet~sucessfulPlanet <> true)
+		gosub :planet~landingsub
+		if ($planet~sucessfulplanet <> true)
 			setvar $switchboard~message "Planet does not appear to be available.  Stopping.*"
 			gosub :switchboard~switchboard
 			halt
 		else
 			setvar $startinglocation "Planet"
-			if ($planet~sucessfulCitadel = true)
+			if ($planet~sucessfulcitadel = true)
 				setvar $startinglocation "Citadel"
 			end
 		end
@@ -218,9 +215,9 @@ end
 gosub :ship~getshipstats
 
 if ($planet~planet_fighters > 0)
-	setvar $switchboard~message "Reloader "&$VERSION&" Active - Using Planet "&$planet~planet&" with "&$planet~planet_FIGHTERS&" fighters.*"
+	setvar $switchboard~message "Reloader "&$version&" Active - Using Planet "&$planet~planet&" with "&$planet~planet_fighters&" fighters.*"
 else
-	setvar $switchboard~message "Reloader "&$VERSION&" Active - Using Planet "&$planet~planet&".*"
+	setvar $switchboard~message "Reloader "&$version&" Active - Using Planet "&$planet~planet&".*"
 end
 gosub :switchboard~switchboard
 setvar $switchboard~message "Will reload when I get below "&$threshold&" ship fighters.*"
@@ -242,105 +239,99 @@ halt
 halt
 
 :ig_turn_it_on
-		
-getWord CURRENTLINE $test 1
+getword currentline $test 1
 if ($test = "F") or ($test = "R") or ($test = "P")
-	setTextLineTrigger 3 :ig_turn_it_on " damaging your ship."
+	settextlinetrigger 3 :ig_turn_it_on " damaging your ship."
 	pause
 end
 killtrigger 1
 killtrigger 2
 killtrigger 3
-setVar $ig_mode 0
-setDelayTrigger ig_timeout :photon_ig_damage_trigger 3000
-setTextTrigger no_ig_trigger :no_ig_available "is not equipped with an Interdictor Generator!"
-setTextTrigger no_ig_beam :no_ig_beam "Beam to what sector? (U=Upgrade Q=Quit)"
-setTextTrigger no_ig_cby :no_ig_cby "ARE YOU SURE CAPTAIN? (Y/N)"
-setTextTrigger need_ig :ig_was_off "Your Interdictor generator is now OFF"
-setTextTrigger ig_fine :ig_was_on "Your Interdictor generator is now ON"
-setTextTrigger do_ig :do_ig_thing "Do you wish to change it? (Y/N)"
+setvar $ig_mode 0
+setdelaytrigger ig_timeout :photon_ig_damage_trigger 3000
+settexttrigger no_ig_trigger :no_ig_available "is not equipped with an Interdictor Generator!"
+settexttrigger no_ig_beam :no_ig_beam "Beam to what sector? (U=Upgrade Q=Quit)"
+settexttrigger no_ig_cby :no_ig_cby "ARE YOU SURE CAPTAIN? (Y/N)"
+settexttrigger need_ig :ig_was_off "Your Interdictor generator is now OFF"
+settexttrigger ig_fine :ig_was_on "Your Interdictor generator is now ON"
+settexttrigger do_ig :do_ig_thing "Do you wish to change it? (Y/N)"
 send "q q* b"
 pause
 
-	:no_ig_available
-	killtrigger ig_timeout
-	killtrigger no_ig_trigger
-	killtrigger no_ig_beam
-	killtrigger no_ig_cby
-	killtrigger ig_fine
-	killtrigger do_ig
-	setvar $switchboard~message "No IG available on this ship.*"
+:no_ig_available
+killtrigger ig_timeout
+killtrigger no_ig_trigger
+killtrigger no_ig_beam
+killtrigger no_ig_cby
+killtrigger ig_fine
+killtrigger do_ig
+setvar $switchboard~message "No IG available on this ship.*"
+gosub :switchboard~switchboard
+setvar $ig false
+goto :settriggers
+
+:no_ig_beam
+killtrigger ig_timeout
+killtrigger no_ig_trigger
+killtrigger no_ig_beam
+killtrigger no_ig_cby
+killtrigger ig_fine
+killtrigger do_ig
+send " Q "
+goto :settriggers
+
+:no_ig_cby
+killtrigger ig_timeout
+killtrigger no_ig_trigger
+killtrigger no_ig_beam
+killtrigger no_ig_cby
+killtrigger ig_fine
+killtrigger do_ig
+send " N "
+goto :settriggers
+
+:ig_was_on
+setvar $ig_mode 1
+pause
+
+:ig_was_off
+setvar $ig_mode 0
+pause
+
+:do_ig_thing
+killtrigger ig_timeout
+killtrigger no_ig_trigger
+killtrigger no_ig_beam
+killtrigger no_ig_cby
+killtrigger ig_fine
+killtrigger do_ig
+killtrigger need_ig
+if ($ig_mode = 0)
+	send "Y"
+	setvar $switchboard~message "IG turned on!*"
 	gosub :switchboard~switchboard
-	setvar $ig false
-	goto :settriggers
-
-	:no_ig_beam
-	killtrigger ig_timeout
-	killtrigger no_ig_trigger
-	killtrigger no_ig_beam
-	killtrigger no_ig_cby
-	killtrigger ig_fine
-	killtrigger do_ig
-	send " Q "
-	goto :settriggers
-
-	:no_ig_cby
-	killtrigger ig_timeout
-	killtrigger no_ig_trigger
-	killtrigger no_ig_beam
-	killtrigger no_ig_cby
-	killtrigger ig_fine
-	killtrigger do_ig
-	send " N "
-	goto :settriggers
-
-	:ig_was_on
-	setVar $ig_mode 1
-	pause
-
-	:ig_was_off
-	setVar $ig_mode 0
-	pause
-
-	:do_ig_thing
-	killtrigger ig_timeout
-	killtrigger no_ig_trigger
-	killtrigger no_ig_beam
-	killtrigger no_ig_cby
-	killtrigger ig_fine
-	killtrigger do_ig
-	killtrigger need_ig
-	if ($ig_mode = 0)
-		send "Y"
-		setvar $switchboard~message "IG turned on!*"
-		gosub :switchboard~switchboard
-	else
-		send "N"
-		setvar $switchboard~message "IG was already on.*"
-		gosub :switchboard~switchboard
-	end
-	goto :settriggers
-
+else
+	send "N"
+	setvar $switchboard~message "IG was already on.*"
+	gosub :switchboard~switchboard
+end
+goto :settriggers
 
 :topoff
-    :do_topoff_again
-    killtrigger topoff_success
-    killtrigger topoff_failure1
-    killtrigger topoff_failure2
-    send "f"
-    waitOn "Your ship can support up to"
-    getWord CURRENTLINE $ftrs_to_leave 10
-    stripText $ftrs_to_leave ","
-    stripText $ftrs_to_leave " "
-    if ($ftrs_to_leave < 1)
-        setVar $ftrs_to_leave 1
-    end
-    send $ftrs_to_leave & "* c d "
+:do_topoff_again
+killtrigger topoff_success
+killtrigger topoff_failure1
+killtrigger topoff_failure2
+send "f"
+waiton "Your ship can support up to"
+getword currentline $ftrs_to_leave 10
+striptext $ftrs_to_leave ","
+striptext $ftrs_to_leave " "
+if ($ftrs_to_leave < 1)
+	setvar $ftrs_to_leave 1
+end
+send $ftrs_to_leave & "* c d "
 return
-
-
-
-
 
 #INCLUDES:
 include "source\include\ship"

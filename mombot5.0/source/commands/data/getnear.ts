@@ -1,226 +1,224 @@
-gosub :PLAYER~QUIKSTATS
-setvar $VERSION "1.1a"
+gosub :player~quikstats
+setvar $version "1.1a"
 loadvar $bot~folder
-setvar $MOM $bot~folder&"/"&GAMENAME&".nego"
-setarray $PORT SECTORS
-setvar $CNT 0
-setvar $BUYER 0
-setvar $B 0
-setvar $SELLER 0
-setvar $S 0
-loadvar $PORT_MAX
-loadvar $GAME~PORT_MAX
-loadvar $BOT_NAME
-loadvar $PARM1
+setvar $mom $bot~folder&"/"&gamename&".nego"
+setarray $port sectors
+setvar $cnt 0
+setvar $buyer 0
+setvar $b 0
+setvar $seller 0
+setvar $s 0
+loadvar $port_max
+loadvar $game~port_max
+loadvar $bot_name
+loadvar $parm1
 
-fileexists $MOM_TST $MOM
-if ($MOM_TST)
-  readtoarray $MOM $PORTS
-  setvar $IDX 1
-  while ($IDX <= $PORTS)
-    setvar $SS $PORTS[$IDX]
-    getwordpos $SS $POS "Sector"
-    if ($POS <> 0)
-      getword $SS $SECT 2
-    end
-    getwordpos $SS $POS "equ for"
-    if (($POS <> 0) and ($SECT <> 0))
-      getword $SS $SS 13
+fileexists $mom_tst $mom
+if ($mom_tst)
+	readtoarray $mom $ports
+	setvar $idx 1
+	while ($idx <= $ports)
+		setvar $ss $ports[$idx]
+		getwordpos $ss $pos "Sector"
+		if ($pos <> 0)
+			getword $ss $sect 2
+		end
+		getwordpos $ss $pos "equ for"
+		if (($pos <> 0) and ($sect <> 0))
+			getword $ss $ss 13
 
-
-      setvar $PORT[$SECT] $SS
-    end
-    add $IDX 1
-  end
+			setvar $port[$sect] $ss
+		end
+		add $idx 1
+	end
 end
 
-
-if (($PORT_MAX = 0) and ($GAME~PORT_MAX > 0))
-  setvar $PORT_MAX $GAME~PORT_MAX
-  savevar $PORT_MAX
+if (($port_max = 0) and ($game~port_max > 0))
+	setvar $port_max $game~port_max
+	savevar $port_max
 end
 
-if (($PORT_MAX = 0) and (($PLAYER~CURRENT_PROMPT = "Command") or ($PLAYER~CURRENT_PROMPT = "Citadel")))
-  setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-  gosub :GAME~GAMESTATS
-  loadvar $GAME~PORT_MAX
-  if ($GAME~PORT_MAX > 0)
-    setvar $PORT_MAX $GAME~PORT_MAX
-    savevar $PORT_MAX
-  end
+if (($port_max = 0) and (($player~current_prompt = "Command") or ($player~current_prompt = "Citadel")))
+	setvar $player~startinglocation $player~current_prompt
+	gosub :game~gamestats
+	loadvar $game~port_max
+	if ($game~port_max > 0)
+		setvar $port_max $game~port_max
+		savevar $port_max
+	end
 end
 
-if ($PORT_MAX = 0)
-  setvar $switchboard~message "Unable To Determine Port Max From CFG File*"
-  gosub :switchboard~switchboard
-  halt
+if ($port_max = 0)
+	setvar $switchboard~message "Unable To Determine Port Max From CFG File*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-isnumber $TST $PARM1
-if ($TST = 0)
-  setvar $PARM1 $PORT_MAX
+isnumber $tst $parm1
+if ($tst = 0)
+	setvar $parm1 $port_max
 else
-  if ($PARM1 > $PORT_MAX)
-    setvar $PARM1 $PORT_MAX
-  end
-  if ($PARM1 < 1)
-    setvar $PARM1 $PORT_MAX
-  end
+	if ($parm1 > $port_max)
+		setvar $parm1 $port_max
+	end
+	if ($parm1 < 1)
+		setvar $parm1 $port_max
+	end
 end
 
-setvar $switchboard~message "GETNEAR "&$VERSION&" - Searching For Ports BUYERS & SELLERS ...*"
+setvar $switchboard~message "GETNEAR "&$version&" - Searching For Ports BUYERS & SELLERS ...*"
 gosub :switchboard~switchboard
 
-getnearestwarps $LOOKUP $PLAYER~CURRENT_SECTOR
-setvar $IDX 1
-while ($IDX <= $LOOKUP)
-  setvar $FOCUS $LOOKUP[$IDX]
-  if (PORT.EXISTS[$FOCUS])
-    if ((PORT.CLASS[$FOCUS] = 2) or (PORT.CLASS[$FOCUS] = 3) or (PORT.CLASS[$FOCUS] = 4) or (PORT.CLASS[$FOCUS] = 8))
-      if (PORT.EQUIP[$FOCUS] >= $PARM1)
-        getsectorparameter $FOCUS "FIGSEC" $FIG
-        if ($FIG <> 0)
-          getdistance $DIST $PLAYER~CURRENT_SECTOR $FOCUS
-          if ($DIST = "-1")
-            setvar $DIST 0
-          end
-          if ($DIST < 10)
-            setvar $DIST " "&$DIST
-          end
-          add $B 1
-          gosub :FORMAT
-          if ($MOM_TST)
-            if ($PORT[$FOCUS] <> 0)
-              setvar $STR $STR&" "&$PORT[$FOCUS]
-            end
-          end
+getnearestwarps $lookup $player~current_sector
+setvar $idx 1
+while ($idx <= $lookup)
+	setvar $focus $lookup[$idx]
+	if (port.exists[$focus])
+		if ((port.class[$focus] = 2) or (port.class[$focus] = 3) or (port.class[$focus] = 4) or (port.class[$focus] = 8))
+			if (port.equip[$focus] >= $parm1)
+				getsectorparameter $focus "FIGSEC" $fig
+				if ($fig <> 0)
+					getdistance $dist $player~current_sector $focus
+					if ($dist = "-1")
+						setvar $dist 0
+					end
+					if ($dist < 10)
+						setvar $dist " "&$dist
+					end
+					add $b 1
+					gosub :format
+					if ($mom_tst)
+						if ($port[$focus] <> 0)
+							setvar $str $str&" "&$port[$focus]
+						end
+					end
 
-          setvar $BUYER[$B] $STR
-          add $CNT 1
-        end
-      end
-    end
-    if ((PORT.CLASS[$FOCUS] = 1) or (PORT.CLASS[$FOCUS] = 5) or (PORT.CLASS[$FOCUS] = 6) or (PORT.CLASS[$FOCUS] = 7))
-      if (PORT.EQUIP[$FOCUS] >= $PARM1)
-        getsectorparameter $FOCUS "FIGSEC" $FIG
-        if ($FIG <> 0)
-          getdistance $DIST $PLAYER~CURRENT_SECTOR $FOCUS
-          if ($DIST = "-1")
-            setvar $DIST 0
-          end
-          if ($DIST < 10)
-            setvar $DIST " "&$DIST
-          end
-          add $S 1
-          gosub :FORMAT
+					setvar $buyer[$b] $str
+					add $cnt 1
+				end
+			end
+		end
+		if ((port.class[$focus] = 1) or (port.class[$focus] = 5) or (port.class[$focus] = 6) or (port.class[$focus] = 7))
+			if (port.equip[$focus] >= $parm1)
+				getsectorparameter $focus "FIGSEC" $fig
+				if ($fig <> 0)
+					getdistance $dist $player~current_sector $focus
+					if ($dist = "-1")
+						setvar $dist 0
+					end
+					if ($dist < 10)
+						setvar $dist " "&$dist
+					end
+					add $s 1
+					gosub :format
 
-          if ($MOM_TST)
-            if ($PORT[$FOCUS] <> 0)
-              setvar $STR $STR&" "&$PORT[$FOCUS]
-            end
-          end
-          setvar $SELLER[$S] $STR
-          add $CNT 1
-        end
-      end
-    end
-  end
-  if ($CNT >= 100)
-    goto :_END_
-  end
-  add $IDX 1
+					if ($mom_tst)
+						if ($port[$focus] <> 0)
+							setvar $str $str&" "&$port[$focus]
+						end
+					end
+					setvar $seller[$s] $str
+					add $cnt 1
+				end
+			end
+		end
+	end
+	if ($cnt >= 100)
+		goto :_end_
+	end
+	add $idx 1
 end
-:_END_
-setvar $IDX 1
+
+:_end_
+setvar $idx 1
 send "'*"
 waiton "Type sub-space message"
-send "{"&$BOT_NAME&"} GETNEAREST CASHING PORT : "&$CNT&" Found >= "&$PARM1&" units*"
-getlength "{"&$BOT_NAME&"}" $LEN
-setvar $PAD ""
-setvar $I 1
-while ($I <= $LEN)
-  setvar $PAD $PAD&"-"
-  add $I 1
+send "{"&$bot_name&"} GETNEAREST CASHING PORT : "&$cnt&" Found >= "&$parm1&" units*"
+getlength "{"&$bot_name&"}" $len
+setvar $pad ""
+setvar $i 1
+while ($i <= $len)
+	setvar $pad $pad&"-"
+	add $i 1
 end
-send $PAD&"-----------------------------------*"
+send $pad&"-----------------------------------*"
 
-if ($B <> 0)
-  send "BUYERS*"
-  while ($IDX <= $B)
-    send $BUYER[$IDX]&"*"
-    add $IDX 1
-  end
+if ($b <> 0)
+	send "BUYERS*"
+	while ($idx <= $b)
+		send $buyer[$idx]&"*"
+		add $idx 1
+	end
 end
 send "    *"
-if ($S <> 0)
-  setvar $IDX 1
-  send "SELLERS*"
-  while ($IDX <= $S)
-    send $SELLER[$IDX]&"*"
-    add $IDX 1
-  end
+if ($s <> 0)
+	setvar $idx 1
+	send "SELLERS*"
+	while ($idx <= $s)
+		send $seller[$idx]&"*"
+		add $idx 1
+	end
 end
 send "*"
 waiton "Sub-space comm-link terminated"
 
 halt
-:FORMAT
 
-setvar $NUM $FOCUS
-gosub :PAD
-setvar $STR $PAD&$FOCUS&", "&$DIST&" hops"
-if (PORT.CLASS[$FOCUS] = 1)
-  setvar $STR $STR&" BBS"
-elseif (PORT.CLASS[$FOCUS] = 2)
-  setvar $STR $STR&" BSB"
-elseif (PORT.CLASS[$FOCUS] = 3)
-  setvar $STR $STR&" SBB"
-elseif (PORT.CLASS[$FOCUS] = 4)
-  setvar $STR $STR&" SSB"
-elseif (PORT.CLASS[$FOCUS] = 5)
-  setvar $STR $STR&" SBS"
-elseif (PORT.CLASS[$FOCUS] = 6)
-  setvar $STR $STR&" BSS"
-elseif (PORT.CLASS[$FOCUS] = 7)
-  setvar $STR $STR&" SSS"
-elseif (PORT.CLASS[$FOCUS] = 8)
-  setvar $STR $STR&" BBB"
+:format
+setvar $num $focus
+gosub :pad
+setvar $str $pad&$focus&", "&$dist&" hops"
+if (port.class[$focus] = 1)
+	setvar $str $str&" BBS"
+elseif (port.class[$focus] = 2)
+	setvar $str $str&" BSB"
+elseif (port.class[$focus] = 3)
+	setvar $str $str&" SBB"
+elseif (port.class[$focus] = 4)
+	setvar $str $str&" SSB"
+elseif (port.class[$focus] = 5)
+	setvar $str $str&" SBS"
+elseif (port.class[$focus] = 6)
+	setvar $str $str&" BSS"
+elseif (port.class[$focus] = 7)
+	setvar $str $str&" SSS"
+elseif (port.class[$focus] = 8)
+	setvar $str $str&" BBB"
 
 end
-setvar $NUM PORT.FUEL[$FOCUS]
-gosub :PAD
-setvar $STR $STR&" "&$PAD&$NUM&" ("&PORT.PERCENTFUEL[$FOCUS]&"%)"
-if (PORT.PERCENTFUEL[$FOCUS] < 10)
-  setvar $STR $STR&"  "
-elseif (PORT.PERCENTFUEL[$FOCUS] < 100)
-  setvar $STR $STR&" "
+setvar $num port.fuel[$focus]
+gosub :pad
+setvar $str $str&" "&$pad&$num&" ("&port.percentfuel[$focus]&"%)"
+if (port.percentfuel[$focus] < 10)
+	setvar $str $str&"  "
+elseif (port.percentfuel[$focus] < 100)
+	setvar $str $str&" "
 end
 
-setvar $NUM PORT.ORG[$FOCUS]
-gosub :PAD
-setvar $STR $STR&$PAD&$NUM&" ("&PORT.PERCENTORG[$FOCUS]&"%)"
-if (PORT.PERCENTORG[$FOCUS] < 10)
-  setvar $STR $STR&"  "
-elseif (PORT.PERCENTORG[$FOCUS] < 100)
-  setvar $STR $STR&" "
+setvar $num port.org[$focus]
+gosub :pad
+setvar $str $str&$pad&$num&" ("&port.percentorg[$focus]&"%)"
+if (port.percentorg[$focus] < 10)
+	setvar $str $str&"  "
+elseif (port.percentorg[$focus] < 100)
+	setvar $str $str&" "
 end
 
-setvar $NUM PORT.EQUIP[$FOCUS]
-gosub :PAD
-setvar $STR $STR&" "&$PAD&$NUM&" ("&PORT.PERCENTEQUIP[$FOCUS]&"%)"
+setvar $num port.equip[$focus]
+gosub :pad
+setvar $str $str&" "&$pad&$num&" ("&port.percentequip[$focus]&"%)"
 return
 
 # includes:
 include "source\include\game"
 include "source\include\switchboard.ts"
-:PAD
 
-
-setvar $PAD ""
-getlength $NUM $LEN
-setvar $PAD_I 1
-while ($PAD_I <= (5 - $LEN))
-  setvar $PAD $PAD&" "
-  add $PAD_I 1
+:pad
+setvar $pad ""
+getlength $num $len
+setvar $pad_i 1
+while ($pad_i <= (5 - $len))
+	setvar $pad $pad&" "
+	add $pad_i 1
 end
 return

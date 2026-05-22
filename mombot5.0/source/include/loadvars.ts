@@ -1,79 +1,85 @@
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:LOADVARS~LOADVARS
+:loadvars~loadvars
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-loadvar $BOT~MODE
-loadvar $BOT~COMMAND
-loadvar $BOT~COMMAND_TYPED
-loadvar $BOT~COMMAND_CALLER
-loadvar $BOT~MOMBOT_DIRECTORY
-loadvar $BOT~MOMBOT_CONFIG_FILE
-loadvar $SWITCHBOARD~BOT_NAME
-setvar $BOT~BOT_NAME $SWITCHBOARD~BOT_NAME
-loadvar $PLANET~PLANET_FILE
-loadvar $SHIP~CAP_FILE
-loadvar $BOT~USER_COMMAND_LINE
-loadvar $BOT~PARM1
-loadvar $BOT~PARM2
-loadvar $BOT~PARM3
-loadvar $BOT~PARM4
-loadvar $BOT~PARM5
-loadvar $BOT~PARM6
-loadvar $BOT~PARM7
-loadvar $BOT~PARM8
-loadvar $BOT~BOT_TURN_LIMIT
-loadvar $PLAYER~UNLIMITEDGAME
-loadvar $MAP~STARDOCK
-loadvar $MAP~RYLOS
-loadvar $MAP~ALPHA_CENTAURI
-loadvar $MAP~HOME_SECTOR
-loadvar $MAP~BACKDOOR
-loadvar $BOT~SILENT_RUNNING
-loadvar $BOT~BOTISDEAF
-loadvar $SWITCHBOARD~SELF_COMMAND
-loadvar $PLANET~PLANET
-loadvar $BOT~PASSWORD
-loadvar $BOT~LETTER
-loadvar $GAME~PORT_MAX
-loadvar $BOT~FOLDER
-loadvar $GAME~PHOTON_DURATION
-loadvar $PLAYER~OVERRIDE
-loadvar $PLAYER~SURROUNDFIGS
-loadvar $PLAYER~SURROUNDLIMP
-loadvar $PLAYER~SURROUNDMINE
-loadvar $PLAYER~FIGHTER_DEPLOY_TYPE
-loadvar $PLAYER~DROPOFFENSIVE
-loadvar $PLAYER~DROPTOLL
-gosub :LOADVARS~NORMALIZE_DEPLOY_PREFERENCES
+loadvar $bot~bot_turn_limit
+loadvar $bot~botisdeaf
+loadvar $bot~command
+loadvar $bot~command_typed
+loadvar $bot~command_caller
+loadvar $bot~folder
+loadvar $bot~letter
+loadvar $bot~mode
+loadvar $bot~mombot_directory
+loadvar $bot~mombot_config_file
+loadvar $bot~parm1
+loadvar $bot~parm2
+loadvar $bot~parm3
+loadvar $bot~parm4
+loadvar $bot~parm5
+loadvar $bot~parm6
+loadvar $bot~parm7
+loadvar $bot~parm8
+loadvar $bot~password
+loadvar $bot~silent_running
+loadvar $bot~user_command_line
+loadvar $game~port_max
+loadvar $game~photon_duration
+loadvar $game~goldenabled
+loadvar $game~mbbs
+loadvar $game~port_max
+loadvar $game~ptradesetting
+loadvar $game~rob_factor
+loadvar $game~production_ra
+loadvar $map~stardock
+loadvar $map~rylos
+loadvar $map~alpha_centauri
+loadvar $map~home_sector
+loadvar $map~backdoor
+loadvar $player~fighter_deploy_type
+loadvar $planet~planet
+loadvar $planet~planet_file
+loadvar $player~dropoffensive
+loadvar $player~droptoll
+loadvar $player~override
+loadvar $player~surroundfigs
+loadvar $player~surroundlimp
+loadvar $player~surroundmine
+loadvar $player~unlimitedgame
+loadvar $ship~cap_file
+loadvar $switchboard~bot_name
+setvar $bot~bot_name $switchboard~bot_name
+loadvar $switchboard~self_command
+gosub :loadvars~normalize_deploy_preferences
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:LOADVARS~NORMALIZE_DEPLOY_PREFERENCES
+:loadvars~normalize_deploy_preferences
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if ($PLAYER~DROPOFFENSIVE = TRUE)
-  setvar $PLAYER~DROPOFFENSIVE TRUE
-  setvar $PLAYER~DROPTOLL FALSE
-  setvar $PLAYER~FIGHTER_DEPLOY_TYPE "o"
-elseif ($PLAYER~DROPTOLL = TRUE)
-  setvar $PLAYER~DROPOFFENSIVE FALSE
-  setvar $PLAYER~DROPTOLL TRUE
-  setvar $PLAYER~FIGHTER_DEPLOY_TYPE "t"
+if ($player~dropoffensive = true)
+	setvar $player~dropoffensive true
+	setvar $player~droptoll false
+	setvar $player~fighter_deploy_type "o"
+elseif ($player~droptoll = true)
+	setvar $player~dropoffensive false
+	setvar $player~droptoll true
+	setvar $player~fighter_deploy_type "t"
 else
-  lowercase $PLAYER~FIGHTER_DEPLOY_TYPE
-  if ($PLAYER~FIGHTER_DEPLOY_TYPE = "o")
-    setvar $PLAYER~DROPOFFENSIVE TRUE
-    setvar $PLAYER~DROPTOLL FALSE
-    setvar $PLAYER~FIGHTER_DEPLOY_TYPE "o"
-  elseif ($PLAYER~FIGHTER_DEPLOY_TYPE = "t")
-    setvar $PLAYER~DROPOFFENSIVE FALSE
-    setvar $PLAYER~DROPTOLL TRUE
-    setvar $PLAYER~FIGHTER_DEPLOY_TYPE "t"
-  else
-    setvar $PLAYER~DROPOFFENSIVE FALSE
-    setvar $PLAYER~DROPTOLL FALSE
-    setvar $PLAYER~FIGHTER_DEPLOY_TYPE "d"
-  end
+	lowercase $player~fighter_deploy_type
+	if ($player~fighter_deploy_type = "o")
+		setvar $player~dropoffensive true
+		setvar $player~droptoll false
+		setvar $player~fighter_deploy_type "o"
+	elseif ($player~fighter_deploy_type = "t")
+		setvar $player~dropoffensive false
+		setvar $player~droptoll true
+		setvar $player~fighter_deploy_type "t"
+	else
+		setvar $player~dropoffensive false
+		setvar $player~droptoll false
+		setvar $player~fighter_deploy_type "d"
+	end
 end
-savevar $PLAYER~DROPOFFENSIVE
-savevar $PLAYER~DROPTOLL
-savevar $PLAYER~FIGHTER_DEPLOY_TYPE
+savevar $player~dropoffensive
+savevar $player~droptoll
+savevar $player~fighter_deploy_type
 return

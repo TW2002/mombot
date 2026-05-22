@@ -1,282 +1,281 @@
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
-	
-	setArray $TYPES 7
-	setVar $TYPES[1] "General"
-	setVar $TYPES[2] "Defense"
-	setVar $TYPES[3] "Offense"
-	setVar $TYPES[4] "Resource"
-	setVar $TYPES[5] "Grid"
-	setVar $TYPES[6] "Cashing"
-	setVar $TYPES[7] "Data"
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-	setVar $HELP~HELP[1] $HELP~TAB&"help - displays help files for commands "
-	setVar $HELP~HELP[2] $HELP~TAB&"   "
-	gosub :HELP~HELPFILE
-	
-	setVar $helpTargetText $BOT~USER_COMMAND_LINE
-	stripText $helpTargetText " "
+setarray $types 7
+setvar $types[1] "General"
+setvar $types[2] "Defense"
+setvar $types[3] "Offense"
+setvar $types[4] "Resource"
+setvar $types[5] "Grid"
+setvar $types[6] "Cashing"
+setvar $types[7] "Data"
 
+setvar $help~help[1] $help~tab&"help - displays help files for commands "
+setvar $help~help[2] $help~tab&"   "
+gosub :help~helpfile
 
-		if ($helpTargetText <> "")
-			lowerCase $BOT~parm1
-			setVar $i 1
-			while ($i <= 7)
-				setVar $temptype $types[$i]
-				lowerCase $temptype
-				if ($BOT~parm1 = $temptype)
-					setVar $currentList $BOT~INTERNALCOMMANDLISTS[$i]
-					goto :command_list
-				end
-				add $i 1
-			end
-			setVar $resolvedHelpCommand $BOT~parm1
-			fileExists $aliasesExist "scripts\"&$bot~mombot_directory&"\aliases.cfg"
-			if ($aliasesExist)
-				readToArray "scripts\"&$bot~mombot_directory&"\aliases.cfg" $aliasLines
-				setVar $aliasIndex 1
-				while ($aliasIndex <= $aliasLines)
-					setVar $aliasLine $aliasLines[$aliasIndex]
-					cutText $aliasLine&" " $aliasFirstChar 1 1
-					if ($aliasFirstChar <> "#")
-						getWordPos $aliasLine $aliasEqPos "="
-						if ($aliasEqPos > 1)
-							cutText $aliasLine $aliasName 1 ($aliasEqPos - 1)
-							cutText $aliasLine $aliasTarget ($aliasEqPos + 1) 9999
-							lowerCase $aliasName
-							lowerCase $aliasTarget
-							setVar $aliasNames ","&$aliasName&","
-							stripText $aliasNames " "
-							getWordPos $aliasNames $aliasNamePos ","&$resolvedHelpCommand&","
-							if ($aliasNamePos > 0)
-								setVar $resolvedHelpCommand $aliasTarget
-								goto :help_alias_resolved
-							end
-						end
-					end
-					add $aliasIndex 1
-				end
-			end
-			:help_alias_resolved
-			setVar $BOT~parm1 $resolvedHelpCommand
-			fileExists $doesExist "scripts\"&$bot~mombot_directory&"\help\"&$BOT~parm1&".txt"
-			if ($doesExist)
-				readToArray "scripts\"&$bot~mombot_directory&"\help\"&$BOT~parm1&".txt" $HELP~HELP
-				gosub :HELP~DISPLAYHELP
+setvar $helptargettext $bot~user_command_line
+striptext $helptargettext " "
 
-			else
-				setVar $SWITCHBOARD~message "No help file available for "&$BOT~parm1&".*"
-				gosub :SWITCHBOARD~switchboard
-			end
-			halt
-		else
-			if ($SWITCHBOARD~self_command)
-				goto :echo_help
-			else
-				goto :ss_help
-			end
+if ($helptargettext <> "")
+	lowercase $bot~parm1
+	setvar $i 1
+	while ($i <= 7)
+		setvar $temptype $types[$i]
+		lowercase $temptype
+		if ($bot~parm1 = $temptype)
+			setvar $currentlist $bot~internalcommandlists[$i]
+			goto :command_list
 		end
+		add $i 1
+	end
+	setvar $resolvedhelpcommand $bot~parm1
+	fileexists $aliasesexist "scripts\"&$bot~mombot_directory&"\aliases.cfg"
+	if ($aliasesexist)
+		readtoarray "scripts\"&$bot~mombot_directory&"\aliases.cfg" $aliaslines
+		setvar $aliasindex 1
+		while ($aliasindex <= $aliaslines)
+			setvar $aliasline $aliaslines[$aliasindex]
+			cuttext $aliasline&" " $aliasfirstchar 1 1
+			if ($aliasfirstchar <> "#")
+				getwordpos $aliasline $aliaseqpos "="
+				if ($aliaseqpos > 1)
+					cuttext $aliasline $aliasname 1 ($aliaseqpos - 1)
+					cuttext $aliasline $aliastarget ($aliaseqpos + 1) 9999
+					lowercase $aliasname
+					lowercase $aliastarget
+					setvar $aliasnames ","&$aliasname&","
+					striptext $aliasnames " "
+					getwordpos $aliasnames $aliasnamepos ","&$resolvedhelpcommand&","
+					if ($aliasnamepos > 0)
+						setvar $resolvedhelpcommand $aliastarget
+						goto :help_alias_resolved
+					end
+				end
+			end
+			add $aliasindex 1
+		end
+	end
 
+	:help_alias_resolved
+	setvar $bot~parm1 $resolvedhelpcommand
+	fileexists $doesexist "scripts\"&$bot~mombot_directory&"\help\"&$bot~parm1&".txt"
+	if ($doesexist)
+		readtoarray "scripts\"&$bot~mombot_directory&"\help\"&$bot~parm1&".txt" $help~help
+		gosub :help~displayhelp
 
+	else
+		setvar $switchboard~message "No help file available for "&$bot~parm1&".*"
+		gosub :switchboard~switchboard
+	end
+	halt
+else
+	if ($switchboard~self_command)
+		goto :echo_help
+	else
+		goto :ss_help
+	end
+end
 
 #####==============================================  BOT HELP SECTION =================================================#####
 :command_list
-setVar $SWITCHBOARD~helpList TRUE
-setVar $helpList TRUE
-setVar $SWITCHBOARD~message ""
-if ($BOT~parm1 = 0)
-	gosub :PLAYER~quikstats
-	setVar $SWITCHBOARD~message "  --------------Mind ()ver Matter Bot Help Categories------------*"
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"                          Version: "&$BOT~major_version&"_"&$BOT~minor_version&"*"
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&" *"
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"                [OFFENSE]|[DEFENSE]|[DATA]|[CASHING]*"
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"                     [RESOURCE]|[GRID]|[GENERAL]*"
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&" *"
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  ---------------------------------------------------------------*"
+setvar $switchboard~helplist true
+setvar $helplist true
+setvar $switchboard~message ""
+if ($bot~parm1 = 0)
+	gosub :player~quikstats
+	setvar $switchboard~message "  --------------Mind ()ver Matter Bot Help Categories------------*"
+	setvar $switchboard~message $switchboard~message&"                          Version: "&$bot~major_version&"_"&$bot~minor_version&"*"
+	setvar $switchboard~message $switchboard~message&" *"
+	setvar $switchboard~message $switchboard~message&"                [OFFENSE]|[DEFENSE]|[DATA]|[CASHING]*"
+	setvar $switchboard~message $switchboard~message&"                     [RESOURCE]|[GRID]|[GENERAL]*"
+	setvar $switchboard~message $switchboard~message&" *"
+	setvar $switchboard~message $switchboard~message&"  ---------------------------------------------------------------*"
 else
-	getFileList $commandList "scripts\"&$bot~mombot_directory&"\commands\"&$BOT~parm1&"\*.cts"
-	getFileList $modeList "scripts\"&$bot~mombot_directory&"\modes\"&$BOT~parm1&"\*.cts"
-	getFileList $localCommandList "scripts\"&$bot~mombot_directory&"\local\commands\"&$BOT~parm1&"\*.cts"
-	if ($localCommandList <= 0)
-		getFileList $localCommandList "scripts/"&$bot~mombot_directory&"/local/commands/"&$BOT~parm1&"/*.cts"
+	getfilelist $commandlist "scripts\"&$bot~mombot_directory&"\commands\"&$bot~parm1&"\*.cts"
+	getfilelist $modelist "scripts\"&$bot~mombot_directory&"\modes\"&$bot~parm1&"\*.cts"
+	getfilelist $localcommandlist "scripts\"&$bot~mombot_directory&"\local\commands\"&$bot~parm1&"\*.cts"
+	if ($localcommandlist <= 0)
+		getfilelist $localcommandlist "scripts/"&$bot~mombot_directory&"/local/commands/"&$bot~parm1&"/*.cts"
 	end
-	getFileList $localModeList "scripts\"&$bot~mombot_directory&"\local\modes\"&$BOT~parm1&"\*.cts"
-	if ($localModeList <= 0)
-		getFileList $localModeList "scripts/"&$bot~mombot_directory&"/local/modes/"&$BOT~parm1&"/*.cts"
+	getfilelist $localmodelist "scripts\"&$bot~mombot_directory&"\local\modes\"&$bot~parm1&"\*.cts"
+	if ($localmodelist <= 0)
+		getfilelist $localmodelist "scripts/"&$bot~mombot_directory&"/local/modes/"&$bot~parm1&"/*.cts"
 	end
-	setVar $maxStringLength 34
-	setVar $paddingDashes "                                 "
-	upperCase $BOT~parm1
-	setVar $SWITCHBOARD~message "  *  *                                   *"
-	getLength "-="&$BOT~parm1&"=-" $comLength
-	setVar $sideLength (($maxStringLength-$comLength)/2)
-	cutText $paddingDashes $leftPad 1 $sideLength
-	cutText $paddingDashes $rightPad 1 (($maxStringLength-$comLength)-$sideLength)
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  "&$leftPad&ansi_8&"-="&ansi_7&$BOT~parm1&ansi_8&"=-"&ansi_15&$rightPad&" *"
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&ansi_7&"  -"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"- *"&ansi_15
-		upperCase $currentList
-		setVar $i 1
-		while ($i <= $commandList)
-			setVar $tempCommand $commandList[$i]&"###"
-			stripText $tempCommand "scripts\"&$bot~mombot_directory&"\commands\"&$BOT~parm1&"\"
-			stripText $tempCommand ".cts###"
-			upperCase $tempCommand
-			cutText $tempCommand&" " $hidden 1 1
-			if ($hidden = "_")
-				getLength $tempCommand $tempLength
-				if (($SWITCHBOARD~self_command = TRUE) AND ($tempLength > 1))
-					cutText $tempCommand $tempCommand 2 9999
-					setVar $currentList $currentList&" [<><>HIDDEN<><>]"&$tempCommand&" "
-				end
-			else
-				getWordPos $currentList $pos " "&$tempCommand&" "
-				if ($pos <= 0)
-					setVar $currentList $currentList&" "&$tempCommand&" "
-				end
+	setvar $maxstringlength 34
+	setvar $paddingdashes "                                 "
+	uppercase $bot~parm1
+	setvar $switchboard~message "  *  *                                   *"
+	getlength "-="&$bot~parm1&"=-" $comlength
+	setvar $sidelength (($maxstringlength-$comlength)/2)
+	cuttext $paddingdashes $leftpad 1 $sidelength
+	cuttext $paddingdashes $rightpad 1 (($maxstringlength-$comlength)-$sidelength)
+	setvar $switchboard~message $switchboard~message&"  "&$leftpad&ansi_8&"-="&ansi_7&$bot~parm1&ansi_8&"=-"&ansi_15&$rightpad&" *"
+	setvar $switchboard~message $switchboard~message&ansi_7&"  -"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"- *"&ansi_15
+	uppercase $currentlist
+	setvar $i 1
+	while ($i <= $commandlist)
+		setvar $tempcommand $commandlist[$i]&"###"
+		striptext $tempcommand "scripts\"&$bot~mombot_directory&"\commands\"&$bot~parm1&"\"
+		striptext $tempcommand ".cts###"
+		uppercase $tempcommand
+		cuttext $tempcommand&" " $hidden 1 1
+		if ($hidden = "_")
+			getlength $tempcommand $templength
+			if (($switchboard~self_command = true) and ($templength > 1))
+				cuttext $tempcommand $tempcommand 2 9999
+				setvar $currentlist $currentlist&" [<><>HIDDEN<><>]"&$tempcommand&" "
 			end
-			add $i 1
-		end
-		setVar $i 1
-		while ($i <= $localCommandList)
-			setVar $tempCommand $localCommandList[$i]&"###"
-			stripText $tempCommand "scripts\"&$bot~mombot_directory&"\local\commands\"&$BOT~parm1&"\"
-			stripText $tempCommand "scripts/"&$bot~mombot_directory&"/local/commands/"&$BOT~parm1&"/"
-			stripText $tempCommand ".cts###"
-			upperCase $tempCommand
-			cutText $tempCommand&" " $hidden 1 1
-			if ($hidden = "_")
-				getLength $tempCommand $tempLength
-				if (($SWITCHBOARD~self_command = TRUE) AND ($tempLength > 1))
-					cutText $tempCommand $tempCommand 2 9999
-					setVar $currentList $currentList&" [<><>HIDDEN<><>]"&$tempCommand&" "
-				end
-			else
-				getWordPos $currentList $pos " "&$tempCommand&" "
-				if ($pos <= 0)
-					setVar $currentList $currentList&" "&$tempCommand&" "
-				end
+		else
+			getwordpos $currentlist $pos " "&$tempcommand&" "
+			if ($pos <= 0)
+				setvar $currentlist $currentlist&" "&$tempcommand&" "
 			end
-			add $i 1
 		end
-		setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  *             "&ansi_2&"-="&ansi_10&"Commands"&ansi_2&"=-"&ansi_15&"            *"
-		setVar $commandCount 0
-		setVar $bufferCount 0
-		gosub :bufferList
-	if (($modelist > 0) or ($localModeList > 0))
-		setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  *              "&ansi_2&"-="&ansi_10&"Modes"&ansi_2&"=-"&ansi_15&"              *"
-		setVar $currentList " "
-		setVar $i 1
+		add $i 1
+	end
+	setvar $i 1
+	while ($i <= $localcommandlist)
+		setvar $tempcommand $localcommandlist[$i]&"###"
+		striptext $tempcommand "scripts\"&$bot~mombot_directory&"\local\commands\"&$bot~parm1&"\"
+		striptext $tempcommand "scripts/"&$bot~mombot_directory&"/local/commands/"&$bot~parm1&"/"
+		striptext $tempcommand ".cts###"
+		uppercase $tempcommand
+		cuttext $tempcommand&" " $hidden 1 1
+		if ($hidden = "_")
+			getlength $tempcommand $templength
+			if (($switchboard~self_command = true) and ($templength > 1))
+				cuttext $tempcommand $tempcommand 2 9999
+				setvar $currentlist $currentlist&" [<><>HIDDEN<><>]"&$tempcommand&" "
+			end
+		else
+			getwordpos $currentlist $pos " "&$tempcommand&" "
+			if ($pos <= 0)
+				setvar $currentlist $currentlist&" "&$tempcommand&" "
+			end
+		end
+		add $i 1
+	end
+	setvar $switchboard~message $switchboard~message&"  *             "&ansi_2&"-="&ansi_10&"Commands"&ansi_2&"=-"&ansi_15&"            *"
+	setvar $commandcount 0
+	setvar $buffercount 0
+	gosub :bufferlist
+	if (($modelist > 0) or ($localmodelist > 0))
+		setvar $switchboard~message $switchboard~message&"  *              "&ansi_2&"-="&ansi_10&"Modes"&ansi_2&"=-"&ansi_15&"              *"
+		setvar $currentlist " "
+		setvar $i 1
 		while ($i <= $modelist)
-			setVar $tempCommand $modelist[$i]&"###"
-			stripText $tempCommand "scripts\"&$bot~mombot_directory&"\modes\"&$BOT~parm1&"\"
-			stripText $tempCommand ".cts###"
-			upperCase $tempCommand
-			cutText $tempCommand&" " $hidden 1 1
+			setvar $tempcommand $modelist[$i]&"###"
+			striptext $tempcommand "scripts\"&$bot~mombot_directory&"\modes\"&$bot~parm1&"\"
+			striptext $tempcommand ".cts###"
+			uppercase $tempcommand
+			cuttext $tempcommand&" " $hidden 1 1
 			if ($hidden = "_")
-				getLength $tempCommand $tempLength
-				if (($SWITCHBOARD~self_command = TRUE) AND ($tempLength > 1))
-					cutText $tempCommand $tempCommand 2 9999
-					setVar $currentList $currentList&" [<><>HIDDEN<><>]"&$tempCommand&" "
+				getlength $tempcommand $templength
+				if (($switchboard~self_command = true) and ($templength > 1))
+					cuttext $tempcommand $tempcommand 2 9999
+					setvar $currentlist $currentlist&" [<><>HIDDEN<><>]"&$tempcommand&" "
 				end
 			else
-				getWordPos $currentList $pos " "&$tempCommand&" "
+				getwordpos $currentlist $pos " "&$tempcommand&" "
 				if ($pos <= 0)
-					setVar $currentList $currentList&" "&$tempCommand&" "
+					setvar $currentlist $currentlist&" "&$tempcommand&" "
 				end
 			end
 			add $i 1
 		end
-		setVar $i 1
-		while ($i <= $localModeList)
-			setVar $tempCommand $localModeList[$i]&"###"
-			stripText $tempCommand "scripts\"&$bot~mombot_directory&"\local\modes\"&$BOT~parm1&"\"
-			stripText $tempCommand "scripts/"&$bot~mombot_directory&"/local/modes/"&$BOT~parm1&"/"
-			stripText $tempCommand ".cts###"
-			upperCase $tempCommand
-			cutText $tempCommand&" " $hidden 1 1
+		setvar $i 1
+		while ($i <= $localmodelist)
+			setvar $tempcommand $localmodelist[$i]&"###"
+			striptext $tempcommand "scripts\"&$bot~mombot_directory&"\local\modes\"&$bot~parm1&"\"
+			striptext $tempcommand "scripts/"&$bot~mombot_directory&"/local/modes/"&$bot~parm1&"/"
+			striptext $tempcommand ".cts###"
+			uppercase $tempcommand
+			cuttext $tempcommand&" " $hidden 1 1
 			if ($hidden = "_")
-				getLength $tempCommand $tempLength
-				if (($SWITCHBOARD~self_command = TRUE) AND ($tempLength > 1))
-					cutText $tempCommand $tempCommand 2 9999
-					setVar $currentList $currentList&" [<><>HIDDEN<><>]"&$tempCommand&" "
+				getlength $tempcommand $templength
+				if (($switchboard~self_command = true) and ($templength > 1))
+					cuttext $tempcommand $tempcommand 2 9999
+					setvar $currentlist $currentlist&" [<><>HIDDEN<><>]"&$tempcommand&" "
 				end
 			else
-				getWordPos $currentList $pos " "&$tempCommand&" "
+				getwordpos $currentlist $pos " "&$tempcommand&" "
 				if ($pos <= 0)
-					setVar $currentList $currentList&" "&$tempCommand&" "
+					setvar $currentlist $currentlist&" "&$tempcommand&" "
 				end
 			end
 			add $i 1
 		end
-		gosub :bufferList
+		gosub :bufferlist
 	end
-	setVar $SWITCHBOARD~message $SWITCHBOARD~message&ansi_7&"  *  -"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"- *"&ansi_15
+	setvar $switchboard~message $switchboard~message&ansi_7&"  *  -"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"-"&ansi_7&"-"&ansi_8&"- *"&ansi_15
 end
-if (($SWITCHBOARD~self_command = true) or ($BOT~silent_running = TRUE))
+if (($switchboard~self_command = true) or ($bot~silent_running = true))
 
 else
-	setVar $SWITCHBOARD~self_command 2
+	setvar $switchboard~self_command 2
 end
-gosub :SWITCHBOARD~switchboard
+gosub :switchboard~switchboard
 halt
-:bufferList
-setVar $i 1
-getWord $currentList $test $i "[<><>NONE<><>]"
-setVar $paddingDashes "                                "
+
+:bufferlist
+setvar $i 1
+getword $currentlist $test $i "[<><>NONE<><>]"
+setvar $paddingdashes "                                "
 while ($test <> "[<><>NONE<><>]")
 	if ($test <> "0")
-		setVar $tempCommand $test
-		setVar $tempCommandHidden FALSE
-		setVar $nextHidden FALSE
-		setVar $next2Hidden FALSE
-		getWord $currentList $next ($i+1)
-		getWord $currentList $next2 ($i+2)
-		getWordPos $tempCommand $pos "[<><>HIDDEN<><>]"
+		setvar $tempcommand $test
+		setvar $tempcommandhidden false
+		setvar $nexthidden false
+		setvar $next2hidden false
+		getword $currentlist $next ($i+1)
+		getword $currentlist $next2 ($i+2)
+		getwordpos $tempcommand $pos "[<><>HIDDEN<><>]"
 		if ($pos > 0)
-			stripText $tempCommand "[<><>HIDDEN<><>]"
-			setVar $tempCommandHidden TRUE
-			setVar $tempCommand2 ANSI_14&$tempCommand&ANSI_15
+			striptext $tempcommand "[<><>HIDDEN<><>]"
+			setvar $tempcommandhidden true
+			setvar $tempcommand2 ansi_14&$tempcommand&ansi_15
 		else
-			setVar $tempCommand2 $tempCommand
+			setvar $tempcommand2 $tempcommand
 		end
 		if ($next <> 0)
-			getWordPos $next $pos "[<><>HIDDEN<><>]"
-			stripText $next "[<><>HIDDEN<><>]"
+			getwordpos $next $pos "[<><>HIDDEN<><>]"
+			striptext $next "[<><>HIDDEN<><>]"
 			if ($pos > 0)
-				setVar $nextHidden TRUE
-				setVar $tempCommand2 $tempCommand2&"   "&ANSI_14&$next&ANSI_15
+				setvar $nexthidden true
+				setvar $tempcommand2 $tempcommand2&"   "&ansi_14&$next&ansi_15
 			else
-				setVar $tempCommand2 $tempCommand2&"   "&$next
+				setvar $tempcommand2 $tempcommand2&"   "&$next
 			end
-			setVar $tempCommand $tempCommand&"   "&$next
+			setvar $tempcommand $tempcommand&"   "&$next
 			add $i 1
 		end
 		if ($next2 <> 0)
-			getWordPos $next2 $pos "[<><>HIDDEN<><>]"
-			stripText $next2 "[<><>HIDDEN<><>]"
+			getwordpos $next2 $pos "[<><>HIDDEN<><>]"
+			striptext $next2 "[<><>HIDDEN<><>]"
 			if ($pos > 0)
-				setVar $next2Hidden TRUE
-				setVar $tempCommand2 $tempCommand2&"   "&ANSI_14&$next2&ANSI_15
+				setvar $next2hidden true
+				setvar $tempcommand2 $tempcommand2&"   "&ansi_14&$next2&ansi_15
 			else
-				setVar $tempCommand2 $tempCommand2&"   "&$next2
+				setvar $tempcommand2 $tempcommand2&"   "&$next2
 			end
-			setVar $tempCommand $tempCommand&"   "&$next2
+			setvar $tempcommand $tempcommand&"   "&$next2
 			add $i 1
 		end
-		getLength $tempCommand $comLength
-		upperCase $tempCommand
-		setVar $sideLength (($maxStringLength-$comLength)/2)
-		cutText $paddingDashes $leftPad 1 $sideLength
-		cutText $paddingDashes $rightPad 1 (($maxStringLength-$comLength)-$sideLength)
-		if ($SWITCHBOARD~self_command = TRUE)
-			setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  "&$leftPad&$tempCommand2&$rightPad&" *"
+		getlength $tempcommand $comlength
+		uppercase $tempcommand
+		setvar $sidelength (($maxstringlength-$comlength)/2)
+		cuttext $paddingdashes $leftpad 1 $sidelength
+		cuttext $paddingdashes $rightpad 1 (($maxstringlength-$comlength)-$sidelength)
+		if ($switchboard~self_command = true)
+			setvar $switchboard~message $switchboard~message&"  "&$leftpad&$tempcommand2&$rightpad&" *"
 		else
-			setVar $SWITCHBOARD~message $SWITCHBOARD~message&"  "&$leftPad&$tempCommand&$rightPad&" *"  
+			setvar $switchboard~message $switchboard~message&"  "&$leftpad&$tempcommand&$rightpad&" *"
 		end
-		add $commandCount 1
+		add $commandcount 1
 	end
 	add $i 1
-	getWord $currentList $test $i "[<><>NONE<><>]"
+	getword $currentlist $test $i "[<><>NONE<><>]"
 end
 return
 
@@ -286,74 +285,74 @@ loadvar $bot~minor_version
 
 echo "*"
 echo ansi_13 "  ----------------" ansi_14 "Mind " ansi_4 "()" ansi_14 "ver Matter Bot Help Categories" ansi_13 "---------------*"
-	echo ansi_13 "                            Version: "&$BOT~major_version&"."&$BOT~minor_version&"*"
-	echo ansi_13 "                  [OFFENSE]|[DEFENSE]|[DATA]|[CASHING]*"
+echo ansi_13 "                            Version: "&$bot~major_version&"."&$bot~minor_version&"*"
+echo ansi_13 "                  [OFFENSE]|[DEFENSE]|[DATA]|[CASHING]*"
 echo ansi_13 "                      [RESOURCE]|[GRID]|[GENERAL]    *"
-gosub :BOT~LOAD_HOTKEY_CONFIG
-echo ansi_13 "  ----------------------------- "&ANSI_14&"Hot Keys"&ANSI_13&" -----------------------------*"
-gosub :MENUS~echoHotKeys
-	
-echo ansi_13 "  ----------------------------- "&ANSI_14&"Daemons"&ANSI_13&" ------------------------------*"
-getFileList $daemonList "scripts\"&$bot~mombot_directory&"\daemons\*.cts"
-if ($daemonList <= 0)
-	getFileList $daemonList "scripts/"&$bot~mombot_directory&"/daemons/*.cts"
+gosub :bot~load_hotkey_config
+echo ansi_13 "  ----------------------------- "&ansi_14&"Hot Keys"&ansi_13&" -----------------------------*"
+gosub :menus~echohotkeys
+
+echo ansi_13 "  ----------------------------- "&ansi_14&"Daemons"&ansi_13&" ------------------------------*"
+getfilelist $daemonlist "scripts\"&$bot~mombot_directory&"\daemons\*.cts"
+if ($daemonlist <= 0)
+	getfilelist $daemonlist "scripts/"&$bot~mombot_directory&"/daemons/*.cts"
 end
-getFileList $localDaemonList "scripts\"&$bot~mombot_directory&"\local\daemons\*.cts"
-if ($localDaemonList <= 0)
-	getFileList $localDaemonList "scripts/"&$bot~mombot_directory&"/local/daemons/*.cts"
+getfilelist $localdaemonlist "scripts\"&$bot~mombot_directory&"\local\daemons\*.cts"
+if ($localdaemonlist <= 0)
+	getfilelist $localdaemonlist "scripts/"&$bot~mombot_directory&"/local/daemons/*.cts"
 end
-if (($daemonList > 0) or ($localDaemonList > 0))
-	setVar $paddingDashes "                                 "
-	setVar $currentList ""
-	setVar $maxStringLength 68
-	setVar $i 1
-	while ($i <= $daemonList)
-		setVar $tempCommand $daemonList[$i]&"###"
-		stripText $tempCommand "scripts\"&$bot~mombot_directory&"\daemons\"
-		stripText $tempCommand "scripts/"&$bot~mombot_directory&"/daemons/"
-		stripText $tempCommand ".cts###"
-		setVar $currentList $currentList&" "&$tempCommand&" "
+if (($daemonlist > 0) or ($localdaemonlist > 0))
+	setvar $paddingdashes "                                 "
+	setvar $currentlist ""
+	setvar $maxstringlength 68
+	setvar $i 1
+	while ($i <= $daemonlist)
+		setvar $tempcommand $daemonlist[$i]&"###"
+		striptext $tempcommand "scripts\"&$bot~mombot_directory&"\daemons\"
+		striptext $tempcommand "scripts/"&$bot~mombot_directory&"/daemons/"
+		striptext $tempcommand ".cts###"
+		setvar $currentlist $currentlist&" "&$tempcommand&" "
 		add $i 1
 	end
-	setVar $i 1
-	while ($i <= $localDaemonList)
-		setVar $tempCommand $localDaemonList[$i]&"###"
-		stripText $tempCommand "scripts\"&$bot~mombot_directory&"\local\daemons\"
-		stripText $tempCommand "scripts/"&$bot~mombot_directory&"/local/daemons/"
-		stripText $tempCommand ".cts###"
-		getWordPos $currentList $pos " "&$tempCommand&" "
+	setvar $i 1
+	while ($i <= $localdaemonlist)
+		setvar $tempcommand $localdaemonlist[$i]&"###"
+		striptext $tempcommand "scripts\"&$bot~mombot_directory&"\local\daemons\"
+		striptext $tempcommand "scripts/"&$bot~mombot_directory&"/local/daemons/"
+		striptext $tempcommand ".cts###"
+		getwordpos $currentlist $pos " "&$tempcommand&" "
 		if ($pos <= 0)
-			setVar $currentList $currentList&" "&$tempCommand&" "
+			setvar $currentlist $currentlist&" "&$tempcommand&" "
 		end
 		add $i 1
 	end
-	setVar $SWITCHBOARD~message ""
-	gosub :bufferList
-	echo $SWITCHBOARD~message
+	setvar $switchboard~message ""
+	gosub :bufferlist
+	echo $switchboard~message
 else
-	echo ANSI_15 "  *                      No daemons found.                            *"
+	echo ansi_15 "  *                      No daemons found.                            *"
 end
-echo ansi_13 "  ------------------------"&ANSI_14&" Hints/Tips "&ANSI_13&"--------------------------------  *"
+echo ansi_13 "  ------------------------"&ansi_14&" Hints/Tips "&ansi_13&"--------------------------------  *"
 gosub :get_hint_tips
-	
+
 echo ansi_15 "  *  "&$hint_tip&"*  *"
 echo ansi_13 "  --------------------------------------------------------------------***"
 halt
+
 :ss_help
 loadvar $bot~major_version
 loadvar $bot~minor_version
-setVar $helpString "'*"
-setVar $helpString $helpString&"  -----------------Mind ()ver Matter Bot Help Categories--------------*"
-setVar $helpString $helpString&"                              Version: "&$BOT~major_version&"."&$BOT~minor_version&"*"
-setVar $helpString $helpString&"                   [OFFENSE]|[DEFENSE]|[DATA]|[CASHING]*"
-setVar $helpString $helpString&"                        [RESOURCE]|[GRID]|[GENERAL]    *"
-setVar $helpString $helpString&"  --------------------------------------------------------------------**"
-send $helpString
+setvar $helpstring "'*"
+setvar $helpstring $helpstring&"  -----------------Mind ()ver Matter Bot Help Categories--------------*"
+setvar $helpstring $helpstring&"                              Version: "&$bot~major_version&"."&$bot~minor_version&"*"
+setvar $helpstring $helpstring&"                   [OFFENSE]|[DEFENSE]|[DATA]|[CASHING]*"
+setvar $helpstring $helpstring&"                        [RESOURCE]|[GRID]|[GENERAL]    *"
+setvar $helpstring $helpstring&"  --------------------------------------------------------------------**"
+send $helpstring
 halt
 # ============================== END HELP FOR COMMANDS SUB ==============================
-
 :get_hint_tips
-setArray $hints 12
+setarray $hints 12
 setvar $hints 12
 setvar $hints[1] "You can run most commands silently by adding a 'silent' parameter*  to any command line.*  There is also a silent option in the bot preference menu to*  keep things quiet on the ss channel."
 setvar $hints[2] "There are different surround options in the bot menu.*  Press tab-~ to see them. TAB-s will surround."
@@ -367,12 +366,10 @@ setvar $hints[9] "Your bot will grab the planet number of the planet you are lan
 setvar $hints[10] "Need to restart a bot?  Try the 'reboot' command.*  It will kill your current bot and reload a new one."
 setvar $hints[11] "If your bot doesn't seem to have the correct game info, try using*  the 'refresh' command."
 setvar $hints[12] "You can scroll through your history of commands by*  pressing the up and down arrow in the self command prompt."
-getRnd $selected_hint 1 $hints
+getrnd $selected_hint 1 $hints
 setvar $hint_tip $hints[$selected_hint]
 
 return
-
-
 
 # includes:
 include "source\include\loadvars"

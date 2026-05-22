@@ -1,781 +1,772 @@
-
 # GETSTARDOCK routine by Shadow
-:MAP~GETSTARDOCK
+:map~getstardock
 killalltriggers
-if (STARDOCK > 11)
-  setvar $MAP~STARDOCK STARDOCK
-  savevar $MAP~STARDOCK
-  return
+if (stardock > 11)
+	setvar $map~stardock stardock
+	savevar $map~stardock
+	return
 else
-  gosub :player~currentprompt
-  if ($PLAYER~CURRENT_PROMPT = "Command")
-    setvar $gsd_sec 0
-    send "nq"
-    :gsd_loop
-    settextlinetrigger gsd_sector :gsd_sector "Sector  :"
-    settextlinetrigger gsd_dock :gsd_dock "Stargate Alpha I, Class 9"
-    settextlinetrigger gsd_end :gsd_end "Choose NavPoint"
-    pause
-    :gsd_sector
-    killalltriggers
-    getword CURRENTLINE $gsd_sec 4
-    goto :gsd_loop
-    :gsd_dock
-    killalltriggers
-    if ($gsd_sec > 11)
-      setvar $MAP~STARDOCK $gsd_sec
-      savevar $MAP~STARDOCK
-    end
-  end
+	gosub :player~currentprompt
+	if ($player~current_prompt = "Command")
+		setvar $gsd_sec 0
+		send "nq"
+
+		:gsd_loop
+		settextlinetrigger gsd_sector :gsd_sector "Sector  :"
+		settextlinetrigger gsd_dock :gsd_dock "Stargate Alpha I, Class 9"
+		settextlinetrigger gsd_end :gsd_end "Choose NavPoint"
+		pause
+
+		:gsd_sector
+		killalltriggers
+		getword currentline $gsd_sec 4
+		goto :gsd_loop
+
+		:gsd_dock
+		killalltriggers
+		if ($gsd_sec > 11)
+			setvar $map~stardock $gsd_sec
+			savevar $map~stardock
+		end
+	end
 end
+
 :gsd_end
 killalltriggers
 return
 
-:MAP~COMMAS
+:map~commas
+if ($map~value < 1000)
 
-if ($MAP~VALUE < 1000)
-
-elseif ($MAP~VALUE < 1000000)
-  getlength $MAP~VALUE $MAP~LEN
-  setvar $MAP~LEN ($MAP~LEN - 3)
-  cuttext $MAP~VALUE $MAP~TMP 1 $MAP~LEN
-  cuttext $MAP~VALUE $MAP~TMP1 ($MAP~LEN + 1) 999
-  setvar $MAP~TMP $MAP~TMP&","&$MAP~TMP1
-  setvar $MAP~VALUE $MAP~TMP
-elseif ($MAP~VALUE <= 999999999)
-  getlength $MAP~VALUE $MAP~LEN
-  setvar $MAP~LEN ($MAP~LEN - 6)
-  cuttext $MAP~VALUE $MAP~TMP 1 $MAP~LEN
-  setvar $MAP~TMP $MAP~TMP&","
-  cuttext $MAP~VALUE $MAP~TMP1 ($MAP~LEN + 1) 3
-  setvar $MAP~TMP $MAP~TMP&$MAP~TMP1&","
-  cuttext $MAP~VALUE $MAP~TMP1 ($MAP~LEN + 4) 999
-  setvar $MAP~TMP $MAP~TMP&$MAP~TMP1
-  setvar $MAP~VALUE $MAP~TMP
+elseif ($map~value < 1000000)
+	getlength $map~value $map~len
+	setvar $map~len ($map~len - 3)
+	cuttext $map~value $map~tmp 1 $map~len
+	cuttext $map~value $map~tmp1 ($map~len + 1) 999
+	setvar $map~tmp $map~tmp&","&$map~tmp1
+	setvar $map~value $map~tmp
+elseif ($map~value <= 999999999)
+	getlength $map~value $map~len
+	setvar $map~len ($map~len - 6)
+	cuttext $map~value $map~tmp 1 $map~len
+	setvar $map~tmp $map~tmp&","
+	cuttext $map~value $map~tmp1 ($map~len + 1) 3
+	setvar $map~tmp $map~tmp&$map~tmp1&","
+	cuttext $map~value $map~tmp1 ($map~len + 4) 999
+	setvar $map~tmp $map~tmp&$map~tmp1
+	setvar $map~value $map~tmp
 end
 return
 
-:MAP~DISPLAYADJACENTGRIDANSI
-setvar $MAP~MARKER_BEACON 1
-setvar $MAP~LIMPET_MINE 2
-setvar $MAP~ARMID_MINE 10
-setvar $MAP~FIGHTER 5
-setvar $MAP~HAZARD 21
-setvar $MAP~UNMANNED_SHIP 38
-setvar $MAP~MANNED_SHIP 40
-setvar $MAP~DESTROYED_PORT 50
-setvar $MAP~PORT 100
-setvar $MAP~PLANET 500
+:map~displayadjacentgridansi
+setvar $map~marker_beacon 1
+setvar $map~limpet_mine 2
+setvar $map~armid_mine 10
+setvar $map~fighter 5
+setvar $map~hazard 21
+setvar $map~unmanned_ship 38
+setvar $map~manned_ship 40
+setvar $map~destroyed_port 50
+setvar $map~port 100
+setvar $map~planet 500
 
-setvar $MAP~I 1
-if (CURRENTSECTOR = 0)
-  gosub :PLAYER~QUIKSTATS
+setvar $map~i 1
+if (currentsector = 0)
+	gosub :player~quikstats
 end
-isnumber $MAP~TEST CURRENTSECTOR
-if ($MAP~TEST)
-  echo "**" ANSI_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
-  while (SECTOR.WARPS[CURRENTSECTOR][$MAP~I] > 0)
-    setvar $MAP~ADJ_SEC SECTOR.WARPS[CURRENTSECTOR][$MAP~I]
-    setvar $MAP~ISALIENS FALSE
-    setvar $MAP~ADJSECTOROWNER SECTOR.FIGS.OWNER[$MAP~ADJ_SEC]
-    setvar $MAP~ADJLIMPOWNER SECTOR.LIMPETS.OWNER[$MAP~ADJ_SEC]
-    setvar $MAP~ADJMINEOWNER SECTOR.MINES.OWNER[$MAP~ADJ_SEC]
+isnumber $map~test currentsector
+if ($map~test)
+	echo "**" ansi_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 "*"
+	while (sector.warps[currentsector][$map~i] > 0)
+		setvar $map~adj_sec sector.warps[currentsector][$map~i]
+		setvar $map~isaliens false
+		setvar $map~adjsectorowner sector.figs.owner[$map~adj_sec]
+		setvar $map~adjlimpowner sector.limpets.owner[$map~adj_sec]
+		setvar $map~adjmineowner sector.mines.owner[$map~adj_sec]
 
-    getsectorparameter $MAP~ADJ_SEC "FIGSEC" $MAP~ISFIGGED
-    getsectorparameter $MAP~ADJ_SEC "LIMPSEC" $MAP~ISLIMPED
-    if ($MAP~ISFIGGED <> TRUE)
-      setvar $MAP~ISFIGGED FALSE
-    end
-    setvar $MAP~CONTAINSSHIELDEDPLANET FALSE
-    setvar $MAP~SHIELDEDPLANETS 0
-    if ($MAP~ADJ_SEC >= 10000)
-      setvar $MAP~ADJUST ""
-    elseif ($MAP~ADJ_SEC >= 1000)
-      setvar $MAP~ADJUST " "
-    elseif ($MAP~ADJ_SEC >= 100)
-      setvar $MAP~ADJUST "  "
-    elseif ($MAP~ADJ_SEC >= 10)
-      setvar $MAP~ADJUST "   "
-    else
-      setvar $MAP~ADJUST "    "
+		getsectorparameter $map~adj_sec "FIGSEC" $map~isfigged
+		getsectorparameter $map~adj_sec "LIMPSEC" $map~islimped
+		if ($map~isfigged <> true)
+			setvar $map~isfigged false
+		end
+		setvar $map~containsshieldedplanet false
+		setvar $map~shieldedplanets 0
+		if ($map~adj_sec >= 10000)
+			setvar $map~adjust ""
+		elseif ($map~adj_sec >= 1000)
+			setvar $map~adjust " "
+		elseif ($map~adj_sec >= 100)
+			setvar $map~adjust "  "
+		elseif ($map~adj_sec >= 10)
+			setvar $map~adjust "   "
+		else
+			setvar $map~adjust "    "
 
+		end
+		gosub :formatsectorowner
+		echo ansi_13 "* (" ansi_10 $map~i ansi_13 ")" ansi_15 " - " ansi_13 "<" $map~color $map~adj_sec ansi_13 ">" $map~adjust ansi_5
+		echo " " ansi_15 "["
 
-    end
-    gosub :FORMATSECTOROWNER
-    echo ANSI_13 "* (" ANSI_10 $MAP~I ANSI_13 ")" ANSI_15 " - " ANSI_13 "<" $MAP~COLOR $MAP~ADJ_SEC ANSI_13 ">" $MAP~ADJUST ANSI_5
-    echo " " ANSI_15 "["
+		echo $map~color $map~temp
 
+		echo ansi_15 "]"
 
-    echo $MAP~COLOR $MAP~TEMP
+		echo "   Warps" ansi_14 ": " ansi_14 sector.warpcount[$map~adj_sec] "   "
+		getsectorparameter $map~adj_sec "FIGSEC" $map~isfigged
+		getsectorparameter $map~adj_sec "MSLSEC" $map~ismsl
+		getsectorparameter $map~adj_sec "BUBBLE" $map~isbubble
+		if ($map~isfigged = "")
+			setvar $map~isfigged false
+		end
+		if ($map~ismsl = "")
+			setvar $map~ismsl false
+		end
+		isnumber $map~isnumber sector.anomaly[$map~adj_sec]
+		if ($map~isnumber)
+			if (sector.anomaly[$map~adj_sec])
+				echo ansi_15 " Anom: " ansi_11 "Yes" ansi_15
+			else
+				echo ansi_15 " Anom: " ansi_7 " No" ansi_15
+			end
+		else
+			echo ansi_15 " Anom: " ansi_7 " ???" ansi_15
+		end
+		echo ansi_15 "  Dens: " ansi_14
+		if (sector.density[$map~adj_sec] = "-1")
+			echo "???        "
+		else
+			setvar $map~calculated_density 0
+			setvar $map~calculated_density ($map~calculated_density + (sector.figs.quantity[$map~adj_sec] * $map~fighter))
+			setvar $map~calculated_density ($map~calculated_density + (sector.mines.quantity[$map~adj_sec] * $map~armid_mine))
+			setvar $map~calculated_density ($map~calculated_density + (sector.limpets.quantity[$map~adj_sec] * $map~limpet_mine))
+			setvar $map~calculated_density ($map~calculated_density + (sector.navhaz[$map~adj_sec] * $map~hazard))
+			if (sector.beacon[$map~i] <> "")
+				setvar $map~calculated_density ($map~calculated_density + $map~marker_beacon)
+			end
+			if (port.exists[$map~adj_sec])
+				setvar $map~calculated_density ($map~calculated_density + $map~port)
+			end
+			setvar $map~calculated_density ($map~calculated_density + (sector.planetcount[$map~adj_sec] * $map~planet))
+			setvar $map~calculated_density ($map~calculated_density + (sector.tradercount[$map~adj_sec] * $map~manned_ship))
+			setvar $map~calculated_density ($map~calculated_density + (sector.shipcount[$map~adj_sec] * $map~unmanned_ship))
+			setvar $map~dens sector.density[$map~adj_sec]
+			getlength sector.density[$map~adj_sec] $map~denslength
 
-    echo ANSI_15 "]"
+			if ($map~denslength >= 9)
+				echo "HIGH      "
+			else
 
-    echo "   Warps" ANSI_14 ": " ANSI_14 SECTOR.WARPCOUNT[$MAP~ADJ_SEC] "   "
-    getsectorparameter $MAP~ADJ_SEC "FIGSEC" $MAP~ISFIGGED
-    getsectorparameter $MAP~ADJ_SEC "MSLSEC" $MAP~ISMSL
-    getsectorparameter $MAP~ADJ_SEC "BUBBLE" $MAP~ISBUBBLE
-    if ($MAP~ISFIGGED = "")
-      setvar $MAP~ISFIGGED FALSE
-    end
-    if ($MAP~ISMSL = "")
-      setvar $MAP~ISMSL FALSE
-    end
-    isnumber $MAP~ISNUMBER SECTOR.ANOMALY[$MAP~ADJ_SEC]
-    if ($MAP~ISNUMBER)
-      if (SECTOR.ANOMALY[$MAP~ADJ_SEC])
-        echo ANSI_15 " Anom: " ANSI_11 "Yes" ANSI_15
-      else
-        echo ANSI_15 " Anom: " ANSI_7 " No" ANSI_15
-      end
-    else
-      echo ANSI_15 " Anom: " ANSI_7 " ???" ANSI_15
-    end
-    echo ANSI_15 "  Dens: " ANSI_14
-    if (SECTOR.DENSITY[$MAP~ADJ_SEC] = "-1")
-      echo "???        "
-    else
-      setvar $MAP~CALCULATED_DENSITY 0
-      setvar $MAP~CALCULATED_DENSITY ($MAP~CALCULATED_DENSITY + (SECTOR.FIGS.QUANTITY[$MAP~ADJ_SEC] * $MAP~FIGHTER))
-      setvar $MAP~CALCULATED_DENSITY ($MAP~CALCULATED_DENSITY + (SECTOR.MINES.QUANTITY[$MAP~ADJ_SEC] * $MAP~ARMID_MINE))
-      setvar $MAP~CALCULATED_DENSITY ($MAP~CALCULATED_DENSITY + (SECTOR.LIMPETS.QUANTITY[$MAP~ADJ_SEC] * $MAP~LIMPET_MINE))
-      setvar $MAP~CALCULATED_DENSITY ($MAP~CALCULATED_DENSITY + (SECTOR.NAVHAZ[$MAP~ADJ_SEC] * $MAP~HAZARD))
-      if (SECTOR.BEACON[$MAP~I] <> "")
-        setvar $MAP~CALCULATED_DENSITY ($MAP~CALCULATED_DENSITY + $MAP~MARKER_BEACON)
-      end
-      if (PORT.EXISTS[$MAP~ADJ_SEC])
-        setvar $MAP~CALCULATED_DENSITY ($MAP~CALCULATED_DENSITY + $MAP~PORT)
-      end
-      setvar $MAP~CALCULATED_DENSITY ($MAP~CALCULATED_DENSITY + (SECTOR.PLANETCOUNT[$MAP~ADJ_SEC] * $MAP~PLANET))
-      setvar $MAP~CALCULATED_DENSITY ($MAP~CALCULATED_DENSITY + (SECTOR.TRADERCOUNT[$MAP~ADJ_SEC] * $MAP~MANNED_SHIP))
-      setvar $MAP~CALCULATED_DENSITY ($MAP~CALCULATED_DENSITY + (SECTOR.SHIPCOUNT[$MAP~ADJ_SEC] * $MAP~UNMANNED_SHIP))
-      setvar $MAP~DENS SECTOR.DENSITY[$MAP~ADJ_SEC]
-      getlength SECTOR.DENSITY[$MAP~ADJ_SEC] $MAP~DENSLENGTH
+				echo $map~dens
+			end
+			if ($map~calculated_density < $map~dens)
+				if (($map~islimped <> true) and ((sector.anomoly[$map~adj_sec] = true) and ((($map~adjlimpowner <> "belong to your Corp") and ($map~adjlimpowner <> "yours")) and (sector.limpets.quantity[$map~adj_sec] <= 0))))
+					setvar $map~possible_limpets (($map~dens - $map~calculated_density) / 2)
+					if ($map~possible_limpets <= 0)
+						setvar $map~possible_limpets 1
+					end
+					echo ansi_3 " [" ansi_12 $map~possible_limpets " Enemy Limpets Detected" ansi_3 "]"
+				end
+			elseif ($map~calculated_density = $map~dens)
+				if ($map~sector.anomoly[$map~adj_sec] = true)
+					echo ansi_3 " /\/\" ansi_12 "Cloaked Ship Detected" ansi_3 "\/\/"
+				end
+			end
 
-      if ($MAP~DENSLENGTH >= 9)
-        echo "HIGH      "
-      else
+		end
+		if ($map~ismsl = true)
+			echo ansi_15 " [" ansi_14 "MSL" ansi_15 "]" ansi_7
+		end
+		if ($map~isbubble = true)
+			echo ansi_15 " [" ansi_10 "BUBBLE" ansi_15 "]" ansi_7
+		end
+		setvar $map~output ""
+		if (port.exists[$map~adj_sec])
+			setvar $map~class port.class[$map~adj_sec]
+			setvar $map~output $map~output&ansi_5&"           Port"&ansi_14&"    : "&ansi_11&port.name[$map~adj_sec]&ansi_14&", "&ansi_5&"Class "&ansi_11&$map~class&" "
+			if (($map~class <> 0) and ($map~class <> 9))
+				setvar $map~output $map~output&ansi_5&"("
+				if (port.buyfuel[$map~adj_sec])
+					setvar $map~output $map~output&ansi_2&"B"
+				else
+					setvar $map~output $map~output&ansi_11&"S"
+				end
+				if (port.buyorg[$map~adj_sec])
+					setvar $map~output $map~output&ansi_2&"B"
+				else
+					setvar $map~output $map~output&ansi_11&"S"
+				end
+				if (port.buyequip[$map~adj_sec])
+					setvar $map~output $map~output&ansi_2&"B"
+				else
+					setvar $map~output $map~output&ansi_11&"S"
+				end
+				setvar $map~output $map~output&ansi_5&")"
+			end
+			setvar $map~output $map~output&""
+			echo "*    "&$map~output&""
+		end
+		if (sector.figs.quantity[$map~adj_sec] > 0)
+			setvar $map~fig_count sector.figs.quantity[$map~adj_sec]
 
+			if ((sector.figs.owner[$map~adj_sec] = "belong to your Corp") or (sector.figs.owner[$map~adj_sec] = "yours"))
+				setvar $map~fig_owner ansi_11&"("&ansi_3&sector.figs.owner[$map~adj_sec]&ansi_11&") "&ansi_6&"["&sector.figs.type[$map~adj_sec]&"]"
+				setvar $map~fighter_color ansi_14
+			elseif ($map~isaliens = true)
+				setvar $map~fig_owner ansi_10&"("&ansi_2&sector.figs.owner[$map~adj_sec]&ansi_10&") "&ansi_6&"["&sector.figs.type[$map~adj_sec]&"]"
+				setvar $map~fighter_color ansi_10
+			else
+				if ($map~isfigged <> true)
+					setvar $map~fig_owner ansi_12&"("&ansi_4&sector.figs.owner[$map~adj_sec]&ansi_12&") "&ansi_6&"["&sector.figs.type[$map~adj_sec]&"]"
+					setvar $map~fighter_color ansi_12
+				else
+					setvar $map~fig_owner ansi_11&"("&ansi_3&"Database hasn't updated yet."&ansi_11&") "
+					setvar $map~fighter_color ansi_14
+				end
+			end
+			setvar $map~value $map~fig_count
+			gosub :commas
+			setvar $map~fig_count $map~value
+			echo ansi_5&"*               Fighters"&ansi_14&": "&$map~fighter_color&$map~fig_count&ansi_5&" "&$map~fig_owner
 
-
-
-
-        echo $MAP~DENS
-      end
-      if ($MAP~CALCULATED_DENSITY < $MAP~DENS)
-        if (($MAP~ISLIMPED <> TRUE) and ((SECTOR.ANOMOLY[$MAP~ADJ_SEC] = TRUE) and ((($MAP~ADJLIMPOWNER <> "belong to your Corp") and ($MAP~ADJLIMPOWNER <> "yours")) and (SECTOR.LIMPETS.QUANTITY[$MAP~ADJ_SEC] <= 0))))
-          setvar $MAP~POSSIBLE_LIMPETS (($MAP~DENS - $MAP~CALCULATED_DENSITY) / 2)
-          if ($MAP~POSSIBLE_LIMPETS <= 0)
-            setvar $MAP~POSSIBLE_LIMPETS 1
-          end
-          echo ANSI_3 " [" ANSI_12 $MAP~POSSIBLE_LIMPETS " Enemy Limpets Detected" ANSI_3 "]"
-        end
-      elseif ($MAP~CALCULATED_DENSITY = $MAP~DENS)
-        if ($MAP~SECTOR.ANOMOLY[$MAP~ADJ_SEC] = TRUE)
-          echo ANSI_3 " /\/\" ANSI_12 "Cloaked Ship Detected" ANSI_3 "\/\/"
-        end
-      end
-
-
-    end
-    if ($MAP~ISMSL = TRUE)
-      echo ANSI_15 " [" ANSI_14 "MSL" ANSI_15 "]" ANSI_7
-    end
-    if ($MAP~ISBUBBLE = TRUE)
-      echo ANSI_15 " [" ANSI_10 "BUBBLE" ANSI_15 "]" ANSI_7
-    end
-    setvar $MAP~OUTPUT ""
-    if (PORT.EXISTS[$MAP~ADJ_SEC])
-      setvar $MAP~CLASS PORT.CLASS[$MAP~ADJ_SEC]
-      setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_5&"           Port"&ANSI_14&"    : "&ANSI_11&PORT.NAME[$MAP~ADJ_SEC]&ANSI_14&", "&ANSI_5&"Class "&ANSI_11&$MAP~CLASS&" "
-      if (($MAP~CLASS <> 0) and ($MAP~CLASS <> 9))
-        setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_5&"("
-        if (PORT.BUYFUEL[$MAP~ADJ_SEC])
-          setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_2&"B"
-        else
-          setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_11&"S"
-        end
-        if (PORT.BUYORG[$MAP~ADJ_SEC])
-          setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_2&"B"
-        else
-          setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_11&"S"
-        end
-        if (PORT.BUYEQUIP[$MAP~ADJ_SEC])
-          setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_2&"B"
-        else
-          setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_11&"S"
-        end
-        setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_5&")"
-      end
-      setvar $MAP~OUTPUT $MAP~OUTPUT&""
-      echo "*    "&$MAP~OUTPUT&""
-    end
-    if (SECTOR.FIGS.QUANTITY[$MAP~ADJ_SEC] > 0)
-      setvar $MAP~FIG_COUNT SECTOR.FIGS.QUANTITY[$MAP~ADJ_SEC]
-
-      if ((SECTOR.FIGS.OWNER[$MAP~ADJ_SEC] = "belong to your Corp") or (SECTOR.FIGS.OWNER[$MAP~ADJ_SEC] = "yours"))
-        setvar $MAP~FIG_OWNER ANSI_11&"("&ANSI_3&SECTOR.FIGS.OWNER[$MAP~ADJ_SEC]&ANSI_11&") "&ANSI_6&"["&SECTOR.FIGS.TYPE[$MAP~ADJ_SEC]&"]"
-        setvar $MAP~FIGHTER_COLOR ANSI_14
-      elseif ($MAP~ISALIENS = TRUE)
-        setvar $MAP~FIG_OWNER ANSI_10&"("&ANSI_2&SECTOR.FIGS.OWNER[$MAP~ADJ_SEC]&ANSI_10&") "&ANSI_6&"["&SECTOR.FIGS.TYPE[$MAP~ADJ_SEC]&"]"
-        setvar $MAP~FIGHTER_COLOR ANSI_10
-      else
-        if ($MAP~ISFIGGED <> TRUE)
-          setvar $MAP~FIG_OWNER ANSI_12&"("&ANSI_4&SECTOR.FIGS.OWNER[$MAP~ADJ_SEC]&ANSI_12&") "&ANSI_6&"["&SECTOR.FIGS.TYPE[$MAP~ADJ_SEC]&"]"
-          setvar $MAP~FIGHTER_COLOR ANSI_12
-        else
-          setvar $MAP~FIG_OWNER ANSI_11&"("&ANSI_3&"Database hasn't updated yet."&ANSI_11&") "
-          setvar $MAP~FIGHTER_COLOR ANSI_14
-        end
-      end
-      setvar $MAP~VALUE $MAP~FIG_COUNT
-      gosub :COMMAS
-      setvar $MAP~FIG_COUNT $MAP~VALUE
-      echo ANSI_5&"*               Fighters"&ANSI_14&": "&$MAP~FIGHTER_COLOR&$MAP~FIG_COUNT&ANSI_5&" "&$MAP~FIG_OWNER
-
-    end
-    setvar $MAP~P 1
-    setvar $MAP~OUTPUT "*"
-    while ($MAP~P <= SECTOR.PLANETCOUNT[$MAP~ADJ_SEC])
-      setvar $MAP~ISSHIELDED FALSE
-      setvar $MAP~TEMP SECTOR.PLANETS[$MAP~ADJ_SEC][$MAP~P]
-      getword $MAP~TEMP $MAP~TEST 1
-      if ($MAP~TEST = "<<<<")
-        setvar $MAP~ISSHIELDED TRUE
-      end
-      getword $MAP~TEMP $MAP~TYPE 2
-      striptext $MAP~TYPE "("
-      striptext $MAP~TYPE ")"
-      if ($MAP~ISSHIELDED)
-        getlength $MAP~TEMP $MAP~LENGTH
-        cuttext $MAP~TEMP $MAP~TEMP 1 ($MAP~LENGTH - 15)
-        cuttext $MAP~TEMP $MAP~TEMP 10 9999
-        setvar $MAP~TEMP ANSI_12&"<<<< "&ANSI_10&"("&ANSI_14&$MAP~TYPE&ANSI_10&") "&ANSI_1&$MAP~TEMP&ANSI_12&" >>>> "&ANSI_2&"(Shielded)"
-      else
-        setvar $MAP~TEMP ANSI_2&$MAP~TEMP
-      end
-      if ($MAP~P = 1)
-        setvar $MAP~TEMP ANSI_5&"               Planets "&ANSI_14&": "&$MAP~TEMP
-        setvar $MAP~OUTPUT $MAP~OUTPUT&$MAP~TEMP&""
-      else
-        setvar $MAP~OUTPUT $MAP~OUTPUT&"                         "&$MAP~TEMP&""
-      end
-      if ($MAP~P < SECTOR.PLANETCOUNT[$MAP~ADJ_SEC])
-        setvar $MAP~OUTPUT $MAP~OUTPUT&"*"
-      end
-      add $MAP~P 1
-    end
-    if (SECTOR.PLANETCOUNT[$MAP~ADJ_SEC] > 0)
-      echo ""&$MAP~OUTPUT&""
-    end
-    setvar $MAP~P 1
-    if (SECTOR.TRADERCOUNT[$MAP~ADJ_SEC] > 0)
-      echo ANSI_6 "*               Traders" ANSI_15 " : "&ANSI_7
-    end
-    while ($MAP~P <= SECTOR.TRADERCOUNT[$MAP~ADJ_SEC])
-      echo "*                         "&ANSI_11&SECTOR.TRADERS[$MAP~ADJ_SEC][$MAP~P]
-      add $MAP~P 1
-    end
-    setvar $MAP~P 1
-    if (SECTOR.SHIPCOUNT[$MAP~ADJ_SEC] > 0)
-      echo ANSI_5 "*               Ships   " ANSI_15 ": "&ANSI_11&"("&SECTOR.SHIPCOUNT[$MAP~ADJ_SEC]&") Empty Ships"
-    end
-    add $MAP~I 1
-  end
-  setvar $MAP~GRIDWARPCOUNT ($MAP~I - 1)
+		end
+		setvar $map~p 1
+		setvar $map~output "*"
+		while ($map~p <= sector.planetcount[$map~adj_sec])
+			setvar $map~isshielded false
+			setvar $map~temp sector.planets[$map~adj_sec][$map~p]
+			getword $map~temp $map~test 1
+			if ($map~test = "<<<<")
+				setvar $map~isshielded true
+			end
+			getword $map~temp $map~type 2
+			striptext $map~type "("
+			striptext $map~type ")"
+			if ($map~isshielded)
+				getlength $map~temp $map~length
+				cuttext $map~temp $map~temp 1 ($map~length - 15)
+				cuttext $map~temp $map~temp 10 9999
+				setvar $map~temp ansi_12&"<<<< "&ansi_10&"("&ansi_14&$map~type&ansi_10&") "&ansi_1&$map~temp&ansi_12&" >>>> "&ansi_2&"(Shielded)"
+			else
+				setvar $map~temp ansi_2&$map~temp
+			end
+			if ($map~p = 1)
+				setvar $map~temp ansi_5&"               Planets "&ansi_14&": "&$map~temp
+				setvar $map~output $map~output&$map~temp&""
+			else
+				setvar $map~output $map~output&"                         "&$map~temp&""
+			end
+			if ($map~p < sector.planetcount[$map~adj_sec])
+				setvar $map~output $map~output&"*"
+			end
+			add $map~p 1
+		end
+		if (sector.planetcount[$map~adj_sec] > 0)
+			echo ""&$map~output&""
+		end
+		setvar $map~p 1
+		if (sector.tradercount[$map~adj_sec] > 0)
+			echo ansi_6 "*               Traders" ansi_15 " : "&ansi_7
+		end
+		while ($map~p <= sector.tradercount[$map~adj_sec])
+			echo "*                         "&ansi_11&sector.traders[$map~adj_sec][$map~p]
+			add $map~p 1
+		end
+		setvar $map~p 1
+		if (sector.shipcount[$map~adj_sec] > 0)
+			echo ansi_5 "*               Ships   " ansi_15 ": "&ansi_11&"("&sector.shipcount[$map~adj_sec]&") Empty Ships"
+		end
+		add $map~i 1
+	end
+	setvar $map~gridwarpcount ($map~i - 1)
 else
-  echo ANSI_15 " ERROR WITH CURRENTSECTOR  " ANSI_7
+	echo ansi_15 " ERROR WITH CURRENTSECTOR  " ansi_7
 end
-echo "**" ANSI_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196
-echo "**" CURRENTANSILINE
+echo "**" ansi_4 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196 #196
+echo "**" currentansiline
 return
-:MAP~DISPLAYNAVIGATION
 
+:map~displaynavigation
+setvar $map~i 1
+setvar $map~map ""
+setarray $map~sectors_array 6
+setvar $map~sectors_array[1] ""
+setvar $map~sectors_array[2] ""
+setvar $map~sectors_array[3] ""
+setvar $map~sectors_array[4] ""
+setvar $map~sectors_array[5] ""
+setvar $map~sectors_array[6] ""
+setvar $map~count 0
+isnumber $map~test currentsector
+if ($map~test)
+	while (sector.warps[currentsector][$map~i] > 0)
+		setvar $map~map ""
+		setvar $map~adj_sec sector.warps[currentsector][$map~i]
+		setvar $map~containsshieldedplanet false
+		setvar $map~shieldedplanets 0
+		if ($map~adj_sec >= 10000)
+			setvar $map~adjust ""
+		elseif ($map~adj_sec >= 1000)
+			setvar $map~adjust " "
+		elseif ($map~adj_sec >= 100)
+			setvar $map~adjust "  "
+		elseif ($map~adj_sec >= 10)
+			setvar $map~adjust "   "
+		else
+			setvar $map~adjust "    "
+		end
+		setvar $map~map $map~map&ansi_13&"* ("&ansi_10&$map~i&ansi_13&")"&ansi_15&" - "&ansi_13&"<"&ansi_14&sector.warps[currentsector][$map~i]&ansi_13&">"&$map~adjust&ansi_15&" Warps: "&ansi_7&sector.warpcount[$map~adj_sec]
+		getsectorparameter $map~adj_sec "FIGSEC" $map~isfigged
+		getsectorparameter $map~adj_sec "MSLSEC" $map~ismsl
+		if ($map~isfigged = "")
+			setvar $map~isfigged false
+		end
+		if ($map~ismsl = "")
+			setvar $map~ismsl false
+		end
+		if ($map~isfigged or ((($map~adjsectorowner = "belong to your Corp") or ($map~adjsectorowner = "yours")) and (sector.figs.quantity[$map~adj_sec] > 0)))
+			setvar $map~map $map~map&ansi_15&" Owner: "&ansi_14&"   OURS   "
+		else
+			getword $map~adjsectorowner $map~aliencheck 1
+			if (($map~adj_sec < 11) or ($map~adj_sec = $map~stardock))
+				setvar $map~map $map~map&ansi_15&" Owner: "&ansi_9&" FEDSPACE "
+			elseif ($map~adj_sec = $map~rylos)
+				setvar $map~map $map~map&ansi_15&" Owner: "&ansi_9&"  RYLOS   "
+			elseif ($map~adj_sec = $map~alpha_centauri)
+				setvar $map~map $map~map&ansi_15&" Owner: "&ansi_9&"  ALPHA   "
+			elseif ($map~adjsectorowner = "Rogue Mercenaries")
+				setvar $map~map $map~map&ansi_15&" Owner: "&ansi_7&"  ROGUE   "
+			elseif ($map~aliencheck = "the")
+				setvar $map~map $map~map&ansi_15&" Owner: "&ansi_2&"  ALIENS  "
+			elseif ($map~aliencheck = "The")
+				setvar $map~map $map~map&ansi_15&" Owner: "&ansi_2&"  ALIENS  "
+			elseif (($map~adjsectorowner <> "") and ($map~adjsectorowner <> "Unknown"))
+				setvar $map~heads true
+				getword $map~adjsectorowner $map~temp 3
+				striptext $map~temp ","
+				uppercase $map~temp
+				getlength $map~temp $map~templength
+				if ($map~templength >= 10)
+					cuttext $map~temp $map~temp 1 10
+				else
+					while ((10 - $map~templength) > 0)
+						if ($map~heads)
+							setvar $map~temp $map~temp&" "
+							setvar $map~heads false
+						else
+							setvar $map~temp " "&$map~temp
+							setvar $map~heads true
+						end
+						getlength $map~temp $map~templength
+					end
+				end
+				setvar $map~map $map~map&ansi_15&" Owner: "&ansi_12&$map~temp
+			else
+				setvar $map~map $map~map&ansi_15&" Owner: "&ansi_13&"   NONE   "
+			end
+		end
+		isnumber $map~isnumber sector.anomaly[$map~adj_sec]
+		if ($map~isnumber)
+			if (sector.anomaly[$map~adj_sec])
+				setvar $map~map $map~map&ansi_15&" Anom: "&ansi_11&"Yes"&ansi_15
+			else
+				setvar $map~map $map~map&ansi_15&" Anom: "&ansi_7&" No"&ansi_15
+			end
+		else
+			setvar $map~map $map~map&ansi_15&" Anom: "&ansi_7&" ???"&ansi_15
+		end
+		setvar $map~map $map~map&ansi_15&"  Dens: "&ansi_14
+		if (sector.density[$map~adj_sec] = "-1")
+			setvar $map~map $map~map&"???        "
+		else
+			setvar $map~dens sector.density[$map~adj_sec]
+			getlength sector.density[$map~adj_sec] $map~denslength
+			if ($map~denslength >= 9)
+				setvar $map~map $map~map&"HIGH      "
+			else
+				setvar $map~d $map~denslength
+				while ($map~d <= 10)
+					setvar $map~dens $map~dens&" "
+					add $map~d 1
+				end
+				setvar $map~map $map~map&$map~dens
+			end
+		end
 
-setvar $MAP~I 1
-setvar $MAP~MAP ""
-setarray $MAP~SECTORS_ARRAY 6
-setvar $MAP~SECTORS_ARRAY[1] ""
-setvar $MAP~SECTORS_ARRAY[2] ""
-setvar $MAP~SECTORS_ARRAY[3] ""
-setvar $MAP~SECTORS_ARRAY[4] ""
-setvar $MAP~SECTORS_ARRAY[5] ""
-setvar $MAP~SECTORS_ARRAY[6] ""
-setvar $MAP~COUNT 0
-isnumber $MAP~TEST CURRENTSECTOR
-if ($MAP~TEST)
-  while (SECTOR.WARPS[CURRENTSECTOR][$MAP~I] > 0)
-    setvar $MAP~MAP ""
-    setvar $MAP~ADJ_SEC SECTOR.WARPS[CURRENTSECTOR][$MAP~I]
-    setvar $MAP~CONTAINSSHIELDEDPLANET FALSE
-    setvar $MAP~SHIELDEDPLANETS 0
-    if ($MAP~ADJ_SEC >= 10000)
-      setvar $MAP~ADJUST ""
-    elseif ($MAP~ADJ_SEC >= 1000)
-      setvar $MAP~ADJUST " "
-    elseif ($MAP~ADJ_SEC >= 100)
-      setvar $MAP~ADJUST "  "
-    elseif ($MAP~ADJ_SEC >= 10)
-      setvar $MAP~ADJUST "   "
-    else
-      setvar $MAP~ADJUST "    "
-    end
-    setvar $MAP~MAP $MAP~MAP&ANSI_13&"* ("&ANSI_10&$MAP~I&ANSI_13&")"&ANSI_15&" - "&ANSI_13&"<"&ANSI_14&SECTOR.WARPS[CURRENTSECTOR][$MAP~I]&ANSI_13&">"&$MAP~ADJUST&ANSI_15&" Warps: "&ANSI_7&SECTOR.WARPCOUNT[$MAP~ADJ_SEC]
-    getsectorparameter $MAP~ADJ_SEC "FIGSEC" $MAP~ISFIGGED
-    getsectorparameter $MAP~ADJ_SEC "MSLSEC" $MAP~ISMSL
-    if ($MAP~ISFIGGED = "")
-      setvar $MAP~ISFIGGED FALSE
-    end
-    if ($MAP~ISMSL = "")
-      setvar $MAP~ISMSL FALSE
-    end
-    if ($MAP~ISFIGGED or ((($MAP~ADJSECTOROWNER = "belong to your Corp") or ($MAP~ADJSECTOROWNER = "yours")) and (SECTOR.FIGS.QUANTITY[$MAP~ADJ_SEC] > 0)))
-      setvar $MAP~MAP $MAP~MAP&ANSI_15&" Owner: "&ANSI_14&"   OURS   "
-    else
-      getword $MAP~ADJSECTOROWNER $MAP~ALIENCHECK 1
-      if (($MAP~ADJ_SEC < 11) or ($MAP~ADJ_SEC = $MAP~STARDOCK))
-        setvar $MAP~MAP $MAP~MAP&ANSI_15&" Owner: "&ANSI_9&" FEDSPACE "
-      elseif ($MAP~ADJ_SEC = $MAP~RYLOS)
-        setvar $MAP~MAP $MAP~MAP&ANSI_15&" Owner: "&ANSI_9&"  RYLOS   "
-      elseif ($MAP~ADJ_SEC = $MAP~ALPHA_CENTAURI)
-        setvar $MAP~MAP $MAP~MAP&ANSI_15&" Owner: "&ANSI_9&"  ALPHA   "
-      elseif ($MAP~ADJSECTOROWNER = "Rogue Mercenaries")
-        setvar $MAP~MAP $MAP~MAP&ANSI_15&" Owner: "&ANSI_7&"  ROGUE   "
-      elseif ($MAP~ALIENCHECK = "the")
-        setvar $MAP~MAP $MAP~MAP&ANSI_15&" Owner: "&ANSI_2&"  ALIENS  "
-      elseif ($MAP~ALIENCHECK = "The")
-        setvar $MAP~MAP $MAP~MAP&ANSI_15&" Owner: "&ANSI_2&"  ALIENS  "
-      elseif (($MAP~ADJSECTOROWNER <> "") and ($MAP~ADJSECTOROWNER <> "Unknown"))
-        setvar $MAP~HEADS TRUE
-        getword $MAP~ADJSECTOROWNER $MAP~TEMP 3
-        striptext $MAP~TEMP ","
-        uppercase $MAP~TEMP
-        getlength $MAP~TEMP $MAP~TEMPLENGTH
-        if ($MAP~TEMPLENGTH >= 10)
-          cuttext $MAP~TEMP $MAP~TEMP 1 10
-        else
-          while ((10 - $MAP~TEMPLENGTH) > 0)
-            if ($MAP~HEADS)
-              setvar $MAP~TEMP $MAP~TEMP&" "
-              setvar $MAP~HEADS FALSE
-            else
-              setvar $MAP~TEMP " "&$MAP~TEMP
-              setvar $MAP~HEADS TRUE
-            end
-            getlength $MAP~TEMP $MAP~TEMPLENGTH
-          end
-        end
-        setvar $MAP~MAP $MAP~MAP&ANSI_15&" Owner: "&ANSI_12&$MAP~TEMP
-      else
-        setvar $MAP~MAP $MAP~MAP&ANSI_15&" Owner: "&ANSI_13&"   NONE   "
-      end
-    end
-    isnumber $MAP~ISNUMBER SECTOR.ANOMALY[$MAP~ADJ_SEC]
-    if ($MAP~ISNUMBER)
-      if (SECTOR.ANOMALY[$MAP~ADJ_SEC])
-        setvar $MAP~MAP $MAP~MAP&ANSI_15&" Anom: "&ANSI_11&"Yes"&ANSI_15
-      else
-        setvar $MAP~MAP $MAP~MAP&ANSI_15&" Anom: "&ANSI_7&" No"&ANSI_15
-      end
-    else
-      setvar $MAP~MAP $MAP~MAP&ANSI_15&" Anom: "&ANSI_7&" ???"&ANSI_15
-    end
-    setvar $MAP~MAP $MAP~MAP&ANSI_15&"  Dens: "&ANSI_14
-    if (SECTOR.DENSITY[$MAP~ADJ_SEC] = "-1")
-      setvar $MAP~MAP $MAP~MAP&"???        "
-    else
-      setvar $MAP~DENS SECTOR.DENSITY[$MAP~ADJ_SEC]
-      getlength SECTOR.DENSITY[$MAP~ADJ_SEC] $MAP~DENSLENGTH
-      if ($MAP~DENSLENGTH >= 9)
-        setvar $MAP~MAP $MAP~MAP&"HIGH      "
-      else
-        setvar $MAP~D $MAP~DENSLENGTH
-        while ($MAP~D <= 10)
-          setvar $MAP~DENS $MAP~DENS&" "
-          add $MAP~D 1
-        end
-        setvar $MAP~MAP $MAP~MAP&$MAP~DENS
-      end
-    end
-
-    if ($MAP~ISMSL = TRUE)
-      setvar $MAP~MAP $MAP~MAP&ANSI_15&"["&ANSI_14&"MSL"&ANSI_15&"]"&ANSI_7
-    end
-    setvar $MAP~OUTPUT ""
-    if (PORT.EXISTS[$MAP~ADJ_SEC])
-      setvar $MAP~CLASS PORT.CLASS[$MAP~ADJ_SEC]
-      setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_5&"    Port   "&ANSI_14&": "&ANSI_11&PORT.NAME[$MAP~ADJ_SEC]&ANSI_14&", "&ANSI_5&"Class "&ANSI_11&$MAP~CLASS&" "
-      if (($MAP~CLASS <> 0) and ($MAP~CLASS <> 9))
-        setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_5&"("
-        if (PORT.BUYFUEL[$MAP~ADJ_SEC])
-          setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_2&"B"
-        else
-          setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_11&"S"
-        end
-        if (PORT.BUYORG[$MAP~ADJ_SEC])
-          setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_2&"B"
-        else
-          setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_11&"S"
-        end
-        if (PORT.BUYEQUIP[$MAP~ADJ_SEC])
-          setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_2&"B"
-        else
-          setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_11&"S"
-        end
-        setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_5&")"
-      end
-      setvar $MAP~OUTPUT $MAP~OUTPUT&""
-      setvar $MAP~MAP $MAP~MAP&"*    "&$MAP~OUTPUT&""
-    end
-    if (SECTOR.FIGS.QUANTITY[$MAP~ADJ_SEC] > 0)
-      setvar $MAP~MAP $MAP~MAP&ANSI_5&"*    Fighters   : "&ANSI_11&SECTOR.FIGS.QUANTITY[$MAP~ADJ_SEC]&ANSI_5&" ("&SECTOR.FIGS.OWNER[$MAP~ADJ_SEC]&") "&ANSI_6&"["&SECTOR.FIGS.TYPE[$MAP~ADJ_SEC]&"]"
-    end
-    setvar $MAP~P 1
-    setvar $MAP~OUTPUT "*"
-    while ($MAP~P <= SECTOR.PLANETCOUNT[$MAP~ADJ_SEC])
-      setvar $MAP~ISSHIELDED FALSE
-      setvar $MAP~TEMP SECTOR.PLANETS[$MAP~ADJ_SEC][$MAP~P]
-      getword $MAP~TEMP $MAP~TEST 1
-      if ($MAP~TEST = "<<<<")
-        setvar $MAP~ISSHIELDED TRUE
-      end
-      getword $MAP~TEMP $MAP~TYPE 2
-      striptext $MAP~TYPE "("
-      striptext $MAP~TYPE ")"
-      if ($MAP~ISSHIELDED)
-        getlength $MAP~TEMP $MAP~LENGTH
-        cuttext $MAP~TEMP $MAP~TEMP 1 ($MAP~LENGTH - 15)
-        cuttext $MAP~TEMP $MAP~TEMP 10 9999
-        setvar $MAP~TEMP ANSI_12&"<<<< "&ANSI_10&"("&ANSI_14&$MAP~TYPE&ANSI_10&") "&ANSI_1&$MAP~TEMP&ANSI_12&" >>>> "&ANSI_2&"(Shielded)"
-      else
-        setvar $MAP~TEMP ANSI_2&$MAP~TEMP
-      end
-      if ($MAP~P = 1)
-        setvar $MAP~TEMP ANSI_5&"     Planets "&ANSI_14&"  : "&$MAP~TEMP
-        setvar $MAP~OUTPUT $MAP~OUTPUT&$MAP~TEMP&""
-      else
-        setvar $MAP~OUTPUT $MAP~OUTPUT&"                 "&$MAP~TEMP&""
-      end
-      if ($MAP~P < SECTOR.PLANETCOUNT[$MAP~ADJ_SEC])
-        setvar $MAP~OUTPUT $MAP~OUTPUT&"*"
-      end
-      add $MAP~P 1
-    end
-    if (SECTOR.PLANETCOUNT[$MAP~ADJ_SEC] > 0)
-      setvar $MAP~MAP $MAP~MAP&""&$MAP~OUTPUT&""
-    end
-    setvar $MAP~P 1
-    if (SECTOR.TRADERCOUNT[$MAP~ADJ_SEC] > 0)
-      setvar $MAP~MAP $MAP~MAP&ANSI_6&"*        Traders: "&ANSI_7
-    end
-    while ($MAP~P <= SECTOR.TRADERCOUNT[$MAP~ADJ_SEC])
-      setvar $MAP~MAP $MAP~MAP&"*             "&ANSI_11&SECTOR.TRADERS[$MAP~ADJ_SEC][$MAP~P]
-      add $MAP~P 1
-    end
-    setvar $MAP~P 1
-    if (SECTOR.SHIPCOUNT[$MAP~ADJ_SEC] > 0)
-      setvar $MAP~MAP $MAP~MAP&ANSI_6&"*       Ships   : "&ANSI_11&"("&SECTOR.SHIPCOUNT[$MAP~ADJ_SEC]&") Empty Ships"
-    end
-    setvar $MAP~SECTORS_ARRAY[$MAP~I] $MAP~MAP
-    add $MAP~COUNT 1
-    add $MAP~I 1
-  end
-  setvar $MAP~GRIDWARPCOUNT ($MAP~I - 1)
+		if ($map~ismsl = true)
+			setvar $map~map $map~map&ansi_15&"["&ansi_14&"MSL"&ansi_15&"]"&ansi_7
+		end
+		setvar $map~output ""
+		if (port.exists[$map~adj_sec])
+			setvar $map~class port.class[$map~adj_sec]
+			setvar $map~output $map~output&ansi_5&"    Port   "&ansi_14&": "&ansi_11&port.name[$map~adj_sec]&ansi_14&", "&ansi_5&"Class "&ansi_11&$map~class&" "
+			if (($map~class <> 0) and ($map~class <> 9))
+				setvar $map~output $map~output&ansi_5&"("
+				if (port.buyfuel[$map~adj_sec])
+					setvar $map~output $map~output&ansi_2&"B"
+				else
+					setvar $map~output $map~output&ansi_11&"S"
+				end
+				if (port.buyorg[$map~adj_sec])
+					setvar $map~output $map~output&ansi_2&"B"
+				else
+					setvar $map~output $map~output&ansi_11&"S"
+				end
+				if (port.buyequip[$map~adj_sec])
+					setvar $map~output $map~output&ansi_2&"B"
+				else
+					setvar $map~output $map~output&ansi_11&"S"
+				end
+				setvar $map~output $map~output&ansi_5&")"
+			end
+			setvar $map~output $map~output&""
+			setvar $map~map $map~map&"*    "&$map~output&""
+		end
+		if (sector.figs.quantity[$map~adj_sec] > 0)
+			setvar $map~map $map~map&ansi_5&"*    Fighters   : "&ansi_11&sector.figs.quantity[$map~adj_sec]&ansi_5&" ("&sector.figs.owner[$map~adj_sec]&") "&ansi_6&"["&sector.figs.type[$map~adj_sec]&"]"
+		end
+		setvar $map~p 1
+		setvar $map~output "*"
+		while ($map~p <= sector.planetcount[$map~adj_sec])
+			setvar $map~isshielded false
+			setvar $map~temp sector.planets[$map~adj_sec][$map~p]
+			getword $map~temp $map~test 1
+			if ($map~test = "<<<<")
+				setvar $map~isshielded true
+			end
+			getword $map~temp $map~type 2
+			striptext $map~type "("
+			striptext $map~type ")"
+			if ($map~isshielded)
+				getlength $map~temp $map~length
+				cuttext $map~temp $map~temp 1 ($map~length - 15)
+				cuttext $map~temp $map~temp 10 9999
+				setvar $map~temp ansi_12&"<<<< "&ansi_10&"("&ansi_14&$map~type&ansi_10&") "&ansi_1&$map~temp&ansi_12&" >>>> "&ansi_2&"(Shielded)"
+			else
+				setvar $map~temp ansi_2&$map~temp
+			end
+			if ($map~p = 1)
+				setvar $map~temp ansi_5&"     Planets "&ansi_14&"  : "&$map~temp
+				setvar $map~output $map~output&$map~temp&""
+			else
+				setvar $map~output $map~output&"                 "&$map~temp&""
+			end
+			if ($map~p < sector.planetcount[$map~adj_sec])
+				setvar $map~output $map~output&"*"
+			end
+			add $map~p 1
+		end
+		if (sector.planetcount[$map~adj_sec] > 0)
+			setvar $map~map $map~map&""&$map~output&""
+		end
+		setvar $map~p 1
+		if (sector.tradercount[$map~adj_sec] > 0)
+			setvar $map~map $map~map&ansi_6&"*        Traders: "&ansi_7
+		end
+		while ($map~p <= sector.tradercount[$map~adj_sec])
+			setvar $map~map $map~map&"*             "&ansi_11&sector.traders[$map~adj_sec][$map~p]
+			add $map~p 1
+		end
+		setvar $map~p 1
+		if (sector.shipcount[$map~adj_sec] > 0)
+			setvar $map~map $map~map&ansi_6&"*       Ships   : "&ansi_11&"("&sector.shipcount[$map~adj_sec]&") Empty Ships"
+		end
+		setvar $map~sectors_array[$map~i] $map~map
+		add $map~count 1
+		add $map~i 1
+	end
+	setvar $map~gridwarpcount ($map~i - 1)
 else
-  setvar $MAP~MAP $MAP~MAP&ANSI_15&" ERROR WITH CURRENTSECTOR  "&ANSI_7
+	setvar $map~map $map~map&ansi_15&" ERROR WITH CURRENTSECTOR  "&ansi_7
 end
-setvar $MAP~MAP $MAP~SECTORS_ARRAY[1]&"  "&$MAP~SECTORS_ARRAY[2]&"  "&$MAP~SECTORS_ARRAY[3]&"***"
-setvar $MAP~DISPLAYSECTOR CURRENTSECTOR
-gosub :DISPLAYSECTOR
-setvar $MAP~MAP $MAP~MAP&$MAP~OUTPUT&"*"
-setvar $MAP~MAP $MAP~MAP&$MAP~SECTORS_ARRAY[4]&"  "&$MAP~SECTORS_ARRAY[5]&"  "&$MAP~SECTORS_ARRAY[6]&"*"
+setvar $map~map $map~sectors_array[1]&"  "&$map~sectors_array[2]&"  "&$map~sectors_array[3]&"***"
+setvar $map~displaysector currentsector
+gosub :displaysector
+setvar $map~map $map~map&$map~output&"*"
+setvar $map~map $map~map&$map~sectors_array[4]&"  "&$map~sectors_array[5]&"  "&$map~sectors_array[6]&"*"
 return
-:MAP~DISPLAYSECTOR
 
-
-setvar $MAP~I $MAP~DISPLAYSECTOR
-setvar $MAP~OUTPUT ANSI_10&"    Sector  "&ANSI_14&": "&ANSI_11&$MAP~I&ANSI_2&" in "
-setvar $MAP~CONSTELLATION SECTOR.CONSTELLATION[$MAP~I]
-if ($MAP~CONSTELLATION = "The Federation.")
-  setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_10&$MAP~CONSTELLATION&"*"
+:map~displaysector
+setvar $map~i $map~displaysector
+setvar $map~output ansi_10&"    Sector  "&ansi_14&": "&ansi_11&$map~i&ansi_2&" in "
+setvar $map~constellation sector.constellation[$map~i]
+if ($map~constellation = "The Federation.")
+	setvar $map~output $map~output&ansi_10&$map~constellation&"*"
 else
-  setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_1&$MAP~CONSTELLATION&"*"
+	setvar $map~output $map~output&ansi_1&$map~constellation&"*"
 end
-if (SECTOR.BEACON[$MAP~I] <> "")
-  setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_5&"    Beacon  "&ANSI_14&": "&ANSI_12&SECTOR.BEACON[$MAP~I]&"*"
+if (sector.beacon[$map~i] <> "")
+	setvar $map~output $map~output&ansi_5&"    Beacon  "&ansi_14&": "&ansi_12&sector.beacon[$map~i]&"*"
 end
-if (PORT.EXISTS[$MAP~I])
-  setvar $MAP~CLASS PORT.CLASS[$MAP~I]
-  setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_5&"    Ports   "&ANSI_14&": "&ANSI_11&PORT.NAME[$MAP~I]&ANSI_14&", "&ANSI_5&"Class "&ANSI_11&$MAP~CLASS&" "
-  if (($MAP~CLASS <> 0) and ($MAP~CLASS <> 9))
-    setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_5&"("
-    if (PORT.BUYFUEL[$MAP~I])
-      setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_2&"B"
-    else
-      setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_11&"S"
-    end
-    if (PORT.BUYORG[$MAP~I])
-      setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_2&"B"
-    else
-      setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_11&"S"
-    end
-    if (PORT.BUYEQUIP[$MAP~I])
-      setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_2&"B"
-    else
-      setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_11&"S"
-    end
-    setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_5&")"
-  end
-  setvar $MAP~OUTPUT $MAP~OUTPUT&"*"
+if (port.exists[$map~i])
+	setvar $map~class port.class[$map~i]
+	setvar $map~output $map~output&ansi_5&"    Ports   "&ansi_14&": "&ansi_11&port.name[$map~i]&ansi_14&", "&ansi_5&"Class "&ansi_11&$map~class&" "
+	if (($map~class <> 0) and ($map~class <> 9))
+		setvar $map~output $map~output&ansi_5&"("
+		if (port.buyfuel[$map~i])
+			setvar $map~output $map~output&ansi_2&"B"
+		else
+			setvar $map~output $map~output&ansi_11&"S"
+		end
+		if (port.buyorg[$map~i])
+			setvar $map~output $map~output&ansi_2&"B"
+		else
+			setvar $map~output $map~output&ansi_11&"S"
+		end
+		if (port.buyequip[$map~i])
+			setvar $map~output $map~output&ansi_2&"B"
+		else
+			setvar $map~output $map~output&ansi_11&"S"
+		end
+		setvar $map~output $map~output&ansi_5&")"
+	end
+	setvar $map~output $map~output&"*"
 end
-setvar $MAP~J 1
-while ($MAP~J <= SECTOR.PLANETCOUNT[$MAP~I])
-  setvar $MAP~ISSHIELDED FALSE
-  setvar $MAP~TEMP SECTOR.PLANETS[$MAP~I][$MAP~J]
-  getword $MAP~TEMP $MAP~TEST 1
-  if ($MAP~TEST = "<<<<")
-    setvar $MAP~ISSHIELDED TRUE
-  end
-  getword $MAP~TEMP $MAP~TYPE 2
-  striptext $MAP~TYPE "("
-  striptext $MAP~TYPE ")"
-  if ($MAP~ISSHIELDED)
-    getlength $MAP~TEMP $MAP~LENGTH
-    cuttext $MAP~TEMP $MAP~TEMP 1 ($MAP~LENGTH - 15)
-    cuttext $MAP~TEMP $MAP~TEMP 10 9999
-    setvar $MAP~TEMP ANSI_12&"<<<< "&ANSI_10&"("&ANSI_14&$MAP~TYPE&ANSI_10&") "&ANSI_1&$MAP~TEMP&ANSI_12&" >>>> "&ANSI_2&"(Shielded)"
-  else
-    setvar $MAP~TEMP ANSI_2&$MAP~TEMP
-  end
-  if ($MAP~J = 1)
-    setvar $MAP~TEMP ANSI_5&"    Planets "&ANSI_14&": "&$MAP~TEMP
-    setvar $MAP~OUTPUT $MAP~OUTPUT&$MAP~TEMP&"*"
-  else
-    setvar $MAP~OUTPUT $MAP~OUTPUT&"              "&$MAP~TEMP&"*"
-  end
-  add $MAP~J 1
+setvar $map~j 1
+while ($map~j <= sector.planetcount[$map~i])
+	setvar $map~isshielded false
+	setvar $map~temp sector.planets[$map~i][$map~j]
+	getword $map~temp $map~test 1
+	if ($map~test = "<<<<")
+		setvar $map~isshielded true
+	end
+	getword $map~temp $map~type 2
+	striptext $map~type "("
+	striptext $map~type ")"
+	if ($map~isshielded)
+		getlength $map~temp $map~length
+		cuttext $map~temp $map~temp 1 ($map~length - 15)
+		cuttext $map~temp $map~temp 10 9999
+		setvar $map~temp ansi_12&"<<<< "&ansi_10&"("&ansi_14&$map~type&ansi_10&") "&ansi_1&$map~temp&ansi_12&" >>>> "&ansi_2&"(Shielded)"
+	else
+		setvar $map~temp ansi_2&$map~temp
+	end
+	if ($map~j = 1)
+		setvar $map~temp ansi_5&"    Planets "&ansi_14&": "&$map~temp
+		setvar $map~output $map~output&$map~temp&"*"
+	else
+		setvar $map~output $map~output&"              "&$map~temp&"*"
+	end
+	add $map~j 1
 end
-setvar $MAP~J 1
-while ($MAP~J <= SECTOR.TRADERCOUNT[$MAP~I])
-  setvar $MAP~TEMP SECTOR.TRADERS[$MAP~I][$MAP~J]
-  setvar $MAP~TEMP ANSI_2&$MAP~TEMP
-  if ($MAP~J = 1)
-    setvar $MAP~TEMP ANSI_5&"    Traders "&ANSI_14&": "&$MAP~TEMP
-    setvar $MAP~OUTPUT $MAP~OUTPUT&$MAP~TEMP&"*"
-  else
-    setvar $MAP~OUTPUT $MAP~OUTPUT&"              "&$MAP~TEMP&"*"
-  end
-  add $MAP~J 1
+setvar $map~j 1
+while ($map~j <= sector.tradercount[$map~i])
+	setvar $map~temp sector.traders[$map~i][$map~j]
+	setvar $map~temp ansi_2&$map~temp
+	if ($map~j = 1)
+		setvar $map~temp ansi_5&"    Traders "&ansi_14&": "&$map~temp
+		setvar $map~output $map~output&$map~temp&"*"
+	else
+		setvar $map~output $map~output&"              "&$map~temp&"*"
+	end
+	add $map~j 1
 end
-setvar $MAP~J 1
-while ($MAP~J <= SECTOR.SHIPCOUNT[$MAP~I])
-  setvar $MAP~TEMP SECTOR.SHIPS[$MAP~I][$MAP~J]
-  setvar $MAP~TEMP ANSI_2&$MAP~TEMP
-  if ($MAP~J = 1)
-    setvar $MAP~TEMP ANSI_5&"      Ships "&ANSI_14&": "&$MAP~TEMP
-    setvar $MAP~OUTPUT $MAP~OUTPUT&$MAP~TEMP&"*"
-  else
-    setvar $MAP~OUTPUT $MAP~OUTPUT&"              "&$MAP~TEMP&"*"
-  end
-  add $MAP~J 1
+setvar $map~j 1
+while ($map~j <= sector.shipcount[$map~i])
+	setvar $map~temp sector.ships[$map~i][$map~j]
+	setvar $map~temp ansi_2&$map~temp
+	if ($map~j = 1)
+		setvar $map~temp ansi_5&"      Ships "&ansi_14&": "&$map~temp
+		setvar $map~output $map~output&$map~temp&"*"
+	else
+		setvar $map~output $map~output&"              "&$map~temp&"*"
+	end
+	add $map~j 1
 end
-if (SECTOR.FIGS.QUANTITY[$MAP~I] > 0)
-  setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_5&"    Fighters"&ANSI_14&": "&ANSI_11&SECTOR.FIGS.QUANTITY[$MAP~I]&ANSI_5&" ("&SECTOR.FIGS.OWNER[$MAP~I]&") "&ANSI_6&"["&SECTOR.FIGS.TYPE[$MAP~I]&"]*"
+if (sector.figs.quantity[$map~i] > 0)
+	setvar $map~output $map~output&ansi_5&"    Fighters"&ansi_14&": "&ansi_11&sector.figs.quantity[$map~i]&ansi_5&" ("&sector.figs.owner[$map~i]&") "&ansi_6&"["&sector.figs.type[$map~i]&"]*"
 end
-setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_10&"    Warps to sector(s) "&ANSI_14&":  "
-setvar $MAP~K 1
-while (SECTOR.WARPS[$MAP~I][$MAP~K] > 0)
-  if ($MAP~K <> 1)
-    setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_2&" - "
-  end
-  getsectorparameter SECTOR.WARPS[$MAP~I][$MAP~K] "FIGSEC" $MAP~CHECK
-  if ($MAP~CHECK = TRUE)
-    setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_11&"["&SECTOR.WARPS[$MAP~I][$MAP~K]&"]"
-  else
-    setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_11&SECTOR.WARPS[$MAP~I][$MAP~K]
-  end
-  add $MAP~K 1
+setvar $map~output $map~output&ansi_10&"    Warps to sector(s) "&ansi_14&":  "
+setvar $map~k 1
+while (sector.warps[$map~i][$map~k] > 0)
+	if ($map~k <> 1)
+		setvar $map~output $map~output&ansi_2&" - "
+	end
+	getsectorparameter sector.warps[$map~i][$map~k] "FIGSEC" $map~check
+	if ($map~check = true)
+		setvar $map~output $map~output&ansi_11&"["&sector.warps[$map~i][$map~k]&"]"
+	else
+		setvar $map~output $map~output&ansi_11&sector.warps[$map~i][$map~k]
+	end
+	add $map~k 1
 end
-setvar $MAP~K 1
-while (SECTOR.BACKDOORS[$MAP~I][$MAP~K] > 0)
-  if ($MAP~K <> 1)
-    setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_2&" - "
-  else
-    setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_12&"*    Backdoor from sector(s) "&ANSI_14&":  "
-  end
-  setvar $MAP~OUTPUT $MAP~OUTPUT&ANSI_11&SECTOR.BACKDOORS[$MAP~I][$MAP~K]
-  add $MAP~K 1
+setvar $map~k 1
+while (sector.backdoors[$map~i][$map~k] > 0)
+	if ($map~k <> 1)
+		setvar $map~output $map~output&ansi_2&" - "
+	else
+		setvar $map~output $map~output&ansi_12&"*    Backdoor from sector(s) "&ansi_14&":  "
+	end
+	setvar $map~output $map~output&ansi_11&sector.backdoors[$map~i][$map~k]
+	add $map~k 1
 end
-setvar $MAP~OUTPUT $MAP~OUTPUT&"*"
+setvar $map~output $map~output&"*"
 return
-:MAP~FORMATSECTOROWNER
 
-
-setvar $MAP~MOST_RECENT_DATA FALSE
-setvar $MAP~DATETIME DATE&" "&TIME
-if ($MAP~DATETIME = SECTOR.UPDATED[$MAP~ADJ_SEC])
-  setvar $MAP~MOST_RECENT_DATA TRUE
+:map~formatsectorowner
+setvar $map~most_recent_data false
+setvar $map~datetime date&" "&time
+if ($map~datetime = sector.updated[$map~adj_sec])
+	setvar $map~most_recent_data true
 end
-if ($MAP~MOST_RECENT_DATA = TRUE)
-  if ((($MAP~ADJSECTOROWNER = "belong to your Corp") or ($MAP~ADJSECTOROWNER = "yours")) and (SECTOR.FIGS.QUANTITY[$MAP~ADJ_SEC] > 0))
-    setsectorparameter $MAP~ADJ_SEC "FIGSEC" TRUE
-    setvar $MAP~ISFIGGED TRUE
-  else
-    setsectorparameter $MAP~ADJ_SEC "FIGSEC" FALSE
-    setvar $MAP~ISFIGGED FALSE
-  end
-  if ((SECTOR.ANOMOLY[$MAP~ADJ_SEC] = TRUE) and (((($MAP~ADJLIMPOWNER = "belong to your Corp") or ($MAP~ADJLIMPOWNER = "yours")) and (SECTOR.LIMPETS.QUANTITY[$MAP~ADJ_SEC] > 0))))
-    setsectorparameter $MAP~ADJ_SEC "LIMPSEC" TRUE
-    setvar $MAP~ISLIMPED TRUE
-  else
-    setsectorparameter $MAP~ADJ_SEC "LIMPSEC" FALSE
-    setvar $MAP~ISLIMPED FALSE
-  end
-  if ((($MAP~ADJMINEOWNER = "belong to your Corp") or ($MAP~ADJMINEOWNER = "yours")) and (SECTOR.MINES.QUANTITY[$MAP~ADJ_SEC] > 0))
-    setsectorparameter $MAP~ADJ_SEC "MINESEC" TRUE
-  else
-    setsectorparameter $MAP~ADJ_SEC "MINESEC" FALSE
-  end
+if ($map~most_recent_data = true)
+	if ((($map~adjsectorowner = "belong to your Corp") or ($map~adjsectorowner = "yours")) and (sector.figs.quantity[$map~adj_sec] > 0))
+		setsectorparameter $map~adj_sec "FIGSEC" true
+		setvar $map~isfigged true
+	else
+		setsectorparameter $map~adj_sec "FIGSEC" false
+		setvar $map~isfigged false
+	end
+	if ((sector.anomoly[$map~adj_sec] = true) and (((($map~adjlimpowner = "belong to your Corp") or ($map~adjlimpowner = "yours")) and (sector.limpets.quantity[$map~adj_sec] > 0))))
+		setsectorparameter $map~adj_sec "LIMPSEC" true
+		setvar $map~islimped true
+	else
+		setsectorparameter $map~adj_sec "LIMPSEC" false
+		setvar $map~islimped false
+	end
+	if ((($map~adjmineowner = "belong to your Corp") or ($map~adjmineowner = "yours")) and (sector.mines.quantity[$map~adj_sec] > 0))
+		setsectorparameter $map~adj_sec "MINESEC" true
+	else
+		setsectorparameter $map~adj_sec "MINESEC" false
+	end
 end
 
-if ($MAP~ISFIGGED = TRUE) or ((($MAP~ADJSECTOROWNER = "belong to your Corp") or ($MAP~ADJSECTOROWNER = "yours")) and (SECTOR.FIGS.QUANTITY[$MAP~ADJ_SEC] > 0))
-  setvar $MAP~TEXT "OURS"
-  setvar $MAP~COLOR ANSI_14
+if ($map~isfigged = true) or ((($map~adjsectorowner = "belong to your Corp") or ($map~adjsectorowner = "yours")) and (sector.figs.quantity[$map~adj_sec] > 0))
+	setvar $map~text "OURS"
+	setvar $map~color ansi_14
 else
-  getword $MAP~ADJSECTOROWNER $MAP~ALIENCHECK 1
-  if (($MAP~ADJ_SEC < 11) or ($MAP~ADJ_SEC = $MAP~STARDOCK))
-    setvar $MAP~COLOR ANSI_9
-    setvar $MAP~TEXT "FEDSPACE"
-  elseif ($MAP~ADJ_SEC = $MAP~RYLOS)
-    setvar $MAP~COLOR ANSI_9
-    setvar $MAP~TEXT "RYLOS"
-  elseif ($MAP~ADJ_SEC = $MAP~ALPHA_CENTAURI)
-    setvar $MAP~COLOR ANSI_9
-    setvar $MAP~TEXT "ALPHA"
-  elseif ($MAP~ADJSECTOROWNER = "Rogue Mercenaries")
-    setvar $MAP~COLOR ANSI_7
-    setvar $MAP~TEXT "ROGUE"
-  elseif ($MAP~ALIENCHECK = "the")
-    setvar $MAP~COLOR ANSI_2
-    setvar $MAP~TEXT "ALIEN"
-    setvar $MAP~ISALIENS TRUE
-  elseif ($MAP~ALIENCHECK = "The")
-    setvar $MAP~COLOR ANSI_2
-    setvar $MAP~TEXT "ALIEN"
-    setvar $MAP~ISALIENS TRUE
-  elseif (($MAP~ADJSECTOROWNER <> "") and ($MAP~ADJSECTOROWNER <> "Unknown"))
-    setvar $MAP~HEADS TRUE
-    getword $MAP~ADJSECTOROWNER $MAP~TEMP 3
-    striptext $MAP~TEMP ","
-    uppercase $MAP~TEMP
-    setvar $MAP~TEXT $MAP~TEMP
-    setvar $MAP~COLOR ANSI_12
-  else
-    setvar $MAP~TEXT "NONE"
-    setvar $MAP~COLOR ANSI_13
-  end
+	getword $map~adjsectorowner $map~aliencheck 1
+	if (($map~adj_sec < 11) or ($map~adj_sec = $map~stardock))
+		setvar $map~color ansi_9
+		setvar $map~text "FEDSPACE"
+	elseif ($map~adj_sec = $map~rylos)
+		setvar $map~color ansi_9
+		setvar $map~text "RYLOS"
+	elseif ($map~adj_sec = $map~alpha_centauri)
+		setvar $map~color ansi_9
+		setvar $map~text "ALPHA"
+	elseif ($map~adjsectorowner = "Rogue Mercenaries")
+		setvar $map~color ansi_7
+		setvar $map~text "ROGUE"
+	elseif ($map~aliencheck = "the")
+		setvar $map~color ansi_2
+		setvar $map~text "ALIEN"
+		setvar $map~isaliens true
+	elseif ($map~aliencheck = "The")
+		setvar $map~color ansi_2
+		setvar $map~text "ALIEN"
+		setvar $map~isaliens true
+	elseif (($map~adjsectorowner <> "") and ($map~adjsectorowner <> "Unknown"))
+		setvar $map~heads true
+		getword $map~adjsectorowner $map~temp 3
+		striptext $map~temp ","
+		uppercase $map~temp
+		setvar $map~text $map~temp
+		setvar $map~color ansi_12
+	else
+		setvar $map~text "NONE"
+		setvar $map~color ansi_13
+	end
 end
-setvar $MAP~TEMP $MAP~TEXT
-getlength $MAP~TEMP $MAP~TEMPLENGTH
-setvar $MAP~LENGTH 10
-if ($MAP~TEMPLENGTH >= $MAP~LENGTH)
-  cuttext $MAP~TEMP $MAP~TEMP 1 $MAP~LENGTH
+setvar $map~temp $map~text
+getlength $map~temp $map~templength
+setvar $map~length 10
+if ($map~templength >= $map~length)
+	cuttext $map~temp $map~temp 1 $map~length
 else
-  while (($MAP~LENGTH - $MAP~TEMPLENGTH) > 0)
-    if ($MAP~HEADS)
-      setvar $MAP~TEMP $MAP~TEMP&" "
-      setvar $MAP~HEADS FALSE
-    else
-      setvar $MAP~TEMP " "&$MAP~TEMP
-      setvar $MAP~HEADS TRUE
-    end
-    getlength $MAP~TEMP $MAP~TEMPLENGTH
-  end
+	while (($map~length - $map~templength) > 0)
+		if ($map~heads)
+			setvar $map~temp $map~temp&" "
+			setvar $map~heads false
+		else
+			setvar $map~temp " "&$map~temp
+			setvar $map~heads true
+		end
+		getlength $map~temp $map~templength
+	end
 end
 return
-:MAP~FORMAT_SECTOR_OWNER
 
-
-setvar $MAP~MOST_RECENT_DATA FALSE
-setvar $MAP~DATETIME DATE&" "&TIME
-if ($MAP~DATETIME = SECTOR.UPDATED[$MAP~ADJ_SEC])
-  setvar $MAP~MOST_RECENT_DATA TRUE
+:map~format_sector_owner
+setvar $map~most_recent_data false
+setvar $map~datetime date&" "&time
+if ($map~datetime = sector.updated[$map~adj_sec])
+	setvar $map~most_recent_data true
 end
-if ($MAP~MOST_RECENT_DATA = TRUE)
-  if ((($MAP~ADJSECTOROWNER = "belong to your Corp") or ($MAP~ADJSECTOROWNER = "yours")) and (SECTOR.FIGS.QUANTITY[$MAP~ADJ_SEC] > 0))
-    setsectorparameter $MAP~ADJ_SEC "FIGSEC" TRUE
-    setvar $MAP~ISFIGGED TRUE
-  else
-    setsectorparameter $MAP~ADJ_SEC "FIGSEC" FALSE
-    setvar $MAP~ISFIGGED FALSE
-  end
-  if ((SECTOR.ANOMOLY[$MAP~ADJ_SEC] = TRUE) and (((($MAP~ADJLIMPOWNER = "belong to your Corp") or ($MAP~ADJLIMPOWNER = "yours")) and (SECTOR.LIMPETS.QUANTITY[$MAP~ADJ_SEC] > 0))))
-    setsectorparameter $MAP~ADJ_SEC "LIMPSEC" TRUE
-    setvar $MAP~ISLIMPED TRUE
-  else
-    setsectorparameter $MAP~ADJ_SEC "LIMPSEC" FALSE
-    setvar $MAP~ISLIMPED FALSE
-  end
-  if ((($MAP~ADJMINEOWNER = "belong to your Corp") or ($MAP~ADJMINEOWNER = "yours")) and (SECTOR.MINES.QUANTITY[$MAP~ADJ_SEC] > 0))
-    setsectorparameter $MAP~ADJ_SEC "MINESEC" TRUE
-  else
-    setsectorparameter $MAP~ADJ_SEC "MINESEC" FALSE
-  end
+if ($map~most_recent_data = true)
+	if ((($map~adjsectorowner = "belong to your Corp") or ($map~adjsectorowner = "yours")) and (sector.figs.quantity[$map~adj_sec] > 0))
+		setsectorparameter $map~adj_sec "FIGSEC" true
+		setvar $map~isfigged true
+	else
+		setsectorparameter $map~adj_sec "FIGSEC" false
+		setvar $map~isfigged false
+	end
+	if ((sector.anomoly[$map~adj_sec] = true) and (((($map~adjlimpowner = "belong to your Corp") or ($map~adjlimpowner = "yours")) and (sector.limpets.quantity[$map~adj_sec] > 0))))
+		setsectorparameter $map~adj_sec "LIMPSEC" true
+		setvar $map~islimped true
+	else
+		setsectorparameter $map~adj_sec "LIMPSEC" false
+		setvar $map~islimped false
+	end
+	if ((($map~adjmineowner = "belong to your Corp") or ($map~adjmineowner = "yours")) and (sector.mines.quantity[$map~adj_sec] > 0))
+		setsectorparameter $map~adj_sec "MINESEC" true
+	else
+		setsectorparameter $map~adj_sec "MINESEC" false
+	end
 end
 
-if ($MAP~ISFIGGED = TRUE) or ((($MAP~ADJSECTOROWNER = "belong to your Corp") or ($MAP~ADJSECTOROWNER = "yours")) and (SECTOR.FIGS.QUANTITY[$MAP~ADJ_SEC] > 0))
-  setvar $MAP~TEXT "OURS"
-  setvar $MAP~COLOR ANSI_14
+if ($map~isfigged = true) or ((($map~adjsectorowner = "belong to your Corp") or ($map~adjsectorowner = "yours")) and (sector.figs.quantity[$map~adj_sec] > 0))
+	setvar $map~text "OURS"
+	setvar $map~color ansi_14
 else
-  getword $MAP~ADJSECTOROWNER $MAP~ALIENCHECK 1
-  if (($MAP~ADJ_SEC < 11) or ($MAP~ADJ_SEC = $MAP~STARDOCK))
-    setvar $MAP~COLOR ANSI_9
-    setvar $MAP~TEXT "FEDSPACE"
-  elseif ($MAP~ADJ_SEC = $MAP~RYLOS)
-    setvar $MAP~COLOR ANSI_9
-    setvar $MAP~TEXT "RYLOS"
-  elseif ($MAP~ADJ_SEC = $MAP~ALPHA_CENTAURI)
-    setvar $MAP~COLOR ANSI_9
-    setvar $MAP~TEXT "ALPHA"
-  elseif ($MAP~ADJSECTOROWNER = "Rogue Mercenaries")
-    setvar $MAP~COLOR ANSI_7
-    setvar $MAP~TEXT "ROGUE"
-  elseif ($MAP~ALIENCHECK = "the")
-    setvar $MAP~COLOR ANSI_2
-    setvar $MAP~TEXT "ALIEN"
-    setvar $MAP~ISALIENS TRUE
-  elseif ($MAP~ALIENCHECK = "The")
-    setvar $MAP~COLOR ANSI_2
-    setvar $MAP~TEXT "ALIEN"
-    setvar $MAP~ISALIENS TRUE
-  elseif (($MAP~ADJSECTOROWNER <> "") and ($MAP~ADJSECTOROWNER <> "Unknown"))
-    setvar $MAP~HEADS TRUE
-    getword $MAP~ADJSECTOROWNER $MAP~TEMP 3
-    striptext $MAP~TEMP ","
-    uppercase $MAP~TEMP
-    setvar $MAP~TEXT $MAP~TEMP
-    setvar $MAP~COLOR ANSI_12
-  else
-    setvar $MAP~TEXT "NONE"
-    setvar $MAP~COLOR ANSI_13
-  end
+	getword $map~adjsectorowner $map~aliencheck 1
+	if (($map~adj_sec < 11) or ($map~adj_sec = $map~stardock))
+		setvar $map~color ansi_9
+		setvar $map~text "FEDSPACE"
+	elseif ($map~adj_sec = $map~rylos)
+		setvar $map~color ansi_9
+		setvar $map~text "RYLOS"
+	elseif ($map~adj_sec = $map~alpha_centauri)
+		setvar $map~color ansi_9
+		setvar $map~text "ALPHA"
+	elseif ($map~adjsectorowner = "Rogue Mercenaries")
+		setvar $map~color ansi_7
+		setvar $map~text "ROGUE"
+	elseif ($map~aliencheck = "the")
+		setvar $map~color ansi_2
+		setvar $map~text "ALIEN"
+		setvar $map~isaliens true
+	elseif ($map~aliencheck = "The")
+		setvar $map~color ansi_2
+		setvar $map~text "ALIEN"
+		setvar $map~isaliens true
+	elseif (($map~adjsectorowner <> "") and ($map~adjsectorowner <> "Unknown"))
+		setvar $map~heads true
+		getword $map~adjsectorowner $map~temp 3
+		striptext $map~temp ","
+		uppercase $map~temp
+		setvar $map~text $map~temp
+		setvar $map~color ansi_12
+	else
+		setvar $map~text "NONE"
+		setvar $map~color ansi_13
+	end
 end
-setvar $MAP~TEMP $MAP~TEXT
-getlength $MAP~TEMP $MAP~TEMPLENGTH
-setvar $MAP~LENGTH 10
-if ($MAP~TEMPLENGTH >= $MAP~LENGTH)
-  cuttext $MAP~TEMP $MAP~TEMP 1 $MAP~LENGTH
+setvar $map~temp $map~text
+getlength $map~temp $map~templength
+setvar $map~length 10
+if ($map~templength >= $map~length)
+	cuttext $map~temp $map~temp 1 $map~length
 else
-  while (($MAP~LENGTH - $MAP~TEMPLENGTH) > 0)
-    if ($MAP~HEADS)
-      setvar $MAP~TEMP $MAP~TEMP&" "
-      setvar $MAP~HEADS FALSE
-    else
-      setvar $MAP~TEMP " "&$MAP~TEMP
-      setvar $MAP~HEADS TRUE
-    end
-    getlength $MAP~TEMP $MAP~TEMPLENGTH
-  end
+	while (($map~length - $map~templength) > 0)
+		if ($map~heads)
+			setvar $map~temp $map~temp&" "
+			setvar $map~heads false
+		else
+			setvar $map~temp " "&$map~temp
+			setvar $map~heads true
+		end
+		getlength $map~temp $map~templength
+	end
 end
 return
 

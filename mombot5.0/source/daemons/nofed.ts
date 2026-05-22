@@ -1,8 +1,8 @@
 systemscript
-setTextOutTrigger fed :fed "`"
+settextouttrigger fed :fed "`"
 pause
 
 :fed
 send "'"
-setTextOutTrigger fed :fed "`"
+settextouttrigger fed :fed "`"
 pause

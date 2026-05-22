@@ -1,561 +1,584 @@
-:CONNECTIVITY~KEEPALIVE
-
+:connectivity~keepalive
 send #27
-setvar $CONNECTIVITY~RELOG_MESSAGE ""
-savevar $CONNECTIVITY~RELOG_MESSAGE
-add $CONNECTIVITY~ALIVE_COUNT 1
-if ($CONNECTIVITY~ALIVE_COUNT >= ($BOT~ECHOINTERVAL * 2))
-  setvar $CONNECTIVITY~ALIVE_COUNT 0
-  gosub :PLAYER~CURRENTPROMPT
-  getsectorparameter 2 "FIG_COUNT" $BOT~FIGCOUNT
-  echo ANSI_14 "*-= Time: " ANSI_15 TIME ANSI_14 " Fig Grid: " ANSI_15 $BOT~FIGCOUNT ANSI_14 " =-*" ANSI_7
-  echo CURRENTANSILINE
+setvar $connectivity~relog_message ""
+savevar $connectivity~relog_message
+add $connectivity~alive_count 1
+if ($connectivity~alive_count >= ($bot~echointerval * 2))
+	setvar $connectivity~alive_count 0
+	gosub :player~currentprompt
+	getsectorparameter 2 "FIG_COUNT" $bot~figcount
+	echo ansi_14 "*-= Time: " ansi_15 time ansi_14 " Fig Grid: " ansi_15 $bot~figcount ansi_14 " =-*" ansi_7
+	echo currentansiline
 end
-if ((CONNECTED <> TRUE) and ($BOT~DORELOG = TRUE))
-  if ($CONNECTIVITY~RELOGGING <> TRUE)
-    setvar $CONNECTIVITY~RELOGGING TRUE
-    savevar $CONNECTIVITY~RELOGGING
-    goto :INTERNAL_COMMANDS~RELOG_ATTEMPT
-  end
-end
-
-
-if ($CONNECTIVITY~LAST_PROMPT_SEEN = CURRENTLINE)
-
-  if ((CURRENTLINE = $GAME~GAME_MENU_PROMPT) or (CURRENTLINE = "[Pause] - [Press Space or Enter to continue]") or (CURRENTLINE = "Enter your choice: ") or (CURRENTLINE = "Selection (? for menu): "))
-    if ($CONNECTIVITY~RELOGGING <> TRUE)
-      setvar $CONNECTIVITY~RELOG_MESSAGE "Stuck on baffling prompt: ["&CURRENTLINE&"], so I relogged.*"
-      savevar $CONNECTIVITY~RELOG_MESSAGE
-      disconnect
-      setvar $CONNECTIVITY~RELOGGING TRUE
-      savevar $CONNECTIVITY~RELOGGING
-      goto :INTERNAL_COMMANDS~RELOG_ATTEMPT
-    end
-  end
+if ((connected <> true) and ($bot~dorelog = true))
+	if ($connectivity~relogging <> true)
+		setvar $connectivity~relogging true
+		savevar $connectivity~relogging
+		goto :internal_commands~relog_attempt
+	end
 end
 
-setvar $CONNECTIVITY~LAST_PROMPT_SEEN CURRENTLINE
+if ($connectivity~last_prompt_seen = currentline)
+
+	if ((currentline = $game~game_menu_prompt) or (currentline = "[Pause] - [Press Space or Enter to continue]") or (currentline = "Enter your choice: ") or (currentline = "Selection (? for menu): "))
+		if ($connectivity~relogging <> true)
+			setvar $connectivity~relog_message "Stuck on baffling prompt: ["&currentline&"], so I relogged.*"
+			savevar $connectivity~relog_message
+			disconnect
+			setvar $connectivity~relogging true
+			savevar $connectivity~relogging
+			goto :internal_commands~relog_attempt
+		end
+	end
+end
+
+setvar $connectivity~last_prompt_seen currentline
 send #27
-killtrigger KEEPALIVE
-setdelaytrigger KEEPALIVE :KEEPALIVE 30000
+killtrigger keepalive
+setdelaytrigger keepalive :keepalive 30000
 pause
-:CONNECTIVITY~ONLINE_WATCH
 
-
-
-
-
-if ((CONNECTED <> TRUE) and ($BOT~DORELOG = TRUE))
-  if ($CONNECTIVITY~RELOGGING <> TRUE)
-    setvar $CONNECTIVITY~RELOGGING TRUE
-    savevar $CONNECTIVITY~RELOGGING
-    goto :INTERNAL_COMMANDS~RELOG_ATTEMPT
-  end
+:connectivity~online_watch
+if ((connected <> true) and ($bot~dorelog = true))
+	if ($connectivity~relogging <> true)
+		setvar $connectivity~relogging true
+		savevar $connectivity~relogging
+		goto :internal_commands~relog_attempt
+	end
 end
-killtrigger KEEPALIVE
-killtrigger ONLINE_WATCH
-settexttrigger ONLINE_WATCH :ONLINE_WATCH "Your session will be terminated in "
-setdelaytrigger KEEPALIVE :KEEPALIVE 20000
+killtrigger keepalive
+killtrigger online_watch
+settexttrigger online_watch :online_watch "Your session will be terminated in "
+setdelaytrigger keepalive :keepalive 20000
 send #27
 pause
-:CONNECTIVITY~DO_RELOG
-:CONNECTIVITY~THEDELAY
 
-
-
-gosub :KILLRELOGTRIGGERS
-seteventtrigger CONTINUELOGIN :CONTINUELOGIN "CONNECTION ACCEPTED"
-if (CONNECTED <> TRUE)
-  echo "*"&ANSI_15&"["&ANSI_3&"ATTEMPTING TO CONNECT"&ANSI_15&"]*"
-  connect
+:connectivity~do_relog
+:connectivity~thedelay
+gosub :killrelogtriggers
+seteventtrigger continuelogin :continuelogin "CONNECTION ACCEPTED"
+if (connected <> true)
+	echo "*"&ansi_15&"["&ansi_3&"ATTEMPTING TO CONNECT"&ansi_15&"]*"
+	connect
 else
-  goto :CONTINUERELOG3
+	goto :continuerelog3
 end
 pause
-:CONNECTIVITY~CONTINUELOGIN
-gosub :KILLRELOGTRIGGERS
-settexttrigger RELOG3 :CONTINUERELOG3 "Please enter your name"
+
+:connectivity~continuelogin
+gosub :killrelogtriggers
+settexttrigger relog3 :continuerelog3 "Please enter your name"
 pause
-:CONNECTIVITY~CONTINUERELOG3
-gosub :KILLRELOGTRIGGERS
 
+:connectivity~continuerelog3
+gosub :killrelogtriggers
 
-settexttrigger LOGINSUCCESSFUL :CONTINUERELOG4V1 "Trade Wars 2002 Game Server v1"
-settexttrigger LOGINSUCCESSFUL2 :CONTINUERELOG4V2 "TWGS v2"
-send $BOT~SERVERNAME&"*"
+settexttrigger loginsuccessful :continuerelog4v1 "Trade Wars 2002 Game Server v1"
+settexttrigger loginsuccessful2 :continuerelog4v2 "TWGS v2"
+send $bot~servername&"*"
 pause
-:CONNECTIVITY~CONTINUERELOG4V1
 
-setvar $CONNECTIVITY~TWGSVERSION 1
-goto :CONTINUERELOG4
-:CONNECTIVITY~CONTINUERELOG4V2
-setvar $CONNECTIVITY~TWGSVERSION 2
-goto :CONTINUERELOG4
-:CONNECTIVITY~CONTINUERELOG4
+:connectivity~continuerelog4v1
+setvar $connectivity~twgsversion 1
+goto :continuerelog4
 
-gosub :KILLRELOGTRIGGERS
-if ($CONNECTIVITY~FIRST_TIME)
-  setvar $CONNECTIVITY~FIRST_TIME FALSE
-  disconnect
-  goto :DO_RELOG
+:connectivity~continuerelog4v2
+setvar $connectivity~twgsversion 2
+goto :continuerelog4
+
+:connectivity~continuerelog4
+gosub :killrelogtriggers
+if ($connectivity~first_time)
+	setvar $connectivity~first_time false
+	disconnect
+	goto :do_relog
 end
-settexttrigger RELOG69 :CONTINUERELOG5 "Make a Selection:"
-settexttrigger RELOG3 :CONTINUERELOG5 "Selection (? for menu):"
+settexttrigger relog69 :continuerelog5 "Make a Selection:"
+settexttrigger relog3 :continuerelog5 "Selection (? for menu):"
 send "#"&#8
 pause
-:CONNECTIVITY~CONTINUERELOG5
-gosub :KILLRELOGTRIGGERS
 
-if ($CONNECTIVITY~NEWGAME)
-  if ($CONNECTIVITY~TWGSVERSION = 1)
-    settexttrigger FIRSTPAUSE :FIRSTPAUSE "[Pause]"
-    settexttrigger ENTER :DONE_DO_RELOG "Would you like to start a new character in this game?"
-    settexttrigger V1ENTER :V1ENTER "Enter your choice"
-    settextlinetrigger NOTOPEN :GAME_NOT_OPEN "but this is a closed game."
-    send $BOT~LETTER&"                                           * "
-    pause
-  else
-    settexttrigger FIRSTPAUSE :FIRSTPAUSE "[Pause]"
-    settexttrigger ENTER :DONE_DO_RELOG "Enter your choice"
-    settexttrigger NOTOPEN :GAME_NOT_OPEN "This game will open"
-    send $BOT~LETTER
-    pause
-  end
+:connectivity~continuerelog5
+gosub :killrelogtriggers
 
+if ($connectivity~newgame)
+	if ($connectivity~twgsversion = 1)
+		settexttrigger firstpause :firstpause "[Pause]"
+		settexttrigger enter :done_do_relog "Would you like to start a new character in this game?"
+		settexttrigger v1enter :v1enter "Enter your choice"
+		settextlinetrigger notopen :game_not_open "but this is a closed game."
+		send $bot~letter&"                                           * "
+		pause
+	else
+		settexttrigger firstpause :firstpause "[Pause]"
+		settexttrigger enter :done_do_relog "Enter your choice"
+		settexttrigger notopen :game_not_open "This game will open"
+		send $bot~letter
+		pause
+	end
 
 else
-  settexttrigger FIRSTPAUSE :FIRSTPAUSE "[Pause]"
-  settexttrigger ENTER :DONE_DO_RELOG "Enter your choice"
-  settexttrigger NOTOPEN :GAME_NOT_OPEN "This game will open"
-  send $BOT~LETTER
-  pause
+	settexttrigger firstpause :firstpause "[Pause]"
+	settexttrigger enter :done_do_relog "Enter your choice"
+	settexttrigger notopen :game_not_open "This game will open"
+	send $bot~letter
+	pause
 end
-:CONNECTIVITY~FIRSTPAUSE
 
-
+:connectivity~firstpause
 send "*"
-settexttrigger FIRSTPAUSE :FIRSTPAUSE "[Pause]"
+settexttrigger firstpause :firstpause "[Pause]"
 pause
-:CONNECTIVITY~V1ENTER
-killtrigger FIRSTPAUSE
+
+:connectivity~v1enter
+killtrigger firstpause
 send "* T ***"
 pause
-:CONNECTIVITY~DONE_DO_RELOG
+
+:connectivity~done_do_relog
 killalltriggers
-if ($CONNECTIVITY~NEWGAME and ($CONNECTIVITY~TWGSVERSION = 2)) or ($CONNECTIVITY~NEWGAME = FALSE)
-  send "T***"
+if ($connectivity~newgame and ($connectivity~twgsversion = 2)) or ($connectivity~newgame = false)
+	send "T***"
 end
 return
-:CONNECTIVITY~GAME_NOT_OPEN
+
+:connectivity~game_not_open
 killalltriggers
-if (CONNECTED <> TRUE)
-  goto :THEDELAY
+if (connected <> true)
+	goto :thedelay
 end
 
-if ($CONNECTIVITY~NEWGAME)
-  if ($CONNECTIVITY~TWGSVERSION = 1)
+if ($connectivity~newgame)
+	if ($connectivity~twgsversion = 1)
 
-    add $CONNECTIVITY~NEWGAMECOUNTER 1
-    if ($CONNECTIVITY~NEWGAMECOUNTER > 20)
-      killalltriggers
-      disconnect
-      setdelaytrigger WAITAMOMENT :WAITAMOMENT 5000
-      pause
-      :CONNECTIVITY~WAITAMOMENT
-      killalltriggers
-      goto :THEDELAY
-    end
+		add $connectivity~newgamecounter 1
+		if ($connectivity~newgamecounter > 20)
+			killalltriggers
+			disconnect
+			setdelaytrigger waitamoment :waitamoment 5000
+			pause
 
-    settexttrigger V1PAUSE :V1PAUSE "[Pause]"
-    settexttrigger V1ENTER2 :V1ENTER2 "Enter your choice"
-    setdelaytrigger 2 :NEW_GAME_DELAY2 1000
-    settexttrigger 3 :TRYAGAINNEWGAMEDAY1 "Would you like to start a new character in this game?"
-    settextlinetrigger 4 :TRYAGAINENTERGAME "but this is a closed game."
-    send $BOT~LETTER&"                                           * "
-    pause
+			:connectivity~waitamoment
+			killalltriggers
+			goto :thedelay
+		end
 
+		settexttrigger v1pause :v1pause "[Pause]"
+		settexttrigger v1enter2 :v1enter2 "Enter your choice"
+		setdelaytrigger 2 :new_game_delay2 1000
+		settexttrigger 3 :tryagainnewgameday1 "Would you like to start a new character in this game?"
+		settextlinetrigger 4 :tryagainentergame "but this is a closed game."
+		send $bot~letter&"                                           * "
+		pause
 
-  else
+	else
 
-    setdelaytrigger 2 :NEW_GAME_DELAY2 5000
-    settexttrigger 3 :TRYAGAINNEWGAMEDAY1 "Enter your choice:"
-    settextlinetrigger 4 :TRYAGAINENTERGAME "This game will open"
-    send $BOT~LETTER&" * "
-    pause
-  end
-
+		setdelaytrigger 2 :new_game_delay2 5000
+		settexttrigger 3 :tryagainnewgameday1 "Enter your choice:"
+		settextlinetrigger 4 :tryagainentergame "This game will open"
+		send $bot~letter&" * "
+		pause
+	end
 
 else
 
-  setdelaytrigger 2 :NEW_GAME_DELAY2 5000
-  settexttrigger 3 :TRYAGAINNEWGAMEDAY1 "Enter your choice:"
-  settextlinetrigger 4 :TRYAGAINENTERGAME "This game will open"
-  send $BOT~LETTER&" * "
-  pause
+	setdelaytrigger 2 :new_game_delay2 5000
+	settexttrigger 3 :tryagainnewgameday1 "Enter your choice:"
+	settextlinetrigger 4 :tryagainentergame "This game will open"
+	send $bot~letter&" * "
+	pause
 end
-:CONNECTIVITY~NEW_GAME_DELAY2
 
+:connectivity~new_game_delay2
+goto :game_not_open
 
-goto :GAME_NOT_OPEN
-:CONNECTIVITY~TRYAGAINENTERGAME
-goto :GAME_NOT_OPEN
-:CONNECTIVITY~TRYAGAINNEWGAMEDAY1
+:connectivity~tryagainentergame
+goto :game_not_open
 
-if ($CONNECTIVITY~NEWGAME and ($CONNECTIVITY~TWGSVERSION = 2)) or ($CONNECTIVITY~NEWGAME = FALSE)
+:connectivity~tryagainnewgameday1
+if ($connectivity~newgame and ($connectivity~twgsversion = 2)) or ($connectivity~newgame = false)
 
-  send "T ***"
+	send "T ***"
 end
 killalltriggers
 return
-:CONNECTIVITY~V1PAUSE
+
+:connectivity~v1pause
 send "*"
-setvar $CONNECTIVITY~NEWGAMECOUNTER 0
-settexttrigger V1PAUSE :V1PAUSE "[Pause]"
+setvar $connectivity~newgamecounter 0
+settexttrigger v1pause :v1pause "[Pause]"
 
 pause
-:CONNECTIVITY~V1ENTER2
-killtrigger V1PAUSE
-killtrigger FIRSTPAUSE
-setvar $CONNECTIVITY~NEWGAMECOUNTER 0
+
+:connectivity~v1enter2
+killtrigger v1pause
+killtrigger firstpause
+setvar $connectivity~newgamecounter 0
 send "T ***"
 pause
 return
-:CONNECTIVITY~KILLRELOGTRIGGERS
 
-killtrigger CONTINUELOGIN
-killtrigger THEDELAY
-killtrigger THEDELAY2
-killtrigger RELOG
-killtrigger RELOG2
-killtrigger RELOG3
-killtrigger RELOG69
-killtrigger RELOG89
-killtrigger LOGINSUCCESSFUL
-killtrigger LOGINSUCCESSFUL2
-killtrigger FIRSTPAUSE
-killtrigger ENTER
-killtrigger NOTOPEN
-killtrigger V1ENTER
-killtrigger V1ENTER2
-killtrigger V1PAUSE
-setdelaytrigger THEDELAY2 :THEDELAY 5000
+:connectivity~killrelogtriggers
+killtrigger continuelogin
+killtrigger thedelay
+killtrigger thedelay2
+killtrigger relog
+killtrigger relog2
+killtrigger relog3
+killtrigger relog69
+killtrigger relog89
+killtrigger loginsuccessful
+killtrigger loginsuccessful2
+killtrigger firstpause
+killtrigger enter
+killtrigger notopen
+killtrigger v1enter
+killtrigger v1enter2
+killtrigger v1pause
+setdelaytrigger thedelay2 :thedelay 5000
 return
-:CONNECTIVITY~ENTER_NEW_GAME
 
-setvar $CONNECTIVITY~TWGSVERSION ""
-:CONNECTIVITY~TRY_AGAIN
-gosub :DO_RELOG
-:CONNECTIVITY~GAMECLOSED
+:connectivity~enter_new_game
+setvar $connectivity~twgsversion ""
+
+:connectivity~try_again
+gosub :do_relog
+
+:connectivity~gameclosed
 killalltriggers
-settextlinetrigger 1 :CLOSED "I'm sorry, but this is a closed game."
-settextlinetrigger 2 :CLOSED "www.tradewars.com                                   Epic Interactive Strategy"
-settextlinetrigger 3 :CLOSED " day(s) to get back in."
-setdelaytrigger 4 :CLOSED 5000
-settextlinetrigger 5 :ON_PLANET "What do you want to name your home planet?"
-settexttrigger 6 :WRONG_NAME "Sorry, you cannot use the name "
-settexttrigger 7 :BACK_IN_GAME "Command [TL"
+settextlinetrigger 1 :closed "I'm sorry, but this is a closed game."
+settextlinetrigger 2 :closed "www.tradewars.com                                   Epic Interactive Strategy"
+settextlinetrigger 3 :closed " day(s) to get back in."
+setdelaytrigger 4 :closed 5000
+settextlinetrigger 5 :on_planet "What do you want to name your home planet?"
+settexttrigger 6 :wrong_name "Sorry, you cannot use the name "
+settexttrigger 7 :back_in_game "Command [TL"
 
-
-if ($CONNECTIVITY~NEWGAME)
-  send "Y"&$BOT~PASSWORD&"*"&$BOT~PASSWORD&"*"
-  settexttrigger 8 :WHOSPLAY "Who's Playing"
-  settexttrigger 9 :NEWNAME "Use (N)ew Name or (B)BS Name"
-  settexttrigger 10 :NOALIAS "Choose a name carefully as you will have it for a while!"
+if ($connectivity~newgame)
+	send "Y"&$bot~password&"*"&$bot~password&"*"
+	settexttrigger 8 :whosplay "Who's Playing"
+	settexttrigger 9 :newname "Use (N)ew Name or (B)BS Name"
+	settexttrigger 10 :noalias "Choose a name carefully as you will have it for a while!"
 else
-  send $BOT~PASSWORD&"* * ************"
-  waiton "What do you want to name your ship? (30 letters)"
-  if ($MENUS~LANDONTERRA = TRUE)
-    send $BOT~STARTSHIPNAME&"*Y l "
-    return
-  else
-    send $BOT~STARTSHIPNAME&"*Y "
-  end
+	send $bot~password&"* * ************"
+	waiton "What do you want to name your ship? (30 letters)"
+	if ($menus~landonterra = true)
+		send $bot~startshipname&"*Y l "
+		return
+	else
+		send $bot~startshipname&"*Y "
+	end
 end
 pause
-:CONNECTIVITY~WHOSPLAY
+
+:connectivity~whosplay
 killtrigger 8
 killtrigger 9
 killtrigger 10
-send "*N"&$BOT~USERNAME&"*Y"&$BOT~STARTSHIPNAME&"*Y * "
+send "*N"&$bot~username&"*Y"&$bot~startshipname&"*Y * "
 pause
-:CONNECTIVITY~NEWNAME
+
+:connectivity~newname
 killtrigger 8
 killtrigger 9
 killtrigger 10
-send "N"&$BOT~USERNAME&"*Y"&$BOT~STARTSHIPNAME&"*Y"
+send "N"&$bot~username&"*Y"&$bot~startshipname&"*Y"
 pause
-:CONNECTIVITY~NOALIAS
+
+:connectivity~noalias
 killtrigger 8
 killtrigger 9
 killtrigger 10
-send $BOT~STARTSHIPNAME&"*Y * "
+send $bot~startshipname&"*Y * "
 pause
-:CONNECTIVITY~WRONG_NAME
+
+:connectivity~wrong_name
 killalltriggers
-echo "[[  {"&$SWITCHBOARD~BOT_NAME&"} - Character name not allowed!  Start over and pick a new name!  ]]*"
+echo "[[  {"&$switchboard~bot_name&"} - Character name not allowed!  Start over and pick a new name!  ]]*"
 halt
-:CONNECTIVITY~CLOSED
+
+:connectivity~closed
 killalltriggers
-if (CONNECTED <> TRUE)
-  load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\relog.cts"
-  seteventtrigger 1 :RELOGENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\relog.cts"
-  pause
-  :CONNECTIVITY~RELOGENDED
-  goto :TRY_AGAIN
+if (connected <> true)
+	load "scripts\"&$bot~mombot_directory&"\commands\general\relog.cts"
+	seteventtrigger 1 :relogended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\general\relog.cts"
+	pause
+
+	:connectivity~relogended
+	goto :try_again
 end
-setdelaytrigger 2 :NEW_GAME_DELAY 300
-settextlinetrigger 3 :TRYAGAINNEWGAMEDAY1 "T - Play Trade Wars 2002"
+setdelaytrigger 2 :new_game_delay 300
+settextlinetrigger 3 :tryagainnewgameday1 "T - Play Trade Wars 2002"
 pause
-:CONNECTIVITY~NEW_GAME_DELAY
-send $BOT~LETTER&" * "
-goto :GAMECLOSED
-:CONNECTIVITY~ON_PLANET
+
+:connectivity~new_game_delay
+send $bot~letter&" * "
+goto :gameclosed
+
+:connectivity~on_planet
 send ".*  Q  "
 pause
-:CONNECTIVITY~BACK_IN_GAME
+
+:connectivity~back_in_game
 killalltriggers
-gosub :CONNECTIVITY~CLEARRETURNSTATE
+gosub :connectivity~clearreturnstate
 
-if ($CONNECTIVITY~NEWGAME)
-  gosub :CONNECTIVITY~PROMOTENEWGAMESTATE
+if ($connectivity~newgame)
+	gosub :connectivity~promotenewgamestate
 end
 
-if (($CONNECTIVITY~NEWGAME = TRUE) and (($BOT~ISCEO = TRUE) and (($BOT~CORPNAME <> "") and ($BOT~CORPPASSWORD <> ""))))
-  gosub :BOT~KILLTHETRIGGERS
-  send "tm" $BOT~CORPNAME "*y" $BOT~CORPPASSWORD "*yq"
-  send "co*cq"
-  setvar $CONNECTIVITY~SKIPJOIN TRUE
-  goto :RESUMESTARTAFTERCORPJOIN
+if (($connectivity~newgame = true) and (($bot~isceo = true) and (($bot~corpname <> "") and ($bot~corppassword <> ""))))
+	gosub :bot~killthetriggers
+	send "tm" $bot~corpname "*y" $bot~corppassword "*yq"
+	send "co*cq"
+	setvar $connectivity~skipjoin true
+	goto :resumestartaftercorpjoin
 end
-if ($CONNECTIVITY~NEWGAME and (($BOT~ISCEO = FALSE) and (($BOT~CORPNAME <> "") and ($BOT~CORPPASSWORD <> ""))))
-  setvar $CONNECTIVITY~SKIPJOIN 0
-  setvar $CONNECTIVITY~ATTEMPS 0
-  gosub :BOT~KILLTHETRIGGERS
-  :CONNECTIVITY~CHECKFORCORP2
-  add $CONNECTIVITY~ATTEMPS 1
-  if ($CONNECTIVITY~ATTEMPS >= 5)
-    gosub :BOT~KILLTHETRIGGERS
-    send "q"
-    goto :RESUMESTARTAFTERCORPJOIN
-  end
-  send "*TD"
-  gosub :PLAYER~QUIKSTATS
-  settextlinetrigger 1 :THEREISMYCORP2 "    "&$BOT~CORPNAME
-  settexttrigger 2 :NOCORPTHATNAME2 "Corporate command ["
-  send "L"
-  pause
-  :CONNECTIVITY~NOCORPTHATNAME2
-  gosub :BOT~KILLTHETRIGGERS
-  echo "[[ Waiting 3 seconds to check for corp again, press [Spacebar] to cancel. ]]*"
-  setdelaytrigger 3 :CHECKFORCORP2 200
-  settextouttrigger 4 :ALREADYCORPED #32
-  pause
-  :CONNECTIVITY~THEREISMYCORP2
-  gosub :BOT~KILLTHETRIGGERS
-  getword CURRENTLINE $CONNECTIVITY~CORPNUMBER 1
-  :CONNECTIVITY~CONTINUECORPCREATION2
-  gosub :BOT~KILLTHETRIGGERS
-  send "J"&$CONNECTIVITY~CORPNUMBER&"*"&$BOT~CORPPASSWORD&"* * "
-  setvar $CONNECTIVITY~SKIPJOIN 1
-end
-:CONNECTIVITY~RESUMESTARTAFTERCORPJOIN
+if ($connectivity~newgame and (($bot~isceo = false) and (($bot~corpname <> "") and ($bot~corppassword <> ""))))
+	setvar $connectivity~skipjoin 0
+	setvar $connectivity~attemps 0
+	gosub :bot~killthetriggers
 
+	:connectivity~checkforcorp2
+	add $connectivity~attemps 1
+	if ($connectivity~attemps >= 5)
+		gosub :bot~killthetriggers
+		send "q"
+		goto :resumestartaftercorpjoin
+	end
+	send "*TD"
+	gosub :player~quikstats
+	settextlinetrigger 1 :thereismycorp2 "    "&$bot~corpname
+	settexttrigger 2 :nocorpthatname2 "Corporate command ["
+	send "L"
+	pause
 
-if (($MENUS~MOWDESTINATION = 0) or ($MENUS~MOWDESTINATION = "0"))
-  setvar $MENUS~MOWDESTINATION ""
+	:connectivity~nocorpthatname2
+	gosub :bot~killthetriggers
+	echo "[[ Waiting 3 seconds to check for corp again, press [Spacebar] to cancel. ]]*"
+	setdelaytrigger 3 :checkforcorp2 200
+	settextouttrigger 4 :alreadycorped #32
+	pause
+
+	:connectivity~thereismycorp2
+	gosub :bot~killthetriggers
+	getword currentline $connectivity~corpnumber 1
+
+	:connectivity~continuecorpcreation2
+	gosub :bot~killthetriggers
+	send "J"&$connectivity~corpnumber&"*"&$bot~corppassword&"* * "
+	setvar $connectivity~skipjoin 1
 end
 
-
-if ($MENUS~MOWDESTINATION <> "")
-  gosub :MOVING
+:connectivity~resumestartaftercorpjoin
+if (($menus~mowdestination = 0) or ($menus~mowdestination = "0"))
+	setvar $menus~mowdestination ""
 end
 
-if ($CONNECTIVITY~NEWGAME)
-  gosub :BOT~KILLTHETRIGGERS
-  setvar $CONNECTIVITY~WAIT_FOR_INTERROG FALSE
-  if (($BOT~ISCEO = TRUE) and (($BOT~CORPNAME <> "") and ($BOT~CORPPASSWORD <> "")))
-    if ($CONNECTIVITY~SKIPJOIN <> TRUE)
-      settextlinetrigger 1 :ALREADYCORPED "You may only be on one Corp at a time."
-      settexttrigger 2 :CONTINUECORPCREATION "<Create New Corporation>"
-      send "*TM"
-      pause
-      :CONNECTIVITY~CONTINUECORPCREATION
-      gosub :BOT~KILLTHETRIGGERS
-      send $BOT~CORPNAME&"*Y"&$BOT~CORPPASSWORD&"*Y"
-      setvar $CONNECTIVITY~WAIT_FOR_INTERROG TRUE
-    else
-      goto :ALLDONE
-    end
-  elseif (($BOT~ISCEO = FALSE) and (($BOT~CORPNAME <> "") and ($BOT~CORPPASSWORD <> "")))
-    if ($CONNECTIVITY~SKIPJOIN <> TRUE)
-      :CONNECTIVITY~CHECKFORCORP
-      send "*TD"
-      gosub :PLAYER~QUIKSTATS
-      settextlinetrigger 1 :THEREISMYCORP "    "&$BOT~CORPNAME
-      settexttrigger 2 :NOCORPTHATNAME "Corporate command ["
-      send "L"
-      pause
-      :CONNECTIVITY~NOCORPTHATNAME
-      gosub :BOT~KILLTHETRIGGERS
-      echo "[[ Waiting 3 seconds to check for corp again, press [Spacebar] to cancel. ]]*"
-      setdelaytrigger 3 :CHECKFORCORP 3000
-      settextouttrigger 4 :ALREADYCORPED #32
-      pause
-      :CONNECTIVITY~THEREISMYCORP
-      gosub :BOT~KILLTHETRIGGERS
-      getword CURRENTLINE $CONNECTIVITY~CORPNUMBER 1
-      :CONNECTIVITY~CONTINUECORPCREATION
-      gosub :BOT~KILLTHETRIGGERS
-      send "J"&$CONNECTIVITY~CORPNUMBER&"*"&$BOT~CORPPASSWORD&"* * "
-      setvar $CONNECTIVITY~WAIT_FOR_INTERROG TRUE
-    else
-      goto :ALLDONE
-    end
-  else
-    :CONNECTIVITY~ALREADYCORPED
-    gosub :BOT~KILLTHETRIGGERS
-  end
-  if ($CONNECTIVITY~WAIT_FOR_INTERROG = TRUE)
-    settextlinetrigger ALLDONE :ALLDONE ": ENDINTERROG"
-    pause
-  end
-  :CONNECTIVITY~ALLDONE
-  gosub :BOT~KILLTHETRIGGERS
-  gosub :CONNECTIVITY~APPLYPOSTLOGINPREFS
-
-
-
-end
-if ($MENUS~MOWDESTINATION = "")
-  gosub :MOVING
+if ($menus~mowdestination <> "")
+	gosub :moving
 end
 
+if ($connectivity~newgame)
+	gosub :bot~killthetriggers
+	setvar $connectivity~wait_for_interrog false
+	if (($bot~isceo = true) and (($bot~corpname <> "") and ($bot~corppassword <> "")))
+		if ($connectivity~skipjoin <> true)
+			settextlinetrigger 1 :alreadycorped "You may only be on one Corp at a time."
+			settexttrigger 2 :continuecorpcreation "<Create New Corporation>"
+			send "*TM"
+			pause
+
+			:connectivity~continuecorpcreation
+			gosub :bot~killthetriggers
+			send $bot~corpname&"*Y"&$bot~corppassword&"*Y"
+			setvar $connectivity~wait_for_interrog true
+		else
+			goto :alldone
+		end
+	elseif (($bot~isceo = false) and (($bot~corpname <> "") and ($bot~corppassword <> "")))
+		if ($connectivity~skipjoin <> true)
+
+			:connectivity~checkforcorp
+			send "*TD"
+			gosub :player~quikstats
+			settextlinetrigger 1 :thereismycorp "    "&$bot~corpname
+			settexttrigger 2 :nocorpthatname "Corporate command ["
+			send "L"
+			pause
+
+			:connectivity~nocorpthatname
+			gosub :bot~killthetriggers
+			echo "[[ Waiting 3 seconds to check for corp again, press [Spacebar] to cancel. ]]*"
+			setdelaytrigger 3 :checkforcorp 3000
+			settextouttrigger 4 :alreadycorped #32
+			pause
+
+			:connectivity~thereismycorp
+			gosub :bot~killthetriggers
+			getword currentline $connectivity~corpnumber 1
+
+			:connectivity~continuecorpcreation
+			gosub :bot~killthetriggers
+			send "J"&$connectivity~corpnumber&"*"&$bot~corppassword&"* * "
+			setvar $connectivity~wait_for_interrog true
+		else
+			goto :alldone
+		end
+	else
+
+		:connectivity~alreadycorped
+		gosub :bot~killthetriggers
+	end
+	if ($connectivity~wait_for_interrog = true)
+		settextlinetrigger alldone :alldone ": ENDINTERROG"
+		pause
+	end
+
+	:connectivity~alldone
+	gosub :bot~killthetriggers
+	gosub :connectivity~applypostloginprefs
+
+end
+if ($menus~mowdestination = "")
+	gosub :moving
+end
 
 return
-:CONNECTIVITY~CLEARRETURNSTATE
-setvar $BOT~DO_NOT_RESUSCITATE FALSE
-savevar $BOT~DO_NOT_RESUSCITATE
-setvar $bot~do_not_resuscitate FALSE
+
+:connectivity~clearreturnstate
+setvar $bot~do_not_resuscitate false
 savevar $bot~do_not_resuscitate
-setvar $do_not_resuscitate FALSE
+setvar $bot~do_not_resuscitate false
+savevar $bot~do_not_resuscitate
+setvar $do_not_resuscitate false
 savevar $do_not_resuscitate
-setvar $BOT~ISSHIPDESTROYED FALSE
-savevar $BOT~ISSHIPDESTROYED
-setvar $bot~isShipDestroyed FALSE
-savevar $bot~isShipDestroyed
+setvar $bot~isshipdestroyed false
+savevar $bot~isshipdestroyed
+setvar $bot~isshipdestroyed false
+savevar $bot~isshipdestroyed
 return
-:CONNECTIVITY~PROMOTENEWGAMESTATE
-if ($BOT~NEWGAMEDAY1 = TRUE)
-  setvar $BOT~NEWGAMEDAY1 FALSE
-  savevar $BOT~NEWGAMEDAY1
-  setvar $BOT~NEWGAMEOLDER TRUE
-  savevar $BOT~NEWGAMEOLDER
+
+:connectivity~promotenewgamestate
+if ($bot~newgameday1 = true)
+	setvar $bot~newgameday1 false
+	savevar $bot~newgameday1
+	setvar $bot~newgameolder true
+	savevar $bot~newgameolder
 end
 return
-:CONNECTIVITY~APPLYPOSTLOGINPREFS
-setvar $GAMEPREFS~BANK "CONNECTIVITY"
-setvar $GAMEPREFS~ANIMATION[$GAMEPREFS~BANK] "OFF"
-if (($BOT~SUBSPACE <> 0) and ($BOT~SUBSPACE <> ""))
-  setvar $GAMEPREFS~SUBSPACE[$GAMEPREFS~BANK] $BOT~SUBSPACE
+
+:connectivity~applypostloginprefs
+setvar $gameprefs~bank "CONNECTIVITY"
+setvar $gameprefs~animation[$gameprefs~bank] "OFF"
+if (($bot~subspace <> 0) and ($bot~subspace <> ""))
+	setvar $gameprefs~subspace[$gameprefs~bank] $bot~subspace
 end
-gosub :GAMEPREFS~SETGAMEPREFS
+gosub :gameprefs~setgameprefs
 return
-:CONNECTIVITY~MOVING
 
-
+:connectivity~moving
 echo #27 "[30D                        " #27 "[30D"
-isnumber $CONNECTIVITY~ISNUMBER $MENUS~MOWDESTINATION
-if ($CONNECTIVITY~ISNUMBER and ($BOT~MOWTODOCK or $MENUS~MOWTORYLOS or $MENUS~MOWTOALPHA or $MENUS~MOWTOOTHER or $MENUS~FMOWTODOCK))
-  if ($BOT~MOWTODOCK or $MENUS~FMOWTODOCK)
-    if (((STARDOCK = 0) or (STARDOCK = "")) and ($MAP~STARDOCK = 0))
-      send "v"
-      waiton "-=-=-=-  Current "
-    end
-    if (((STARDOCK = 0) or (STARDOCK = "")) and ($MAP~STARDOCK = 0))
-      setvar $switchboard~message "Stardock appears to be hidden in this game. Aborting mow.*"
-      gosub :switchboard~switchboard
-    else
-      if ((STARDOCK <> 0) and (STARDOCK <> ""))
-        setvar $MAP~STARDOCK STARDOCK
-        savevar $MAP~STARDOCK
-      end
-      setvar $MENUS~MOWDESTINATION $MAP~STARDOCK
-    end
-  end
-  if ($MENUS~FMOWTODOCK = TRUE)
-    setvar $BOT~USER_COMMAND_LINE "fmow "&$MENUS~MOWDESTINATION&" 1 "
-  else
-    setvar $BOT~USER_COMMAND_LINE "mow "&$MENUS~MOWDESTINATION&" 1 "
-  end
-  setvar $BOT~PARM1 $MENUS~MOWDESTINATION
-  setvar $BOT~PARM2 1
-  if ($MENUS~START_MOW_OPTION <> "")
-    setvar $BOT~USER_COMMAND_LINE $BOT~USER_COMMAND_LINE&$MENUS~START_MOW_OPTION&" "
-    setvar $BOT~PARM3 $MENUS~START_MOW_OPTION
-  end
-  savevar $BOT~USER_COMMAND_LINE
-  savevar $BOT~PARM1
-  savevar $BOT~PARM2
-  if ($MENUS~START_MOW_OPTION <> "")
-    savevar $BOT~PARM3
-  end
-  setvar $MENUS~START_MOW_OPTION ""
-  savevar $MENUS~START_MOW_OPTION
-  if ($MENUS~FMOWTODOCK = TRUE)
-    load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\grid\fmow.cts"
-    seteventtrigger 1 :FMOWENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\grid\fmow.cts"
-    pause
-    :CONNECTIVITY~FMOWENDED
-  else
-    load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\grid\mow.cts"
-    seteventtrigger 1 :MOWENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\modes\grid\mow.cts"
-    pause
-    :CONNECTIVITY~MOWENDED
-    loadvar $MAP~BACKDOOR
-  end
+isnumber $connectivity~isnumber $menus~mowdestination
+if ($connectivity~isnumber and ($bot~mowtodock or $menus~mowtorylos or $menus~mowtoalpha or $menus~mowtoother or $menus~fmowtodock))
+	if ($bot~mowtodock or $menus~fmowtodock)
+		if (((stardock = 0) or (stardock = "")) and ($map~stardock = 0))
+			send "v"
+			waiton "-=-=-=-  Current "
+		end
+		if (((stardock = 0) or (stardock = "")) and ($map~stardock = 0))
+			setvar $switchboard~message "Stardock appears to be hidden in this game. Aborting mow.*"
+			gosub :switchboard~switchboard
+		else
+			if ((stardock <> 0) and (stardock <> ""))
+				setvar $map~stardock stardock
+				savevar $map~stardock
+			end
+			setvar $menus~mowdestination $map~stardock
+		end
+	end
+	if ($menus~fmowtodock = true)
+		setvar $bot~user_command_line "fmow "&$menus~mowdestination&" 1 "
+	else
+		setvar $bot~user_command_line "mow "&$menus~mowdestination&" 1 "
+	end
+	setvar $bot~parm1 $menus~mowdestination
+	setvar $bot~parm2 1
+	if ($menus~start_mow_option <> "")
+		setvar $bot~user_command_line $bot~user_command_line&$menus~start_mow_option&" "
+		setvar $bot~parm3 $menus~start_mow_option
+	end
+	savevar $bot~user_command_line
+	savevar $bot~parm1
+	savevar $bot~parm2
+	if ($menus~start_mow_option <> "")
+		savevar $bot~parm3
+	end
+	setvar $menus~start_mow_option ""
+	savevar $menus~start_mow_option
+	if ($menus~fmowtodock = true)
+		load "scripts\"&$bot~mombot_directory&"\modes\grid\fmow.cts"
+		seteventtrigger 1 :fmowended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\grid\fmow.cts"
+		pause
+
+		:connectivity~fmowended
+	else
+		load "scripts\"&$bot~mombot_directory&"\modes\grid\mow.cts"
+		seteventtrigger 1 :mowended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\modes\grid\mow.cts"
+		pause
+
+		:connectivity~mowended
+		loadvar $map~backdoor
+	end
 else
-  if ($CONNECTIVITY~ISNUMBER and $MENUS~XPORTTOSHIP)
-    send "x    "&$MENUS~MOWDESTINATION&"  "
-  else
-    if ($MENUS~LANDONTERRA = TRUE)
-      settexttrigger 1 :LANDED_ON_TERRA "Do you wish to (L)eave or (T)ake Colonists?"
-      setdelaytrigger 2 :LANDING_TIMEOUT 5000
-      send "l "
-      pause
-      :CONNECTIVITY~LANDING_TIMEOUT
-      killtrigger 2
-      setvar $switchboard~message "Could not land on Terra!  Probably not in sector 1.*"
-      gosub :switchboard~switchboard
-      goto :DONE_LANDING_TERRA
-      :CONNECTIVITY~LANDED_ON_TERRA
-      killtrigger 1
-      setvar $switchboard~message "Safely on Terra.*"
-      gosub :switchboard~switchboard
-      :CONNECTIVITY~DONE_LANDING_TERRA
-    elseif ($MENUS~LANDONSTARDOCK = TRUE)
-      settexttrigger 1 :LANDED_ON_STARDOCK "<Shipyards> Your option (?)"
-      setdelaytrigger 2 :LANDING_TIMEOUT 5000
-      send "pss "
-      pause
-      :CONNECTIVITY~LANDING_TIMEOUT
-      killtrigger 2
-      setvar $switchboard~message "Could not land on Stardock!  Probably not in sector.*"
-      gosub :switchboard~switchboard
-      goto :DONE_LANDING_STARDOCK
-      :CONNECTIVITY~LANDED_ON_STARDOCK
-      killtrigger 1
-      setvar $switchboard~message "Safely on Stardock.*"
-      gosub :switchboard~switchboard
-      :CONNECTIVITY~DONE_LANDING_STARDOCK
-    end
-  end
+	if ($connectivity~isnumber and $menus~xporttoship)
+		send "x    "&$menus~mowdestination&"  "
+	else
+		if ($menus~landonterra = true)
+			settexttrigger 1 :landed_on_terra "Do you wish to (L)eave or (T)ake Colonists?"
+			setdelaytrigger 2 :landing_timeout 5000
+			send "l "
+			pause
+
+			:connectivity~landing_timeout
+			killtrigger 2
+			setvar $switchboard~message "Could not land on Terra!  Probably not in sector 1.*"
+			gosub :switchboard~switchboard
+			goto :done_landing_terra
+
+			:connectivity~landed_on_terra
+			killtrigger 1
+			setvar $switchboard~message "Safely on Terra.*"
+			gosub :switchboard~switchboard
+
+			:connectivity~done_landing_terra
+		elseif ($menus~landonstardock = true)
+			settexttrigger 1 :landed_on_stardock "<Shipyards> Your option (?)"
+			setdelaytrigger 2 :landing_timeout 5000
+			send "pss "
+			pause
+
+			:connectivity~landing_timeout
+			killtrigger 2
+			setvar $switchboard~message "Could not land on Stardock!  Probably not in sector.*"
+			gosub :switchboard~switchboard
+			goto :done_landing_stardock
+
+			:connectivity~landed_on_stardock
+			killtrigger 1
+			setvar $switchboard~message "Safely on Stardock.*"
+			gosub :switchboard~switchboard
+
+			:connectivity~done_landing_stardock
+		end
+	end
 end
 
-if (($MENUS~COMMAND_TO_ISSUE <> "") and ($MENUS~COMMAND_TO_ISSUE <> 0))
-  setvar $BOT~USER_COMMAND_LINE $MENUS~COMMAND_TO_ISSUE
-  setvar $MENUS~COMMAND_TO_ISSUE ""
-  savevar $MENUS~COMMAND_TO_ISSUE
-  goto :USER_INTERFACE~RUNUSERCOMMANDLINE
+if (($menus~command_to_issue <> "") and ($menus~command_to_issue <> 0))
+	setvar $bot~user_command_line $menus~command_to_issue
+	setvar $menus~command_to_issue ""
+	savevar $menus~command_to_issue
+	goto :user_interface~runusercommandline
 end
 return
 

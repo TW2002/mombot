@@ -1,494 +1,514 @@
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PORT~GETPORTINFO
+:port~getportinfo
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if ($PORT~STARTINGLOCATION = "Citadel")
-  send "S*CR"
+gosub :player~currentprompt
+if ($player~current_prompt = "Citadel")
+	send "|S*CR"
+elseif ($player~current_prompt = "Command")
+	send "|CR"
 else
-  send "*CR"
+	setvar $switchboard~message "Must be at Command or Citadel prompt to get port info.*"
+	gosub :switchboard~switchboard
+	return
 end
-if ($PORT~REMOTEPORT > 0)
-  send $PORT~REMOTEPORT
+setvar $startinglocation $player~current_prompt
+
+if ($port~remoteport > 0)
+	send $port~remoteport
 end
 send "*"
-setvar $PORT~REMOTEPORT 0
-setvar $PORT~NOPORT 1
-setvar $PORT~FUELSELLING 0
-setvar $PORT~ORGSELLING 0
-setvar $PORT~EQUIPSELLING 0
-settextlinetrigger FOUNDPORT :PORT~FOUNDPORT2 "Items     Status  Trading % of max OnBoard"
-settextlinetrigger NOPORT :PORT~NOPORT2 "I have no information about a port in that sector."
-settextlinetrigger NOPORT2 :PORT~NOPORT2 "You have never visted sector"
-settextlinetrigger NOPORT3 :PORT~NOPORT2 "credits / next hold"
-settextlinetrigger NOPORT4 :PORT~NOPORT2 "A  Cargo holds     :"
+
+setvar $port~remoteport 0
+setvar $port~noport 0
+setvar $port~foundport false
+setvar $port~orebuying 0
+setvar $port~orgbuying 0
+setvar $port~equbuying 0
+setvar $port~oretrading 0
+setvar $port~orgtrading 0
+setvar $port~equtrading 0
+setvar $port~orepercent 0
+setvar $port~orgpercent 0
+setvar $port~equpercent 0
+
+settextlinetrigger foundport :foundport "Items     Status  Trading % of max OnBoard"
+settextlinetrigger noport :noport "I have no information about a port in that sector."
+settextlinetrigger noport2 :noport "You have never visted sector"
+settextlinetrigger noport3 :noport "credits / next hold"
+settextlinetrigger noport4 :noport "A  Cargo holds     :"
 pause
 
-:PORT~NOPORT2
-gosub :PORT~PORTKILLINGTRIGGERS
+:noport
+killalltriggers
+setvar $port~noport 1
+setvar $port~foundport false
 send "q"
 return
 
-:PORT~FOUNDPORT2
-gosub :PORT~PORTKILLINGTRIGGERS
-send "q"
-setvar $PORT~NOPORT 0
-:PORT~GETSELLING
-settextlinetrigger PORTFUELINFO :PORT~PORTFUELINFO2 "Fuel Ore   Selling"
-settextlinetrigger PORTORGINFO :PORT~PORTORGINFO2 "Organics   Selling"
-settextlinetrigger PORTEQUIPINFO :PORT~PORTEQUIPINFO2 "Equipment  Selling"
-settextlinetrigger GOTALLPORTINFO :PORT~GOTALLPORTINFO2 "<Computer deactivated>"
+:foundport
+killalltriggers
+setvar $port~foundport true
+setvar $port~noport 0
+settextlinetrigger portinfo1 :portinfo1 "Fuel Ore "
+settextlinetrigger portinfo2 :portinfo2 "Organics"
+settextlinetrigger portinfo3 :portinfo3 "Equipment"
+settexttrigger gotcr :gotcr "Computer command [TL="
 pause
 
-:PORT~PORTFUELINFO2
-getword CURRENTLINE $PORT~FUELSELLING 4
-settextlinetrigger PORTFUELINFO :PORT~PORTFUELINFO2 "Fuel Ore   Selling"
+:portinfo1
+getword currentline $port~orebuying 3
+getword currentline $port~oretrading 4
+getword currentline $port~orepercent 5
+striptext $port~orepercent "%"
 pause
 
-:PORT~PORTORGINFO2
-getword CURRENTLINE $PORT~ORGSELLING 3
-settextlinetrigger PORTORGINFO :PORT~PORTORGINFO2 "Organics   Selling"
+:portinfo2
+getword currentline $port~orgbuying 2
+getword currentline $port~orgtrading 3
+getword currentline $port~orgpercent 4
+striptext $port~orgpercent "%"
 pause
 
-:PORT~PORTEQUIPINFO2
-getword CURRENTLINE $PORT~EQUIPSELLING 3
-settextlinetrigger PORTEQUIPINFO :PORT~PORTEQUIPINFO2 "Equipment  Selling"
+:portinfo3
+getword currentline $port~equbuying 2
+getword currentline $port~equtrading 3
+getword currentline $port~equpercent 4
+striptext $port~equpercent "%"
 pause
 
-:PORT~GOTALLPORTINFO2
-killtrigger PORTFUELINFO
-killtrigger PORTORGINFO
-killtrigger PORTEQUIPINFO
-killtrigger GOTALLPORTINFO
-return
-
-:PORT~PORTKILLINGTRIGGERS
-killtrigger FOUNDPORT
-killtrigger NOPORT
-killtrigger NOPORT2
-killtrigger NOPORT3
-killtrigger NOPORT4
+:gotcr
+killalltriggers
+send "Q|"
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PORT~BUILDPORT
+:port~buildport
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 killalltriggers
-gosub :PLAYER~QUIKSTATS
-setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $PORT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
+gosub :player~quikstats
+setvar $bot~startinglocation $player~current_prompt
+setvar $port~startinglocation $player~current_prompt
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
 
-if ($PORT~STARTINGLOCATION = "Command")
-  send "** "
-  waiton "Warps to Sector(s)"
+if ($port~startinglocation = "Command")
+	send "** "
+	waiton "Warps to Sector(s)"
 else
-  send "q"
-  gosub :PLANET~GETPLANETINFO
-  send "m*** cs* "
-  gosub :PLAYER~QUIKSTATS
+	send "q"
+	gosub :planet~getplanetinfo
+	send "m*** cs* "
+	gosub :player~quikstats
 end
-if (PORT.EXISTS[$PLAYER~CURRENT_SECTOR] = TRUE)
-  setvar $SWITCHBOARD~MESSAGE "Already a port in sector!*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+if (port.exists[$player~current_sector] = true)
+	setvar $switchboard~message "Already a port in sector!*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-if (($BOT~USER_COMMAND_LINE = "") or ($BOT~USER_COMMAND_LINE = 0))
-  setvar $PORT~PORT_NAME "Mind ()ver Matter"
+if (($bot~user_command_line = "") or ($bot~user_command_line = 0))
+	setvar $port~port_name "Mind ()ver Matter"
 else
-  setvar $PORT~PORT_NAME $BOT~USER_COMMAND_LINE
+	setvar $port~port_name $bot~user_command_line
 end
 killalltriggers
 
-if ($PORT~STARTINGLOCATION = "Citadel")
-  if ($PLAYER~CREDITS < 50000)
-    send "T F 50000*"
-  end
+if ($port~startinglocation = "Citadel")
+	if ($player~credits < 50000)
+		send "T F 50000*"
+	end
 end
-gosub :PLAYER~QUIKSTATS
+gosub :player~quikstats
 
-if ($PLAYER~CREDITS < 50000)
-  setvar $SWITCHBOARD~MESSAGE "Not Enough Credits to Make Ports*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+if ($player~credits < 50000)
+	setvar $switchboard~message "Not Enough Credits to Make Ports*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-send "q q q z n * o3y" $PORT~PORT_NAME "*"
+send "q q q z n * o3y" $port~port_name "*"
 killtrigger 1
 killtrigger 2
-setvar $PORT~FAIL FALSE
-settextlinetrigger 1 :TOO_MANY "Sorry... All of the StarPort Licenses have been granted."
-settextlinetrigger 2 :BUILD_SUCCESS "For building this Starport, you receive"
+setvar $port~fail false
+settextlinetrigger 1 :too_many "Sorry... All of the StarPort Licenses have been granted."
+settextlinetrigger 2 :build_success "For building this Starport, you receive"
 pause
 
-:PORT~TOO_MANY
-setvar $SWITCHBOARD~MESSAGE "Too many ports in the universe!*"
-gosub :SWITCHBOARD~SWITCHBOARD
-setvar $PORT~FAIL TRUE
+:port~too_many
+setvar $switchboard~message "Too many ports in the universe!*"
+gosub :switchboard~switchboard
+setvar $port~fail true
 
-:PORT~BUILD_SUCCESS
-if ($PORT~FAIL = FALSE)
-  setvar $SWITCHBOARD~MESSAGE "Port successfully created!*"
-  gosub :SWITCHBOARD~SWITCHBOARD
+:port~build_success
+if ($port~fail = false)
+	setvar $switchboard~message "Port successfully created!*"
+	gosub :switchboard~switchboard
 end
 killtrigger 1
 killtrigger 2
-if ($PORT~STARTINGLOCATION = "Citadel")
-  send "l "&#8&$PLANET~PLANET&"*  c  s* "
+if ($port~startinglocation = "Citadel")
+	send "l "&#8&$planet~planet&"*  c  s* "
 end
 
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PORT~DESTROYPORT
+:port~destroyport
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-gosub :PLAYER~QUIKSTATS
-setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $PORT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
+gosub :player~quikstats
+setvar $bot~startinglocation $player~current_prompt
+setvar $port~startinglocation $player~current_prompt
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
 
-if ($PORT~STARTINGLOCATION = "Command")
-  send "** "
-  waiton "Warps to Sector(s)"
+if ($port~startinglocation = "Command")
+	send "** "
+	waiton "Warps to Sector(s)"
 else
-  if ($PLANET~PLANET = 0)
-    send "q"
-    gosub :PLANET~GETPLANETINFO
-    send "m*** cs* "
-    gosub :PLAYER~QUIKSTATS
-  end
+	if ($planet~planet = 0)
+		send "q"
+		gosub :planet~getplanetinfo
+		send "m*** cs* "
+		gosub :player~quikstats
+	end
 end
-if (PORT.EXISTS[$PLAYER~CURRENT_SECTOR] <> TRUE)
-  setvar $SWITCHBOARD~MESSAGE "No port in sector!*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+if (port.exists[$player~current_sector] <> true)
+	setvar $switchboard~message "No port in sector!*"
+	gosub :switchboard~switchboard
+	halt
 end
-gosub :SHIP~GETSHIPSTATS
+gosub :ship~getshipstats
 
-if (PORT.EXISTS[$PLAYER~CURRENT_SECTOR] = TRUE)
-  :PORT~KEEPDESTROYING
-  killtrigger 1
-  killtrigger 2
-  killtrigger 3
-  killtrigger 4
-  gosub :PLAYER~QUIKSTATS
-  if ($PLAYER~FIGHTERS >= $SHIP~SHIP_MAX_ATTACK)
-    if ($PORT~STARTINGLOCATION = "Citadel")
-      send "q q q * *  "
-    end
-    send "p"
-    settexttrigger 1 :PORTALREADYGONE "Captain! Are you sure you want to port here?"
-    settexttrigger 2 :CONTINUEDESTROY "<A> Attack this Port"
-    pause
-    :PORT~CONTINUEDESTROY
-    killtrigger 1
-    killtrigger 2
-    killtrigger 3
-    killtrigger 4
-    send " a y "&$SHIP~SHIP_MAX_ATTACK&"** "
-    if ($PORT~STARTINGLOCATION = "Citadel")
-      send "l "&$PLANET~PLANET&"* m * * * q "
-    end
-    settexttrigger 1 :KEEPDESTROYING "Incoming laser barrage from"
-    settexttrigger 2 :DONEDESTROYING "You destroyed the Star Port!"
-    pause
-    :PORT~DONEDESTROYING
-    :PORT~PORTALREADYGONE
-    send "*   "
-    if ($PORT~STARTINGLOCATION = "Citadel")
-      send "l "&$PLANET~PLANET&"* c s*  "
-    end
-    killtrigger 1
-    killtrigger 2
-    killtrigger 3
-    killtrigger 4
+if (port.exists[$player~current_sector] = true)
 
-    setvar $SWITCHBOARD~MESSAGE "Port Destroyed.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
+	:port~keepdestroying
+	killtrigger 1
+	killtrigger 2
+	killtrigger 3
+	killtrigger 4
+	gosub :player~quikstats
+	if ($player~fighters >= $ship~ship_max_attack)
+		if ($port~startinglocation = "Citadel")
+			send "q q q * *  "
+		end
+		send "p"
+		settexttrigger 1 :portalreadygone "Captain! Are you sure you want to port here?"
+		settexttrigger 2 :continuedestroy "<A> Attack this Port"
+		pause
 
-  else
-    setvar $SWITCHBOARD~MESSAGE "Not enough fighters.  Better reload before the you blow up this port.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
+		:port~continuedestroy
+		killtrigger 1
+		killtrigger 2
+		killtrigger 3
+		killtrigger 4
+		send " a y "&$ship~ship_max_attack&"** "
+		if ($port~startinglocation = "Citadel")
+			send "l "&$planet~planet&"* m * * * q "
+		end
+		settexttrigger 1 :keepdestroying "Incoming laser barrage from"
+		settexttrigger 2 :donedestroying "You destroyed the Star Port!"
+		pause
+
+		:port~donedestroying
+		:port~portalreadygone
+		send "*   "
+		if ($port~startinglocation = "Citadel")
+			send "l "&$planet~planet&"* c s*  "
+		end
+		killtrigger 1
+		killtrigger 2
+		killtrigger 3
+		killtrigger 4
+
+		setvar $switchboard~message "Port Destroyed.*"
+		gosub :switchboard~switchboard
+
+	else
+		setvar $switchboard~message "Not enough fighters.  Better reload before the you blow up this port.*"
+		gosub :switchboard~switchboard
+		halt
+	end
 end
 halt
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PORT~MAX
-:PORT~UPGRADEPORT
+:port~max
+:port~upgradeport
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 killalltriggers
-gosub :PLAYER~QUIKSTATS
-setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $PORT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
+gosub :player~quikstats
+setvar $bot~startinglocation $player~current_prompt
+setvar $port~startinglocation $player~current_prompt
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
 
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $PORT~POS " f "
-if ($PORT~POS > 0)
-  setvar $PORT~DOFUEL TRUE
+getwordpos " "&$bot~user_command_line&" " $port~pos " f "
+if ($port~pos > 0)
+	setvar $port~dofuel true
 end
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $PORT~POS " o "
-if ($PORT~POS > 0)
-  setvar $PORT~DOORG TRUE
+getwordpos " "&$bot~user_command_line&" " $port~pos " o "
+if ($port~pos > 0)
+	setvar $port~doorg true
 end
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $PORT~POS " e "
-if ($PORT~POS > 0)
-  setvar $PORT~DOEQU TRUE
+getwordpos " "&$bot~user_command_line&" " $port~pos " e "
+if ($port~pos > 0)
+	setvar $port~doequ true
 end
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $PORT~POS " noexp "
-if ($PORT~POS > 0)
-  setvar $PORT~NO_EXP TRUE
+getwordpos " "&$bot~user_command_line&" " $port~pos " noexp "
+if ($port~pos > 0)
+	setvar $port~no_exp true
 else
-  setvar $PORT~NO_EXP FALSE
+	setvar $port~no_exp false
 end
-if ($PORT~STARTINGLOCATION = "Command")
-  send "** "
-  waiton "Warps to Sector(s)"
+if ($port~startinglocation = "Command")
+	send "** "
+	waiton "Warps to Sector(s)"
 else
-  send "s* "
-  waiton "Warps to Sector(s)"
+	send "s* "
+	waiton "Warps to Sector(s)"
 end
-if (PORT.EXISTS[$PLAYER~CURRENT_SECTOR] <> TRUE)
-  setvar $SWITCHBOARD~MESSAGE "No port in sector!*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
-end
-
-if (($PORT~DOFUEL <> TRUE) and (($PORT~DOORG <> TRUE) and ($PORT~DOEQU <> TRUE)))
-  if (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = FALSE)
-    setvar $PORT~DOFUEL TRUE
-  end
-  if (PORT.BUYORG[$PLAYER~CURRENT_SECTOR] = TRUE)
-    setvar $PORT~DOORG TRUE
-  end
-  if (PORT.BUYEQUIP[$PLAYER~CURRENT_SECTOR] = TRUE)
-    setvar $PORT~DOEQU TRUE
-  end
+if (port.exists[$player~current_sector] <> true)
+	setvar $switchboard~message "No port in sector!*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-setvar $PORT~TOTAL_CREDS_NEEDED 0
-if (($PORT~STARTINGLOCATION = "Planet") or ($PORT~STARTINGLOCATION = "Citadel"))
-  if ($PORT~STARTINGLOCATION = "Citadel")
-    send "q"
-  end
-  gosub :PLANET~GETPLANETINFO
-  if ($PLANET~CITADEL > 0)
-    send "cs* "
-    waiton "<Enter Citadel>"
-    waiton "Warps to Sector(s)"
-    if (PORT.EXISTS[$PLAYER~CURRENT_SECTOR])
-      send "cr*q"
-      waiton "Fuel Ore"
-      getword CURRENTLINE $PORT~PORTFUEL 4
-      getword CURRENTLINE $PORT~PORTFUELPERCENT 5
-      striptext $PORT~PORTFUELPERCENT "%"
-      waiton "Organics"
-      getword CURRENTLINE $PORT~PORTORG 3
-      getword CURRENTLINE $PORT~PORTORGPERCENT 4
-      striptext $PORT~PORTORGPERCENT "%"
-      waiton "Equipment"
-      getword CURRENTLINE $PORT~PORTEQUIP 3
-      getword CURRENTLINE $PORT~PORTEQUIPPERCENT 4
-      striptext $PORT~PORTEQUIPPERCENT "%"
-      if ($PORT~PORTEQUIPPERCENT <= 0)
-        setvar $PORT~PORTEQUIPPERCENT 1
-      end
-      if ($PORT~PORTORGPERCENT <= 0)
-        setvar $PORT~PORTORGPERCENT 1
-      end
-      if ($PORT~PORTFUELPERCENT <= 0)
-        setvar $PORT~PORTFUELPERCENT 1
-      end
-      setvar $PORT~TOTALFUELUPGRADENEEDED ((($PORT~PORT_MAX - (($PORT~PORTFUEL * 100) / $PORT~PORTFUELPERCENT)) / 10) + 1)
-      setvar $PORT~TOTALORGUPGRADENEEDED ((($PORT~PORT_MAX - (($PORT~PORTORG * 100) / $PORT~PORTORGPERCENT)) / 10) + 1)
-      setvar $PORT~TOTALEQUIPUPGRADENEEDED ((($PORT~PORT_MAX - (($PORT~PORTEQUIP * 100) / $PORT~PORTEQUIPPERCENT)) / 10) + 1)
-      setvar $PORT~TOTAL_CREDS_NEEDED 0
-      if ($PORT~DOFUEL = "f")
-        add $PORT~TOTAL_CREDS_NEEDED (300 * $PORT~TOTALFUELUPGRADENEEDED)
-      elseif ($PORT~DOORG = "o")
-        add $PORT~TOTAL_CREDS_NEEDED (500 * $PORT~TOTALORGUPGRADENEEDED)
-      else
-        add $PORT~TOTAL_CREDS_NEEDED (1000 * $PORT~TOTALEQUIPUPGRADENEEDED)
-      end
-      if ($PORT~TOTAL_CREDS_NEEDED > $PLAYER~CREDITS)
-        setvar $PORT~CASHONHAND $PLANET~CITADEL_CREDITS
-        add $PORT~CASHONHAND $PLAYER~CREDITS
-        if ($PORT~CASHONHAND > $PORT~TOTAL_CREDS_NEEDED)
-          if ($PORT~STARTINGLOCATION = "Planet")
-            send "C"
-          end
-          send "T T "&$PLAYER~CREDITS&"* "
-          send "T F "&$PORT~TOTAL_CREDS_NEEDED&"* "
-          setvar $PLAYER~CREDITS $PORT~TOTAL_CREDS_NEEDED
-          setvar $SWITCHBOARD~MESSAGE "Withdrew funds from the Treasury to complete the port max*"
-          gosub :SWITCHBOARD~SWITCHBOARD
-        end
-      end
-    end
-    send "q q"
-  else
-    send "q"
-  end
+if (($port~dofuel <> true) and (($port~doorg <> true) and ($port~doequ <> true)))
+	if (port.buyfuel[$player~current_sector] = false)
+		setvar $port~dofuel true
+	end
+	if (port.buyorg[$player~current_sector] = true)
+		setvar $port~doorg true
+	end
+	if (port.buyequip[$player~current_sector] = true)
+		setvar $port~doequ true
+	end
 end
-setvar $PORT~WRONG FALSE
-if ($PORT~DOFUEL)
-  setvar $PORT~PRODUCT 1
-  setvar $PORT~NOEXPAMOUNT 9
-  gosub :DOMAXPORT
+
+setvar $port~total_creds_needed 0
+if (($port~startinglocation = "Planet") or ($port~startinglocation = "Citadel"))
+	if ($port~startinglocation = "Citadel")
+		send "q"
+	end
+	gosub :planet~getplanetinfo
+	if ($planet~citadel > 0)
+		send "cs* "
+		waiton "<Enter Citadel>"
+		waiton "Warps to Sector(s)"
+		if (port.exists[$player~current_sector])
+			send "cr*q"
+			waiton "Fuel Ore"
+			getword currentline $port~portfuel 4
+			getword currentline $port~portfuelpercent 5
+			striptext $port~portfuelpercent "%"
+			waiton "Organics"
+			getword currentline $port~portorg 3
+			getword currentline $port~portorgpercent 4
+			striptext $port~portorgpercent "%"
+			waiton "Equipment"
+			getword currentline $port~portequip 3
+			getword currentline $port~portequippercent 4
+			striptext $port~portequippercent "%"
+			if ($port~portequippercent <= 0)
+				setvar $port~portequippercent 1
+			end
+			if ($port~portorgpercent <= 0)
+				setvar $port~portorgpercent 1
+			end
+			if ($port~portfuelpercent <= 0)
+				setvar $port~portfuelpercent 1
+			end
+			setvar $port~totalfuelupgradeneeded ((($port~port_max - (($port~portfuel * 100) / $port~portfuelpercent)) / 10) + 1)
+			setvar $port~totalorgupgradeneeded ((($port~port_max - (($port~portorg * 100) / $port~portorgpercent)) / 10) + 1)
+			setvar $port~totalequipupgradeneeded ((($port~port_max - (($port~portequip * 100) / $port~portequippercent)) / 10) + 1)
+			setvar $port~total_creds_needed 0
+			if ($port~dofuel = "f")
+				add $port~total_creds_needed (300 * $port~totalfuelupgradeneeded)
+			elseif ($port~doorg = "o")
+				add $port~total_creds_needed (500 * $port~totalorgupgradeneeded)
+			else
+				add $port~total_creds_needed (1000 * $port~totalequipupgradeneeded)
+			end
+			if ($port~total_creds_needed > $player~credits)
+				setvar $port~cashonhand $planet~citadel_credits
+				add $port~cashonhand $player~credits
+				if ($port~cashonhand > $port~total_creds_needed)
+					if ($port~startinglocation = "Planet")
+						send "C"
+					end
+					send "T T "&$player~credits&"* "
+					send "T F "&$port~total_creds_needed&"* "
+					setvar $player~credits $port~total_creds_needed
+					setvar $switchboard~message "Withdrew funds from the Treasury to complete the port max*"
+					gosub :switchboard~switchboard
+				end
+			end
+		end
+		send "q q"
+	else
+		send "q"
+	end
 end
-if ($PORT~DOORG)
-  setvar $PORT~PRODUCT 2
-  setvar $PORT~NOEXPAMOUNT 4
-  gosub :DOMAXPORT
+setvar $port~wrong false
+if ($port~dofuel)
+	setvar $port~product 1
+	setvar $port~noexpamount 9
+	gosub :domaxport
 end
-if ($PORT~DOEQU)
-  setvar $PORT~PRODUCT 3
-  setvar $PORT~NOEXPAMOUNT 3
-  gosub :DOMAXPORT
+if ($port~doorg)
+	setvar $port~product 2
+	setvar $port~noexpamount 4
+	gosub :domaxport
 end
-if (($PORT~STARTINGLOCATION = "Citadel") or ($PORT~STARTINGLOCATION = "Planet"))
-  gosub :PLANET~LANDINGSUB
+if ($port~doequ)
+	setvar $port~product 3
+	setvar $port~noexpamount 3
+	gosub :domaxport
 end
-if ($PORT~WRONG)
-  setvar $SWITCHBOARD~MESSAGE "No valid port here.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
+if (($port~startinglocation = "Citadel") or ($port~startinglocation = "Planet"))
+	gosub :planet~landingsub
 end
-setvar $SWITCHBOARD~MESSAGE "Port upgrade complete.*"
-gosub :SWITCHBOARD~SWITCHBOARD
+if ($port~wrong)
+	setvar $switchboard~message "No valid port here.*"
+	gosub :switchboard~switchboard
+end
+setvar $switchboard~message "Port upgrade complete.*"
+gosub :switchboard~switchboard
 return
 
-:PORT~DOMAXPORT
-send "o z" $PORT~PRODUCT "z0* "
-settextlinetrigger NOREALPORTHERE :WRONGPORTTYPE "Do you want to initiate construction on this port?"
-settextlinetrigger CONSTRUCTION :WRONGPORTTYPE "Do you want instructions (Y/N)"
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:port~domaxport
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+send "o z" $port~product "z0* "
+settextlinetrigger norealporthere :wrongporttype "Do you want to initiate construction on this port?"
+settextlinetrigger construction :wrongporttype "Do you want instructions (Y/N)"
 waiton ", 0 to quit)"
 killalltriggers
-getword CURRENTLINE $PORT~UPGRADEAMOUNT 9
-striptext $PORT~UPGRADEAMOUNT "("
+getword currentline $port~upgradeamount 9
+striptext $port~upgradeamount "("
 send "o "
-if ($PORT~NO_EXP)
-  while ($PORT~UPGRADEAMOUNT > 0)
-    if ($PORT~UPGRADEAMOUNT > 3)
-      send $PORT~PRODUCT " " $PORT~NOEXPAMOUNT "* "
-      subtract $PORT~UPGRADEAMOUNT $PORT~NOEXPAMOUNT
-    else
-      send $PORT~PRODUCT " " $PORT~UPGRADEAMOUNT "* "
-      subtract $PORT~UPGRADEAMOUNT $PORT~UPGRADEAMOUNT
-    end
-  end
-  send "* * "
+if ($port~no_exp)
+	while ($port~upgradeamount > 0)
+		if ($port~upgradeamount > 3)
+			send $port~product " " $port~noexpamount "* "
+			subtract $port~upgradeamount $port~noexpamount
+		else
+			send $port~product " " $port~upgradeamount "* "
+			subtract $port~upgradeamount $port~upgradeamount
+		end
+	end
+	send "* * "
 else
-  send $PORT~PRODUCT " " $PORT~UPGRADEAMOUNT "* * "
+	send $port~product " " $port~upgradeamount "* * "
 end
 send "CR*Q"
 waiton "<Computer deactivated>"
 
-:PORT~DONEMAXPORT
+:port~donemaxport
 killalltriggers
 return
 
-:PORT~WRONGPORTTYPE
-setvar $PORT~WRONG TRUE
-goto :DONEMAXPORT
+:port~wrongporttype
+setvar $port~wrong true
+goto :donemaxport
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PORT~SHIPSELL
+:port~shipsell
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if ($PLAYER~CURRENT_SECTOR <> STARDOCK)
-  setvar $SWITCHBOARD~MESSAGE "Must be at StarDock, Ported or in Sector!*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+if ($player~current_sector <> stardock)
+	setvar $switchboard~message "Must be at StarDock, Ported or in Sector!*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-setvar $PORT~I 0
-setvar $PORT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-striptext $PORT~STARTINGLOCATION ">"
-striptext $PORT~STARTINGLOCATION "<"
-if (($PORT~STARTINGLOCATION <> "Command") and (($PORT~STARTINGLOCATION <> "StarDock") and ($PORT~STARTINGLOCATION <> "Shipyards")))
-  setvar $SWITCHBOARD~MESSAGE "Ship Sell must be run from Command, Stardock or Shipyard prompt.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+setvar $port~i 0
+setvar $port~startinglocation $player~current_prompt
+striptext $port~startinglocation ">"
+striptext $port~startinglocation "<"
+if (($port~startinglocation <> "Command") and (($port~startinglocation <> "StarDock") and ($port~startinglocation <> "Shipyards")))
+	setvar $switchboard~message "Ship Sell must be run from Command, Stardock or Shipyard prompt.*"
+	gosub :switchboard~switchboard
+	halt
 end
-if ($PORT~STARTINGLOCATION = "Command")
-  send "p ss ys *"
-elseif ($PORT~STARTINGLOCATION = "StarDock")
-  send "s"
-elseif ($PORT~STARTINGLOCATION = "Shipyard")
-  goto :STARTSHIPSELL
+if ($port~startinglocation = "Command")
+	send "p ss ys *"
+elseif ($port~startinglocation = "StarDock")
+	send "s"
+elseif ($port~startinglocation = "Shipyard")
+	goto :startshipsell
 end
 
-:PORT~STARTSHIPSELL
-setvar $PORT~CASH $PLAYER~CREDITS
-setvar $PORT~INC 0
+:port~startshipsell
+setvar $port~cash $player~credits
+setvar $port~inc 0
 send "|S|"
 waitfor "-------------------------------------------"
-settextlinetrigger NOSHIP :SHIPSELLDONE "You do not own any other ships orbiting the Stardock!"
-settexttrigger DONE :DONE "Choose which ship to sell (Q=Quit)"
-settextlinetrigger LINE :LINE
+settextlinetrigger noship :shipselldone "You do not own any other ships orbiting the Stardock!"
+settexttrigger done :done "Choose which ship to sell (Q=Quit)"
+settextlinetrigger line :line
 pause
 
-:PORT~LINE
-getword CURRENTLINE $PORT~I 1
-isnumber $PORT~TST $PORT~I
-if ($PORT~TST)
-  if ($PORT~I <> 0)
-    add $PORT~INC 1
-    setvar $PORT~SELLING[$PORT~INC] $PORT~I
-  end
+:port~line
+getword currentline $port~i 1
+isnumber $port~tst $port~i
+if ($port~tst)
+	if ($port~i <> 0)
+		add $port~inc 1
+		setvar $port~selling[$port~inc] $port~i
+	end
 end
-settextlinetrigger LINE :LINE
+settextlinetrigger line :line
 pause
 
-:PORT~DONE
+:port~done
 killalltriggers
 send "  Q  "
-setvar $PORT~I 1
-if ($PORT~INC <> 0)
-  while ($PORT~I <= $PORT~INC)
-    send " S  "&$PORT~SELLING[$PORT~I]&"* Y  "
-    waiton "You have "
-    add $PORT~I 1
-  end
+setvar $port~i 1
+if ($port~inc <> 0)
+	while ($port~i <= $port~inc)
+		send " S  "&$port~selling[$port~i]&"* Y  "
+		waiton "You have "
+		add $port~i 1
+	end
 end
 
-:PORT~SHIPSELLDONE
+:port~shipselldone
 killalltriggers
-if ($PORT~INC > 0)
-  gosub :PLAYER~QUIKSTATS
-  setvar $PORT~CASHAMOUNT ($PLAYER~CREDITS - $PORT~CASH)
-  gosub :COMMASIZE
-  setvar $SWITCHBOARD~MESSAGE "You sold "&$PORT~INC&" ships. You made $"&$PORT~CASHAMOUNT&" credits.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
+if ($port~inc > 0)
+	gosub :player~quikstats
+	setvar $port~cashamount ($player~credits - $port~cash)
+	gosub :commasize
+	setvar $switchboard~message "You sold "&$port~inc&" ships. You made $"&$port~cashamount&" credits.*"
+	gosub :switchboard~switchboard
 
-elseif ($PORT~INC < 1)
-  setvar $SWITCHBOARD~MESSAGE " No Ships to Sell.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
+elseif ($port~inc < 1)
+	setvar $switchboard~message " No Ships to Sell.*"
+	gosub :switchboard~switchboard
 end
 return
 
-:PORT~COMMASIZE
-if ($PORT~CASHAMOUNT < 1000)
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:port~commasize
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($port~cashamount < 1000)
 
-elseif ($PORT~CASHAMOUNT < 1000000)
-  getlength $PORT~CASHAMOUNT $PORT~LEN
-  setvar $PORT~LEN ($PORT~LEN - 3)
-  cuttext $PORT~CASHAMOUNT $PORT~TMP 1 $PORT~LEN
-  cuttext $PORT~CASHAMOUNT $PORT~TMP1 ($PORT~LEN + 1) 999
-  setvar $PORT~TMP $PORT~TMP&","&$PORT~TMP1
-  setvar $PORT~CASHAMOUNT $PORT~TMP
-elseif ($PORT~CASHAMOUNT <= 999999999)
-  getlength $PORT~CASHAMOUNT $PORT~LEN
-  setvar $PORT~LEN ($PORT~LEN - 6)
-  cuttext $PORT~CASHAMOUNT $PORT~TMP 1 $PORT~LEN
-  setvar $PORT~TMP $PORT~TMP&","
-  cuttext $PORT~CASHAMOUNT $PORT~TMP1 ($PORT~LEN + 1) 3
-  setvar $PORT~TMP $PORT~TMP&$PORT~TMP1&","
-  cuttext $PORT~CASHAMOUNT $PORT~TMP1 ($PORT~LEN + 4) 999
-  setvar $PORT~TMP $PORT~TMP&$PORT~TMP1
-  setvar $PORT~CASHAMOUNT $PORT~TMP
+elseif ($port~cashamount < 1000000)
+	getlength $port~cashamount $port~len
+	setvar $port~len ($port~len - 3)
+	cuttext $port~cashamount $port~tmp 1 $port~len
+	cuttext $port~cashamount $port~tmp1 ($port~len + 1) 999
+	setvar $port~tmp $port~tmp&","&$port~tmp1
+	setvar $port~cashamount $port~tmp
+elseif ($port~cashamount <= 999999999)
+	getlength $port~cashamount $port~len
+	setvar $port~len ($port~len - 6)
+	cuttext $port~cashamount $port~tmp 1 $port~len
+	setvar $port~tmp $port~tmp&","
+	cuttext $port~cashamount $port~tmp1 ($port~len + 1) 3
+	setvar $port~tmp $port~tmp&$port~tmp1&","
+	cuttext $port~cashamount $port~tmp1 ($port~len + 4) 999
+	setvar $port~tmp $port~tmp&$port~tmp1
+	setvar $port~cashamount $port~tmp
 end
 return
 

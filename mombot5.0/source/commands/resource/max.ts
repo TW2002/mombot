@@ -1,174 +1,169 @@
-
 logging "OFF"
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
+setvar $help~help[1] $help~tab&"Upgrades a port product as much as possible.  "
+setvar $help~help[2] $help~tab&"         "
+setvar $help~help[3] $help~tab&"Options: "
+setvar $help~help[4] $help~tab&"{noexp} - Upgrades port without experience increase."
+gosub :help~helpfile
 
-setvar $HELP~HELP[1] $HELP~TAB&"Upgrades a port product as much as possible.  "
-setvar $HELP~HELP[2] $HELP~TAB&"         "
-setvar $HELP~HELP[3] $HELP~TAB&"Options: "
-setvar $HELP~HELP[4] $HELP~TAB&"{noexp} - Upgrades port without experience increase."
-gosub :HELP~HELPFILE
-:MAXPORT
-:MAX
-
-
-
-
+:maxport
+:max
 killalltriggers
-gosub :PLAYER~QUIKSTATS
-setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $BOT~VALIDPROMPTS "Citadel Command Planet"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-if (($BOT~PARM1 <> "f") and (($BOT~PARM1 <> "o") and ($BOT~PARM1 <> "e")))
-  setvar $switchboard~message "maxport [f / o / e] noexp*"
-  gosub :switchboard~switchboard
-  halt
+gosub :player~quikstats
+setvar $bot~startinglocation $player~current_prompt
+setvar $startinglocation $player~current_prompt
+setvar $bot~validprompts "Citadel Command Planet"
+gosub :player~checkstartingprompt
+if (($bot~parm1 <> "f") and (($bot~parm1 <> "o") and ($bot~parm1 <> "e")))
+	setvar $switchboard~message "maxport [f / o / e] noexp*"
+	gosub :switchboard~switchboard
+	halt
 end
 
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $POS " f "
-if ($POS > 0)
-  setvar $DOFUEL TRUE
+getwordpos " "&$bot~user_command_line&" " $pos " f "
+if ($pos > 0)
+	setvar $dofuel true
 end
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $POS " o "
-if ($POS > 0)
-  setvar $DOORG TRUE
+getwordpos " "&$bot~user_command_line&" " $pos " o "
+if ($pos > 0)
+	setvar $doorg true
 end
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $POS " e "
-if ($POS > 0)
-  setvar $DOEQU TRUE
+getwordpos " "&$bot~user_command_line&" " $pos " e "
+if ($pos > 0)
+	setvar $doequ true
 end
-getwordpos " "&$BOT~USER_COMMAND_LINE&" " $POS " noexp "
-if ($POS > 0)
-  setvar $NO_EXP TRUE
+getwordpos " "&$bot~user_command_line&" " $pos " noexp "
+if ($pos > 0)
+	setvar $no_exp true
 else
-  setvar $NO_EXP FALSE
+	setvar $no_exp false
 end
-setvar $TOTAL_CREDS_NEEDED 0
-if (($STARTINGLOCATION = "Planet") or ($STARTINGLOCATION = "Citadel"))
-  if ($STARTINGLOCATION = "Citadel")
-    send "q"
-  end
-  gosub :PLANET~GETPLANETINFO
-  if ($PLANET~CITADEL > 0)
-    send "cs* "
-    waiton "<Enter Citadel>"
-    waiton "Warps to Sector(s)"
-    if (PORT.EXISTS[$PLAYER~CURRENT_SECTOR])
-      send "cr*q"
-      waiton "Fuel Ore"
-      getword CURRENTLINE $PORTFUEL 4
-      getword CURRENTLINE $PORTFUELPERCENT 5
-      striptext $PORTFUELPERCENT "%"
-      waiton "Organics"
-      getword CURRENTLINE $PORTORG 3
-      getword CURRENTLINE $PORTORGPERCENT 4
-      striptext $PORTORGPERCENT "%"
-      waiton "Equipment"
-      getword CURRENTLINE $PORTEQUIP 3
-      getword CURRENTLINE $PORTEQUIPPERCENT 4
-      striptext $PORTEQUIPPERCENT "%"
-      if ($PORTEQUIPPERCENT <= 0)
-        setvar $PORTEQUIPPERCENT 1
-      end
-      if ($PORTORGPERCENT <= 0)
-        setvar $PORTORGPERCENT 1
-      end
-      if ($PORTFUELPERCENT <= 0)
-        setvar $PORTFUELPERCENT 1
-      end
-      setvar $TOTALFUELUPGRADENEEDED ((($PORT_MAX - (($PORTFUEL * 100) / $PORTFUELPERCENT)) / 10) + 1)
-      setvar $TOTALORGUPGRADENEEDED ((($PORT_MAX - (($PORTORG * 100) / $PORTORGPERCENT)) / 10) + 1)
-      setvar $TOTALEQUIPUPGRADENEEDED ((($PORT_MAX - (($PORTEQUIP * 100) / $PORTEQUIPPERCENT)) / 10) + 1)
-      setvar $TOTAL_CREDS_NEEDED 0
-      if ($DOFUEL = "f")
-        add $TOTAL_CREDS_NEEDED (300 * $TOTALFUELUPGRADENEEDED)
-      elseif ($DOORG = "o")
-        add $TOTAL_CREDS_NEEDED (500 * $TOTALORGUPGRADENEEDED)
-      else
-        add $TOTAL_CREDS_NEEDED (1000 * $TOTALEQUIPUPGRADENEEDED)
-      end
-      if ($TOTAL_CREDS_NEEDED > $PLAYER~CREDITS)
-        setvar $CASHONHAND $PLANET~CITADEL_CREDITS
-        add $CASHONHAND $PLAYER~CREDITS
-        if ($CASHONHAND > $TOTAL_CREDS_NEEDED)
-          if ($STARTINGLOCATION = "Planet")
-            send "C"
-          end
-          send "T T "&$PLAYER~CREDITS&"* "
-          send "T F "&$TOTAL_CREDS_NEEDED&"* "
-          setvar $PLAYER~CREDITS $TOTAL_CREDS_NEEDED
-          setvar $switchboard~message "Withdrew funds from the Treasury to complete the port max*"
-          gosub :switchboard~switchboard
-        end
-      end
-    end
-    send "q q"
-  else
-    send "q"
-  end
+setvar $total_creds_needed 0
+if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+	if ($startinglocation = "Citadel")
+		send "q"
+	end
+	gosub :planet~getplanetinfo
+	if ($planet~citadel > 0)
+		send "cs* "
+		waiton "<Enter Citadel>"
+		waiton "Warps to Sector(s)"
+		if (port.exists[$player~current_sector])
+			send "cr*q"
+			waiton "Fuel Ore"
+			getword currentline $portfuel 4
+			getword currentline $portfuelpercent 5
+			striptext $portfuelpercent "%"
+			waiton "Organics"
+			getword currentline $portorg 3
+			getword currentline $portorgpercent 4
+			striptext $portorgpercent "%"
+			waiton "Equipment"
+			getword currentline $portequip 3
+			getword currentline $portequippercent 4
+			striptext $portequippercent "%"
+			if ($portequippercent <= 0)
+				setvar $portequippercent 1
+			end
+			if ($portorgpercent <= 0)
+				setvar $portorgpercent 1
+			end
+			if ($portfuelpercent <= 0)
+				setvar $portfuelpercent 1
+			end
+			setvar $totalfuelupgradeneeded ((($port_max - (($portfuel * 100) / $portfuelpercent)) / 10) + 1)
+			setvar $totalorgupgradeneeded ((($port_max - (($portorg * 100) / $portorgpercent)) / 10) + 1)
+			setvar $totalequipupgradeneeded ((($port_max - (($portequip * 100) / $portequippercent)) / 10) + 1)
+			setvar $total_creds_needed 0
+			if ($dofuel = "f")
+				add $total_creds_needed (300 * $totalfuelupgradeneeded)
+			elseif ($doorg = "o")
+				add $total_creds_needed (500 * $totalorgupgradeneeded)
+			else
+				add $total_creds_needed (1000 * $totalequipupgradeneeded)
+			end
+			if ($total_creds_needed > $player~credits)
+				setvar $cashonhand $planet~citadel_credits
+				add $cashonhand $player~credits
+				if ($cashonhand > $total_creds_needed)
+					if ($startinglocation = "Planet")
+						send "C"
+					end
+					send "T T "&$player~credits&"* "
+					send "T F "&$total_creds_needed&"* "
+					setvar $player~credits $total_creds_needed
+					setvar $switchboard~message "Withdrew funds from the Treasury to complete the port max*"
+					gosub :switchboard~switchboard
+				end
+			end
+		end
+		send "q q"
+	else
+		send "q"
+	end
 end
-setvar $WRONG FALSE
-if ($DOFUEL)
-  setvar $PRODUCT 1
-  setvar $NOEXPAMOUNT 9
-  gosub :DOMAXPORT
+setvar $wrong false
+if ($dofuel)
+	setvar $product 1
+	setvar $noexpamount 9
+	gosub :domaxport
 end
-if ($DOORG)
-  setvar $PRODUCT 2
-  setvar $NOEXPAMOUNT 4
-  gosub :DOMAXPORT
+if ($doorg)
+	setvar $product 2
+	setvar $noexpamount 4
+	gosub :domaxport
 end
-if ($DOEQU)
-  setvar $PRODUCT 3
-  setvar $NOEXPAMOUNT 3
-  gosub :DOMAXPORT
+if ($doequ)
+	setvar $product 3
+	setvar $noexpamount 3
+	gosub :domaxport
 end
-if (($STARTINGLOCATION = "Citadel") or ($STARTINGLOCATION = "Planet"))
-  gosub :PLANET~LANDINGSUB
+if (($startinglocation = "Citadel") or ($startinglocation = "Planet"))
+	gosub :planet~landingsub
 end
-if ($WRONG)
-  setvar $switchboard~message "No valid port here.*"
-  gosub :switchboard~switchboard
+if ($wrong)
+	setvar $switchboard~message "No valid port here.*"
+	gosub :switchboard~switchboard
 end
 setvar $switchboard~message "Port upgrade complete.*"
 gosub :switchboard~switchboard
 halt
-:DOMAXPORT
 
-send "o z" $PRODUCT "z0* "
-settextlinetrigger NOREALPORTHERE :WRONGPORTTYPE "Do you want to initiate construction on this port?"
-settextlinetrigger CONSTRUCTION :WRONGPORTTYPE "Do you want instructions (Y/N)"
+:domaxport
+send "o z" $product "z0* "
+settextlinetrigger norealporthere :wrongporttype "Do you want to initiate construction on this port?"
+settextlinetrigger construction :wrongporttype "Do you want instructions (Y/N)"
 waiton ", 0 to quit)"
 killalltriggers
-getword CURRENTLINE $UPGRADEAMOUNT 9
-striptext $UPGRADEAMOUNT "("
+getword currentline $upgradeamount 9
+striptext $upgradeamount "("
 send "o "
-if ($NO_EXP)
-  while ($UPGRADEAMOUNT > 0)
-    if ($UPGRADEAMOUNT > 3)
-      send $PRODUCT " " $NOEXPAMOUNT "* "
-      subtract $UPGRADEAMOUNT $NOEXPAMOUNT
-    else
-      send $PRODUCT " " $UPGRADEAMOUNT "* "
-      subtract $UPGRADEAMOUNT $UPGRADEAMOUNT
-    end
-  end
-  send "* * "
+if ($no_exp)
+	while ($upgradeamount > 0)
+		if ($upgradeamount > 3)
+			send $product " " $noexpamount "* "
+			subtract $upgradeamount $noexpamount
+		else
+			send $product " " $upgradeamount "* "
+			subtract $upgradeamount $upgradeamount
+		end
+	end
+	send "* * "
 else
-  send $PRODUCT " " $UPGRADEAMOUNT "* * "
+	send $product " " $upgradeamount "* * "
 end
 send "CR*Q"
 waiton "<Computer deactivated>"
-:DONEMAXPORT
+
+:donemaxport
 killalltriggers
 return
-:WRONGPORTTYPE
 
-
-setvar $WRONG TRUE
-goto :DONEMAXPORT
+:wrongporttype
+setvar $wrong true
+goto :donemaxport
 
 # includes:
 include "source\include\planet"

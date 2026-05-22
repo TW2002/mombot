@@ -1,440 +1,461 @@
 systemscript
-    loadVar $switchboard~bot_name
-    loadVar $bot~user_command_line
-    loadVar $bot~parm1
-    loadVar $bot~parm2
-    loadVar $bot~parm3
-    loadvar $self_command
-    loadVar $MAP~stardock
-    loadVar $MAP~backdoor
-    loadVar $MAP~rylos
-    loadVar $MAP~alpha_centauri
-    loadVar $PLAYER~unlimitedGame
-    loadVar $PLAYER~CREDITS
-    loadVar $PLAYER~FIGHTERS
-    loadVar $PLAYER~SHIELDS
-    loadVar $player~total_holds
-    loadVar $player~ore_holds
-    loadVar $player~organic_holds
-    loadVar $player~equipment_holds
-    loadVar $player~colonist_holds
-    loadVar $PLAYER~PHOTONS
-    loadVar $PLAYER~ARMIDS
-    loadVar $PLAYER~LIMPETS
-    loadVar $PLAYER~GENESIS
-    loadVar $PLAYER~TWARP_TYPE
-    loadVar $PLAYER~CLOAKS
-    loadVar $PLAYER~BEACONS
-    loadVar $PLAYER~ATOMIC
-    loadVar $PLAYER~CORBO
-    loadVar $PLAYER~EPROBES
-    loadVar $PLAYER~MINE_DISRUPTORS
-    loadVar $PLAYER~PSYCHIC_PROBE
-    loadVar $PLAYER~PLANET_SCANNER
-    loadVar $PLAYER~SCAN_TYPE
-    loadVar $PLAYER~ALIGNMENT
-    loadVar $PLAYER~EXPERIENCE
-    loadVar $PLAYER~SHIP_NUMBER
-    loadVar $PLAYER~TRADER_NAME
+loadvar $switchboard~bot_name
+loadvar $bot~user_command_line
+loadvar $bot~parm1
+loadvar $bot~parm2
+loadvar $bot~parm3
+loadvar $self_command
+loadvar $map~stardock
+loadvar $map~backdoor
+loadvar $map~rylos
+loadvar $map~alpha_centauri
+loadvar $player~unlimitedgame
+loadvar $player~credits
+loadvar $player~fighters
+loadvar $player~shields
+loadvar $player~total_holds
+loadvar $player~ore_holds
+loadvar $player~organic_holds
+loadvar $player~equipment_holds
+loadvar $player~colonist_holds
+loadvar $player~photons
+loadvar $player~armids
+loadvar $player~limpets
+loadvar $player~genesis
+loadvar $player~twarp_type
+loadvar $player~cloaks
+loadvar $player~beacons
+loadvar $player~atomic
+loadvar $player~corbo
+loadvar $player~eprobes
+loadvar $player~mine_disruptors
+loadvar $player~psychic_probe
+loadvar $player~planet_scanner
+loadvar $player~scan_type
+loadvar $player~alignment
+loadvar $player~experience
+loadvar $player~ship_number
+loadvar $player~trader_name
 
- loadvar $SWITCHBOARD~bot_name 
+loadvar $switchboard~bot_name
 
-window COMS 280 650 "Stats" ONTOP
+window coms 280 650 "Stats" ontop
 gosub :update_window
 
-gosub :targeting~initializetargeting 
+gosub :targeting~initializetargeting
 
 :start_over
-    setVar $player~current_prompt      "Undefined"
-    killtrigger noprompt
-    killtrigger prompt
-    killtrigger statlinetrig
-    killtrigger getLine2
-    killtrigger playerinfo
-    killtrigger getshipoffense
-    killtrigger getshipfighters
-    killtrigger getshipmines
-    setTextLineTrigger  prompt      :allPrompts     #145 & #8
-    setTextLineTrigger  statlinetrig    :statStart      #179
-    setTextLineTrigger  playerinfo :playerinfo  "<Info>"
-    setTextLineTrigger  getshipoffense      :shipoffenseodds    "Offensive Odds: "
-    setTextLineTrigger  getshipfighters     :shipmaxfigsperattack   " TransWarp Drive:   "
-    setTextLineTrigger  getshipmines        :shipmaxmines       " Mine Max:  "
+setvar $player~current_prompt      "Undefined"
+killtrigger noprompt
+killtrigger prompt
+killtrigger statlinetrig
+killtrigger getline2
+killtrigger playerinfo
+killtrigger getshipoffense
+killtrigger getshipfighters
+killtrigger getshipmines
+settextlinetrigger  prompt      :allprompts     #145 & #8
+settextlinetrigger  statlinetrig    :statstart      #179
+settextlinetrigger  playerinfo :playerinfo  "<Info>"
+settextlinetrigger  getshipoffense      :shipoffenseodds    "Offensive Odds: "
+settextlinetrigger  getshipfighters     :shipmaxfigsperattack   " TransWarp Drive:   "
+settextlinetrigger  getshipmines        :shipmaxmines       " Mine Max:  "
 
-    pause
-    :allPrompts
-        getWord CURRENTLINE $player~current_prompt 1
-        setVar $player~full_current_prompt CURRENTLINE
-        stripText $player~full_current_prompt #145
-        stripText $player~full_current_prompt #8
-        stripText $player~current_prompt #145
-        stripText $player~current_prompt #8
-        setTextLineTrigger  prompt      :allPrompts     #145 & #8
-        pause
-    :statStart
-        killtrigger prompt
-        setVar $stats ""
-        setVar $wordy ""
-    :statsline
-        killtrigger statlinetrig
-        killtrigger getLine2
-        setVar $line2 CURRENTLINE
-        replacetext $line2 #179 " "
-        striptext $line2 ","
-        setVar $stats $stats & $line2
-        getWordPos $line2 $pos "Ship"
-        if ($pos > 0)
-            goto :gotStats
-        else
-            setTextLineTrigger getLine2 :statsline
-            pause
-        end
-    :gotStats
-        setVar $stats $stats & " @@@"
-        setVar $current_word 0
-        while ($wordy <> "@@@")
-            if ($wordy = "Sect")
-                getWord $stats $PLAYER~CURRENT_SECTOR      ($current_word + 1)
-            elseif ($wordy = "Turns")
-                getWord $stats $PLAYER~TURNS           ($current_word + 1)
-            elseif ($wordy = "Creds")
-                getWord $stats $PLAYER~CREDITS         ($current_word + 1)
-            elseif ($wordy = "Figs")
-                getWord $stats $PLAYER~FIGHTERS        ($current_word + 1)
-            elseif ($wordy = "Shlds")
-                getWord $stats $PLAYER~SHIELDS         ($current_word + 1)
-            elseif ($wordy = "Hlds")
-                getWord $stats $player~total_holds         ($current_word + 1)
-            elseif ($wordy = "Ore")
-                getWord $stats $player~ore_holds           ($current_word + 1)
-            elseif ($wordy = "Org")
-                getWord $stats $player~organic_holds       ($current_word + 1)
-            elseif ($wordy = "Equ")
-                getWord $stats $player~equipment_holds     ($current_word + 1)
-            elseif ($wordy = "Col")
-                getWord $stats $player~colonist_holds      ($current_word + 1)
-            elseif ($wordy = "Phot")
-                getWord $stats $PLAYER~PHOTONS         ($current_word + 1)
-            elseif ($wordy = "Armd")
-                getWord $stats $PLAYER~ARMIDS          ($current_word + 1)
-            elseif ($wordy = "Lmpt")
-                getWord $stats $PLAYER~LIMPETS         ($current_word + 1)
-            elseif ($wordy = "GTorp")
-                getWord $stats $PLAYER~GENESIS         ($current_word + 1)
-            elseif ($wordy = "TWarp")
-                getWord $stats $PLAYER~TWARP_TYPE          ($current_word + 1)
-            elseif ($wordy = "Clks")
-                getWord $stats $PLAYER~CLOAKS          ($current_word + 1)
-            elseif ($wordy = "Beacns")
-                getWord $stats $PLAYER~BEACONS         ($current_word + 1)
-            elseif ($wordy = "AtmDt")
-                getWord $stats $PLAYER~ATOMIC          ($current_word + 1)
-            elseif ($wordy = "Corbo")
-                getWord $stats $PLAYER~CORBO           ($current_word + 1)
-            elseif ($wordy = "EPrb")
-                getWord $stats $PLAYER~EPROBES         ($current_word + 1)
-            elseif ($wordy = "MDis")
-                getWord $stats $PLAYER~MINE_DISRUPTORS     ($current_word + 1)
-            elseif ($wordy = "PsPrb")
-                getWord $stats $PLAYER~PSYCHIC_PROBE       ($current_word + 1)
-            elseif ($wordy = "PlScn")
-                getWord $stats $PLAYER~PLANET_SCANNER      ($current_word + 1)
-            elseif ($wordy = "LRS")
-                getWord $stats $PLAYER~SCAN_TYPE           ($current_word + 1)
-            elseif ($wordy = "Aln")
-                getWord $stats $PLAYER~ALIGNMENT           ($current_word + 1)
-            elseif ($wordy = "Exp")
-                getWord $stats $PLAYER~EXPERIENCE          ($current_word + 1)
-            elseif ($wordy = "Corp")
-                getWord $stats $PLAYER~CORP            ($current_word + 1)
-            elseif ($wordy = "Ship")
-                getWord $stats $PLAYER~SHIP_NUMBER         ($current_word + 1)
-            end
-            add $current_word 1
-            getWord $stats $wordy $current_word
-        end
-    :doneQuikstats
-    killtrigger statlinetrig
-    killtrigger getLine2
-    gosub :update_window
+pause
+
+:allprompts
+getword currentline $player~current_prompt 1
+setvar $player~full_current_prompt currentline
+striptext $player~full_current_prompt #145
+striptext $player~full_current_prompt #8
+striptext $player~current_prompt #145
+striptext $player~current_prompt #8
+settextlinetrigger  prompt      :allprompts     #145 & #8
+pause
+
+:statstart
+killtrigger prompt
+setvar $stats ""
+setvar $wordy ""
+
+:statsline
+killtrigger statlinetrig
+killtrigger getline2
+setvar $line2 currentline
+replacetext $line2 #179 " "
+striptext $line2 ","
+setvar $stats $stats & $line2
+getwordpos $line2 $pos "Ship"
+if ($pos > 0)
+	goto :gotstats
+else
+	settextlinetrigger getline2 :statsline
+	pause
+end
+
+:gotstats
+setvar $stats $stats & " @@@"
+setvar $current_word 0
+while ($wordy <> "@@@")
+	if ($wordy = "Sect")
+		getword $stats $player~current_sector      ($current_word + 1)
+	elseif ($wordy = "Turns")
+		getword $stats $player~turns           ($current_word + 1)
+	elseif ($wordy = "Creds")
+		getword $stats $player~credits         ($current_word + 1)
+	elseif ($wordy = "Figs")
+		getword $stats $player~fighters        ($current_word + 1)
+	elseif ($wordy = "Shlds")
+		getword $stats $player~shields         ($current_word + 1)
+	elseif ($wordy = "Hlds")
+		getword $stats $player~total_holds         ($current_word + 1)
+	elseif ($wordy = "Ore")
+		getword $stats $player~ore_holds           ($current_word + 1)
+	elseif ($wordy = "Org")
+		getword $stats $player~organic_holds       ($current_word + 1)
+	elseif ($wordy = "Equ")
+		getword $stats $player~equipment_holds     ($current_word + 1)
+	elseif ($wordy = "Col")
+		getword $stats $player~colonist_holds      ($current_word + 1)
+	elseif ($wordy = "Phot")
+		getword $stats $player~photons         ($current_word + 1)
+	elseif ($wordy = "Armd")
+		getword $stats $player~armids          ($current_word + 1)
+	elseif ($wordy = "Lmpt")
+		getword $stats $player~limpets         ($current_word + 1)
+	elseif ($wordy = "GTorp")
+		getword $stats $player~genesis         ($current_word + 1)
+	elseif ($wordy = "TWarp")
+		getword $stats $player~twarp_type          ($current_word + 1)
+	elseif ($wordy = "Clks")
+		getword $stats $player~cloaks          ($current_word + 1)
+	elseif ($wordy = "Beacns")
+		getword $stats $player~beacons         ($current_word + 1)
+	elseif ($wordy = "AtmDt")
+		getword $stats $player~atomic          ($current_word + 1)
+	elseif ($wordy = "Corbo")
+		getword $stats $player~corbo           ($current_word + 1)
+	elseif ($wordy = "EPrb")
+		getword $stats $player~eprobes         ($current_word + 1)
+	elseif ($wordy = "MDis")
+		getword $stats $player~mine_disruptors     ($current_word + 1)
+	elseif ($wordy = "PsPrb")
+		getword $stats $player~psychic_probe       ($current_word + 1)
+	elseif ($wordy = "PlScn")
+		getword $stats $player~planet_scanner      ($current_word + 1)
+	elseif ($wordy = "LRS")
+		getword $stats $player~scan_type           ($current_word + 1)
+	elseif ($wordy = "Aln")
+		getword $stats $player~alignment           ($current_word + 1)
+	elseif ($wordy = "Exp")
+		getword $stats $player~experience          ($current_word + 1)
+	elseif ($wordy = "Corp")
+		getword $stats $player~corp            ($current_word + 1)
+	elseif ($wordy = "Ship")
+		getword $stats $player~ship_number         ($current_word + 1)
+	end
+	add $current_word 1
+	getword $stats $wordy $current_word
+end
+
+:donequikstats
+killtrigger statlinetrig
+killtrigger getline2
+gosub :update_window
 goto :start_over
 
 :playerinfo
-    setTextLineTrigger getTraderName            :getTraderName "Trader Name    :"
-        setTextLineTrigger getExpAndAlign           :getExpAndAlign "Rank and Exp"
-        setTextLineTrigger getCorp          :getCorp "Corp           #"
-        setTextLineTrigger getShipType              :getShipType "Ship Info      :"
-        setTextLineTrigger getTPW           :getTPW "Turns to Warp  :"
-        setTextLineTrigger getSect          :getSect "Current Sector :"
-        setTextLineTrigger getTurns                 :getTurns "Turns left"
-        setTextLineTrigger getHolds                 :getHolds "Total Holds"
-        setTextLineTrigger getFighters              :getFighters "Fighters       :"
-        setTextLineTrigger getShields               :getShields "Shield points  :"
-        setTextLineTrigger getPhotons               :getPhotons "Photon Missiles:"
-        setTextLineTrigger getScanType              :getScanType "LongRange Scan :"
-        setTextLineTrigger getTwarpType1            :getTwarpType1 "  (Type 1 Jump):"
-        setTextLineTrigger getTwarpType2            :getTwarpType2 "  (Type 2 Jump):"
-        setTextLineTrigger getCredits               :getCredits "Credits"
-        setTextLineTrigger checkig          :checkig "Interdictor ON :"
-    setTextTrigger getInfoDone          :getInfoDone "Command [TL="
-        setTextTrigger getInfoDone2                 :getInfoDone "Citadel command"
-        pause
-    :getInfo_CN9_Check
-        setvar $NOFLIP  TRUE
-        pause
-    :getTraderName
-        killTrigger getInfo_CN9_Check_1
-        killTrigger getInfo_CN9_Check_2
-        setVar $PLAYER~TRADER_NAME CURRENTLINE
-        stripText $PLAYER~TRADER_NAME "Trader Name    : "
-        setVar $i 1
-        while ($i <= $PLAYER~ranksLength)
-            setVar $temp $PLAYER~ranks[$i]
-            stripText $temp "31m"
-            stripText $temp "36m"
-            stripText $PLAYER~TRADER_NAME $temp&" "
-            add $i 1
-        end
-        pause
-    :getExpAndAlign
-            getWord CURRENTLINE $PLAYER~EXPERIENCE 5
-            getWord CURRENTLINE $PLAYER~ALIGNMENT 7
-            stripText $PLAYER~EXPERIENCE ","
-            stripText $PLAYER~ALIGNMENT ","
-            stripText $PLAYER~ALIGNMENT "Alignment="
-            pause
-    :getCorp
-            getWord CURRENTLINE $PLAYER~CORP 3
-            stripText $PLAYER~CORP ","
-            setVar $player~corpstring "[" & $PLAYER~CORP & "]"
-            pause
-    :getShipType
-            getWordPos CURRENTLINE $shiptypeend "Ported="
-            subtract $shiptypeend 18
-            cutText CURRENTLINE $PLAYER~SHIP_TYPE 18 $shiptypeend
-            pause
-    :getTPW
-            getWord CURRENTLINE $PLAYER~TURNS_PER_WARP 5
-            pause
-    :getSect
-            getWord CURRENTLINE $PLAYER~CURRENT_SECTOR 4
-            pause
-    :getTurns
-            getWord CURRENTLINE $PLAYER~TURNS 4
-            if ($PLAYER~TURNS = "Unlimited")
-                setVar $PLAYER~unlimitedGame TRUE
-            end
-            saveVar $PLAYER~unlimitedGame
-            pause
-    :getHolds
-        setVar $Temp (CURRENTLINE & " ")
-        getText $Temp $player~ore_holds "Ore=" " "
-        if ($player~ore_holds = "")
-            setVar $player~ore_holds "0"
-        end
-        getText $Temp $player~organic_holds "Organics=" " "
-        if ($player~organic_holds = "")
-            setVar $player~organic_holds "0"
-        end
-        getTExt $Temp $player~equipment_holds "Equipment=" " "
-        if ($player~equipment_holds = "")
-            setVar $player~equipment_holds "0"
-        end
-        getTExt $Temp $player~colonist_holds "Colonists=" " "
-        if ($player~colonist_holds = "")
-            setVar $player~colonist_holds "0"
-        end
-        getText $Temp $PLAYER~EMPTY_HOLDS "Empty=" " "
-        if ($PLAYER~EMPTY_HOLDS = "")
-            setVar $PLAYER~EMPTY_HOLDS "0"
-        end
-        pause
-    :getFighters
-            getWord CURRENTLINE $PLAYER~FIGHTERS 3
-            stripText $PLAYER~FIGHTERS ","
-            pause
-    :getShields
-            getWord CURRENTLINE $PLAYER~SHIELDS 4
-            stripText $PLAYER~SHIELDS ","
-            pause
-    :getPhotons
-            getWord CURRENTLINE $PLAYER~PHOTONS 3
-            pause
-    :getScanType
-            getWord CURRENTLINE $PLAYER~SCAN_TYPE 4
-            pause
-    :getTwarpType1
-            getWord CURRENTLINE $PLAYER~TWARP_1_RANGE 4
-            setVar $PLAYER~TWARP_TYPE 1
-            pause
-    :getTwarpType2
-            getWord CURRENTLINE $PLAYER~TWARP_2_RANGE 4
-            setVar $PLAYER~TWARP_TYPE 2
-            pause
-    :getCredits
-            getWord CURRENTLINE $PLAYER~CREDITS 3
-            stripText $player~credits ","
-            if ($PLAYER~igstat = 0)
-                setVar $PLAYER~igstat "NO IG"
-            end
-            pause
-    :checkig
-        getWord CURRENTLINE $PLAYER~igstat 4
-        pause
-    :getInfoDone
-                    killtrigger getExpAndAlign     
-                killtrigger getCorp         
-                killtrigger getShipType       
-                killtrigger getTPW           
-                killtrigger getSect          
-                killtrigger getTurns                 
-                killtrigger getHolds                 
-                killtrigger getFighters              
-                killtrigger getShields               
-                killtrigger getPhotons               
-                killtrigger getScanType             
-                killtrigger getTwarpType1          
-                killtrigger getTwarpType2           
-                killtrigger getCredits              
-                killtrigger checkig          
-                killtrigger getInfoDone          
-                killtrigger getInfoDone2        
+settextlinetrigger gettradername            :gettradername "Trader Name    :"
+settextlinetrigger getexpandalign           :getexpandalign "Rank and Exp"
+settextlinetrigger getcorp          :getcorp "Corp           #"
+settextlinetrigger getshiptype              :getshiptype "Ship Info      :"
+settextlinetrigger gettpw           :gettpw "Turns to Warp  :"
+settextlinetrigger getsect          :getsect "Current Sector :"
+settextlinetrigger getturns                 :getturns "Turns left"
+settextlinetrigger getholds                 :getholds "Total Holds"
+settextlinetrigger getfighters              :getfighters "Fighters       :"
+settextlinetrigger getshields               :getshields "Shield points  :"
+settextlinetrigger getphotons               :getphotons "Photon Missiles:"
+settextlinetrigger getscantype              :getscantype "LongRange Scan :"
+settextlinetrigger gettwarptype1            :gettwarptype1 "  (Type 1 Jump):"
+settextlinetrigger gettwarptype2            :gettwarptype2 "  (Type 2 Jump):"
+settextlinetrigger getcredits               :getcredits "Credits"
+settextlinetrigger checkig          :checkig "Interdictor ON :"
+settexttrigger getinfodone          :getinfodone "Command [TL="
+settexttrigger getinfodone2                 :getinfodone "Citadel command"
+pause
+
+:getinfo_cn9_check
+setvar $noflip  true
+pause
+
+:gettradername
+killtrigger getinfo_cn9_check_1
+killtrigger getinfo_cn9_check_2
+setvar $player~trader_name currentline
+striptext $player~trader_name "Trader Name    : "
+setvar $i 1
+while ($i <= $player~rankslength)
+	setvar $temp $player~ranks[$i]
+	striptext $temp "31m"
+	striptext $temp "36m"
+	striptext $player~trader_name $temp&" "
+	add $i 1
+end
+pause
+
+:getexpandalign
+getword currentline $player~experience 5
+getword currentline $player~alignment 7
+striptext $player~experience ","
+striptext $player~alignment ","
+striptext $player~alignment "Alignment="
+pause
+
+:getcorp
+getword currentline $player~corp 3
+striptext $player~corp ","
+setvar $player~corpstring "[" & $player~corp & "]"
+pause
+
+:getshiptype
+getwordpos currentline $shiptypeend "Ported="
+subtract $shiptypeend 18
+cuttext currentline $player~ship_type 18 $shiptypeend
+pause
+
+:gettpw
+getword currentline $player~turns_per_warp 5
+pause
+
+:getsect
+getword currentline $player~current_sector 4
+pause
+
+:getturns
+getword currentline $player~turns 4
+if ($player~turns = "Unlimited")
+	setvar $player~unlimitedgame true
+end
+savevar $player~unlimitedgame
+pause
+
+:getholds
+setvar $temp (currentline & " ")
+gettext $temp $player~ore_holds "Ore=" " "
+if ($player~ore_holds = "")
+	setvar $player~ore_holds "0"
+end
+gettext $temp $player~organic_holds "Organics=" " "
+if ($player~organic_holds = "")
+	setvar $player~organic_holds "0"
+end
+gettext $temp $player~equipment_holds "Equipment=" " "
+if ($player~equipment_holds = "")
+	setvar $player~equipment_holds "0"
+end
+gettext $temp $player~colonist_holds "Colonists=" " "
+if ($player~colonist_holds = "")
+	setvar $player~colonist_holds "0"
+end
+gettext $temp $player~empty_holds "Empty=" " "
+if ($player~empty_holds = "")
+	setvar $player~empty_holds "0"
+end
+pause
+
+:getfighters
+getword currentline $player~fighters 3
+striptext $player~fighters ","
+pause
+
+:getshields
+getword currentline $player~shields 4
+striptext $player~shields ","
+pause
+
+:getphotons
+getword currentline $player~photons 3
+pause
+
+:getscantype
+getword currentline $player~scan_type 4
+pause
+
+:gettwarptype1
+getword currentline $player~twarp_1_range 4
+setvar $player~twarp_type 1
+pause
+
+:gettwarptype2
+getword currentline $player~twarp_2_range 4
+setvar $player~twarp_type 2
+pause
+
+:getcredits
+getword currentline $player~credits 3
+striptext $player~credits ","
+if ($player~igstat = 0)
+	setvar $player~igstat "NO IG"
+end
+pause
+
+:checkig
+getword currentline $player~igstat 4
+pause
+
+:getinfodone
+killtrigger getexpandalign
+killtrigger getcorp
+killtrigger getshiptype
+killtrigger gettpw
+killtrigger getsect
+killtrigger getturns
+killtrigger getholds
+killtrigger getfighters
+killtrigger getshields
+killtrigger getphotons
+killtrigger getscantype
+killtrigger gettwarptype1
+killtrigger gettwarptype2
+killtrigger getcredits
+killtrigger checkig
+killtrigger getinfodone
+killtrigger getinfodone2
 gosub :update_window
 goto :start_over
-
 
 :ship_stats
-    
-    :shipoffenseodds
-    getWordPos CURRENTANSILINE $pos "[0;31m:[1;36m1"
-    if ($pos > 0)
-        getText CURRENTANSILINE $SHIP~SHIP_OFFENSIVE_ODDS "Offensive Odds[1;33m:[36m " "[0;31m:[1;36m1"
-        stripText $SHIP~SHIP_OFFENSIVE_ODDS " "
-        gettext CURRENTANSILINE $SHIP~SHIP_FIGHTERS_MAX "Max Fighters[1;33m:[36m" "[0;32m Offensive Odds"
-        stripText $SHIP~SHIP_FIGHTERS_MAX ","
-        stripText $SHIP~SHIP_FIGHTERS_MAX " "
-    end
-    pause
-    :shipmaxmines
-        getText CURRENTLINE $SHIP~SHIP_MINES_MAX "Mine Max:" "Beacon Max:"
-        stripText $SHIP~SHIP_MINES_MAX " "
-        pause
-    
-    :shipmaxfigsperattack
-        getWordPos CURRENTANSILINE $pos "[0m[32m Max Figs Per Attack[1;33m:[36m"
-        if ($pos > 0)
-            getText CURRENTANSILINE $SHIP~SHIP_MAX_ATTACK "[0m[32m Max Figs Per Attack[1;33m:[36m" "[0;32mTransWarp"
-            striptext $SHIP~SHIP_MAX_ATTACK " "
-        end 
+:shipoffenseodds
+getwordpos currentansiline $pos "[0;31m:[1;36m1"
+if ($pos > 0)
+	gettext currentansiline $ship~ship_offensive_odds "Offensive Odds[1;33m:[36m " "[0;31m:[1;36m1"
+	striptext $ship~ship_offensive_odds " "
+	gettext currentansiline $ship~ship_fighters_max "Max Fighters[1;33m:[36m" "[0;32m Offensive Odds"
+	striptext $ship~ship_fighters_max ","
+	striptext $ship~ship_fighters_max " "
+end
+pause
+
+:shipmaxmines
+gettext currentline $ship~ship_mines_max "Mine Max:" "Beacon Max:"
+striptext $ship~ship_mines_max " "
+pause
+
+:shipmaxfigsperattack
+getwordpos currentansiline $pos "[0m[32m Max Figs Per Attack[1;33m:[36m"
+if ($pos > 0)
+	gettext currentansiline $ship~ship_max_attack "[0m[32m Max Figs Per Attack[1;33m:[36m" "[0;32mTransWarp"
+	striptext $ship~ship_max_attack " "
+end
 
 gosub :update_window
 goto :start_over
 
-
 :update_window
-    loadVar $MAP~stardock
-    loadVar $MAP~backdoor
-    loadVar $MAP~rylos
-    loadVar $MAP~alpha_centauri
+loadvar $map~stardock
+loadvar $map~backdoor
+loadvar $map~rylos
+loadvar $map~alpha_centauri
 
-    setVar $contents ""
-    setVar $contents $contents&"----------------------------------*"
-    setVar $contents $contents&"      Game : "&GAMENAME&"*"
-    setVar $contents $contents&"----------------------------------*"
-    setVar $contents $contents&"    Trader : "&$PLAYER~TRADER_NAME&"*"
-    setVar $contents $contents&"----------------------------------*"
-    if ($PLAYER~CURRENT_SECTOR = 0)
-        setVar $contents $contents&"    Sector : "&CURRENTSECTOR&"*"
-    else
-        setVar $contents $contents&"    Sector : "&$PLAYER~CURRENT_SECTOR&"*"
-    end
-    if ($planet~planet <> 0)
-        setVar $contents $contents&"    Planet : "&$planet~planet&"*"
-    end
-    if ($PLAYER~unlimitedGame)
-        setVar $contents $contents&"     Turns : Unlimited*"
-    else
-        setVar $contents $contents&"     Turns : "&$PLAYER~TURNS&"*"
-    end
-    setVar $contents $contents&"       Exp : "&$PLAYER~EXPERIENCE&"*"
-    setVar $contents $contents&"     Align : "&$PLAYER~ALIGNMENT&"*"
-    setVar $contents $contents&"   Credits : "&$PLAYER~CREDITS&"*"
-    setVar $contents $contents&"----------------------------------*"
-    setVar $contents $contents&"Holds Info : "&$player~total_holds&"*"
-    setVar $contents $contents&"----------------------------------*"
-    setVar $contents $contents&"  Fuel Ore : "&$player~ore_holds&"*"
-    setVar $contents $contents&"  Organics : "&$player~organic_holds&"*"
-    setVar $contents $contents&" Equipment : "&$player~equipment_holds&"*"
-    setVar $contents $contents&" Colonists : "&$player~colonist_holds&"*"
-    setVar $empty_holds ($player~total_holds - $player~ore_holds)
-    setVar $empty_holds ($empty_holds - $player~organic_holds)
-    setVar $empty_holds ($empty_holds - $player~equipment_holds)
-    setVar $empty_holds ($empty_holds - $player~colonist_holds)
-    
-    setVar $contents $contents&"     Empty : "&$PLAYER~EMPTY_HOLDS&"*"
-    setVar $contents $contents&"----------------------------------*"
-    setVar $contents $contents&"    Ship # : "&$PLAYER~SHIP_NUMBER&"*"
-    setVar $contents $contents&"----------------------------------*"
-    setVar $contents $contents&"  Fighters : "&$PLAYER~FIGHTERS&"*"
-    setVar $contents $contents&"   Shields : "&$PLAYER~SHIELDS&"*"
-    setVar $contents $contents&"  Max Figs : "&$PLAYER~SHIP_FIGHTERS_MAX&"*"
-    setVar $contents $contents&"  Max Wave : "&$PLAYER~SHIP_MAX_ATTACK&"*"
-    setVar $contents $contents&"Turns/Warp : "&$PLAYER~TURNS_PER_WARP&"*"
-    setVar $contents $contents&"----------------------------------*"
-  
-    cutText $PLAYER~ARMIDS&"    " $PLAYER~ARMIDS 0 3
-    cutText $PLAYER~CLOAKS&"    " $PLAYER~CLOAKS 0 3
-    cutText $PLAYER~GENESIS&"    " $PLAYER~GENESIS 0 3
-    cutText $PLAYER~MINE_DISRUPTORS&"    " $PLAYER~MINE_DISRUPTORS 0 3
-    cutText $PLAYER~EPROBES&"    " $PLAYER~EPROBES 0 3
-    cutText $PLAYER~TWARP_TYPE&"    " $PLAYER~TWARP_TYPE 0 3
-    cutText $PLAYER~SCAN_TYPE&"    " $PLAYER~SCAN_TYPE 0 3
+setvar $contents ""
+setvar $contents $contents&"----------------------------------*"
+setvar $contents $contents&"      Game : "&gamename&"*"
+setvar $contents $contents&"----------------------------------*"
+setvar $contents $contents&"    Trader : "&$player~trader_name&"*"
+setvar $contents $contents&"----------------------------------*"
+if ($player~current_sector = 0)
+	setvar $contents $contents&"    Sector : "&currentsector&"*"
+else
+	setvar $contents $contents&"    Sector : "&$player~current_sector&"*"
+end
+if ($planet~planet <> 0)
+	setvar $contents $contents&"    Planet : "&$planet~planet&"*"
+end
+if ($player~unlimitedgame)
+	setvar $contents $contents&"     Turns : Unlimited*"
+else
+	setvar $contents $contents&"     Turns : "&$player~turns&"*"
+end
+setvar $contents $contents&"       Exp : "&$player~experience&"*"
+setvar $contents $contents&"     Align : "&$player~alignment&"*"
+setvar $contents $contents&"   Credits : "&$player~credits&"*"
+setvar $contents $contents&"----------------------------------*"
+setvar $contents $contents&"Holds Info : "&$player~total_holds&"*"
+setvar $contents $contents&"----------------------------------*"
+setvar $contents $contents&"  Fuel Ore : "&$player~ore_holds&"*"
+setvar $contents $contents&"  Organics : "&$player~organic_holds&"*"
+setvar $contents $contents&" Equipment : "&$player~equipment_holds&"*"
+setvar $contents $contents&" Colonists : "&$player~colonist_holds&"*"
+setvar $empty_holds ($player~total_holds - $player~ore_holds)
+setvar $empty_holds ($empty_holds - $player~organic_holds)
+setvar $empty_holds ($empty_holds - $player~equipment_holds)
+setvar $empty_holds ($empty_holds - $player~colonist_holds)
 
-    setVar $contents $contents&"   EProbes : "&$PLAYER~eprobes&" | Beacons : "&$PLAYER~beacons&"*"
-    setVar $contents $contents&"   Disrupt : "&$PLAYER~MINE_DISRUPTORS&" | Photons : "&$PLAYER~PHOTONS&"*"
-    setVar $contents $contents&"    Armids : "&$PLAYER~ARMIDS&" | Limpets : "&$PLAYER~LIMPETS&"*"
-    setVar $contents $contents&"   Genesis : "&$PLAYER~GENESIS&" | AtmDets : "&$PLAYER~ATOMIC&"*"
-    setVar $contents $contents&"    Cloaks : "&$PLAYER~CLOAKS&" |  Corbos : "&$PLAYER~CORBO&"*"
-    setVar $contents $contents&"     Twarp : "&$PLAYER~TWARP_TYPE&" | PlnScan : "&$PLAYER~PLANET_SCANNER&"*"
-    setVar $contents $contents&"   Scanner : "&$PLAYER~SCAN_TYPE&" | PsiProb : "&$PLAYER~PSYCHIC_PROBE&"*"
-    setVar $contents $contents&"----------------------------------*"
-    setVar $contents $contents&"  Special Sectors*"
-    setVar $contents $contents&"----------------------------------*"
-    setVar $contents $contents&"     Dock  : "&$MAP~stardock&"*"
-    setVar $contents $contents&"     Alpha : "&$MAP~alpha_centauri&"*"
-    setVar $contents $contents&"     Rylos : "&$MAP~rylos&"*"
-    setVar $contents $contents&"  Backdoor : "&$MAP~backdoor&"*"
-    setVar $contents $contents&"----------------------------------*"
-    setwindowcontents COMS $contents
+setvar $contents $contents&"     Empty : "&$player~empty_holds&"*"
+setvar $contents $contents&"----------------------------------*"
+setvar $contents $contents&"    Ship # : "&$player~ship_number&"*"
+setvar $contents $contents&"----------------------------------*"
+setvar $contents $contents&"  Fighters : "&$player~fighters&"*"
+setvar $contents $contents&"   Shields : "&$player~shields&"*"
+setvar $contents $contents&"  Max Figs : "&$player~ship_fighters_max&"*"
+setvar $contents $contents&"  Max Wave : "&$player~ship_max_attack&"*"
+setvar $contents $contents&"Turns/Warp : "&$player~turns_per_warp&"*"
+setvar $contents $contents&"----------------------------------*"
 
-    saveVar $PLAYER~unlimitedGame
-    saveVar $PLAYER~CREDITS
-    saveVar $PLAYER~FIGHTERS
-    saveVar $PLAYER~SHIELDS
-    saveVar $player~total_holds
-    saveVar $PLAYER~TURNS
-    saveVar $player~ore_holds
-    saveVar $player~organic_holds
-    saveVar $player~equipment_holds
-    saveVar $player~colonist_holds
-    saveVar $PLAYER~PHOTONS
-    saveVar $PLAYER~ARMIDS
-    saveVar $PLAYER~LIMPETS
-    saveVar $PLAYER~GENESIS
-    saveVar $PLAYER~TWARP_TYPE
-    saveVar $PLAYER~CLOAKS
-    saveVar $PLAYER~BEACONS
-    saveVar $PLAYER~ATOMIC
-    saveVar $PLAYER~CORBO
-    saveVar $PLAYER~EPROBES
-    saveVar $PLAYER~MINE_DISRUPTORS
-    saveVar $PLAYER~PSYCHIC_PROBE
-    saveVar $PLAYER~PLANET_SCANNER
-    saveVar $PLAYER~SCAN_TYPE
-    saveVar $PLAYER~ALIGNMENT
-    saveVar $PLAYER~EXPERIENCE
-    saveVar $PLAYER~SHIP_NUMBER
-    saveVar $PLAYER~TRADER_NAME
+cuttext $player~armids&"    " $player~armids 0 3
+cuttext $player~cloaks&"    " $player~cloaks 0 3
+cuttext $player~genesis&"    " $player~genesis 0 3
+cuttext $player~mine_disruptors&"    " $player~mine_disruptors 0 3
+cuttext $player~eprobes&"    " $player~eprobes 0 3
+cuttext $player~twarp_type&"    " $player~twarp_type 0 3
+cuttext $player~scan_type&"    " $player~scan_type 0 3
+
+setvar $contents $contents&"   EProbes : "&$player~eprobes&" | Beacons : "&$player~beacons&"*"
+setvar $contents $contents&"   Disrupt : "&$player~mine_disruptors&" | Photons : "&$player~photons&"*"
+setvar $contents $contents&"    Armids : "&$player~armids&" | Limpets : "&$player~limpets&"*"
+setvar $contents $contents&"   Genesis : "&$player~genesis&" | AtmDets : "&$player~atomic&"*"
+setvar $contents $contents&"    Cloaks : "&$player~cloaks&" |  Corbos : "&$player~corbo&"*"
+setvar $contents $contents&"     Twarp : "&$player~twarp_type&" | PlnScan : "&$player~planet_scanner&"*"
+setvar $contents $contents&"   Scanner : "&$player~scan_type&" | PsiProb : "&$player~psychic_probe&"*"
+setvar $contents $contents&"----------------------------------*"
+setvar $contents $contents&"  Special Sectors*"
+setvar $contents $contents&"----------------------------------*"
+setvar $contents $contents&"     Dock  : "&$map~stardock&"*"
+setvar $contents $contents&"     Alpha : "&$map~alpha_centauri&"*"
+setvar $contents $contents&"     Rylos : "&$map~rylos&"*"
+setvar $contents $contents&"  Backdoor : "&$map~backdoor&"*"
+setvar $contents $contents&"----------------------------------*"
+setwindowcontents coms $contents
+
+savevar $player~unlimitedgame
+savevar $player~credits
+savevar $player~fighters
+savevar $player~shields
+savevar $player~total_holds
+savevar $player~turns
+savevar $player~ore_holds
+savevar $player~organic_holds
+savevar $player~equipment_holds
+savevar $player~colonist_holds
+savevar $player~photons
+savevar $player~armids
+savevar $player~limpets
+savevar $player~genesis
+savevar $player~twarp_type
+savevar $player~cloaks
+savevar $player~beacons
+savevar $player~atomic
+savevar $player~corbo
+savevar $player~eprobes
+savevar $player~mine_disruptors
+savevar $player~psychic_probe
+savevar $player~planet_scanner
+savevar $player~scan_type
+savevar $player~alignment
+savevar $player~experience
+savevar $player~ship_number
+savevar $player~trader_name
 
 return
 # includes:

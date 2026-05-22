@@ -1,122 +1,121 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-setVar $HELP~HELP[1]  $HELP~TAB&"Gives the first five sector quasar shots for entered planets."
-setVar $HELP~HELP[2]  $HELP~TAB&" "
-setVar $HELP~HELP[3]  $HELP~TAB&"qreport [planet1] [planet2] ... [planet x]"
-gosub :HELP~HELPFILE
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1]  $help~tab&"Gives the first five sector quasar shots for entered planets."
+setvar $help~help[2]  $help~tab&" "
+setvar $help~help[3]  $help~tab&"qreport [planet1] [planet2] ... [planet x]"
+gosub :help~helpfile
 
-loadvar $BOT_NAME
-loadvar $USER_COMMAND_LINE
-loadvar $PARM1
-loadvar $PARM2
-loadvar $PARM3
-loadvar $PARM4
-loadvar $PARM5
-loadvar $PARM6
-loadvar $PARM7
-loadvar $PARM8
-loadvar $MBBS
+loadvar $bot_name
+loadvar $user_command_line
+loadvar $parm1
+loadvar $parm2
+loadvar $parm3
+loadvar $parm4
+loadvar $parm5
+loadvar $parm6
+loadvar $parm7
+loadvar $parm8
+loadvar $mbbs
 
-:CANNONCALCULATOR
-
-gosub :PLAYER~QUIKSTATS
-setvar $STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-if ($STARTINGLOCATION <> "Command")
-  setvar $switchboard~message "Cannon Calculator must be run from command prompt*"
-  gosub :switchboard~switchboard
-  halt
+:cannoncalculator
+gosub :player~quikstats
+setvar $startinglocation $player~current_prompt
+if ($startinglocation <> "Command")
+	setvar $switchboard~message "Cannon Calculator must be run from command prompt*"
+	gosub :switchboard~switchboard
+	halt
 end
-setarray $CANNONPLANET 100
-setarray $CANNONFUEL 100
-setarray $CANNONPERCENT 100
-setvar $CANNONPLANETCOUNT 0
-getword $USER_COMMAND_LINE $TEMP 1
-while ($TEMP <> 0)
-  add $CANNONPLANETCOUNT 1
-  setvar $CANNONPLANET[$CANNONPLANETCOUNT] $TEMP
-  getword $USER_COMMAND_LINE $TEMP ($CANNONPLANETCOUNT + 1)
+setarray $cannonplanet 100
+setarray $cannonfuel 100
+setarray $cannonpercent 100
+setvar $cannonplanetcount 0
+getword $user_command_line $temp 1
+while ($temp <> 0)
+	add $cannonplanetcount 1
+	setvar $cannonplanet[$cannonplanetcount] $temp
+	getword $user_command_line $temp ($cannonplanetcount + 1)
 end
-if ($CANNONPLANETCOUNT <= 0)
-  setvar $switchboard~message "No planet numbers entered*"
-  gosub :switchboard~switchboard
-  halt
+if ($cannonplanetcount <= 0)
+	setvar $switchboard~message "No planet numbers entered*"
+	gosub :switchboard~switchboard
+	halt
 end
-setvar $PLANETMEMORY " "
-setvar $I 1
-while ($I <= $CANNONPLANETCOUNT)
-  getwordpos $PLANETMEMORY $POS " "&$CANNONPLANET[$I]&" "
-  if ($POS > 0)
+setvar $planetmemory " "
+setvar $i 1
+while ($i <= $cannonplanetcount)
+	getwordpos $planetmemory $pos " "&$cannonplanet[$i]&" "
+	if ($pos > 0)
 
-  else
-    setvar $PLANETMEMORY $PLANETMEMORY&" "&$CANNONPLANET[$I]&" "
-    send "l "&$CANNONPLANET[$I]&"** "
-    settextlinetrigger WRONGPLANET :BADPLANET "That planet is not in this sector."
-    settextlinetrigger BADPLANET :BADPLANET "Invalid registry number, landing aborted."
-    settextlinetrigger GOODPLANET :GOODPLANET "Claimed by:"
-    pause
-    :BADPLANET
-    setvar $switchboard~message "Planet number " $CANNONPLANET[$I] " entered not valid. *"
-    gosub :switchboard~switchboard
-    halt
-    :GOODPLANET
-    killtrigger WRONGPLANET
-    killtrigger BADPLANET
-    gosub :PLANET~GETPLANETINFO
-    send "q "
-    setvar $CANNONFUEL[$I] $PLANET~PLANET_FUEL
-    setvar $CANNONPERCENT[$I] $PLANET~SECTOR_CANNON
-  end
+	else
+		setvar $planetmemory $planetmemory&" "&$cannonplanet[$i]&" "
+		send "l "&$cannonplanet[$i]&"** "
+		settextlinetrigger wrongplanet :badplanet "That planet is not in this sector."
+		settextlinetrigger badplanet :badplanet "Invalid registry number, landing aborted."
+		settextlinetrigger goodplanet :goodplanet "Claimed by:"
+		pause
 
+		:badplanet
+		setvar $switchboard~message "Planet number " $cannonplanet[$i] " entered not valid. *"
+		gosub :switchboard~switchboard
+		halt
 
+		:goodplanet
+		killtrigger wrongplanet
+		killtrigger badplanet
+		gosub :planet~getplanetinfo
+		send "q "
+		setvar $cannonfuel[$i] $planet~planet_fuel
+		setvar $cannonpercent[$i] $planet~sector_cannon
+	end
 
-  add $I 1
+	add $i 1
 end
-setvar $COUNT 1
-setvar $QUASAROUTPUT "'*"
-setvar $QUASAROUTPUT $QUASAROUTPUT&"{"&$BOT_NAME&"}    Sector Quasar Report    {"&$BOT_NAME&"}*  (Planet "
-setvar $I 1
-while ($I <= $CANNONPLANETCOUNT)
-  if (($I = $CANNONPLANETCOUNT) and ($I > 1))
-    setvar $QUASAROUTPUT $QUASAROUTPUT&" and "&$CANNONPLANET[$I]&")*"
-  elseif ($I = $CANNONPLANETCOUNT)
-    setvar $QUASAROUTPUT $QUASAROUTPUT&$CANNONPLANET[$I]&")*"
-  elseif ($I = 1)
-    setvar $QUASAROUTPUT $QUASAROUTPUT&$CANNONPLANET[$I]
-  else
-    setvar $QUASAROUTPUT $QUASAROUTPUT&", "&$CANNONPLANET[$I]
-  end
-  add $I 1
+setvar $count 1
+setvar $quasaroutput "'*"
+setvar $quasaroutput $quasaroutput&"{"&$bot_name&"}    Sector Quasar Report    {"&$bot_name&"}*  (Planet "
+setvar $i 1
+while ($i <= $cannonplanetcount)
+	if (($i = $cannonplanetcount) and ($i > 1))
+		setvar $quasaroutput $quasaroutput&" and "&$cannonplanet[$i]&")*"
+	elseif ($i = $cannonplanetcount)
+		setvar $quasaroutput $quasaroutput&$cannonplanet[$i]&")*"
+	elseif ($i = 1)
+		setvar $quasaroutput $quasaroutput&$cannonplanet[$i]
+	else
+		setvar $quasaroutput $quasaroutput&", "&$cannonplanet[$i]
+	end
+	add $i 1
 end
-while ($COUNT <= 5)
-  setvar $CANNONDAMAGE 0
-  setvar $I 1
-  while ($I <= $CANNONPLANETCOUNT)
-    if ($MBBS)
-      add $CANNONDAMAGE ((($CANNONFUEL[$I] * $CANNONPERCENT[$I]) / 100) / 2)
-    else
-      add $CANNONDAMAGE ((($CANNONFUEL[$I] * $CANNONPERCENT[$I]) / 100) / 3)
-    end
-    subtract $CANNONFUEL[$I] (($CANNONFUEL[$I] * $CANNONPERCENT[$I]) / 100)
-    if ($CANNONFUEL[$I] < 0)
-      setvar $CANNONFUEL[$I] 0
-    end
-    add $I 1
-  end
+while ($count <= 5)
+	setvar $cannondamage 0
+	setvar $i 1
+	while ($i <= $cannonplanetcount)
+		if ($mbbs)
+			add $cannondamage ((($cannonfuel[$i] * $cannonpercent[$i]) / 100) / 2)
+		else
+			add $cannondamage ((($cannonfuel[$i] * $cannonpercent[$i]) / 100) / 3)
+		end
+		subtract $cannonfuel[$i] (($cannonfuel[$i] * $cannonpercent[$i]) / 100)
+		if ($cannonfuel[$i] < 0)
+			setvar $cannonfuel[$i] 0
+		end
+		add $i 1
+	end
 
-  setvar $FORMATTEDCANNONDAMAGE ""
-  getlength $CANNONDAMAGE $LENGTH
-  while ($LENGTH > 3)
-    cuttext $CANNONDAMAGE $SNIPPET ($LENGTH - 2) 9999
-    cuttext $CANNONDAMAGE $CANNONDAMAGE 1 ($LENGTH - 3)
-    getlength $CANNONDAMAGE $LENGTH
-    setvar $FORMATTEDCANNONDAMAGE ","&$SNIPPET&$FORMATTEDCANNONDAMAGE
-  end
-  setvar $FORMATTEDCANNONDAMAGE $CANNONDAMAGE&$FORMATTEDCANNONDAMAGE
-  setvar $QUASAROUTPUT $QUASAROUTPUT&"  Shot "&$COUNT&": "&$FORMATTEDCANNONDAMAGE&" points of damage.*"
-  add $COUNT 1
+	setvar $formattedcannondamage ""
+	getlength $cannondamage $length
+	while ($length > 3)
+		cuttext $cannondamage $snippet ($length - 2) 9999
+		cuttext $cannondamage $cannondamage 1 ($length - 3)
+		getlength $cannondamage $length
+		setvar $formattedcannondamage ","&$snippet&$formattedcannondamage
+	end
+	setvar $formattedcannondamage $cannondamage&$formattedcannondamage
+	setvar $quasaroutput $quasaroutput&"  Shot "&$count&": "&$formattedcannondamage&" points of damage.*"
+	add $count 1
 end
-setvar $QUASAROUTPUT $QUASAROUTPUT&"{"&$BOT_NAME&"}    Sector Quasar Report    {"&$BOT_NAME&"}**"
-send $QUASAROUTPUT
+setvar $quasaroutput $quasaroutput&"{"&$bot_name&"}    Sector Quasar Report    {"&$bot_name&"}**"
+send $quasaroutput
 halt
 
 # includes:

@@ -1,87 +1,86 @@
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-	setVar $HELP~HELP[1] $HELP~TAB&"HAZKILL - Remove NavHaz Command"
-	setVar $HELP~HELP[2] $HELP~TAB&"          Scans Current-Sector and launches Genesis Torpedos"
-	setVar $HELP~HELP[3] $HELP~TAB&"          to removes any NavHaz"
-	gosub :HELP~HELPFILE
-
-
+setvar $help~help[1] $help~tab&"HAZKILL - Remove NavHaz Command"
+setvar $help~help[2] $help~tab&"          Scans Current-Sector and launches Genesis Torpedos"
+setvar $help~help[3] $help~tab&"          to removes any NavHaz"
+gosub :help~helpfile
 
 # ============================== START NAV HAZ KILLER (navhaz) Sub ==============================
-:hazKill
-setVar $pName "M()M - NAV HAZ KiLLA!"
+:hazkill
+setvar $pname "M()M - NAV HAZ KiLLA!"
 gosub :player~quikstats
-setVar $startingLocation $player~CURRENT_PROMPT
-if (($startingLocation <> "Command") AND ($startingLocation <> "Citadel"))
-        setvar $switchboard~message "Please Start from Command or Citadel Prompts!*"
-        gosub :switchboard~switchboard
+setvar $startinglocation $player~current_prompt
+if (($startinglocation <> "Command") and ($startinglocation <> "Citadel"))
+	setvar $switchboard~message "Please Start from Command or Citadel Prompts!*"
+	gosub :switchboard~switchboard
 	halt
 end
-if ($player~GENESIS <= 0)
+if ($player~genesis <= 0)
 	setvar $switchboard~message "No Genesis Torps On Hand.*"
 	gosub :switchboard~switchboard
 	halt
 end
-if ($startingLocation = "Citadel")
+if ($startinglocation = "Citadel")
 	send "Q"
-	gosub :planet~getPlanetInfo
+	gosub :planet~getplanetinfo
 	send "  Q  "
 	waitfor "Command [TL="
 end
 send "*"
 waitfor "(?="
-setVar $haz SECTOR.NAVHAZ[$player~CURRENT_SECTOR]
+setvar $haz sector.navhaz[$player~current_sector]
 if ($haz <= 10)
-	setVar $2Bpopped 1
+	setvar $2Bpopped 1
 elseif ($haz <= 20)
-	setVar $2Bpopped 2
+	setvar $2Bpopped 2
 elseif ($haz <= 30)
-	setVar $2Bpopped 3
+	setvar $2Bpopped 3
 elseif ($haz <= 40)
-	setVar $2Bpopped 4
+	setvar $2Bpopped 4
 elseif ($haz <= 50)
-	setVar $2Bpopped 5
+	setvar $2Bpopped 5
 elseif ($haz <= 60)
-	setVar $2Bpopped 6
+	setvar $2Bpopped 6
 elseif ($haz <= 70)
-	setVar $2Bpopped 7
+	setvar $2Bpopped 7
 elseif ($haz <= 80)
-	setVar $2Bpopped 8
+	setvar $2Bpopped 8
 elseif ($haz <= 90)
-	setVar $2Bpopped 9
+	setvar $2Bpopped 9
 else
-	setVar $2Bpopped 10
+	setvar $2Bpopped 10
 end
-if ($2Bpopped > $player~GENESIS)
-	setvar $switchboard~message "Short " & ($2Bpopped - $player~GENESIS) & " Genesis Torps.*"
+if ($2Bpopped > $player~genesis)
+	setvar $switchboard~message "Short " & ($2Bpopped - $player~genesis) & " Genesis Torps.*"
 	gosub :switchboard~switchboard
-	setVar $2Bpopped $player~GENESIS
+	setvar $2Bpopped $player~genesis
 	waitfor "Message sent on sub-space"
 end
 while ($2Bpopped > 0)
 	send "U Y "
-	setTextLineTrigger planetname :planetname "What do you want to name this planet?"
-	setTextTrigger override :override "Do you wish to abort?"
+	settextlinetrigger planetname :planetname "What do you want to name this planet?"
+	settexttrigger override :override "Do you wish to abort?"
 	pause
-   		:override
-		send "N "
-		pause
-			:planetname
-			killtrigger planetname
-			killtrigger override
-			send $pName & "* Z  C * "
-			subtract $2Bpopped 1
-	end
-	if ($startingLocation = "Citadel")
-		send " L " & $planet~planet & "* C "
-	end
-	setvar $switchboard~message "Nav Haz Killa Complete!*"
-	gosub :switchboard~switchboard
+
+	:override
+	send "N "
+	pause
+
+	:planetname
+	killtrigger planetname
+	killtrigger override
+	send $pname & "* Z  C * "
+	subtract $2Bpopped 1
+end
+if ($startinglocation = "Citadel")
+	send " L " & $planet~planet & "* C "
+end
+setvar $switchboard~message "Nav Haz Killa Complete!*"
+gosub :switchboard~switchboard
 
 halt
 # ============================== END NAV HAZ KILLER (navhaz) Sub ==============================
-
 
 #INCLUDES:
 include "source\include\planet"

@@ -1,173 +1,176 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-	setvar $bot~command "refurb"
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $bot~command "refurb"
 
-	setVar $HELP~HELP[1]  $HELP~TAB&"refurb {holds} {fighters} {shields} {seek} "
-	setVar $HELP~HELP[2]  $HELP~TAB&"     "
-	setVar $HELP~HELP[3]  $HELP~TAB&"   Auto buys fighters and shields"
-	setVar $HELP~HELP[4]  $HELP~TAB&"     "
-	setVar $HELP~HELP[5]  $HELP~TAB&"       {seek} - twarp to class 9 or 0 port and back"
-	setVar $HELP~HELP[6]  $HELP~TAB&"      {holds} - buy holds"
-	setVar $HELP~HELP[7]  $HELP~TAB&"   {fighters} - buy fighters"
-	setVar $HELP~HELP[8]  $HELP~TAB&"    {shields} - buy shields"
-	gosub :HELP~HELPFILE
+setvar $help~help[1]  $help~tab&"refurb {holds} {fighters} {shields} {seek} "
+setvar $help~help[2]  $help~tab&"     "
+setvar $help~help[3]  $help~tab&"   Auto buys fighters and shields"
+setvar $help~help[4]  $help~tab&"     "
+setvar $help~help[5]  $help~tab&"       {seek} - twarp to class 9 or 0 port and back"
+setvar $help~help[6]  $help~tab&"      {holds} - buy holds"
+setvar $help~help[7]  $help~tab&"   {fighters} - buy fighters"
+setvar $help~help[8]  $help~tab&"    {shields} - buy shields"
+gosub :help~helpfile
 
-	setVar $message ""
-	setVar $BOT~validPrompts "Citadel Command"
-	gosub :PLAYER~CHECKSTARTINGPROMPT
-	setVar $startingLocation $PLAYER~CURRENT_PROMPT
+setvar $message ""
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
+setvar $startinglocation $player~current_prompt
 
+getwordpos " "&$bot~user_command_line&" " $pos " seek "
+setvar $seek false
+if ($pos > 0)
+	setvar $seek true
+end
 
-	getwordpos " "&$bot~user_command_line&" " $pos " seek "
-	setvar $seek false
-	if ($pos > 0)
-		setvar $seek true
+getwordpos " "&$bot~user_command_line&" " $pos " h"
+setvar $holds false
+if ($pos > 0)
+	setvar $holds true
+end
+
+getwordpos " "&$bot~user_command_line&" " $pos " f"
+setvar $fighters false
+if ($pos > 0)
+	setvar $fighters true
+end
+
+getwordpos " "&$bot~user_command_line&" " $pos " sh"
+setvar $shields false
+if ($pos > 0)
+	setvar $shields true
+end
+
+if (($shields <> true) and ($fighters <> true) and ($holds <> true))
+	# default is all are true #
+	setvar $holds true
+	setvar $fighters true
+	setvar $shields true
+end
+
+if ((currentsector = 1) or (port.class[currentsector] = 0) or (currentsector = $map~rylos) or (currentsector = $map~alpha_centauri))
+	if ($startinglocation = "Citadel")
+		send "q t*t1* "
+		gosub :planet~getplanetinfo
+		send "q "
 	end
-
-	getwordpos " "&$bot~user_command_line&" " $pos " h"
-	setvar $holds false
-	if ($pos > 0)
-		setvar $holds true
-	end
-
-	getwordpos " "&$bot~user_command_line&" " $pos " f"
-	setvar $fighters false
-	if ($pos > 0)
-		setvar $fighters true
-	end
-
-	getwordpos " "&$bot~user_command_line&" " $pos " sh"
-	setvar $shields false
-	if ($pos > 0)
-		setvar $shields true
-	end
-
-	if (($shields <> true) and ($fighters <> true) and ($holds <> true))
-		# default is all are true #
-		setvar $holds true
-		setvar $fighters true
-		setvar $shields true
-	end
-
-	if ((CURRENTSECTOR = 1) OR (PORT.CLASS[CURRENTSECTOR] = 0) or (CURRENTSECTOR = $map~rylos) or (CURRENTSECTOR = $map~alpha_centauri))
-		if ($startingLocation = "Citadel")
+	send "p ty"
+elseif (currentsector = $map~stardock)
+	send "p ss ys *p"
+else
+	if ($seek = true)
+		if ($startinglocation = "Citadel")
 			send "q t*t1* "
-			gosub :PLANET~getPlanetInfo
-			send "q "
+			gosub :planet~getplanetinfo
+			send "c "
 		end
-		send "p ty"
-	elseif (CURRENTSECTOR = $MAP~STARDOCK)
-		send "p ss ys *p"
-	else
-		if ($seek = true)
-			if ($startingLocation = "Citadel")
-				send "q t*t1* "
-				gosub :PLANET~getPlanetInfo
-				send "c "
-			end
-			gosub :PLAYER~quikstats
-			setVar $back $PLAYER~CURRENT_SECTOR
-			setVar $PLAYER~warpto 1
+		gosub :player~quikstats
+		setvar $back $player~current_sector
+		setvar $player~warpto 1
+		gosub :move~twarp
+		gosub  :player~currentprompt
+		if ($player~twarpsuccess = true)
+			send "p ty"
+		else
+			send " C R " & $map~stardock & "*"
+			settextlinetrigger 1 :itsalive "Items     Status  Trading % of max OnBoard"
+			settextlinetrigger 2 :nosoupforme "I have no information about a port in that sector"
+			pause
+
+			:nosoupforme
+			killtrigger 1
+			setvar $switchboard~message "StarDock appears to have been Blown Up!*"
+			gosub :switchboard~switchboard
+			goto :wait_for_command
+
+			:itsalive
+			killtrigger 2
+			send "q "
+			setvar $player~warpto $map~stardock
 			gosub :move~twarp
-			gosub  :player~currentPrompt
-			if ($PLAYER~twarpSuccess = TRUE)
-				send "p ty"
+			gosub  :player~currentprompt
+			if ($player~twarpsuccess = true)
+				send "P  S G YG Q s p"
 			else
-				send " C R " & $map~stardock & "*"
-				setTextLineTrigger 1 :itsalive "Items     Status  Trading % of max OnBoard"
-				setTextLineTrigger 2 :nosoupforme "I have no information about a port in that sector"
-				pause
-				:nosoupforme
-				killtrigger 1
-				setvar $switchboard~message "StarDock appears to have been Blown Up!*"
+				setvar $switchboard~message $player~msg&"*"
 				gosub :switchboard~switchboard
 				goto :wait_for_command
-				:itsalive
-				killtrigger 2
-				send "q "
-				setVar $PLAYER~warpto $map~stardock
-				gosub :move~twarp
-				gosub  :player~currentPrompt
-				if ($PLAYER~twarpSuccess = TRUE)
-				send "P  S G YG Q s p"
-				else
-				setVar $SWITCHBOARD~message $PLAYER~msg&"*"
-				gosub :SWITCHBOARD~switchboard
-				goto :wait_for_command
-				end
 			end
-		else
-			setVar $SWITCHBOARD~message "Not currently at a class 0 or 9 port. Use the seek option to twarp to a known class 0 or 9 port and back.*" 
-			gosub :SWITCHBOARD~switchboard
-			goto :wait_for_command
 		end
-	end
-	setVar $message "No limpet on my ship.*"
-	setTextLineTrigger limpet   :markLimpet	 "After an intensive scanning search, they find and remove the Limpet"
-	setTextLineTrigger limpetno	 :markLimpetNo   "The port official frowns at you (you haven't the funds!) and storms"
-	setTextLineTrigger fighter  :buyfighters	"A  Cargo holds     :"
-	pause
-	:markLimpet
-	setVar $message "Limpet scrubbed off of hull.*"
-	pause
-	:markLimpetNo
-	setVar $message "Limpet exists, but not enough cash to get scrubbed.*"
-	pause   
-	:buyfighters
-	killalltriggers
-	if ($scrubonly <> TRUE)
-		getWord CURRENTLINE $holdsToBuy 10
-		waitOn " credits per fighter "
-		getWord CURRENTLINE $figsToBuy 8
-		waitOn " credits per point "
-		getWord CURRENTLINE $shieldsToBuy 9
-		if (($holds = true) AND ($holdsToBuy > 0))
-			send "a "&$holdsToBuy&"* y "
-		end
-		if (($fighters = true) AND ($figsToBuy > 0))
-			send "b "&$figsToBuy&"* "
-		end
-		if (($shields = true) AND ($shieldsToBuy > 0))
-			send "c "&$shieldsToBuy&"* "
-		end
-		send "q q q * "
 	else
-		send "b 0* c 0* q q q * "
+		setvar $switchboard~message "Not currently at a class 0 or 9 port. Use the seek option to twarp to a known class 0 or 9 port and back.*"
+		gosub :switchboard~switchboard
+		goto :wait_for_command
 	end
-	if ($seek = true)
-		gosub :PLAYER~quikstats
-		setVar $PLAYER~warpto $back
-		gosub :move~twarp
-		if ($PLAYER~twarpSuccess <> TRUE)
-			setVar $SWITCHBOARD~message $PLAYER~msg&"*"
-			gosub :SWITCHBOARD~switchboard
-			goto :wait_for_command
-		end
-	 end		
-	if ($startingLocation = "Citadel")
-		gosub :PLANET~landingSub
+end
+setvar $message "No limpet on my ship.*"
+settextlinetrigger limpet   :marklimpet	 "After an intensive scanning search, they find and remove the Limpet"
+settextlinetrigger limpetno	 :marklimpetno   "The port official frowns at you (you haven't the funds!) and storms"
+settextlinetrigger fighter  :buyfighters	"A  Cargo holds     :"
+pause
+
+:marklimpet
+setvar $message "Limpet scrubbed off of hull.*"
+pause
+
+:marklimpetno
+setvar $message "Limpet exists, but not enough cash to get scrubbed.*"
+pause
+
+:buyfighters
+killalltriggers
+if ($scrubonly <> true)
+	getword currentline $holdstobuy 10
+	waiton " credits per fighter "
+	getword currentline $figstobuy 8
+	waiton " credits per point "
+	getword currentline $shieldstobuy 9
+	if (($holds = true) and ($holdstobuy > 0))
+		send "a "&$holdstobuy&"* y "
 	end
-	gosub :PLAYER~quikstats
-	if (($holdstobuy > 0) and ($holds = true))
-		format $holdstobuy $holdstobuy NUMBER
-		setvar $message $message&"   - "&$holdstobuy&" holds purchased.*"
+	if (($fighters = true) and ($figstobuy > 0))
+		send "b "&$figstobuy&"* "
 	end
-	if (($figstobuy > 0) and ($holds = true))
-		format $figstobuy $figstobuy NUMBER
-		setvar $message $message&"   - "&$figstobuy&" fighters purchased.*"
+	if (($shields = true) and ($shieldstobuy > 0))
+		send "c "&$shieldstobuy&"* "
 	end
-	if (($shieldstobuy > 0) and ($holds = true))
-		format $shieldstobuy $shieldstobuy NUMBER
-		setvar $message $message&"   - "&$shieldstobuy&" shields purchased.*"
+	send "q q q * "
+else
+	send "b 0* c 0* q q q * "
+end
+if ($seek = true)
+	gosub :player~quikstats
+	setvar $player~warpto $back
+	gosub :move~twarp
+	if ($player~twarpsuccess <> true)
+		setvar $switchboard~message $player~msg&"*"
+		gosub :switchboard~switchboard
+		goto :wait_for_command
 	end
-	if ($message <> "")
-		setVar $SWITCHBOARD~message $message
-		gosub :SWITCHBOARD~switchboard
-	end
+end
+if ($startinglocation = "Citadel")
+	gosub :planet~landingsub
+end
+gosub :player~quikstats
+if (($holdstobuy > 0) and ($holds = true))
+	format $holdstobuy $holdstobuy number
+	setvar $message $message&"   - "&$holdstobuy&" holds purchased.*"
+end
+if (($figstobuy > 0) and ($holds = true))
+	format $figstobuy $figstobuy number
+	setvar $message $message&"   - "&$figstobuy&" fighters purchased.*"
+end
+if (($shieldstobuy > 0) and ($holds = true))
+	format $shieldstobuy $shieldstobuy number
+	setvar $message $message&"   - "&$shieldstobuy&" shields purchased.*"
+end
+if ($message <> "")
+	setvar $switchboard~message $message
+	gosub :switchboard~switchboard
+end
 
 :wait_for_command
 halt
-
 
 # includes:
 include "source\include\planet"

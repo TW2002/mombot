@@ -1,71 +1,68 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-if (($BOT~PARM1 = "?") or ($BOT~PARM1 = "help"))
-  goto :WAIT_FOR_COMMAND
-end
-:TOPOFF
+gosub :loadvars~loadvars
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"topoff - fill up ship with fighters from sector "
+gosub :help~helpfile
 
-
+:topoff
 killalltriggers
-gosub :PLAYER~CURRENTPROMPT
-setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-if ($BOT~STARTINGLOCATION = "Citadel")
-  send " q "
-  gosub :PLANET~GETPLANETINFO
-  send " q "
+gosub :player~currentprompt
+setvar $bot~startinglocation $player~current_prompt
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
+if ($bot~startinglocation = "Citadel")
+	send " q "
+	gosub :planet~getplanetinfo
+	send " q "
 end
-if (($BOT~PARM1 <> "o") and (($BOT~PARM1 <> "t") and ($BOT~PARM1 <> "d")))
-  setvar $TYPE "d"
-  isnumber $TEST CURRENTSECTOR
-  if ($TEST = TRUE)
-    if ((CURRENTSECTOR > 0) and (CURRENTSECTOR <= SECTORS))
-      setvar $TYPE SECTOR.FIGS.TYPE[CURRENTSECTOR]
-      if ($TYPE = "Offensive")
-        setvar $TYPE "o"
-      elseif ($TYPE = "Defensive")
-        setvar $TYPE "d"
-      elseif ($TYPE = "Toll")
-        setvar $TYPE "t"
-      else
-        setvar $TYPE "d"
-      end
-    end
-  end
-  setvar $BOT~PARM1 $TYPE
+if (($bot~parm1 <> "o") and (($bot~parm1 <> "t") and ($bot~parm1 <> "d")))
+	setvar $type "d"
+	isnumber $test currentsector
+	if ($test = true)
+		if ((currentsector > 0) and (currentsector <= sectors))
+			setvar $type sector.figs.type[currentsector]
+			if ($type = "Offensive")
+				setvar $type "o"
+			elseif ($type = "Defensive")
+				setvar $type "d"
+			elseif ($type = "Toll")
+				setvar $type "t"
+			else
+				setvar $type "d"
+			end
+		end
+	end
+	setvar $bot~parm1 $type
 end
-setvar $TO_DROP $BOT~PARM1
-gosub :DO_TOPOFF
-if ($BOT~STARTINGLOCATION = "Citadel")
-  gosub :PLANET~LANDINGSUB
+setvar $to_drop $bot~parm1
+gosub :do_topoff
+if ($bot~startinglocation = "Citadel")
+	gosub :planet~landingsub
 end
-setvar $SWITCHBOARD~MESSAGE "TopOff complete Left "&$FTRS_TO_LEAVE&" fighters.*"
-gosub :SWITCHBOARD~SWITCHBOARD
-goto :WAIT_FOR_COMMAND
-:DO_TOPOFF
-:DO_TOPOFF_AGAIN
+setvar $switchboard~message "TopOff complete Left "&$ftrs_to_leave&" fighters.*"
+gosub :switchboard~switchboard
+goto :wait_for_command
+
+:do_topoff
+:do_topoff_again
 killalltriggers
 send " F"
 waiton "Your ship can support up to"
-getword CURRENTLINE $FTRS_TO_LEAVE 10
-striptext $FTRS_TO_LEAVE ","
-striptext $FTRS_TO_LEAVE " "
-if ($FTRS_TO_LEAVE < 1)
-  setvar $FTRS_TO_LEAVE 1
+getword currentline $ftrs_to_leave 10
+striptext $ftrs_to_leave ","
+striptext $ftrs_to_leave " "
+if ($ftrs_to_leave < 1)
+	setvar $ftrs_to_leave 1
 end
-send " "&$FTRS_TO_LEAVE&" * C "&$TO_DROP
-settextlinetrigger TOPOFF_SUCCESS :TOPOFF_SUCCESS "Done. You have "
-settextlinetrigger TOPOFF_FAILURE1 :DO_TOPOFF_AGAIN "You don't have that many fighters available."
-settextlinetrigger TOPOFF_FAILURE2 :DO_TOPOFF_AGAIN "Too many fighters in your fleet!  You are limited to"
+send " "&$ftrs_to_leave&" * C "&$to_drop
+settextlinetrigger topoff_success :topoff_success "Done. You have "
+settextlinetrigger topoff_failure1 :do_topoff_again "You don't have that many fighters available."
+settextlinetrigger topoff_failure2 :do_topoff_again "Too many fighters in your fleet!  You are limited to"
 pause
-:TOPOFF_SUCCESS
+
+:topoff_success
 return
-:WAIT_FOR_COMMAND
 
-
-setvar $HELP~HELP[1] $HELP~TAB&"topoff - fill up ship with fighters from sector "
-gosub :HELP~HELPFILE
+:wait_for_command
 halt
 
 # includes:

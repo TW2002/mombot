@@ -1,21 +1,17 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-loadVar $BOT~bot_team_name
+gosub :loadvars~loadvars
+gosub :help~initialize
+loadvar $bot~bot_team_name
+setvar $help~help[1] $help~tab&"Reports team name and current sector."
+gosub :help~helpfile
 
-if (($bot~parm1 = "?") or ($bot~parm1 = "help"))
-	goto :wait_for_command
+gosub :player~quikstats
+if ($bot~bot_team_name = false)
+	setvar $bot~bot_team_name "None"
 end
 
-gosub :PLAYER~quikstats
-if ($BOT~bot_team_name = FALSE)
-	setVar $BOT~bot_team_name "None"
-end
-
-send "'" & "Team: " & $BOT~bot_team_name & " Sec: "&$PLAYER~CURRENT_SECTOR&" Exp: "&$PLAYER~EXPERIENCE&" Aln: "&$PLAYER~ALIGNMENT&" Creds: "&$PLAYER~CREDITS&" Ship: "&$PLAYER~SHIP_NUMBER&" Turns: "&$PLAYER~TURNS&"*"
+send "'" & "Team: " & $bot~bot_team_name & " Sec: "&$player~current_sector&" Exp: "&$player~experience&" Aln: "&$player~alignment&" Creds: "&$player~credits&" Ship: "&$player~ship_number&" Turns: "&$player~turns&"*"
 
 :wait_for_command
-setVar $HELP~HELP[1] $HELP~TAB&"Reports team name and current sector."
-gosub :HELP~HELPFILE
 halt
 
 #INCLUDES:

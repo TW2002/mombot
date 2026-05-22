@@ -1,45 +1,45 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-setvar $HELP~HELP[1] $HELP~TAB&"refresh - refresh cached bot state from the live game"
-setvar $HELP~HELP[2] $HELP~TAB&"  "
-setvar $HELP~HELP[3] $HELP~TAB&"  refresh"
-setvar $HELP~HELP[4] $HELP~TAB&"    - re-reads player, game, ship, and planet data"
-setvar $HELP~HELP[5] $HELP~TAB&"      from the current prompt"
-gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&"refresh - refresh cached bot state from the live game"
+setvar $help~help[2] $help~tab&"  "
+setvar $help~help[3] $help~tab&"  refresh"
+setvar $help~help[4] $help~tab&"    - re-reads player, game, ship, and planet data"
+setvar $help~help[5] $help~tab&"      from the current prompt"
+gosub :help~helpfile
 
 killalltriggers
-gosub :PLAYER~QUIKSTATS
-setvar $BOT~VALIDPROMPTS "Citadel Command"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-if ($PLAYER~CURRENT_PROMPT = "Citadel")
-  send "q"
-  gosub :PLANET~GETPLANETINFO
-  send "q"
+gosub :player~quikstats
+setvar $bot~validprompts "Citadel Command"
+gosub :player~checkstartingprompt
+if ($player~current_prompt = "Citadel")
+	send "q"
+	gosub :planet~getplanetinfo
+	send "q"
 end
 
-gosub :PLAYER~GETINFO
-gosub :GAME~GAMESTATS
-gosub :SHIP~GETSHIPSTATS
+gosub :player~getinfo
+gosub :game~gamestats
+gosub :ship~getshipstats
 
-gosub :PLAYER~QUIKSTATS
-gosub :SHIP~GETSHIPCAPSTATS
-gosub :SHIP~LOADSHIPINFO
+gosub :player~quikstats
+gosub :ship~getshipcapstats
+gosub :ship~loadshipinfo
 
-gosub :PLANET~GETPLANETSTATS
-gosub :PLANET~LOADPLANETINFO
+gosub :planet~getplanetstats
+gosub :planet~loadplanetinfo
 
-if ($PLAYER~CURRENT_PROMPT = "Citadel")
-  gosub :PLANET~LANDINGSUB
+if ($player~current_prompt = "Citadel")
+	gosub :planet~landingsub
 end
 
-if ($MAP~STARDOCK > 0) and ($MAP~BACKDOOR = 0)
-	setvar $SECTOR~DESTINATION $MAP~STARDOCK
-	gosub :SECTOR~GETBACKDOOR
+if ($map~stardock > 0) and ($map~backdoor = 0)
+	setvar $sector~destination $map~stardock
+	gosub :sector~getbackdoor
 end
 
-setvar $SWITCHBOARD~MESSAGE "Bot data refresh completed.*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "Bot data refresh completed.*"
+gosub :switchboard~switchboard
 halt
 
 # includes:

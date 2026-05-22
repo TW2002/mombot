@@ -1,24 +1,23 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
-loadvar $BOT~USERNAME
-loadvar $BOT~LETTER
-loadvar $BOT~PASSWORD
-loadvar $BOT~SUBSPACE
+gosub :loadvars~loadvars
+gosub :help~initialize
+loadvar $bot~username
+loadvar $bot~letter
+loadvar $bot~password
+loadvar $bot~subspace
 
-setvar $HELP~HELP[1] $HELP~TAB&"cn9"
-setvar $HELP~HELP[2] $HELP~TAB&"  - Resets the cn settings in the game to bot desirable settings."
-gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&"cn9"
+setvar $help~help[2] $help~tab&"  - Resets the cn settings in the game to bot desirable settings."
+gosub :help~helpfile
 
-
-gosub :PLAYER~CURRENTPROMPT
-setvar $BOT~VALIDPROMPTS "Citadel Command Computer"
-gosub :PLAYER~CHECKSTARTINGPROMPT
-if ($PLAYER~STARTINGLOCATION = "Computer")
-  send "q"
+gosub :player~currentprompt
+setvar $bot~validprompts "Citadel Command Computer"
+gosub :player~checkstartingprompt
+if ($player~startinglocation = "Computer")
+	send "q"
 end
-gosub :PLAYER~STARTCNSETTINGS
-setvar $SWITCHBOARD~MESSAGE "CN Settings are reset for this bot.*"
-gosub :SWITCHBOARD~SWITCHBOARD
+gosub :player~startcnsettings
+setvar $switchboard~message "CN Settings are reset for this bot.*"
+gosub :switchboard~switchboard
 halt
 
 # includes:

@@ -1,587 +1,628 @@
-:GAME~GAMESTATS
-setvar $GAME~DID_GAMESTATS FALSE
-if (($PLAYER~STARTINGLOCATION = "0") OR ($PLAYER~STARTINGLOCATION = ""))
-  if (($PLAYER~CURRENT_PROMPT = "Command") OR ($PLAYER~CURRENT_PROMPT = "Citadel"))
-    setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-  end
+:game~gamestats
+setvar $game~did_gamestats false
+if (($player~startinglocation = "0") or ($player~startinglocation = ""))
+	if (($player~current_prompt = "Command") or ($player~current_prompt = "Citadel"))
+		setvar $player~startinglocation $player~current_prompt
+	end
 end
 
-
-
-
-
-
-
-if ($PLAYER~STARTINGLOCATION = "Citadel")
-  send "qqzn"
+if ($player~startinglocation = "Citadel")
+	send "qqzn"
 end
-if (($PLAYER~STARTINGLOCATION = "Command") or ($PLAYER~STARTINGLOCATION = "Citadel"))
-  setvar $GAME~DID_GAMESTATS TRUE
-  send "vqyn"
-  send #42 "*"
-  settextlinetrigger SETTINGS1 :FINDGOLD "Gold Enabled="
-  settextlinetrigger SETTINGS2 :FINDMBBS "MBBS Compatibility="
-  settextlinetrigger SETTINGS3 :FINDALIENS "Internal Aliens="
-  settextlinetrigger SETTINGS4 :FINDFERRENGI "Internal Ferrengi="
-  settextlinetrigger SETTINGS5 :FINDMAXCOMMANDS "Max Commands="
-  settextlinetrigger SETTINGS6 :FINDINACTIVE "Inactive Time="
-  settextlinetrigger SETTINGS7 :FINDCOLOREGEN "Colonist Regen Rate="
-  settextlinetrigger SETTINGS8 :FINDPHOTONDUR "Photon Missile Duration="
-  settextlinetrigger SETTINGS9 :FINDDEBRIS "Debris Loss Percent="
-  settextlinetrigger SETTINGS10 :FINDTRADEPERCENT "Trade Percent="
-  settextlinetrigger SETTINGS11 :FINDPRODUCTIONRATE "Production Rate="
-  settextlinetrigger SETTINGS12 :FINDMAXPRODUCTIONRATE "Max Production Regen="
-  settextlinetrigger SETTINGS13 :FINDMULTIPLEPHOTONS "Multiple Photons="
-  settextlinetrigger SETTINGS14 :FINDCLEARBUSTS "Clear Bust Days="
-  settextlinetrigger SETTINGS15 :FINDSTEALFACTOR "Steal Factor="
-  settextlinetrigger SETTINGS16 :FINDROBFACTOR "Rob Factor="
-  settextlinetrigger SETTINGS17 :FINDPORTMAX "Port Production Max="
-  settextlinetrigger SETTINGS18 :FINDRADIATION "Radiation Lifetime="
-  settextlinetrigger REREGISTER :REREGISTER "Reregister Ship="
-  settextlinetrigger SETTINGS37 :FINDLIMPETREMOVAL "Limpet Removal="
-  settextlinetrigger SETTINGS20 :FINDGENESIS "Genesis Torpedo="
-  settextlinetrigger SETTINGS21 :FINDARMID "Armid Mine="
-  settextlinetrigger SETTINGS22 :FINDLIMPET "Limpet Mine="
-  settextlinetrigger SETTINGS23 :FINDBEACON "Beacon="
-  settextlinetrigger SETTINGS24 :FINDTWARPI "Type I TWarp="
-  settextlinetrigger SETTINGS25 :FINDTWARPII "Type II TWarp="
-  settextlinetrigger SETTINGS26 :FINDTWARPUPGRADE "TWarp Upgrade="
-  settextlinetrigger SETTINGS27 :FINDPSYCHIC "Psychic Probe="
-  settextlinetrigger SETTINGS28 :FINDPLANETSCANNER "Planet Scanner="
-  settextlinetrigger SETTINGS29 :FINDATOMIC "Atomic Detonator="
-  settextlinetrigger SETTINGS30 :FINDCORBO "Corbomite="
-  settextlinetrigger SETTINGS31 :FINDETHER "Ether Probe="
-  settextlinetrigger SETTINGS32 :FINDPHOTON "Photon Missile="
-  settextlinetrigger SETTINGS33 :FINDCLOAK "Cloaking Device="
-  settextlinetrigger SETTINGS34 :FINDDISRUPTOR "Mine Disruptor="
-  settextlinetrigger SETTINGS35 :FINDHOLOSCANNER "Holographic Scanner="
-  settextlinetrigger SETTINGS36 :FINDDENSITYSCAN "Density Scanner="
-  settextlinetrigger SETTINGS38 :FINDMAXPLANETS "Max Planet Sector="
-  settextlinetrigger SETTINGS39 :FINDMAXGAMEPLANETS ", sectors"
-  settextlinetrigger SETTINGS40 :FINDFEDSPACEPHOTONS "FedSpace Photons="
-  settextlinetrigger SETTINGS41 :FINDLATENCY "Latency="
-  settextlinetrigger SETTINGS42 :FINDDELAYSHIPMOVE "Ship Delay="
-  settextlinetrigger SETTINGS43 :FINDDELAYPLANETMOVE "Planet Delay="
-  settextlinetrigger SETTINGS44 :FINDDELAYOTHERATTACKS "Other Attacks Delay="
-  settextlinetrigger SETTINGS45 :FINDDELAYSHIPTRANSPORTER "Ship Transporter Delay="
-  settextlinetrigger SETTINGS46 :FINDDELAYPLANETTRANSPORTER "Planet Transporter Delay="
-  settextlinetrigger SETTINGS47 :FINDDELAYEPROBE "EProbe Delay="
-  settextlinetrigger SETTINGS48 :FINDDELAYPHOTONLAUNCH "Photon Launch Delay="
-  settextlinetrigger SETTINGS49 :FINDDELAYPHOTONWAVE "Photon Wave Delay="
-  pause
-  :GAME~FINDLATENCY
-  getword CURRENTLINE $GAME~LATENCY 1
-  striptext $GAME~LATENCY "Latency="
-  savevar $GAME~LATENCY
-  pause
-  :GAME~FINDDELAYSHIPMOVE
-  setvar $GAME~DELAY 0
-  setvar $GAME~DELAYWORD 2
-  gosub :CONVERTDELAY
-  setvar $GAME~DELAYSHIP $GAME~DELAY
-  savevar $GAME~DELAYSHIP
-  pause
-  :GAME~FINDDELAYPLANETMOVE
-  setvar $GAME~DELAY 0
-  setvar $GAME~DELAYWORD 2
-  gosub :CONVERTDELAY
-  setvar $GAME~DELAYPLANET $GAME~DELAY
-  savevar $GAME~DELAYPLANET
-  pause
-  :GAME~FINDDELAYOTHERATTACKS
-  setvar $GAME~DELAY 0
-  setvar $GAME~DELAYWORD 3
-  gosub :CONVERTDELAY
-  setvar $GAME~DELAYOTHERATTACK $GAME~DELAY
-  savevar $GAME~DELAYOTHERATTACK
-  pause
-  :GAME~FINDDELAYSHIPTRANSPORTER
-  setvar $GAME~DELAY 0
-  setvar $GAME~DELAYWORD 3
-  gosub :CONVERTDELAY
-  setvar $GAME~DELAYSHIPTRANSPORTER $GAME~DELAY
-  savevar $GAME~DELAYSHIPTRANSPORTER
-  pause
-  :GAME~FINDDELAYPLANETTRANSPORTER
-  setvar $GAME~DELAY 0
-  setvar $GAME~DELAYWORD 3
-  gosub :CONVERTDELAY
-  setvar $GAME~DELAYPLANETTRANSPORTER $GAME~DELAY
-  savevar $GAME~DELAYPLANETTRANSPORTER
-  pause
-  :GAME~FINDDELAYEPROBE
-  setvar $GAME~DELAY 0
-  setvar $GAME~DELAYWORD 2
-  gosub :CONVERTDELAY
-  setvar $GAME~DELAYEPROBE $GAME~DELAY
-  savevar $GAME~DELAYEPROBE
-  pause
-  :GAME~FINDDELAYPHOTONLAUNCH
-  setvar $GAME~DELAY 0
-  setvar $GAME~DELAYWORD 3
-  gosub :CONVERTDELAY
-  setvar $GAME~DELAYPHOTONLAUNCH $GAME~DELAY
-  savevar $GAME~DELAYPHOTONLAUNCH
-  pause
-  :GAME~FINDDELAYPHOTONWAVE
-  setvar $GAME~DELAY 0
-  setvar $GAME~DELAYWORD 3
-  gosub :CONVERTDELAY
-  setvar $GAME~DELAYPHOTONDELAY $GAME~DELAY
-  savevar $GAME~DELAYPHOTONDELAY
-  pause
-  :GAME~FINDGOLD
-  getword CURRENTLINE $GAME~CHECK 2
-  striptext $GAME~CHECK "Enabled="
-  if ($GAME~CHECK = "True")
-    setvar $GAME~GOLDENABLED TRUE
-    savevar $GAME~GOLDENABLED
-  else
-    setvar $GAME~GOLDENABLED FALSE
-    savevar $GAME~GOLDENABLED
-  end
-  pause
-  :GAME~FINDFEDSPACEPHOTONS
-  getword CURRENTLINE $GAME~CHECK 2
-  striptext $GAME~CHECK "Photons="
-  if ($GAME~CHECK = "True")
-    setvar $GAME~FEDSPACEPHOTONS TRUE
-    savevar $GAME~FEDSPACEPHOTONS
-  else
-    setvar $GAME~FEDSPACEPHOTONS FALSE
-    savevar $GAME~FEDSPACEPHOTONS
-  end
-  pause
-  :GAME~FINDMAXPLANETS
+if (($player~startinglocation = "Command") or ($player~startinglocation = "Citadel"))
+	setvar $game~did_gamestats true
+	send "vqyn"
+	send #42 "*"
+	settextlinetrigger settings1 :findgold "Gold Enabled="
+	settextlinetrigger settings2 :findmbbs "MBBS Compatibility="
+	settextlinetrigger settings3 :findaliens "Internal Aliens="
+	settextlinetrigger settings4 :findferrengi "Internal Ferrengi="
+	settextlinetrigger settings5 :findmaxcommands "Max Commands="
+	settextlinetrigger settings6 :findinactive "Inactive Time="
+	settextlinetrigger settings7 :findcoloregen "Colonist Regen Rate="
+	settextlinetrigger settings8 :findphotondur "Photon Missile Duration="
+	settextlinetrigger settings9 :finddebris "Debris Loss Percent="
+	settextlinetrigger settings10 :findtradepercent "Trade Percent="
+	settextlinetrigger settings11 :findproductionrate "Production Rate="
+	settextlinetrigger settings12 :findmaxproductionrate "Max Production Regen="
+	settextlinetrigger settings13 :findmultiplephotons "Multiple Photons="
+	settextlinetrigger settings14 :findclearbusts "Clear Bust Days="
+	settextlinetrigger settings15 :findstealfactor "Steal Factor="
+	settextlinetrigger settings16 :findrobfactor "Rob Factor="
+	settextlinetrigger settings17 :findportmax "Port Production Max="
+	settextlinetrigger settings18 :findradiation "Radiation Lifetime="
+	settextlinetrigger reregister :reregister "Reregister Ship="
+	settextlinetrigger settings37 :findlimpetremoval "Limpet Removal="
+	settextlinetrigger settings20 :findgenesis "Genesis Torpedo="
+	settextlinetrigger settings21 :findarmid "Armid Mine="
+	settextlinetrigger settings22 :findlimpet "Limpet Mine="
+	settextlinetrigger settings23 :findbeacon "Beacon="
+	settextlinetrigger settings24 :findtwarpi "Type I TWarp="
+	settextlinetrigger settings25 :findtwarpii "Type II TWarp="
+	settextlinetrigger settings26 :findtwarpupgrade "TWarp Upgrade="
+	settextlinetrigger settings27 :findpsychic "Psychic Probe="
+	settextlinetrigger settings28 :findplanetscanner "Planet Scanner="
+	settextlinetrigger settings29 :findatomic "Atomic Detonator="
+	settextlinetrigger settings30 :findcorbo "Corbomite="
+	settextlinetrigger settings31 :findether "Ether Probe="
+	settextlinetrigger settings32 :findphoton "Photon Missile="
+	settextlinetrigger settings33 :findcloak "Cloaking Device="
+	settextlinetrigger settings34 :finddisruptor "Mine Disruptor="
+	settextlinetrigger settings35 :findholoscanner "Holographic Scanner="
+	settextlinetrigger settings36 :finddensityscan "Density Scanner="
+	settextlinetrigger settings38 :findmaxplanets "Max Planet Sector="
+	settextlinetrigger settings39 :findmaxgameplanets ", sectors"
+	settextlinetrigger settings40 :findfedspacephotons "FedSpace Photons="
+	settextlinetrigger settings41 :findlatency "Latency="
+	settextlinetrigger settings42 :finddelayshipmove "Ship Delay="
+	settextlinetrigger settings43 :finddelayplanetmove "Planet Delay="
+	settextlinetrigger settings44 :finddelayotherattacks "Other Attacks Delay="
+	settextlinetrigger settings45 :finddelayshiptransporter "Ship Transporter Delay="
+	settextlinetrigger settings46 :finddelayplanettransporter "Planet Transporter Delay="
+	settextlinetrigger settings47 :finddelayeprobe "EProbe Delay="
+	settextlinetrigger settings48 :finddelayphotonlaunch "Photon Launch Delay="
+	settextlinetrigger settings49 :finddelayphotonwave "Photon Wave Delay="
+	pause
 
-  getword CURRENTLINE $GAME~CHECK 3
-  striptext $GAME~CHECK "Sector="
-  setvar $GAME~MAX_PLANETS_PER_SECTOR $GAME~CHECK
-  savevar $GAME~MAX_PLANETS_PER_SECTOR
-  pause
-  :GAME~FINDMAXGAMEPLANETS
-  getword CURRENTLINE $GAME~CHECK 9
-  striptext $GAME~CHECK "."
-  setvar $GAME~MAX_PLANETS_IN_GAME $GAME~CHECK
-  savevar $GAME~MAX_PLANETS_IN_GAME
-  pause
-  :GAME~FINDMBBS
-  getword CURRENTLINE $GAME~MBBS_CK 2
-  striptext $GAME~MBBS_CK "Compatibility="
-  if ($GAME~MBBS_CK = "True")
-    setvar $GAME~MBBS TRUE
-    savevar $GAME~MBBS
-  elseif ($GAME~MBBS_CK = "False")
-    setvar $GAME~MBBS FALSE
-    savevar $GAME~MBBS
-  end
-  pause
-  :GAME~FINDALIENS
-  getword CURRENTLINE $GAME~CHECK 2
-  striptext $GAME~CHECK "Aliens="
-  if ($GAME~CHECK = "True")
-    setvar $GAME~INTERNALALIENS TRUE
-    savevar $GAME~INTERNALALIENS
-  elseif ($GAME~CHECK = "False")
-    setvar $GAME~INTERNALALIENS FALSE
-    savevar $GAME~INTERNALALIENS
-  end
-  pause
-  :GAME~FINDFERRENGI
-  getword CURRENTLINE $GAME~CHECK 2
-  striptext $GAME~CHECK "Ferrengi="
-  if ($GAME~CHECK = "True")
-    setvar $GAME~INTERNALFERRENGI TRUE
-    savevar $GAME~INTERNALFERRENGI
-  elseif ($GAME~CHECK = "False")
-    setvar $GAME~INTERNALFERRENGI FALSE
-    savevar $GAME~INTERNALFERRENGI
-  end
-  pause
-  :GAME~FINDMAXCOMMANDS
-  getword CURRENTLINE $GAME~CHECK 2
-  striptext $GAME~CHECK "Commands="
-  setvar $GAME~MAX_COMMANDS $GAME~CHECK
-  savevar $GAME~MAX_COMMANDS
-  pause
-  :GAME~FINDINACTIVE
-  getword CURRENTLINE $GAME~CHECK 2
-  striptext $GAME~CHECK "Time="
-  setvar $GAME~INACTIVE_TIME $GAME~CHECK
-  savevar $GAME~INACTIVE_TIME
-  pause
-  :GAME~FINDCOLOREGEN
-  setvar $GAME~LINE CURRENTLINE
-  striptext $GAME~LINE "Colonist Regen Rate="
-  striptext $GAME~LINE ","
-  lowercase $GAME~LINE
-  replacetext $GAME~LINE "m" 000000
-  replacetext $GAME~LINE "k" 000
-  setvar $GAME~COLONIST_REGEN $GAME~LINE
-  savevar $GAME~COLONIST_REGEN
-  pause
-  :GAME~FINDPHOTONDUR
-  getword CURRENTLINE $GAME~CHECK 3
-  striptext $GAME~CHECK "Duration="
-  setvar $GAME~PHOTON_DURATION $GAME~CHECK
-  savevar $GAME~PHOTON_DURATION
-  if ($GAME~PHOTON_DURATION <= 0)
-    setvar $GAME~PHOTONS_ENABLED FALSE
-  else
-    setvar $GAME~PHOTONS_ENABLED TRUE
-  end
-  savevar $GAME~PHOTONS_ENABLED
-  pause
-  :GAME~FINDDEBRIS
-  getword CURRENTLINE $GAME~CHECK 3
-  striptext $GAME~CHECK "Percent="
-  striptext $GAME~CHECK "%"
-  setvar $GAME~DEBRIS_LOSS $GAME~CHECK
-  savevar $GAME~DEBRIS_LOSS
-  pause
-  :GAME~FINDTRADEPERCENT
-  getword CURRENTLINE $GAME~PTRADESETTING 2
-  striptext $GAME~PTRADESETTING "Percent="
-  striptext $GAME~PTRADESETTING "%"
-  savevar $GAME~PTRADESETTING
-  pause
-  :GAME~FINDPRODUCTIONRATE
-  getword CURRENTLINE $GAME~PRODUCTION_RATE 2
-  striptext $GAME~PRODUCTION_RATE "Rate="
-  savevar $GAME~PRODUCTION_RATE
-  pause
-  :GAME~FINDMAXPRODUCTIONRATE
-  getword CURRENTLINE $GAME~PRODUCTION_REGEN 3
-  striptext $GAME~PRODUCTION_REGEN "Regen="
-  savevar $GAME~PRODUCTION_REGEN
-  pause
-  :GAME~FINDMULTIPLEPHOTONS
-  getword CURRENTLINE $GAME~MULTIPLE_PHOTONS 2
-  striptext $GAME~MULTIPLE_PHOTONS "Photons="
-  if ($GAME~MULTIPLE_PHOTONS = "True")
-    setvar $GAME~MULTIPLE_PHOTONS TRUE
-  else
-    setvar $GAME~MULTIPLE_PHOTONS FALSE
-  end
-  savevar $GAME~MULTIPLE_PHOTONS
-  pause
-  :GAME~FINDCLEARBUSTS
-  getword CURRENTLINE $GAME~CLEAR_BUST_DAYS 3
-  striptext $GAME~CLEAR_BUST_DAYS "Days="
-  savevar $GAME~CLEAR_BUST_DAYS
-  pause
-  :GAME~FINDSTEALFACTOR
-  getword CURRENTLINE $GAME~STEAL_FACTOR 2
-  striptext $GAME~STEAL_FACTOR "Factor="
-  striptext $GAME~STEAL_FACTOR "%"
-  setvar $GAME~ACTUAL_STEAL_FACTOR $GAME~STEAL_FACTOR
-  savevar $GAME~ACTUAL_STEAL_FACTOR
-  savevar $GAME~STEAL_FACTOR
-  pause
-  :GAME~FINDROBFACTOR
-  getword CURRENTLINE $GAME~ROB_FACTOR 2
-  striptext $GAME~ROB_FACTOR "Factor="
-  striptext $GAME~ROB_FACTOR "%"
-  setvar $GAME~ACTUAL_ROB_FACTOR $GAME~ROB_FACTOR
-  savevar $GAME~ACTUAL_ROB_FACTOR
-  savevar $GAME~ROB_FACTOR
-  pause
-  :GAME~FINDPORTMAX
-  setvar $GAME~LINE CURRENTLINE
-  striptext $GAME~LINE "Port Production Max="
-  setvar $GAME~PORT_MAX $GAME~LINE
-  savevar $GAME~PORT_MAX
-  pause
-  :GAME~FINDRADIATION
-  getword CURRENTLINE $GAME~RADIATION_LIFETIME 2
-  striptext $GAME~RADIATION_LIFETIME "Lifetime="
-  savevar $GAME~RADIATION_LIFETIME
-  pause
-  :GAME~FINDLIMPETREMOVAL
-  getword CURRENTLINE $GAME~LIMPET_REMOVAL_COST 2
-  striptext $GAME~LIMPET_REMOVAL_COST "Removal="
-  striptext $GAME~LIMPET_REMOVAL_COST ","
-  striptext $GAME~LIMPET_REMOVAL_COST "$"
-  savevar $GAME~LIMPET_REMOVAL_COST
-  setvar $GAME~LSD_LIMPREMOVALCOST $GAME~LIMPET_REMOVAL_COST
-  savevar $GAME~LSD_LIMPREMOVALCOST
-  pause
-  :GAME~FINDGENESIS
-  getword CURRENTLINE $GAME~GENESIS_COST 2
-  striptext $GAME~GENESIS_COST "Torpedo="
-  striptext $GAME~GENESIS_COST ","
-  striptext $GAME~GENESIS_COST "$"
-  savevar $GAME~GENESIS_COST
-  setvar $GAME~LSD_GENCOST $GAME~GENESIS_COST
-  savevar $GAME~LSD_GENCOST
-  pause
-  :GAME~FINDARMID
-  getword CURRENTLINE $GAME~ARMID_COST 2
-  striptext $GAME~ARMID_COST "Mine="
-  striptext $GAME~ARMID_COST ","
-  striptext $GAME~ARMID_COST "$"
-  savevar $GAME~ARMID_COST
-  setvar $GAME~LSD_ARMIDCOST $GAME~ARMID_COST
-  savevar $GAME~LSD_ARMIDCOST
-  pause
-  :GAME~FINDLIMPET
-  getword CURRENTLINE $GAME~LIMPET_COST 2
-  striptext $GAME~LIMPET_COST "Mine="
-  striptext $GAME~LIMPET_COST ","
-  striptext $GAME~LIMPET_COST "$"
-  savevar $GAME~LIMPET_COST
-  setvar $GAME~LSD_LIMPCOST $GAME~LIMPET_COST
-  savevar $GAME~LSD_LIMPCOST
-  pause
-  :GAME~FINDBEACON
-  getword CURRENTLINE $GAME~BEACON_COST 1
-  striptext $GAME~BEACON_COST "Beacon="
-  striptext $GAME~BEACON_COST ","
-  striptext $GAME~BEACON_COST "$"
-  savevar $GAME~BEACON_COST
-  setvar $GAME~LSD_BEACON $GAME~BEACON_COST
-  savevar $GAME~LSD_BEACON
-  pause
-  :GAME~FINDTWARPI
-  getword CURRENTLINE $GAME~TWARPI_COST 3
-  striptext $GAME~TWARPI_COST "TWarp="
-  striptext $GAME~TWARPI_COST ","
-  striptext $GAME~TWARPI_COST "$"
-  savevar $GAME~TWARPI_COST
-  setvar $GAME~LSD_TWARPICOST $GAME~TWARPI_COST
-  savevar $GAME~LSD_TWARPICOST
-  pause
-  :GAME~FINDTWARPII
-  getword CURRENTLINE $GAME~TWARPII_COST 3
-  striptext $GAME~TWARPII_COST "TWarp="
-  striptext $GAME~TWARPII_COST ","
-  striptext $GAME~TWARPII_COST "$"
-  savevar $GAME~TWARPII_COST
-  setvar $GAME~LSD_TWARPIICOST $GAME~TWARPII_COST
-  savevar $GAME~LSD_TWARPIICOST
-  pause
-  :GAME~FINDTWARPUPGRADE
-  getword CURRENTLINE $GAME~TWARP_UPGRADE_COST 2
-  striptext $GAME~TWARP_UPGRADE_COST "Upgrade="
-  striptext $GAME~TWARP_UPGRADE_COST ","
-  striptext $GAME~TWARP_UPGRADE_COST "$"
-  savevar $GAME~TWARP_UPGRADE_COST
-  setvar $GAME~LSD_TWARPUPCOST $GAME~TWARP_UPGRADE_COST
-  savevar $GAME~LSD_TWARPUPCOST
-  pause
-  :GAME~FINDPSYCHIC
-  getword CURRENTLINE $GAME~PSYCHIC_COST 2
-  striptext $GAME~PSYCHIC_COST "Probe="
-  striptext $GAME~PSYCHIC_COST ","
-  striptext $GAME~PSYCHIC_COST "$"
-  savevar $GAME~PSYCHIC_COST
-  pause
-  :GAME~FINDPLANETSCANNER
-  getword CURRENTLINE $GAME~PLANET_SCANNER_COST 2
-  striptext $GAME~PLANET_SCANNER_COST "Scanner="
-  striptext $GAME~PLANET_SCANNER_COST ","
-  striptext $GAME~PLANET_SCANNER_COST "$"
-  savevar $GAME~PLANET_SCANNER_COST
-  setvar $GAME~LSD_PSCAN $GAME~PLANET_SCANNER_COST
-  savevar $GAME~LSD_PSCAN
-  pause
-  :GAME~FINDATOMIC
-  getword CURRENTLINE $GAME~ATOMIC_COST 2
-  striptext $GAME~ATOMIC_COST "Detonator="
-  striptext $GAME~ATOMIC_COST ","
-  striptext $GAME~ATOMIC_COST "$"
-  savevar $GAME~ATOMIC_COST
-  setvar $GAME~LSD_ATOMICCOST $GAME~ATOMIC_COST
-  savevar $GAME~LSD_ATOMICCOST
-  pause
-  :GAME~REREGISTER
-  killtrigger REREGISTER
-  gosub :GETCOST
-  setvar $GAME~LSD_REREGISTERCOST $GAME~LSD_COST
-  savevar $GAME~LSD_REREGISTERCOST
-  pause
-  :GAME~FINDCORBO
-  getword CURRENTLINE $GAME~CORBO_COST 1
-  striptext $GAME~CORBO_COST "Corbomite="
-  striptext $GAME~CORBO_COST ","
-  striptext $GAME~CORBO_COST "$"
-  savevar $GAME~CORBO_COST
-  setvar $GAME~LSD_CORBOCOST $GAME~CORBO_COST
-  savevar $GAME~LSD_CORBOCOST
-  pause
-  :GAME~FINDETHER
-  getword CURRENTLINE $GAME~PROBE_COST 2
-  striptext $GAME~PROBE_COST "Probe="
-  striptext $GAME~PROBE_COST ","
-  striptext $GAME~PROBE_COST "$"
-  savevar $GAME~PROBE_COST
-  setvar $GAME~LSD_EPROBE $GAME~PROBE_COST
-  savevar $GAME~LSD_EPROBE
-  pause
-  :GAME~FINDPHOTON
-  getword CURRENTLINE $GAME~PHOTON_COST 2
-  striptext $GAME~PHOTON_COST "Missile="
-  striptext $GAME~PHOTON_COST ","
-  striptext $GAME~PHOTON_COST "$"
-  savevar $GAME~PHOTON_COST
-  setvar $GAME~LSD_PHOTONCOST $GAME~PHOTON_COST
-  savevar $GAME~LSD_PHOTONCOST
-  pause
-  :GAME~FINDCLOAK
-  getword CURRENTLINE $GAME~CLOAK_COST 2
-  striptext $GAME~CLOAK_COST "Device="
-  striptext $GAME~CLOAK_COST ","
-  striptext $GAME~CLOAK_COST "$"
-  savevar $GAME~CLOAK_COST
-  setvar $GAME~LSD_CLOAKCOST $GAME~CLOAK_COST
-  savevar $GAME~LSD_CLOAKCOST
-  pause
-  :GAME~FINDDISRUPTOR
-  getword CURRENTLINE $GAME~DISRUPTOR_COST 2
-  striptext $GAME~DISRUPTOR_COST "Disruptor="
-  striptext $GAME~DISRUPTOR_COST ","
-  striptext $GAME~DISRUPTOR_COST "$"
-  savevar $GAME~DISRUPTOR_COST
-  setvar $GAME~LSD_DISRUPTCOST $GAME~DISRUPTOR_COST
-  savevar $GAME~LSD_DISRUPTCOST
-  pause
-  :GAME~FINDHOLOSCANNER
-  getword CURRENTLINE $GAME~HOLO_COST 2
-  striptext $GAME~HOLO_COST "Scanner="
-  striptext $GAME~HOLO_COST ","
-  striptext $GAME~HOLO_COST "$"
-  savevar $GAME~HOLO_COST
-  setvar $GAME~LSD_HOLOCOST $GAME~HOLO_COST
-  savevar $GAME~LSD_HOLOCOST
-  pause
-  :GAME~FINDDENSITYSCAN
+	:game~findlatency
+	getword currentline $game~latency 1
+	striptext $game~latency "Latency="
+	savevar $game~latency
+	pause
 
-  getword CURRENTLINE $GAME~DENSITY_COST 2
-  striptext $GAME~DENSITY_COST "Scanner="
-  striptext $GAME~DENSITY_COST ","
-  striptext $GAME~DENSITY_COST "$"
-  savevar $GAME~DENSITY_COST
-  setvar $GAME~LSD_DSCANCOST $GAME~DENSITY_COST
-  savevar $GAME~LSD_DSCANCOST
-  setvar $GAME~FILEHEADINGS "MBBS     COLO_REGEN     PTRADE     SF     RF     PORTMAX"
-  setvar $GAME~FILEOUTPUT $GAME~MBBS&"     "&$GAME~COLONIST_REGEN&"     "&$GAME~PTRADESETTING&"     "&$GAME~STEAL_FACTOR&"     "&$GAME~ROB_FACTOR&"     "&$GAME~PORT_MAX
-  delete $GAME~GAME_SETTINGS_FILE
-  write $GAME~GAME_SETTINGS_FILE $GAME~FILEHEADINGS
-  write $GAME~GAME_SETTINGS_FILE $GAME~FILEOUTPUT
-  setvar $GAME~STEAL_FACTOR ((30 * $GAME~STEAL_FACTOR) / 100)
-  savevar $GAME~STEAL_FACTOR
-  setvar $GAME~ROB_FACTOR ((3 * 100) / $GAME~ROB_FACTOR)
-  savevar $GAME~ROB_FACTOR
+	:game~finddelayshipmove
+	setvar $game~delay 0
+	setvar $game~delayword 2
+	gosub :convertdelay
+	setvar $game~delayship $game~delay
+	savevar $game~delayship
+	pause
 
-  send "x*"
+	:game~finddelayplanetmove
+	setvar $game~delay 0
+	setvar $game~delayword 2
+	gosub :convertdelay
+	setvar $game~delayplanet $game~delay
+	savevar $game~delayplanet
+	pause
 
-  settexttrigger PROMPT :ALLPROMPTSCATCH ""
-  setdelaytrigger PROMPT_DELAY :CURRENT_PROMPT_DELAY 2000
-  send "?"
-  pause
-  :GAME~CURRENT_PROMPT_DELAY
+	:game~finddelayotherattacks
+	setvar $game~delay 0
+	setvar $game~delayword 3
+	gosub :convertdelay
+	setvar $game~delayotherattack $game~delay
+	savevar $game~delayotherattack
+	pause
 
-  killtrigger PROMPT
-  goto :WHISTLEWHILEYOUWORKSETTINGS
-  :GAME~ALLPROMPTSCATCH
+	:game~finddelayshiptransporter
+	setvar $game~delay 0
+	setvar $game~delayword 3
+	gosub :convertdelay
+	setvar $game~delayshiptransporter $game~delay
+	savevar $game~delayshiptransporter
+	pause
 
-  setvar $GAME~VALID_GAME_MENU_PROMPT FALSE
-  if ((CURRENTLINE = "Selection (? for menu):") or (CURRENTLINE = "Selection (? for menu): ") or (CURRENTLINE = "Enter your choice:") or (CURRENTLINE = "Enter your choice: "))
-    setvar $GAME~VALID_GAME_MENU_PROMPT TRUE
-  end
-  if ($GAME~VALID_GAME_MENU_PROMPT = TRUE)
-    setvar $GAME~GAME_MENU_PROMPT CURRENTLINE
-    setvar $GAME~GAME_MENU_PROMPT_ANSI CURRENTANSILINE
-    savevar $GAME~GAME_MENU_PROMPT
-    savevar $GAME~GAME_MENU_PROMPT_ANSI
-  end
-  settexttrigger PROMPT :ALLPROMPTSCATCH ""
-  pause
-  :GAME~TRYAGAINSETTINGS
+	:game~finddelayplanettransporter
+	setvar $game~delay 0
+	setvar $game~delayword 3
+	gosub :convertdelay
+	setvar $game~delayplanettransporter $game~delay
+	savevar $game~delayplanettransporter
+	pause
 
-  killalltriggers
-  settextlinetrigger GAMECLOSED1 :GAMECLOSEDSETTINGS "I'm sorry, but this is a closed game."
-  settextlinetrigger GAMECLOSED2 :GAMECLOSEDSETTINGS "www.tradewars.com                                   Epic Interactive Strategy"
-  settextlinetrigger GAMECLOSED3 :GAMECLOSEDSETTINGS " day(s) to get back in."
-  settexttrigger PHEW :BACK_TO_GAME "Command [TL"
-  setdelaytrigger DELAY_CLOSE :GAMECLOSEDSETTINGS 5000
-  loadvar $BOT~PASSWORD
-  send "T***"&$BOT~PASSWORD&"*    *    *    "
-  pause
-  :GAME~GAMECLOSEDSETTINGS
-  killalltriggers
-  if (CONNECTED <> TRUE)
-    load "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\relog.cts"
-    seteventtrigger RELOGENDED :RELOGENDED "SCRIPT STOPPED" "scripts\"&$BOT~MOMBOT_DIRECTORY&"\commands\general\relog.cts"
-    pause
-    :GAME~RELOGENDED
-    goto :TRYAGAINSETTINGS
-  end
-  setdelaytrigger WHISTLEWHILEYOUWORKSETTINGS :WHISTLEWHILEYOUWORKSETTINGS 1500
-  settextlinetrigger AT_GAME_MENU :TRYAGAINSETTINGS "T - Play Trade Wars 2002"
-  pause
-  :GAME~WHISTLEWHILEYOUWORKSETTINGS
-  loadvar $BOT~LETTER
-  send $BOT~LETTER&"*"
-  settexttrigger REFRESHPAUSE :REFRESHPAUSE "[Pause]"
-  goto :GAMECLOSEDSETTINGS
-  :GAME~REFRESHPAUSE
+	:game~finddelayeprobe
+	setvar $game~delay 0
+	setvar $game~delayword 2
+	gosub :convertdelay
+	setvar $game~delayeprobe $game~delay
+	savevar $game~delayeprobe
+	pause
 
-  send "*  "
-  pause
-  :GAME~BACK_TO_GAME
-  killalltriggers
-  if ($GAME~FEDSPACEPHOTONS = "")
+	:game~finddelayphotonlaunch
+	setvar $game~delay 0
+	setvar $game~delayword 3
+	gosub :convertdelay
+	setvar $game~delayphotonlaunch $game~delay
+	savevar $game~delayphotonlaunch
+	pause
 
-    setvar $GAME~FEDSPACEPHOTONS FALSE
-    savevar $GAME~FEDSPACEPHOTONS
-  end
-  send "  *  *  zaz*z*za9999*z*"
+	:game~finddelayphotonwave
+	setvar $game~delay 0
+	setvar $game~delayword 3
+	gosub :convertdelay
+	setvar $game~delayphotondelay $game~delay
+	savevar $game~delayphotondelay
+	pause
 
+	:game~findgold
+	getword currentline $game~check 2
+	striptext $game~check "Enabled="
+	if ($game~check = "True")
+		setvar $game~goldenabled true
+		savevar $game~goldenabled
+	else
+		setvar $game~goldenabled false
+		savevar $game~goldenabled
+	end
+	pause
 
+	:game~findfedspacephotons
+	getword currentline $game~check 2
+	striptext $game~check "Photons="
+	if ($game~check = "True")
+		setvar $game~fedspacephotons true
+		savevar $game~fedspacephotons
+	else
+		setvar $game~fedspacephotons false
+		savevar $game~fedspacephotons
+	end
+	pause
 
-  gosub :PLAYER~QUIKSTATS
+	:game~findmaxplanets
+	getword currentline $game~check 3
+	striptext $game~check "Sector="
+	setvar $game~max_planets_per_sector $game~check
+	savevar $game~max_planets_per_sector
+	pause
+
+	:game~findmaxgameplanets
+	getword currentline $game~check 9
+	striptext $game~check "."
+	setvar $game~max_planets_in_game $game~check
+	savevar $game~max_planets_in_game
+	pause
+
+	:game~findmbbs
+	getword currentline $game~mbbs_ck 2
+	striptext $game~mbbs_ck "Compatibility="
+	if ($game~mbbs_ck = "True")
+		setvar $game~mbbs true
+		savevar $game~mbbs
+	elseif ($game~mbbs_ck = "False")
+		setvar $game~mbbs false
+		savevar $game~mbbs
+	end
+	pause
+
+	:game~findaliens
+	getword currentline $game~check 2
+	striptext $game~check "Aliens="
+	if ($game~check = "True")
+		setvar $game~internalaliens true
+		savevar $game~internalaliens
+	elseif ($game~check = "False")
+		setvar $game~internalaliens false
+		savevar $game~internalaliens
+	end
+	pause
+
+	:game~findferrengi
+	getword currentline $game~check 2
+	striptext $game~check "Ferrengi="
+	if ($game~check = "True")
+		setvar $game~internalferrengi true
+		savevar $game~internalferrengi
+	elseif ($game~check = "False")
+		setvar $game~internalferrengi false
+		savevar $game~internalferrengi
+	end
+	pause
+
+	:game~findmaxcommands
+	getword currentline $game~check 2
+	striptext $game~check "Commands="
+	setvar $game~max_commands $game~check
+	savevar $game~max_commands
+	pause
+
+	:game~findinactive
+	getword currentline $game~check 2
+	striptext $game~check "Time="
+	setvar $game~inactive_time $game~check
+	savevar $game~inactive_time
+	pause
+
+	:game~findcoloregen
+	setvar $game~line currentline
+	striptext $game~line "Colonist Regen Rate="
+	striptext $game~line ","
+	lowercase $game~line
+	replacetext $game~line "m" 000000
+	replacetext $game~line "k" 000
+	setvar $game~colonist_regen $game~line
+	savevar $game~colonist_regen
+	pause
+
+	:game~findphotondur
+	getword currentline $game~check 3
+	striptext $game~check "Duration="
+	setvar $game~photon_duration $game~check
+	savevar $game~photon_duration
+	if ($game~photon_duration <= 0)
+		setvar $game~photons_enabled false
+	else
+		setvar $game~photons_enabled true
+	end
+	savevar $game~photons_enabled
+	pause
+
+	:game~finddebris
+	getword currentline $game~check 3
+	striptext $game~check "Percent="
+	striptext $game~check "%"
+	setvar $game~debris_loss $game~check
+	savevar $game~debris_loss
+	pause
+
+	:game~findtradepercent
+	getword currentline $game~ptradesetting 2
+	striptext $game~ptradesetting "Percent="
+	striptext $game~ptradesetting "%"
+	savevar $game~ptradesetting
+	pause
+
+	:game~findproductionrate
+	getword currentline $game~production_rate 2
+	striptext $game~production_rate "Rate="
+	savevar $game~production_rate
+	pause
+
+	:game~findmaxproductionrate
+	getword currentline $game~production_regen 3
+	striptext $game~production_regen "Regen="
+	savevar $game~production_regen
+	pause
+
+	:game~findmultiplephotons
+	getword currentline $game~multiple_photons 2
+	striptext $game~multiple_photons "Photons="
+	if ($game~multiple_photons = "True")
+		setvar $game~multiple_photons true
+	else
+		setvar $game~multiple_photons false
+	end
+	savevar $game~multiple_photons
+	pause
+
+	:game~findclearbusts
+	getword currentline $game~clear_bust_days 3
+	striptext $game~clear_bust_days "Days="
+	savevar $game~clear_bust_days
+	pause
+
+	:game~findstealfactor
+	getword currentline $game~steal_factor 2
+	striptext $game~steal_factor "Factor="
+	striptext $game~steal_factor "%"
+	setvar $game~actual_steal_factor $game~steal_factor
+	savevar $game~actual_steal_factor
+	savevar $game~steal_factor
+	pause
+
+	:game~findrobfactor
+	getword currentline $game~rob_factor 2
+	striptext $game~rob_factor "Factor="
+	striptext $game~rob_factor "%"
+	setvar $game~actual_rob_factor $game~rob_factor
+	savevar $game~actual_rob_factor
+	savevar $game~rob_factor
+	pause
+
+	:game~findportmax
+	setvar $game~line currentline
+	striptext $game~line "Port Production Max="
+	setvar $game~port_max $game~line
+	savevar $game~port_max
+	pause
+
+	:game~findradiation
+	getword currentline $game~radiation_lifetime 2
+	striptext $game~radiation_lifetime "Lifetime="
+	savevar $game~radiation_lifetime
+	pause
+
+	:game~findlimpetremoval
+	getword currentline $game~limpet_removal_cost 2
+	striptext $game~limpet_removal_cost "Removal="
+	striptext $game~limpet_removal_cost ","
+	striptext $game~limpet_removal_cost "$"
+	savevar $game~limpet_removal_cost
+	setvar $game~lsd_limpremovalcost $game~limpet_removal_cost
+	savevar $game~lsd_limpremovalcost
+	pause
+
+	:game~findgenesis
+	getword currentline $game~genesis_cost 2
+	striptext $game~genesis_cost "Torpedo="
+	striptext $game~genesis_cost ","
+	striptext $game~genesis_cost "$"
+	savevar $game~genesis_cost
+	setvar $game~lsd_gencost $game~genesis_cost
+	savevar $game~lsd_gencost
+	pause
+
+	:game~findarmid
+	getword currentline $game~armid_cost 2
+	striptext $game~armid_cost "Mine="
+	striptext $game~armid_cost ","
+	striptext $game~armid_cost "$"
+	savevar $game~armid_cost
+	setvar $game~lsd_armidcost $game~armid_cost
+	savevar $game~lsd_armidcost
+	pause
+
+	:game~findlimpet
+	getword currentline $game~limpet_cost 2
+	striptext $game~limpet_cost "Mine="
+	striptext $game~limpet_cost ","
+	striptext $game~limpet_cost "$"
+	savevar $game~limpet_cost
+	setvar $game~lsd_limpcost $game~limpet_cost
+	savevar $game~lsd_limpcost
+	pause
+
+	:game~findbeacon
+	getword currentline $game~beacon_cost 1
+	striptext $game~beacon_cost "Beacon="
+	striptext $game~beacon_cost ","
+	striptext $game~beacon_cost "$"
+	savevar $game~beacon_cost
+	setvar $game~lsd_beacon $game~beacon_cost
+	savevar $game~lsd_beacon
+	pause
+
+	:game~findtwarpi
+	getword currentline $game~twarpi_cost 3
+	striptext $game~twarpi_cost "TWarp="
+	striptext $game~twarpi_cost ","
+	striptext $game~twarpi_cost "$"
+	savevar $game~twarpi_cost
+	setvar $game~lsd_twarpicost $game~twarpi_cost
+	savevar $game~lsd_twarpicost
+	pause
+
+	:game~findtwarpii
+	getword currentline $game~twarpii_cost 3
+	striptext $game~twarpii_cost "TWarp="
+	striptext $game~twarpii_cost ","
+	striptext $game~twarpii_cost "$"
+	savevar $game~twarpii_cost
+	setvar $game~lsd_twarpiicost $game~twarpii_cost
+	savevar $game~lsd_twarpiicost
+	pause
+
+	:game~findtwarpupgrade
+	getword currentline $game~twarp_upgrade_cost 2
+	striptext $game~twarp_upgrade_cost "Upgrade="
+	striptext $game~twarp_upgrade_cost ","
+	striptext $game~twarp_upgrade_cost "$"
+	savevar $game~twarp_upgrade_cost
+	setvar $game~lsd_twarpupcost $game~twarp_upgrade_cost
+	savevar $game~lsd_twarpupcost
+	pause
+
+	:game~findpsychic
+	getword currentline $game~psychic_cost 2
+	striptext $game~psychic_cost "Probe="
+	striptext $game~psychic_cost ","
+	striptext $game~psychic_cost "$"
+	savevar $game~psychic_cost
+	pause
+
+	:game~findplanetscanner
+	getword currentline $game~planet_scanner_cost 2
+	striptext $game~planet_scanner_cost "Scanner="
+	striptext $game~planet_scanner_cost ","
+	striptext $game~planet_scanner_cost "$"
+	savevar $game~planet_scanner_cost
+	setvar $game~lsd_pscan $game~planet_scanner_cost
+	savevar $game~lsd_pscan
+	pause
+
+	:game~findatomic
+	getword currentline $game~atomic_cost 2
+	striptext $game~atomic_cost "Detonator="
+	striptext $game~atomic_cost ","
+	striptext $game~atomic_cost "$"
+	savevar $game~atomic_cost
+	setvar $game~lsd_atomiccost $game~atomic_cost
+	savevar $game~lsd_atomiccost
+	pause
+
+	:game~reregister
+	killtrigger reregister
+	gosub :getcost
+	setvar $game~lsd_reregistercost $game~lsd_cost
+	savevar $game~lsd_reregistercost
+	pause
+
+	:game~findcorbo
+	getword currentline $game~corbo_cost 1
+	striptext $game~corbo_cost "Corbomite="
+	striptext $game~corbo_cost ","
+	striptext $game~corbo_cost "$"
+	savevar $game~corbo_cost
+	setvar $game~lsd_corbocost $game~corbo_cost
+	savevar $game~lsd_corbocost
+	pause
+
+	:game~findether
+	getword currentline $game~probe_cost 2
+	striptext $game~probe_cost "Probe="
+	striptext $game~probe_cost ","
+	striptext $game~probe_cost "$"
+	savevar $game~probe_cost
+	setvar $game~lsd_eprobe $game~probe_cost
+	savevar $game~lsd_eprobe
+	pause
+
+	:game~findphoton
+	getword currentline $game~photon_cost 2
+	striptext $game~photon_cost "Missile="
+	striptext $game~photon_cost ","
+	striptext $game~photon_cost "$"
+	savevar $game~photon_cost
+	setvar $game~lsd_photoncost $game~photon_cost
+	savevar $game~lsd_photoncost
+	pause
+
+	:game~findcloak
+	getword currentline $game~cloak_cost 2
+	striptext $game~cloak_cost "Device="
+	striptext $game~cloak_cost ","
+	striptext $game~cloak_cost "$"
+	savevar $game~cloak_cost
+	setvar $game~lsd_cloakcost $game~cloak_cost
+	savevar $game~lsd_cloakcost
+	pause
+
+	:game~finddisruptor
+	getword currentline $game~disruptor_cost 2
+	striptext $game~disruptor_cost "Disruptor="
+	striptext $game~disruptor_cost ","
+	striptext $game~disruptor_cost "$"
+	savevar $game~disruptor_cost
+	setvar $game~lsd_disruptcost $game~disruptor_cost
+	savevar $game~lsd_disruptcost
+	pause
+
+	:game~findholoscanner
+	getword currentline $game~holo_cost 2
+	striptext $game~holo_cost "Scanner="
+	striptext $game~holo_cost ","
+	striptext $game~holo_cost "$"
+	savevar $game~holo_cost
+	setvar $game~lsd_holocost $game~holo_cost
+	savevar $game~lsd_holocost
+	pause
+
+	:game~finddensityscan
+	getword currentline $game~density_cost 2
+	striptext $game~density_cost "Scanner="
+	striptext $game~density_cost ","
+	striptext $game~density_cost "$"
+	savevar $game~density_cost
+	setvar $game~lsd_dscancost $game~density_cost
+	savevar $game~lsd_dscancost
+	setvar $game~fileheadings "MBBS     COLO_REGEN     PTRADE     SF     RF     PORTMAX"
+	setvar $game~fileoutput $game~mbbs&"     "&$game~colonist_regen&"     "&$game~ptradesetting&"     "&$game~steal_factor&"     "&$game~rob_factor&"     "&$game~port_max
+	delete $game~game_settings_file
+	write $game~game_settings_file $game~fileheadings
+	write $game~game_settings_file $game~fileoutput
+	setvar $game~steal_factor ((30 * $game~steal_factor) / 100)
+	savevar $game~steal_factor
+	setvar $game~rob_factor ((3 * 100) / $game~rob_factor)
+	savevar $game~rob_factor
+
+	send "x*"
+
+	settexttrigger prompt :allpromptscatch ""
+	setdelaytrigger prompt_delay :current_prompt_delay 2000
+	send "?"
+	pause
+
+	:game~current_prompt_delay
+	killtrigger prompt
+	goto :whistlewhileyouworksettings
+
+	:game~allpromptscatch
+	setvar $game~valid_game_menu_prompt false
+	if ((currentline = "Selection (? for menu):") or (currentline = "Selection (? for menu): ") or (currentline = "Enter your choice:") or (currentline = "Enter your choice: "))
+		setvar $game~valid_game_menu_prompt true
+	end
+	if ($game~valid_game_menu_prompt = true)
+		setvar $game~game_menu_prompt currentline
+		setvar $game~game_menu_prompt_ansi currentansiline
+		savevar $game~game_menu_prompt
+		savevar $game~game_menu_prompt_ansi
+	end
+	settexttrigger prompt :allpromptscatch ""
+	pause
+
+	:game~tryagainsettings
+	killalltriggers
+	settextlinetrigger gameclosed1 :gameclosedsettings "I'm sorry, but this is a closed game."
+	settextlinetrigger gameclosed2 :gameclosedsettings "www.tradewars.com                                   Epic Interactive Strategy"
+	settextlinetrigger gameclosed3 :gameclosedsettings " day(s) to get back in."
+	settexttrigger phew :back_to_game "Command [TL"
+	setdelaytrigger delay_close :gameclosedsettings 5000
+	loadvar $bot~password
+	send "T***"&$bot~password&"*    *    *    "
+	pause
+
+	:game~gameclosedsettings
+	killalltriggers
+	if (connected <> true)
+		load "scripts\"&$bot~mombot_directory&"\commands\general\relog.cts"
+		seteventtrigger relogended :relogended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\general\relog.cts"
+		pause
+
+		:game~relogended
+		goto :tryagainsettings
+	end
+	setdelaytrigger whistlewhileyouworksettings :whistlewhileyouworksettings 1500
+	settextlinetrigger at_game_menu :tryagainsettings "T - Play Trade Wars 2002"
+	pause
+
+	:game~whistlewhileyouworksettings
+	loadvar $bot~letter
+	send $bot~letter&"*"
+	settexttrigger refreshpause :refreshpause "[Pause]"
+	goto :gameclosedsettings
+
+	:game~refreshpause
+	send "*  "
+	pause
+
+	:game~back_to_game
+	killalltriggers
+	if ($game~fedspacephotons = "")
+
+		setvar $game~fedspacephotons false
+		savevar $game~fedspacephotons
+	end
+	send "  *  *  zaz*z*za9999*z*"
+
+	gosub :player~quikstats
 end
-killtrigger SETTINGS5
-if ($GAME~DID_GAMESTATS = TRUE)
-  setvar $GAME~GAMESTATS TRUE
+killtrigger settings5
+if ($game~did_gamestats = true)
+	setvar $game~gamestats true
 else
-  setvar $GAME~GAMESTATS FALSE
+	setvar $game~gamestats false
 end
-savevar $GAME~GAMESTATS
+savevar $game~gamestats
 return
-:GAME~CONVERTDELAY
 
-getword CURRENTLINE $GAME~CHECK1 $GAME~DELAYWORD
-striptext $GAME~CHECK1 "Delay="
-if ($GAME~CHECK1 = "Constant")
-  getword CURRENTLINE $GAME~CHECK2 ($GAME~DELAYWORD + 1)
-  striptext $GAME~CHECK2 "("
-  getword CURRENTLINE $GAME~CHECK3 ($GAME~DELAYWORD + 2)
-  striptext $GAME~CHECK3 ")"
-  if ($GAME~CHECK3 = "s")
-    setvar $GAME~DELAY ($GAME~CHECK2 * 1000)
-  else
-    setvar $GAME~DELAY $GAME~CHECK2
-  end
-elseif ($GAME~CHECK1 = "None")
+:game~convertdelay
+getword currentline $game~check1 $game~delayword
+striptext $game~check1 "Delay="
+if ($game~check1 = "Constant")
+	getword currentline $game~check2 ($game~delayword + 1)
+	striptext $game~check2 "("
+	getword currentline $game~check3 ($game~delayword + 2)
+	striptext $game~check3 ")"
+	if ($game~check3 = "s")
+		setvar $game~delay ($game~check2 * 1000)
+	else
+		setvar $game~delay $game~check2
+	end
+elseif ($game~check1 = "None")
 
-  setvar $GAME~DELAY 0
+	setvar $game~delay 0
 else
 
-  setvar $GAME~DELAY $GAME~CHECK1
+	setvar $game~delay $game~check1
 end
 return
 
 include "source\include\player"
-:GAME~GETCOST
 
-
-
-setvar $GAME~LSD_COST 0
-getwordpos CURRENTLINE $GAME~LSD_POS "="
-if ($GAME~LSD_POS <> 0)
-  cuttext CURRENTLINE $GAME~LSD_COST ($GAME~LSD_POS + 1) 999
-  striptext $GAME~LSD_COST " cr"
+:game~getcost
+setvar $game~lsd_cost 0
+getwordpos currentline $game~lsd_pos "="
+if ($game~lsd_pos <> 0)
+	cuttext currentline $game~lsd_cost ($game~lsd_pos + 1) 999
+	striptext $game~lsd_cost " cr"
 end
 return

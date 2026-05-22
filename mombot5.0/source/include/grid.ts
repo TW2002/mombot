@@ -1,127 +1,130 @@
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:GRID~SURROUND
-:GRID~STARTSURROUND
+:grid~surround
+:grid~startsurround
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if ($PLAYER~SURROUNDPASSIVE)
-  send "szd"
-  settextlinetrigger SURROUNDSCANDEN :DONESURROUNDSCANDEN "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] D"
-  settexttrigger SURROUNDSCANFAILDEN :DONESURROUNDSCAN "Do you want instructions (Y/N) [N]?"
-  pause
-  :GRID~DONESURROUNDSCANDEN
-  killtrigger SURROUNDSCANDEN
-  killtrigger SURROUNDSCANFAILDEN
-  send "szh"
-  waiton "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
-  send "* "
+if ($player~surroundpassive)
+	send "szd"
+	settextlinetrigger surroundscanden :donesurroundscanden "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] D"
+	settexttrigger surroundscanfailden :donesurroundscan "Do you want instructions (Y/N) [N]?"
+	pause
+
+	:grid~donesurroundscanden
+	killtrigger surroundscanden
+	killtrigger surroundscanfailden
+	send "szh"
+	waiton "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
+	send "* "
 else
-  send "szh"
-  settextlinetrigger SURROUNDSCAN :DONESURROUNDSCAN "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
-  settexttrigger SURROUNDSCANFAIL :DONESURROUNDSCAN "Do you want instructions (Y/N) [N]?"
-  pause
-  :GRID~DONESURROUNDSCAN
-  killtrigger SURROUNDSCAN
-  killtrigger SURROUNDSCANFAIL
-  send "* "
+	send "szh"
+	settextlinetrigger surroundscan :donesurroundscan "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
+	settexttrigger surroundscanfail :donesurroundscan "Do you want instructions (Y/N) [N]?"
+	pause
+
+	:grid~donesurroundscan
+	killtrigger surroundscan
+	killtrigger surroundscanfail
+	send "* "
 end
-killtrigger SURROUNDSECTOR
-settexttrigger SURROUNDSECTOR :CONTINUESURROUNDSECTOR "["&$PLAYER~CURRENT_SECTOR&"]"
+killtrigger surroundsector
+settexttrigger surroundsector :continuesurroundsector "["&$player~current_sector&"]"
 pause
-:GRID~CONTINUESURROUNDSECTOR
-if ($GRID~ALREADY_CHECKED_SHIP <> TRUE)
-  gosub :SHIP~GETSHIPSTATS
+
+:grid~continuesurroundsector
+if ($grid~already_checked_ship <> true)
+	gosub :ship~getshipstats
 end
-if ($SHIP~SHIP_MAX_ATTACK > $PLAYER~FIGHTERS)
-  setvar $SHIP~SHIP_MAX_ATTACK ($PLAYER~FIGHTERS / 2)
+if ($ship~ship_max_attack > $player~fighters)
+	setvar $ship~ship_max_attack ($player~fighters / 2)
 end
 
-setvar $GRID~I 1
-setvar $GRID~SURROUNDSTRING "c v 0* y* "&$PLAYER~CURRENT_SECTOR&"* q "
-setvar $PLAYER~SURROUNDOUTPUT ""
-setvar $GRID~YOUROWNCOUNT 0
-if ($PLAYER~DROPOFFENSIVE = TRUE)
-  setvar $GRID~DEPLOYFIG "o"
-elseif ($PLAYER~DROPTOLL = TRUE)
-  setvar $GRID~DEPLOYFIG "t"
+setvar $grid~i 1
+setvar $grid~surroundstring "c v 0* y* "&$player~current_sector&"* q "
+setvar $player~surroundoutput ""
+setvar $grid~yourowncount 0
+if ($player~dropoffensive = true)
+	setvar $grid~deployfig "o"
+elseif ($player~droptoll = true)
+	setvar $grid~deployfig "t"
 else
-  setvar $GRID~DEPLOYFIG "d"
+	setvar $grid~deployfig "d"
 end
-setvar $GRID~TOTALWARPS SECTOR.WARPCOUNT[$PLAYER~CURRENT_SECTOR]
-while (SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$GRID~I] > 0)
-  setvar $GRID~ADJ_SEC SECTOR.WARPS[$PLAYER~CURRENT_SECTOR][$GRID~I]
-  getdistance $GRID~DISTANCE $GRID~ADJ_SEC $PLAYER~CURRENT_SECTOR
-  if ($GRID~DISTANCE <= 0)
-    send "^f"&$GRID~ADJ_SEC&"*"&$PLAYER~CURRENT_SECTOR&"*q"
-    waiton "ENDINTERROG"
-    getdistance $GRID~DISTANCE $GRID~ADJ_SEC $PLAYER~CURRENT_SECTOR
-  end
-  setvar $GRID~CONTAINSSHIELDEDPLANET FALSE
-  setvar $GRID~P 1
-  while ($GRID~P <= SECTOR.PLANETCOUNT[$GRID~ADJ_SEC])
-    getword SECTOR.PLANETS[$GRID~ADJ_SEC][$GRID~P] $GRID~TEST 1
-    if ($GRID~TEST = "<<<<")
-      setvar $GRID~CONTAINSSHIELDEDPLANET TRUE
-    end
-    add $GRID~P 1
-  end
-  setvar $GRID~TEMPOFFODD $SHIP~SHIP_OFFENSIVE_ODDS
-  multiply $GRID~TEMPOFFODD $SHIP~SHIP_MAX_ATTACK
-  divide $GRID~TEMPOFFODD 12
-  setvar $GRID~FIGOWNER SECTOR.FIGS.OWNER[$GRID~ADJ_SEC]
-  setvar $GRID~MINEOWNER SECTOR.MINES.OWNER[$GRID~ADJ_SEC]
-  setvar $GRID~LIMPOWNER SECTOR.LIMPETS.OWNER[$GRID~ADJ_SEC]
-  getword $GRID~FIGOWNER $GRID~ALIENCHECK 1
-  lowercase $GRID~ALIENCHECK
+setvar $grid~totalwarps sector.warpcount[$player~current_sector]
+while (sector.warps[$player~current_sector][$grid~i] > 0)
+	setvar $grid~adj_sec sector.warps[$player~current_sector][$grid~i]
+	getdistance $grid~distance $grid~adj_sec $player~current_sector
+	if ($grid~distance <= 0)
+		send "^f"&$grid~adj_sec&"*"&$player~current_sector&"*q"
+		waiton "ENDINTERROG"
+		getdistance $grid~distance $grid~adj_sec $player~current_sector
+	end
+	setvar $grid~containsshieldedplanet false
+	setvar $grid~p 1
+	while ($grid~p <= sector.planetcount[$grid~adj_sec])
+		getword sector.planets[$grid~adj_sec][$grid~p] $grid~test 1
+		if ($grid~test = "<<<<")
+			setvar $grid~containsshieldedplanet true
+		end
+		add $grid~p 1
+	end
+	setvar $grid~tempoffodd $ship~ship_offensive_odds
+	multiply $grid~tempoffodd $ship~ship_max_attack
+	divide $grid~tempoffodd 12
+	setvar $grid~figowner sector.figs.owner[$grid~adj_sec]
+	setvar $grid~mineowner sector.mines.owner[$grid~adj_sec]
+	setvar $grid~limpowner sector.limpets.owner[$grid~adj_sec]
+	getword $grid~figowner $grid~aliencheck 1
+	lowercase $grid~aliencheck
 
-  if (($PLAYER~SURROUNDOVERWRITE = FALSE) and (($GRID~FIGOWNER = "belong to your Corp") or ($GRID~FIGOWNER = "yours")))
-    add $GRID~YOUROWNCOUNT 1
-    if ($GRID~YOUROWNCOUNT = $GRID~TOTALWARPS)
-      setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) All sectors around are friendly fighters.*"
-      return
-    end
-  elseif (SECTOR.FIGS.QUANTITY[$GRID~ADJ_SEC] >= $GRID~TEMPOFFODD)
-    setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) Too many fighters in sector "&$GRID~ADJ_SEC&".*"
-  elseif (($GRID~ADJ_SEC <= 10) or ($GRID~ADJ_SEC = $MAP~STARDOCK))
-    setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) Avoided Fed Space, sector "&$GRID~ADJ_SEC&".*"
-  elseif ((SECTOR.PLANETCOUNT[$GRID~ADJ_SEC] > 0) and $PLAYER~SURROUNDAVOIDALLPLANETS)
-    setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) Avoided planet in sector "&$GRID~ADJ_SEC&".*"
-  elseif (($GRID~CONTAINSSHIELDEDPLANET = TRUE) and ($PLAYER~SURROUNDAVOIDSHIELDEDONLY = TRUE))
-    setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) Avoided shielded planet in sector "&$GRID~ADJ_SEC&".*"
-  elseif ($GRID~DISTANCE > 1)
-    setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) Avoided one way in sector "&$GRID~ADJ_SEC&".*"
-  elseif (($PLAYER~SURROUNDPASSIVE = TRUE) and (((SECTOR.ANOMALY[$GRID~ADJ_SEC] = TRUE) and (($GRID~LIMPOWNER <> "belong to your Corp") and ($GRID~LIMPOWNER <> "yours"))) or ((SECTOR.FIGS.QUANTITY[$GRID~ADJ_SEC] > 0) and ($GRID~ALIENCHECK <> "the")) or ((SECTOR.MINES.QUANTITY[$GRID~ADJ_SEC] > 0) and (($GRID~MINEOWNER <> "belong to your Corp") and ($GRID~MINEOWNER <> "yours")))))
-    setvar $PLAYER~SURROUNDOUTPUT $PLAYER~SURROUNDOUTPUT&"(Surround) Avoided non-passive situation in sector "&$GRID~ADJ_SEC&".*"
-  else
-    setvar $GRID~SURROUNDSTRING $GRID~SURROUNDSTRING&" m z "&$GRID~ADJ_SEC&"* z a "&$SHIP~SHIP_MAX_ATTACK&"* * "
-    if (($PLAYER~SURROUNDFIGS > 0) and ($PLAYER~FIGHTERS > $PLAYER~SURROUNDFIGS))
-      setvar $GRID~SURROUNDSTRING $GRID~SURROUNDSTRING&"f z"&$PLAYER~SURROUNDFIGS&"*zc"&$GRID~DEPLOYFIG&"*  "
-      subtract $PLAYER~FIGHTERS $PLAYER~SURROUNDFIGS
-      setvar $GRID~TARGET $GRID~ADJ_SEC
-      setsectorparameter $GRID~TARGET "FIGSEC" TRUE
-    end
-    if (($PLAYER~SURROUNDLIMP > 0) and (($PLAYER~LIMPETS > $PLAYER~SURROUNDLIMP) and ($PLAYER~LIMPETS > 0)))
-      setvar $GRID~SURROUNDSTRING $GRID~SURROUNDSTRING&"h2 z"&$PLAYER~SURROUNDLIMP&"*zc* "
-      subtract $PLAYER~LIMPETS $PLAYER~SURROUNDLIMP
-    end
+	if (($player~surroundoverwrite = false) and (($grid~figowner = "belong to your Corp") or ($grid~figowner = "yours")))
+		add $grid~yourowncount 1
+		if ($grid~yourowncount = $grid~totalwarps)
+			setvar $player~surroundoutput $player~surroundoutput&"(Surround) All sectors around are friendly fighters.*"
+			return
+		end
+	elseif (sector.figs.quantity[$grid~adj_sec] >= $grid~tempoffodd)
+		setvar $player~surroundoutput $player~surroundoutput&"(Surround) Too many fighters in sector "&$grid~adj_sec&".*"
+	elseif (($grid~adj_sec <= 10) or ($grid~adj_sec = $map~stardock))
+		setvar $player~surroundoutput $player~surroundoutput&"(Surround) Avoided Fed Space, sector "&$grid~adj_sec&".*"
+	elseif ((sector.planetcount[$grid~adj_sec] > 0) and $player~surroundavoidallplanets)
+		setvar $player~surroundoutput $player~surroundoutput&"(Surround) Avoided planet in sector "&$grid~adj_sec&".*"
+	elseif (($grid~containsshieldedplanet = true) and ($player~surroundavoidshieldedonly = true))
+		setvar $player~surroundoutput $player~surroundoutput&"(Surround) Avoided shielded planet in sector "&$grid~adj_sec&".*"
+	elseif ($grid~distance > 1)
+		setvar $player~surroundoutput $player~surroundoutput&"(Surround) Avoided one way in sector "&$grid~adj_sec&".*"
+	elseif (($player~surroundpassive = true) and (((sector.anomaly[$grid~adj_sec] = true) and (($grid~limpowner <> "belong to your Corp") and ($grid~limpowner <> "yours"))) or ((sector.figs.quantity[$grid~adj_sec] > 0) and ($grid~aliencheck <> "the")) or ((sector.mines.quantity[$grid~adj_sec] > 0) and (($grid~mineowner <> "belong to your Corp") and ($grid~mineowner <> "yours")))))
+		setvar $player~surroundoutput $player~surroundoutput&"(Surround) Avoided non-passive situation in sector "&$grid~adj_sec&".*"
+	else
+		setvar $grid~surroundstring $grid~surroundstring&" m z "&$grid~adj_sec&"* z a "&$ship~ship_max_attack&"* * "
+		if (($player~surroundfigs > 0) and ($player~fighters > $player~surroundfigs))
+			setvar $grid~surroundstring $grid~surroundstring&"f z"&$player~surroundfigs&"*zc"&$grid~deployfig&"*  "
+			subtract $player~fighters $player~surroundfigs
+			setvar $grid~target $grid~adj_sec
+			setsectorparameter $grid~target "FIGSEC" true
+		end
+		if (($player~surroundlimp > 0) and (($player~limpets > $player~surroundlimp) and ($player~limpets > 0)))
+			setvar $grid~surroundstring $grid~surroundstring&"h2 z"&$player~surroundlimp&"*zc* "
+			subtract $player~limpets $player~surroundlimp
+		end
 
-    if (($PLAYER~SURROUNDMINE > 0) and (($PLAYER~ARMIDS > $PLAYER~SURROUNDMINE) and ($PLAYER~ARMIDS > 0)))
-      setvar $GRID~SURROUNDSTRING $GRID~SURROUNDSTRING&"h1 z"&$PLAYER~SURROUNDMINE&"*zc* "
-      subtract $PLAYER~ARMIDS $PLAYER~SURROUNDMINE
-    end
+		if (($player~surroundmine > 0) and (($player~armids > $player~surroundmine) and ($player~armids > 0)))
+			setvar $grid~surroundstring $grid~surroundstring&"h1 z"&$player~surroundmine&"*zc* "
+			subtract $player~armids $player~surroundmine
+		end
 
-    setvar $GRID~SURROUNDSTRING $GRID~SURROUNDSTRING&"< "
-    if (($PLAYER~CURRENT_SECTOR <> $MAP~STARDOCK) and ($PLAYER~CURRENT_SECTOR > 10))
-      setvar $GRID~SURROUNDSTRING $GRID~SURROUNDSTRING&"za z "&$SHIP~SHIP_MAX_ATTACK&"* * "
-    end
-  end
-  add $GRID~I 1
+		setvar $grid~surroundstring $grid~surroundstring&"< "
+		if (($player~current_sector <> $map~stardock) and ($player~current_sector > 10))
+			setvar $grid~surroundstring $grid~surroundstring&"za z "&$ship~ship_max_attack&"* * "
+		end
+	end
+	add $grid~i 1
 end
-if ((($PLAYER~SURROUNDFIGS > 0) and ($PLAYER~FIGHTERS > $PLAYER~SURROUNDFIGS)) and (($PLAYER~CURRENT_SECTOR <> $MAP~STARDOCK) and ($PLAYER~CURRENT_SECTOR > 10)))
-  setvar $GRID~SURROUNDSTRING $GRID~SURROUNDSTRING&"f z"&$PLAYER~SURROUNDFIGS&"*zc"&$GRID~DEPLOYFIG&"*  "
-  subtract $PLAYER~FIGHTERS $PLAYER~SURROUNDFIGS
-  setvar $GRID~TARGET $PLAYER~CURRENT_SECTOR
-  setsectorparameter $GRID~TARGET "FIGSEC" TRUE
+if ((($player~surroundfigs > 0) and ($player~fighters > $player~surroundfigs)) and (($player~current_sector <> $map~stardock) and ($player~current_sector > 10)))
+	setvar $grid~surroundstring $grid~surroundstring&"f z"&$player~surroundfigs&"*zc"&$grid~deployfig&"*  "
+	subtract $player~fighters $player~surroundfigs
+	setvar $grid~target $player~current_sector
+	setsectorparameter $grid~target "FIGSEC" true
 end
-send $GRID~SURROUNDSTRING
+send $grid~surroundstring
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -140,356 +143,367 @@ return
 # $grid~pgrid_waves
 
 loadvar $map~stardock
-loadvar $SHIP~SHIP_MAX_ATTACK
+loadvar $ship~ship_max_attack
 
-if ($pgridSector = 0)
-	setVar $SWITCHBOARD~message "Invalid sector number.*"
-	gosub :SWITCHBOARD~switchboard
+if ($pgridsector = 0)
+	setvar $switchboard~message "Invalid sector number.*"
+	gosub :switchboard~switchboard
 	halt
 end
-if ($pgridSector < 11)
-	setVar $SWITCHBOARD~message "Cannot PGRID into FedSpace!*"
-	gosub :SWITCHBOARD~switchboard
+if ($pgridsector < 11)
+	setvar $switchboard~message "Cannot PGRID into FedSpace!*"
+	gosub :switchboard~switchboard
 	halt
-elseif ($pgridSector = $map~stardock)
-	setVar $SWITCHBOARD~message "Cannot PGRID into STARDOCK!*"
-	gosub :SWITCHBOARD~switchboard
+elseif ($pgridsector = $map~stardock)
+	setvar $switchboard~message "Cannot PGRID into STARDOCK!*"
+	gosub :switchboard~switchboard
 	halt
 end
 
 if ($grid~incitadel = 0)
-  setVar $grid~incitadel ""
+	setvar $grid~incitadel ""
 end
 
-if ($grid~pgrid_fighterDrop = 0)
-  setVar $grid~pgrid_fighterDrop 1
+if ($grid~pgrid_fighterdrop = 0)
+	setvar $grid~pgrid_fighterdrop 1
 end
 
 if ($grid~pgrid_waves = 0)
-  setVar $grid~pgrid_waves 1
+	setvar $grid~pgrid_waves 1
 end
 
 # yes, true is the default, unless explicitly false
 if ($grid~pgrid_surrender = 0)
-  setvar $grid~pgrid_surrender TRUE
+	setvar $grid~pgrid_surrender true
 end
 
-gosub :PLAYER~QUIKSTATS
-setVar $startingLocation $PLAYER~CURRENT_PROMPT
-setVar $startingsector $PLAYER~CURRENT_SECTOR
-setVar $startingship $PLAYER~SHIP_NUMBER
-setVar $bot~validPrompts "Command Citadel"
-gosub :PLAYER~CHECKSTARTINGPROMPT
+gosub :player~quikstats
+setvar $startinglocation $player~current_prompt
+setvar $startingsector $player~current_sector
+setvar $startingship $player~ship_number
+setvar $bot~validprompts "Command Citadel"
+gosub :player~checkstartingprompt
 
-if ($startingLocation = "Citadel")
-	setVar $inCitadel "Q Q "
+if ($startinglocation = "Citadel")
+	setvar $incitadel "Q Q "
 else
-	setVar $inCitadel ""
+	setvar $incitadel ""
 end
 
 if ($grid~pgrid_xporting = "")
-  setVar $grid~pgrid_xporting FALSE
+	setvar $grid~pgrid_xporting false
 end
 
-setvar $pgrid_xportshipFound FALSE
+setvar $pgrid_xportshipfound false
 
-if ($grid~pgrid_xporting = TRUE)
+if ($grid~pgrid_xporting = true)
 	send "czq"
 	waitfor "-----------------------------------------------------------------------------"
+
 	:shipsagain
-	setTextTrigger shipsDone :shipsDone "Computer command ["
-	setTextLineTrigger shipFound :shipFound ""
+	settexttrigger shipsdone :shipsdone "Computer command ["
+	settextlinetrigger shipfound :shipfound ""
 	pause
 
-	:shipFound
+	:shipfound
 	killalltriggers
-	getWord CURRENTLINE $maybeship 1
-	isNumber $test $maybeship
+	getword currentline $maybeship 1
+	isnumber $test $maybeship
 	if ($test)
 		if ($maybeship = $pgrid_xportship)
-			getWord CURRENTLINE $xportshipsector 2
-			setVar $pgrid_xportshipFound true
-			goto :shipsDone
-    end
-  else
-    if ($maybeship = "Computer")
-      goto :shipsdone
-    end
-  end
-  goto :shipsagain
+			getword currentline $xportshipsector 2
+			setvar $pgrid_xportshipfound true
+			goto :shipsdone
+		end
+	else
+		if ($maybeship = "Computer")
+			goto :shipsdone
+		end
+	end
+	goto :shipsagain
 
-	:shipsDone
+	:shipsdone
 	killalltriggers
-	if ($pgrid_xportshipFound = FALSE)
-		setVar $SWITCHBOARD~message "Could not find xport ship in shipscan*"
-		gosub :SWITCHBOARD~switchboard
+	if ($pgrid_xportshipfound = false)
+		setvar $switchboard~message "Could not find xport ship in shipscan*"
+		gosub :switchboard~switchboard
 		halt
 	end
-  if ($pgrid_xportshipFound = TRUE)
-	if ($SHIP~SHIP_XPORT_RANGE <= 0)
-		gosub :SHIP~getShipStats
-	end
-	send "cf" $pgridSector "*" $xportshipsector "*q"
-	setTextLineTrigger shortestPath1 :shortestPath1 "The shortest path"
-	setTextLineTrigger noRouteToSec1 :noRouteToSec1 "No route within "
-	settextLineTrigger whatsThePoint1 :whatsThePoint1 "So what's the point?"
-	pause
-		:noRouteToSec1
+	if ($pgrid_xportshipfound = true)
+		if ($ship~ship_xport_range <= 0)
+			gosub :ship~getshipstats
+		end
+		send "cf" $pgridsector "*" $xportshipsector "*q"
+		settextlinetrigger shortestpath1 :shortestpath1 "The shortest path"
+		settextlinetrigger noroutetosec1 :noroutetosec1 "No route within "
+		settextlinetrigger whatsthepoint1 :whatsthepoint1 "So what's the point?"
+		pause
+
+		:noroutetosec1
 		killalltriggers
-		setVar $SWITCHBOARD~message "Error determining path, ship out of range or avoids blocking path.*"
-		gosub :SWITCHBOARD~switchboard
+		setvar $switchboard~message "Error determining path, ship out of range or avoids blocking path.*"
+		gosub :switchboard~switchboard
 		halt
-		:shortestPath1
+
+		:shortestpath1
 		killalltriggers
-		getWord CURRENTLINE $dist1 4
-		stripText $dist1 "("
-		if ($dist1 > $SHIP~SHIP_XPORT_RANGE)
-			setVar $SWITCHBOARD~message "Return XPort will be out of range.*"
-			gosub :SWITCHBOARD~switchboard
+		getword currentline $dist1 4
+		striptext $dist1 "("
+		if ($dist1 > $ship~ship_xport_range)
+			setvar $switchboard~message "Return XPort will be out of range.*"
+			gosub :switchboard~switchboard
 			halt
 		end
-		:whatsThePoint1
+
+		:whatsthepoint1
 		killalltriggers
 
-	send "cf" $xportshipsector "*" $pgridSector "*q"
-	setTextLineTrigger shortestPath2 :shortestPath2 "The shortest path"
-	setTextLineTrigger noRouteToSec2 :noRouteToSec2 "No route within "
-	settextLineTrigger whatsThePoint2 :whatsThePoint2 "So what's the point?"
-	pause
-		:noRouteToSec2
+		send "cf" $xportshipsector "*" $pgridsector "*q"
+		settextlinetrigger shortestpath2 :shortestpath2 "The shortest path"
+		settextlinetrigger noroutetosec2 :noroutetosec2 "No route within "
+		settextlinetrigger whatsthepoint2 :whatsthepoint2 "So what's the point?"
+		pause
+
+		:noroutetosec2
 		killalltriggers
-		setVar $SWITCHBOARD~message "Error determining path, ship out of range or avoids blocking path.*"
-		gosub :SWITCHBOARD~switchboard
+		setvar $switchboard~message "Error determining path, ship out of range or avoids blocking path.*"
+		gosub :switchboard~switchboard
 		halt
-		:shortestPath2
+
+		:shortestpath2
 		killalltriggers
-		getWord CURRENTLINE $dist2 4
-		stripText $dist2 "("
-		if ($dist2 > $SHIP~SHIP_XPORT_RANGE)
-			setVar $SWITCHBOARD~message "First XPort will be out of range.*"
-			gosub :SWITCHBOARD~switchboard
+		getword currentline $dist2 4
+		striptext $dist2 "("
+		if ($dist2 > $ship~ship_xport_range)
+			setvar $switchboard~message "First XPort will be out of range.*"
+			gosub :switchboard~switchboard
 			halt
 		end
-		:whatsThePoint2
+
+		:whatsthepoint2
 		killalltriggers
-  else
-    setVar $SWITCHBOARD~message "Invalid xport ship entered*"
-	  gosub :SWITCHBOARD~switchboard
-	  halt
-  end
+	else
+		setvar $switchboard~message "Invalid xport ship entered*"
+		gosub :switchboard~switchboard
+		halt
+	end
 end
 
-if ($startingLocation = "Citadel")
+if ($startinglocation = "Citadel")
 	send "q"
-	gosub :PLANET~getPlanetInfo
+	gosub :planet~getplanetinfo
 	send "c "
 end
 
-if ($SHIP~SHIP_MAX_ATTACK <= 0)
-	gosub :SHIP~getShipStats
+if ($ship~ship_max_attack <= 0)
+	gosub :ship~getshipstats
 end
 
-setVar $i 1
-setVar $isFound false
-while (SECTOR.WARPS[$PLAYER~CURRENT_Sector][$i] > 0)
-	if (SECTOR.WARPS[$PLAYER~CURRENT_Sector][$i] = $pgridSector)
-		setVar $isFound TRUE
+setvar $i 1
+setvar $isfound false
+while (sector.warps[$player~current_sector][$i] > 0)
+	if (sector.warps[$player~current_sector][$i] = $pgridsector)
+		setvar $isfound true
 	end
 	add $i 1
 end
-if ($isFound = FALSE)
-	setVar $SWITCHBOARD~message "Cannot PGRID.  Sector " & $pgridsector & " not Adjacent, aborting..*"
-	gosub :SWITCHBOARD~switchboard
+if ($isfound = false)
+	setvar $switchboard~message "Cannot PGRID.  Sector " & $pgridsector & " not Adjacent, aborting..*"
+	gosub :switchboard~switchboard
 	halt
-end 
-setvar $switchboard~message "Planet gridding into sector " & $pgridSector & "* c v* y* " & $pgridSector & "* q "
+end
+setvar $switchboard~message "Planet gridding into sector " & $pgridsector & "* c v* y* " & $pgridsector & "* q "
 
-setVar $mac " * "
+setvar $mac " * "
 if ($pgrid_waves <= 0)
-	setVar $pgrid_waves 1
+	setvar $pgrid_waves 1
 end
 if ($wave > 0)
-	setVar $mac $mac & "a z"&$wave&"* * r * "
+	setvar $mac $mac & "a z"&$wave&"* * r * "
 else
-	if ($PLAYER~FIGHTERS < $SHIP~SHIP_MAX_ATTACK)
-		setVar $mac $mac & "a z " & ($PLAYER~FIGHTERS-1) & "9999" & "* * "
+	if ($player~fighters < $ship~ship_max_attack)
+		setvar $mac $mac & "a z " & ($player~fighters-1) & "9999" & "* * "
 	else
-		setVar $i 1
-		while (($i <= $pgrid_waves) AND ($PLAYER~FIGHTERS >= $SHIP~SHIP_MAX_ATTACK))
-			setVar $mac $mac & "a z " & ($SHIP~SHIP_MAX_ATTACK-1) & "9999" & "* * "
+		setvar $i 1
+		while (($i <= $pgrid_waves) and ($player~fighters >= $ship~ship_max_attack))
+			setvar $mac $mac & "a z " & ($ship~ship_max_attack-1) & "9999" & "* * "
 			add $i 1
-			subtract $PLAYER~FIGHTERS ($SHIP~SHIP_MAX_ATTACK-1)
+			subtract $player~fighters ($ship~ship_max_attack-1)
 		end
 	end
 end
 if ($unsafe = true)
-	setVar $mac $mac & "f z "&$fighterDrop&" * z c d l j" & #8 & $planet~planet & "* l j" & #8 & $planet~planet & "*  "
+	setvar $mac $mac & "f z "&$fighterdrop&" * z c d l j" & #8 & $planet~planet & "* l j" & #8 & $planet~planet & "*  "
 elseif ($xporting = false)
-	setVar $mac $mac & "j r * f z "&$fighterDrop&" * z c d * "
+	setvar $mac $mac & "j r * f z "&$fighterdrop&" * z c d * "
 else
 	# still testing - but not adding anything - not even the reteat
 end
-setVar $previousPlanetsInSector SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR]
-if ($pgrid_scan = TRUE)
+setvar $previousplanetsinsector sector.planetcount[$player~current_sector]
+if ($pgrid_scan = true)
 	send "s* "
 end
-if (($player~scan_type <> "None") AND ($pgrid_scan = TRUE))
-		:density_scanning
+if (($player~scan_type <> "None") and ($pgrid_scan = true))
 
+	:density_scanning
 	if ($pgrid_density > 0)
-		setVar $tempDensity $pgrid_maxdensity
+		setvar $tempdensity $pgrid_maxdensity
 	else
-		setVar $tempDensity SECTOR.DENSITY[$pgridsector]
+		setvar $tempdensity sector.density[$pgridsector]
 	end
 
-	   # setVar $tempDensity SECTOR.DENSITY[$pgridsector]
-		setVar $pgridDensity "-99"
-		send "q q sdz* l " & $planet~planet & "* c  "
-		waitOn "Relative Density Scan"
-		setTextLineTrigger denscheck  :getDensityPgrid " " & $pgridSector & "  ==>"
-		setTextLineTrigger denscheck2 :getDensityPgrid2 " " & $pgridSector & ") ==>"
-		setTextLineTrigger denscheck3 :getDensityPgrid "(" & $pgridSector & ") ==>"
-		setTextLineTrigger denscheckdone :doneDensityCheck "<Enter Citadel>"
-		pause
-		:getDensityPgrid
-		killtrigger denscheck
-		killtrigger denscheck3
-		killtrigger denscheck2
-		getWord CURRENTLINE $pgridDensity 4
-		stripText $pgridDensity ","
-		stripText $pgridDensity "."
-		pause
-		:getDensityPgrid2
-		killtrigger denscheck
-		killtrigger denscheck3
-		killtrigger denscheck2
-		getWord CURRENTLINE $pgridDensity 5
-		stripText $pgridDensity ","
-		stripText $pgridDensity "."
-		pause
-		:doneDensityCheck
-		killalltriggers
-		if ($tempDensity <> "-1")
-			if ($pgridDensity = "-99")
-				setVar $SWITCHBOARD~message "Last Density Scan was not correctly grabbed, cannot safely continue.*"
-				gosub :SWITCHBOARD~switchboard
-				halt
-			elseif ($pgridDensity > $tempDensity)
-				setVar $SWITCHBOARD~message "Density increased since last scan in sector "&$pgridsector&". ("&$pgridDensity&")*"
-				gosub :SWITCHBOARD~switchboard
-				halt
-			end
-		else
-			setVar $SWITCHBOARD~message "You must density scan sector "&$pgridsector&" at least once before pgridding.*"
-			gosub :SWITCHBOARD~switchboard
+	# setVar $tempDensity SECTOR.DENSITY[$pgridsector]
+	setvar $pgriddensity "-99"
+	send "q q sdz* l " & $planet~planet & "* c  "
+	waiton "Relative Density Scan"
+	settextlinetrigger denscheck  :getdensitypgrid " " & $pgridsector & "  ==>"
+	settextlinetrigger denscheck2 :getdensitypgrid2 " " & $pgridsector & ") ==>"
+	settextlinetrigger denscheck3 :getdensitypgrid "(" & $pgridsector & ") ==>"
+	settextlinetrigger denscheckdone :donedensitycheck "<Enter Citadel>"
+	pause
+
+	:getdensitypgrid
+	killtrigger denscheck
+	killtrigger denscheck3
+	killtrigger denscheck2
+	getword currentline $pgriddensity 4
+	striptext $pgriddensity ","
+	striptext $pgriddensity "."
+	pause
+
+	:getdensitypgrid2
+	killtrigger denscheck
+	killtrigger denscheck3
+	killtrigger denscheck2
+	getword currentline $pgriddensity 5
+	striptext $pgriddensity ","
+	striptext $pgriddensity "."
+	pause
+
+	:donedensitycheck
+	killalltriggers
+	if ($tempdensity <> "-1")
+		if ($pgriddensity = "-99")
+			setvar $switchboard~message "Last Density Scan was not correctly grabbed, cannot safely continue.*"
+			gosub :switchboard~switchboard
+			halt
+		elseif ($pgriddensity > $tempdensity)
+			setvar $switchboard~message "Density increased since last scan in sector "&$pgridsector&". ("&$pgriddensity&")*"
+			gosub :switchboard~switchboard
 			halt
 		end
-end 
-setVar $newPlanetsInSector SECTOR.PLANETCOUNT[$PLAYER~CURRENT_SECTOR]
-if (($previousPlanetsInSector < $newPlanetsInSector) AND ($newPlanetsInSector > 1))
-	setVar $SWITCHBOARD~message "Planet number increased since last scan in this sector. Try again to override.*"
-	gosub :SWITCHBOARD~switchboard
+	else
+		setvar $switchboard~message "You must density scan sector "&$pgridsector&" at least once before pgridding.*"
+		gosub :switchboard~switchboard
+		halt
+	end
+end
+setvar $newplanetsinsector sector.planetcount[$player~current_sector]
+if (($previousplanetsinsector < $newplanetsinsector) and ($newplanetsinsector > 1))
+	setvar $switchboard~message "Planet number increased since last scan in this sector. Try again to override.*"
+	gosub :switchboard~switchboard
 	halt
 end
 if ($pgrid_retreat)
-	send $incitadel & "m " & $pgridSector & $mac & "< n n n * "
+	send $incitadel & "m " & $pgridsector & $mac & "< n n n * "
 
-	if ($pgrid_surrender = TRUE)
+	if ($pgrid_surrender = true)
 		send " h s y * "
 	end
 	if ($planet~planet > 0)
 		send "l j" & #8 & $planet~planet & "*  *  "
 	end
-	gosub :PLAYER~QUIKSTATS
-	if (($PLAYER~CURRENT_SECTOR <> $grid~startingsector))
-		send "'" & $pgridSector & "=saveme* "
-		gosub :emergencyLanding
-		setvar $switchboard~message "Unsuccessful retreat from sector " & $pgridSector & ". Attempted saveme call.*"
+	gosub :player~quikstats
+	if (($player~current_sector <> $grid~startingsector))
+		send "'" & $pgridsector & "=saveme* "
+		gosub :emergencylanding
+		setvar $switchboard~message "Unsuccessful retreat from sector " & $pgridsector & ". Attempted saveme call.*"
 	else
-		if ($PLAYER~CURRENT_PROMPT = "Planet")
+		if ($player~current_prompt = "Planet")
 			send "m * * * c p " & $pgridsector & "* y s* "
 		end
-		gosub :PLAYER~QUIKSTATS
-		if ($PLAYER~CURRENT_SECTOR = $pgridsector)
-			setVar $SWITCHBOARD~message "Successfully P-gridded into sector " & $pgridSector & "*"
-			setVar $target $pgridSector
-			setSectorParameter $target "FIGSEC" TRUE
+		gosub :player~quikstats
+		if ($player~current_sector = $pgridsector)
+			setvar $switchboard~message "Successfully P-gridded into sector " & $pgridsector & "*"
+			setvar $target $pgridsector
+			setsectorparameter $target "FIGSEC" true
 		else
-			setVar $SWITCHBOARD~message "No fighter deployed in sector " & $pgridSector & "*"
-			gosub :SWITCHBOARD~switchboard
+			setvar $switchboard~message "No fighter deployed in sector " & $pgridsector & "*"
+			gosub :switchboard~switchboard
 		end
 	end
 else
 
 	if ($xporting = false)
-		setVar $pgridString "'" & $pgridSector & "=saveme* " & $incitadel & "m " & $pgridSector & $mac
+		setvar $pgridstring "'" & $pgridsector & "=saveme* " & $incitadel & "m " & $pgridsector & $mac
 	else
 		# Xporting - we will grid in > Xport out > wait > xport in and drop fig/saveme
-		setVar $pgridString $incitadel & "m " & $pgridSector & $mac
+		setvar $pgridstring $incitadel & "m " & $pgridsector & $mac
 
-	end	
+	end
 
 	if ($xporting)
-		setVar $pgridString $pgridString & "x   " & $pgrid_xportship & "* * "
-	else 
-		if ($pgrid_surrender = TRUE)
-			setVar $pgridString $pgridString & " h s y * "
+		setvar $pgridstring $pgridstring & "x   " & $pgrid_xportship & "* * "
+	else
+		if ($pgrid_surrender = true)
+			setvar $pgridstring $pgridstring & " h s y * "
 		end
 	end
-	send $pgridString
+	send $pgridstring
 	if ($xporting)
-		gosub :PLAYER~QUIKSTATS
-		if ($PLAYER~SHIP_NUMBER = $startingship)
-			gosub :emergencyLanding
-			setVar $SWITCHBOARD~message "Unsuccessful xport out of sector " & $pgridSector & ". Ship too far away or I was photoned.*"  
-			gosub :SWITCHBOARD~switchboard
+		gosub :player~quikstats
+		if ($player~ship_number = $startingship)
+			gosub :emergencylanding
+			setvar $switchboard~message "Unsuccessful xport out of sector " & $pgridsector & ". Ship too far away or I was photoned.*"
+			gosub :switchboard~switchboard
 			send " f 1* c d  * * "
-			send "'" & $player~Current_sector & "=saveme* "
-			gosub :emergencyLanding
+			send "'" & $player~current_sector & "=saveme* "
+			gosub :emergencylanding
 		else
-			getRND $theDelay 150 450
-			setDelayTrigger waitPgridXport :goPgridXport $theDelay
+			getrnd $thedelay 150 450
+			setdelaytrigger waitpgridxport :gopgridxport $thedelay
 			pause
-				:goPgridXport
-				
-				send "'" & $pgridSector & "=saveme* x   " & $startingship & "* * f "&$fighterDrop&" * c d "
-				gosub :emergencyLanding
-				gosub :PLAYER~QUIKSTATS
-				if ($PLAYER~CURRENT_PROMPT = "Planet")
-					send "m * * * c s* "
-				end
-				if ($PLAYER~SHIP_NUMBER <> $startingship)
-					setVar $SWITCHBOARD~message "Gridding ship not available for re-export.  Bot is in safe ship.*" 
-					gosub :SWITCHBOARD~switchboard
-				else
-					setVar $SWITCHBOARD~message "Successfully P-gridded w/xport into sector " & $pgridSector & "*"
-					gosub :SWITCHBOARD~switchboard
-				end
-			
+
+			:gopgridxport
+			send "'" & $pgridsector & "=saveme* x   " & $startingship & "* * f "&$fighterdrop&" * c d "
+			gosub :emergencylanding
+			gosub :player~quikstats
+			if ($player~current_prompt = "Planet")
+				send "m * * * c s* "
+			end
+			if ($player~ship_number <> $startingship)
+				setvar $switchboard~message "Gridding ship not available for re-export.  Bot is in safe ship.*"
+				gosub :switchboard~switchboard
+			else
+				setvar $switchboard~message "Successfully P-gridded w/xport into sector " & $pgridsector & "*"
+				gosub :switchboard~switchboard
+			end
+
 		end
 	else
-		gosub :emergencyLanding
-		gosub :PLAYER~QUIKSTATS
-		if (($PLAYER~CURRENT_SECTOR <> $pgridSector))
-			setVar $SWITCHBOARD~message "Unsuccessful P-grid into sector " & $pgridSector & ". Someone make sure bot is picked up.*"
-			gosub :SWITCHBOARD~switchboard
+		gosub :emergencylanding
+		gosub :player~quikstats
+		if (($player~current_sector <> $pgridsector))
+			setvar $switchboard~message "Unsuccessful P-grid into sector " & $pgridsector & ". Someone make sure bot is picked up.*"
+			gosub :switchboard~switchboard
 		else
-			setVar $SWITCHBOARD~message "Successfully P-gridded into sector " & $pgridSector & "*"
-			gosub :SWITCHBOARD~switchboard
-			setVar $target $pgridSector
-			setSectorParameter $target "FIGSEC" TRUE
+			setvar $switchboard~message "Successfully P-gridded into sector " & $pgridsector & "*"
+			gosub :switchboard~switchboard
+			setvar $target $pgridsector
+			setsectorparameter $target "FIGSEC" true
 		end
 	end
 end
 halt
-:emergencyLanding
-setVar $i 0
+
+:emergencylanding
+setvar $i 0
 while ($i < 15)
 	add $i 1
 	send "l j" & #8 & $planet~planet & "*  *  "
 end
-gosub  :player~currentPrompt
-if ($PLAYER~current_prompt = "Planet")
+gosub  :player~currentprompt
+if ($player~current_prompt = "Planet")
 	send "m * * * c s* "
 end
 return

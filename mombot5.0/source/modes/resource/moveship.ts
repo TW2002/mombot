@@ -1,405 +1,399 @@
-	gosub :LOADVARS~LOADVARS
-	gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
+setvar $help~help[1]  $help~tab&"Moves empty ships from one sector to another."
+setvar $help~help[2]  $help~tab&"                "
+setvar $help~help[3]  $help~tab&"  moveship [sector] {back} {sell} {dep} {"&#34&"ship filter"&#34&"}"
+setvar $help~help[4]  $help~tab&"                  "
+setvar $help~help[5]  $help~tab&"   Options:            "
+setvar $help~help[6]  $help~tab&"        [sector] - target sector"
+setvar $help~help[7]  $help~tab&"          [back] - will grab ships from target sector and bring"
+setvar $help~help[8]  $help~tab&"                   them back to current sector   "
+setvar $help~help[9]  $help~tab&"          [sell] - if moving to stardock, attempt to sell ships"
+setvar $help~help[10] $help~tab&" ["&#34&"ship filter"&#34&"] - move ships only matching this filter"
+setvar $help~help[11] $help~tab&"                   "
+setvar $help~help[12] $help~tab&"             -  Ship filter list can be comma delimited.    "
+setvar $help~help[13] $help~tab&"             -  Can use either planet or SXX port in        "
+setvar $help~help[14] $help~tab&"                starting sector for fuel."
+gosub :help~helpfile
 
-	setVar $HELP~HELP[1]  $HELP~TAB&"Moves empty ships from one sector to another."
-	setVar $HELP~HELP[2]  $HELP~TAB&"                "
-	setVar $HELP~HELP[3]  $HELP~TAB&"  moveship [sector] {back} {sell} {dep} {"&#34&"ship filter"&#34&"}"
-	setVar $HELP~HELP[4]  $HELP~TAB&"                  "
-	setVar $HELP~HELP[5]  $HELP~TAB&"   Options:            "
-	setVar $HELP~HELP[6]  $HELP~TAB&"        [sector] - target sector"
-	setVar $HELP~HELP[7]  $HELP~TAB&"          [back] - will grab ships from target sector and bring"
-	setVar $HELP~HELP[8]  $HELP~TAB&"                   them back to current sector   "
-	setVar $HELP~HELP[9]  $HELP~TAB&"          [sell] - if moving to stardock, attempt to sell ships"
-	setVar $HELP~HELP[10] $HELP~TAB&" ["&#34&"ship filter"&#34&"] - move ships only matching this filter"
-	setVar $HELP~HELP[11] $HELP~TAB&"                   "
-	setVar $HELP~HELP[12] $HELP~TAB&"             -  Ship filter list can be comma delimited.    "
-	setVar $HELP~HELP[13] $HELP~TAB&"             -  Can use either planet or SXX port in        "
-	setVar $HELP~HELP[14] $HELP~TAB&"                starting sector for fuel."
-	gosub :HELP~HELPFILE
-
-	setvar $SWITCHBOARD~MESSAGE "Ship Mover starting up!*"
-	gosub :SWITCHBOARD~SWITCHBOARD
-
+setvar $switchboard~message "Ship Mover starting up!*"
+gosub :switchboard~switchboard
 
 # ============================== START Move Ship (moveship) Sub ==============================
 :moveship
 :shipmove
-
 killalltriggers
-gosub :PLAYER~quikstats
-if ($PLAYER~TWARP_TYPE = "No")
-	setVar $SWITCHBOARD~message "You need a Transwarp drive to run moveship.*"
-	gosub :SWITCHBOARD~switchboard
+gosub :player~quikstats
+if ($player~twarp_type = "No")
+	setvar $switchboard~message "You need a Transwarp drive to run moveship.*"
+	gosub :switchboard~switchboard
 	halt
 end
-setVar $startSector $PLAYER~CURRENT_SECTOR
-setarray $theShips 1000 
-isNumber $test $bot~parm1
+setvar $startsector $player~current_sector
+setarray $theships 1000
+isnumber $test $bot~parm1
 if ($test)
 	if ($bot~parm1 > 0)
-		setVar $moveSector $bot~parm1
+		setvar $movesector $bot~parm1
 	else
-		setVar $SWITCHBOARD~message "Invalid move sector entered*"
-		gosub :SWITCHBOARD~switchboard
+		setvar $switchboard~message "Invalid move sector entered*"
+		gosub :switchboard~switchboard
 		halt
 	end
 else
-	setVar $SWITCHBOARD~message "Invalid move sector entered*"
-	gosub :SWITCHBOARD~switchboard
+	setvar $switchboard~message "Invalid move sector entered*"
+	gosub :switchboard~switchboard
 	halt
 end
 
-getWordPos $bot~user_command_line $pos "back"
+getwordpos $bot~user_command_line $pos "back"
 if ($pos > 0)
-	setVar $back TRUE
+	setvar $back true
 else
-	setVar $back FALSE
+	setvar $back false
 end
 
-
-getWordPos $bot~user_command_line $pos "silent"
+getwordpos $bot~user_command_line $pos "silent"
 if ($pos > 0)
-	setVar $bot~silent_running TRUE
+	setvar $bot~silent_running true
 else
-	setVar $bot~silent_running FALSE
+	setvar $bot~silent_running false
 end
 
-getWordPos $bot~user_command_line $pos "sell"
+getwordpos $bot~user_command_line $pos "sell"
 if ($pos > 0)
-	setVar $sellship TRUE
+	setvar $sellship true
 else
-	setVar $sellship FALSE
+	setvar $sellship false
 end
 
-getWordPos $bot~user_command_line $pos "dep"
+getwordpos $bot~user_command_line $pos "dep"
 if ($pos > 0)
-	setVar $dep TRUE
+	setvar $dep true
 else
-	setVar $dep FALSE
+	setvar $dep false
 end
 
-getWordPos $bot~user_command_line $pos "silent"
+getwordpos $bot~user_command_line $pos "silent"
 if ($pos > 0)
-	setVar $SWITCHBOARD~self_command TRUE
+	setvar $switchboard~self_command true
 end
-if ($BOT~silent_running = TRUE)
-	setVar $SWITCHBOARD~self_command TRUE
+if ($bot~silent_running = true)
+	setvar $switchboard~self_command true
 end
 
 setvar $filterships ""
-getWordPos $bot~user_command_line $pos #34
+getwordpos $bot~user_command_line $pos #34
 if ($pos > 0)
-	getText $bot~user_command_line $filterships #34 #34
+	gettext $bot~user_command_line $filterships #34 #34
 	if ($filterships = false)
-		setVar $SWITCHBOARD~message "Invalid ship filter entered.*"
-		gosub :SWITCHBOARD~switchboard
-		halt			
+		setvar $switchboard~message "Invalid ship filter entered.*"
+		gosub :switchboard~switchboard
+		halt
 	else
-		splitText $filterships $shiptypes ","
-		setVar $SWITCHBOARD~message "Moving all ships matching: ["&$filterships&"].*"
-		gosub :SWITCHBOARD~switchboard
+		splittext $filterships $shiptypes ","
+		setvar $switchboard~message "Moving all ships matching: ["&$filterships&"].*"
+		gosub :switchboard~switchboard
 	end
 end
 
-
-
-setVar $startingLocation $PLAYER~CURRENT_PROMPT
+setvar $startinglocation $player~current_prompt
 send "** "
-setVar $fuelInSector FALSE
-if (($startingLocation <> "Citadel") AND ($startingSector <> "Planet"))
-	if ($startingLocation = "Command")
-		getSectorParameter $PLAYER~CURRENT_SECTOR "BUSTED" $isBusted
-		if ((PORT.EXISTS[$PLAYER~CURRENT_SECTOR] = TRUE) AND (PORT.BUYFUEL[$PLAYER~CURRENT_SECTOR] = FALSE) and ($isBusted <> true))
-			if ($player~CREDITS < 50000)
-				setVar $SWITCHBOARD~message "Need at least 50,000 credits to use port as fuel source*"
-				gosub :SWITCHBOARD~switchboard
+setvar $fuelinsector false
+if (($startinglocation <> "Citadel") and ($startingsector <> "Planet"))
+	if ($startinglocation = "Command")
+		getsectorparameter $player~current_sector "BUSTED" $isbusted
+		if ((port.exists[$player~current_sector] = true) and (port.buyfuel[$player~current_sector] = false) and ($isbusted <> true))
+			if ($player~credits < 50000)
+				setvar $switchboard~message "Need at least 50,000 credits to use port as fuel source*"
+				gosub :switchboard~switchboard
 			end
-			setVar $fuelInSector TRUE
+			setvar $fuelinsector true
 		else
-			setVar $i 1
-			setVar $isFound false
-			while (SECTOR.WARPS[$PLAYER~CURRENT_Sector][$i] > 0)
-				if (SECTOR.WARPS[$PLAYER~CURRENT_Sector][$i] = $moveSector)
-					setVar $isFound TRUE
+			setvar $i 1
+			setvar $isfound false
+			while (sector.warps[$player~current_sector][$i] > 0)
+				if (sector.warps[$player~current_sector][$i] = $movesector)
+					setvar $isfound true
 				end
 				add $i 1
 			end
-			if ($isFound = FALSE)
-				setVar $SWITCHBOARD~message "No fuel port in sector, cannot run from Command Prompt*"
-				gosub :SWITCHBOARD~switchboard
+			if ($isfound = false)
+				setvar $switchboard~message "No fuel port in sector, cannot run from Command Prompt*"
+				gosub :switchboard~switchboard
 				halt
 			end
 		end
 	else
-		setVar $SWITCHBOARD~message "Must be in Command, Citadel or Planet prompt to run*"
-		gosub :SWITCHBOARD~switchboard
+		setvar $switchboard~message "Must be in Command, Citadel or Planet prompt to run*"
+		gosub :switchboard~switchboard
 		halt
 	end
 end
 
-if ($startingLocation = "Citadel")
+if ($startinglocation = "Citadel")
 	send "s* q "
 end
 
-setVar $shipCount 0
-if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
-	gosub :PLANET~GETPLANETINFO
+setvar $shipcount 0
+if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+	gosub :planet~getplanetinfo
 	send "t * l 1 * t * l 2 * t * l 3 * s * l 1 * s * l 2 * s * l 3 * t * t1*m* * * q "
 end
 send "*"
-gosub :PLAYER~quikstats
+gosub :player~quikstats
 setvar $starting_credits $player~credits
-killtrigger PLAYER~getLine2
-setVar $figcnt SECTOR.FIGS.QUANTITY[$startSector]
-setVar $figowner SECTOR.FIGS.OWNER[$startSector]
-if (($figcnt = 0) OR (($figOwner <> "belong to your Corp") AND ($figOwner <> "yours")))
-	if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
-		gosub :PLANET~landingSub
+killtrigger player~getline2
+setvar $figcnt sector.figs.quantity[$startsector]
+setvar $figowner sector.figs.owner[$startsector]
+if (($figcnt = 0) or (($figowner <> "belong to your Corp") and ($figowner <> "yours")))
+	if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+		gosub :planet~landingsub
 	end
-	setVar $SWITCHBOARD~message "No friendly fighters deployed in current sector!*"
-	gosub :SWITCHBOARD~switchboard
+	setvar $switchboard~message "No friendly fighters deployed in current sector!*"
+	gosub :switchboard~switchboard
 	halt
 end
-setVar $SWITCHBOARD~message "Ship Mover starting up!  Starting ship scan..*"
-gosub :SWITCHBOARD~switchboard
-if ($back = TRUE)
-	if ($startingLocation <> "Command")
+setvar $switchboard~message "Ship Mover starting up!  Starting ship scan..*"
+gosub :switchboard~switchboard
+if ($back = true)
+	if ($startinglocation <> "Command")
 		send "l "&$planet~planet&"* t * l 1 * t * l 2 * t * l 3 * s * l 1 * s * l 2 * s * l 3 * t * t1*m* * * q "
 	else
-		if ($fuelInSector)
+		if ($fuelinsector)
 			send " p t * * 0 * * 0 * * 0 * * "
 		end
 	end
-	setVar $PLAYER~CURRENT_SECTOR $startSector
-	setVar $PLAYER~WARPTO $moveSector
+	setvar $player~current_sector $startsector
+	setvar $player~warpto $movesector
 	gosub :move~twarp
-	if ($PLAYER~twarpSuccess = FALSE)
-		setVar $SWITCHBOARD~message "Can not make it to move sector, shutting down*"
-		gosub :SWITCHBOARD~switchboard
-		setVar $SWITCHBOARD~message "Not all ships were moved*"
-		gosub :SWITCHBOARD~switchboard
-		if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
-			gosub :PLANET~landingSub
+	if ($player~twarpsuccess = false)
+		setvar $switchboard~message "Can not make it to move sector, shutting down*"
+		gosub :switchboard~switchboard
+		setvar $switchboard~message "Not all ships were moved*"
+		gosub :switchboard~switchboard
+		if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+			gosub :planet~landingsub
 		end
 		halt
 	end
 end
-	:tryshipscan
-	setTextLineTrigger statlinetrig :shipline "-----------------------------------------------------------------------------"
-	setTextLineTrigger towalreadyon :continuetowon "You shut off your Tractor Beam."
-	settextlinetrigger enter :enter "[Pause]"
-	settexttrigger enter2 :gotShips "Choose which ship to tow (Q=Quit)"
-	settexttrigger enter3 :gotships "You do not own any other ships in this sector!"
-	send "|w*"
+
+:tryshipscan
+settextlinetrigger statlinetrig :shipline "-----------------------------------------------------------------------------"
+settextlinetrigger towalreadyon :continuetowon "You shut off your Tractor Beam."
+settextlinetrigger enter :enter "[Pause]"
+settexttrigger enter2 :gotships "Choose which ship to tow (Q=Quit)"
+settexttrigger enter3 :gotships "You do not own any other ships in this sector!"
+send "|w*"
+pause
+
+:continuetowon
+killtrigger statlinetrig
+killtrigger doneships
+killtrigger enter
+killtrigger enter2
+killtrigger enter3
+goto :tryshipscan
+
+:enter
+killtrigger statlinetrig
+killtrigger doneships
+killtrigger enter2
+killtrigger enter3
+send "*"
+settextlinetrigger enter :enter "[Pause]"
+pause
+
+:shipline
+killtrigger towalreadyon
+setvar $line currentline
+setvar $shiptype ""
+getwordpos $line $pos "Choose which ship to tow (Q=Quit)"
+getword $line $temp 1
+getlength $line $length
+if ($length > 54)
+	cuttext $line $shiptype 54 999
+end
+lowercase $shiptype
+
+isnumber $result $temp
+if (($result = true))
+	if ($temp > 0)
+
+		if ($filterships <> "")
+			setvar $i 1
+			setvar $shipfound false
+			while ($i <= $shiptypes)
+				setvar $testship $shiptypes[$i]
+				trim $testship
+				getwordpos $shiptype $filterpos $testship
+				if ($filterpos > 0)
+					setvar $shipfound true
+				end
+				add $i 1
+			end
+			if ($shipfound = true)
+				add $shipcount 1
+				setvar $theships[$shipcount] $temp
+			end
+		else
+			add $shipcount 1
+			setvar $theships[$shipcount] $temp
+		end
+	end
+end
+if ($pos > 0)
+	killtrigger getline
+	goto :gotships
+else
+	settextlinetrigger getline :shipline
 	pause
-		:continuetowon
-		killtrigger statlinetrig
-		killtrigger doneships
-		killtrigger enter
-		killtrigger enter2
-		killtrigger enter3
-		goto :tryshipscan
-		:enter
-		killtrigger statlinetrig
-		killtrigger doneships
-		killtrigger enter2
-		killtrigger enter3
-		send "*"
-		settextlinetrigger enter :enter "[Pause]"
+end
+
+:gotships
+send "*|"
+killtrigger statlinetrig
+killtrigger towalreadyon
+killtrigger doneships
+killtrigger getline
+killtrigger towalreadyon
+killtrigger enter
+killtrigger enter2
+killtrigger enter3
+if ($back = true)
+	gosub :player~quikstats
+	setvar $player~warpto $startsector
+	gosub :move~twarp
+	if ($player~twarpsuccess = false)
+		setvar $switchboard~message "Can not make it back home, shutting down*"
+		gosub :switchboard~switchboard
+		if ($i >= $shipcount)
+			setvar $switchboard~message "All ships were moved*"
+			gosub :switchboard~switchboard
+		else
+			setvar $switchboard~message "Not all ships were moved*"
+			gosub :switchboard~switchboard
+		end
+		gosub :planet~landingsub
+		halt
+	end
+end
+setvar $switchboard~message "Found "&$shipcount&" empty ships to move.*"
+gosub :switchboard~switchboard
+setvar $i 1
+while ($i <= $shipcount)
+	if ($theships[$i] > 0)
+		gosub :player~quikstats
+		if ($startinglocation <> "Command")
+			send "l "&$planet~planet&"* t * t1*m* * * q "
+		else
+			if ($fuelinsector)
+				send " p t * * 0 * * 0 * * 0 * * "
+			end
+		end
+		if ($back = false)
+			send "w n "&$theships[$i]&"* "
+			setvar $player~current_sector $startsector
+			setvar $player~warpto $movesector
+			gosub :move~twarp
+			if ($player~twarpsuccess = false)
+				setvar $switchboard~message "Can not make it to move sector, shutting down*"
+				gosub :switchboard~switchboard
+				setvar $switchboard~message "Not all ships were moved*"
+				gosub :switchboard~switchboard
+				if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+					gosub :planet~landingsub
+				end
+				halt
+			end
+			send "w  "
+			if (($movesector = $map~stardock) and ($sellship = true))
+				gosub :player~quikstats
+				gosub :port~shipsell
+				send "q q q * * *"
+			end
+			setvar $player~current_sector $movesector
+			setvar $player~warpto $startsector
+			gosub :move~twarp
+			if ($player~twarpsuccess = false)
+				setvar $switchboard~message "Can not make it back home, shutting down*"
+				gosub :switchboard~switchboard
+				if ($i >= $shipcount)
+					setvar $switchboard~message "All ships were moved*"
+					gosub :switchboard~switchboard
+				else
+					setvar $switchboard~message "Not all ships were moved*"
+					gosub :switchboard~switchboard
+				end
+				gosub :planet~landingsub
+				halt
+			end
+		else
+			setvar $player~current_sector $startsector
+			setvar $player~warpto $movesector
+			gosub :move~twarp
+			if ($player~twarpsuccess = false)
+				setvar $switchboard~message "Can not make it to move sector, shutting down*"
+				gosub :switchboard~switchboard
+				setvar $switchboard~message "Not all ships were moved*"
+				gosub :switchboard~switchboard
+				if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+					gosub :planet~landingsub
+				end
+				halt
+			end
+			send "w n "&$theships[$i]&"* "
+			setvar $player~current_sector $movesector
+			setvar $player~warpto $startsector
+			gosub :move~twarp
+			if ($player~twarpsuccess = false)
+				setvar $switchboard~message "Can not make it back home, shutting down*"
+				gosub :switchboard~switchboard
+				if ($i >= $shipcount)
+					setvar $switchboard~message "All ships were moved*"
+					gosub :switchboard~switchboard
+				else
+					setvar $switchboard~message "Not all ships were moved*"
+					gosub :switchboard~switchboard
+				end
+				gosub :planet~landingsub
+				halt
+			end
+			send "w  "
+		end
+	end
+	add $i 1
+end
+if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+	gosub :planet~landingsub
+	if ($dep = true)
+		setvar $bot~command "dep"
+		loadvar $map~stardock
+
+		if ($bot~silent_running = true)
+			setvar $bot~user_command_line " dep "&($player~credits-$starting_credits)&" silent"
+		else
+			setvar $bot~user_command_line " dep "&($player~credits-$starting_credits)
+		end
+		setvar $bot~parm1 ($player~credits-$starting_credits)
+		savevar $bot~parm1
+		savevar $bot~parm1
+		savevar $bot~command
+		savevar $bot~user_command_line
+		load "scripts\"&$bot~mombot_directory&"\commands\general\dep.cts"
+		seteventtrigger		depended		:depended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\general\dep.cts"
 		pause
 
-	:shipline
-	killtrigger towalreadyon
-	setVar $line CURRENTLINE
-	setvar $shiptype ""
-	getWordPos $line $pos "Choose which ship to tow (Q=Quit)"
-	getWord $line $temp 1
-	getLength $line $length
-	if ($length > 54)
-		cuttext $line $shiptype 54 999
+		:depended
 	end
-	lowercase $shiptype
-
-	isNumber $result $temp
-	if (($result = TRUE))
-		if ($temp > 0)
-
-			if ($filterships <> "")
-				setvar $i 1
-				setvar $shipfound false
-				while ($i <= $shiptypes)
-					setvar $testship $shiptypes[$i]
-					trim $testship
-					getwordpos $shiptype $filterpos $testship
-					if ($filterpos > 0)
-						setvar $shipfound true
-					end
-					add $i 1
-				end
-				if ($shipfound = true)
-					add $shipCount 1
-					setVar $theShips[$shipCount] $temp
-				end
-			else
-				add $shipCount 1
-				setVar $theShips[$shipCount] $temp
-			end
-		end
-	end
-	if ($pos > 0)
-		killtrigger getLine
-		goto :gotShips
-	else
-		setTextLineTrigger getLine :shipline
-		pause
-	end
-
-
-	:gotShips
-	send "*|"
-	killtrigger statlinetrig
-	killtrigger towalreadyon
-	killtrigger doneships
-	killtrigger getLine
-	killtrigger towalreadyon
-	killtrigger enter
-	killtrigger enter2
-	killtrigger enter3
-	if ($back = TRUE)
-		gosub :PLAYER~quikstats
-		setVar $PLAYER~WARPTO $startSector
-		gosub :move~twarp
-		if ($PLAYER~twarpSuccess = FALSE)
-			setVar $SWITCHBOARD~message "Can not make it back home, shutting down*"
-			gosub :SWITCHBOARD~switchboard
-			if ($i >= $shipCount)
-				setVar $SWITCHBOARD~message "All ships were moved*"
-				gosub :SWITCHBOARD~switchboard
-			else
-				setVar $SWITCHBOARD~message "Not all ships were moved*"
-				gosub :SWITCHBOARD~switchboard
-			end
-			gosub :PLANET~landingSub
-			halt
-		end
-	end
-	setVar $SWITCHBOARD~message "Found "&$shipCount&" empty ships to move.*"
-	gosub :SWITCHBOARD~switchboard
-	setVar $i 1
-	while ($i <= $shipCount)
-		if ($theShips[$i] > 0)
-			gosub :PLAYER~quikstats
-			if ($startingLocation <> "Command")
-				send "l "&$planet~planet&"* t * t1*m* * * q "
-			else
-				if ($fuelInSector)
-					send " p t * * 0 * * 0 * * 0 * * "
-				end
-			end
-			if ($back = FALSE)
-				send "w n "&$theShips[$i]&"* "
-				setVar $PLAYER~CURRENT_SECTOR $startSector
-				setVar $PLAYER~WARPTO $moveSector
-				gosub :move~twarp
-				if ($PLAYER~twarpSuccess = FALSE)
-					setVar $SWITCHBOARD~message "Can not make it to move sector, shutting down*"
-					gosub :SWITCHBOARD~switchboard
-					setVar $SWITCHBOARD~message "Not all ships were moved*"
-					gosub :SWITCHBOARD~switchboard
-					if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
-						gosub :PLANET~landingSub
-					end
-					halt
-				end
-				send "w  "
-				if (($moveSector = $map~stardock) and ($sellship = true))
-					gosub :player~quikstats
-					gosub :port~shipsell
-					send "q q q * * *"
-				end
-				setVar $PLAYER~CURRENT_SECTOR $moveSector
-				setVar $PLAYER~WARPTO $startSector
-				gosub :move~twarp
-				if ($PLAYER~twarpSuccess = FALSE)
-					setVar $SWITCHBOARD~message "Can not make it back home, shutting down*"
-					gosub :SWITCHBOARD~switchboard
-					if ($i >= $shipCount)
-						setVar $SWITCHBOARD~message "All ships were moved*"
-						gosub :SWITCHBOARD~switchboard
-					else
-						setVar $SWITCHBOARD~message "Not all ships were moved*"
-						gosub :SWITCHBOARD~switchboard
-					end
-					gosub :PLANET~landingSub
-					halt
-				end
-			else
-				setVar $PLAYER~CURRENT_SECTOR $startSector
-				setVar $PLAYER~WARPTO $moveSector
-				gosub :move~twarp
-				if ($PLAYER~twarpSuccess = FALSE)
-					setVar $SWITCHBOARD~message "Can not make it to move sector, shutting down*"
-					gosub :SWITCHBOARD~switchboard
-					setVar $SWITCHBOARD~message "Not all ships were moved*"
-					gosub :SWITCHBOARD~switchboard
-					if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
-						gosub :PLANET~landingSub
-					end
-					halt
-				end
-				send "w n "&$theShips[$i]&"* "
-				setVar $PLAYER~CURRENT_SECTOR $moveSector
-				setVar $PLAYER~WARPTO $startSector
-				gosub :move~twarp
-				if ($PLAYER~twarpSuccess = FALSE)
-					setVar $SWITCHBOARD~message "Can not make it back home, shutting down*"
-					gosub :SWITCHBOARD~switchboard
-					if ($i >= $shipCount)
-						setVar $SWITCHBOARD~message "All ships were moved*"
-						gosub :SWITCHBOARD~switchboard
-					else
-						setVar $SWITCHBOARD~message "Not all ships were moved*"
-						gosub :SWITCHBOARD~switchboard
-					end
-					gosub :PLANET~landingSub
-					halt
-				end
-				send "w  "
-			end
-		end
-		add $i 1
-	end
-	if (($startingLocation = "Planet") OR ($startingLocation = "Citadel"))
-		gosub :PLANET~landingSub
-		if ($dep = true)
-			setVar $BOT~command "dep"
-			loadVar $MAP~stardock
-
-			if ($bot~silent_running = true)
-				setVar $BOT~user_command_line " dep "&($player~credits-$starting_credits)&" silent"
-			else
-				setVar $BOT~user_command_line " dep "&($player~credits-$starting_credits)
-			end
-			setVar $BOT~parm1 ($player~credits-$starting_credits)
-							saveVar $BOT~parm1
-			saveVar $bot~parm1
-			saveVar $BOT~command
-			saveVar $BOT~user_command_line
-			load "scripts\"&$bot~mombot_directory&"\commands\general\dep.cts"
-			setEventTrigger		depended		:depended "SCRIPT STOPPED" "scripts\"&$bot~mombot_directory&"\commands\general\dep.cts"				
-			pause
-				:depended
-
-			end
-		end
-		setVar $SWITCHBOARD~message "All ships moved successfully.*"
-		gosub :SWITCHBOARD~switchboard
+end
+setvar $switchboard~message "All ships moved successfully.*"
+gosub :switchboard~switchboard
 
 halt
 # ============================== END Move Ship (moveship) Sub ==============================
-
-
 
 #INCLUDES:
 include "source\include\loadvars"

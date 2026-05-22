@@ -1,216 +1,212 @@
-:SWITCHBOARD~SWITCHBOARD
-
-if (($SWITCHBOARD~MESSAGE = 0) or ($SWITCHBOARD~MESSAGE = ""))
-  return
+:switchboard~switchboard
+if (($switchboard~message = 0) or ($switchboard~message = ""))
+	return
 end
-setvar $SWITCHBOARD~DISCORD_IGNORE "-- "
+setvar $switchboard~discord_ignore "-- "
 
-setvar $SWITCHBOARD~DISCORD_IGNORE_LENGTH 3
+setvar $switchboard~discord_ignore_length 3
 
-getdeafclients $SWITCHBOARD~BOTISDEAF
-loadvar $BOT~BOTISDEAF
-loadvar $BOT~MODE
-loadvar $BOT~COMMAND
-loadvar $BOT~USER_COMMAND_LINE
-loadvar $BOT~SILENT_RUNNING
-loadvar $BOT~ONLY_HELP
-loadvar $SWITCHBOARD~NODISCORD
-loadvar $SWITCHBOARD~FEDSPACE_OUTPUT
+getdeafclients $switchboard~botisdeaf
+loadvar $bot~botisdeaf
+loadvar $bot~mode
+loadvar $bot~command
+loadvar $bot~user_command_line
+loadvar $bot~silent_running
+loadvar $bot~only_help
+loadvar $switchboard~nodiscord
+loadvar $switchboard~fedspace_output
 
-if ($SWITCHBOARD~NODISCORD <> TRUE)
-  getwordpos " "&$BOT~USER_COMMAND_LINE&" " $SWITCHBOARD~POS " nodiscord "
-  if ($SWITCHBOARD~POS > 0)
-    setvar $SWITCHBOARD~NODISCORD TRUE
-  end
-end
-
-if ($SWITCHBOARD~FEDSPACE_OUTPUT <> TRUE)
-  getwordpos " "&$BOT~USER_COMMAND_LINE&" " $SWITCHBOARD~POS " fed "
-  if ($SWITCHBOARD~POS > 0)
-    setvar $SWITCHBOARD~FEDSPACE_OUTPUT TRUE
-  end
+if ($switchboard~nodiscord <> true)
+	getwordpos " "&$bot~user_command_line&" " $switchboard~pos " nodiscord "
+	if ($switchboard~pos > 0)
+		setvar $switchboard~nodiscord true
+	end
 end
 
-if ($SWITCHBOARD~FEDSPACE_OUTPUT)
-  setvar $SWITCHBOARD~COMMUNICATION_STARTER "`"
-  if ($SWITCHBOARD~NODISCORD)
-    setvar $SWITCHBOARD~MSG_HEADER_SS_1 $SWITCHBOARD~COMMUNICATION_STARTER&$SWITCHBOARD~DISCORD_IGNORE&"Fedspace output - "
-    setvar $SWITCHBOARD~MSG_HEADER_SS_2 $SWITCHBOARD~COMMUNICATION_STARTER&"*"&$SWITCHBOARD~DISCORD_IGNORE&"Fedspace output - * "
-  else
-    setvar $SWITCHBOARD~MSG_HEADER_SS_1 $SWITCHBOARD~COMMUNICATION_STARTER&"Fedspace output - "
-    setvar $SWITCHBOARD~MSG_HEADER_SS_2 $SWITCHBOARD~COMMUNICATION_STARTER&"*Fedspace output - * "
-  end
+if ($switchboard~fedspace_output <> true)
+	getwordpos " "&$bot~user_command_line&" " $switchboard~pos " fed "
+	if ($switchboard~pos > 0)
+		setvar $switchboard~fedspace_output true
+	end
+end
+
+if ($switchboard~fedspace_output)
+	setvar $switchboard~communication_starter "`"
+	if ($switchboard~nodiscord)
+		setvar $switchboard~msg_header_ss_1 $switchboard~communication_starter&$switchboard~discord_ignore&"Fedspace output - "
+		setvar $switchboard~msg_header_ss_2 $switchboard~communication_starter&"*"&$switchboard~discord_ignore&"Fedspace output - * "
+	else
+		setvar $switchboard~msg_header_ss_1 $switchboard~communication_starter&"Fedspace output - "
+		setvar $switchboard~msg_header_ss_2 $switchboard~communication_starter&"*Fedspace output - * "
+	end
 else
-  setvar $SWITCHBOARD~COMMUNICATION_STARTER "'"
-  if ($SWITCHBOARD~NODISCORD)
-    setvar $SWITCHBOARD~MSG_HEADER_SS_1 $SWITCHBOARD~COMMUNICATION_STARTER&$SWITCHBOARD~DISCORD_IGNORE&"["&$BOT~MODE&"] {"&$SWITCHBOARD~BOT_NAME&"} - "
-    setvar $SWITCHBOARD~MSG_HEADER_SS_2 $SWITCHBOARD~COMMUNICATION_STARTER&"*"&$SWITCHBOARD~DISCORD_IGNORE&"["&$BOT~MODE&"] {"&$SWITCHBOARD~BOT_NAME&"} - * "
-  else
-    setvar $SWITCHBOARD~MSG_HEADER_SS_1 $SWITCHBOARD~COMMUNICATION_STARTER&"["&$BOT~MODE&"] {"&$SWITCHBOARD~BOT_NAME&"} - "
-    setvar $SWITCHBOARD~MSG_HEADER_SS_2 $SWITCHBOARD~COMMUNICATION_STARTER&"*["&$BOT~MODE&"] {"&$SWITCHBOARD~BOT_NAME&"} - * "
-  end
+	setvar $switchboard~communication_starter "'"
+	if ($switchboard~nodiscord)
+		setvar $switchboard~msg_header_ss_1 $switchboard~communication_starter&$switchboard~discord_ignore&"["&$bot~mode&"] {"&$switchboard~bot_name&"} - "
+		setvar $switchboard~msg_header_ss_2 $switchboard~communication_starter&"*"&$switchboard~discord_ignore&"["&$bot~mode&"] {"&$switchboard~bot_name&"} - * "
+	else
+		setvar $switchboard~msg_header_ss_1 $switchboard~communication_starter&"["&$bot~mode&"] {"&$switchboard~bot_name&"} - "
+		setvar $switchboard~msg_header_ss_2 $switchboard~communication_starter&"*["&$bot~mode&"] {"&$switchboard~bot_name&"} - * "
+	end
 end
-setvar $SWITCHBOARD~MSG_HEADER_ECHO ANSI_9&"{"&ANSI_14&$SWITCHBOARD~BOT_NAME&ANSI_9&"} "&ANSI_15
-if ($SWITCHBOARD~MESSAGE <> "")
+setvar $switchboard~msg_header_echo ansi_9&"{"&ansi_14&$switchboard~bot_name&ansi_9&"} "&ansi_15
+if ($switchboard~message <> "")
 
-  if ($SWITCHBOARD~SELF_COMMAND > 0)
-    setvar $SWITCHBOARD~LENGTH 0
-  else
-    getlength $SWITCHBOARD~BOT_NAME $SWITCHBOARD~LENGTH
-  end
-  setvar $SWITCHBOARD~I 1
-  setvar $SWITCHBOARD~SPACING ""
-  getwordpos " "&$BOT~USER_COMMAND_LINE&" " $SWITCHBOARD~ISBROADCAST " ss "
-  getwordpos " "&$BOT~USER_COMMAND_LINE&" " $SWITCHBOARD~ISSILENT " silent "
+	if ($switchboard~self_command > 0)
+		setvar $switchboard~length 0
+	else
+		getlength $switchboard~bot_name $switchboard~length
+	end
+	setvar $switchboard~i 1
+	setvar $switchboard~spacing ""
+	getwordpos " "&$bot~user_command_line&" " $switchboard~isbroadcast " ss "
+	getwordpos " "&$bot~user_command_line&" " $switchboard~issilent " silent "
 
-  if ($SWITCHBOARD~SELF_COMMAND <> 0)
+	if ($switchboard~self_command <> 0)
 
-    if (($BOT~COMMAND <> "help") and ($BOT~ONLY_HELP <> TRUE))
-      if ($SWITCHBOARD~SELF_COMMAND > 1) or (($SWITCHBOARD~SELF_COMMAND = 1) and (($BOT~SILENT_RUNNING <> TRUE) and ($SWITCHBOARD~ISSILENT <= 0)))
-        gosub :STRIPANSI
-        if ($SWITCHBOARD~HELPLIST <> TRUE)
-        end
-      end
-    end
+		if (($bot~command <> "help") and ($bot~only_help <> true))
+			if ($switchboard~self_command > 1) or (($switchboard~self_command = 1) and (($bot~silent_running <> true) and ($switchboard~issilent <= 0)))
+				gosub :stripansi
+				if ($switchboard~helplist <> true)
+				end
+			end
+		end
 
-    while ($SWITCHBOARD~I <= $SWITCHBOARD~LENGTH)
-      setvar $SWITCHBOARD~SPACING $SWITCHBOARD~SPACING&" "
-      add $SWITCHBOARD~I 1
-    end
-    setvar $SWITCHBOARD~NEW_MESSAGE ""
-    setvar $SWITCHBOARD~MESSAGE_LINE ""
-    gosub :FORMAT_RAW_MESSAGE
-  else
-    gosub :FORMAT_RAW_MESSAGE
-  end
+		while ($switchboard~i <= $switchboard~length)
+			setvar $switchboard~spacing $switchboard~spacing&" "
+			add $switchboard~i 1
+		end
+		setvar $switchboard~new_message ""
+		setvar $switchboard~message_line ""
+		gosub :format_raw_message
+	else
+		gosub :format_raw_message
+	end
 
-  getwordpos " "&$SWITCHBOARD~NEW_MESSAGE&" " $SWITCHBOARD~POS "*"
-  getlength $SWITCHBOARD~NEW_MESSAGE $SWITCHBOARD~LENGTH
-  if ($SWITCHBOARD~NODISCORD)
-    setvar $SWITCHBOARD~NEW_MESSAGE $SWITCHBOARD~DISCORD_IGNORE&$SWITCHBOARD~NEW_MESSAGE
-    add $SWITCHBOARD~LENGTH $SWITCHBOARD~DISCORD_IGNORE_LENGTH
-  end
+	getwordpos " "&$switchboard~new_message&" " $switchboard~pos "*"
+	getlength $switchboard~new_message $switchboard~length
+	if ($switchboard~nodiscord)
+		setvar $switchboard~new_message $switchboard~discord_ignore&$switchboard~new_message
+		add $switchboard~length $switchboard~discord_ignore_length
+	end
 
-  if ($SWITCHBOARD~SELF_COMMAND > 1)
-    setvar $SWITCHBOARD~SELF_COMMAND FALSE
-  end
-  if ($SWITCHBOARD~POS < $SWITCHBOARD~LENGTH)
-    setvar $SWITCHBOARD~MULTIPLE_LINES TRUE
-  else
-    setvar $SWITCHBOARD~MULTIPLE_LINES FALSE
-  end
+	if ($switchboard~self_command > 1)
+		setvar $switchboard~self_command false
+	end
+	if ($switchboard~pos < $switchboard~length)
+		setvar $switchboard~multiple_lines true
+	else
+		setvar $switchboard~multiple_lines false
+	end
 
+	if ($switchboard~issilent > 0) or (($bot~silent_running = true) and ($switchboard~self_command = true)) or (((($switchboard~self_command = true) and (($bot~command = "help") or ($bot~only_help = true)))) and ($switchboard~isbroadcast <= 0))
+		if ($bot~botisdeaf <> true)
+			echo "*"&$switchboard~msg_header_echo&$switchboard~new_message
+			send #145
+		else
+			setvar $switchboard~window_content $switchboard~new_message
+			replacetext $switchboard~window_content "*" "[][]"
+			savevar $switchboard~window_content
+		end
+	elseif ($switchboard~multiple_lines = false)
+		setvar $switchboard~message $switchboard~new_message
+		gosub :stripansi
+		send $switchboard~msg_header_ss_1&$switchboard~message
+	else
+		setvar $switchboard~message $switchboard~new_message
+		gosub :stripansi
+		getlength $switchboard~message $switchboard~trim_length
+		setvar $switchboard~trimming true
+		while (($switchboard~trim_length > 0) and ($switchboard~trimming = true))
+			cuttext $switchboard~message $switchboard~trim_char $switchboard~trim_length 1
+			if ($switchboard~trim_char = " ")
+				cuttext $switchboard~message $switchboard~message 1 ($switchboard~trim_length - 1)
+				subtract $switchboard~trim_length 1
+			else
+				setvar $switchboard~trimming false
+			end
+		end
+		setdelaytrigger switchboard_ss_delay :switchboard~ss_done 2000
+		settextlinetrigger switchboard_ss_open :switchboard~ss_done "Comm-link open on sub-space band"
+		settextlinetrigger switchboard_ss_sent :switchboard~ss_done "Message sent on sub-space channel"
+		send $switchboard~msg_header_ss_2&$switchboard~message&"*"
+		pause
 
-  if ($SWITCHBOARD~ISSILENT > 0) or (($BOT~SILENT_RUNNING = TRUE) and ($SWITCHBOARD~SELF_COMMAND = TRUE)) or (((($SWITCHBOARD~SELF_COMMAND = TRUE) and (($BOT~COMMAND = "help") or ($BOT~ONLY_HELP = TRUE)))) and ($SWITCHBOARD~ISBROADCAST <= 0))
-    if ($BOT~BOTISDEAF <> TRUE)
-      echo "*"&$SWITCHBOARD~MSG_HEADER_ECHO&$SWITCHBOARD~NEW_MESSAGE
-      send #145
-    else
-      setvar $SWITCHBOARD~WINDOW_CONTENT $SWITCHBOARD~NEW_MESSAGE
-      replacetext $SWITCHBOARD~WINDOW_CONTENT "*" "[][]"
-      savevar $SWITCHBOARD~WINDOW_CONTENT
-    end
-  elseif ($SWITCHBOARD~MULTIPLE_LINES = FALSE)
-    setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~NEW_MESSAGE
-    gosub :STRIPANSI
-    send $SWITCHBOARD~MSG_HEADER_SS_1&$SWITCHBOARD~MESSAGE
-  else
-    setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~NEW_MESSAGE
-    gosub :STRIPANSI
-    getlength $SWITCHBOARD~MESSAGE $SWITCHBOARD~TRIM_LENGTH
-    setvar $SWITCHBOARD~TRIMMING TRUE
-    while (($SWITCHBOARD~TRIM_LENGTH > 0) and ($SWITCHBOARD~TRIMMING = TRUE))
-      cuttext $SWITCHBOARD~MESSAGE $SWITCHBOARD~TRIM_CHAR $SWITCHBOARD~TRIM_LENGTH 1
-      if ($SWITCHBOARD~TRIM_CHAR = " ")
-        cuttext $SWITCHBOARD~MESSAGE $SWITCHBOARD~MESSAGE 1 ($SWITCHBOARD~TRIM_LENGTH - 1)
-        subtract $SWITCHBOARD~TRIM_LENGTH 1
-      else
-        setvar $SWITCHBOARD~TRIMMING FALSE
-      end
-    end
-    setdelaytrigger SWITCHBOARD_SS_DELAY :SWITCHBOARD~SS_DONE 2000
-    settextlinetrigger SWITCHBOARD_SS_OPEN :SWITCHBOARD~SS_DONE "Comm-link open on sub-space band"
-    settextlinetrigger SWITCHBOARD_SS_SENT :SWITCHBOARD~SS_DONE "Message sent on sub-space channel"
-    send $SWITCHBOARD~MSG_HEADER_SS_2&$SWITCHBOARD~MESSAGE&"*"
-    pause
-    :SWITCHBOARD~SS_DONE
-    killtrigger SWITCHBOARD_SS_DELAY
-    killtrigger SWITCHBOARD_SS_OPEN
-    killtrigger SWITCHBOARD_SS_SENT
-  end
-  setvar $SWITCHBOARD~MESSAGE ""
+		:switchboard~ss_done
+		killtrigger switchboard_ss_delay
+		killtrigger switchboard_ss_open
+		killtrigger switchboard_ss_sent
+	end
+	setvar $switchboard~message ""
 end
-setvar $SWITCHBOARD~HELPLIST FALSE
+setvar $switchboard~helplist false
 return
-:SWITCHBOARD~FORMAT_RAW_MESSAGE
 
+:switchboard~format_raw_message
+getwordpos " "&$switchboard~message&" " $switchboard~pos "*"
 
+getlength $switchboard~message $switchboard~message_length
 
-
-getwordpos " "&$SWITCHBOARD~MESSAGE&" " $SWITCHBOARD~POS "*"
-
-getlength $SWITCHBOARD~MESSAGE $SWITCHBOARD~MESSAGE_LENGTH
-
-if ($SWITCHBOARD~POS < $SWITCHBOARD~MESSAGE_LENGTH)
-  setvar $SWITCHBOARD~MULTIPLE_LINES TRUE
+if ($switchboard~pos < $switchboard~message_length)
+	setvar $switchboard~multiple_lines true
 else
-  setvar $SWITCHBOARD~MULTIPLE_LINES FALSE
+	setvar $switchboard~multiple_lines false
 end
-if (($BOT~COMMAND <> "help") and ($BOT~ONLY_HELP <> TRUE))
-  if ($SWITCHBOARD~SELF_COMMAND = 0) or ($SWITCHBOARD~SELF_COMMAND > 1) or (($SWITCHBOARD~SELF_COMMAND = 1) and (($BOT~SILENT_RUNNING <> TRUE) and ($SWITCHBOARD~ISSILENT <= 0)))
+if (($bot~command <> "help") and ($bot~only_help <> true))
+	if ($switchboard~self_command = 0) or ($switchboard~self_command > 1) or (($switchboard~self_command = 1) and (($bot~silent_running <> true) and ($switchboard~issilent <= 0)))
 
-    setvar $SWITCHBOARD~NEXT_LENGTH 65
-    setvar $SWITCHBOARD~I 1
-    setvar $SWITCHBOARD~LENGTH 1
-    while ($SWITCHBOARD~I <= $SWITCHBOARD~MESSAGE_LENGTH)
-      cuttext $SWITCHBOARD~MESSAGE $SWITCHBOARD~CHARACTER $SWITCHBOARD~I 1
-      if (($SWITCHBOARD~CHARACTER = " ") and ($SWITCHBOARD~LENGTH >= $SWITCHBOARD~NEXT_LENGTH)) or (($SWITCHBOARD~CHARACTER = "*") and ($SWITCHBOARD~LENGTH > 1))
-        if ($SWITCHBOARD~I < $SWITCHBOARD~MESSAGE_LENGTH)
-          cuttext $SWITCHBOARD~MESSAGE $SWITCHBOARD~FIRST_HALF 1 ($SWITCHBOARD~I - 1)
-          cuttext $SWITCHBOARD~MESSAGE $SWITCHBOARD~SECOND_HALF ($SWITCHBOARD~I + 1) 999999999
+		setvar $switchboard~next_length 65
+		setvar $switchboard~i 1
+		setvar $switchboard~length 1
+		while ($switchboard~i <= $switchboard~message_length)
+			cuttext $switchboard~message $switchboard~character $switchboard~i 1
+			if (($switchboard~character = " ") and ($switchboard~length >= $switchboard~next_length)) or (($switchboard~character = "*") and ($switchboard~length > 1))
+				if ($switchboard~i < $switchboard~message_length)
+					cuttext $switchboard~message $switchboard~first_half 1 ($switchboard~i - 1)
+					cuttext $switchboard~message $switchboard~second_half ($switchboard~i + 1) 999999999
 
-          if ($SWITCHBOARD~NODISCORD)
-            setvar $SWITCHBOARD~FIRST_HALF $SWITCHBOARD~FIRST_HALF&"*"&$SWITCHBOARD~DISCORD_IGNORE
-            add $SWITCHBOARD~I $SWITCHBOARD~DISCORD_IGNORE_LENGTH
-            add $SWITCHBOARD~MESSAGE_LENGTH $SWITCHBOARD~DISCORD_IGNORE_LENGTH
-          else
-            setvar $SWITCHBOARD~FIRST_HALF $SWITCHBOARD~FIRST_HALF&"* "
-            add $SWITCHBOARD~I 1
-            add $SWITCHBOARD~MESSAGE_LENGTH 1
-          end
-          setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~FIRST_HALF&$SWITCHBOARD~SECOND_HALF
-          setvar $SWITCHBOARD~LENGTH 0
-        end
-      end
-      add $SWITCHBOARD~LENGTH 1
-      add $SWITCHBOARD~I 1
-    end
-  end
+					if ($switchboard~nodiscord)
+						setvar $switchboard~first_half $switchboard~first_half&"*"&$switchboard~discord_ignore
+						add $switchboard~i $switchboard~discord_ignore_length
+						add $switchboard~message_length $switchboard~discord_ignore_length
+					else
+						setvar $switchboard~first_half $switchboard~first_half&"* "
+						add $switchboard~i 1
+						add $switchboard~message_length 1
+					end
+					setvar $switchboard~message $switchboard~first_half&$switchboard~second_half
+					setvar $switchboard~length 0
+				end
+			end
+			add $switchboard~length 1
+			add $switchboard~i 1
+		end
+	end
 end
-setvar $SWITCHBOARD~NEW_MESSAGE $SWITCHBOARD~MESSAGE
+setvar $switchboard~new_message $switchboard~message
 return
-:SWITCHBOARD~STRIPANSI
 
-striptext $SWITCHBOARD~MESSAGE ANSI_1
-striptext $SWITCHBOARD~MESSAGE ANSI_2
-striptext $SWITCHBOARD~MESSAGE ANSI_3
-striptext $SWITCHBOARD~MESSAGE ANSI_4
-striptext $SWITCHBOARD~MESSAGE ANSI_5
-striptext $SWITCHBOARD~MESSAGE ANSI_6
-striptext $SWITCHBOARD~MESSAGE ANSI_7
-striptext $SWITCHBOARD~MESSAGE ANSI_8
-striptext $SWITCHBOARD~MESSAGE ANSI_9
-striptext $SWITCHBOARD~MESSAGE ANSI_10
-striptext $SWITCHBOARD~MESSAGE ANSI_11
-striptext $SWITCHBOARD~MESSAGE ANSI_12
-striptext $SWITCHBOARD~MESSAGE ANSI_13
-striptext $SWITCHBOARD~MESSAGE ANSI_14
-striptext $SWITCHBOARD~MESSAGE ANSI_15
+:switchboard~stripansi
+striptext $switchboard~message ansi_1
+striptext $switchboard~message ansi_2
+striptext $switchboard~message ansi_3
+striptext $switchboard~message ansi_4
+striptext $switchboard~message ansi_5
+striptext $switchboard~message ansi_6
+striptext $switchboard~message ansi_7
+striptext $switchboard~message ansi_8
+striptext $switchboard~message ansi_9
+striptext $switchboard~message ansi_10
+striptext $switchboard~message ansi_11
+striptext $switchboard~message ansi_12
+striptext $switchboard~message ansi_13
+striptext $switchboard~message ansi_14
+striptext $switchboard~message ansi_15
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:SWITCHBOARD~BANNER
+:switchboard~banner
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $SWITCHBOARD~MESSAGE $SWITCHBOARD~SCRIPT_TITLE&" starting up!*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message $switchboard~script_title&" starting up!*"
+gosub :switchboard~switchboard
 return

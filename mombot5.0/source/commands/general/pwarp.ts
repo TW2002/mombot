@@ -1,64 +1,64 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 
-setVar $HELP~HELP[1]  $HELP~TAB&"pwarp {sector:#} {"&#34&"trader_name"&#34&"} "
-setVar $HELP~HELP[2]  $HELP~TAB&"      "
-setVar $HELP~HELP[3]  $HELP~TAB&"        planet warps to sector "
-setVar $HELP~HELP[4]  $HELP~TAB&"      "
-setVar $HELP~HELP[5]  $HELP~TAB&"    Options: "
-setVar $HELP~HELP[6]  $HELP~TAB&"           {sector:#} - sector to pwarp to "
-setVar $HELP~HELP[7]  $HELP~TAB&"      {"&#34&"trader_name"&#34&"} - trader to pwarp to"
-setVar $HELP~HELP[8]  $HELP~TAB&"         "
-setVar $HELP~HELP[9]  $HELP~TAB&"    Examples:"
-setVar $HELP~HELP[10] $HELP~TAB&"               >p 233 - normal pwarp"
-setVar $HELP~HELP[11] $HELP~TAB&"         >p planet 12 - pwarp to last known "
-setVar $HELP~HELP[12] $HELP~TAB&"                        location of planet 12 "
-setVar $HELP~HELP[13] $HELP~TAB&"              >p mind - pwarp to a corp member with mind"
-setVar $HELP~HELP[14] $HELP~TAB&"                        in their name"
-setVar $HELP~HELP[15] $HELP~TAB&"     >p "&#34&"mind dagger"&#34&" - pwarp to corp member"
-gosub :HELP~HELPFILE
+setvar $help~help[1]  $help~tab&"pwarp {sector:#} {"&#34&"trader_name"&#34&"} "
+setvar $help~help[2]  $help~tab&"      "
+setvar $help~help[3]  $help~tab&"        planet warps to sector "
+setvar $help~help[4]  $help~tab&"      "
+setvar $help~help[5]  $help~tab&"    Options: "
+setvar $help~help[6]  $help~tab&"           {sector:#} - sector to pwarp to "
+setvar $help~help[7]  $help~tab&"      {"&#34&"trader_name"&#34&"} - trader to pwarp to"
+setvar $help~help[8]  $help~tab&"         "
+setvar $help~help[9]  $help~tab&"    Examples:"
+setvar $help~help[10] $help~tab&"               >p 233 - normal pwarp"
+setvar $help~help[11] $help~tab&"         >p planet 12 - pwarp to last known "
+setvar $help~help[12] $help~tab&"                        location of planet 12 "
+setvar $help~help[13] $help~tab&"              >p mind - pwarp to a corp member with mind"
+setvar $help~help[14] $help~tab&"                        in their name"
+setvar $help~help[15] $help~tab&"     >p "&#34&"mind dagger"&#34&" - pwarp to corp member"
+gosub :help~helpfile
 
 killalltriggers
 setvar $player~save true
-if ($bot~parm1 <> $PLAYER~CURRENT_SECTOR)
-	gosub  :player~currentPrompt
+if ($bot~parm1 <> $player~current_sector)
+	gosub  :player~currentprompt
 else
-	gosub :PLAYER~quikstats
+	gosub :player~quikstats
 end
-setVar $PLAYER~startingLocation $PLAYER~CURRENT_PROMPT
-setVar $bot~validPrompts "Citadel"
-gosub :PLAYER~CHECKSTARTINGPROMPT
+setvar $player~startinglocation $player~current_prompt
+setvar $bot~validprompts "Citadel"
+gosub :player~checkstartingprompt
 
 gosub :player~checkfortravelname
 
-isNumber $test $bot~parm1
-if (($test = FALSE) OR ($bot~parm1 = ""))
-	setVar $SWITCHBOARD~message "Sector must be entered as a number between 11-"&SECTORS&"*"
-	gosub :SWITCHBOARD~switchboard
+isnumber $test $bot~parm1
+if (($test = false) or ($bot~parm1 = ""))
+	setvar $switchboard~message "Sector must be entered as a number between 11-"&sectors&"*"
+	gosub :switchboard~switchboard
 	halt
-else    
-	if (($bot~parm1 > SECTORS) OR ($bot~parm1 < 11))    
-		setVar $SWITCHBOARD~message "Sector must be entered as a number between 11-"&SECTORS&"*"  
-		gosub :SWITCHBOARD~switchboard
+else
+	if (($bot~parm1 > sectors) or ($bot~parm1 < 11))
+		setvar $switchboard~message "Sector must be entered as a number between 11-"&sectors&"*"
+		gosub :switchboard~switchboard
 		halt
 	else
-		setVar $PLANET~warpto $bot~parm1
-		if ($PLAYER~CURRENT_SECTOR = $PLANET~warpto)
-			setVar $SWITCHBOARD~message "Already in that sector!*"
-			gosub :SWITCHBOARD~switchboard
+		setvar $planet~warpto $bot~parm1
+		if ($player~current_sector = $planet~warpto)
+			setvar $switchboard~message "Already in that sector!*"
+			gosub :switchboard~switchboard
 			halt
 		end
 	end
 end
 
-	getWordPos " "&$bot~user_command_line&" " $pos " scan "
-	if ($pos > 0)
-		setVar $PLANET~PWARP_SCAN TRUE
-	else
-		setVar $PLANET~PWARP_SCAN FALSE
-	end
+getwordpos " "&$bot~user_command_line&" " $pos " scan "
+if ($pos > 0)
+	setvar $planet~pwarp_scan true
+else
+	setvar $planet~pwarp_scan false
+end
 
-	gosub :planet~pwarp
+gosub :planet~pwarp
 halt
 
 # includes:

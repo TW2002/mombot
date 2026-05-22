@@ -1,5 +1,5 @@
-:HAGGLE~HAGGLE
-:HAGGLE~STARTHAGGLE
+:haggle~haggle
+:haggle~starthaggle
 #
 # If defined, $haggle~buyprod will limit the routine to buying one of: Fuel, Organics, or Equipment.
 # If not defined, the routine will attempt to buy any product that is offered.
@@ -8,237 +8,268 @@
 #We are buying up to 1940.  You have 108 in your holds.
 
 waiton "Commerce report for"
-setTextLineTrigger sell :sell "We are buying up to "
-setTextLineTrigger buy :buy "We are selling up to "
-setTextTrigger done :done "Command [TL="
+settextlinetrigger sell :sell "We are buying up to "
+settextlinetrigger buy :buy "We are selling up to "
+settexttrigger done :done "Command [TL="
 pause
 
 :sell
-killTrigger done
+killtrigger done
 send "*"
-if (HAGGLE = FALSE)
-  setVar $firstOffer 0
-  setVar $offerPerc (1000 + $SellFactor[$Sector])
-  :SellReset
-  killTrigger line
-  killTrigger offer
-  setTextLineTrigger line :sellLine
-  setTextTrigger offer :sellOffer "Your offer ["
-  pause
+if (haggle = false)
+	setvar $firstoffer 0
+	setvar $offerperc (1000 + $sellfactor[$sector])
 
-  :sellLine
-  getWord CURRENTLINE $test 1
+	:sellreset
+	killtrigger line
+	killtrigger offer
+	settextlinetrigger line :sellline
+	settexttrigger offer :selloffer "Your offer ["
+	pause
 
-  if ($test = 0)
-    setVar $lastLineBlank 1
-  else
-    setVar $lastLinkBlank 0
+	:sellline
+	getword currentline $test 1
 
-    if (CURRENTLINE = "We're not interested.")
-      goto :abort
-    else
-      cutText CURRENTLINE $test 1 12
+	if ($test = 0)
+		setvar $lastlineblank 1
+	else
+		setvar $lastlinkblank 0
 
+		if (currentline = "We're not interested.")
+			goto :abort
+		else
+			cuttext currentline $test 1 12
 
-      if ($test = "Command [TL=")
-        goto :done
-      else
-        cutText CURRENTLINE $test 1 9
+			if ($test = "Command [TL=")
+				goto :done
+			else
+				cuttext currentline $test 1 9
 
-        if ($test = "You have ")
-          goto :sellDone
-        end
-      end
-    end
-  end
+				if ($test = "You have ")
+					goto :selldone
+				end
+			end
+		end
+	end
 
-  setTextLineTrigger line :sellLine
-  pause
+	settextlinetrigger line :sellline
+	pause
 
-  :sellOffer
-  # get the first offer (if we don't have it)
-  if ($firstOffer = 0)
-    getWord CURRENTLINE $firstOffer 3
-    stripText $firstOffer "["
-    stripText $firstOffer "]"
-    stripText $firstOffer ","
-  end
+	:selloffer
+	# get the first offer (if we don't have it)
+	if ($firstoffer = 0)
+		getword currentline $firstoffer 3
+		striptext $firstoffer "["
+		striptext $firstoffer "]"
+		striptext $firstoffer ","
+	end
 
-  # calculate and make an offer
-  setVar $offer $firstOffer
-  multiply $offer $offerPerc
-  divide $offer 1000
-  send $offer "*"
-  if ($SellFactor[$Sector] < 0)
-    if ($SellDone[$Sector])
-      add $offerPerc 5
-      add $SellFactor[$Sector] 5
-    else
-      add $offerPerc 10
-      add $SellFactor[$Sector] 10
-    end
-  else
-    if ($SellDone[$Sector])
-      subtract $offerPerc 3
-      subtract $SellFactor[$Sector] 3
-    else
-      subtract $offerPerc 10
-      subtract $SellFactor[$Sector] 10
-    end
-  end
-  goto :sellReset
+	# calculate and make an offer
+	setvar $offer $firstoffer
+	multiply $offer $offerperc
+	divide $offer 1000
+	send $offer "*"
+	if ($sellfactor[$sector] < 0)
+		if ($selldone[$sector])
+			add $offerperc 5
+			add $sellfactor[$sector] 5
+		else
+			add $offerperc 10
+			add $sellfactor[$sector] 10
+		end
+	else
+		if ($selldone[$sector])
+			subtract $offerperc 3
+			subtract $sellfactor[$sector] 3
+		else
+			subtract $offerperc 10
+			subtract $sellfactor[$sector] 10
+		end
+	end
+	goto :sellreset
 
-  :sellDone
-  # product sold, get credits
-  getWord CURRENTLINE $test 3
-  if ($test <> "been")
-    setVar $Credits $test
-    stripText $Credits ","
-  end
-  killTrigger offer
-  killTrigger line
-  setVar $SellDone[$Sector] 1
-  if ($SellFactor[$Sector] < 0)
-    subtract $SellFactor[$sector] 4
-  else
-    add $SellFactor[$Sector] 6
-  end
+	:selldone
+	# product sold, get credits
+	getword currentline $test 3
+	if ($test <> "been")
+		setvar $credits $test
+		striptext $credits ","
+	end
+	killtrigger offer
+	killtrigger line
+	setvar $selldone[$sector] 1
+	if ($sellfactor[$sector] < 0)
+		subtract $sellfactor[$sector] 4
+	else
+		add $sellfactor[$sector] 6
+	end
 end
-setTextTrigger done :done "Command [TL="
+settexttrigger done :done "Command [TL="
 pause
 
 :buy
-killTrigger done
+killtrigger done
 
 # make sure we're buying the right stuff
-waitOn "do you want to buy ["
-getWord CURRENTLINE $Product 5
-if ($Product <> $buyProd)
-    send "0*"
-    setTextLineTrigger Buy :Buy "We are selling up to "
-    setTextTrigger done :done "Command [TL="
-    pause
+waiton "do you want to buy ["
+getword currentline $product 5
+if ($product <> $buyprod)
+	send "0*"
+	settextlinetrigger buy :buy "We are selling up to "
+	settexttrigger done :done "Command [TL="
+	pause
 end
 
-if ($Quantity > 0)
-  send $Quantity "*"
+if ($quantity > 0)
+	send $quantity "*"
 else
-  send "*"
+	send "*"
 end
 
-if (HAGGLE = FALSE)
-  setVar $firstOffer 0
-  setVar $offerPerc (1000 - $BuyFactor[$Sector])
-  :buyReset
-  killTrigger line
-  killTrigger offer
-  setTextLineTrigger line :buyLine
-  setTextTrigger offer :BuyOffer "Your offer ["
-  pause
+if (haggle = false)
+	setvar $firstoffer 0
+	setvar $offerperc (1000 - $buyfactor[$sector])
 
-  :buyLine
-  getWord CURRENTLINE $test 1
+	:buyreset
+	killtrigger line
+	killtrigger offer
+	settextlinetrigger line :buyline
+	settexttrigger offer :buyoffer "Your offer ["
+	pause
 
-  if ($test = 0)
-    setVar $lastLineBlank 1
-  else
-    setVar $lastLinkBlank 0
+	:buyline
+	getword currentline $test 1
 
-    if (CURRENTLINE = "We're not interested.")
-      goto :Abort
-    else
-      cutText CURRENTLINE $test 1 12
-      if ($test = "Command [TL=")
-        goto :Done
-      else
-        cutText CURRENTLINE $test 1 9
+	if ($test = 0)
+		setvar $lastlineblank 1
+	else
+		setvar $lastlinkblank 0
 
-        if ($test = "You have ")
-          goto :BuyDone
-        end
-      end
-    end
-  end
+		if (currentline = "We're not interested.")
+			goto :abort
+		else
+			cuttext currentline $test 1 12
+			if ($test = "Command [TL=")
+				goto :done
+			else
+				cuttext currentline $test 1 9
 
-  setTextLineTrigger line :buyLine
-  pause
+				if ($test = "You have ")
+					goto :buydone
+				end
+			end
+		end
+	end
 
-  :buyOffer
-  if ($lastLinkBlank)
-    # prompt display caused by a message
-    setTextTrigger offer :buyOffer "Your offer ["
-    pause
-  end
+	settextlinetrigger line :buyline
+	pause
 
-  # get the first offer (if we don't have it)
-  if ($firstOffer = 0)
-    getWord CURRENTLINE $firstOffer 3
-    stripText $firstOffer "["
-    stripText $firstOffer "]"
-    stripText $firstOffer ","
-  end
+	:buyoffer
+	if ($lastlinkblank)
+		# prompt display caused by a message
+		settexttrigger offer :buyoffer "Your offer ["
+		pause
+	end
 
-  # calculate and make an offer
-  setVar $offer $firstOffer
-  multiply $offer $offerPerc
-  divide $offer 1000
-  send $offer "*"
-  if ($BuyFactor[$Sector] < 0)
-    if ($BuyDone[$Sector])
-      subtract $offerPerc 5
-      add $BuyFactor[$Sector] 5
-    else
-      subtract $offerPerc 10
-      add $BuyFactor[$Sector] 10
-    end
-  else
-    if ($BuyDone[$Sector])
-      add $offerPerc 3
-      subtract $BuyFactor[$Sector] 3
-    else
-      add $offerPerc 10
-      subtract $BuyFactor[$Sector] 10
-    end
-  end
-  goto :BuyReset
+	# get the first offer (if we don't have it)
+	if ($firstoffer = 0)
+		getword currentline $firstoffer 3
+		striptext $firstoffer "["
+		striptext $firstoffer "]"
+		striptext $firstoffer ","
+	end
 
-  :buyDone
-  # product bought, get credits
-  getWord CURRENTLINE $test 3
-  if ($test <> "been")
-    setVar $Credits $test
-    stripText $Credits ","
-  end
-  killTrigger offer
-    killTrigger line
-  setVar $BuyDone[$Sector] 1
+	# calculate and make an offer
+	setvar $offer $firstoffer
+	multiply $offer $offerperc
+	divide $offer 1000
+	send $offer "*"
+	if ($buyfactor[$sector] < 0)
+		if ($buydone[$sector])
+			subtract $offerperc 5
+			add $buyfactor[$sector] 5
+		else
+			subtract $offerperc 10
+			add $buyfactor[$sector] 10
+		end
+	else
+		if ($buydone[$sector])
+			add $offerperc 3
+			subtract $buyfactor[$sector] 3
+		else
+			add $offerperc 10
+			subtract $buyfactor[$sector] 10
+		end
+	end
+	goto :buyreset
 
-  if ($BuyFactor[$Sector] < 0)
-    subtract $BuyFactor[$sector] 4
-  else
-    add $BuyFactor[$Sector] 6
-  end
+	:buydone
+	# product bought, get credits
+	getword currentline $test 3
+	if ($test <> "been")
+		setvar $credits $test
+		striptext $credits ","
+	end
+	killtrigger offer
+	killtrigger line
+	setvar $buydone[$sector] 1
+
+	if ($buyfactor[$sector] < 0)
+		subtract $buyfactor[$sector] 4
+	else
+		add $buyfactor[$sector] 6
+	end
 end
 
-setTextLineTrigger buy :buy "We are selling up to "
-setTextTrigger done :done "Command [TL="
+settextlinetrigger buy :buy "We are selling up to "
+settexttrigger done :done "Command [TL="
 pause
 
 :abort
-setVar $abort 1
-killTrigger buy
-killTrigger sell
-killTrigger done
-killTrigger line
-killTrigger offer
-setTextLineTrigger buy :buy "We are selling up to "
-setTextLineTrigger sell :sell "We are buying up to "
-setTextTrigger done :done "Command [TL="
+setvar $abort 1
+killtrigger buy
+killtrigger sell
+killtrigger done
+killtrigger line
+killtrigger offer
+settextlinetrigger buy :buy "We are selling up to "
+settextlinetrigger sell :sell "We are buying up to "
+settexttrigger done :done "Command [TL="
 pause
 
-:Done
-killTrigger abort
-killTrigger sell
-killTrigger buy
-setVar $Quantity 0
+:done
+killtrigger abort
+killtrigger sell
+killtrigger buy
+setvar $quantity 0
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:haggle~configurenativehaggle
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $restoreautohagglestate 0
+if ($haggle~nativehagglemode = true)
+	if (haggle = false)
+		autohaggle on
+		setvar $restoreautohagglestate 2
+	end
+else
+	if (haggle)
+		autohaggle off
+		setvar $restoreautohagglestate 1
+	end
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:haggle~restoreautohaggle
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($restoreautohagglestate = 1)
+	autohaggle on
+else
+	if ($restoreautohagglestate = 2)
+		autohaggle off
+	end
+end
+setvar $restoreautohagglestate 0
 return

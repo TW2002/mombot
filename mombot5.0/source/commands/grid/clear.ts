@@ -1,20 +1,19 @@
-gosub :LOADVARS~LOADVARS
-gosub :HELP~INITIALIZE
+gosub :loadvars~loadvars
+gosub :help~initialize
 loadvar $player~surroundlimp
 loadvar $player~surroundmine
 
-setVar $HELP~HELP[1]  $HELP~TAB&"clear - clear all enemy armids and limpets from sector "
-gosub :HELP~HELPFILE
+setvar $help~help[1]  $help~tab&"clear - clear all enemy armids and limpets from sector "
+gosub :help~helpfile
 
-setVar $SWITCHBOARD~bot_name $bot~bot_name
-setVar $SWITCHBOARD~self_command $self_command
+setvar $switchboard~bot_name $bot~bot_name
+setvar $switchboard~self_command $self_command
 
 setvar $switchboard~message "Clearing Current Sector*"
-gosub :SWITCHBOARD~switchboard
+gosub :switchboard~switchboard
 gosub :mines~clear
 gosub :switchboard~switchboard
 halt
-
 
 # includes:
 include "source\include\loadvars"

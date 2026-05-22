@@ -1,51 +1,50 @@
 logging "OFF"
-gosub :LOADVARS~LOADVARS
-:XENTER~RUN
+gosub :loadvars~loadvars
 
-
-
-
-isnumber $XENTER~TEST $BOT~PARM1
-if ($XENTER~TEST = FALSE)
-  setvar $BOT~PARM1 1
+:xenter~run
+isnumber $xenter~test $bot~parm1
+if ($xenter~test = false)
+	setvar $bot~parm1 1
 else
-  if ($BOT~PARM1 <= 0)
-    setvar $BOT~PARM1 1
-  end
+	if ($bot~parm1 <= 0)
+		setvar $bot~parm1 1
+	end
 end
-getwordpos $BOT~USER_COMMAND_LINE $XENTER~POS "fill"
-if ($XENTER~POS > 0)
-  setvar $XENTER~REFILL TRUE
+getwordpos $bot~user_command_line $xenter~pos "fill"
+if ($xenter~pos > 0)
+	setvar $xenter~refill true
 else
-  setvar $XENTER~REFILL FALSE
+	setvar $xenter~refill false
 end
-:XENTER~RUNLOOP
-setvar $XENTER~I 1
-while ($XENTER~I <= $BOT~PARM1)
-  gosub :XENTER~XENTER
-  if (($PLAYER~CURRENT_SECTOR > 10) and ($PLAYER~CURRENT_SECTOR <> $MAP~STARDOCK))
-    if ($XENTER~REFILL = TRUE)
-      gosub :PLAYER~TOPOFF
-    else
-      if ($XENTER~I = $BOT~PARM1)
-        send "f z1* z c d * "
-      end
-    end
-  end
-  add $XENTER~I 1
+
+:xenter~runloop
+setvar $xenter~i 1
+while ($xenter~i <= $bot~parm1)
+	gosub :xenter~xenter
+	if (($player~current_sector > 10) and ($player~current_sector <> $map~stardock))
+		if ($xenter~refill = true)
+			gosub :player~topoff
+		else
+			if ($xenter~i = $bot~parm1)
+				send "f z1* z c d * "
+			end
+		end
+	end
+	add $xenter~i 1
 end
-:XENTER~DONE
+
+:xenter~done
 killalltriggers
-gosub :PLAYER~QUIKSTATS
-if ($BOT~PARM1 > 1)
-  setvar $SWITCHBOARD~MESSAGE "Exit Enter - "&$BOT~PARM1&" times completed.*"
+gosub :player~quikstats
+if ($bot~parm1 > 1)
+	setvar $switchboard~message "Exit Enter - "&$bot~parm1&" times completed.*"
 else
-  setvar $SWITCHBOARD~MESSAGE "Exit Enter.*"
+	setvar $switchboard~message "Exit Enter.*"
 end
-if ($BOT~SILENT_RUNNING <> TRUE)
-  setvar $SWITCHBOARD~SELF_COMMAND FALSE
+if ($bot~silent_running <> true)
+	setvar $switchboard~self_command false
 end
-gosub :SWITCHBOARD~SWITCHBOARD
+gosub :switchboard~switchboard
 halt
 
 # includes:

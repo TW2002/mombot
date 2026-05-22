@@ -1,20 +1,21 @@
 setvar $version "2.0.1 12/09/05"
+
 :setup
-gosub :getTime
-loadvar $MH_LoginName
-if ($MH_LoginName = 0) OR ($MH_LoginName = "")
-	if (LOGINNAME = "")
-		setvar $MH_LoginName "ME"
+gosub :gettime
+loadvar $mh_loginname
+if ($mh_loginname = 0) or ($mh_loginname = "")
+	if (loginname = "")
+		setvar $mh_loginname "ME"
 	else
-		setvar $MH_LoginName LOGINNAME
-		savevar $MH_LoginName
+		setvar $mh_loginname loginname
+		savevar $mh_loginname
 	end
 end
-setvar $startDate $year & $month & $day
-setvar $logFileName "data\" & GAMENAME & "-comlog-" & $year & $month & $day & ".txt"
+setvar $startdate $year & $month & $day
+setvar $logfilename "data\" & gamename & "-comlog-" & $year & $month & $day & ".txt"
 setvar $count 1
 setvar $comstring ""
-setArray $coms 10
+setarray $coms 10
 setvar $coms[10][1] 1
 setvar $coms[9][1] 1
 setvar $coms[8][1] 1
@@ -28,35 +29,35 @@ setvar $coms[1][1] 1
 setvar $distance 1
 # setvar $currsec 1
 setvar $sector 1
-window COMS 750 230 "Com Window" ONTOP
-setvar $windowString " Traitor's PUBLIC Comm Monitor Loaded!* Waiting for incoming transmissions.*"
-setvar $windowString $windowString & " Press '_' to review transmission log.*"
-setwindowcontents COMS $windowString
+window coms 750 230 "Com Window" ontop
+setvar $windowstring " Traitor's PUBLIC Comm Monitor Loaded!* Waiting for incoming transmissions.*"
+setvar $windowstring $windowstring & " Press '_' to review transmission log.*"
+setwindowcontents coms $windowstring
 
 :start
 setvar $comtype ""
-killtrigger lookForP
-killtrigger lookForR
-killtrigger lookForF
-killtrigger lookForF2
-killtrigger lookForR2
+killtrigger lookforp
+killtrigger lookforr
+killtrigger lookforf
+killtrigger lookforf2
+killtrigger lookforr2
 killtrigger replay
-killtrigger figHit
-killtrigger offFigHit
+killtrigger fighit
+killtrigger offfighit
 killtrigger limpet
 killtrigger fedcom
-killtrigger SSchan
-killtrigger corpMemo
-killtrigger compMail
-settextlinetrigger lookForP :lookForCom "P "
-settextlinetrigger lookForR :lookForCom "R "
-settextlinetrigger lookForR2 :lookForCom "'"
-settextlinetrigger lookForF :lookForCom "F "
-settextlinetrigger lookForF2 :lookForCom "`"
+killtrigger sschan
+killtrigger corpmemo
+killtrigger compmail
+settextlinetrigger lookforp :lookforcom "P "
+settextlinetrigger lookforr :lookforcom "R "
+settextlinetrigger lookforr2 :lookforcom "'"
+settextlinetrigger lookforf :lookforcom "F "
+settextlinetrigger lookforf2 :lookforcom "`"
 settextlinetrigger fedcom :fedcom "Federation comm-link: [<ENTER> for multiple lines]"
-settextlinetrigger SSchan :SSchan "Sub-space radio ("
-settextlinetrigger corpMemo :corpMemo "Type corporate message"
-settextlinetrigger compMail :compMail "Type M.A.I.L. message ["
+settextlinetrigger sschan :sschan "Sub-space radio ("
+settextlinetrigger corpmemo :corpmemo "Type corporate message"
+settextlinetrigger compmail :compmail "Type M.A.I.L. message ["
 settextouttrigger replay :replay "_"
 #settextlinetrigger figHit :figHit "of your fighters in sector"
 #settextlinetrigger offFigHit :offFigHit "Your fighters in sector"
@@ -64,97 +65,97 @@ settextlinetrigger limpet :limpet "Limpet mine in "
 pause
 
 :fighit
-gosub :figHitProcess
+gosub :fighitprocess
 goto :start
 
-:offFigHit
-gosub :figHitProcess
+:offfighit
+gosub :fighitprocess
 goto :start
 
 :limpet
-gosub :limpetProcess
+gosub :limpetprocess
 goto :start
 
 :fedcom
-killtrigger lookForP
-killtrigger lookForR
-killtrigger lookForF
+killtrigger lookforp
+killtrigger lookforr
+killtrigger lookforf
 killtrigger replay
-killtrigger figHit
-killtrigger offFigHit
+killtrigger fighit
+killtrigger offfighit
 killtrigger limpet
 killtrigger fedcom
-killtrigger SSchan
-killtrigger corpMemo
-killtrigger compMail
-setvar $comType "F"
-goto :comTriggers
+killtrigger sschan
+killtrigger corpmemo
+killtrigger compmail
+setvar $comtype "F"
+goto :comtriggers
 
-:SSchan
-killtrigger lookForP
-killtrigger lookForR
-killtrigger lookForF
+:sschan
+killtrigger lookforp
+killtrigger lookforr
+killtrigger lookforf
 killtrigger replay
-killtrigger figHit
-killtrigger offFigHit
+killtrigger fighit
+killtrigger offfighit
 killtrigger limpet
 killtrigger fedcom
-killtrigger SSchan
-killtrigger corpMemo
-killtrigger compMail
-setvar $comType "S"
-goto :comTriggers
+killtrigger sschan
+killtrigger corpmemo
+killtrigger compmail
+setvar $comtype "S"
+goto :comtriggers
 
-:corpMemo
-killtrigger lookForP
-killtrigger lookForR
-killtrigger lookForF
+:corpmemo
+killtrigger lookforp
+killtrigger lookforr
+killtrigger lookforf
 killtrigger replay
-killtrigger figHit
-killtrigger offFigHit
+killtrigger fighit
+killtrigger offfighit
 killtrigger limpet
 killtrigger fedcom
-killtrigger SSchan
-killtrigger corpMemo
-killtrigger compMail
-setvar $comType "C"
-goto :comTriggers
+killtrigger sschan
+killtrigger corpmemo
+killtrigger compmail
+setvar $comtype "C"
+goto :comtriggers
 
-:compMail
-killtrigger lookForP
-killtrigger lookForR
-killtrigger lookForF
+:compmail
+killtrigger lookforp
+killtrigger lookforr
+killtrigger lookforf
 killtrigger replay
-killtrigger figHit
-killtrigger offFigHit
+killtrigger fighit
+killtrigger offfighit
 killtrigger limpet
 killtrigger fedcom
-killtrigger SSchan
-killtrigger corpMemo
-killtrigger compMail
-setvar $comType "M"
-goto :comTriggers
+killtrigger sschan
+killtrigger corpmemo
+killtrigger compmail
+setvar $comtype "M"
+goto :comtriggers
 
-:comTriggers
+:comtriggers
 setvar $line ""
-settextouttrigger comText :comText
-settextlinetrigger endFedComText :endComText "Federation comm-link terminated."
-settextlinetrigger endFedComText1 :endComText "Message sent on Federation comm-link."
-settextlinetrigger endSSComText :endComText "Message sent on sub-space channel"
-settextlinetrigger endSSComText1 :endComText "Sub-space comm-link terminated"
-settextlinetrigger endCorpMemoText :endComText "CMS link terminated."
-settextlinetrigger endCompMailText :endComText "GMS link terminated."
-settexttrigger extraFedComLine :extraComLine "F:"
+settextouttrigger comtext :comtext
+settextlinetrigger endfedcomtext :endcomtext "Federation comm-link terminated."
+settextlinetrigger endfedcomtext1 :endcomtext "Message sent on Federation comm-link."
+settextlinetrigger endsscomtext :endcomtext "Message sent on sub-space channel"
+settextlinetrigger endsscomtext1 :endcomtext "Sub-space comm-link terminated"
+settextlinetrigger endcorpmemotext :endcomtext "CMS link terminated."
+settextlinetrigger endcompmailtext :endcomtext "GMS link terminated."
+settexttrigger extrafedcomline :extracomline "F:"
 #settexttrigger extraPComLine :extraComLine "P:"
-settexttrigger extraSSComLine :extraComLine "S:"
-settexttrigger extraCorpMemoLine :extraComLine "C:"
-settexttrigger extraCompMailLine :extraComLine "M:"
-settextlinetrigger figHitCom :figHitCom "of your fighters in sector"
-settextlinetrigger offFigHitCom :offFigHitCom "Your fighters in sector"
-settextlinetrigger limpetCom :limpetCom "Limpet mine in "
+settexttrigger extrasscomline :extracomline "S:"
+settexttrigger extracorpmemoline :extracomline "C:"
+settexttrigger extracompmailline :extracomline "M:"
+settextlinetrigger fighitcom :fighitcom "of your fighters in sector"
+settextlinetrigger offfighitcom :offfighitcom "Your fighters in sector"
+settextlinetrigger limpetcom :limpetcom "Limpet mine in "
 pause
 
-:comText
+:comtext
 getouttext $letter
 if ($letter = #13)
 	if ($line = "")
@@ -162,8 +163,8 @@ if ($letter = #13)
 		pause
 	else
 		processout $letter
-		setvar $line $comType & " " & $MH_LoginName & " " & $line
-		gosub :addCom2Window
+		setvar $line $comtype & " " & $mh_loginname & " " & $line
+		gosub :addcom2window
 		setvar $line ""
 		pause
 	end
@@ -171,106 +172,105 @@ elseif ($letter = #8)
 	getlength $line $length
 	cuttext $line $line 0 ($length - 1)
 	processout $letter
-	settextouttrigger comText :comText
+	settextouttrigger comtext :comtext
 	pause
 end
 setvar $line $line & $letter
 processout $letter
-settextouttrigger comText :comText
+settextouttrigger comtext :comtext
 pause
 
-:extraComLine
-killtrigger comText
-killtrigger extraFedComLine
-killtrigger extraSSComLine
-killtrigger extraCorpMemoLine
-killtrigger extraCompMailLine
+:extracomline
+killtrigger comtext
+killtrigger extrafedcomline
+killtrigger extrasscomline
+killtrigger extracorpmemoline
+killtrigger extracompmailline
 # gosub :addCom2Window
 setvar $line ""
-settexttrigger extraFedComLine :extraComLine "F:"
-settexttrigger extraSSComLine :extraComLine "S:"
-settexttrigger extraCorpMemoLine :extraComLine "C:"
-settexttrigger extraCompMailLine :extraComLine "M:"
-settextouttrigger comText :comText
+settexttrigger extrafedcomline :extracomline "F:"
+settexttrigger extrasscomline :extracomline "S:"
+settexttrigger extracorpmemoline :extracomline "C:"
+settexttrigger extracompmailline :extracomline "M:"
+settextouttrigger comtext :comtext
 pause
 
-:endComText
-killtrigger comText
-killtrigger extraFedComLine
-killtrigger extraSSComLine
-killtrigger extraCorpMemoLine
-killtrigger extraCompMailLine
-killtrigger endFedComText
-killtrigger endFedComText1
-killtrigger endSSComText
-killtrigger endSSComText1
-killtrigger endCorpMemoText
-killtrigger endCompMailText
-killtrigger figHitCom
-killtrigger offFigHitCom
-killtrigger limpetCom
+:endcomtext
+killtrigger comtext
+killtrigger extrafedcomline
+killtrigger extrasscomline
+killtrigger extracorpmemoline
+killtrigger extracompmailline
+killtrigger endfedcomtext
+killtrigger endfedcomtext1
+killtrigger endsscomtext
+killtrigger endsscomtext1
+killtrigger endcorpmemotext
+killtrigger endcompmailtext
+killtrigger fighitcom
+killtrigger offfighitcom
+killtrigger limpetcom
 # striptext $line #13
 # gosub :addCom2Window
 goto :start
 
-:figHitCom
+:fighitcom
 setvar $templine $line
-gosub :figHitProcess
-settextlinetrigger figHitCom :figHitCom "of your fighters in sector"
+gosub :fighitprocess
+settextlinetrigger fighitcom :fighitcom "of your fighters in sector"
 setvar $line $templine
 pause
 
-:offFigHitCom
+:offfighitcom
 setvar $templine $line
-gosub :offFigHitProcess
-settextlinetrigger offFigHitCom :offFigHitCom "Your fighters in sector"
+gosub :offfighitprocess
+settextlinetrigger offfighitcom :offfighitcom "Your fighters in sector"
 setvar $line $templine
 pause
 
-:limpetCom
+:limpetcom
 setvar $templine $line
-gosub :limpetProcess
-settextlinetrigger limpetCom :limpetCom "Limpet mine in "
+gosub :limpetprocess
+settextlinetrigger limpetcom :limpetcom "Limpet mine in "
 setvar $line $templine
 pause
 
-
-:lookForCom
-killtrigger lookForP
-killtrigger lookForR
-killtrigger lookForF
-killtrigger lookForF2
-killtrigger lookForR2
+:lookforcom
+killtrigger lookforp
+killtrigger lookforr
+killtrigger lookforf
+killtrigger lookforf2
+killtrigger lookforr2
 killtrigger replay
-killtrigger figHit
-killtrigger offFigHit
+killtrigger fighit
+killtrigger offfighit
 killtrigger limpet
 killtrigger fedcom
-killtrigger SSchan
-killtrigger corpMemo
-killtrigger compMail
-setvar $line CURRENTLINE
-getword $line $checkCom 1
-if ($checkCom = "'") OR ($checkCom = "`") OR ($checkCom = "P") OR ($checkCom = "R") OR ($checkCom = "F")
-	if ($checkCom = "P")
-		getword $line $checkCorpScan 2
-		if ($checkCorpScan = "indicates")
+killtrigger sschan
+killtrigger corpmemo
+killtrigger compmail
+setvar $line currentline
+getword $line $checkcom 1
+if ($checkcom = "'") or ($checkcom = "`") or ($checkcom = "P") or ($checkcom = "R") or ($checkcom = "F")
+	if ($checkcom = "P")
+		getword $line $checkcorpscan 2
+		if ($checkcorpscan = "indicates")
 			goto :start
 		end
 	end
-	gosub :addCom2Window
+	gosub :addcom2window
 	goto :start
 else
 	goto :start
 end
 
-:addCom2Window
-gosub :getTime
-if ($startDate <> $year & $month & $day)
-	setvar $startDate $year & $month & $day
-	setvar $logFileName "data\" & GAMENAME & "-comlog-" & $year & $month & $day & ".txt"
+:addcom2window
+gosub :gettime
+if ($startdate <> $year & $month & $day)
+	setvar $startdate $year & $month & $day
+	setvar $logfilename "data\" & gamename & "-comlog-" & $year & $month & $day & ".txt"
 end
-write $logFileName $hour & ":" & $minute & ":" & $second & ":" & $msec & "  " &$line
+write $logfilename $hour & ":" & $minute & ":" & $second & ":" & $msec & "  " &$line
 getlength $line $length
 setvar $numline 1
 setvar $line " " & $line
@@ -280,12 +280,12 @@ if ($length > 86)
 	setvar $line $line1 & "* " & $line2
 	setvar $numline 2
 end
-gosub :buildComString
+gosub :buildcomstring
 return
 
-:buildComString
+:buildcomstring
 setvar $comstring ""
-setvar $windowString ""
+setvar $windowstring ""
 setvar $coms[10] $coms[9]
 setvar $coms[9] $coms[8]
 setvar $coms[8] $coms[7]
@@ -307,8 +307,8 @@ setvar $coms[3][1] $coms[2][1]
 setvar $coms[2][1] $coms[1][1]
 setvar $coms[1][1] $numline
 setvar $count 2
-while ($numline < 9) AND ($count < 10)
-#	echo ansi_10 "*" $numline " " $count
+while ($numline < 9) and ($count < 10)
+	#	echo ansi_10 "*" $numline " " $count
 	setvar $numline ($numline + $coms[$count][1])
 	add $count 1
 end
@@ -321,150 +321,150 @@ while ($count >=1)
 	subtract $count 1
 end
 
-setvar $windowString $comstring 
-setwindowcontents COMS $windowString
+setvar $windowstring $comstring
+setwindowcontents coms $windowstring
 return
 
-:figHitProcess
-killtrigger lookForP
-killtrigger lookForR
-killtrigger lookForF
+:fighitprocess
+killtrigger lookforp
+killtrigger lookforr
+killtrigger lookforf
 killtrigger replay
-killtrigger figHit
-killtrigger offFigHit
+killtrigger fighit
+killtrigger offfighit
 killtrigger limpet
 killtrigger fedcom
-killtrigger SSchan
-killtrigger corpMemo
-killtrigger compMail
-setvar $line CURRENTLINE
-getword $line $spoofCheck 1
-if ($spoofCheck = "P") OR ($spoofCheck = "F") OR ($spoofCheck = "R") OR ($spoofCheck = ">")
+killtrigger sschan
+killtrigger corpmemo
+killtrigger compmail
+setvar $line currentline
+getword $line $spoofcheck 1
+if ($spoofcheck = "P") or ($spoofcheck = "F") or ($spoofcheck = "R") or ($spoofcheck = ">")
 	return
 else
 	#gettext CURRENTLINE $sector "sector " ""
 	#striptext $sector ":"
 	#getdistance $distance $sector CURRENTSECTOR
 	#setvar $line " Hops: " & $distance & " " & $line
-	gosub :addCom2Window
+	gosub :addcom2window
 	return
 end
 
-:offFigHitProcess
-killtrigger lookForP
-killtrigger lookForR
-killtrigger lookForF
+:offfighitprocess
+killtrigger lookforp
+killtrigger lookforr
+killtrigger lookforf
 killtrigger replay
-killtrigger figHit
-killtrigger offFigHit
+killtrigger fighit
+killtrigger offfighit
 killtrigger limpet
 killtrigger fedcom
-killtrigger SSchan
-killtrigger corpMemo
-killtrigger compMail
-setvar $line CURRENTLINE
-getword $line $spoofCheck 1
-if ($spoofCheck = "P") OR ($spoofCheck = "F") OR ($spoofCheck = "R") OR ($spoofCheck = ">")
+killtrigger sschan
+killtrigger corpmemo
+killtrigger compmail
+setvar $line currentline
+getword $line $spoofcheck 1
+if ($spoofcheck = "P") or ($spoofcheck = "F") or ($spoofcheck = "R") or ($spoofcheck = ">")
 	return
 else
 	#getword CURRENTLINE $sector 5
 	#striptext $sector ":"
 	#getdistance $distance $sector CURRENTSECTOR
 	#setvar $line " Hops: " & $distance & " " & $line
-	gosub :addCom2Window
+	gosub :addcom2window
 	return
 end
 
-:limpetProcess
-killtrigger lookForP
-killtrigger lookForR
-killtrigger lookForF
+:limpetprocess
+killtrigger lookforp
+killtrigger lookforr
+killtrigger lookforf
 killtrigger replay
-killtrigger figHit
-killtrigger offFigHit
+killtrigger fighit
+killtrigger offfighit
 killtrigger limpet
 killtrigger fedcom
-killtrigger SSchan
-killtrigger corpMemo
-killtrigger compMail
-setvar $line CURRENTLINE
-getword $line $spoofCheck 1
-if ($spoofCheck = "P") OR ($spoofCheck = "F") OR ($spoofCheck = "R") OR ($spoofCheck = ">")
+killtrigger sschan
+killtrigger corpmemo
+killtrigger compmail
+setvar $line currentline
+getword $line $spoofcheck 1
+if ($spoofcheck = "P") or ($spoofcheck = "F") or ($spoofcheck = "R") or ($spoofcheck = ">")
 	return
 else
 	#getword CURRENTLINE $sector 4
 	#getdistance $distance $sector CURRENTSECTOR
 	#setvar $line " Hops: " & $distance & " " & $line
-	gosub :addCom2Window
+	gosub :addcom2window
 	return
 end
 
 :replay
-killtrigger lookForP
-killtrigger lookForR
-killtrigger lookForF
+killtrigger lookforp
+killtrigger lookforr
+killtrigger lookforf
 killtrigger replay
-killtrigger figHit
-killtrigger offFigHit
+killtrigger fighit
+killtrigger offfighit
 killtrigger limpet
 killtrigger fedcom
-killtrigger SSchan
-killtrigger corpMemo
-killtrigger compMail
-fileexists $yn $logFileName
-if ($yn = FALSE)
-	echo ANSI_12 "**No Comm Log File Exists. As soon as a message is recieved, it will be created.**"
+killtrigger sschan
+killtrigger corpmemo
+killtrigger compmail
+fileexists $yn $logfilename
+if ($yn = false)
+	echo ansi_12 "**No Comm Log File Exists. As soon as a message is recieved, it will be created.**"
 	goto :start
 end
-echo ANSI_10 "**Show last 20 entries (2), last 50 (5), last 100 (1), or show all (a)? " ANSI_11 "(1,2,5,a)*"
-getconsoleinput $showLast SINGLEKEY
-if ($showLast = 2) OR ($showLast = 5) OR ($showLast = "a") OR ($showLast = "1")
-	goto :buildLogDisplay
+echo ansi_10 "**Show last 20 entries (2), last 50 (5), last 100 (1), or show all (a)? " ansi_11 "(1,2,5,a)*"
+getconsoleinput $showlast singlekey
+if ($showlast = 2) or ($showlast = 5) or ($showlast = "a") or ($showlast = "1")
+	goto :buildlogdisplay
 else
 	goto :start
 end
 
-:buildLogDisplay
-setvar $fileLine ""
-setvar $logLength 1
-while ($fileline <> EOF)
-	read $logFileName $fileLine $logLength
-	add $logLength 1
+:buildlogdisplay
+setvar $fileline ""
+setvar $loglength 1
+while ($fileline <> eof)
+	read $logfilename $fileline $loglength
+	add $loglength 1
 end
-if ($logLength < 20) OR ($showLast = "a")
+if ($loglength < 20) or ($showlast = "a")
 	setvar $count 1
-	goto :displayLog
-elseif ($logLength < 50) AND ($showLast = 5)
+	goto :displaylog
+elseif ($loglength < 50) and ($showlast = 5)
 	setvar $count 1
-	goto :displayLog
-elseif ($logLength < 100) AND ($showLast = 1)
+	goto :displaylog
+elseif ($loglength < 100) and ($showlast = 1)
 	setvar $count 1
-	goto :displayLog
-elseif ($showLast = 1)
-	setvar $count ($logLength - 101)
-	goto :displayLog
-elseif ($showLast = 5)
-	setvar $count ($logLength - 51)
-	goto :displayLog
+	goto :displaylog
+elseif ($showlast = 1)
+	setvar $count ($loglength - 101)
+	goto :displaylog
+elseif ($showlast = 5)
+	setvar $count ($loglength - 51)
+	goto :displaylog
 else
-	setvar $count ($logLength - 21)
-	goto :displayLog
+	setvar $count ($loglength - 21)
+	goto :displaylog
 end
 
-:displayLog
-setvar $fileLine ""
-echo ANSI_10 "*Comm Log:*"
-while ($fileLine <> EOF)
-	read $logFileName $fileLine $count
-	getword $fileline $commType 2
-	if ($commType = "P")
-		echo ANSI_10 $fileLine "*"
-	elseif ($commType = "R")
-		echo ANSI_11 $fileLine "*"
-	elseif ($commType = "Hops:")
-		echo ANSI_12 $fileLine "*"
+:displaylog
+setvar $fileline ""
+echo ansi_10 "*Comm Log:*"
+while ($fileline <> eof)
+	read $logfilename $fileline $count
+	getword $fileline $commtype 2
+	if ($commtype = "P")
+		echo ansi_10 $fileline "*"
+	elseif ($commtype = "R")
+		echo ansi_11 $fileline "*"
+	elseif ($commtype = "Hops:")
+		echo ansi_12 $fileline "*"
 	else
-		echo ANSI_14 $fileLine "*"
+		echo ansi_14 $fileline "*"
 	end
 	add $count 1
 end
@@ -474,23 +474,23 @@ goto :start
 # creates a unique number timestamp
 # if time/date is 10:50:00am 9/15/05 then output = 20050915105000
 # if time/date is 5:33:22pm 9/15/05 then output = 20050915173322
-:getTime
-getTime $dateTime "yyyymmddhhnnsszzz am/pm"
-getword $dateTime $amPMcheck 2
-getword $dateTime $finalTime 1
-cuttext $finalTime $12check 9 2
-if ($amPMcheck = "pm")
+:gettime
+gettime $datetime "yyyymmddhhnnsszzz am/pm"
+getword $datetime $ampmcheck 2
+getword $datetime $finaltime 1
+cuttext $finaltime $12check 9 2
+if ($ampmcheck = "pm")
 	if ($12check <> 12)
-		add $finalTime 120000000
+		add $finaltime 120000000
 	end
 end
-cuttext $finalTime $year 1 4
-cuttext $finalTime $month 5 2
-cuttext $finalTime $day 7 2
-cuttext $finalTime $hour 9 2
-cuttext $finalTime $minute 11 2
-cuttext $finalTime $second 13 2
-cuttext $finalTime $msec 15 3
+cuttext $finaltime $year 1 4
+cuttext $finaltime $month 5 2
+cuttext $finaltime $day 7 2
+cuttext $finaltime $hour 9 2
+cuttext $finaltime $minute 11 2
+cuttext $finaltime $second 13 2
+cuttext $finaltime $msec 15 3
 # echo ANSI_10 "*" $finalTime
 # echo ANSI_10 "**" $month "/" $day "/" $year " - " $hour ":" $minute ":" $second
 # echo ANSI_10 "*Date: " DATE " Time: " TIME "*"
@@ -499,17 +499,17 @@ return
 #-----------------------------------
 # ----====[ BANNER SECTION ]====----
 #-----------------------------------
-:egoBanner
-echo ANSI_14 "***"
-echo ANSI_14 "                                 /\         *"
-echo ANSI_14 "                                /  \        *"
-echo ANSI_14 "                               /    \       *"
-echo ANSI_14 "                              / ____ \      *"
-echo ANSI_14 "                             / /\   \_\     *"
-echo ANSI_14 "                            /   " #17 #42 & #16 "-   \    *"
-echo ANSI_14 "                           /    " #245 "\_     \   *"
-echo ANSI_14 "                          /______________\  *"
-echo ANSI_14 "                          www.tw-cabal.com"
+:egobanner
+echo ansi_14 "***"
+echo ansi_14 "                                 /\         *"
+echo ansi_14 "                                /  \        *"
+echo ansi_14 "                               /    \       *"
+echo ansi_14 "                              / ____ \      *"
+echo ansi_14 "                             / /\   \_\     *"
+echo ansi_14 "                            /   " #17 #42 & #16 "-   \    *"
+echo ansi_14 "                           /    " #245 "\_     \   *"
+echo ansi_14 "                          /______________\  *"
+echo ansi_14 "                          www.tw-cabal.com"
 return
 
 halt

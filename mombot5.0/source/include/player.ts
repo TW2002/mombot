@@ -13,1148 +13,1169 @@
 # :player~voidadjacent / :player~clearadjacent - Voids or clears voids on all adjacent sectors to the player's current sector.
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~BWARP
+:player~bwarp
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "b"
-settexttrigger NOBWARP :NOBWARP "Would you like to place a subspace order for one? "
-settexttrigger YESBWARP :YESBWARP "Beam to what sector? (U="
-settexttrigger IGBWARP :BWARPPHOTONED "Your ship was hit by a Photon and has been disabled"
+settexttrigger nobwarp :nobwarp "Would you like to place a subspace order for one? "
+settexttrigger yesbwarp :yesbwarp "Beam to what sector? (U="
+settexttrigger igbwarp :bwarpphotoned "Your ship was hit by a Photon and has been disabled"
 pause
 
-:PLAYER~NOBWARP
-gosub :KILLBWARPTRIGGERS
+:player~nobwarp
+gosub :killbwarptriggers
 send "*"
-setvar $SWITCHBOARD~MESSAGE "No Bwarp installed on this planet*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $switchboard~message "No Bwarp installed on this planet*"
+gosub :switchboard~switchboard
 return
 
-:PLAYER~YESBWARP
-gosub :KILLBWARPTRIGGERS
-send $PLAYER~WARPTO&"*"
-settexttrigger BWARP_LOCK :BWARP_NO_RANGE "This planetary transporter does not have the range."
-settexttrigger NO_BWRP_LOCK :NO_BWARP_LOCK "Do you want to make this transport blind?"
-settexttrigger BWARP_READY :BWARP_LOCK "All Systems Ready, shall we engage?"
-settextlinetrigger NO_BWARPFUEL :BWARPNOFUEL "This planet does not have enough Fuel Ore to transport you."
+:player~yesbwarp
+gosub :killbwarptriggers
+send $player~warpto&"*"
+settexttrigger bwarp_lock :bwarp_no_range "This planetary transporter does not have the range."
+settexttrigger no_bwrp_lock :no_bwarp_lock "Do you want to make this transport blind?"
+settexttrigger bwarp_ready :bwarp_lock "All Systems Ready, shall we engage?"
+settextlinetrigger no_bwarpfuel :bwarpnofuel "This planet does not have enough Fuel Ore to transport you."
 pause
 
-:PLAYER~BWARP_NO_RANGE
-gosub :KILLBWARPTRIGGERS
-setvar $SWITCHBOARD~MESSAGE "Not enough range on this planet's transporter.*"
-gosub :SWITCHBOARD~SWITCHBOARD
+:player~bwarp_no_range
+gosub :killbwarptriggers
+setvar $switchboard~message "Not enough range on this planet's transporter.*"
+gosub :switchboard~switchboard
 return
 
-:PLAYER~NO_BWARP_LOCK
-gosub :KILLBWARPTRIGGERS
+:player~no_bwarp_lock
+gosub :killbwarptriggers
 send "* "
-setvar $PLAYER~TARGET $PLAYER~WARPTO
-setsectorparameter $PLAYER~TARGET "FIGSEC" FALSE
-setvar $SWITCHBOARD~MESSAGE "No fighter down at that destination, aborting*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $player~target $player~warpto
+setsectorparameter $player~target "FIGSEC" false
+setvar $switchboard~message "No fighter down at that destination, aborting*"
+gosub :switchboard~switchboard
 return
 
-:PLAYER~BWARP_LOCK
-gosub :KILLBWARPTRIGGERS
+:player~bwarp_lock
+gosub :killbwarptriggers
 send "y     * "
-setvar $PLAYER~TARGET $PLAYER~WARPTO
-setsectorparameter $PLAYER~TARGET "FIGSEC" TRUE
-setvar $SWITCHBOARD~MESSAGE "B-warp completed.*"
-gosub :SWITCHBOARD~SWITCHBOARD
+setvar $player~target $player~warpto
+setsectorparameter $player~target "FIGSEC" true
+setvar $switchboard~message "B-warp completed.*"
+gosub :switchboard~switchboard
 return
 
-:PLAYER~BWARPNOFUEL
-gosub :KILLBWARPTRIGGERS
-setvar $SWITCHBOARD~MESSAGE "Not enough fuel on the planet to make the transport!*"
-gosub :SWITCHBOARD~SWITCHBOARD
+:player~bwarpnofuel
+gosub :killbwarptriggers
+setvar $switchboard~message "Not enough fuel on the planet to make the transport!*"
+gosub :switchboard~switchboard
 return
 
-:PLAYER~BWARPPHOTONED
-gosub :KILLBWARPTRIGGERS
-setvar $SWITCHBOARD~MESSAGE "I have been photoned and can not B-warp!*"
-gosub :SWITCHBOARD~SWITCHBOARD
+:player~bwarpphotoned
+gosub :killbwarptriggers
+setvar $switchboard~message "I have been photoned and can not B-warp!*"
+gosub :switchboard~switchboard
 return
 
-:PLAYER~KILLBWARPTRIGGERS
-killtrigger YESBWARP
-killtrigger IGBWARP
-killtrigger NOBWARP
-killtrigger BWARP_LOCK
-killtrigger NO_BWRP_LOCK
-killtrigger BWARP_READY
-killtrigger NO_BWARPFUEL
+:player~killbwarptriggers
+killtrigger yesbwarp
+killtrigger igbwarp
+killtrigger nobwarp
+killtrigger bwarp_lock
+killtrigger no_bwrp_lock
+killtrigger bwarp_ready
+killtrigger no_bwarpfuel
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~ECHO
+:player~echo
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-loadvar $BOT~BOTISDEAF
-getdeafclients $BOT~BOTISDEAF
-if ($BOT~BOTISDEAF)
-  setvar $BOT~SILENT_RUNNING TRUE
-  setvar $silent_running TRUE
-  savevar $silent_running
-  savevar $bot~silent_running
-  gosub :SWITCHBOARD~SWITCHBOARD
+loadvar $bot~botisdeaf
+getdeafclients $bot~botisdeaf
+if ($bot~botisdeaf)
+	setvar $bot~silent_running true
+	setvar $silent_running true
+	savevar $silent_running
+	savevar $bot~silent_running
+	gosub :switchboard~switchboard
 else
-  echo $SWITCHBOARD~MESSAGE
+	echo $switchboard~message
 end
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~CHECKSTARTINGPROMPT
+:player~checkstartingprompt
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-loadvar $BOT~VALIDPROMPTS
-if ($PLAYER~CURRENT_PROMPT = 0)
-  gosub :PLAYER~CURRENTPROMPT
+loadvar $bot~validprompts
+if ($player~current_prompt = 0)
+	gosub :player~currentprompt
 end
-getwordpos " "&$BOT~VALIDPROMPTS&" " $POS $PLAYER~CURRENT_PROMPT
-if ($POS <= 0)
-  setvar $SWITCHBOARD~MESSAGE "Invalid starting prompt: ["&$PLAYER~CURRENT_PROMPT&"]. Valid prompt(s) for this command: ["&$BOT~VALIDPROMPTS&"]*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  halt
+getwordpos " "&$bot~validprompts&" " $pos $player~current_prompt
+if ($pos <= 0)
+	setvar $switchboard~message "Invalid starting prompt: ["&$player~current_prompt&"]. Valid prompt(s) for this command: ["&$bot~validprompts&"]*"
+	gosub :switchboard~switchboard
+	halt
 end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~CHECKCORP
+:player~checkcorp
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-setarray $PLAYER~CORP_MEMBERS 10 1
-setvar $PLAYER~CORP_COUNT 0
-gosub :QUIKSTATS
-if ($PLAYER~CURRENT_PROMPT = "Citadel")
-  send "xa"
+setarray $player~corp_members 10 1
+setvar $player~corp_count 0
+gosub :quikstats
+if ($player~current_prompt = "Citadel")
+	send "xa"
 else
-  send "ta"
+	send "ta"
 end
 waiton "    Corp Member Name                   Sector  Fighters Shields Mines  Credits"
 waiton "------------------------------------------------------------------------------"
 
-:PLAYER~TA_AGAIN
-settextlinetrigger TALINE :TA_CHECK
+:player~ta_again
+settextlinetrigger taline :ta_check
 pause
 
-:PLAYER~TA_CHECK
-getwordpos CURRENTLINE $PLAYER~POS "P indicates Trader is on a planet in that sector"
-getwordpos CURRENTLINE $PLAYER~POS2 "Corporate command ["
-if (($PLAYER~POS > 0) or ($PLAYER~POS2 > 0))
-  goto :DONE_TA
+:player~ta_check
+getwordpos currentline $player~pos "P indicates Trader is on a planet in that sector"
+getwordpos currentline $player~pos2 "Corporate command ["
+if (($player~pos > 0) or ($player~pos2 > 0))
+	goto :done_ta
 end
-setvar $PLAYER~LINE CURRENTLINE
-trim $PLAYER~LINE
-if ($PLAYER~LINE <> "")
-  cuttext $PLAYER~LINE $PLAYER~NAME 1 30
-  replacetext $PLAYER~LINE $PLAYER~NAME ""
-  trim $PLAYER~NAME
-  add $PLAYER~CORP_COUNT 1
-  setvar $PLAYER~CORP_MEMBERS[$PLAYER~CORP_COUNT] $PLAYER~NAME
-  getword $PLAYER~LINE $PLAYER~CORP_MEMBERS[$PLAYER~CORP_COUNT][1] 1
-  replacetext $PLAYER~CORP_MEMBERS[$PLAYER~CORP_COUNT][1] "P" ""
+setvar $player~line currentline
+trim $player~line
+if ($player~line <> "")
+	cuttext $player~line $player~name 1 30
+	replacetext $player~line $player~name ""
+	trim $player~name
+	add $player~corp_count 1
+	setvar $player~corp_members[$player~corp_count] $player~name
+	getword $player~line $player~corp_members[$player~corp_count][1] 1
+	replacetext $player~corp_members[$player~corp_count][1] "P" ""
 end
-goto :TA_AGAIN
+goto :ta_again
 
-:PLAYER~DONE_TA
+:player~done_ta
 send "q"
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~CHECKFORTRAVELNAME
+:player~checkfortravelname
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 if ($parm1 = "me")
-  if ($command_caller = "self")
-    setvar $SWITCHBOARD~MESSAGE "I don't think you need to travel to yourself.*"
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
-  setvar $PLAYER~WHO_CALLED_ME $command_caller
-  gosub :CHECKCORP
-  setvar $PLAYER~I 1
-  while ($PLAYER~I <= $PLAYER~CORP_COUNT)
-    lowercase $PLAYER~CORP_MEMBERS[$PLAYER~I]
-    lowercase $PLAYER~WHO_CALLED_ME
-    getwordpos $PLAYER~CORP_MEMBERS[$PLAYER~I] $PLAYER~POS $PLAYER~WHO_CALLED_ME
-    if ($PLAYER~POS > 0)
-      setvar $parm1 $PLAYER~CORP_MEMBERS[$PLAYER~I][1]
-      goto :GO_AFTER_ME
-    end
-    add $PLAYER~I 1
-  end
+	if ($command_caller = "self")
+		setvar $switchboard~message "I don't think you need to travel to yourself.*"
+		gosub :switchboard~switchboard
+		halt
+	end
+	setvar $player~who_called_me $command_caller
+	gosub :checkcorp
+	setvar $player~i 1
+	while ($player~i <= $player~corp_count)
+		lowercase $player~corp_members[$player~i]
+		lowercase $player~who_called_me
+		getwordpos $player~corp_members[$player~i] $player~pos $player~who_called_me
+		if ($player~pos > 0)
+			setvar $parm1 $player~corp_members[$player~i][1]
+			goto :go_after_me
+		end
+		add $player~i 1
+	end
 end
-isnumber $PLAYER~TEST $parm1
-if ($PLAYER~TEST <> TRUE)
-  getwordpos $user_command_line $PLAYER~POS "sector:"
-  if ($PLAYER~POS > 0)
-    setvar $PLAYER~CLINE $user_command_line&" "
-    gettext $PLAYER~CLINE $parm1 "sector:" " "
-    goto :GO_AFTER_ME
-  end
-  getwordpos $user_command_line $PLAYER~POS #34
-  if ($PLAYER~POS > 0)
-    gettext $user_command_line $PLAYER~TRADER #34 #34
-    if ($PLAYER~TRADER = FALSE)
-      setvar $PLAYER~TRADER $parm1
-    end
-  else
-    setvar $PLAYER~TRADER $parm1
-  end
+isnumber $player~test $parm1
+if ($player~test <> true)
+	getwordpos $user_command_line $player~pos "sector:"
+	if ($player~pos > 0)
+		setvar $player~cline $user_command_line&" "
+		gettext $player~cline $parm1 "sector:" " "
+		goto :go_after_me
+	end
+	getwordpos $user_command_line $player~pos #34
+	if ($player~pos > 0)
+		gettext $user_command_line $player~trader #34 #34
+		if ($player~trader = false)
+			setvar $player~trader $parm1
+		end
+	else
+		setvar $player~trader $parm1
+	end
 
-  gosub :CHECKCORP
-  setvar $PLAYER~I 1
-  while ($PLAYER~I <= $PLAYER~CORP_COUNT)
-    lowercase $PLAYER~CORP_MEMBERS[$PLAYER~I]
-    lowercase $PLAYER~TRADER
-    getwordpos $PLAYER~CORP_MEMBERS[$PLAYER~I] $PLAYER~POS $PLAYER~TRADER
-    if ($PLAYER~POS > 0)
-      setvar $parm1 $PLAYER~CORP_MEMBERS[$PLAYER~I][1]
-      goto :GO_AFTER_ME
-    end
-    add $PLAYER~I 1
-  end
+	gosub :checkcorp
+	setvar $player~i 1
+	while ($player~i <= $player~corp_count)
+		lowercase $player~corp_members[$player~i]
+		lowercase $player~trader
+		getwordpos $player~corp_members[$player~i] $player~pos $player~trader
+		if ($player~pos > 0)
+			setvar $parm1 $player~corp_members[$player~i][1]
+			goto :go_after_me
+		end
+		add $player~i 1
+	end
 end
-:PLAYER~GO_AFTER_ME
+
+:player~go_after_me
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~CLEARADJACENT
+:player~clearadjacent
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-getsector $PLAYER~CURRENT_SECTOR $PLAYER~SECTORINFO
-if ($PLAYER~SECTORINFO.WARP[1] = 0)
-  setvar $SWITCHBOARD~MESSAGE "This sector has no warps, try to scan it first!*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  return
+getsector $player~current_sector $player~sectorinfo
+if ($player~sectorinfo.warp[1] = 0)
+	setvar $switchboard~message "This sector has no warps, try to scan it first!*"
+	gosub :switchboard~switchboard
+	return
 else
-  setvar $PLAYER~VOIDSECT 0
-  :PLAYER~CLEARVOIDS
-  add $PLAYER~VOIDSECT 1
-  if ($PLAYER~VOIDSECT < 7)
-    if ($PLAYER~SECTORINFO.WARP[$PLAYER~VOIDSECT] <> 0)
-      send "CV0*YN"&$PLAYER~SECTORINFO.WARP[$PLAYER~VOIDSECT]&"*Q"
-    end
-    goto :CLEARVOIDS
-  end
+	setvar $player~voidsect 0
 
-  send "/"
-  waiton " Sect "
+	:player~clearvoids
+	add $player~voidsect 1
+	if ($player~voidsect < 7)
+		if ($player~sectorinfo.warp[$player~voidsect] <> 0)
+			send "CV0*YN"&$player~sectorinfo.warp[$player~voidsect]&"*Q"
+		end
+		goto :clearvoids
+	end
+
+	send "/"
+	waiton " Sect "
 end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~COMMASIZE
+:player~commasize
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-format $PLAYER~VALUE $PLAYER~VALUE "NUMBER"
+format $player~value $player~value "NUMBER"
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~CURRENTPROMPT
+:player~currentprompt
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-settexttrigger PROMPT :ALLPROMPTSCATCH #145&#8
-setdelaytrigger PROMPT_DELAY :CURRENT_PROMPT_DELAY 5000
+settexttrigger prompt :allpromptscatch #145&#8
+setdelaytrigger prompt_delay :current_prompt_delay 5000
 send #145
 pause
-:PLAYER~CURRENT_PROMPT_DELAY
-settextouttrigger ATKEYS :CURRENT_PROMPT_AT_KEYS
-setdelaytrigger PROMPT_DELAY :VERIFYDELAY 30000
+
+:player~current_prompt_delay
+settextouttrigger atkeys :current_prompt_at_keys
+setdelaytrigger prompt_delay :verifydelay 30000
 pause
-:PLAYER~CURRENT_PROMPT_AT_KEYS
-getouttext $PLAYER~OUT
-send $PLAYER~OUT
-killtrigger PROMPT_DELAY
+
+:player~current_prompt_at_keys
+getouttext $player~out
+send $player~out
+killtrigger prompt_delay
 return
-:PLAYER~ALLPROMPTSCATCH
-killtrigger PROMPT_DELAY
-gosub :PLAYER~PARSE_CURRENT_PROMPT_LINE
-setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+
+:player~allpromptscatch
+killtrigger prompt_delay
+gosub :player~parse_current_prompt_line
+setvar $player~startinglocation $player~current_prompt
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~PARSE_CURRENT_PROMPT_LINE
+:player~parse_current_prompt_line
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLAYER~ANSILINE CURRENTANSILINE
-setvar $PLAYER~SELF_DESTRUCT_PROMPT FALSE
-getwordpos $PLAYER~ANSILINE $PLAYER~POS "ARE YOU SURE CAPTAIN? (Y/N) [N]"
-if ($PLAYER~POS > 0)
-  setvar $PLAYER~SELF_DESTRUCT_PROMPT TRUE
+setvar $player~ansiline currentansiline
+setvar $player~self_destruct_prompt false
+getwordpos $player~ansiline $player~pos "ARE YOU SURE CAPTAIN? (Y/N) [N]"
+if ($player~pos > 0)
+	setvar $player~self_destruct_prompt true
 end
-setvar $PLAYER~FULL_CURRENT_PROMPT CURRENTLINE
-striptext $PLAYER~FULL_CURRENT_PROMPT #145
-striptext $PLAYER~FULL_CURRENT_PROMPT #8
-getword $PLAYER~FULL_CURRENT_PROMPT $PLAYER~CURRENT_PROMPT 1
-if ($PLAYER~CURRENT_PROMPT = 0)
-  setvar $PLAYER~FULL_CURRENT_PROMPT CURRENTANSILINE
-  striptext $PLAYER~FULL_CURRENT_PROMPT #145
-  striptext $PLAYER~FULL_CURRENT_PROMPT #8
-  getword $PLAYER~FULL_CURRENT_PROMPT $PLAYER~CURRENT_PROMPT 1
+setvar $player~full_current_prompt currentline
+striptext $player~full_current_prompt #145
+striptext $player~full_current_prompt #8
+getword $player~full_current_prompt $player~current_prompt 1
+if ($player~current_prompt = 0)
+	setvar $player~full_current_prompt currentansiline
+	striptext $player~full_current_prompt #145
+	striptext $player~full_current_prompt #8
+	getword $player~full_current_prompt $player~current_prompt 1
 end
-striptext $PLAYER~CURRENT_PROMPT #145
-striptext $PLAYER~CURRENT_PROMPT #8
+striptext $player~current_prompt #145
+striptext $player~current_prompt #8
 return
-:PLAYER~VERIFYDELAY
 
+:player~verifydelay
 killalltriggers
 disconnect
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~FORMATNUMBERFORSPACES
+:player~formatnumberforspaces
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if ($PLAYER~INPUTVARIABLE < 10)
-  setvar $PLAYER~OUTPUTVARIABLE "    "&$PLAYER~INPUTVARIABLE
-elseif ($PLAYER~INPUTVARIABLE < 100)
-  setvar $PLAYER~OUTPUTVARIABLE "   "&$PLAYER~INPUTVARIABLE
-elseif ($PLAYER~INPUTVARIABLE < 1000)
-  setvar $PLAYER~OUTPUTVARIABLE "  "&$PLAYER~INPUTVARIABLE
-elseif ($PLAYER~INPUTVARIABLE < 10000)
-  setvar $PLAYER~OUTPUTVARIABLE " "&$PLAYER~INPUTVARIABLE
+if ($player~inputvariable < 10)
+	setvar $player~outputvariable "    "&$player~inputvariable
+elseif ($player~inputvariable < 100)
+	setvar $player~outputvariable "   "&$player~inputvariable
+elseif ($player~inputvariable < 1000)
+	setvar $player~outputvariable "  "&$player~inputvariable
+elseif ($player~inputvariable < 10000)
+	setvar $player~outputvariable " "&$player~inputvariable
 else
-  setvar $PLAYER~OUTPUTVARIABLE $PLAYER~INPUTVARIABLE
+	setvar $player~outputvariable $player~inputvariable
 end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~FORMATPERCENTAGESFORSPACES
+:player~formatpercentagesforspaces
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if ($PLAYER~INPUTVARIABLE < 10)
-  setvar $PLAYER~OUTPUTVARIABLE "  ("&$PLAYER~INPUTVARIABLE&"%)"
-elseif ($PLAYER~INPUTVARIABLE < 100)
-  setvar $PLAYER~OUTPUTVARIABLE " ("&$PLAYER~INPUTVARIABLE&"%)"
-elseif ($PLAYER~INPUTVARIABLE < 1000)
-  setvar $PLAYER~OUTPUTVARIABLE "("&$PLAYER~INPUTVARIABLE&"%)"
+if ($player~inputvariable < 10)
+	setvar $player~outputvariable "  ("&$player~inputvariable&"%)"
+elseif ($player~inputvariable < 100)
+	setvar $player~outputvariable " ("&$player~inputvariable&"%)"
+elseif ($player~inputvariable < 1000)
+	setvar $player~outputvariable "("&$player~inputvariable&"%)"
 else
-  setvar $PLAYER~OUTPUTVARIABLE $PLAYER~INPUTVARIABLE
+	setvar $player~outputvariable $player~inputvariable
 end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~GETINFO
+:player~getinfo
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLAYER~NOFLIP TRUE
-setvar $PLAYER~PHOTONS 0
-setvar $PLAYER~TOWED ""
-setvar $PLAYER~SCAN_TYPE "None"
-setvar $PLAYER~TWARP_TYPE 0
-setvar $PLAYER~CORPSTRING "[0]"
-setvar $PLAYER~IGSTAT 0
+setvar $player~noflip true
+setvar $player~photons 0
+setvar $player~towed ""
+setvar $player~scan_type "None"
+setvar $player~twarp_type 0
+setvar $player~corpstring "[0]"
+setvar $player~igstat 0
 
-gosub :PLAYER~CURRENTPROMPT
-if ($PLAYER~CURRENT_PROMPT <> "Command") and ($PLAYER~CURRENT_PROMPT <> "Citadel")
-  setvar $SWITCHBOARD~MESSAGE "getinfo must be run at the Command or Citadel prompt.*"
-  gosub :SWITCHBOARD~SWITCHBOARD
-  return
+gosub :player~currentprompt
+if ($player~current_prompt <> "Command") and ($player~current_prompt <> "Citadel")
+	setvar $switchboard~message "getinfo must be run at the Command or Citadel prompt.*"
+	gosub :switchboard~switchboard
+	return
 end
 
-:PLAYER~WAITONINFO
-settextlinetrigger GETINFO_CN9_CHECK_1 :GETINFO_CN9_CHECK "<N> Interdictor Control"
-settextlinetrigger GETINFO_CN9_CHECK_2 :GETINFO_CN9_CHECK "<N> Move to NavPoint"
-settextlinetrigger GETTRADERNAME :GETTRADERNAME "Trader Name    :"
-settextlinetrigger GETEXPANDALIGN :GETEXPANDALIGN "Rank and Exp"
-settextlinetrigger GETCORP :GETCORP "Corp           #"
-settextlinetrigger GETSHIPTYPE :GETSHIPTYPE "Ship Info      :"
-settextlinetrigger GETTPW :GETTPW "Turns to Warp  :"
-settextlinetrigger GETSECT :GETSECT "Current Sector :"
-settextlinetrigger GETTURNS :GETTURNS "Turns left"
-settextlinetrigger GETTOW :GETTOW "Tractor Beam   : ON, towing "
-settextlinetrigger GETHOLDS :GETHOLDS "Total Holds"
-settextlinetrigger GETFIGHTERS :GETFIGHTERS "Fighters       :"
-settextlinetrigger GETSHIELDS :GETSHIELDS "Shield points  :"
-settextlinetrigger GETPHOTONS :GETPHOTONS "Photon Missiles:"
-settextlinetrigger GETSCANTYPE :GETSCANTYPE "LongRange Scan :"
-settextlinetrigger GETTWARPTYPE1 :GETTWARPTYPE1 "  (Type 1 Jump):"
-settextlinetrigger GETTWARPTYPE2 :GETTWARPTYPE2 "  (Type 2 Jump):"
-settextlinetrigger GETCREDITS :GETCREDITS "Credits"
-settextlinetrigger CHECKIG :CHECKIG "Interdictor ON :"
+:player~waitoninfo
+settextlinetrigger getinfo_cn9_check_1 :getinfo_cn9_check "<N> Interdictor Control"
+settextlinetrigger getinfo_cn9_check_2 :getinfo_cn9_check "<N> Move to NavPoint"
+settextlinetrigger gettradername :gettradername "Trader Name    :"
+settextlinetrigger getexpandalign :getexpandalign "Rank and Exp"
+settextlinetrigger getcorp :getcorp "Corp           #"
+settextlinetrigger getshiptype :getshiptype "Ship Info      :"
+settextlinetrigger gettpw :gettpw "Turns to Warp  :"
+settextlinetrigger getsect :getsect "Current Sector :"
+settextlinetrigger getturns :getturns "Turns left"
+settextlinetrigger gettow :gettow "Tractor Beam   : ON, towing "
+settextlinetrigger getholds :getholds "Total Holds"
+settextlinetrigger getfighters :getfighters "Fighters       :"
+settextlinetrigger getshields :getshields "Shield points  :"
+settextlinetrigger getphotons :getphotons "Photon Missiles:"
+settextlinetrigger getscantype :getscantype "LongRange Scan :"
+settextlinetrigger gettwarptype1 :gettwarptype1 "  (Type 1 Jump):"
+settextlinetrigger gettwarptype2 :gettwarptype2 "  (Type 2 Jump):"
+settextlinetrigger getcredits :getcredits "Credits"
+settextlinetrigger checkig :checkig "Interdictor ON :"
 send "i"
 pause
 
-:PLAYER~GETINFO_CN9_CHECK
-setvar $PLAYER~NOFLIP TRUE
+:player~getinfo_cn9_check
+setvar $player~noflip true
 pause
 
-:PLAYER~GETTRADERNAME
-killtrigger GETINFO_CN9_CHECK_1
-killtrigger GETINFO_CN9_CHECK_2
-setvar $PLAYER~TRADER_NAME CURRENTLINE
-striptext $PLAYER~TRADER_NAME "Trader Name    : "
-setvar $PLAYER~I 1
-while ($PLAYER~I <= $PLAYER~RANKSLENGTH)
-  setvar $PLAYER~TEMP $PLAYER~RANKS[$PLAYER~I]
-  striptext $PLAYER~TEMP "31m"
-  striptext $PLAYER~TEMP "36m"
-  striptext $PLAYER~TRADER_NAME $PLAYER~TEMP&" "
-  add $PLAYER~I 1
+:player~gettradername
+killtrigger getinfo_cn9_check_1
+killtrigger getinfo_cn9_check_2
+setvar $player~trader_name currentline
+striptext $player~trader_name "Trader Name    : "
+setvar $player~i 1
+while ($player~i <= $player~rankslength)
+	setvar $player~temp $player~ranks[$player~i]
+	striptext $player~temp "31m"
+	striptext $player~temp "36m"
+	striptext $player~trader_name $player~temp&" "
+	add $player~i 1
 end
 pause
 
-:PLAYER~GETTOW
-setvar $PLAYER~LINE CURRENTLINE&"<<|END|>>"
-gettext $PLAYER~LINE $PLAYER~TOWED "Tractor Beam   : ON, towing " "<<|END|>>"
+:player~gettow
+setvar $player~line currentline&"<<|END|>>"
+gettext $player~line $player~towed "Tractor Beam   : ON, towing " "<<|END|>>"
 pause
 
-:PLAYER~GETEXPANDALIGN
-getword CURRENTLINE $PLAYER~EXPERIENCE 5
-getword CURRENTLINE $PLAYER~ALIGNMENT 7
-striptext $PLAYER~EXPERIENCE ","
-striptext $PLAYER~ALIGNMENT ","
-striptext $PLAYER~ALIGNMENT "Alignment="
+:player~getexpandalign
+getword currentline $player~experience 5
+getword currentline $player~alignment 7
+striptext $player~experience ","
+striptext $player~alignment ","
+striptext $player~alignment "Alignment="
 pause
 
-:PLAYER~GETCORP
-getword CURRENTLINE $PLAYER~CORP 3
-striptext $PLAYER~CORP ","
-setvar $PLAYER~CORPSTRING "["&$PLAYER~CORP&"]"
+:player~getcorp
+getword currentline $player~corp 3
+striptext $player~corp ","
+setvar $player~corpstring "["&$player~corp&"]"
 pause
 
-:PLAYER~GETSHIPTYPE
-getwordpos CURRENTLINE $PLAYER~SHIPTYPEEND "Ported="
-subtract $PLAYER~SHIPTYPEEND 18
-cuttext CURRENTLINE $PLAYER~SHIP_TYPE_LONG 18 $PLAYER~SHIPTYPEEND
+:player~getshiptype
+getwordpos currentline $player~shiptypeend "Ported="
+subtract $player~shiptypeend 18
+cuttext currentline $player~ship_type_long 18 $player~shiptypeend
 pause
 
-:PLAYER~GETTPW
-getword CURRENTLINE $PLAYER~TURNS_PER_WARP 5
+:player~gettpw
+getword currentline $player~turns_per_warp 5
 pause
 
-:PLAYER~GETSECT
-getword CURRENTLINE $PLAYER~CURRENT_SECTOR 4
+:player~getsect
+getword currentline $player~current_sector 4
 pause
 
-:PLAYER~GETTURNS
-getword CURRENTLINE $PLAYER~TURNS 4
-if ($PLAYER~TURNS = "Unlimited")
-  setvar $PLAYER~TURNS 65000
-  setvar $PLAYER~UNLIMITEDGAME TRUE
+:player~getturns
+getword currentline $player~turns 4
+if ($player~turns = "Unlimited")
+	setvar $player~turns 65000
+	setvar $player~unlimitedgame true
 end
-savevar $PLAYER~UNLIMITEDGAME
+savevar $player~unlimitedgame
 pause
 
-:PLAYER~GETHOLDS
-setvar $PLAYER~TEMP CURRENTLINE&" "
-gettext $PLAYER~TEMP $PLAYER~ORE_HOLDS "Ore=" " "
-if ($PLAYER~ORE_HOLDS = "")
-  setvar $PLAYER~ORE_HOLDS 0
+:player~getholds
+setvar $player~temp currentline&" "
+gettext $player~temp $player~ore_holds "Ore=" " "
+if ($player~ore_holds = "")
+	setvar $player~ore_holds 0
 end
-gettext $PLAYER~TEMP $PLAYER~ORGANIC_HOLDS "Organics=" " "
-if ($PLAYER~ORGANIC_HOLDS = "")
-  setvar $PLAYER~ORGANIC_HOLDS 0
+gettext $player~temp $player~organic_holds "Organics=" " "
+if ($player~organic_holds = "")
+	setvar $player~organic_holds 0
 end
-gettext $PLAYER~TEMP $PLAYER~EQUIPMENT_HOLDS "Equipment=" " "
-if ($PLAYER~EQUIPMENT_HOLDS = "")
-  setvar $PLAYER~EQUIPMENT_HOLDS 0
+gettext $player~temp $player~equipment_holds "Equipment=" " "
+if ($player~equipment_holds = "")
+	setvar $player~equipment_holds 0
 end
-gettext $PLAYER~TEMP $PLAYER~COLONIST_HOLDS "Colonists=" " "
-if ($PLAYER~COLONIST_HOLDS = "")
-  setvar $PLAYER~COLONIST_HOLDS 0
+gettext $player~temp $player~colonist_holds "Colonists=" " "
+if ($player~colonist_holds = "")
+	setvar $player~colonist_holds 0
 end
-gettext $PLAYER~TEMP $PLAYER~EMPTY_HOLDS "Empty=" " "
-if ($PLAYER~EMPTY_HOLDS = "")
-  setvar $PLAYER~EMPTY_HOLDS 0
+gettext $player~temp $player~empty_holds "Empty=" " "
+if ($player~empty_holds = "")
+	setvar $player~empty_holds 0
 end
 pause
 
-:PLAYER~GETFIGHTERS
-getword CURRENTLINE $PLAYER~FIGHTERS 3
-striptext $PLAYER~FIGHTERS ","
+:player~getfighters
+getword currentline $player~fighters 3
+striptext $player~fighters ","
 pause
 
-:PLAYER~GETSHIELDS
-getword CURRENTLINE $PLAYER~SHIELDS 4
-striptext $PLAYER~SHIELDS ","
+:player~getshields
+getword currentline $player~shields 4
+striptext $player~shields ","
 pause
 
-:PLAYER~GETPHOTONS
-getword CURRENTLINE $PLAYER~PHOTONS 3
+:player~getphotons
+getword currentline $player~photons 3
 pause
 
-:PLAYER~GETSCANTYPE
-getword CURRENTLINE $PLAYER~SCAN_TYPE 4
+:player~getscantype
+getword currentline $player~scan_type 4
 pause
 
-
-:PLAYER~GETTWARPTYPE1
-getword CURRENTLINE $PLAYER~TWARP_1_RANGE 4
-setvar $PLAYER~TWARP_TYPE 1
+:player~gettwarptype1
+getword currentline $player~twarp_1_range 4
+setvar $player~twarp_type 1
 pause
 
-:PLAYER~GETTWARPTYPE2
-getword CURRENTLINE $PLAYER~TWARP_2_RANGE 4
-setvar $PLAYER~TWARP_TYPE 2
+:player~gettwarptype2
+getword currentline $player~twarp_2_range 4
+setvar $player~twarp_type 2
 pause
 
-:PLAYER~CHECKIG
-getword CURRENTLINE $PLAYER~IGSTAT 4
+:player~checkig
+getword currentline $player~igstat 4
 pause
 
-:PLAYER~GETCREDITS
-getword CURRENTLINE $PLAYER~CREDITS 3
-striptext $PLAYER~CREDITS ","
-if ($PLAYER~IGSTAT = 0)
-  setvar $PLAYER~IGSTAT "NO IG"
+:player~getcredits
+getword currentline $player~credits 3
+striptext $player~credits ","
+if ($player~igstat = 0)
+	setvar $player~igstat "NO IG"
 end
 
-:PLAYER~GETINFODONE
-killtrigger GETEXPANDALIGN
-killtrigger GETCORP
-killtrigger GETSHIPTYPE
-killtrigger GETTPW
-killtrigger GETTOW
-killtrigger GETSECT
-killtrigger GETTURNS
-killtrigger GETHOLDS
-killtrigger GETFIGHTERS
-killtrigger GETSHIELDS
-killtrigger GETPHOTONS
-killtrigger GETSCANTYPE
-killtrigger GETTWARPTYPE1
-killtrigger GETTWARPTYPE2
-killtrigger GETCREDITS
-killtrigger CHECKIG
-killtrigger GETINFODONE
-killtrigger GETINFODONE2
-killtrigger GETINFO_CN9_CHECK_1
-killtrigger GETINFO_CN9_CHECK_2
+:player~getinfodone
+killtrigger getexpandalign
+killtrigger getcorp
+killtrigger getshiptype
+killtrigger gettpw
+killtrigger gettow
+killtrigger getsect
+killtrigger getturns
+killtrigger getholds
+killtrigger getfighters
+killtrigger getshields
+killtrigger getphotons
+killtrigger getscantype
+killtrigger gettwarptype1
+killtrigger gettwarptype2
+killtrigger getcredits
+killtrigger checkig
+killtrigger getinfodone
+killtrigger getinfodone2
+killtrigger getinfo_cn9_check_1
+killtrigger getinfo_cn9_check_2
 
-savevar $PLAYER~UNLIMITEDGAME
+savevar $player~unlimitedgame
 
-if ($PLAYER~SAVE)
+if ($player~save)
 
-  savevar $PLAYER~CREDITS
-  savevar $PLAYER~FIGHTERS
-  savevar $PLAYER~SHIELDS
-  savevar $PLAYER~TOTAL_HOLDS
-  savevar $PLAYER~ORE_HOLDS
-  savevar $PLAYER~ORGANIC_HOLDS
-  savevar $PLAYER~EQUIPMENT_HOLDS
-  savevar $PLAYER~COLONIST_HOLDS
-  savevar $PLAYER~PHOTONS
-  savevar $PLAYER~ARMIDS
-  savevar $PLAYER~LIMPETS
-  savevar $PLAYER~GENESIS
-  savevar $PLAYER~TWARP_TYPE
-  savevar $PLAYER~CLOAKS
-  savevar $PLAYER~BEACONS
-  savevar $PLAYER~ATOMIC
-  savevar $PLAYER~CORBO
-  savevar $PLAYER~EPROBES
-  savevar $PLAYER~MINE_DISRUPTORS
-  savevar $PLAYER~PSYCHIC_PROBE
-  savevar $PLAYER~PLANET_SCANNER
-  savevar $PLAYER~SCAN_TYPE
-  savevar $PLAYER~ALIGNMENT
-  savevar $PLAYER~EXPERIENCE
-  savevar $PLAYER~SHIP_NUMBER
-  savevar $PLAYER~TRADER_NAME
+	savevar $player~credits
+	savevar $player~fighters
+	savevar $player~shields
+	savevar $player~total_holds
+	savevar $player~ore_holds
+	savevar $player~organic_holds
+	savevar $player~equipment_holds
+	savevar $player~colonist_holds
+	savevar $player~photons
+	savevar $player~armids
+	savevar $player~limpets
+	savevar $player~genesis
+	savevar $player~twarp_type
+	savevar $player~cloaks
+	savevar $player~beacons
+	savevar $player~atomic
+	savevar $player~corbo
+	savevar $player~eprobes
+	savevar $player~mine_disruptors
+	savevar $player~psychic_probe
+	savevar $player~planet_scanner
+	savevar $player~scan_type
+	savevar $player~alignment
+	savevar $player~experience
+	savevar $player~ship_number
+	savevar $player~trader_name
 end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~QUIKSTATS
+:player~quikstats
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLAYER~CURRENT_PROMPT "Undefined"
-setvar $PLAYER~QUIKSTATS_RETRY 0
-if ($PLAYER~TOWED = 0)
-  setvar $PLAYER~TOWED ""
+setvar $player~current_prompt "Undefined"
+setvar $player~quikstats_retry 0
+if ($player~towed = 0)
+	setvar $player~towed ""
 end
-loadvar $PLAYER~UNLIMITEDGAME
-:PLAYER~TRYPROMPTAGAIN
-killtrigger TOOLONGPROMPT
-killtrigger NOPROMPT
-killtrigger PROMPT
-killtrigger STATLINETRIG
-killtrigger GETLINE2
-settextlinetrigger PROMPT :ALLPROMPTS #145&#8
-settextlinetrigger STATLINETRIG :STATSTART #179
-setdelaytrigger TOOLONGPROMPT :TRYPROMPTAGAIN 10000
+loadvar $player~unlimitedgame
+
+:player~trypromptagain
+killtrigger toolongprompt
+killtrigger noprompt
+killtrigger prompt
+killtrigger statlinetrig
+killtrigger getline2
+settextlinetrigger prompt :allprompts #145&#8
+settextlinetrigger statlinetrig :statstart #179
+setdelaytrigger toolongprompt :trypromptagain 10000
 send #145&"/"
 pause
-:PLAYER~ALLPROMPTS
-gosub :PLAYER~PARSE_CURRENT_PROMPT_LINE
-settextlinetrigger PROMPT :ALLPROMPTS #145&#8
+
+:player~allprompts
+gosub :player~parse_current_prompt_line
+settextlinetrigger prompt :allprompts #145&#8
 pause
-:PLAYER~STATSTART
-killtrigger PROMPT
-setvar $PLAYER~STATS ""
-setvar $PLAYER~WORDY ""
-:PLAYER~STATSLINE
-killtrigger STATLINETRIG
-killtrigger GETLINE2
-setvar $PLAYER~LINE2 CURRENTLINE
-replacetext $PLAYER~LINE2 #179 " "
-striptext $PLAYER~LINE2 ","
-setvar $PLAYER~STATS $PLAYER~STATS&$PLAYER~LINE2
-getwordpos $PLAYER~LINE2 $PLAYER~POS "Ship"
-if ($PLAYER~POS > 0)
-  goto :GOTSTATS
+
+:player~statstart
+killtrigger prompt
+setvar $player~stats ""
+setvar $player~wordy ""
+
+:player~statsline
+killtrigger statlinetrig
+killtrigger getline2
+setvar $player~line2 currentline
+replacetext $player~line2 #179 " "
+striptext $player~line2 ","
+setvar $player~stats $player~stats&$player~line2
+getwordpos $player~line2 $player~pos "Ship"
+if ($player~pos > 0)
+	goto :gotstats
 else
-  settextlinetrigger GETLINE2 :STATSLINE
-  pause
+	settextlinetrigger getline2 :statsline
+	pause
 end
-:PLAYER~GOTSTATS
-killtrigger TOOLONGPROMPT
-killtrigger GETLINE2
-setvar $PLAYER~STATS $PLAYER~STATS&" @@@"
-getwordpos $PLAYER~STATS $PLAYER~POS "Sect "
-if ($PLAYER~POS = 0)
-  add $PLAYER~QUIKSTATS_RETRY 1
-  if ($PLAYER~QUIKSTATS_RETRY <= 3)
-    goto :PLAYER~TRYPROMPTAGAIN
-  end
+
+:player~gotstats
+killtrigger toolongprompt
+killtrigger getline2
+setvar $player~stats $player~stats&" @@@"
+getwordpos $player~stats $player~pos "Sect "
+if ($player~pos = 0)
+	add $player~quikstats_retry 1
+	if ($player~quikstats_retry <= 3)
+		goto :player~trypromptagain
+	end
 end
-getwordpos $PLAYER~STATS $PLAYER~POS "Figs "
-if ($PLAYER~POS = 0)
-  add $PLAYER~QUIKSTATS_RETRY 1
-  if ($PLAYER~QUIKSTATS_RETRY <= 3)
-    goto :PLAYER~TRYPROMPTAGAIN
-  end
+getwordpos $player~stats $player~pos "Figs "
+if ($player~pos = 0)
+	add $player~quikstats_retry 1
+	if ($player~quikstats_retry <= 3)
+		goto :player~trypromptagain
+	end
 end
-setvar $PLAYER~CURRENT_WORD 1
-getword $PLAYER~STATS $PLAYER~WORDY $PLAYER~CURRENT_WORD
-:PLAYER~PARSESTATS
-if ($PLAYER~WORDY <> "@@@")
-  if ($PLAYER~WORDY = "Sect")
-    getword $PLAYER~STATS $PLAYER~CURRENT_SECTOR ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Turns")
-    getword $PLAYER~STATS $PLAYER~TURNS ($PLAYER~CURRENT_WORD + 1)
-    if ($PLAYER~UNLIMITEDGAME = TRUE)
-      setvar $PLAYER~TURNS 65000
-    end
-  elseif ($PLAYER~WORDY = "Creds")
-    getword $PLAYER~STATS $PLAYER~CREDITS ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Figs")
-    getword $PLAYER~STATS $PLAYER~FIGHTERS ($PLAYER~CURRENT_WORD + 1)
-    savevar $PLAYER~FIGHTERS
-  elseif ($PLAYER~WORDY = "Shlds")
-    getword $PLAYER~STATS $PLAYER~SHIELDS ($PLAYER~CURRENT_WORD + 1)
-    savevar $PLAYER~SHIELDS
-  elseif ($PLAYER~WORDY = "Hlds")
-    getword $PLAYER~STATS $PLAYER~TOTAL_HOLDS ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Ore")
-    getword $PLAYER~STATS $PLAYER~ORE_HOLDS ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Org")
-    getword $PLAYER~STATS $PLAYER~ORGANIC_HOLDS ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Equ")
-    getword $PLAYER~STATS $PLAYER~EQUIPMENT_HOLDS ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Col")
-    getword $PLAYER~STATS $PLAYER~COLONIST_HOLDS ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Phot")
-    getword $PLAYER~STATS $PLAYER~PHOTONS ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Armd")
-    getword $PLAYER~STATS $PLAYER~ARMIDS ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Lmpt")
-    getword $PLAYER~STATS $PLAYER~LIMPETS ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "GTorp")
-    getword $PLAYER~STATS $PLAYER~GENESIS ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "TWarp")
-    getword $PLAYER~STATS $PLAYER~TWARP_TYPE ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Clks")
-    getword $PLAYER~STATS $PLAYER~CLOAKS ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Beacns")
-    getword $PLAYER~STATS $PLAYER~BEACONS ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "AtmDt")
-    getword $PLAYER~STATS $PLAYER~ATOMIC ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Corbo")
-    getword $PLAYER~STATS $PLAYER~CORBO ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "EPrb")
-    getword $PLAYER~STATS $PLAYER~EPROBES ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "MDis")
-    getword $PLAYER~STATS $PLAYER~MINE_DISRUPTORS ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "PsPrb")
-    getword $PLAYER~STATS $PLAYER~PSYCHIC_PROBE ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "PlScn")
-    getword $PLAYER~STATS $PLAYER~PLANET_SCANNER ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "LRS")
-    getword $PLAYER~STATS $PLAYER~SCAN_TYPE ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Aln")
-    getword $PLAYER~STATS $PLAYER~ALIGNMENT ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Exp")
-    getword $PLAYER~STATS $PLAYER~EXPERIENCE ($PLAYER~CURRENT_WORD + 1)
-  elseif ($PLAYER~WORDY = "Corp")
-    getword $PLAYER~STATS $PLAYER~CORP ($PLAYER~CURRENT_WORD + 1)
-    setvar $PLAYER~CORPNUMBER $PLAYER~CORP
-    savevar $PLAYER~CORPNUMBER
-  elseif ($PLAYER~WORDY = "Ship")
-    getword $PLAYER~STATS $PLAYER~SHIP_NUMBER ($PLAYER~CURRENT_WORD + 1)
-    getword $PLAYER~STATS $PLAYER~SHIP_TYPE ($PLAYER~CURRENT_WORD + 2)
-  end
-  add $PLAYER~CURRENT_WORD 1
-  getword $PLAYER~STATS $PLAYER~WORDY $PLAYER~CURRENT_WORD
-  goto :PLAYER~PARSESTATS
+setvar $player~current_word 1
+getword $player~stats $player~wordy $player~current_word
+
+:player~parsestats
+if ($player~wordy <> "@@@")
+	if ($player~wordy = "Sect")
+		getword $player~stats $player~current_sector ($player~current_word + 1)
+	elseif ($player~wordy = "Turns")
+		getword $player~stats $player~turns ($player~current_word + 1)
+		if ($player~unlimitedgame = true)
+			setvar $player~turns 65000
+		end
+	elseif ($player~wordy = "Creds")
+		getword $player~stats $player~credits ($player~current_word + 1)
+	elseif ($player~wordy = "Figs")
+		getword $player~stats $player~fighters ($player~current_word + 1)
+		savevar $player~fighters
+	elseif ($player~wordy = "Shlds")
+		getword $player~stats $player~shields ($player~current_word + 1)
+		savevar $player~shields
+	elseif ($player~wordy = "Hlds")
+		getword $player~stats $player~total_holds ($player~current_word + 1)
+	elseif ($player~wordy = "Ore")
+		getword $player~stats $player~ore_holds ($player~current_word + 1)
+	elseif ($player~wordy = "Org")
+		getword $player~stats $player~organic_holds ($player~current_word + 1)
+	elseif ($player~wordy = "Equ")
+		getword $player~stats $player~equipment_holds ($player~current_word + 1)
+	elseif ($player~wordy = "Col")
+		getword $player~stats $player~colonist_holds ($player~current_word + 1)
+	elseif ($player~wordy = "Phot")
+		getword $player~stats $player~photons ($player~current_word + 1)
+	elseif ($player~wordy = "Armd")
+		getword $player~stats $player~armids ($player~current_word + 1)
+	elseif ($player~wordy = "Lmpt")
+		getword $player~stats $player~limpets ($player~current_word + 1)
+	elseif ($player~wordy = "GTorp")
+		getword $player~stats $player~genesis ($player~current_word + 1)
+	elseif ($player~wordy = "TWarp")
+		getword $player~stats $player~twarp_type ($player~current_word + 1)
+	elseif ($player~wordy = "Clks")
+		getword $player~stats $player~cloaks ($player~current_word + 1)
+	elseif ($player~wordy = "Beacns")
+		getword $player~stats $player~beacons ($player~current_word + 1)
+	elseif ($player~wordy = "AtmDt")
+		getword $player~stats $player~atomic ($player~current_word + 1)
+	elseif ($player~wordy = "Corbo")
+		getword $player~stats $player~corbo ($player~current_word + 1)
+	elseif ($player~wordy = "EPrb")
+		getword $player~stats $player~eprobes ($player~current_word + 1)
+	elseif ($player~wordy = "MDis")
+		getword $player~stats $player~mine_disruptors ($player~current_word + 1)
+	elseif ($player~wordy = "PsPrb")
+		getword $player~stats $player~psychic_probe ($player~current_word + 1)
+	elseif ($player~wordy = "PlScn")
+		getword $player~stats $player~planet_scanner ($player~current_word + 1)
+	elseif ($player~wordy = "LRS")
+		getword $player~stats $player~scan_type ($player~current_word + 1)
+	elseif ($player~wordy = "Aln")
+		getword $player~stats $player~alignment ($player~current_word + 1)
+	elseif ($player~wordy = "Exp")
+		getword $player~stats $player~experience ($player~current_word + 1)
+	elseif ($player~wordy = "Corp")
+		getword $player~stats $player~corp ($player~current_word + 1)
+		setvar $player~corpnumber $player~corp
+		savevar $player~corpnumber
+	elseif ($player~wordy = "Ship")
+		getword $player~stats $player~ship_number ($player~current_word + 1)
+		getword $player~stats $player~ship_type ($player~current_word + 2)
+	end
+	add $player~current_word 1
+	getword $player~stats $player~wordy $player~current_word
+	goto :player~parsestats
 end
-if ($PLAYER~CURRENT_PROMPT = "Undefined")
-  settextlinetrigger PROMPTAFTERSTATS :PLAYER~PROMPTAFTERSTATS #145&#8
-  setdelaytrigger NOPROMPT :PLAYER~NOPROMPT 1000
-  pause
+if ($player~current_prompt = "Undefined")
+	settextlinetrigger promptafterstats :player~promptafterstats #145&#8
+	setdelaytrigger noprompt :player~noprompt 1000
+	pause
 end
-goto :PLAYER~DONEQUIKSTATS
-:PLAYER~PROMPTAFTERSTATS
-killtrigger NOPROMPT
-gosub :PLAYER~PARSE_CURRENT_PROMPT_LINE
-goto :PLAYER~DONEQUIKSTATS
-:PLAYER~NOPROMPT
-killtrigger PROMPTAFTERSTATS
-goto :PLAYER~DONEQUIKSTATS
-:PLAYER~DONEQUIKSTATS
-killtrigger STATLINETRIG
-killtrigger GETLINE2
-killtrigger PROMPT
-savevar $PLAYER~UNLIMITEDGAME
-if ($PLAYER~SAVE)
-  savevar $PLAYER~CORP
-  savevar $PLAYER~CREDITS
-  savevar $PLAYER~CURRENT_SECTOR
-  savevar $PLAYER~TURNS
-  savevar $PLAYER~FIGHTERS
-  savevar $PLAYER~SHIELDS
-  savevar $PLAYER~TOTAL_HOLDS
-  savevar $PLAYER~ORE_HOLDS
-  savevar $PLAYER~ORGANIC_HOLDS
-  savevar $PLAYER~EQUIPMENT_HOLDS
-  savevar $PLAYER~COLONIST_HOLDS
-  savevar $PLAYER~PHOTONS
-  savevar $PLAYER~ARMIDS
-  savevar $PLAYER~LIMPETS
-  savevar $PLAYER~GENESIS
-  savevar $PLAYER~TWARP_TYPE
-  savevar $PLAYER~CLOAKS
-  savevar $PLAYER~BEACONS
-  savevar $PLAYER~ATOMIC
-  savevar $PLAYER~CORBO
-  savevar $PLAYER~EPROBES
-  savevar $PLAYER~MINE_DISRUPTORS
-  savevar $PLAYER~PSYCHIC_PROBE
-  savevar $PLAYER~PLANET_SCANNER
-  savevar $PLAYER~SCAN_TYPE
-  savevar $PLAYER~ALIGNMENT
-  savevar $PLAYER~EXPERIENCE
-  savevar $PLAYER~SHIP_NUMBER
-  savevar $PLAYER~TRADER_NAME
+goto :player~donequikstats
+
+:player~promptafterstats
+killtrigger noprompt
+gosub :player~parse_current_prompt_line
+goto :player~donequikstats
+
+:player~noprompt
+killtrigger promptafterstats
+goto :player~donequikstats
+
+:player~donequikstats
+killtrigger statlinetrig
+killtrigger getline2
+killtrigger prompt
+savevar $player~unlimitedgame
+if ($player~save)
+	savevar $player~corp
+	savevar $player~credits
+	savevar $player~current_sector
+	savevar $player~turns
+	savevar $player~fighters
+	savevar $player~shields
+	savevar $player~total_holds
+	savevar $player~ore_holds
+	savevar $player~organic_holds
+	savevar $player~equipment_holds
+	savevar $player~colonist_holds
+	savevar $player~photons
+	savevar $player~armids
+	savevar $player~limpets
+	savevar $player~genesis
+	savevar $player~twarp_type
+	savevar $player~cloaks
+	savevar $player~beacons
+	savevar $player~atomic
+	savevar $player~corbo
+	savevar $player~eprobes
+	savevar $player~mine_disruptors
+	savevar $player~psychic_probe
+	savevar $player~planet_scanner
+	savevar $player~scan_type
+	savevar $player~alignment
+	savevar $player~experience
+	savevar $player~ship_number
+	savevar $player~trader_name
 end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~EXIT_MENU_DEAF
+:player~exit_menu_deaf
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if ($BOT~MENU_DEAF_DEPTH > 0)
-  subtract $BOT~MENU_DEAF_DEPTH 1
+if ($bot~menu_deaf_depth > 0)
+	subtract $bot~menu_deaf_depth 1
 end
 
-if ($BOT~MENU_DEAF_DEPTH <= 0)
-  if ($BOT~MENU_DEAF_RESTORE = TRUE)
-    setdeafclients TRUE
-    setvar $BOT~BOTISDEAF TRUE
-  else
-    setdeafclients FALSE
-    setvar $BOT~BOTISDEAF FALSE
-  end
-  savevar $BOT~BOTISDEAF
+if ($bot~menu_deaf_depth <= 0)
+	if ($bot~menu_deaf_restore = true)
+		setdeafclients true
+		setvar $bot~botisdeaf true
+	else
+		setdeafclients false
+		setvar $bot~botisdeaf false
+	end
+	savevar $bot~botisdeaf
 end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~DISCOD
+:player~discod
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLAYER~TAGLINE "["&$command&"]"
-setvar $PLAYER~TAGLINEB "["&$command&"]"
+setvar $player~tagline "["&$command&"]"
+setvar $player~taglineb "["&$command&"]"
 killalltriggers
-echo "**"&ANSI_14&$PLAYER~TAGLINEB&ANSI_15&" Disconnected **"
+echo "**"&ansi_14&$player~taglineb&ansi_15&" Disconnected **"
 
-:PLAYER~DISCO_TEST
-if (CONNECTED <> TRUE)
-  setdelaytrigger EMANCIPATE_CPU :EMANCIPATE_CPU 3000
-  echo "**"&ANSI_14&$PLAYER~TAGLINEB&ANSI_15&" Auto Resume Initiated - Awaiting Connection!**"
-  pause
-  :PLAYER~EMANCIPATE_CPU
-  goto :DISCO_TEST
+:player~disco_test
+if (connected <> true)
+	setdelaytrigger emancipate_cpu :emancipate_cpu 3000
+	echo "**"&ansi_14&$player~taglineb&ansi_15&" Auto Resume Initiated - Awaiting Connection!**"
+	pause
+
+	:player~emancipate_cpu
+	goto :disco_test
 end
 waitfor "(?="
-setdelaytrigger WAITINGABIT :WAITINGABIT 3000
-echo "**"&ANSI_14&$PLAYER~TAGLINEB&ANSI_15&" Connected - Waiting For Command Prompt!**"
+setdelaytrigger waitingabit :waitingabit 3000
+echo "**"&ansi_14&$player~taglineb&ansi_15&" Connected - Waiting For Command Prompt!**"
 pause
 
-:PLAYER~WAITINGABIT
+:player~waitingabit
 killalltriggers
-gosub :QUIKSTATS
-if ($PLAYER~CURRENT_PROMPT = "Command")
-  setvar $switchboard~message $PLAYER~TAGLINEB&" - Restarting!**"
-  gosub :switchboard~switchboard
-  waitfor "Message sent on sub-space channel"
-  # goto :inac
-  halt
-elseif ($PLAYER~CURRENT_PROMPT = "Citadel")
-  setvar $switchboard~message $PLAYER~TAGLINEB&" - Restarting!**"
-  gosub :switchboard~switchboard
-  waitfor "Message sent on sub-space channel"
-  send "qqqq**"
-  # goto :inac
-  halt
+gosub :quikstats
+if ($player~current_prompt = "Command")
+	setvar $switchboard~message $player~taglineb&" - Restarting!**"
+	gosub :switchboard~switchboard
+	waitfor "Message sent on sub-space channel"
+	# goto :inac
+	halt
+elseif ($player~current_prompt = "Citadel")
+	setvar $switchboard~message $player~taglineb&" - Restarting!**"
+	gosub :switchboard~switchboard
+	waitfor "Message sent on sub-space channel"
+	send "qqqq**"
+	# goto :inac
+	halt
 else
-  send " p d 0* 0* 0* * *** * c q q q q q z 2 2 c q * z * *** * * '"&$PLAYER~TAGLINEB&"Attempting to Reach Correct Prompt...*"
-  settextlinetrigger EMQ_COMPLETE :EMQ_DELAY "Attempting to Reach Correct Prompt..."
-  setdelaytrigger EMQ_DELAY :EMQ_DELAY 3000
-  pause
-  :PLAYER~EMQ_DELAY
-  killalltriggers
-  goto :DISCO_TEST
+	send " p d 0* 0* 0* * *** * c q q q q q z 2 2 c q * z * *** * * '"&$player~taglineb&"Attempting to Reach Correct Prompt...*"
+	settextlinetrigger emq_complete :emq_delay "Attempting to Reach Correct Prompt..."
+	setdelaytrigger emq_delay :emq_delay 3000
+	pause
+
+	:player~emq_delay
+	killalltriggers
+	goto :disco_test
 end
 
-:PLAYER~SETCONNECTIONTRIGGERS
-killtrigger DISCOD1
-killtrigger DISCOD2
-seteventtrigger DISCOD1 :DISCOD "CONNECTION LOST"
-seteventtrigger DISCOD2 :DISCOD "Connections have been temporarily disabled."
+:player~setconnectiontriggers
+killtrigger discod1
+killtrigger discod2
+seteventtrigger discod1 :discod "CONNECTION LOST"
+seteventtrigger discod2 :discod "Connections have been temporarily disabled."
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~STARTCNSETTINGS
+:player~startcnsettings
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "CN"
-settextlinetrigger ANSI1 :CNCHECK "(1) ANSI graphics            - Off"
-settextlinetrigger ANIM1 :CNCHECK "(2) Animation display        - On"
-settextlinetrigger PAGE1 :CNCHECK "(3) Page on messages         - On"
-settextlinetrigger SETSSCHN :SETSSCHN "(4) Sub-space radio channel"
-settextlinetrigger SILENCE1 :CNCHECK "(7) Silence ALL messages     - Yes"
-settextlinetrigger ABORTDISPLAY1 :CNCHECK "(9) Abort display on keys    - ALL KEYS"
-settextlinetrigger MESSAGEDISPLAY1 :CNCHECK "(A) Message Display Mode     - Long"
-settextlinetrigger SCREENPAUSES1 :CNCHECK "(B) Screen Pauses            - Yes"
-settextlinetrigger ONLINEAUTOFLEE0 :CNCDONE "(C) Online Auto Flee         - Off"
-settextlinetrigger ONLINEAUTOFLEE1 :CNCALMOSTDONE "(C) Online Auto Flee         - On"
+settextlinetrigger ansi1 :cncheck "(1) ANSI graphics            - Off"
+settextlinetrigger anim1 :cncheck "(2) Animation display        - On"
+settextlinetrigger page1 :cncheck "(3) Page on messages         - On"
+settextlinetrigger setsschn :setsschn "(4) Sub-space radio channel"
+settextlinetrigger silence1 :cncheck "(7) Silence ALL messages     - Yes"
+settextlinetrigger abortdisplay1 :cncheck "(9) Abort display on keys    - ALL KEYS"
+settextlinetrigger messagedisplay1 :cncheck "(A) Message Display Mode     - Long"
+settextlinetrigger screenpauses1 :cncheck "(B) Screen Pauses            - Yes"
+settextlinetrigger onlineautoflee0 :cncdone "(C) Online Auto Flee         - Off"
+settextlinetrigger onlineautoflee1 :cncalmostdone "(C) Online Auto Flee         - On"
 pause
-:PLAYER~CNCHECK
-gosub :GETCNC
+
+:player~cncheck
+gosub :getcnc
 pause
-:PLAYER~SETSSCHN
-getword CURRENTLINE $subspace 6
+
+:player~setsschn
+getword currentline $subspace 6
 if ($subspace = 0)
-  getrnd $subspace 101 60000
-  send 4&$subspace&"*"
+	getrnd $subspace 101 60000
+	send 4&$subspace&"*"
 end
 savevar $subspace
 pause
-:PLAYER~CNCALMOSTDONE
-gosub :GETCNC
-:PLAYER~CNCDONE
+
+:player~cncalmostdone
+gosub :getcnc
+
+:player~cncdone
 send "QQ"
 killtrigger 1
 killtrigger 2
-settexttrigger 1 :SUBSTARTCNCONTINUE "Command [TL="
-settexttrigger 2 :SUBSTARTCNCONTINUE "Citadel command (?=help)"
+settexttrigger 1 :substartcncontinue "Command [TL="
+settexttrigger 2 :substartcncontinue "Citadel command (?=help)"
 pause
-:PLAYER~SUBSTARTCNCONTINUE
+
+:player~substartcncontinue
 killtrigger 1
 killtrigger 2
 return
 
-:PLAYER~GETCNC
-getword CURRENTLINE $PLAYER~CNC 1
-striptext $PLAYER~CNC "("
-striptext $PLAYER~CNC ")"
-send $PLAYER~CNC&"  "
+:player~getcnc
+getword currentline $player~cnc 1
+striptext $player~cnc "("
+striptext $player~cnc ")"
+send $player~cnc&"  "
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~SWATHOFF
+:player~swathoff
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-loadvar $PLAYER~SWATHOFF
+loadvar $player~swathoff
 
-if ($PLAYER~SWATHOFF = FALSE)
-  settexttrigger SWATHISON :SWATHISON "Command [TL="
-  setdelaytrigger SWATHISOFF :SWATHISOFF 2000
-  pause
-  
-  :PLAYER~SWATHISON
-  killtrigger SWATHISOFF
-  killtrigger SWATHISON
-  setvar $PLAYER~SWATHOFFMESSAGE "Detected SWATH Autohaggle"
-  setvar $PLAYER~SWATHOFF FALSE
-  savevar $PLAYER~SWATHOFF
-  return
-  
-  :PLAYER~SWATHISOFF
-  killtrigger SWATHISOFF
-  killtrigger SWATHISON
-  setvar $PLAYER~SWATHOFF TRUE
-  savevar $PLAYER~SWATHOFF
+if ($player~swathoff = false)
+	settexttrigger swathison :swathison "Command [TL="
+	setdelaytrigger swathisoff :swathisoff 2000
+	pause
+
+	:player~swathison
+	killtrigger swathisoff
+	killtrigger swathison
+	setvar $player~swathoffmessage "Detected SWATH Autohaggle"
+	setvar $player~swathoff false
+	savevar $player~swathoff
+	return
+
+	:player~swathisoff
+	killtrigger swathisoff
+	killtrigger swathison
+	setvar $player~swathoff true
+	savevar $player~swathoff
 end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~TOPOFF
-:PLAYER~DO_TOPOFF_AGAIN
+:player~topoff
+:player~do_topoff_again
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-killtrigger TOPOFF_SUCCESS
-killtrigger TOPOFF_FAILURE1
-killtrigger TOPOFF_FAILURE2
+killtrigger topoff_success
+killtrigger topoff_failure1
+killtrigger topoff_failure2
 send " F"
 waiton "Your ship can support up to"
-getword CURRENTLINE $PLAYER~FTRS_TO_LEAVE 10
-striptext $PLAYER~FTRS_TO_LEAVE ","
-striptext $PLAYER~FTRS_TO_LEAVE " "
-if ($PLAYER~FTRS_TO_LEAVE < 1)
-  setvar $PLAYER~FTRS_TO_LEAVE 1
+getword currentline $player~ftrs_to_leave 10
+striptext $player~ftrs_to_leave ","
+striptext $player~ftrs_to_leave " "
+if ($player~ftrs_to_leave < 1)
+	setvar $player~ftrs_to_leave 1
 end
-send " "&$PLAYER~FTRS_TO_LEAVE&" * c d"
-settextlinetrigger TOPOFF_SUCCESS :TOPOFF_SUCCESS "Done. You have "
-settextlinetrigger TOPOFF_FAILURE1 :DO_TOPOFF_AGAIN "You don't have that many fighters available."
-settextlinetrigger TOPOFF_FAILURE2 :DO_TOPOFF_AGAIN "Too many fighters in your fleet!  You are limited to"
+send " "&$player~ftrs_to_leave&" * c d"
+settextlinetrigger topoff_success :topoff_success "Done. You have "
+settextlinetrigger topoff_failure1 :do_topoff_again "You don't have that many fighters available."
+settextlinetrigger topoff_failure2 :do_topoff_again "Too many fighters in your fleet!  You are limited to"
 pause
-:PLAYER~TOPOFF_SUCCESS
-killtrigger TOPOFF_FAILURE1
-killtrigger TOPOFF_FAILURE2
+
+:player~topoff_success
+killtrigger topoff_failure1
+killtrigger topoff_failure2
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~TURNOFFANSI
+:player~turnoffansi
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "c n"
 killalltriggers
 waiton "(1) ANSI graphics"
-getword CURRENTLINE $PLAYER~ANSISTATUS 5
+getword currentline $player~ansistatus 5
 waiton "(2) Animation display"
-getword CURRENTLINE $PLAYER~ANIMATIONSTATUS 5
-if ($PLAYER~ANIMATIONSTATUS = "On")
-  send 2
+getword currentline $player~animationstatus 5
+if ($player~animationstatus = "On")
+	send 2
 end
-if ($PLAYER~ANSISTATUS = "On")
-  send "1 q q"
+if ($player~ansistatus = "On")
+	send "1 q q"
 else
-  send "q q"
+	send "q q"
 end
 waiton "<Computer deactivated>"
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~TURNONANSI
+:player~turnonansi
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "c n"
 killalltriggers
 waiton "(1) ANSI graphics"
-getword CURRENTLINE $PLAYER~ANSISTATUS 5
-if ($PLAYER~ANSISTATUS = "Off")
-  send "1 q q"
+getword currentline $player~ansistatus 5
+if ($player~ansistatus = "Off")
+	send "1 q q"
 else
-  send "q q"
+	send "q q"
 end
 waiton "<Computer deactivated>"
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~STRIPANSI
+:player~stripansi
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # [1;33m[0m[1;31mRoyal [5;37mFlush[0;32m
-if ($PLAYER~INPUT = 0) or ($PLAYER~INPUT = "")
-  return
+if ($player~input = 0) or ($player~input = "")
+	return
 end
-getwordpos $PLAYER~INPUT $pos "["
+getwordpos $player~input $pos "["
 if ($pos < 1)
-  return
+	return
 elseif ($pos = 1)
-  setvar $pre ""
+	setvar $pre ""
 else
-  cuttext $PLAYER~INPUT $pre 1 ($pos - 1)
+	cuttext $player~input $pre 1 ($pos - 1)
 end
-cuttext $PLAYER~INPUT $post ($pos + 6) 999
-setvar $PLAYER~INPUT ($pre & $post)
+cuttext $player~input $post ($pos + 6) 999
+setvar $player~input ($pre & $post)
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~INIT
+:player~init
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setarray $PLAYER~TRADERS 200
-setarray $PLAYER~FAKETRADERS 200
-setarray $PLAYER~EMPTYSHIPS 100
+setarray $player~traders 200
+setarray $player~faketraders 200
+setarray $player~emptyships 100
 
-:PLAYER~INITRANKS
-setvar $PLAYER~RANKSLENGTH 46
-setarray $PLAYER~RANKS $PLAYER~RANKSLENGTH
-setvar $PLAYER~RANKS[1] "36mCivilian"
-setvar $PLAYER~RANKS[2] "36mPrivate 1st Class"
-setvar $PLAYER~RANKS[3] "36mPrivate"
-setvar $PLAYER~RANKS[4] "36mLance Corporal"
-setvar $PLAYER~RANKS[5] "36mCorporal"
-setvar $PLAYER~RANKS[6] "36mStaff Sergeant"
-setvar $PLAYER~RANKS[7] "36mGunnery Sergeant"
-setvar $PLAYER~RANKS[8] "36m1st Sergeant"
-setvar $PLAYER~RANKS[9] "36mSergeant Major"
-setvar $PLAYER~RANKS[10] "36mSergeant"
-setvar $PLAYER~RANKS[11] "31mAnnoyance"
-setvar $PLAYER~RANKS[12] "31mNuisance 3rd Class"
-setvar $PLAYER~RANKS[13] "31mNuisance 2nd Class"
-setvar $PLAYER~RANKS[14] "31mNuisance 1st Class"
-setvar $PLAYER~RANKS[15] "31mMenace 3rd Class"
-setvar $PLAYER~RANKS[16] "31mMenace 2nd Class"
-setvar $PLAYER~RANKS[17] "31mMenace 1st Class"
-setvar $PLAYER~RANKS[18] "31mSmuggler 3rd Class"
-setvar $PLAYER~RANKS[19] "31mSmuggler 2nd Class"
-setvar $PLAYER~RANKS[20] "31mSmuggler 1st Class"
-setvar $PLAYER~RANKS[21] "31mSmuggler Savant"
-setvar $PLAYER~RANKS[22] "31mRobber"
-setvar $PLAYER~RANKS[23] "31mTerrorist"
-setvar $PLAYER~RANKS[24] "31mInfamous Pirate"
-setvar $PLAYER~RANKS[25] "31mNotorious Pirate"
-setvar $PLAYER~RANKS[26] "31mDread Pirate"
-setvar $PLAYER~RANKS[27] "31mPirate"
-setvar $PLAYER~RANKS[28] "31mGalactic Scourge"
-setvar $PLAYER~RANKS[29] "31mEnemy of the State"
-setvar $PLAYER~RANKS[30] "31mEnemy of the People"
-setvar $PLAYER~RANKS[31] "31mEnemy of Humankind"
-setvar $PLAYER~RANKS[32] "31mHeinous Overlord"
-setvar $PLAYER~RANKS[33] "31mPrime Evil"
-setvar $PLAYER~RANKS[34] "36mChief Warrant Officer"
-setvar $PLAYER~RANKS[35] "36mWarrant Officer"
-setvar $PLAYER~RANKS[36] "36mEnsign"
-setvar $PLAYER~RANKS[37] "36mLieutenant J.G."
-setvar $PLAYER~RANKS[38] "36mLieutenant Commander"
-setvar $PLAYER~RANKS[39] "36mLieutenant"
-setvar $PLAYER~RANKS[40] "36mCommander"
-setvar $PLAYER~RANKS[41] "36mCaptain"
-setvar $PLAYER~RANKS[42] "36mCommodore"
-setvar $PLAYER~RANKS[43] "36mRear Admiral"
-setvar $PLAYER~RANKS[44] "36mVice Admiral"
-setvar $PLAYER~RANKS[45] "36mFleet Admiral"
-setvar $PLAYER~RANKS[46] "36mAdmiral"
-setvar $PLAYER~LASTTARGET ""
+:player~initranks
+setvar $player~rankslength 46
+setarray $player~ranks $player~rankslength
+setvar $player~ranks[1] "36mCivilian"
+setvar $player~ranks[2] "36mPrivate 1st Class"
+setvar $player~ranks[3] "36mPrivate"
+setvar $player~ranks[4] "36mLance Corporal"
+setvar $player~ranks[5] "36mCorporal"
+setvar $player~ranks[6] "36mStaff Sergeant"
+setvar $player~ranks[7] "36mGunnery Sergeant"
+setvar $player~ranks[8] "36m1st Sergeant"
+setvar $player~ranks[9] "36mSergeant Major"
+setvar $player~ranks[10] "36mSergeant"
+setvar $player~ranks[11] "31mAnnoyance"
+setvar $player~ranks[12] "31mNuisance 3rd Class"
+setvar $player~ranks[13] "31mNuisance 2nd Class"
+setvar $player~ranks[14] "31mNuisance 1st Class"
+setvar $player~ranks[15] "31mMenace 3rd Class"
+setvar $player~ranks[16] "31mMenace 2nd Class"
+setvar $player~ranks[17] "31mMenace 1st Class"
+setvar $player~ranks[18] "31mSmuggler 3rd Class"
+setvar $player~ranks[19] "31mSmuggler 2nd Class"
+setvar $player~ranks[20] "31mSmuggler 1st Class"
+setvar $player~ranks[21] "31mSmuggler Savant"
+setvar $player~ranks[22] "31mRobber"
+setvar $player~ranks[23] "31mTerrorist"
+setvar $player~ranks[24] "31mInfamous Pirate"
+setvar $player~ranks[25] "31mNotorious Pirate"
+setvar $player~ranks[26] "31mDread Pirate"
+setvar $player~ranks[27] "31mPirate"
+setvar $player~ranks[28] "31mGalactic Scourge"
+setvar $player~ranks[29] "31mEnemy of the State"
+setvar $player~ranks[30] "31mEnemy of the People"
+setvar $player~ranks[31] "31mEnemy of Humankind"
+setvar $player~ranks[32] "31mHeinous Overlord"
+setvar $player~ranks[33] "31mPrime Evil"
+setvar $player~ranks[34] "36mChief Warrant Officer"
+setvar $player~ranks[35] "36mWarrant Officer"
+setvar $player~ranks[36] "36mEnsign"
+setvar $player~ranks[37] "36mLieutenant J.G."
+setvar $player~ranks[38] "36mLieutenant Commander"
+setvar $player~ranks[39] "36mLieutenant"
+setvar $player~ranks[40] "36mCommander"
+setvar $player~ranks[41] "36mCaptain"
+setvar $player~ranks[42] "36mCommodore"
+setvar $player~ranks[43] "36mRear Admiral"
+setvar $player~ranks[44] "36mVice Admiral"
+setvar $player~ranks[45] "36mFleet Admiral"
+setvar $player~ranks[46] "36mAdmiral"
+setvar $player~lasttarget ""
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~GETCOURSE
+:player~getcourse
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if (($PLAYER~DESTINATION <= 0) or ($PLAYER~DESTINATION = ""))
-  setvar $PLAYER~COURSELENGTH 0
-  return
+if (($player~destination <= 0) or ($player~destination = ""))
+	setvar $player~courselength 0
+	return
 end
-if (($PLAYER~STARTING_POINT <= 0) or ($PLAYER~STARTING_POINT = ""))
-  setvar $PLAYER~STARTING_POINT CURRENTSECTOR
+if (($player~starting_point <= 0) or ($player~starting_point = ""))
+	setvar $player~starting_point currentsector
 end
 
 # try getcourse system function first, if we have grid data
-getcourse $PLAYER~COURSE $PLAYER~STARTING_POINT $PLAYER~DESTINATION
-if ($PLAYER~COURSE > 0)
-  setvar $PLAYER~COURSELENGTH ($PLAYER~COURSE + 1)
-  return
+getcourse $player~course $player~starting_point $player~destination
+if ($player~course > 0)
+	setvar $player~courselength ($player~course + 1)
+	return
 end
 
-setvar $PLAYER~SECTORS ""
-setarray $PLAYER~COURSE 80
-settextlinetrigger SECTORLINETRIG :SECTORSLINE " > "
-send "^f"&$PLAYER~STARTING_POINT&"*"&$PLAYER~DESTINATION&"*"
+setvar $player~sectors ""
+setarray $player~course 80
+settextlinetrigger sectorlinetrig :sectorsline " > "
+send "^f"&$player~starting_point&"*"&$player~destination&"*"
 pause
 
-:PLAYER~GOTSECTORS
-setvar $PLAYER~SECTORS $PLAYER~SECTORS&" :::"
-setvar $PLAYER~COURSELENGTH 0
-setvar $PLAYER~INDEX 1
-goto :PLAYER~KEEPGOING
+:player~gotsectors
+setvar $player~sectors $player~sectors&" :::"
+setvar $player~courselength 0
+setvar $player~index 1
+goto :player~keepgoing
 
-:PLAYER~KEEPGOING
-getword $PLAYER~SECTORS $PLAYER~COURSE[$PLAYER~INDEX] $PLAYER~INDEX
-while ($PLAYER~COURSE[$PLAYER~INDEX] <> ":::")
-  add $PLAYER~COURSELENGTH 1
-  add $PLAYER~INDEX 1
-  getword $PLAYER~SECTORS $PLAYER~COURSE[$PLAYER~INDEX] $PLAYER~INDEX
+:player~keepgoing
+getword $player~sectors $player~course[$player~index] $player~index
+while ($player~course[$player~index] <> ":::")
+	add $player~courselength 1
+	add $player~index 1
+	getword $player~sectors $player~course[$player~index] $player~index
 end
 return
 
-:PLAYER~NOCAPPINGTARGETS
-killtrigger NOCTARGET
-killtrigger FOUNDCAPTARGET
+:player~nocappingtargets
+killtrigger noctarget
+killtrigger foundcaptarget
 send "* "
 
-:PLAYER~SECTORSLINE
-killtrigger SECTORLINETRIG
-killtrigger SECTORLINETRIG2
-killtrigger SECTORLINETRIG3
-killtrigger SECTORLINETRIG4
-killtrigger DONEPATH
-killtrigger DONEPATH2
-setvar $PLAYER~LINE CURRENTLINE
-replacetext $PLAYER~LINE ">" " "
-striptext $PLAYER~LINE "("
-striptext $PLAYER~LINE ")"
-setvar $PLAYER~LINE $PLAYER~LINE&" "
-getwordpos $PLAYER~LINE $PLAYER~POS "So what's the point?"
-getwordpos $PLAYER~LINE $PLAYER~POS2 ": ENDINTERROG"
-getwordpos $PLAYER~LINE $PLAYER~POS3 " No route within "
+:player~sectorsline
+killtrigger sectorlinetrig
+killtrigger sectorlinetrig2
+killtrigger sectorlinetrig3
+killtrigger sectorlinetrig4
+killtrigger donepath
+killtrigger donepath2
+setvar $player~line currentline
+replacetext $player~line ">" " "
+striptext $player~line "("
+striptext $player~line ")"
+setvar $player~line $player~line&" "
+getwordpos $player~line $player~pos "So what's the point?"
+getwordpos $player~line $player~pos2 ": ENDINTERROG"
+getwordpos $player~line $player~pos3 " No route within "
 
-if (($PLAYER~POS > 0) or ($PLAYER~POS2 > 0) or ($PLAYER~POS3 > 0))
-  goto :NOPATH
+if (($player~pos > 0) or ($player~pos2 > 0) or ($player~pos3 > 0))
+	goto :nopath
 end
-getwordpos $PLAYER~LINE $PLAYER~POS " sector "
-getwordpos $PLAYER~LINE $PLAYER~POS2 "TO"
+getwordpos $player~line $player~pos " sector "
+getwordpos $player~line $player~pos2 "TO"
 
-if (($PLAYER~POS <= 0) and ($PLAYER~POS2 <= 0))
-  setvar $PLAYER~SECTORS $PLAYER~SECTORS&" "&$PLAYER~LINE
+if (($player~pos <= 0) and ($player~pos2 <= 0))
+	setvar $player~sectors $player~sectors&" "&$player~line
 end
-getwordpos $PLAYER~LINE $PLAYER~POS " "&$PLAYER~DESTINATION&" "
-getwordpos $PLAYER~LINE $PLAYER~POS2 "("&$PLAYER~DESTINATION&")"
-getwordpos $PLAYER~LINE $PLAYER~POS3 "TO"
+getwordpos $player~line $player~pos " "&$player~destination&" "
+getwordpos $player~line $player~pos2 "("&$player~destination&")"
+getwordpos $player~line $player~pos3 "TO"
 
-if ((($PLAYER~POS > 0) or ($PLAYER~POS2 > 0)) and ($PLAYER~POS3 <= 0))
-  send "* q "
-  goto :GOTSECTORS
+if ((($player~pos > 0) or ($player~pos2 > 0)) and ($player~pos3 <= 0))
+	send "* q "
+	goto :gotsectors
 else
-  settextlinetrigger SECTORLINETRIG :SECTORSLINE " > "
-  settextlinetrigger SECTORLINETRIG2 :SECTORSLINE " "&$PLAYER~DESTINATION&" "
-  settextlinetrigger SECTORLINETRIG3 :SECTORSLINE " "&$PLAYER~DESTINATION
-  settextlinetrigger SECTORLINETRIG4 :SECTORSLINE "("&$PLAYER~DESTINATION&")"
-  settextlinetrigger DONEPATH :SECTORSLINE "So what's the point?"
-  settextlinetrigger DONEPATH2 :SECTORSLINE ": ENDINTERROG"
+	settextlinetrigger sectorlinetrig :sectorsline " > "
+	settextlinetrigger sectorlinetrig2 :sectorsline " "&$player~destination&" "
+	settextlinetrigger sectorlinetrig3 :sectorsline " "&$player~destination
+	settextlinetrigger sectorlinetrig4 :sectorsline "("&$player~destination&")"
+	settextlinetrigger donepath :sectorsline "So what's the point?"
+	settextlinetrigger donepath2 :sectorsline ": ENDINTERROG"
 end
 pause
 
-:PLAYER~NOPATH
-send "q '{" $SWITCHBOARD~BOT_NAME "} - No path to that sector, cannot mow!*"
-setvar $PLAYER~COURSE 0
-setvar $PLAYER~COURSELENGTH 0
+:player~nopath
+send "q '{" $switchboard~bot_name "} - No path to that sector, cannot mow!*"
+setvar $player~course 0
+setvar $player~courselength 0
 return
 
-:PLAYER~STOPPINGPOINT
+:player~stoppingpoint
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~ADDFIGTODATA
+:player~addfigtodata
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if (($PLAYER~TARGET > 0) and ($PLAYER~TARGET <= SECTORS))
-  setsectorparameter $PLAYER~TARGET "FIGSEC" TRUE
+if (($player~target > 0) and ($player~target <= sectors))
+	setsectorparameter $player~target "FIGSEC" true
 end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~REMOVEFIGFROMDATA
+:player~removefigfromdata
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-getsectorparameter $PLAYER~TARGET "FIGSEC" $PLAYER~CHECK
-if ($PLAYER~CHECK = TRUE)
-  getsectorparameter 2 "FIG_COUNT" $PLAYER~FIGCOUNT
-  setsectorparameter 2 "FIG_COUNT" ($PLAYER~FIGCOUNT - 1)
+getsectorparameter $player~target "FIGSEC" $player~check
+if ($player~check = true)
+	getsectorparameter 2 "FIG_COUNT" $player~figcount
+	setsectorparameter 2 "FIG_COUNT" ($player~figcount - 1)
 end
-setsectorparameter $PLAYER~TARGET "FIGSEC" FALSE
+setsectorparameter $player~target "FIGSEC" false
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~ENTER_MENU_DEAF
+:player~enter_menu_deaf
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if ($BOT~MENU_DEAF_DEPTH <= 0)
-  getdeafclients $BOT~MENU_DEAF_RESTORE
+if ($bot~menu_deaf_depth <= 0)
+	getdeafclients $bot~menu_deaf_restore
 end
-add $BOT~MENU_DEAF_DEPTH 1
-setdeafclients TRUE
-setvar $BOT~BOTISDEAF TRUE
-savevar $BOT~BOTISDEAF
+add $bot~menu_deaf_depth 1
+setdeafclients true
+setvar $bot~botisdeaf true
+savevar $bot~botisdeaf
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:PLAYER~ANSICOLORS
+:player~ansicolors
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setVar $player~cls #27 & "[2J"
-setVar $player~black #27 & "[1;30m"
-setVar $player~red #27 & "[1;31m"
-setVar $player~green #27 & "[1;32m"
-setVar $player~yellow #27 & "[1;33m"
-setVar $player~blue #27 & "[1;34m"
-setVar $player~magenta #27 & "[1;35m"
-setVar $player~cyan #27 & "[1;36m"
-setVar $player~white #27 & "[1;37m"
-setVar $player~blackWhite #27 & "[0;30;47m"
-setVar $player~whiteRed #27 & "[1;37;41m"
-setVar $player~redWhite #27 & "[1;31;47m"
-setVar $player~yellowRed #27 & "[1;33;41m"
-setVar $player~resetBlack #27 & "[1;37;40m"
+setvar $player~cls #27 & "[2J"
+setvar $player~black #27 & "[1;30m"
+setvar $player~red #27 & "[1;31m"
+setvar $player~green #27 & "[1;32m"
+setvar $player~yellow #27 & "[1;33m"
+setvar $player~blue #27 & "[1;34m"
+setvar $player~magenta #27 & "[1;35m"
+setvar $player~cyan #27 & "[1;36m"
+setvar $player~white #27 & "[1;37m"
+setvar $player~blackwhite #27 & "[0;30;47m"
+setvar $player~whitered #27 & "[1;37;41m"
+setvar $player~redwhite #27 & "[1;31;47m"
+setvar $player~yellowred #27 & "[1;33;41m"
+setvar $player~resetblack #27 & "[1;37;40m"
 return
 
 include "source\include\switchboard"
