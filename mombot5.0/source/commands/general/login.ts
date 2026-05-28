@@ -1,3 +1,7 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Sets the ship or citadel overnight message to Login."
+gosub :help~helpfile
+
 :login
 gosub  :player~currentprompt
 setvar $player~startinglocation $player~current_prompt
@@ -15,3 +19,4 @@ halt
 
 #INCLUDES:
 include "source\include\player"
+include "source\include\help"

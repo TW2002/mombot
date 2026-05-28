@@ -6,7 +6,7 @@ setvar $help~help[1]  $help~tab&"MOVE - Product Mover"
 setvar $help~help[2]  $help~tab&" "
 setvar $help~help[3]  $help~tab&"    move [type] [planet] [rounds]"
 setvar $help~help[4]  $help~tab&" "
-setvar $help~help[5]  $help~tab&"    [type] - use [f]uel, [o]rg, [e]quip"
+setvar $help~help[5]  $help~tab&"    [type] - use [f]uel, [o]rg, [e]quip, [fig]hters"
 setvar $help~help[6]  $help~tab&"    [type] - use [fc] fuel colo, [oc] org colo, [ec] equip colo"
 setvar $help~help[7]  $help~tab&"    [planet] planet to move to"
 setvar $help~help[8]  $help~tab&"    [rounds] number of rounds to move product / colonists"
@@ -35,8 +35,10 @@ elseif ($parm1 = "oc")
 	setvar $stuffmoved "Organic Colonists"
 elseif ($parm1 = "ec")
 	setvar $stuffmoved "Equipment Colonists"
+elseif ($parm1 = "fig") or ($parm1 = "figs")
+	setvar $stuffmoved "Fighters"
 else
-	setvar $switchboard~message "Please use move [f/o/e/fc/oc/ec/] [planet] {[rounds]|[amount]} format*"
+	setvar $switchboard~message "Please use move [f/o/e/fc/oc/ec/fig] [planet] {[rounds]|[amount]} format*"
 	gosub :switchboard~switchboard
 	halt
 end
@@ -47,6 +49,7 @@ if ($test = false)
 	halt
 end
 setvar $moveall false
+setvar $moveamount 0
 isnumber $test $parm3
 if ($test = false)
 	if ($parm3 = "")
@@ -60,6 +63,12 @@ elseif ($parm3 <= 0)
 	setvar $switchboard~message "Must choose more than 0 rounds to move*"
 	gosub :switchboard~switchboard
 	halt
+elseif ($stuffmoved = "Fighters")
+	setvar $moveamount $parm3
+	setvar $moveholds 0
+	setvar $moveextra 0
+	setvar $switchboard~message "Moving " & $parm3 & " total fighters.*"
+	gosub :switchboard~switchboard
 elseif ($parm3 > 1000)
 	gosub :player~quikstats
 	if ($player~total_holds <= 0)
@@ -89,6 +98,48 @@ if (($moveall = true) and (($stuffmoved = "Fuel Colonists") or ($stuffmoved = "O
 	gosub :getplanetcolonistinfo
 end
 if ($stuffmoved = "Fighters")
+	loadvar $ship~ship_fighters_max
+	isnumber $test $ship~ship_fighters_max
+	if (($test = false) or ($ship~ship_fighters_max <= 0))
+		if ($citadel > 0)
+			send "c"
+			waiton "Citadel command"
+			gosub :ship~getshipstats
+			send "q"
+			waiton "Planet command"
+		end
+		isnumber $test $ship~ship_fighters_max
+		if (($test = false) or ($ship~ship_fighters_max <= 0))
+			setvar $switchboard~message "Unable to determine ship fighter capacity.*"
+			gosub :switchboard~switchboard
+			halt
+		end
+	end
+	if ($moveall = true)
+		setvar $parm3 0
+		setvar $fighterstomove $planet_fighters
+		if ($player~fighters > 0)
+			add $parm3 1
+			if ($ship~ship_fighters_max > $player~fighters)
+				setvar $freeshipfighters $ship~ship_fighters_max - $player~fighters
+				if ($freeshipfighters >= $fighterstomove)
+					setvar $fighterstomove 0
+				else
+					subtract $fighterstomove $freeshipfighters
+				end
+			end
+		end
+		if ($ship~ship_fighters_max > 0)
+			setvar $moveholds ($fighterstomove / $ship~ship_fighters_max)
+			setvar $moveextra $fighterstomove - ($moveholds * $ship~ship_fighters_max)
+			add $parm3 $moveholds
+			if ($moveextra > 0)
+				add $parm3 1
+			end
+		elseif ($fighterstomove > 0)
+			add $parm3 1
+		end
+	end
 	goto :movefighters
 elseif (($stuffmoved = "Fuel") or ($stuffmoved = "Fuel Colonists"))
 	setvar $stuff 1
@@ -126,52 +177,45 @@ elseif (($stuffmoved = "Equipment") or ($stuffmoved = "Equipment Colonists"))
 end
 getwordpos $bot~user_command_line $pos "c"
 if ($pos > 0)
-	send "q  j  y l "&$planet&" *  "
-	goto :movecolonists
-else
-	send "q  j  y l "&$planet&" *  "
-	goto :moveproduct
+	#send "q  j  y l "&$planet&" *  "
+	#goto :movecolonists
+	setvar $planet~planettofill $parm2
+	setvar $planet~moveholds $moveholds
+	setvar $planet~moveextra $moveextra
+	setvar $planet~moveamount 0
+	setvar $planet~type "s"
+	setvar $planet~category $stuff
+	gosub :planet~moveproduct
+elseif ($stuffmoved <> "Fighters")
+	#send "q  j  y l "&$planet&" *  "
+	#goto :moveproduct
+	setvar $planet~planettofill $parm2
+	setvar $planet~moveholds $moveholds
+	setvar $planet~moveextra $moveextra
+	setvar $planet~moveamount 0
+	setvar $planet~type "t"
+	setvar $planet~category $stuff
+	gosub :planet~moveproduct
 end
-
-:moveproduct
-#echo "moveholds " $MOVEHOLDS " rounds " $ROUNDS "*"
-if ($rounds >= $moveholds)
-	goto :moveproductextra
-end
-send "t  n  t  "&$stuff&"*  q  l "&$parm2&"*  t  n  l "&$stuff&"*  q  l "&$planet&"*  "
-add $rounds 1
-goto :moveproduct
-
-:moveproductextra
-if ($moveextra <= 0)
-	goto :movedone
-end
-send "t  n  t  "&$stuff&" "&$moveextra&"*  q  l "&$parm2&"*  t  n  l "&$stuff&"*  q  l "&$planet&"*  "
-goto :movedone
-
-:movecolonists
-if ($rounds >= $moveholds)
-	goto :movecolonistsextra
-end
-send "s  n  t  "&$stuff&"*  q  l "&$parm2&"*  s  n  l "&$stuff&"*  q  l "&$planet&"*  "
-add $rounds 1
-goto :movecolonists
-
-:movecolonistsextra
-if ($moveextra <= 0)
-	goto :movedone
-end
-send "s  n  t  "&$stuff&" "&$moveextra&"*  q  l "&$parm2&"*  s  n  l "&$stuff&"*  q  l "&$planet&"*  "
 goto :movedone
 
 :movefighters
-if ($rounds <= $parm3)
-	send "m  n  *  *  q  l  "&$parm2&"*  m  n  l  *  q  l  "&$planet&"*  "
-	add $rounds 1
-	goto :movefighters
-elseif ($rounds < 1)
-	goto :movedone
-end
+setvar $planet~planettofill $parm2
+setvar $planet~moveholds $moveholds
+setvar $planet~moveextra $moveextra
+setvar $planet~moveamount $moveamount
+setvar $planet~type "m"
+setvar $planet~category 4
+gosub :planet~moveproduct
+
+#:movefighters
+#if ($rounds < $parm3)
+#	send "m  n  *  *  q  l  "&$parm2&"*  m  n  l  *  q  l  "&$planet&"*  "
+#	add $rounds 1
+#	goto :movefighters
+#elseif ($rounds < 1)
+#	goto :movedone
+#end
 
 :movedone
 if ($startlocation = "Citadel")
@@ -256,6 +300,7 @@ settextlinetrigger getshipmaxfighters :setshipmaxfigattack " TransWarp Drive:   
 pause
 
 include "source\include\planet"
+include "source\include\ship"
 include "source\include\loadvars.ts"
 include "source\include\help.ts"
 include "source\include\switchboard.ts"

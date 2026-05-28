@@ -1,3 +1,14 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Sets a planet quasar cannon damage target."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  qset [a | s]  [damage]"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"   [a] - atmosphere cannon."
+setvar $help~help[6] $help~tab&"   [s] - sector cannon."
+setvar $help~help[7] $help~tab&"   [damage] - desired cannon damage."
+setvar $help~help[8] $help~tab&"   Run from Planet or Citadel; calculates the needed fuel percent."
+gosub :help~helpfile
+
 loadvar $bot_name
 loadvar $user_command_line
 loadvar $parm1
@@ -102,3 +113,4 @@ return
 #INCLUDES:
 include "source\include\planet"
 include "source\include\switchboard.ts"
+include "source\include\help"

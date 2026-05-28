@@ -1,7 +1,9 @@
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :port~getportinfo
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-gosub :player~currentprompt
+gosub :player~quikstats
+setvar $sector $player~current_sector
+setvar $startinglocation $player~current_prompt
 if ($player~current_prompt = "Citadel")
 	send "|S*CR"
 elseif ($player~current_prompt = "Command")
@@ -11,10 +13,9 @@ else
 	gosub :switchboard~switchboard
 	return
 end
-setvar $startinglocation $player~current_prompt
-
 if ($port~remoteport > 0)
 	send $port~remoteport
+	setvar $sector $port~remoteport
 end
 send "*"
 
@@ -30,6 +31,12 @@ setvar $port~equtrading 0
 setvar $port~orepercent 0
 setvar $port~orgpercent 0
 setvar $port~equpercent 0
+setvar $port~oremcic 0
+setvar $port~orgmcic 0
+setvar $port~equmcic 0
+setvar $port~orgvalue 0
+setvar $port~equvalue 0
+setvar $port~portvalue 0
 
 settextlinetrigger foundport :foundport "Items     Status  Trading % of max OnBoard"
 settextlinetrigger noport :noport "I have no information about a port in that sector."
@@ -79,6 +86,134 @@ pause
 :gotcr
 killalltriggers
 send "Q|"
+getsectorparameter $sector "OREMCIC" $tmp
+isnumber $test $tmp
+if ($test = true)
+	setvar $port~oremcic $tmp
+	striptext $port~oremcic "-"
+end
+getsectorparameter $sector "ORGMCIC" $tmp
+isnumber $test $tmp
+if ($test = true)
+	setvar $port~orgmcic $tmp
+	striptext $port~orgmcic "-"
+end
+getsectorparameter $sector "EQUMCIC" $tmp
+isnumber $test $tmp
+if ($test = true)
+	setvar $port~equmcic $tmp
+	striptext $port~equmcic "-"
+end
+setvar $orgunitvalue ((24200 + (734 * $port~orgmcic) + (213 * $port~orgpercent) + 500) / 1000)
+setvar $equunitvalue ((31300 + (1227 * $port~equmcic) + (554 * $port~equpercent) + 500) / 1000)
+if ($port~orgbuying = "Buying") and ($port~orgtrading > 500) and ($port~orgpercent > 50)
+	setvar $port~orgvalue ($port~orgtrading * $orgunitvalue)
+end
+if ($port~equbuying = "Buying") and ($port~equtrading > 500) and ($port~equpercent > 50)
+	setvar $port~equvalue ($port~equtrading * $equunitvalue)
+end
+setvar $port~portvalue ($port~orgvalue + $port~equvalue)
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:port~getportdbinfo
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $port~noport 0
+setvar $port~foundport false
+setvar $port~orebuying 0
+setvar $port~orgbuying 0
+setvar $port~equbuying 0
+setvar $port~oretrading 0
+setvar $port~orgtrading 0
+setvar $port~equtrading 0
+setvar $port~orepercent 0
+setvar $port~orgpercent 0
+setvar $port~equpercent 0
+setvar $port~oremcic 0
+setvar $port~orgmcic 0
+setvar $port~equmcic 0
+setvar $port~oretotal false
+setvar $port~orgtotal false
+setvar $port~equtotal false
+setvar $port~orgvalue 0
+setvar $port~equvalue 0
+setvar $port~portvalue 0
+setvar $port~sector $port~target
+if ($port~sector <= 0)
+	setvar $port~sector $sector
+end
+
+if (port.exists[$port~sector] <> true)
+	setvar $port~noport 1
+	setvar $port~target 0
+	return
+else
+	setvar $port~foundport true
+end
+
+if (port.buyfuel[$port~sector] = true)
+	setvar $port~orebuying "Buying"
+else
+	setvar $port~orebuying "Selling"
+end
+if (port.buyorg[$port~sector] = true)
+	setvar $port~orgbuying "Buying"
+else
+	setvar $port~orgbuying "Selling"
+end
+if (port.buyequip[$port~sector] = true)
+	setvar $port~equbuying "Buying"
+else
+	setvar $port~equbuying "Selling"
+end
+setvar $port~oretrading port.fuel[$port~sector]
+setvar $port~orgtrading port.org[$port~sector]
+setvar $port~equtrading port.equip[$port~sector]
+setvar $port~orepercent port.percentfuel[$port~sector]
+setvar $port~orgpercent port.percentorg[$port~sector]
+setvar $port~equpercent port.percentequip[$port~sector]
+striptext $port~orepercent "%"
+striptext $port~orgpercent "%"
+striptext $port~equpercent "%"
+
+if ($port~orepercent > 0)
+	setvar $port~oretotal (($port~oretrading * 100) / $port~orepercent)
+end
+if ($port~orgpercent > 0)
+	setvar $port~orgtotal (($port~orgtrading * 100) / $port~orgpercent)
+end
+if ($port~equpercent > 0)
+	setvar $port~equtotal (($port~equtrading * 100) / $port~equpercent)
+end
+
+getsectorparameter $port~sector "OREMCIC" $tmp
+isnumber $test $tmp
+if ($test = true)
+	setvar $port~oremcic $tmp
+	striptext $port~oremcic "-"
+end
+getsectorparameter $port~sector "ORGMCIC" $tmp
+isnumber $test $tmp
+if ($test = true)
+	setvar $port~orgmcic $tmp
+	striptext $port~orgmcic "-"
+end
+getsectorparameter $port~sector "EQUMCIC" $tmp
+isnumber $test $tmp
+if ($test = true)
+	setvar $port~equmcic $tmp
+	striptext $port~equmcic "-"
+end
+setvar $orgunitvalue ((24200 + (734 * $port~orgmcic) + (213 * $port~orgpercent) + 500) / 1000)
+setvar $equunitvalue ((31300 + (1227 * $port~equmcic) + (554 * $port~equpercent) + 500) / 1000)
+if ($port~orgbuying = "Buying") and ($port~orgtrading > 500) and ($port~orgpercent > 50)
+	setvar $port~orgvalue ($port~orgtrading * $orgunitvalue)
+end
+if ($port~equbuying = "Buying") and ($port~equtrading > 500) and ($port~equpercent > 50)
+	setvar $port~equvalue ($port~equtrading * $equunitvalue)
+end
+setvar $port~portvalue ($port~orgvalue + $port~equvalue)
+setvar $port~target 0
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

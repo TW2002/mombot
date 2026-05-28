@@ -1,4 +1,16 @@
 logging "OFF"
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Moves fighters between planet(s) and sector."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  movefig [p | s] [amount | all] {all}"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"   [p] - move sector fighters to the planet."
+setvar $help~help[6] $help~tab&"   [s] - move planet fighters to the sector."
+setvar $help~help[7] $help~tab&"   [amount | all] - fighter amount to move."
+setvar $help~help[8] $help~tab&"   {all} with s - pull fighters from all planets in sector."
+setvar $help~help[9] $help~tab&"   Run from Planet or Citadel."
+gosub :help~helpfile
+
 loadvar $bot_name
 loadvar $unlimitedgame
 loadvar $bot_turn_limit
@@ -292,3 +304,4 @@ setvar $ship_mines_max $ship~ship_mines_max
 setvar $ship_max_attack $ship~ship_max_attack
 return
 include "source\include\switchboard.ts"
+include "source\include\help"

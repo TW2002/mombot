@@ -1,3 +1,15 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Pwarps to random safe flee sectors after fighter hits."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  runaway [on | off] {first sector} {evac}"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"   [on] - enable runaway mode."
+setvar $help~help[6] $help~tab&"   [off] - disable runaway mode."
+setvar $help~help[7] $help~tab&"   {first sector} - optional first flee sector to use."
+setvar $help~help[8] $help~tab&"   {evac} - move all planets to the flee sector instead of just pwarping."
+setvar $help~help[9] $help~tab&"   Run from Citadel. Builds a flee-sector list and reacts to fig hits."
+gosub :help~helpfile
+
 loadvar $switchboard~bot_name
 loadvar $bot~user_command_line
 loadvar $bot~parm1
@@ -394,3 +406,4 @@ return
 
 include "source\include\planet"
 include "source\include\switchboard.ts"
+include "source\include\help"

@@ -1178,4 +1178,44 @@ setvar $player~yellowred #27 & "[1;33;41m"
 setvar $player~resetblack #27 & "[1;37;40m"
 return
 
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:player~msgs_off
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $was_silent false
+
+:msgs_off_again
+settexttrigger onmsgs_on :onmsgs_on "Displaying all messages."
+settexttrigger onmsgs_off :onmsgs_off "Silencing all messages."
+send "|"
+pause
+
+:onmsgs_on
+killtrigger onmsgs_off
+setvar $was_silent true
+goto :msgs_off_again
+
+:onmsgs_off
+killtrigger onmsgs_on
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:player~msgs_on
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $was_silent true
+
+:msgs_on_again
+settexttrigger onmsgs_on2 :onmsgs_on "Displaying all messages."
+settexttrigger onmsgs_off2 :onmsgs_off "Silencing all messages."
+send "|"
+pause
+
+:onmsgs_off2
+killtrigger onmsgs_on2
+setvar $was_silent false
+goto :msgs_on_again
+
+:onmsgs_on2
+killtrigger onmsgs_off2
+return
+
 include "source\include\switchboard"

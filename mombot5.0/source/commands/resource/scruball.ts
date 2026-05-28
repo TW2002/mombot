@@ -1,3 +1,7 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Scrubs limpets from empty ships at Stardock and reports results."
+gosub :help~helpfile
+
 gosub :player~quikstats
 setvar $max 100
 setarray $ships $max
@@ -132,3 +136,4 @@ elseif ($cashamount <= 999999999)
 end
 return
 include "source\include\switchboard.ts"
+include "source\include\help"

@@ -1,5 +1,11 @@
-IG - Interdictor Control Resetter
-     Turns ship IG on, if it's off, or when hit by
-     a Photon
-
-     IG [on/off] 
+                     
+   
+                   <<<< ig >>>>
+   
+     Keeps an interdictor generator turned on after damage.
+        
+     Usage:  ig [on | off]
+        
+        [on] - enable auto IG reset mode.
+        [off] - disable auto IG reset mode.
+        Run from Command on a ship with an IG.

@@ -2,6 +2,10 @@
 # Dnyarri's "Holo killa" ... Holoscans, goes adj and kills enemy before trying
 # to retreat to safety. A bit dangerous, but hey... so is life.
 # ----------------------------------------------------------------------------
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Holoscans and attacks adjacent enemy traders, then retreats."
+setvar $help~help[2] $help~tab&"Run from Command with a holo scanner."
+gosub :help~helpfile
 
 reqrecording
 
@@ -47,6 +51,7 @@ killtrigger scanned
 clientmessage "You don't have a HoloScanner!"
 send " *  "
 halt
+include "source\include\help"
 
 :scandone
 killtrigger noscan1

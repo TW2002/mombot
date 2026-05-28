@@ -1,1 +1,5 @@
-EMQ - Attempts to return to the command prompt
+                     
+   
+                  <<<< emq >>>>
+   
+     Emergency macro to escape menus and reset command state.

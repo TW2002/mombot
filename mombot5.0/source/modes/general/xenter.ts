@@ -1,5 +1,14 @@
 logging "OFF"
 gosub :loadvars~loadvars
+gosub :help~initialize
+
+setvar $help~help[1] $help~tab&"Exit/enter cycles to clear mines or fighters."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  xenter {count} {fill}"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"   {count} - number of exit/enter cycles. Defaults to 1."
+setvar $help~help[6] $help~tab&"   {fill} - top off fighters after each cycle."
+gosub :help~helpfile
 
 :xenter~run
 isnumber $xenter~test $bot~parm1
@@ -53,3 +62,4 @@ include "source\include\xenter"
 include "source\include\player"
 include "source\include\planet"
 include "source\include\switchboard"
+include "source\include\help"

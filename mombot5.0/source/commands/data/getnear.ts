@@ -1,3 +1,13 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Finds nearby cashing ports with equipment volume."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  getnear {minimum equipment}"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"   {minimum equipment} - minimum equipment units to list."
+setvar $help~help[6] $help~tab&"                         Defaults to the game's port max."
+setvar $help~help[7] $help~tab&"   Lists figged buying and selling ports nearest your current sector."
+gosub :help~helpfile
+
 gosub :player~quikstats
 setvar $version "1.1a"
 loadvar $bot~folder
@@ -212,6 +222,7 @@ return
 # includes:
 include "source\include\game"
 include "source\include\switchboard.ts"
+include "source\include\help"
 
 :pad
 setvar $pad ""

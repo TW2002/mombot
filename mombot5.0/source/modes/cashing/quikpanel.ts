@@ -1,3 +1,10 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"SupG cashing control panel and automation helper."
+setvar $help~help[2] $help~tab&"Opens an interactive panel for haggle, bust warning, PPT,"
+setvar $help~help[3] $help~tab&"display options, auto steal/rob, blind warp, and fighter kill helpers."
+setvar $help~help[4] $help~tab&"After setup it remains loaded and reacts to game prompts."
+gosub :help~helpfile
+
 loadvar $bot_name
 loadvar $user_command_line
 loadvar $bot_turn_limit
@@ -2654,3 +2661,4 @@ end
 send "qq"
 return
 include "source\include\switchboard.ts"
+include "source\include\help"

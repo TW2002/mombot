@@ -1,4 +1,16 @@
 reqrecording
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"LoneStar Dock Shopper order runner."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  lsd [encoded order]"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"   [encoded order] - dock shopping order to execute."
+setvar $help~help[6] $help~tab&"   Runs a Stardock shopping order for hardware, holds, figs,"
+setvar $help~help[7] $help~tab&"   shields, ship purchase, towing, and upgrades."
+setvar $help~help[8] $help~tab&"   Usually launched by the dock shopper menu."
+setvar $help~help[9] $help~tab&"   Use m for max and 0/blank for no purchase in order fields."
+gosub :help~helpfile
+
 loadvar $bot~bot_name
 loadvar $bot~unlimitedgame
 loadvar $map~stardock
@@ -1732,3 +1744,4 @@ return
 
 include "source\include\player"
 include "source\include\switchboard.ts"
+include "source\include\help"

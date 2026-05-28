@@ -1,3 +1,13 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Keeps personal limpets loaded in the current sector."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  plimper {saveme}"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"   {saveme} - start CK saveme before running."
+setvar $help~help[6] $help~tab&"   Run from Citadel, blue alignment, with T-warp and Stardock known."
+setvar $help~help[7] $help~tab&"   Refurbs limpets at Stardock and reloads the sector after limp hits."
+gosub :help~helpfile
+
 setvar $limit 100
 setvar $tagline "'[PLIMP] "
 setvar $version "1.1a"
@@ -253,3 +263,4 @@ killalltriggers
 return
 
 include "source\include\player"
+include "source\include\help"

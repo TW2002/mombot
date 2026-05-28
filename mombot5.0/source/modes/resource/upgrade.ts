@@ -10,7 +10,7 @@ setvar $help~help[7]  $help~tab&"   >upgrade 4 6 10"
 setvar $help~help[8]  $help~tab&"   >upgrade ignore 3 7 11"
 setvar $help~help[9]  $help~tab&" "
 setvar $help~help[10]  $help~tab&"   Upgrades all planets in sector by default. "
-setvar $help~help[11]  $help~tab&"   {planets} will only upgradethe specified planets"
+setvar $help~help[11]  $help~tab&"   {planets} will only upgrade the specified planets"
 setvar $help~help[12]  $help~tab&"   {ignore [planets]} will skip the specified planets"
 gosub :help~helpfile
 
@@ -61,7 +61,6 @@ while ($index < 8)
 	add $index 1
 	setvar $isnumber 0
 end
-
 :end_ignoreloop
 #loadvar $MASSUPGRADESAVED
 
@@ -70,7 +69,7 @@ waiton "Average Interval Lag:"
 
 setvar $gameprefs~bank "MassUpgrade"
 setvar $gameprefs~animation[$gameprefs~bank] "OFF"
-setvar $gameprefs~abortdisplayall[$gameprefs~bank] "OFF"
+#setvar $gameprefs~abortdisplayall[$gameprefs~bank] "OFF"
 setvar $gameprefs~screenpauses[$gameprefs~bank] "OFF"
 gosub :gameprefs~setgameprefs
 
@@ -99,7 +98,10 @@ setvar $planetupgrade~failed 0
 logging off
 gosub :sector~voidadjacent
 gosub :planetloop
+#setvar $gameprefs~abortdisplayall[$gameprefs~bank] "SPACE"
+#gosub :gameprefs~setgameprefs
 gosub :sector~clearvoidadjacent
+
 logging on
 
 if ($planetupgrade~failed = 0)
@@ -278,7 +280,7 @@ end
 
 setvar $planetupgrade~destcategory $dropcategory
 
-if (($planet~buildtime > 0) or ($planetupgrade~level = 6))
+if (($planet~under_construction = true) or (($planet~buildtime > 0) or ($planetupgrade~level = 6)))
 	return
 end
 
@@ -477,11 +479,13 @@ add $gather~gathered $moved
 
 if ($gather~gathered < $gather~quantity)
 	send "q"
+	waiton "Command [TL="
 	goto :gather_gogather
 end
 
 if ($gather~stayonplanet = 0)
 	send "q"
+	waiton "Command [TL="
 end
 return
 

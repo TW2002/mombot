@@ -18,7 +18,7 @@ class Test
             sw.WriteLine("""
                 <?xml version="1.0" encoding="UTF-8"?>
                 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-                	<Product Id="*" Name="Mombot 5.0" Language="1033" Version="2.6.5.2" Manufacturer="eXide" UpgradeCode="9be0828c-24de-43b2-a233-5c0a82c07f35">
+                	<Product Id="*" Name="Mombot 5.0 beta1" Language="1033" Version="2.6.5.2" Manufacturer="eXide" UpgradeCode="9be0828c-24de-43b2-a233-5c0a82c07f35">
                 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
     
                         <MajorUpgrade AllowSameVersionUpgrades="yes"

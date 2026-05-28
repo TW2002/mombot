@@ -1,3 +1,6 @@
-HAZ - Create 100% NavHaz in Current-Sector
-      Scans the Game-Status (aka V Screen), once, to obtain
-      Maximum Planets per Sector.
+                     
+   
+                  <<<< haz >>>>
+   
+     Creates navhaz by making and destroying planets.
+     Run from Command; requires at least 10 torps and 10 atomics.

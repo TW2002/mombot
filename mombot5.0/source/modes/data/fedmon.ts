@@ -1,3 +1,9 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Monitors public FedSpace movement messages."
+setvar $help~help[2] $help~tab&"Relays warps, docks, Terra/Sol movement, logins, exits,"
+setvar $help~help[3] $help~tab&"weapon power-up, and fighter launch messages to subspace."
+gosub :help~helpfile
+
 :start
 loadvar $bot_name
 
@@ -47,3 +53,4 @@ setvar $switchboard~message "OZ Fed Monitor On Line!*"
 gosub :switchboard~switchboard
 goto :main
 include "source\include\switchboard.ts"
+include "source\include\help"

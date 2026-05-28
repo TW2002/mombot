@@ -1,3 +1,8 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Creates navhaz by making and destroying planets."
+setvar $help~help[2] $help~tab&"Run from Command; requires at least 10 torps and 10 atomics."
+gosub :help~helpfile
+
 loadvar $bot_name
 
 gosub :player~quikstats
@@ -111,3 +116,4 @@ gosub :switchboard~switchboard
 halt
 include "source\include\player"
 include "source\include\switchboard.ts"
+include "source\include\help"

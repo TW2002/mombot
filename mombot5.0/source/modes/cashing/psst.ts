@@ -1,6 +1,19 @@
 logging "OFF"
 goto :start_script
 
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Planet SST using two ships and two planets."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  psst [ship2#] [planet1#] [planet2#]"
+setvar $help~help[4] $help~tab&"        psst clear_busts"
+setvar $help~help[5] $help~tab&"   "
+setvar $help~help[6] $help~tab&"   [ship2#] - empty second ship in the starting sector."
+setvar $help~help[7] $help~tab&"   [planet1#] [planet2#] - movable planets in the starting sector."
+setvar $help~help[8] $help~tab&"   [clear_busts] - clears cached bust data."
+setvar $help~help[9] $help~tab&"   Steals equipment from xxB ports, xports between ships, and refurbishes."
+setvar $help~help[10] $help~tab&"   Run from Command."
+gosub :help~helpfile
+
 :findsstports
 if ($ship1needsport)
 	if ($inship1 <> true)
@@ -753,3 +766,4 @@ setvar $switchboard~message "Check to make sure both planets and ships made it b
 gosub :switchboard~switchboard
 halt
 include "source\include\switchboard.ts"
+include "source\include\help"

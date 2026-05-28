@@ -1,46 +1,8 @@
-# Copyright (C) 2005  Remco Mulder
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-# For source notes please refer to Notes.txt
-# For license terms please refer to GPL.txt.
-#
-# These files should be stored in the root of the compression you
-# received this source in.
-
-# SUB:       MakePlanet
-# Passed:    $WantedPlanets[] - Zero based array of full/partial names of wanted planets
-#            $Sector - Current sector ("0" if unknown)
-#            $WantedPlanetCount - Number of items in array
-#            $WarpType - "T" to twarp to/from stardock
-#                        "E" to ewarp
-#                        "S" to single step warp
-#            $Resupply - "1" to resupply from stardock
-#            $CreditLimit - Sub will abort if credits fall below this
-#            $Haggle~HaggleFactor - Default hagglefactor
-# Triggered: Anywhere
-# Returned:  $PlanetID - ID of planet created
-#            $Type - Type of planet created
-#            $Name - Name of planet created
-#            $Credits - Player credits
-#            $Failed - "1" if failed to create planet (out of cash)
-#                      "2" if failed to create planet
+# Original script Copyright (C) 2005 Remco Mulder
 
 gosub :loadvars~loadvars
-gosub :help~initialize
 
+gosub :help~initialize
 setvar $help~help[1]    $help~tab&"makeplanet {ewarp} {create:} {"&#34&"custom planet name"&#34&"} "
 setvar $help~help[2]    $help~tab&"       "
 setvar $help~help[3]    $help~tab&"     {ewarp}  - Will refurb torps and atomics by ewarp "
@@ -53,12 +15,15 @@ setvar $help~help[9]    $help~tab&"                "
 setvar $help~help[10]   $help~tab&"{custom name} - Name the planet will be.  Otherwise it's a random   "
 setvar $help~help[11]   $help~tab&"                name from a database              "
 setvar $help~help[12]   $help~tab&"                              "
-setvar $help~help[13]   $help~tab&"      Examples:                   "
-setvar $help~help[14]   $help~tab&"            >makeplanet create:earth,volcanic,oceanic "
-setvar $help~help[15]   $help~tab&"            >makeplanet ewarp create:earth         "
-setvar $help~help[16]   $help~tab&"            >makeplanet "&#34&"death"&#34&" create:volcanic "
-setvar $help~help[17]   $help~tab&"                              "
-setvar $help~help[18]   $help~tab&"               - Originally written by Xide"
+setvar $help~help[13]   $help~tab&"      {strip} - Strip the made planets of products. Must start"
+setvar $help~help[14]   $help~tab&"                on the planet to fill.               "
+setvar $help~help[15]   $help~tab&"                              "
+setvar $help~help[16]   $help~tab&"      Examples:                   "
+setvar $help~help[17]   $help~tab&"            >makeplanet create:earth,volcanic,oceanic "
+setvar $help~help[18]   $help~tab&"            >makeplanet ewarp strip create:earth         "
+setvar $help~help[19]   $help~tab&"            >makeplanet "&#34&"death"&#34&" create:volcanic "
+setvar $help~help[20]   $help~tab&"                              "
+setvar $help~help[21]   $help~tab&"               - Originally written by Xide"
 gosub :help~helpfile
 
 loadvar $game~genesis_cost
@@ -70,9 +35,9 @@ loadvar $planet~planet_file
 
 gosub :player~quikstats
 setvar $startinglocation $player~current_prompt
-if ($startinglocation = "Command")
+setvar $startingplanet 0
 
-elseif ($startinglocation = "Citadel")
+if ($startinglocation = "Citadel")
 	send "q"
 	gosub :planet~getplanetinfo
 	setvar $startingplanet $planet~planet
@@ -81,8 +46,8 @@ elseif ($startinglocation = "Planet")
 	gosub :planet~getplanetinfo
 	setvar $startingplanet $planet~planet
 	send "q"
-else
-	setvar $switchboard~message "Have to be on Command, Planet, or Citadel prompt to start upgrader.*"
+elseif ($startinglocation <> "Command")
+	setvar $switchboard~message "Have to be on Command, Planet, or Citadel prompt to start makeplanet.*"
 	gosub :switchboard~switchboard
 	halt
 end
@@ -93,6 +58,23 @@ getwordpos " "&$bot~user_command_line&" " $pos "ewarp"
 setvar $warptype "T"
 if ($pos > 0)
 	setvar $warptype "E"
+end
+
+getwordpos " "&$bot~user_command_line&" " $pos "strip"
+if ($pos > 0)
+	if ($startingplanet = 0)
+		setvar $switchboard~message "Must start on a planet to use strip option.*"
+		gosub :switchboard~switchboard
+		halt
+	end
+	setvar $strip true
+	setvar $planet~planettofill $planet~planet
+	setvar $startingplanet $planet~planet
+	setvar $planet~emptyfuel true
+	setvar $planet~emptyorganics true
+	setvar $planet~emptyequipment true
+else
+	setvar $strip false
 end
 
 getwordpos " "&$bot~user_command_line&" " $pos "create:"
@@ -253,6 +235,23 @@ killtrigger 1
 
 :bust_landed
 killtrigger 2
+if ($strip = true)
+	setvar $planet~planettostrip $planetid
+	gosub :planet~stripplanet
+	gosub :player~currentprompt
+	if ($player~current_prompt = "Citadel")
+		send "q"
+		elseif ($player~current_prompt = "Command")
+			setvar $planet~planet $planetid
+			gosub :planet~landingsub
+		end
+	gosub :planet~getplanetinfo
+	if ($planet~planet <> $planetid)
+		setvar $switchboard~message "Landed on wrong planet, halting strip.*"
+		gosub :switchboard~switchboard
+		halt
+	end
+end
 # nuke it
 send "zdy  "
 subtract $dets 1

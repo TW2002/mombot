@@ -13,8 +13,17 @@ loadvar $game~armid_cost
 loadvar $game~photon_cost
 loadvar $game~disruptor_cost
 
-#	setVar $HELP~HELP[1] $HELP~TAB&"Lister"
-#	gosub :HELP~HELPFILE
+setvar $help~help[1] $help~tab&"Searches database sectors by port, MCIC, figs, and warp count."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  list {port type} {mcic} {pair} {figged} {warp filter}"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"Arguments:"
+setvar $help~help[6] $help~tab&"   {port type}   sbb/bbs/xxx/xbb/xxb/etc. B buys, S sells, X is any."
+setvar $help~help[7] $help~tab&"        {mcic}   positive or negative MCIC threshold."
+setvar $help~help[8] $help~tab&"        {pair}   require a matching paired adjacent port."
+setvar $help~help[9] $help~tab&"      {figged}   include figged sectors instead of unfigged sectors."
+setvar $help~help[10] $help~tab&" {warp filter}   deadend, 2way, 3way, 4way, 5way, 6way, or 7way."
+gosub :help~helpfile
 
 setvar $switchboard~message "Lister starting up!*"
 gosub :switchboard~switchboard

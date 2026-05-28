@@ -1,3 +1,12 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Responds to =saveme calls by twarping/bwarping to help."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  tsaveme {scrub sector}"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"   {scrub sector} - optional sector to return/scrub after the save."
+setvar $help~help[6] $help~tab&"   Run from Command for TWarp saves or Citadel for BWarp saves."
+gosub :help~helpfile
+
 loadvar $user_command_line
 loadvar $parm1
 loadvar $parm2
@@ -249,3 +258,4 @@ send "**"
 halt
 include "source\include\player"
 include "source\include\switchboard.ts"
+include "source\include\help"

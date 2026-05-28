@@ -17,6 +17,11 @@ setvar $minesdeployed "Yes"
 setvar $basedetails "Yes"
 setvar $output "SubSpace"
 
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"corpinfo   "
+setvar $help~help[2] $help~tab&"      Sends a report of all corporate assets on subspace.  "
+gosub :help~helpfile
+
 setvar $bot~validprompts "Citadel Planet Command"
 gosub :player~checkstartingprompt
 if (($player~startinglocation = "Citadel") or ($player~startinglocation = "Planet"))
@@ -701,5 +706,6 @@ halt
 
 # includes:
 include "source\include\planet"
+include "source\include\help"
 include "source\include\loadvars"
 include "source\include\switchboard.ts"

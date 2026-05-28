@@ -4,7 +4,7 @@ gosub :help~initialize
 setvar $help~help[1] $help~tab&"           Visits all ports in grid and sells organics          "
 setvar $help~help[2] $help~tab&"           and/or equipment.       "
 setvar $help~help[3] $help~tab&"       "
-setvar $help~help[4] $help~tab&" merch {sector param} {min port product} [o | e] {args}  "
+setvar $help~help[4] $help~tab&" merch [min product] [o | e] {args}  "
 setvar $help~help[5] $help~tab&"       "
 setvar $help~help[6] $help~tab&"Arguments:"
 setvar $help~help[7] $help~tab&"    {neg/hold}   Determines planet negotiate or hold "
@@ -98,10 +98,10 @@ end
 
 setvar $merchant~salesman false
 setvar $merchant~sellingfuel false
-setvar $merchant~nativehagglemode false
+setvar $merchant~nativehagglemode true
 
 if (($merchant~sellingorg = false) and ($merchant~sellingequip = false))
-	setvar $switchboard~message "Please pick [o]rganics and/or [e]quipment to sell.  merch [min product] {o} {e} {docim} {skipcim} {negotiate/hold}*"
+	setvar $switchboard~message "Please pick [o]rganics and/or [e]quipment to sell.*"
 	gosub :switchboard~switchboard
 	halt
 end

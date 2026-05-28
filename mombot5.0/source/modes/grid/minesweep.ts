@@ -1,5 +1,20 @@
 reqrecording
 logging "OFF"
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Sweeps the fig grid by deploying/clearing mines."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  minesweep {furb} {disr} {fast} {nonsafe} {border} {l:#} {a:#}"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"Arguments:"
+setvar $help~help[6] $help~tab&"        {furb}   buy more mines/disruptors at dock when needed."
+setvar $help~help[7] $help~tab&"        {disr}   use mine disruptors against enemy mines."
+setvar $help~help[8] $help~tab&"        {fast}   use fast sector-clear macro."
+setvar $help~help[9] $help~tab&"     {nonsafe}   use non-safe clear path unless fast is set."
+setvar $help~help[10] $help~tab&"      {border}   target hostile border sectors."
+setvar $help~help[11] $help~tab&"      {l:#} {a:#}   limpets and armids to deploy."
+setvar $help~help[12] $help~tab&"   Run from Citadel with FIGSEC, MINESEC, and LIMPSEC data loaded."
+gosub :help~helpfile
+
 loadvar $bot_name
 loadvar $unlimitedgame
 loadvar $bot_turn_limit
@@ -1129,3 +1144,4 @@ waitfor "<Hardware Emporium>"
 return
 include "source\include\switchboard.ts"
 include "source\include\sector"
+include "source\include\help"

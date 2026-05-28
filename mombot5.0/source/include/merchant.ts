@@ -17,6 +17,8 @@ if (($player~limpets <= $player~surroundlimp) and ($merchant~mines = true))
 	gosub :attempt_refurb
 end
 
+loadvar $bot~bot_folder
+setvar $hagglefile $bot~folder&"/haggledata.txt"
 setvar $sectorcount 10
 setvar $totalholds 0
 setvar $spentcredits 0
@@ -57,23 +59,23 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 	end
 
 	:select_next_port
-	# selloff first to all the high MCIC ports
+	# selloff first to all the high value ports
 	if ($checkmcic <> true)
-		setvar $bestmcicsector 0
-		setvar $bestmcicscore 49
+		setvar $sellscore 0
+		setvar $sellsector 0
 		setvar $focus 1
 		setvar $merchcheckremote false
 
 		while ($focus <= sectors)
 			gosub :checkport
-			if (($goodport = true) and ($mcicscore > $bestmcicscore))
-				setvar $bestmcicscore $mcicscore
-				setvar $bestmcicsector $focus
+			if ($goodport = true) and ($port~portvalue > $sellscore)
+				setvar $sellscore $port~portvalue
+				setvar $sellsector $focus
 			end
 			add $focus 1
 		end
-		if ($bestmcicsector > 0)
-			setvar $nearfig $bestmcicsector
+		if ($sellsector > 0)
+			setvar $nearfig $sellsector
 			setvar $checkedports[$nearfig] true
 			goto :continueon2
 		end
@@ -119,256 +121,58 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 		add $bottom 1
 	end
 
-	setvar $switchboard~message "Can't find a route to any other ports.*"
+	setvar $switchboard~message "No ports available*"
 	gosub :switchboard~switchboard
 	return
+end
 
-	:continueon2
-	if ($nearfig > 0)
-		killalltriggers
-		if ($nearfig <> $player~current_sector)
-			if ($salesman = true)
-				send "p"&$nearfig&"*"
-				settextlinetrigger warped :movesuccess "Locating beam pinpointed, TransWarp Locked."
-			else
-				send "p"&$nearfig&"*y"
-				settextlinetrigger warped :movesuccess "-=-=-=- Planetary TransWarp Drive Engaged! -=-=-=-"
-			end
-			settextlinetrigger didnotwarp :nofigatlocation "Your own fighters must be in the destination to make a safe jump."
-			settextlinetrigger notenoughfuel :donenofuel "You do not have enough Fuel Ore on this planet to make the jump."
-			pause
-		else
-			goto :refresh_current_port
-		end
+setvar $switchboard~message "Merchant successfully completed.*"
+gosub :switchboard~switchboard
+return
 
-		:donenofuel
-		killalltriggers
-		setvar $switchboard~message "Not enough fuel to continue.*"
-		gosub :switchboard~switchboard
-		return
-
-		:nofigatlocation
-		killalltriggers
-		setsectorparameter $nearfig "FIGSEC" false
+:continueon2
+if ($nearfig > 0) and ($nearfig <> $player~current_sector)
+	killalltriggers
+	setvar $planet~warpto $nearfig
+	gosub :planet~pwarp
+	if ($planet~pwarpsuccess = false)
 		goto :select_next_port
+	end
+	setvar $player~current_sector $nearfig
+	gosub :refreshport
+	setvar $oretrading $port~oretrading
+	setvar $orgtrading $port~orgtrading
+	setvar $equtrading $port~equtrading
 
-		:movesuccess
-		killalltriggers
-		if ($salesman = true)
-			send "y s*"
-		end
+	if ($liveport <> true)
+		goto :select_next_port
+	end
 
-		setvar $player~current_sector $nearfig
+	gosub :merchant~refreshtradeflags
+	setvar $thisportvalue 0
+	if ($cansellequiphere = true)
+		add $thisportvalue $port~equvalue
+	end
+	if ($cansellorghere = true)
+		add $thisportvalue $port~orgvalue
+	end
+	if ($salesman = true) and ($merchant~upgrade = true) and (port.exists[$player~current_sector] = true)
+		gosub :merchant~salesmanupgradeall
+	end
+	if (($cansellfuelhere <> true) and ($cansellorghere <> true) and ($cansellequiphere <> true) and ($canbuyfuelhere <> true) and ($canbuyorghere <> true) and ($canbuyequiphere <> true))
+		gosub :postport
+		goto :select_next_port
+	end
 
-		:refresh_current_port
-		gosub :refreshport
+	if ($planet~planetnegotiate = true)
+		gosub :sellhaggle
+	else
+		gosub :sellnative
+	end
 
-		if ($liveport <> true)
-			#setvar $switchboard~message "No valid live port at sector "&$nearfig&", skipping.*"
-			#gosub :switchboard~switchboard
-			gosub :postport
-			goto :select_next_port
-		end
+	if ($salesman)
+		gosub :refreshtradeflags
 
-		gosub :merchant~refreshtradeflags
-
-		if (($salesman = true) and ($merchant~upfuel_fuel = true) and ($port~orebuying = "Selling") and ($planet~planetfuel < ($planet~planetfuelmax / 2)) and ($port~oretrading < $game~port_max))
-			gosub :merchant~salesmanupgradefuel
-		elseif (($salesman <> true) and ($merchant~upfuel = true) and ($port~orebuying = "Selling") and ($planet~planetfuel < ($planet~planetfuelmax / 2)) and ($port~oretrading < $game~port_max))
-			setvar $port~product 1
-			gosub :merchant~upgradeport
-		end
-
-		if (($salesman = true) and ($merchant~upgrade = true) and (port.exists[$player~current_sector] = true))
-			gosub :merchant~salesmanupgradeall
-		end
-
-		if ($liveport <> true)
-			#setvar $switchboard~message "No valid live port at sector "&$nearfig&" after upgrade, skipping.*"
-			#gosub :switchboard~switchboard
-			gosub :postport
-			goto :select_next_port
-		end
-
-		gosub :merchant~refreshtradeflags
-		if (($cansellfuelhere <> true) and ($cansellorghere <> true) and ($cansellequiphere <> true) and ($canbuyfuelhere <> true) and ($canbuyorghere <> true) and ($canbuyequiphere <> true))
-			gosub :postport
-			goto :select_next_port
-		end
-
-		if ($planet~planetnegotiate = true)
-			killalltriggers
-			setvar $attemptedsell false
-			setvar $planethaggle~_ck_pnego_fueltosell "-1"
-			if ($cansellfuelhere)
-				if ($checkmcic = true)
-					setvar $planethaggle~_ck_pnego_fueltosell $merch_neg_sample_amount
-				elseif ($sellhalf)
-					setvar $fuel_to_sell ($port~oretrading - $half_port_max)
-					if ($fuel_to_sell <= 0)
-						setvar $planethaggle~_ck_pnego_fueltosell "-1"
-					else
-						setvar $planethaggle~_ck_pnego_fueltosell $fuel_to_sell
-					end
-				else
-					setvar $fuel_to_sell (100000 - $port~oretrading)
-					setvar $planethaggle~_ck_pnego_fueltosell $fuel_to_sell
-				end
-			else
-				setvar $planethaggle~_ck_pnego_fueltosell "-1"
-			end
-			if ($cansellorghere)
-				if ($checkmcic = true)
-					setvar $planethaggle~_ck_pnego_orgtosell $merch_neg_sample_amount
-				elseif ($sellhalf)
-					setvar $org_to_sell ($port~orgtrading - $half_port_max)
-					if ($org_to_sell <= 0)
-						setvar $planethaggle~_ck_pnego_orgtosell "-1"
-					else
-						setvar $planethaggle~_ck_pnego_orgtosell $org_to_sell
-					end
-				else
-					setvar $planethaggle~_ck_pnego_orgtosell "max"
-				end
-			else
-				setvar $planethaggle~_ck_pnego_orgtosell "-1"
-			end
-			if ($cansellequiphere)
-				if ($checkmcic = true)
-					setvar $planethaggle~_ck_pnego_equiptosell $merch_neg_sample_amount
-				elseif ($sellhalf)
-					setvar $equip_to_sell ($port~equtrading - $half_port_max)
-					if ($equip_to_sell <= 0)
-						setvar $planethaggle~_ck_pnego_equiptosell "-1"
-					else
-						setvar $planethaggle~_ck_pnego_equiptosell $equip_to_sell
-					end
-				else
-					setvar $planethaggle~_ck_pnego_equiptosell "max"
-				end
-			else
-				setvar $planethaggle~_ck_pnego_equiptosell "-1"
-			end
-			setvar $planethaggle~hasprods 1
-			gosub :planethaggle~planetneg
-			setvar $planethaggle~hasprods 0
-
-			if ($planethaggle~sellhagglesucceeded = true)
-				gosub :refreshport
-				if ($checkmcic <> true)
-					if ($cansellequiphere and ($port~equtrading >= $minprod))
-						setvar $checkedports[$nearfig] false
-					end
-					if ($cansellorghere and ($port~orgtrading >= $minprod))
-						setvar $checkedports[$nearfig] false
-					end
-				end
-			end
-
-			if (($buyfuel = true) and ($port~orebuying = "Selling"))
-				setvar $player~buyobject "f"
-				setvar $player~buytype "s"
-				setvar $player~buydownroundsfromparam $player~turnstoempty
-				gosub :planethaggle~buy
-				gosub :player~quikstats
-			end
-
-			if (($player~unlimitedgame = false) and (($player~turns - $player~turnssellingproduct) <= $bot~bot_turn_limit))
-				setvar $switchboard~message "Turns too low to continue.*"
-				gosub :switchboard~switchboard
-				send "l "&$planet~planet&"* c "
-				return
-			end
-			#send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
-		else
-			killalltriggers
-				gosub :refreshport
-
-				if (($planet~planet_fuel_max - $planet~planet_fuel) < $port~oretrading)
-					setvar $player~turnstoemptyfuel ((($planet~planet_fuel_max - $planet~planet_fuel) / $player~total_holds) - 1)
-				else
-					setvar $player~turnstoemptyfuel (($port~oretrading / $player~total_holds) - 1)
-				end
-			if ($cansellorghere)
-				if ($checkmcic = true)
-					setvar $player~turnssellingproduct 1
-				elseif ($planet~planet_organics < $port~orgtrading)
-					setvar $player~turnssellingproduct (($planet~planet_organics / $player~total_holds) - 1)
-				else
-					setvar $player~turnssellingproduct ($port~orgtrading / $player~total_holds)
-				end
-				if (($player~unlimitedgame = false) and (($player~turns - $player~turnssellingproduct) <= $bot~bot_turn_limit))
-					setvar $switchboard~message "Turns too low to continue.*"
-					gosub :switchboard~switchboard
-					send "l "&$planet~planet&"* c "
-					return
-				end
-				send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
-				gosub :player~quikstats
-				while ($player~turnssellingproduct > 0)
-					send "l " $planet~planet "*  t  *  * 2*  q P * *"
-					send "0 * 0 *  /"
-					waiton "Turns"
-					if ($ni <> true)
-						subtract $player~turnssellingproduct 1
-					end
-					add $totalorganicholds $player~total_holds
-				end
-			end
-			if ($cansellequiphere)
-				if ($checkmcic = true)
-					setvar $player~turnssellingproduct 1
-				elseif ($planet~planet_equipment < $port~equtrading)
-					setvar $player~turnssellingproduct (($planet~planet_equipment / $player~total_holds) - 1)
-				else
-					setvar $player~turnssellingproduct ($port~equtrading / $player~total_holds)
-				end
-				if (($port~orebuying = "Selling") and ($buyfuel = true))
-                send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
-				gosub :player~quikstats
-	                while (($player~turnssellingproduct > 0) and ($player~turnstoemptyfuel > 1))
-	                    send "l " $planet~planet "*   t  *  l 1* t  *  * 3*  q P * *"
-		                send "*"
-		                send " 0 *  /"
-		                if ($ni <> true)
-		                	subtract $player~turnssellingproduct 1
-	                end
-	                subtract $player~turnstoemptyfuel 1
-		                add $totalequipmentholds $player~total_holds
-		                waiton "Turns"
-	                end
-					end
-					send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
-					while ($player~turnssellingproduct > 0)
-					send "l " $planet~planet "*  t  *  * 3*  q P * *"
-					send "0 * 0 *  /"
-					if ($ni <> true)
-						subtract $player~turnssellingproduct 1
-					end
-					add $totalequipmentholds $player~total_holds
-					waiton "Turns"
-				end
-			end
-			#if ($upfuel = true)
-			#	setvar $port~product 1
-            #    gosub :merchant~upgradeport
-            #end
-
-			if (($port~orebuying = "Selling") and ($buyfuel = true))
-				send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
-				gosub :player~quikstats
-				while (($player~turnssellingproduct > 0) and ($player~turnstoemptyfuel > 1))
-					send "l " $planet~planet "*   t  *  l 1* t  *  * 2*  q P * *"
-					send "*"
-					send " 0 * "
-					if ($ni <> true)
-						subtract $player~turnssellingproduct 1
-					end
-					subtract $player~turnstoemptyfuel 1
-                    subtract $player~turns 1
-					waiton "Turns"
-				end
-			end
 		setvar $planetroom ($planet~planetequipmax - $planet~planetequip)
 		if (($equipselling >= $merchant~minprod) and ($planetroom >= $merchant~minprod))
 			setvar $buyproduct "e"
@@ -387,9 +191,8 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 			setvar $buyavailable $fuelselling
 			gosub :buyproduct
 		end
-
+	
 		gosub :player~quikstats
-
 		if (($salesman <> true) and ($uporg = true))
 			getsectorparameter $nearfig "ORGMCIC" $tmp
 			if ($tmp <= $upmcic)
@@ -397,7 +200,7 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 				gosub :upgradeport
 			end
 		end
-
+	
 		if (($salesman <> true) and ($upequ = true))
 			getsectorparameter $nearfig "EQUMCIC" $tmp
 			if ($tmp <= $upmcic)
@@ -405,15 +208,185 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 				gosub :upgradeport
 			end
 		end
+	end
 
-		send "#"
-		waiton "                            Who's Playing"
-		if ($player~current_prompt <> "Citadel")
-			gosub :planet~landonplanetentercitadel
+	if ($player~current_prompt = "Command")
+		gosub :planet~landingsub
+	elseif ($player~current_prompt = "Citadel")
+		send "q"
+	end
+
+	gosub :planet~getplanetinfo
+	send "c"
+	gosub :player~quikstats
+	gosub :port~getportinfo
+end
+gosub :postport
+goto :select_next_port
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:sellhaggle
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+killalltriggers
+setvar $attemptedsell false
+setvar $planethaggle~_ck_pnego_fueltosell "-1"
+if ($cansellfuelhere)
+	if ($checkmcic = true)
+		setvar $planethaggle~_ck_pnego_fueltosell $merch_neg_sample_amount
+	elseif ($sellhalf)
+		setvar $fuel_to_sell ($port~oretrading - $half_port_max)
+		if ($fuel_to_sell <= 0)
+			setvar $planethaggle~_ck_pnego_fueltosell "-1"
+		else
+			setvar $planethaggle~_ck_pnego_fueltosell $fuel_to_sell
 		end
-		gosub :player~quikstats
-        gosub :port~getportinfo		
+	else
+		setvar $fuel_to_sell (100000 - $port~oretrading)
+		setvar $planethaggle~_ck_pnego_fueltosell $fuel_to_sell
+	end
+else
+	setvar $planethaggle~_ck_pnego_fueltosell "-1"
+end
+if ($cansellorghere)
+	if ($checkmcic = true)
+		setvar $planethaggle~_ck_pnego_orgtosell $merch_neg_sample_amount
+	elseif ($sellhalf)
+		setvar $org_to_sell ($port~orgtrading - $half_port_max)
+		if ($org_to_sell <= 0)
+			setvar $planethaggle~_ck_pnego_orgtosell "-1"
+		else
+			setvar $planethaggle~_ck_pnego_orgtosell $org_to_sell
 		end
+	else
+		setvar $planethaggle~_ck_pnego_orgtosell "max"
+	end
+else
+	setvar $planethaggle~_ck_pnego_orgtosell "-1"
+end
+if ($cansellequiphere)
+	if ($checkmcic = true)
+		setvar $planethaggle~_ck_pnego_equiptosell $merch_neg_sample_amount
+	elseif ($sellhalf)
+		setvar $equip_to_sell ($port~equtrading - $half_port_max)
+		if ($equip_to_sell <= 0)
+			setvar $planethaggle~_ck_pnego_equiptosell "-1"
+		else
+			setvar $planethaggle~_ck_pnego_equiptosell $equip_to_sell
+		end
+	else
+		setvar $planethaggle~_ck_pnego_equiptosell "max"
+	end
+else
+	setvar $planethaggle~_ck_pnego_equiptosell "-1"
+end
+setvar $planethaggle~hasprods 1
+gosub :player~quikstats
+setvar $precreds $player~credits
+gosub :planethaggle~planetneg
+gosub :player~quikstats
+setvar $profit ($planethaggle~oreprofit + $planethaggle~orgprofit + $planethaggle~equprofit)
+setvar $haggledata $profit & " " & $thisportvalue & " " & $oretrading & " " & $orgtrading & " " & $equtrading & "*"
+write $hagglefile $haggledata
+setvar $planethaggle~hasprods 0
+if ($planethaggle~sellhagglesucceeded = true)
+	gosub :refreshport
+	if ($checkmcic <> true)
+		if ($cansellequiphere and ($port~equtrading >= $minprod))
+			setvar $checkedports[$nearfig] false
+		end
+		if ($cansellorghere and ($port~orgtrading >= $minprod))
+			setvar $checkedports[$nearfig] false
+		end
+	end
+end
+if ($merchant~upfuel = true) and ($port~orebuying = "Selling") and ($planet~planetfuel < ($planet~planetfuelmax / 2)) and ($port~oretrading < $game~port_max)
+	setvar $port~product 1
+	gosub :upgradeport
+end
+if ($canbuyfuelhere = true)
+	setvar $player~buyobject "f"
+	setvar $player~buytype "s"
+	setvar $player~buydownroundsfromparam $player~turnstoempty
+	gosub :planethaggle~buy
+	gosub :player~quikstats
+end
+if (($player~unlimitedgame = false) and (($player~turns - $player~turnssellingproduct) <= $bot~bot_turn_limit))
+	setvar $switchboard~message "Turns too low to continue.*"
+	gosub :switchboard~switchboard
+	send "l "&$planet~planet&"* c "
+	return
+end
+#send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:sellnative
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+killalltriggers
+gosub :refreshport
+if (($planet~planet_fuel_max - $planet~planet_fuel) < $port~oretrading)
+	setvar $player~turnstoemptyfuel ((($planet~planet_fuel_max - $planet~planet_fuel) / $player~total_holds) - 1)
+else
+	setvar $player~turnstoemptyfuel (($port~oretrading / $player~total_holds) - 1)
+end
+if ($cansellorghere)
+	if ($checkmcic = true)
+		setvar $player~turnssellingproduct 1
+	elseif ($planet~planet_organics < $port~orgtrading)
+		setvar $player~turnssellingproduct (($planet~planet_organics / $player~total_holds) - 1)
+	else
+		setvar $player~turnssellingproduct ($port~orgtrading / $player~total_holds)
+	end
+	if (($player~unlimitedgame = false) and (($player~turns - $player~turnssellingproduct) <= $bot~bot_turn_limit))
+		setvar $switchboard~message "Turns too low to continue.*"
+		gosub :switchboard~switchboard
+		send "l "&$planet~planet&"* c "
+		return
+	end
+	send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
+	gosub :player~quikstats
+	while ($player~turnssellingproduct > 0)
+		send "l " $planet~planet "*  t  *  * 2*  q P * *"
+		send "0 * 0 *  /"
+		waiton "Turns"
+		if ($ni <> true)
+			subtract $player~turnssellingproduct 1
+		end
+		add $totalorganicholds $player~total_holds
+	end
+end
+if ($cansellequiphere)
+	if ($checkmcic = true)
+		setvar $player~turnssellingproduct 1
+	elseif ($planet~planet_equipment < $port~equtrading)
+		setvar $player~turnssellingproduct (($planet~planet_equipment / $player~total_holds) - 1)
+	else
+		setvar $player~turnssellingproduct ($port~equtrading / $player~total_holds)
+	end
+	send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
+	while ($player~turnssellingproduct > 0)
+		send "l " $planet~planet "*  t  *  * 3*  q P * *"
+		send "0 * 0 *  /"
+		if ($ni <> true)
+			subtract $player~turnssellingproduct 1
+		end
+		add $totalequipmentholds $player~total_holds
+		waiton "Turns"
+	end
+end
+if (($port~orebuying = "Selling") and ($buyfuel = true))
+	send "l "&$planet~planet&"* t n l 1* t nl 2* t n l 3* s n l 1* s n l 2* s n l 3* q jy "
+	gosub :player~quikstats
+	while (($player~turnssellingproduct > 0) and ($player~turnstoemptyfuel > 1))
+		send "l " $planet~planet "*   t  *  l 1* t  *  * 2*  q P * *"
+		send "*"
+		send " 0 * "
+		if ($ni <> true)
+			subtract $player~turnssellingproduct 1
+		end
+		subtract $player~turnstoemptyfuel 1
+		subtract $player~turns 1
+		waiton "Turns"
 	end
 end
 return
@@ -635,158 +608,75 @@ if (($isbusted = true) or ($checkedports[$focus] = true) or (port.exists[$focus]
 	return
 end
 
+setvar $port~target $focus
+gosub :port~getportdbinfo
+
+# If running in checkmcic mode, skip ports that are upgraded or that we already have MCIC for
 if ($checkmcic = true)
-	gosub :merchupgradedport
-	if ($merchupgraded = true)
+	if ($port~oretotal > 25000) or ($port~orgtotal > 25000) or ($port~equtotal > 25000)
 		return
+	end
+	if ($orebuying = "Buying") and ($port~oremcic = 0) and ($port~oretrading >= $minprod) and ($port~orepercent >= $minpct)
+		setvar $cansellfuelhere true
+	end
+	if ($orgbuying = "Buying") and ($port~orgmcic = 0) and ($port~orgtrading >= $minprod) and ($port~orgpercent >= $minpct)
+		setvar $cansellorghere true
+	end
+	if ($equbuying = "Buying") and ($port~equmcic = 0) and ($port~equtrading >= $minprod) and ($port~equpercent >= $minpct)
+		setvar $cansellequiphere true
+	end
+	if ($cansellfuelhere = true) or ($cansellorghere = true) or ($cansellequiphere = true)
+		setvar $goodport true
+	end
+	return
+end
+
+# Everything else is not in checkmcic mode
+
+if ($sellingfuel = true)
+	if ($planet~planet_fuel >= 100000) and ($port~orebuying = "Buying") and ($port~oretrading >= $minprod) and ($port~orepercent >= $minpct)
+		setvar $cansellfuelhere true
 	end
 end
 
-if ($sellingfuel = true)
-    if ($planet~planet_fuel >= 100000) and (port.buyfuel[$focus] = true) and (port.fuel[$focus] >= $minprod)
-	    if ($checkmcic = true) and ($upgradedfuel = false)
-            setvar $cansellfuelhere true
-        elseif (($salesman = true) or ($sellhalf <> true) or ((port.percentfuel[$focus] >= $minpct) and (port.fuel[$focus] > $half_port_max)))
-		    setvar $cansellfuelhere true
-	    end
-    end
-end
-
 if ($sellingorg = true)
-    if (((($salesman = true) and ($planet~planet_organics >= 500)) or (($salesman <> true) and ($planet~planet_organics >= $minprod))) and (port.buyorg[$focus] = true) and (port.org[$focus] >= $minprod))
-	    if ($checkmcic = true) and ($upgradedorg = false)
-            setvar $cansellorghere true
-        elseif (($salesman = true) or ($sellhalf <> true) or ((port.percentorg[$focus] >= $minpct) and (port.org[$focus] > $half_port_max)))     
-		    setvar $cansellorghere true
-        end
+	if ($planet~planet_organics >= $minprod) and ($port~orgbuying = "Buying") and ($port~orgtrading >= $minprod) and ($port~orgpercent >= $minpct)
+		setvar $cansellorghere true
 	end
 end
 
 if ($sellingequip = true)
-    if (((($salesman = true) and ($planet~planet_equipment >= 500)) or (($salesman <> true) and ($planet~planet_equipment >= $minprod))) and (port.buyequip[$focus] = true) and (port.equip[$focus] >= $minprod))
-	    if ($checkmcic = true) and ($upgradedequip = false)
-            setvar $cansellequiphere true
-        elseif (($salesman = true) or ($sellhalf <> true) or ((port.percentequip[$focus] >= $minpct) and (port.equip[$focus] > $half_port_max)))     
-		    setvar $cansellequiphere true
-        end
+	if ($planet~planet_equipment >= $minprod) and ($port~equbuying = "Buying") and ($port~equtrading >= $minprod) and ($port~equpercent >= $minpct)
+		setvar $cansellequiphere true
 	end
 end
 
 if ($salesman = true)
 	setvar $planetroom ($planet~planet_equipment_max - $planet~planet_equipment)
-	if ((port.buyequip[$focus] = false) and ($planetroom >= $minprod) and (port.equip[$focus] >= $minprod))
+	if ($port~equbuying = "Selling") and ($planetroom >= $minprod) and ($port~equtrading >= $minprod)
 		setvar $canbuyequiphere true
 	end
 	setvar $planetroom ($planet~planet_organics_max - $planet~planet_organics)
-	if ((port.buyorg[$focus] = false) and ($planetroom >= $minprod) and (port.org[$focus] >= $minprod))
+	if ($port~orgbuying = "Selling") and ($planetroom >= $minprod) and ($port~orgtrading >= $minprod)
 		setvar $canbuyorghere true
 	end
+end
+
+if ($salesman = true) or ($buyfuel = true)
 	setvar $planetroom ($planet~planet_fuel_max - $planet~planet_fuel)
-	if (($buyfuel = true) and (port.buyfuel[$focus] = false) and ($planetroom >= $minprod) and (port.fuel[$focus] >= $minprod))
+	if ($port~orebuying = "Selling") and ($planetroom >= $minprod) and ($port~oretrading >= $minprod)
 		setvar $canbuyfuelhere true
 	end
 end
 
-if ($cansellfuelhere = true) and ($checkmcic = true)
-	getsectorparameter $focus "OREMCIC" $tmp
-	if ($tmp <> "") and ($tmp <> 0)
-		setvar $cansellfuelhere false
-	end
+if ($cansellfuelhere = true) or ($cansellorghere = true) or ($cansellequiphere = true)
+	setvar $goodport true
 end
 
-if ($cansellorghere = true) and ($checkmcic = true)
-	getsectorparameter $focus "ORGMCIC" $tmp
-	if ($tmp <> "") and ($tmp <> 0)
-		setvar $cansellorghere false
-	end
+if ($canbuyfuelhere = true) or ($canbuyorghere = true) or ($canbuyequiphere = true)
+	setvar $goodport true
 end
 
-if ($cansellequiphere = true) and ($checkmcic = true)
-	getsectorparameter $focus "EQUMCIC" $tmp
-	if ($tmp <> "") and ($tmp <> 0)
-		setvar $cansellequiphere false
-	end
-end
-
-if ($cansellfuelhere <> true) and ($cansellorghere <> true) and ($cansellequiphere <> true) and ($canbuyfuelhere <> true) and ($canbuyorghere <> true) and ($canbuyequiphere <> true)
-	return
-end
-
-if ($checkmcic <> true)
-	if (($cansellfuelhere = true) and ($sellmcic <> 0))
-		getsectorparameter $focus "OREMCIC" $tmp
-		if (($tmp <> 0) and ($tmp > $sellmcic))
-			setvar $cansellfuelhere false
-		end
-	end
-	if (($cansellorghere = true) and ($sellmcic <> 0))
-		getsectorparameter $focus "ORGMCIC" $tmp
-		if (($tmp <> 0) and ($tmp > $sellmcic))
-			setvar $cansellorghere false
-		end
-	end
-	if (($cansellequiphere = true) and ($sellmcic <> 0))
-		getsectorparameter $focus "EQUMCIC" $tmp
-		if (($tmp <> 0) and ($tmp > $sellmcic))
-			setvar $cansellequiphere false
-		end
-	end
-	if (($cansellfuelhere <> true) and ($cansellorghere <> true) and ($cansellequiphere <> true) and ($canbuyfuelhere <> true) and ($canbuyorghere <> true) and ($canbuyequiphere <> true))
-		return
-	end
-	if ($cansellfuelhere = true)
-		getsectorparameter $focus "OREMCIC" $tmp
-		setvar $merchscore $tmp
-		if ($tmp < 0)
-			setvar $merchscore (0 - $tmp)
-		end
-		if ($merchscore > $mcicscore)
-			setvar $mcicscore $merchscore
-		end
-	end
-	if ($cansellorghere = true)
-		getsectorparameter $focus "ORGMCIC" $tmp
-		setvar $merchscore $tmp
-		if ($tmp < 0)
-			setvar $merchscore (0 - $tmp)
-		end
-		if ($merchscore > $mcicscore)
-			setvar $mcicscore $merchscore
-		end
-	end
-	if ($cansellequiphere = true)
-		getsectorparameter $focus "EQUMCIC" $tmp
-		setvar $merchscore $tmp
-		if ($tmp < 0)
-			setvar $merchscore (0 - $tmp)
-		end
-		if ($merchscore > $mcicscore)
-			setvar $mcicscore $merchscore
-		end
-	end
-	if ($canbuyfuelhere = true)
-		getsectorparameter $focus "OREMCIC" $tmp
-		isnumber $isnumber $tmp
-		if (($isnumber = true) and ($tmp > $mcicscore))
-			setvar $mcicscore $tmp
-		end
-	end
-	if ($canbuyorghere = true)
-		getsectorparameter $focus "ORGMCIC" $tmp
-		isnumber $isnumber $tmp
-		if (($isnumber = true) and ($tmp > $mcicscore))
-			setvar $mcicscore $tmp
-		end
-	end
-	if ($canbuyequiphere = true)
-		getsectorparameter $focus "EQUMCIC" $tmp
-		isnumber $isnumber $tmp
-		if (($isnumber = true) and ($tmp > $mcicscore))
-			setvar $mcicscore $tmp
-		end
-	end
-end
-setvar $goodport true
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -808,7 +698,7 @@ if ($sellingfuel = true)
 end
 
 if ($sellingorg = true)
-	if (((($salesman = true) and ($planet~planet_organics >= 500)) or (($salesman <> true) and ($planet~planet_organics >= $minprod))) and ($port~orgbuying = "Buying") and ($port~orgtrading >= $minprod))
+	if (((($salesman = true) and ($planet~planet_organics >= $minprod)) or (($salesman <> true) and ($planet~planet_organics >= $minprod))) and ($port~orgbuying = "Buying") and ($port~orgtrading >= $minprod))
 		if (($checkmcic = true) or ($salesman = true) or ($sellhalf <> true) or (($port~orgpercent >= $minpct) and ($port~orgtrading > $half_port_max)))
 			setvar $cansellorghere true
 		end
@@ -816,10 +706,17 @@ if ($sellingorg = true)
 end
 
 if ($sellingequip = true)
-	if (((($salesman = true) and ($planet~planet_equipment >= 500)) or (($salesman <> true) and ($planet~planet_equipment >= $minprod))) and ($port~equbuying = "Buying") and ($port~equtrading >= $minprod))
+	if (((($salesman = true) and ($planet~planet_equipment >= $minprod)) or (($salesman <> true) and ($planet~planet_equipment >= $minprod))) and ($port~equbuying = "Buying") and ($port~equtrading >= $minprod))
 		if (($checkmcic = true) or ($salesman = true) or ($sellhalf <> true) or (($port~equpercent >= $minpct) and ($port~equtrading > $half_port_max)))
 			setvar $cansellequiphere true
 		end
+	end
+end
+
+if ($buyfuel = true) or ($salesman = true)
+	setvar $planetroom ($planet~planet_fuel_max - $planet~planet_fuel)
+	if (($buyfuel = true) and ($port~orebuying = "Selling") and ($planetroom >= $minprod) and ($port~oretrading >= $minprod))
+		setvar $canbuyfuelhere true
 	end
 end
 
@@ -831,10 +728,6 @@ if ($salesman = true)
 	setvar $planetroom ($planet~planet_organics_max - $planet~planet_organics)
 	if (($port~orgbuying = "Selling") and ($planetroom >= $minprod) and ($port~orgtrading >= $minprod))
 		setvar $canbuyorghere true
-	end
-	setvar $planetroom ($planet~planet_fuel_max - $planet~planet_fuel)
-	if (($buyfuel = true) and ($port~orebuying = "Selling") and ($planetroom >= $minprod) and ($port~oretrading >= $minprod))
-		setvar $canbuyfuelhere true
 	end
 end
 return

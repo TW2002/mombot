@@ -1,3 +1,13 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Keeps an interdictor generator turned on after damage."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  ig [on | off]"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"   [on] - enable auto IG reset mode."
+setvar $help~help[6] $help~tab&"   [off] - disable auto IG reset mode."
+setvar $help~help[7] $help~tab&"   Run from Command on a ship with an IG."
+gosub :help~helpfile
+
 loadvar $switchboard~bot_name
 loadvar $bot~parm1
 loadvar $bot~user_command_line
@@ -113,3 +123,4 @@ return
 
 include "source\include\player"
 include "source\include\switchboard.ts"
+include "source\include\help"

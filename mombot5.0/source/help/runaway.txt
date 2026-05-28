@@ -1,7 +1,13 @@
-RUNAWAY - Automatic Flee Mode
-
-       runaway [on/off] {preset flee sector} {evac}
-
-       - [preset flee sector]   = Sector to attempt to flee to first
-       - [evac]                 = attempts to move all level 4 and 
-                                  above planets in the sector
+                     
+   
+                <<<< runaway >>>>
+   
+     Pwarps to random safe flee sectors after fighter hits.
+        
+     Usage:  runaway [on | off] {first sector} {evac}
+        
+        [on] - enable runaway mode.
+        [off] - disable runaway mode.
+        {first sector} - optional first flee sector to use.
+        {evac} - move all planets to the flee sector instead of just pwarping.
+        Run from Citadel. Builds a flee-sector list and reacts to fig hits.

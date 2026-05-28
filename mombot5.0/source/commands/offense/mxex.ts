@@ -1,3 +1,14 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Move/xport/attack using a moth ship."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  mxex [target sector] [moth ship] {tow ship}"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"   [target sector] - adjacent sector to attack."
+setvar $help~help[6] $help~tab&"   [moth ship] - ship to xport from/through."
+setvar $help~help[7] $help~tab&"   {tow ship} - optional ship to tow."
+setvar $help~help[8] $help~tab&"   Run from Command or Citadel."
+gosub :help~helpfile
+
 loadvar $user_command_line
 loadvar $bot_name
 
@@ -228,3 +239,4 @@ elseif ($len = 4)
 end
 return
 include "source\include\switchboard.ts"
+include "source\include\help"

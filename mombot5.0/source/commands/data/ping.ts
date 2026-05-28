@@ -3,6 +3,11 @@ setvar $average 0
 setvar $min 999999
 setvar $max 0
 
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"ping   "
+setvar $help~help[2] $help~tab&"      Measures and reports on your round-trip ping times to the server.  "
+gosub :help~helpfile
+
 send "|"
 
 send "'*"
@@ -134,3 +139,5 @@ if ($average > 300)
 	end
 end
 return
+
+include "source\include\help"

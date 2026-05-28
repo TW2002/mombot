@@ -155,16 +155,16 @@ if ($last_rob_attempt = $player~current_sector)
 	setvar $switchboard~message "last rob attempt is this sector! HAlting*"
 	gosub :switchboard~switchboard
 	gosub :endcnsettings
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	halt
 end
-gosub :voidadjacent
+gosub :sector~voidadjacent
 
 getsectorparameter $player~current_sector "BUSTED" $bustthissec
 if ($bustthissec = true)
 	setvar $switchboard~message "According to my data i've busted here - ending*"
 	gosub :switchboard~switchboard
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	gosub :endcnsettings
 	halt
 end
@@ -175,14 +175,14 @@ gosub :steal
 gosub :xport
 
 gosub :getinfo
-gosub :voidadjacent
+gosub :sector~voidadjacent
 setvar $sec2void 1
 getsectorparameter $player~current_sector "BUSTED" $bustthissec
 if ($bustthissec = true)
 	setvar $switchboard~message "According to my data i've busted here - ending*"
 	gosub :switchboard~switchboard
 	gosub :endcnsettings
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	halt
 end
 
@@ -207,7 +207,7 @@ else
 end
 
 :finish
-gosub :clearadjacent
+gosub :sector~clearvoidadjacent
 
 setvar $player~turns_used $init_turns
 subtract $player~turns_used $player~turns
@@ -338,7 +338,7 @@ if (($port[$current_ship] <> 2) and (($port[$current_ship] <> 3) and (($port[$cu
 	setvar $switchboard~message "Ship " $current_ship " is in sector " $player~current_sector " at " $bad_port_name ", class " $port[$current_ship] ". SST needs an equipment-buying port (class 2, 3, 4, or 8). Halting.*"
 	gosub :switchboard~switchboard
 	gosub :endcnsettings
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	halt
 else
 	setvar $port.multiple[$current_ship] 110
@@ -397,13 +397,13 @@ else
 		setvar $switchboard~message "You need more experience to SST!!!*"
 		gosub :switchboard~switchboard
 		gosub :endcnsettings
-		gosub :clearadjacent
+		gosub :sector~clearvoidadjacent
 		halt
 	elseif ($holds[$current_ship] < 10)
 		setvar $switchboard~message "You need more cargo holds to SST!!!*"
 		gosub :switchboard~switchboard
 		gosub :endcnsettings
-		gosub :clearadjacent
+		gosub :sector~clearvoidadjacent
 		halt
 	end
 	if ($steal_holds > $holds[$current_ship])
@@ -426,7 +426,7 @@ else
 			setvar $switchboard~message "Not enough credits on hand to upgrade the port.*"
 			gosub :switchboard~switchboard
 			gosub :endcnsettings
-			gosub :clearadjacent
+			gosub :sector~clearvoidadjacent
 			halt
 		end
 		setvar $upgrade_amount 0
@@ -440,7 +440,7 @@ killalltriggers
 setvar $switchboard~message "There is no port, you can't SST here!*"
 gosub :switchboard~switchboard
 gosub :endcnsettings
-gosub :clearadjacent
+gosub :sector~clearvoidadjacent
 halt
 
 :cleanship
@@ -460,7 +460,7 @@ if ($port[$current_ship] = 2)
 				setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
 				gosub :switchboard~switchboard
 				gosub :endcnsettings
-				gosub :clearadjacent
+				gosub :sector~clearvoidadjacent
 				halt
 			end
 		else
@@ -493,7 +493,7 @@ elseif ($port[$current_ship] = 3)
 				setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
 				gosub :switchboard~switchboard
 				gosub :endcnsettings
-				gosub :clearadjacent
+				gosub :sector~clearvoidadjacent
 				halt
 			end
 		else
@@ -524,7 +524,7 @@ elseif ($port[$current_ship] = 4)
 				setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
 				gosub :switchboard~switchboard
 				gosub :endcnsettings
-				gosub :clearadjacent
+				gosub :sector~clearvoidadjacent
 				halt
 			end
 		else
@@ -552,7 +552,7 @@ elseif ($port[$current_ship] = 8)
 				setvar $switchboard~message "I couldn't clean the ship cargo with native haggle on. Script Halting*"
 				gosub :switchboard~switchboard
 				gosub :endcnsettings
-				gosub :clearadjacent
+				gosub :sector~clearvoidadjacent
 				halt
 			end
 		else
@@ -572,7 +572,7 @@ elseif ($port[$current_ship] = 8)
 else
 	echo "**badport**"
 	gosub :endcnsettings
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	halt
 end
 
@@ -607,7 +607,7 @@ if ($equ[$current_ship] > 0)
 			setvar $switchboard~message "I'm having problems selling my equipment to the port with native haggle. Script Halting*"
 			gosub :switchboard~switchboard
 			gosub :endcnsettings
-			gosub :clearadjacent
+			gosub :sector~clearvoidadjacent
 			halt
 		end
 		goto :aftersellsuccess
@@ -730,7 +730,7 @@ if ($equ[$current_ship] > 0)
 		setvar $switchboard~message "I'm having problems selling my equipment to the port. Script Halting*"
 		gosub :switchboard~switchboard
 		gosub :endcnsettings
-		gosub :clearadjacent
+		gosub :sector~clearvoidadjacent
 		halt
 	end
 	goto :sell
@@ -851,7 +851,7 @@ else
 	setvar $switchboard~message "There is no equ to sell, something is wrong*"
 	gosub :switchboard~switchboard
 	gosub :endcnsettings
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	halt
 end
 
@@ -1065,13 +1065,13 @@ if ($steal_holds < 10)
 	setvar $switchboard~message "You need more experience to SST!!!*"
 	gosub :switchboard~switchboard
 	gosub :endcnsettings
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	halt
 elseif ($holds[$current_ship] < 10)
 	setvar $switchboard~message "You need more cargo holds to SST!!!*"
 	gosub :switchboard~switchboard
 	gosub :endcnsettings
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	halt
 end
 if (($steal_holds > 300) and ($jet = "y"))
@@ -1154,7 +1154,7 @@ send "N  N  *  *"
 setvar $switchboard~message "FAKE Busted in Ship "&$current_ship&", need a super furb*"
 gosub :switchboard~switchboard
 gosub :endcnsettings
-gosub :clearadjacent
+gosub :sector~clearvoidadjacent
 halt
 
 :good
@@ -1206,7 +1206,7 @@ else
 	setvar $switchboard~message "That is not an available ship, Script Halting.*"
 	gosub :switchboard~switchboard
 	gosub :endcnsettings
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	halt
 
 	:noxportrange
@@ -1214,7 +1214,7 @@ else
 	setvar $switchboard~message "Not enough transport range, Script Halting.*"
 	gosub :switchboard~switchboard
 	gosub :endcnsettings
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	halt
 
 	:noxportpassword
@@ -1222,7 +1222,7 @@ else
 	setvar $switchboard~message "Transport ship requires a password, Script Halting.*"
 	gosub :switchboard~switchboard
 	gosub :endcnsettings
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	halt
 
 	:xportsuccess
@@ -1383,7 +1383,7 @@ if ($cnb = 1)
 end
 return
 
-:voidadjacent
+:sector~voidadjacent
 send "*"
 gosub :player~quikstats
 
@@ -1396,7 +1396,7 @@ if (sector.warps[$player~current_sector][1] = 0)
 	setvar $switchboard~message "This sector has no warps, maybe you need to scan it first*"
 	gosub :switchboard~switchboard
 	gosub :endcnsettings
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	halt
 else
 	setvar $voidsect 0
@@ -1417,7 +1417,7 @@ else
 	return
 end
 
-:clearadjacent
+:sector~clearvoidadjacent
 setvar $voidsect 0
 
 :clearvoids
@@ -1460,4 +1460,5 @@ return
 include "source\include\loadvars"
 include "source\include\help"
 include "source\include\player"
+include "source\include\sector"
 include "source\include\switchboard.ts"

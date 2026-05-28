@@ -1,3 +1,13 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Reads or deletes in-game messages."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  msgs {d}"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"   {d} - delete all messages and report how many were deleted."
+setvar $help~help[6] $help~tab&"   Without arguments, opens and pages through the message reader."
+setvar $help~help[7] $help~tab&"   Run from Command or Citadel."
+gosub :help~helpfile
+
 gosub :player~quikstats
 loadvar $user_command_line
 loadvar $parm1
@@ -62,3 +72,4 @@ end
 halt
 include "source\include\player"
 include "source\include\switchboard.ts"
+include "source\include\help"

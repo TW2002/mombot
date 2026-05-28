@@ -1,4 +1,13 @@
 logging "OFF"
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Checks unexplored sectors in your fig grid."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  gridcheck {b}"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"   {b} - use BWarp instead of TWarp."
+setvar $help~help[6] $help~tab&"   Run from Citadel. Visits figged unexplored sectors and scans them."
+gosub :help~helpfile
+
 loadvar $bot_name
 loadvar $unlimitedgame
 loadvar $bot_turn_limit
@@ -410,3 +419,4 @@ killtrigger cannon
 
 return
 include "source\include\switchboard.ts"
+include "source\include\help"

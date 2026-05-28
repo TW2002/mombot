@@ -180,6 +180,10 @@ end
 return
 
 :search~breadth_search
+if ((($search~near = "f") or ($search~near = "nf")) or (($search~near = "uf") or (($search~near = "owner") or (($search~near = "de") or (($search~near = "ufde") or ($search~near = "fde"))))))
+	gosub :search~breadth_search_inbound
+	return
+end
 setvar $search~i 1
 setvar $search~loop_data 1
 getnearestwarps $search~neararray $search~source
@@ -354,6 +358,158 @@ while ($search~i <= $search~neararray)
 end
 
 setvar $search~return_data "Nothing found for that search."
+return
+
+:search~focus_matches_near
+setvar $search~focus_match false
+if ((($search~source <> $search~focus) and (($search~focus > 10) and ($search~focus <> $map~stardock))) and (((($search~near = "de") and ($search~check_deadend = true))) or ((($search~isfigged2 = false) and (($search~near = "uf") or ($search~near = "nf") or (($search~near = "owner") and ($search~figowner = "Corp#"&$search~target_corp&",")) or (($search~near = "ufde") and ($search~check_deadend = true)))) or (($search~isfigged2 = true) and (($search~near = "f") or (($search~near = "fde") and ($search~check_deadend = true)))))))
+	setvar $search~focus_match true
+end
+return
+
+:search~breadth_search_inbound
+setarray $search~checked sectors
+setarray $search~queue sectors
+setarray $search~depth sectors
+setvar $search~bottom 1
+setvar $search~top 1
+setvar $search~found_depth 0
+setvar $search~match_count 0
+setvar $search~directions ""
+setvar $search~return_data ""
+setvar $search~queue[1] $search~source
+setvar $search~depth[$search~source] 0
+setvar $search~checked[$search~source] true
+gosub :search~set_result_title
+while ($search~bottom <= $search~top)
+	setvar $search~focus $search~queue[$search~bottom]
+	setvar $search~focus_depth $search~depth[$search~focus]
+	if (($search~found_depth > 0) and ($search~focus_depth > $search~found_depth))
+		goto :search~finish_inbound_search
+	end
+	setvar $search~check_sector $search~focus
+	gosub :search~load_fig_state
+	setvar $search~isfigged2 $search~check_figged
+	gosub :search~load_deadend_state
+	getword sector.figs.owner[$search~focus] $search~figowner 3
+	gosub :search~focus_matches_near
+	if ($search~focus_match = true)
+		getcourse $search~course $search~focus $search~source
+		setvar $search~hops $search~course
+		if ($search~hops > 0)
+			if (($search~found_depth = 0) or ($search~hops = $search~found_depth))
+				if ($search~found_depth = 0)
+					setvar $search~found_depth $search~hops
+				end
+				add $search~match_count 1
+				if ($search~found_depth = 1)
+					gosub :search~append_adjacent_match
+				elseif ($search~match_count = 1)
+					gosub :search~build_navigable_result
+				end
+			end
+		end
+	end
+	if ($search~found_depth = 0)
+		setvar $search~i 1
+		while (sector.warpsin[$search~focus][$search~i] > 0)
+			setvar $search~adjacent sector.warpsin[$search~focus][$search~i]
+			if ($search~checked[$search~adjacent] <> true)
+				setvar $search~checked[$search~adjacent] true
+				add $search~top 1
+				setvar $search~queue[$search~top] $search~adjacent
+				setvar $search~depth[$search~adjacent] ($search~focus_depth + 1)
+			end
+			add $search~i 1
+		end
+	end
+	add $search~bottom 1
+end
+
+:search~finish_inbound_search
+if ($search~match_count <= 0)
+	setvar $search~return_data "Nothing found for that search."
+elseif ($search~found_depth = 1)
+	if ($search~match_count > 1)
+		setvar $search~return_data $switchboard~message&"s adjacent to "&$search~source&" are*    [ "&$search~directions&"]"
+	else
+		setvar $search~return_data $switchboard~message&" adjacent to "&$search~source&" is*    [ "&$search~directions&"]"
+	end
+end
+return
+
+:search~append_adjacent_match
+setvar $search~check_sector $search~focus
+gosub :search~load_fig_state
+setvar $search~isfigged3 $search~check_figged
+getsectorparameter $search~focus "MINESEC" $search~ismined3
+getsectorparameter $search~focus "LIMPSEC" $search~islimpd3
+setvar $search~directions $search~directions&$search~focus
+if ($search~isfigged3 = true)
+	setvar $search~directions $search~directions&"F"
+end
+if (($search~ismined3 = true) and ($search~islimpd3 = true))
+	setvar $search~directions $search~directions&"LA"
+else
+	if ($search~ismined3 = true)
+		setvar $search~directions $search~directions&"A"
+	elseif ($search~islimpd3 = true)
+		setvar $search~directions $search~directions&"L"
+	end
+end
+setvar $search~directions $search~directions&" "
+return
+
+:search~build_navigable_result
+setvar $search~directions ""
+setvar $search~i 1
+setvar $search~courselength ($search~course + 1)
+while ($search~i <= $search~courselength)
+	setvar $search~course_sector $search~course[$search~i]
+	gosub :search~append_direction_sector
+	add $search~i 1
+end
+setvar $search~return_data $switchboard~message&" to "&$search~source&" is "&$search~focus&" ("&$search~hops&" hops to target)*  <<"&$search~directions&" >>*                L: Limpet A: Armid F:Fighter  "
+return
+
+:search~set_result_title
+if ($search~near = "f")
+	setvar $switchboard~message "Nearest Fig"
+elseif (($search~near = "uf") or ($search~near = "nf"))
+	setvar $switchboard~message "Nearest Non-Fig"
+elseif ($search~near = "owner")
+	setvar $switchboard~message "Nearest Corp #"&$search~target_corp&" Fig"
+elseif ($search~near = "de")
+	setvar $switchboard~message "Nearest DE"
+elseif ($search~near = "ufde")
+	setvar $switchboard~message "Nearest Non-Fig DE"
+elseif ($search~near = "fde")
+	setvar $switchboard~message "Nearest Fig'd DE"
+end
+return
+
+:search~append_direction_sector
+setvar $search~check_sector $search~course_sector
+gosub :search~load_fig_state
+setvar $search~isfigged3 $search~check_figged
+getsectorparameter $search~course_sector "MINESEC" $search~ismined3
+getsectorparameter $search~course_sector "LIMPSEC" $search~islimpd3
+if ($search~directions <> "")
+	setvar $search~directions $search~directions&" "
+end
+setvar $search~directions $search~directions&$search~course_sector
+if ($search~isfigged3 = true)
+	setvar $search~directions $search~directions&"F"
+end
+if (($search~ismined3 = true) and ($search~islimpd3 = true))
+	setvar $search~directions $search~directions&"LA"
+else
+	if ($search~ismined3 = true)
+		setvar $search~directions $search~directions&"A"
+	elseif ($search~islimpd3 = true)
+		setvar $search~directions $search~directions&"L"
+	end
+end
 return
 
 :search~load_fig_state

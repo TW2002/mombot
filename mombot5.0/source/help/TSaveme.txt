@@ -1,6 +1,10 @@
-TSAVEME - TWarp SaveMe MODE
-          Will Twarp to Corpie's Location and attempt to Tow
-          him/her back to starting sector. 
-
-          tsaveme [on/off] 
-
+                     
+   
+                <<<< tsaveme >>>>
+   
+     Responds to -saveme calls by twarping/bwarping to help.
+        
+     Usage:  tsaveme {scrub sector}
+        
+        {scrub sector} - optional sector to return/scrub after the save.
+        Run from Command for TWarp saves or Citadel for BWarp saves.

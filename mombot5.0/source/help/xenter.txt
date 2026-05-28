@@ -2,4 +2,9 @@
    
                  <<<< xenter >>>>
    
-     xenter - exit/enter to clear sector of enemy mines/fighters 
+     Exit/enter cycles to clear mines or fighters.
+        
+     Usage:  xenter {count} {fill}
+        
+        {count} - number of exit/enter cycles. Defaults to 1.
+        {fill} - top off fighters after each cycle.

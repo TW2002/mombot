@@ -148,7 +148,7 @@ end
 waiton "Warps to Sector(s) :"
 gosub :player~getinfo
 
-gosub :voidadjacent
+gosub :sector~voidadjacent
 
 setvar $port~startinglocation $startinglocation
 gosub :port~getportinfo
@@ -164,7 +164,7 @@ if ($validportfound <> true)
 	if ($startinglocation <> "Citadel")
 		gosub :planet~landingsub
 	end
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	goto :buydownexit
 end
 
@@ -269,7 +269,7 @@ if (($fuelrounds = 0) and (($orgrounds = 0) and ($equiprounds = 0)))
 		send "q "
 	end
 	setvar $exit_message "Nothing to buy"
-	gosub :clearadjacent
+	gosub :sector~clearvoidadjacent
 	goto :buydownexit
 end
 
@@ -341,7 +341,7 @@ if ($total_creds_needed > $player~credits)
 			send "q "
 		end
 		setvar $exit_message "Not enough cash onhand"
-		gosub :clearadjacent
+		gosub :sector~clearvoidadjacent
 		goto :buydownexit
 	end
 end
@@ -422,7 +422,7 @@ end
 gosub :player~quikstats
 setvar $player~credits_spent ($init_credits - $player~credits)
 
-gosub :clearadjacent
+gosub :sector~clearvoidadjacent
 
 if ($startinglocation = "Planet")
 	send "L  Z"&#8&#8&$planet~planet&"*  "
@@ -483,34 +483,6 @@ if ($player~buydown_aborted = true)
 	setvar $exit_message $player~exit_message
 	goto :buydownexit
 end
-return
-
-:voidadjacent
-setvar $i 1
-send "  C  "
-while (sector.warps[$player~current_sector][$i] <> 0)
-	setvar $focus sector.warps[$player~current_sector][$i]
-	if ($focus <> 0)
-		send "V"&$focus&"*"
-	end
-	add $i 1
-end
-send "  Q"
-waiton "<Computer deactivated>"
-return
-
-:clearadjacent
-setvar $i 1
-send "  C  "
-while (sector.warps[$player~current_sector][$i] <> 0)
-	setvar $focus sector.warps[$player~current_sector][$i]
-	if ($focus <> 0)
-		send "V0*YN"&$focus&"*"
-	end
-	add $i 1
-end
-send "   Q"
-waiton "<Computer deactivated>"
 return
 
 :fighter_start

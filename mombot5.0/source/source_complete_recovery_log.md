@@ -1,4 +1,4 @@
-# Mombot 5.0 Source Recovery Log
+# Mombot 5.0 beta1 Source Recovery Log
 
 Date: 2026-04-11
 

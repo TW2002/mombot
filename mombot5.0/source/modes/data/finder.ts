@@ -1,3 +1,9 @@
+gosub :help~initialize
+setvar $help~help[1] $help~tab&"Reports nearest friendly fig after fighter hits."
+setvar $help~help[2] $help~tab&"Daemon-style mode that watches fighter hit reports and posts"
+setvar $help~help[3] $help~tab&"the nearest FIGSEC route back to the hit sector."
+gosub :help~helpfile
+
 loadvar $bot_name
 
 :settriggers
@@ -84,3 +90,4 @@ end
 
 setvar $return_data "Nothing found for that search."
 return
+include "source\include\help"

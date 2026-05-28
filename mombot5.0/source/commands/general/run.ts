@@ -1,4 +1,13 @@
 gosub :loadvars~loadvars
+gosub :help~initialize
+
+setvar $help~help[1] $help~tab&"Dispatches a raw Mombot command line."
+setvar $help~help[2] $help~tab&"   "
+setvar $help~help[3] $help~tab&"Usage:  run [command line]"
+setvar $help~help[4] $help~tab&"   "
+setvar $help~help[5] $help~tab&"   [command line] - command text to run through the bot resolver."
+setvar $help~help[6] $help~tab&"   Mainly used internally by Mombot/native command dispatch."
+gosub :help~helpfile
 
 setarray $internalcommandlists 7
 setvar $bot~internalcommandlists[1]  " stopall stop listall reset emq bot relog tow refresh login logoff unlock lift with dep callin about cn extern twarp bwarp pwarp relog help switchbot "
@@ -212,3 +221,4 @@ return
 
 #-=-=-=-=-includes-=-=-=-=-
 include "source\include\user_interface"
+include "source\include\help"

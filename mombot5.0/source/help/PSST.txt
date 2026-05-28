@@ -1,4 +1,14 @@
- - psst [ship2] [planet1] [planet2] - Planet SST.
-
-  - psst CLEAR_BUSTS - Clears bot's bust file.
-  - psst off - Stops Planet SST
+                     
+   
+                  <<<< psst >>>>
+   
+     Planet SST using two ships and two planets.
+        
+     Usage:  psst [ship2#] [planet1#] [planet2#]
+             psst clear_busts
+        
+        [ship2#] - empty second ship in the starting sector.
+        [planet1#] [planet2#] - movable planets in the starting sector.
+        [clear_busts] - clears cached bust data.
+        Steals equipment from xxB ports, xports between ships, and refurbishes.
+        Run from Command.

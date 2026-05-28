@@ -1,14 +1,14 @@
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :planet~countplanets
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+killalltriggers
 setvar $planet~planetcount 0
-killtrigger planetgrabber
-killtrigger bedone
-send "/"
-waiton "Creds"
+
+gosub :player~msgs_off
+send "lq*"
+waiton "Registry"
 settextlinetrigger planetgrabber :planetline "   <"
 settextlinetrigger bedone :countdone "Land on which planet "
-send "|lq*|"
 pause
 
 :planet~planetline
@@ -34,6 +34,7 @@ killtrigger getend
 killtrigger getline2
 killtrigger planetgrabber
 killtrigger bedone
+gosub :player~msgs_on
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -213,6 +214,8 @@ if ($planet~noheader = 0)
 	killtrigger planetinfo2
 	settextlinetrigger planetinfo2 :planetinfo2 "Planet #"
 	pause
+else
+	setvar $planet~noheader 0
 end
 
 goto :planetinfostart
@@ -693,7 +696,8 @@ if ($planet~land_and_lift = true)
 	send "m* * * q  "
 	return
 end
-send "m* * * c*"
+#send "m* * * c*"
+return
 settexttrigger build_cit :build_cit "Do you wish to construct one?"
 settexttrigger in_cit :in_cit "Citadel command"
 settexttrigger nocitallowed :build_cit "Citadels are not allowed in FedSpace."
@@ -704,6 +708,7 @@ pause
 gosub :killlandingtriggers
 setvar $planet~sucessfulplanet true
 setvar $planet~startinglocation "Planet"
+send "n"
 return
 
 :planet~in_cit
@@ -934,4 +939,397 @@ setvar $planet~planetprods[$i] "0"
 setvar $planet~planetstats true
 return
 
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:planet~moveproduct
+:planet~movefighters
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $movesuccess false
+gosub :player~currentprompt
+setvar $startingprompt $player~current_prompt
+if ($player~current_prompt = "Citadel")
+	send "q"
+elseif ($player~current_prompt <> "Planet")
+	setvar $switchboard~message "You must start from the Citadel or Planet prompt!*"
+	gosub :switchboard~switchboard
+	return
+end
+if ($player~turns <= $bot~bot_turn_limit)
+	return
+	setvar $switchboard~message "Bot turn limit reached, cannot move product!*"
+	gosub :switchboard~switchboard
+	return
+end
+
+gosub :getplanetinfo
+setvar $startingplanet $planet~planet
+# $planet~planettofill
+# $oretomove, $equtomove, $orgtomove, $fctomove, $octomove, $ectomove, $figtomove
+# $category, $type
+
+if ($planet~planettofill = 0)
+	return
+end
+if ($planet~type <> "t") and ($planet~type <> "s") and ($planet~type <> "m")
+	return
+end
+if (($planet~moveholds = 0) and ($planet~moveamount = 0) and ($planet~moveextra = 0))
+	return
+end
+if ($planet~category < 1) or ($planet~category > 4)
+	return
+end
+if ($category = 4)
+	loadvar $ship~ship_fighters_max
+	isnumber $test $ship~ship_fighters_max
+	if (($test = false) or ($ship~ship_fighters_max <= 0))
+		setvar $switchboard~message "Unable to determine ship fighter capacity.*"
+		gosub :switchboard~switchboard
+		return
+	end
+	send "m n l*"
+end
+
+gosub :player~quikstats
+setvar $player~turns ($player~turns-1)
+setvar $count 0
+setvar $planet~burstsize 1000
+
+send "q jy"
+
+:moveproductloop
+killtrigger success
+killtrigger empty
+killtrigger full
+killtrigger success_colos
+killtrigger empty_colos
+
+if ($player~turns <= $bot~bot_turn_limit)
+	goto :move_done
+end
+if ($player~total_holds <= 0)
+	goto :move_done
+end
+if (($planet~moveamount <= 0) and ($planet~moveholds <= 0) and ($planet~moveextra <= 0))
+	goto :move_done
+end
+
+settexttrigger empty         :move_done     "There aren't that many "
+settexttrigger full          :empty    "They don't have room for that many "
+settexttrigger empty_colos   :switch    "There isn't room on the planet"
+
+if ($planet~moveamount > 0)
+	goto :moveamountloop
+end
+
+setvar $loop 0
+
+:moveholdsloop
+setvar $i 0
+while ($i < $planet~burstsize)
+	add $i 1
+	if ($loop >= $planet~moveholds)
+		goto :moveextra
+	end
+	if ($category = 4)
+		setvar $get $ship~ship_fighters_max
+		gosub :sendmovefighters
+	else
+		setvar $get $player~total_holds
+		gosub :sendmoveproduct
+	end
+	add $count $get
+	add $loop 1
+end
+send "@"
+waiton "Average Interval Lag"
+goto :moveholdsloop
+
+:moveextra
+if ($planet~moveextra > 0)
+	setvar $get $planet~moveextra
+	if ($category = 4)
+		gosub :sendmovefighters
+	else
+		gosub :sendmoveproduct
+	end
+	add $count $get
+end
+goto :move_done
+
+:moveamountloop
+if ($planet~moveamount <= 0)
+	goto :move_done
+end
+setvar $j 0
+while ($j < $planet~burstsize)
+	add $j 1
+	if ($planet~moveamount <= 0)
+		goto :move_done
+	end
+
+	if ($category = 4)
+		setvar $get $ship~ship_fighters_max
+		if ($planet~moveamount >= $ship~ship_fighters_max)
+			setvar $get $ship~ship_fighters_max
+		else
+			setvar $get $planet~moveamount
+		end
+	else
+		if ($planet~moveamount >= $player~total_holds)
+			setvar $get $player~total_holds
+		else
+			setvar $get $planet~moveamount
+		end
+	end
+	if ($category = 4)
+		gosub :sendmovefighters
+	else
+		gosub :sendmoveproduct
+	end
+	add $count $get
+	setvar $planet~moveamount ($planet~moveamount - $get)
+end
+send "@"
+waiton "Average Interval Lag"
+goto :moveamountloop
+
+:sendmoveproduct
+send "l j"&#8&$startingplanet&"* j"&$type&"* jt"&$category&$get&"* x q l j"&#8&$planet~planettofill&"* j"&$type&"* jl"&$category&"* x q "
+return
+
+:sendmovefighters
+send "l j"&#8&$startingplanet&"* j"&$type&"* jt"&$get&"* x q l j"&#8&$planet~planettofill&"* j"&$type&"* jl"&$get&"* x q "
+return
+
+:switch
+:empty
+killalltriggers
+send "q q * * j y "
+
+:move_done
+killalltriggers
+setvar $planet~moveamount 0
+setvar $planet~moveholds 0
+setvar $planet~moveextra 0
+setvar $planet~movesuccess true
+setvar $macro "l " &$startingplanet
+if ($planet~category = 4)
+	setvar $macro $macro & "* m n t*"
+end
+
+if ($startingprompt = "Citadel")
+	send $macro&"* c"
+	waiton "Citadel command"
+else
+	send $macro&"*"
+	waiton "Planet command"
+end
+setvar $movesuccess true
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:planet~stripplanet
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :player~currentprompt
+setvar $startingplanet 0
+gosub :player~currentprompt
+setvar $startingprompt $player~current_prompt
+if ($startingprompt = "Citadel")
+	send "q"
+elseif ($startingprompt = "Command")
+	if ($planet~planettofill = 0)
+		setvar $switchboard~message "No destination planet selected to fill!*"
+		gosub :switchboard~switchboard
+		return
+	end
+	setvar $planet~planet $planet~planettofill
+	gosub :landingsub
+elseif ($startingprompt <> "Planet")
+	setvar $switchboard~message "You must start from the Citadel, Planet or Command prompt!*"
+	gosub :switchboard~switchboard
+	return
+end
+if ($planet~planettostrip <= 0)
+	setvar $switchboard~message "No planet selected to strip!*"
+	gosub :switchboard~switchboard
+	return
+end
+if ($planet~planettostrip = $planet~planettofill)
+	setvar $switchboard~message "Source and destination planets are the same; skipping strip.*"
+	gosub :switchboard~switchboard
+	return
+end
+gosub :planetinfo
+isnumber $test $planet~planet
+if ($test = false)
+	setvar $switchboard~message "Could not read source planet info, halting strip.*"
+	gosub :switchboard~switchboard
+	halt
+elseif ($planet~planet <= 0)
+	setvar $switchboard~message "Could not read source planet info, halting strip.*"
+	gosub :switchboard~switchboard
+	halt
+end
+if ($startingprompt <> "Command")
+	setvar $startingplanet $planet~planet
+end
+setvar $oretofill ($planet~planet_fuel_max - $planet~planet_fuel)
+setvar $orgtofill ($planet~planet_organics_max - $planet~planet_organics)
+setvar $equtofill ($planet~planet_equipment_max - $planet~planet_equipment)
+send "q"
+send "l "&$planet~planettostrip&"*   "
+gosub :planet~getplanetinfo
+if ($emptyfuel)
+	if ($oretofill <= 0)
+		setvar $amount_to_strip 0
+	else
+		setvar $amount_to_strip $planet~planet_fuel
+		if ($amount_to_strip > $oretofill)
+			setvar $amount_to_strip $oretofill
+		end
+	end
+	if ($amount_to_strip > 0)
+		setvar $planet~category 1
+		setvar $planet~type "t"
+		setvar $planet~moveholds 0
+		setvar $planet~moveextra 0
+		setvar $planet~moveamount $amount_to_strip
+		gosub :planet~moveproduct
+		if ($movesuccess = false)
+			setvar $switchboard~message "Failed to move product, halting.*"
+			gosub :switchboard~switchboard
+			halt
+		end
+		add $countfuel $planet~count
+	end
+end
+if ($emptyorganics)
+	if ($orgtofill <= 0)
+		setvar $amount_to_strip 0
+	else
+		setvar $amount_to_strip $planet~planet_organics
+		if ($amount_to_strip > $orgtofill)
+			setvar $amount_to_strip $orgtofill
+		end
+	end
+	if ($amount_to_strip > 0)
+		setvar $planet~category 2
+		setvar $planet~type "t"
+		setvar $planet~moveholds 0
+		setvar $planet~moveextra 0
+		setvar $planet~moveamount $amount_to_strip
+		gosub :planet~moveproduct
+		if ($movesuccess = false)
+			setvar $switchboard~message "Failed to move product, halting.*"
+			gosub :switchboard~switchboard
+			halt
+		end
+		add $countorganics $planet~count
+	end
+end
+if ($emptyequipment)
+	if ($equtofill <= 0)
+		setvar $amount_to_strip 0
+	else
+		setvar $amount_to_strip $planet~planet_equipment
+		if ($amount_to_strip > $equtofill)
+			setvar $amount_to_strip $equtofill
+		end
+	end
+	if ($amount_to_strip > 0)
+		setvar $planet~category 3
+		setvar $planet~type "t"
+		setvar $planet~moveholds 0
+		setvar $planet~moveextra 0
+		setvar $planet~moveamount $amount_to_strip
+		gosub :planet~moveproduct
+		if ($movesuccess = false)
+			setvar $switchboard~message "Failed to move product, halting.*"
+			gosub :switchboard~switchboard
+			halt
+		end
+		add $countequipment $planet~count
+	end
+end
+if ($emptyfuelcolos)
+	setvar $amount_to_strip $planet~planet_fuel_colonists
+	if ($amount_to_strip > 0)
+		setvar $planet~category 1
+		setvar $planet~type "s"
+		setvar $planet~moveholds 0
+		setvar $planet~moveextra 0
+		setvar $planet~moveamount $amount_to_strip
+		gosub :planet~moveproduct
+		if ($movesuccess = false)
+			setvar $switchboard~message "Failed to move product, halting.*"
+			gosub :switchboard~switchboard
+			halt
+		end
+		add $countcolonists $planet~count
+	end
+end
+if ($emptyorgcolos)
+	setvar $amount_to_strip $planet~planet_organics_colonists
+	if ($amount_to_strip > 0)
+		setvar $planet~category 2
+		setvar $planet~type "s"
+		setvar $planet~moveholds 0
+		setvar $planet~moveextra 0
+		setvar $planet~moveamount $amount_to_strip
+		gosub :planet~moveproduct
+		if ($movesuccess = false)
+			setvar $switchboard~message "Failed to move product, halting.*"
+			gosub :switchboard~switchboard
+			halt
+		end
+		add $countcolonists $planet~count
+	end
+end
+if ($emptyequcolos)
+	setvar $amount_to_strip $planet~planet_equipment_colonists
+	if ($amount_to_strip > 0)
+		setvar $planet~category 3
+		setvar $planet~type "s"
+		setvar $planet~moveholds 0
+		setvar $planet~moveextra 0
+		setvar $planet~moveamount $amount_to_strip
+		gosub :planet~moveproduct
+		if ($movesuccess = false)
+			setvar $switchboard~message "Failed to move product, halting.*"
+			gosub :switchboard~switchboard
+			halt
+		end
+		add $countcolonists $planet~count
+	end
+end
+
+send "q "
+
+if ($emptyfigs)
+	:tryfighters
+	killtrigger success
+	killtrigger emptyempty
+	killtrigger fullfill
+	killtrigger empty
+	send "l j"&#8&$planet~planettostrip&"* jm ** *x q l j"&#8&$planet~planettofill&"* jm*jl*x q "
+	settexttrigger success :tryfighters "The Fighters join your battle force."
+	settexttrigger emptyempty :strip_donewiththisplanet "There isn't room on the planet"
+	settexttrigger fullfill :strip_donewiththisplanet "They don't have room for that many "
+	settexttrigger empty :strip_donewiththisplanet "How many Fighters do you want to take (0 Max) [0]"
+	pause
+end
+
+:strip_donewiththisplanet
+killalltriggers
+if ($startingplanet = 0)
+	return
+end
+setvar $planet~planet $startingplanet
+gosub :landingsub
+if ($startingprompt = "Command")
+	send "c"
+end
+return
+
 include "source\include\player"
+include "source\include\switchboard"
