@@ -1,5 +1,16 @@
+
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :planet~countplanets
+#
+# Creates the following array:
+# $planetcount = number of planets
+# $planets[1] = name of planet 1
+# $planets[1][1] = level of planet 1
+# $planets[1][2] = military response pct of planet 1
+# $planets[1][3] = number of fighters on planet 1
+# $planets[1][4] = sector cannon pct on planet 1
+# $planets[1][5] = class of planet 1
+# $planets[1][6] = owner of planet 1
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 killalltriggers
 setvar $planet~planetcount 0
@@ -12,28 +23,66 @@ settextlinetrigger bedone :countdone "Land on which planet "
 pause
 
 :planet~planetline
-killtrigger getend
-killtrigger getline2
-killtrigger planetgrabber
-killtrigger bedone
-getwordpos currentline $planet~pos "<<<< SHIELDED"
-if ($planet~pos <= 0)
-	setvar $planet~line currentline
-	replacetext $planet~line "<" " "
-	replacetext $planet~line ">" " "
-	striptext $planet~line ","
-	add $planet~planetcount 1
-	getword $planet~line $planet~planets[$planet~planetcount] 1
+killalltriggers
+getwordpos currentline $pos "<<<< SHIELDED"
+if ($pos > 0)
+	goto :countdone
 end
-settextlinetrigger getline2 :planetline "   <"
+setvar $line currentline
+replacetext $line "<" " "
+replacetext $line ">" " "
+striptext $line ","
+add $planetcount 1
+getword $line $planets[$planetcount] 1
+getwordpos $line $pos "Level"
+if ($pos > 0)
+	cuttext $line $tmp_line $pos 999
+	setarray $planets[$planetcount] 6
+	getword $tmp_line $planets[$planetcount][1] 2
+	getword $tmp_line $tmp 3
+	striptext $tmp "%"
+	setvar $planets[$planetcount][2] $tmp
+	getword $tmp_line $tmpqcan 5
+	striptext $tmpqcan "%"
+	setvar $planets[$planetcount][4] $tmpqcan
+	getword $tmp_line $tmpclass 6
+	setvar $planets[$planetcount][5] $tmpclass
+	getword $tmp_line $tmpfig 4
+	getlength $tmpfig $len
+	cuttext $tmpfig $multiplier $len 999
+	if ($multiplier <> "")
+		cuttext $tmpfig $tmpfig2 0 ($len - 1)
+		if ($multiplier = "M")
+			setvar $planets[$planetcount][3] ($tmpfig2 * 1000000)
+		elseif ($multiplier = "T")
+			setvar $planets[$planetcount][3] ($tmpfig2 * 1000)
+		end
+	end
+end
+settextlinetrigger ownedby :ownedby "Owned by: "
+settextlinetrigger planetgrabber :planetline "   <"
 settextlinetrigger getend :countdone "Land on which planet "
 pause
 
-:planet~countdone
-killtrigger getend
-killtrigger getline2
-killtrigger planetgrabber
-killtrigger bedone
+:ownedby
+killalltriggers
+setvar $line currentline
+gettext $line $owner "Owned by: " ""
+getwordpos $owner $pos "["
+if ($pos > 0)
+    cuttext $owner $corp $pos 999
+	striptext $corp "["
+	striptext $corp "]"
+	setvar $planets[$planetcount][6] "Corp " & $corp
+else
+	setvar $planets[$planetcount][6] $owner
+end
+settextlinetrigger planetgrabber :planetline "   <"
+settextlinetrigger getend :countdone "Land on which planet "
+pause
+
+:countdone
+killalltriggers
 gosub :player~msgs_on
 return
 
@@ -944,6 +993,8 @@ return
 :planet~movefighters
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $movesuccess false
+setvar $planet~movesuccess false
+setvar $movefailed false
 gosub :player~currentprompt
 setvar $startingprompt $player~current_prompt
 if ($player~current_prompt = "Citadel")
@@ -1013,9 +1064,9 @@ if (($planet~moveamount <= 0) and ($planet~moveholds <= 0) and ($planet~moveextr
 	goto :move_done
 end
 
-settexttrigger empty         :move_done     "There aren't that many "
-settexttrigger full          :empty    "They don't have room for that many "
-settexttrigger empty_colos   :switch    "There isn't room on the planet"
+settexttrigger empty         :move_done "There aren't that many "
+settexttrigger full          :move_failed "They don't have room for that many "
+settexttrigger empty_colos   :move_failed "There isn't room on the planet"
 
 if ($planet~moveamount > 0)
 	goto :moveamountloop
@@ -1101,9 +1152,9 @@ return
 send "l j"&#8&$startingplanet&"* j"&$type&"* jt"&$get&"* x q l j"&#8&$planet~planettofill&"* j"&$type&"* jl"&$get&"* x q "
 return
 
-:switch
-:empty
+:move_failed
 killalltriggers
+setvar $movefailed true
 send "q q * * j y "
 
 :move_done
@@ -1111,7 +1162,11 @@ killalltriggers
 setvar $planet~moveamount 0
 setvar $planet~moveholds 0
 setvar $planet~moveextra 0
-setvar $planet~movesuccess true
+if ($movefailed = true)
+	setvar $planet~movesuccess false
+else
+	setvar $planet~movesuccess true
+end
 setvar $macro "l " &$startingplanet
 if ($planet~category = 4)
 	setvar $macro $macro & "* m n t*"
@@ -1124,7 +1179,11 @@ else
 	send $macro&"*"
 	waiton "Planet command"
 end
-setvar $movesuccess true
+if ($movefailed = true)
+	setvar $movesuccess false
+else
+	setvar $movesuccess true
+end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -1173,10 +1232,24 @@ end
 if ($startingprompt <> "Command")
 	setvar $startingplanet $planet~planet
 end
+setvar $countfuel 0
+setvar $countorganics 0
+setvar $countequipment 0
+setvar $countcolonists 0
 setvar $oretofill ($planet~planet_fuel_max - $planet~planet_fuel)
 setvar $orgtofill ($planet~planet_organics_max - $planet~planet_organics)
 setvar $equtofill ($planet~planet_equipment_max - $planet~planet_equipment)
+setvar $figstofill ($planet~planet_fighters_max - $planet~planet_fighters)
 send "q"
+if ($ship~ship_fighters_max <= 0)
+	gosub :ship~getshipstats
+end
+if ($figstofill < $ship~ship_fighters_max)
+	setvar $figstofill 0
+end
+if ($oretofill <= 0) and ($orgtofill <= 0) and ($equtofill <= 0) and ($figstofill <= 0)
+	goto :strip_donewiththisplanet
+end
 send "l "&$planet~planettostrip&"*   "
 gosub :planet~getplanetinfo
 if ($emptyfuel)
@@ -1306,17 +1379,27 @@ end
 send "q "
 
 if ($emptyfigs)
-	:tryfighters
-	killtrigger success
-	killtrigger emptyempty
-	killtrigger fullfill
-	killtrigger empty
-	send "l j"&#8&$planet~planettostrip&"* jm ** *x q l j"&#8&$planet~planettofill&"* jm*jl*x q "
-	settexttrigger success :tryfighters "The Fighters join your battle force."
-	settexttrigger emptyempty :strip_donewiththisplanet "There isn't room on the planet"
-	settexttrigger fullfill :strip_donewiththisplanet "They don't have room for that many "
-	settexttrigger empty :strip_donewiththisplanet "How many Fighters do you want to take (0 Max) [0]"
-	pause
+	if ($figstofill <= 0) or ($figstofill < $ship~ship_fighters_max)
+		goto :strip_donewiththisplanet
+	else
+		setvar $amount_to_strip $planet~planet_fighters
+		if ($amount_to_strip > $figstofill)
+			setvar $amount_to_strip $figstofill
+		end
+	end
+	if ($amount_to_strip > 0)
+		:tryfighters
+		killtrigger success
+		killtrigger emptyempty
+		killtrigger fullfill
+		killtrigger empty
+		send "l j"&#8&$planet~planettostrip&"* jm ** *x q l j"&#8&$planet~planettofill&"* jm*jl*x q "
+		settexttrigger success :tryfighters "The Fighters join your battle force."
+		settexttrigger emptyempty :strip_donewiththisplanet "There isn't room on the planet"
+		settexttrigger fullfill :strip_donewiththisplanet "They don't have room for that many "
+		settexttrigger empty :strip_donewiththisplanet "How many Fighters do you want to take (0 Max) [0]"
+		pause
+	end
 end
 
 :strip_donewiththisplanet
@@ -1332,4 +1415,5 @@ end
 return
 
 include "source\include\player"
+include "source\include\ship"
 include "source\include\switchboard"

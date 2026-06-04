@@ -591,7 +591,8 @@ setvar $canbuyfuelhere false
 setvar $canbuyorghere false
 setvar $canbuyequiphere false
 
-if ($bot~parameter <> "")
+## review this logic
+if ($bot~parameter <> "") and ($bot~parameter <> 0)
 	getsectorparameter $focus $bot~parameter $isgoodsector
 	if ($isgoodsector <> true)
 		return
@@ -662,7 +663,7 @@ if ($salesman = true)
 	end
 end
 
-if ($salesman = true) or ($buyfuel = true)
+if ($buyfuel = true)
 	setvar $planetroom ($planet~planet_fuel_max - $planet~planet_fuel)
 	if ($port~orebuying = "Selling") and ($planetroom >= $minprod) and ($port~oretrading >= $minprod)
 		setvar $canbuyfuelhere true
@@ -713,9 +714,9 @@ if ($sellingequip = true)
 	end
 end
 
-if ($buyfuel = true) or ($salesman = true)
+if ($buyfuel = true)
 	setvar $planetroom ($planet~planet_fuel_max - $planet~planet_fuel)
-	if (($buyfuel = true) and ($port~orebuying = "Selling") and ($planetroom >= $minprod) and ($port~oretrading >= $minprod))
+	if (($port~orebuying = "Selling") and ($planetroom >= $minprod) and ($port~oretrading >= $minprod))
 		setvar $canbuyfuelhere true
 	end
 end

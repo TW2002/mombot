@@ -87,6 +87,7 @@ elseif (($predeploylimpets = $player~limpets) and (($limpetowner <> "belong to y
 end
 gosub :switchboard~switchboard
 return
+
 # ============================== END MINES (ARMID AND LIMP) SUB ==============================
 :deployarmid
 if ($personal)
@@ -299,12 +300,7 @@ return
 :updatearmids
 setvar $switchboard~message "Loading current armid locations. . .*"
 gosub :switchboard~switchboard
-fileexists $gfile_chk $bot~armid_count_file
-if ($gfile_chk = 1)
-	read $bot~armid_count_file $previouscount 1
-else
-	setvar $previouscount 0
-end
+
 setarray $pmines sectors
 
 :readarmidlist
@@ -377,18 +373,17 @@ while ($i <= sectors)
 	end
 	add $i 1
 end
-delete $bot~armid_file
-write $bot~armid_file $output
-delete $bot~armid_count_file
-write $bot~armid_count_file $count
 return
 
 :reportarmids
+loadvar $bot~armid_count
 setvar $percent (($count * 100) / sectors)
-setvar $gridchange $count - $previouscount
+setvar $gridchange $count - $bot~armid_count
 if ($gridchange > 0)
 	setvar $gridchange "+"&$gridchange
 end
+setvar $bot~armid_count $count
+savevar $bot~armid_count
 setvar $switchboard~message $switchboard~message&"          - Armid Grid Report -*          - "&$count&" sectors, "&$personalcount&" personal. ("&$percent&"%) ("&$gridchange&" Change)**"
 return
 
@@ -397,12 +392,6 @@ setarray $plimps sectors
 
 setvar $switchboard~message "Loading current limpet locations. . .*"
 gosub :switchboard~switchboard
-fileexists $gfile_chk $bot~limp_count_file
-if ($gfile_chk = 1)
-	read $bot~limp_count_file $previouscount 1
-else
-	setvar $previouscount 0
-end
 
 :readlimplist
 setvar $count 0
@@ -498,18 +487,17 @@ while ($i <= sectors)
 	end
 	add $i 1
 end
-delete $bot~limp_file
-write $bot~limp_file $output
-delete $bot~limp_count_file
-write $bot~limp_count_file $count
 return
 
 :reportlimps
+loadvar $bot~limpet_count
 setvar $percent (($count * 100) / sectors)
-setvar $gridchange ($count - $previouscount)
+setvar $gridchange ($count - $bot~limpet_count)
 if ($gridchange > 0)
 	setvar $gridchange "+"&$gridchange
 end
+setvar $bot~limpet_count $count
+savevar $bot~limpet_count
 setvar $player~limpetsgridded true
 setvar $switchboard~message $switchboard~message&"          - Limpet Grid Report -*          - "&$count&" sectors, "&$personalcount&" personal. ("&$percent&"%) ("&$gridchange&" Change)*          - Activated  Limpet  Scan*            *             Sector    Personal/Corp*            ========================*"&$limpetoutput&"*"
 return

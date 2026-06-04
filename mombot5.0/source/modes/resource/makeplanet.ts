@@ -260,12 +260,12 @@ goto :bust
 :bust_wanted
 # give it a nice name
 
-if ($custom_planet_name = "")
-	getrnd $planet~planet_pointer 1 1000
-	setvar $first_part $planet~planet_names[$planet~planet_pointer]
-	getword $first_part $first_half 1
-	getrnd $planet~planet_pointer 1 1000
-	setvar $second_part $planet~planet_names[$planet~planet_pointer]
+	if ($custom_planet_name = "")
+		getrnd $planet~planet_pointer 1 1000
+		setvar $first_part $planetnames~planet_names[$planet~planet_pointer]
+		getword $first_part $first_half 1
+		getrnd $planet~planet_pointer 1 1000
+		setvar $second_part $planetnames~planet_names[$planet~planet_pointer]
 	getrnd $flip_a_coin 1 2
 	getword $second_part $last_half $flip_a_coin
 	if (($last_half = "")  or ($last_half = "0"))

@@ -3,6 +3,9 @@ loadvar $bot~folder
 
 #=============================================  DOCK SHOPPER MENU  ==================================================
 :dock_shopper
+setvar $lsd_menu_deaf_active false
+gosub :player~enter_menu_deaf
+setvar $lsd_menu_deaf_active true
 # ============================ START DOCK SHOPPER VARIABLES ==========================
 setvar $lsd_curent_version "4.0"
 setvar $lsd_taglineb "LSDv" & $lsd_curent_version
@@ -155,6 +158,7 @@ setvar $yes_no false
 setvar $item_max 1000
 if ($lsd_selection = "Q")
 	echo "**" & ansi_12 "  Script Halted" & ansi_15 & "**"
+	gosub :lsd_exit_menu_deaf
 	halt
 elseif ($lsd_selection = "A")
 	setvar $item_name "Atomics"
@@ -369,6 +373,7 @@ elseif ($lsd_selection = "X")
 	:botnotthere
 	killalltriggers
 	echo "**" & ansi_14 & $lsd_taglineb & ansi_15 & " - " & $lsd_botting & "-bot Is Not Responding**"
+	gosub :lsd_exit_menu_deaf
 	halt
 
 	:needtologin
@@ -380,6 +385,7 @@ elseif ($lsd_selection = "X")
 			send " X T Login***"
 		else
 			echo "**" & ansi_14 & $lsd_taglineb & ansi_15 & " - Please Login to Bots!**"
+			gosub :lsd_exit_menu_deaf
 			halt
 		end
 		setdelaytrigger     areweloggedin   :areweloggedin  4000
@@ -399,12 +405,14 @@ elseif ($lsd_selection = "X")
 		goto :lsd_login_loop
 	else
 		echo "**" & ansi_14 & $lsd_taglineb & ansi_15 & " - Unable To Login to Bot!!**"
+		gosub :lsd_exit_menu_deaf
 		halt
 	end
 
 	:botsbusy
 	killalltriggers
 	echo "**" & ansi_14 & $lsd_taglineb & ansi_15 & " - Bot must be in General Mode**"
+	gosub :lsd_exit_menu_deaf
 	halt
 
 	:botsnotbusy
@@ -421,10 +429,12 @@ elseif ($lsd_selection = "X")
 	:mode_issue
 	killalltriggers
 	echo "**" & ansi_14 & $lsd_taglineb & ansi_15 & " - StopAll Timed Out. Please Try Again!**"
+	gosub :lsd_exit_menu_deaf
 	halt
 
 	:mode_reset
 	killalltriggers
+	gosub :lsd_exit_menu_deaf
 	send ("'" & $lsd_botting & " LSD " & $lsd_order & "*")
 	halt
 end
@@ -769,6 +779,13 @@ elseif ($item_number  = "Max")
 	setvar $item_echo "Max"
 else
 	setvar $item_echo ""
+end
+return
+
+:lsd_exit_menu_deaf
+if ($lsd_menu_deaf_active = true)
+	setvar $lsd_menu_deaf_active false
+	gosub :player~exit_menu_deaf
 end
 return
 

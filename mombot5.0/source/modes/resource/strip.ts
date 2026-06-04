@@ -140,7 +140,7 @@ else
 end
 
 if ($startinglocation = "Citadel")
-	send "q "
+	send "q"
 end
 
 gosub :planet~getplanetinfo
@@ -205,9 +205,13 @@ while ($i <= $planet~planetcount)
 			echo "*Stripping Planet " &$planet~planets[$i]&"...*"
 		end
 		send "q * l "&$planet~planettofill&"*"
-		setvar $planet~noheader 1
+		#setvar $planet~noheader 1
 		setvar $planet~planettostrip $planet~planets[$i]
 		gosub :planet~stripplanet
+		add $countfuel $planet~countfuel
+		add $countorganics $planet~countorganics
+		add $countequipment $planet~countequipment
+		add $countcolonists $planet~countcolonists
 	end
 	add $i 1
 end

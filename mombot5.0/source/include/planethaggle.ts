@@ -181,7 +181,7 @@ if (($planethaggle~fueltosell <> 0) or ($planethaggle~orgtosell <> 0) or ($plane
 	goto :exitneg
 else
 	gosub :negotiateland
-	#setvar $planethaggle~exit_message "Nothing to sell"
+	setvar $planethaggle~exit_message "Nothing to sell"
 	goto :exitneg
 end
 
@@ -1555,10 +1555,10 @@ pause
 
 :planethaggle~buyinitpause
 :planethaggle~buygetinputs
-if ($player~buydown_usenativehaggle = 0)
-	echo "*Buying down product, please wait...*"
-	gosub :player~enter_menu_deaf
-end
+#if ($player~buydown_usenativehaggle = 0)
+#	echo "*Buying down product, please wait...*"
+#	gosub :player~enter_menu_deaf
+#end
 
 setvar $player~turns_needed 0
 setvar $player~turns_allowed $player~turns
@@ -1773,9 +1773,9 @@ if ($player~fuelrounds > 0)
 end
 
 :planethaggle~buydownfinish
-if ($player~buydown_usenativehaggle = 0)
-	gosub :player~exit_menu_deaf
-end
+#if ($player~buydown_usenativehaggle = 0)
+#	gosub :player~exit_menu_deaf
+#end
 if ($player~startinglocation = "Citadel")
 	send "C "
 end
