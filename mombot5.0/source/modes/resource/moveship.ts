@@ -47,6 +47,21 @@ else
 	halt
 end
 
+if ($movesector = $player~current_sector)
+	setvar $switchboard~message "Destination sector must be different than the current sector*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+getdistance $distance $startsector $movesector
+if ($distance = 1)
+	setvar $use_move true
+	setvar $use_twarp false
+else
+	setvar $use_move false
+	setvar $use_twarp true
+end
+
 getwordpos $bot~user_command_line $pos "back"
 if ($pos > 0)
 	setvar $back true
@@ -103,13 +118,15 @@ send "** "
 setvar $fuelinsector false
 if (($startinglocation <> "Citadel") and ($startingsector <> "Planet"))
 	if ($startinglocation = "Command")
-		getsectorparameter $player~current_sector "BUSTED" $isbusted
-		if ((port.exists[$player~current_sector] = true) and (port.buyfuel[$player~current_sector] = false) and ($isbusted <> true))
-			if ($player~credits < 50000)
-				setvar $switchboard~message "Need at least 50,000 credits to use port as fuel source*"
-				gosub :switchboard~switchboard
+		if ($use_move = false)
+			getsectorparameter $player~current_sector "BUSTED" $isbusted
+			if ((port.exists[$player~current_sector] = true) and (port.buyfuel[$player~current_sector] = false) and ($isbusted <> true))
+				if ($player~credits < 50000)
+					setvar $switchboard~message "Need at least 50,000 credits to use port as fuel source*"
+					gosub :switchboard~switchboard
+				end
+				setvar $fuelinsector true
 			end
-			setvar $fuelinsector true
 		else
 			setvar $i 1
 			setvar $isfound false
@@ -167,16 +184,30 @@ if ($back = true)
 	end
 	setvar $player~current_sector $startsector
 	setvar $player~warpto $movesector
-	gosub :move~twarp
-	if ($player~twarpsuccess = false)
-		setvar $switchboard~message "Can not make it to move sector, shutting down*"
-		gosub :switchboard~switchboard
-		setvar $switchboard~message "Not all ships were moved*"
-		gosub :switchboard~switchboard
-		if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
-			gosub :planet~landingsub
+	if ($use_move = true)
+		gosub :move
+		if ($player~movesuccess = false)
+			setvar $switchboard~message "Can not make it to move sector, shutting down*"
+			gosub :switchboard~switchboard
+			setvar $switchboard~message "Not all ships were moved*"
+			gosub :switchboard~switchboard
+			if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+				gosub :planet~landingsub
+			end
+			halt
 		end
-		halt
+	else
+		gosub :move~twarp
+		if ($player~twarpsuccess = false)
+			setvar $switchboard~message "Can not make it to move sector, shutting down*"
+			gosub :switchboard~switchboard
+			setvar $switchboard~message "Not all ships were moved*"
+			gosub :switchboard~switchboard
+			if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+				gosub :planet~landingsub
+			end
+			halt
+		end
 	end
 end
 
@@ -265,19 +296,33 @@ killtrigger enter3
 if ($back = true)
 	gosub :player~quikstats
 	setvar $player~warpto $startsector
-	gosub :move~twarp
-	if ($player~twarpsuccess = false)
-		setvar $switchboard~message "Can not make it back home, shutting down*"
-		gosub :switchboard~switchboard
-		if ($i >= $shipcount)
-			setvar $switchboard~message "All ships were moved*"
+	if ($use_move = true)
+		gosub :move
+		if ($player~movesuccess = false)
+			setvar $switchboard~message "Can not make it to move sector, shutting down*"
 			gosub :switchboard~switchboard
-		else
 			setvar $switchboard~message "Not all ships were moved*"
 			gosub :switchboard~switchboard
+			if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+				gosub :planet~landingsub
+			end
+			halt
 		end
-		gosub :planet~landingsub
-		halt
+	else
+		gosub :move~twarp
+		if ($player~twarpsuccess = false)
+			setvar $switchboard~message "Can not make it back home, shutting down*"
+			gosub :switchboard~switchboard
+			if ($i >= $shipcount)
+				setvar $switchboard~message "All ships were moved*"
+				gosub :switchboard~switchboard
+			else
+				setvar $switchboard~message "Not all ships were moved*"
+				gosub :switchboard~switchboard
+			end
+			gosub :planet~landingsub
+			halt
+		end
 	end
 end
 setvar $switchboard~message "Found "&$shipcount&" empty ships to move.*"
@@ -297,16 +342,30 @@ while ($i <= $shipcount)
 			send "w n "&$theships[$i]&"* "
 			setvar $player~current_sector $startsector
 			setvar $player~warpto $movesector
-			gosub :move~twarp
-			if ($player~twarpsuccess = false)
-				setvar $switchboard~message "Can not make it to move sector, shutting down*"
-				gosub :switchboard~switchboard
-				setvar $switchboard~message "Not all ships were moved*"
-				gosub :switchboard~switchboard
-				if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
-					gosub :planet~landingsub
+			if ($use_move = true)
+				gosub :move
+				if ($player~movesuccess = false)
+					setvar $switchboard~message "Can not make it to move sector, shutting down*"
+					gosub :switchboard~switchboard
+					setvar $switchboard~message "Not all ships were moved*"
+					gosub :switchboard~switchboard
+					if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+						gosub :planet~landingsub
+					end
+					halt
 				end
-				halt
+			else
+				gosub :move~twarp
+				if ($player~twarpsuccess = false)
+					setvar $switchboard~message "Can not make it to move sector, shutting down*"
+					gosub :switchboard~switchboard
+					setvar $switchboard~message "Not all ships were moved*"
+					gosub :switchboard~switchboard
+					if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+						gosub :planet~landingsub
+					end
+					halt
+				end
 			end
 			send "w  "
 			if (($movesector = $map~stardock) and ($sellship = true))
@@ -316,33 +375,61 @@ while ($i <= $shipcount)
 			end
 			setvar $player~current_sector $movesector
 			setvar $player~warpto $startsector
-			gosub :move~twarp
-			if ($player~twarpsuccess = false)
-				setvar $switchboard~message "Can not make it back home, shutting down*"
-				gosub :switchboard~switchboard
-				if ($i >= $shipcount)
-					setvar $switchboard~message "All ships were moved*"
+			if ($use_move = true)
+				gosub :move
+				if ($player~movesuccess = false)
+					setvar $switchboard~message "Can not make it to move sector, shutting down*"
 					gosub :switchboard~switchboard
-				else
 					setvar $switchboard~message "Not all ships were moved*"
 					gosub :switchboard~switchboard
+					if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+						gosub :planet~landingsub
+					end
+					halt
 				end
-				gosub :planet~landingsub
-				halt
+			else
+				gosub :move~twarp
+				if ($player~twarpsuccess = false)
+					setvar $switchboard~message "Can not make it back home, shutting down*"
+					gosub :switchboard~switchboard
+					if ($i >= $shipcount)
+						setvar $switchboard~message "All ships were moved*"
+						gosub :switchboard~switchboard
+					else
+						setvar $switchboard~message "Not all ships were moved*"
+						gosub :switchboard~switchboard
+					end
+					gosub :planet~landingsub
+					halt
+				end
 			end
 		else
 			setvar $player~current_sector $startsector
 			setvar $player~warpto $movesector
-			gosub :move~twarp
-			if ($player~twarpsuccess = false)
-				setvar $switchboard~message "Can not make it to move sector, shutting down*"
-				gosub :switchboard~switchboard
-				setvar $switchboard~message "Not all ships were moved*"
-				gosub :switchboard~switchboard
-				if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
-					gosub :planet~landingsub
+			if ($use_move = true)
+				gosub :move
+				if ($player~movesuccess = false)
+					setvar $switchboard~message "Can not make it to move sector, shutting down*"
+					gosub :switchboard~switchboard
+					setvar $switchboard~message "Not all ships were moved*"
+					gosub :switchboard~switchboard
+					if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+						gosub :planet~landingsub
+					end
+					halt
 				end
-				halt
+			else
+				gosub :move~twarp
+				if ($player~twarpsuccess = false)
+					setvar $switchboard~message "Can not make it to move sector, shutting down*"
+					gosub :switchboard~switchboard
+					setvar $switchboard~message "Not all ships were moved*"
+					gosub :switchboard~switchboard
+					if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
+						gosub :planet~landingsub
+					end
+					halt
+				end
 			end
 			send "w n "&$theships[$i]&"* "
 			setvar $player~current_sector $movesector
@@ -391,13 +478,41 @@ if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
 end
 setvar $switchboard~message "All ships moved successfully.*"
 gosub :switchboard~switchboard
-
 halt
 # ============================== END Move Ship (moveship) Sub ==============================
+
+:move
+setvar $player~movesuccess false
+setvar $player~current_sector currentsector
+if ($player~current_sector = $player~warpto) or ($player~warpto = 0)
+	setvar $switchboard~message "Move failed!*"
+	gosub :switchboard~switchboard
+	halt
+end
+settexttrigger move_there :move_good "You are already in that sector!"
+settextlinetrigger move_good :move_good "Sector  : "&$player~warpto&" "
+settexttrigger move_twarp :move_failed "Do you want to engage the TransWarp drive?"
+settexttrigger move_igd :move_failed "An Interdictor Generator in this sector holds you fast!"
+settexttrigger move_photon :move_failed "Your ship was hit by a Photon and has been disabled"
+settexttrigger move_noroute :move_failed "Do you really want to warp there? (Y/N)"
+settextlinetrigger move_no_fuel :move_failed "You do not have enough Fuel Ore"
+send "m "&$player~warpto&"**"
+pause
+
+:move_good
+killalltriggers
+setvar $player~movesuccess true
+return
+
+:move_failed
+killalltriggers
+send "***"
+return
 
 #INCLUDES:
 include "source\include\loadvars"
 include "source\include\port"
+include "source\include\player"
 include "source\include\move"
 include "source\include\help"
 include "source\include\switchboard.ts"

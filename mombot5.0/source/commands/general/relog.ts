@@ -190,19 +190,23 @@ killtrigger 1
 :continuerelogmessage
 gosub :player~quikstats
 gosub :relog_freeze_trigger
+loadvar $planet~planet
+loadvar $relog_nocitadel
+if (($planet~planet <> 0) and ($player~current_sector <> 1) and ($player~current_sector <> $map~stardock))
+	gosub :planet~landingsub
+end
+gosub :player~currentprompt
 if ($player~current_prompt = "Planet")
-	send "*"
 	gosub :planet~getplanetinfo
-	if ($planet~citadel > 0)
+	if ($planet~citadel > 0) and ($relog_nocitadel < 1)
 		send "c "
 		setvar $switchboard~message "In citadel, planet "&$planet~planet&".*"
 		gosub :switchboard~switchboard
 		halt
-	else
-		setvar $switchboard~message "On planet "&$planet~planet&".*"
-		gosub :switchboard~switchboard
-		halt
 	end
+	setvar $switchboard~message "On planet "&$planet~planet&".*"
+	gosub :switchboard~switchboard
+	halt
 end
 loadvar $relog_message
 if (($relog_message <> "") and ($relog_message <> "0"))
@@ -210,10 +214,6 @@ if (($relog_message <> "") and ($relog_message <> "0"))
 	gosub :switchboard~switchboard
 	setvar $relog_message ""
 	savevar $relog_message
-end
-loadvar $planet~planet
-if (($planet~planet <> 0) and ($player~current_sector <> 1) and ($player~current_sector <> $map~stardock))
-	gosub :planet~landingsub
 end
 halt
 

@@ -299,58 +299,6 @@ else
 end
 waitfor ": ENDINTERROG"
 setarray $mcic sectors
-
-:mcic_looper
-fileexists $mcic_ck $bot~mcic_file
-if ($mcic_ck = 0)
-	goto :done_mcic_read
-end
-setvar $mcic_sec 0
-setvar $mcic_count 1
-
-:mcic_read_loop
-read $bot~mcic_file $mcicline $mcic_count
-if ($mcicline = eof)
-	goto :done_mcic_read
-end
-if ($mcicline = "")
-	add $mcic_count 1
-	goto :mcic_read_loop
-end
-getword $mcicline $mcic_word1 1
-if ($mcic_word1 = "Sector")
-	getword $mcicline $mcic_sec 2
-	add $mcic_count 1
-	goto :mcic_read_loop
-end
-if ($mcic_sec <= 0)
-	add $mcic_count 1
-	goto :mcic_read_loop
-end
-getword $mcicline $mcic_product 2
-getword $mcicline $mcic_line_ck 5
-if ($mcic_line_ck = "cr")
-	getword $mcicline $actual_mcic 13
-	striptext $actual_mcic "/-65"
-	if ($actual_mcic = "-65") or  ($actual_mcic = "-64") or  ($actual_mcic = "-63") or  ($actual_mcic = "-62") or  ($actual_mcic = "-61") or  ($actual_mcic = "-60")
-		setvar $mcic[$mcic_sec] $actual_mcic
-		if ($mcic_product = "ore")
-			setsectorparameter $mcic_sec "OREMCIC" $actual_mcic
-		elseif ($mcic_product = "org")
-			setsectorparameter $mcic_sec "ORGMCIC" $actual_mcic
-		elseif ($mcic_product = "equ")
-			setsectorparameter $mcic_sec "EQUMCIC" $actual_mcic
-		end
-	end
-end
-if ($mcic_product = "ore") or ($mcic_product = "org") or ($mcic_product = "equ")
-	add $mcic_count 1
-else
-	add $mcic_count 1
-end
-goto :mcic_read_loop
-
-:done_mcic_read
 setvar $cim_count 1
 
 :cim_looper
@@ -401,21 +349,26 @@ while ($cim_count <= sectors)
 	end
 end
 
-if ($startinglocation = "Command")
-	send "tt"
-elseif ($startinglocation = "Citadel")
-	send "xt"
-else
-	return
-end
-send "-----" $bot~bot_name "-----*"
-send "Upped Ports: (At least "&$upgradelimit&" product level)*"
+setvar $switchboard~message "Upped Ports: (At least "&$upgradelimit&" product level)**"
+#setvar $i 0
 setvar $cimout_count 1
 while ($cimout_count <= sectors)
 	getwordpos $upped $pos " "&$cimout_count&" "
 	if ($pos > 0)
-		setvar $cimtemp $cimout_count & "("
-
+		setvar $cimtemp ""
+		striptext $cimout_count " "
+		if ($cimout_count < 10)
+			setvar $cimtemp "    "&$cimout_count&"("
+		elseif ($cimout_count < 100)
+			setvar $cimtemp "   "&$cimout_count&"("
+		elseif ($cimout_count < 1000)
+			setvar $cimtemp "  "&$cimout_count&"("
+		elseif ($cimout_count < 10000)
+			setvar $cimtemp " "&$cimout_count&"("
+		else
+			setvar $cimtemp $cimout_count&"("
+		end
+		#setvar $cimtemp $cimout_count & "("
 		if (port.buyfuel[$cimout_count] = 1)
 			setvar $cimtemp $cimtemp&"B"
 		else
@@ -432,32 +385,25 @@ while ($cimout_count <= sectors)
 			setvar $cimtemp $cimtemp&"S"
 		end
 		setvar $cimtemp $cimtemp&") "
-		send $cimtemp
+		setvar $switchboard~message $switchboard~message & $cimtemp
+		#add $i 1
+		#if ($i = 6)
+		#	setvar $switchboard~message $switchboard~message & "*"
+		#	setvar $i 0
+		#end
 	end
 	add $cimout_count 1
 end
-send "***"
+setvar $switchboard~message $switchboard~message & "**"
 setvar $upped ""
-if ($mcic_ck = 1)
-	if ($startinglocation = "Command")
-		send "tt"
-	elseif ($startinglocation = "Citadel")
-		send "xt"
-	else
-		return
-	end
-else
-	return
 
-end
-send "Ports with MCIC at least -60/-65 :*"
+setvar $switchboard~message $switchboard~message & " Ports with MCIC at least -60/-65 :*"
 
 :mcic_send_loop
 setvar $mcic_send_count 1
 while ($mcic_send_count <= sectors)
 	if ($mcic[$mcic_send_count] <> 0)
 		setvar $cimtemp $mcic_send_count & "("
-
 		if (port.buyfuel[$mcic_send_count] = 1)
 			setvar $cimtemp $cimtemp&"B"
 		else
@@ -474,12 +420,11 @@ while ($mcic_send_count <= sectors)
 			setvar $cimtemp $cimtemp&"S"
 		end
 		setvar $cimtemp $cimtemp&") "
-		send $cimtemp & " MCIC = " & $mcic[$mcic_send_count] & "*"
+		setvar $switchboard~message $switchboard~message & $cimtemp & " MCIC = " & $mcic[$mcic_send_count] & "*"
 	end
 	add $mcic_send_count 1
 end
-send "***"
-setvar $switchboard~message "CIM Processing Complete!*"
+setvar $switchboard~message $switchboard~message & "* CIM Processing Complete!**"
 gosub :switchboard~switchboard
 setarray $mcic 10
 return

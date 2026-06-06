@@ -219,6 +219,9 @@ send $planet~planetnum "*"
 #check ore
 
 gosub :planet~getplanetinfo
+gosub :planet~updateplanetprods
+setvar $skip_prods_read 1
+end
 
 if ((($planet~planetfuel < $player~total_holds) or ($emptyfuel = false)) and (($planet~planetorg < $player~total_holds) or ($emptyorganics = false)) and (($planet~planetequip< $player~total_holds) or ($emptyequipment = false)))
 	#Blow it up :D

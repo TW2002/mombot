@@ -235,6 +235,9 @@ killtrigger 1
 
 :bust_landed
 killtrigger 2
+gosub :planet~getplanetinfo
+gosub :planet~updateplanetprods
+
 if ($strip = true)
 	setvar $planet~planettostrip $planetid
 	gosub :planet~stripplanet

@@ -3,27 +3,27 @@ loadvar $farmsectors
 
 gosub :help~initialize
 setvar $help~help[1] $help~tab&"Visits sectors in list and farms the planets there."
-setvar $help~help[2] $help~tab&"Default will visit all planets on the tl list."
-setvar $help~help[3] $help~tab&"       "
-setvar $help~help[4] $help~tab&"  Usage:  farm set {sector1} {sector2} {...}"
-setvar $help~help[5] $help~tab&"  Usage:  farm list"
-setvar $help~help[6] $help~tab&"  Usage:  farm clear"
-#setvar $help~help[7] $help~tab&"  Usage:  farm balance"
-setvar $help~help[8] $help~tab&"  Usage:  farm fill {planets}/{all} {options}"
-setvar $help~help[9] $help~tab&"  Usage:  farm "
-setvar $help~help[10] $help~tab&"       "
-setvar $help~help[11] $help~tab&"Examples:"
-setvar $help~help[12] $help~tab&"       "
-setvar $help~help[13] $help~tab&"  >farm set 1224 1925 3176     "
-setvar $help~help[14] $help~tab&"  >farm     "
-setvar $help~help[15] $help~tab&"  >farm fill 12 13 14     "
-setvar $help~help[16] $help~tab&"  >farm fill all     "
-setvar $help~help[17] $help~tab&"       "
-setvar $help~help[18] $help~tab&"Modes:"
-setvar $help~help[19] $help~tab&"       "
-setvar $help~help[20] $help~tab&"   set - Adds sectors in the order entered into the farm set."
-setvar $help~help[21] $help~tab&"   list - Lists all sectors in the farm set."
-setvar $help~help[22] $help~tab&"   clear - Removes all sectors from the farm set."
+setvar $help~help[2] $help~tab&"       "
+setvar $help~help[3] $help~tab&"  Usage:  farm set {sector1} {sector2} {...}"
+setvar $help~help[4] $help~tab&"  Usage:  farm list"
+setvar $help~help[5] $help~tab&"  Usage:  farm clear"
+setvar $help~help[6] $help~tab&"  Usage:  farm balance"
+setvar $help~help[7] $help~tab&"  Usage:  farm fill {planets}/{all} {options}"
+setvar $help~help[8] $help~tab&"  Usage:  farm "
+setvar $help~help[9] $help~tab&"       "
+setvar $help~help[10] $help~tab&"Examples:"
+setvar $help~help[11] $help~tab&"       "
+setvar $help~help[12] $help~tab&"  >farm set 1224 1925 3176     "
+setvar $help~help[13] $help~tab&"  >farm     "
+setvar $help~help[14] $help~tab&"  >farm fill 12 13 14     "
+setvar $help~help[15] $help~tab&"  >farm fill all     "
+setvar $help~help[16] $help~tab&"       "
+setvar $help~help[17] $help~tab&"Modes:"
+setvar $help~help[18] $help~tab&"       "
+setvar $help~help[19] $help~tab&"   set - Adds sectors in the order entered into the farm set."
+setvar $help~help[20] $help~tab&"   list - Lists all sectors in the farm set."
+setvar $help~help[21] $help~tab&"   clear - Removes all sectors from the farm set."
+setvar $help~help[22] $help~tab&"   balance - Attempts to balance colos on farm planets."
 setvar $help~help[23] $help~tab&"      "
 setvar $help~help[24] $help~tab&"   Running farm with no options attempts to farm all products."
 setvar $help~help[25] $help~tab&"   If you specify one or more options, only those will be farmed."
@@ -71,36 +71,35 @@ end
 
 getwordpos $bot~parm1 $pos "set"
 if ($pos > 0)
-	setvar $i 2
-	setvar $newfarmlist ""
-	setvar $sectorsadded 0
-	setvar $check ""
-	while ($check <> "%%%")
-		getword $bot~user_command_line $check $i "%%%"
-		if ($check <> "%%%")
-			isnumber $test $check
-			if ($test)
-				if (($check > 0) and ($check <= sectors))
-					if ($newfarmlist = "")
-						setvar $newfarmlist $check
-					else
-						setvar $newfarmlist $newfarmlist&" "&$check
-					end
-					add $sectorsadded 1
-				end
-			end
-		end
-		add $i 1
-	end
-	if ($farmsectors = "") or ($farmsectors = 0)
-		setvar $farmsectors $newfarmlist
-	else
-		setvar $farmsectors $farmsectors&" "&$newfarmlist
-	end
-	savevar $farmsectors
-	setvar $switchboard~message ""&$sectorsadded&" Sectors added to Bot Farming Configuration.*"
+	goto :farm_set
+end
+
+gosub :player~quikstats
+setvar $startinglocation $player~current_sector
+setvar $startingprompt $player~current_prompt
+
+if ($player~current_prompt = "Citadel")
+	send "q"
+elseif ($player~current_prompt <> "Planet")
+	setvar $switchboard~message "Planet Farmer must be run from on a planet.*"
 	gosub :switchboard~switchboard
 	halt
+end
+gosub :planet~getplanetinfo
+setvar $startingplanet $planet~planet
+send "q"
+gosub :ship~getshipstats
+send "l " & $startingplanet & "* c"
+
+getwordpos $bot~parm1 $pos "balance"
+if ($pos > 0)
+	if ($farmsectors = "") or ($farmsectors = 0)
+		setvar $switchboard~message "No sectors in farming list.*"
+		gosub :switchboard~switchboard
+		halt
+	else
+		goto :balanceplanets
+	end
 end
 
 if ($farmsectors = "") or ($farmsectors = 0)
@@ -191,21 +190,6 @@ if ($prodstofarm = false)
 	setvar $prodstofarm true
 end
 
-if ($player~current_prompt = "Citadel")
-	send "q"
-elseif ($player~current_prompt <> "Planet")
-	setvar $switchboard~message "Planet Farmer must be run from on a planet.*"
-	gosub :switchboard~switchboard
-	halt
-end
-gosub :planet~getplanetinfo
-send "q"
-gosub :player~quikstats
-gosub :ship~getshipstats
-send "l " & $planet~planet & "* c"
-setvar $startingplanet $planet~planet
-setvar $startinglocation $player~current_sector
-setvar $startingprompt $player~current_prompt
 logging off
 
 if ($player~planet_scanner = "No")
@@ -258,11 +242,9 @@ if ($check <> "") and ($check > 0)
 	isnumber $test $check
 	if ($test)
 		if (($check > 0) and ($check <= sectors))
-			if ($planetlist_count > 1)
-				if ($check <> $startinglocation)
-					add $farmlistcount 1
-					setvar $sector[$farmlistcount] $check
-				end
+			if ($check <> $startinglocation)
+				add $farmlistcount 1
+				setvar $sector[$farmlistcount] $check
 			end
 		end
 	end
@@ -270,10 +252,13 @@ if ($check <> "") and ($check > 0)
 	goto :getfarmsector
 end
 
+setvar $relog_nocitadel 1
+savevar $relog_nocitadel
 setvar $p 0
 while ($p < $planetlist_count)
 	add $p 1
 	setvar $planet~planettofill $planetlist[$p]
+	setvar $planet~skip_over_99 true
 	send "qqq*"
 	setvar $planet~planet $planet~planettofill
 	gosub :planet~landingsub
@@ -408,6 +393,8 @@ return
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 killalltriggers
 logging on
+setvar $relog_nocitadel 0
+savevar $relog_nocitadel
 gosub :player~currentprompt
 if ($player~current_prompt = "Planet")
 	send "c"
@@ -428,12 +415,168 @@ end
 halt
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:balanceplanets
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :planet~loadplanetcolos
+
+halt
+
+gosub :getcolosfromfile
+
+halt
+gosub :getplanetcolos
+halt
+
+:getcolosfromfile
+setvar $i 0
+setvar $fuelcolos 0
+setvar $orgcolos 0
+setvar $equcolos 0
+while ($i < $planet~planet_colos_count)
+	add $i 1
+	setvar $tmpclass $planet~planet_colos[$i]
+	if ($tmpclass = $class)
+		if ($planet~planet_colos[$i][1] > 0)
+			if ($planet~planet_colos[$i][1] < 250000)
+				setvar $fuelcolos ($planet~planet_colos[$i][1] * 0.8)
+			else
+				setvar $fuelcolos ($planet~planet_colos[$i][1] * 0.9)
+			end
+		end
+		if ($planet~planet_colos[$i][2] > 0)
+			if ($planet~planet_colos[$i][2] < 250000)
+				setvar $orgcolos ($planet~planet_colos[$i][2] * 0.8)
+			else
+				setvar $orgcolos ($planet~planet_colos[$i][2] * 0.9)
+			end
+		end
+		if ($planet~planet_colos[$i][3] > 0)
+			if ($planet~planet_colos[$i][3] < 250000)
+				setvar $equcolos ($planet~planet_colos[$i][3] * 0.8)
+			else
+				setvar $equcolos ($planet~planet_colos[$i][3] * 0.9)
+			end
+		end
+		#echo "*Class: "&$class&"  Fuel Colos: "&$fuelcolos&"  Org Colos: "&$orgcolos&"  Equ Colos: "&$equcolos&"*"
+	end
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:getplanetcolos
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+killalltriggers
+if (($planet~prod[1] * $planet~rate[1]) < $planet~colo[1])
+	setprecision 5
+	setvar $fuelmax (($planet~prod[1] + ($planet~colo[1] / $planet~rate[1])) / 2)
+	setvar $planet~fuelcolos (($planet~colo[1] + ($planet~prod[1] * $planet~rate[1])) / 2)
+	setvar $colo_target $planet~fuelcolos
+	gosub :snapcolotarget
+	setvar $planet~fuelcolos $colo_target
+	if ($planet~fuelcolos < 250000)
+		setvar $f1 ($planet~colo[1] - ($planet~fuelcolos * 0.8))
+	else
+		setvar $f1 ($planet~colo[1] - ($planet~fuelcolos * 0.9))
+	end
+else
+	setvar $fuelmax 0
+	setvar $planet~fuelcolos 0
+	setvar $f1 0
+end
+if (($planet~prod[2] * $planet~rate[2]) < $planet~colo[2])
+	setprecision 5
+	setvar $orgmax (($planet~prod[2] + ($planet~colo[2] / $planet~rate[2])) / 2)
+	setvar $planet~orgcolos (($planet~colo[2] + ($planet~prod[2] * $planet~rate[2])) / 2)
+	setvar $colo_target $planet~orgcolos
+	gosub :snapcolotarget
+	setvar $planet~orgcolos $colo_target
+	if ($planet~orgcolos < 250000)
+		setvar $o1 ($planet~colo[2] - ($planet~orgcolos * 0.8))
+	else
+		setvar $o1 ($planet~colo[2] - ($planet~orgcolos * 0.9))
+	end
+else
+	setvar $orgmax 0
+	setvar $planet~orgcolos 0
+	setvar $o1 0
+end
+if (($planet~prod[3] * $planet~rate[3]) < $planet~colo[3])
+	setprecision 5
+	setvar $equmax (($planet~prod[3] + ($planet~colo[3] / $planet~rate[3])) / 2)
+	setvar $planet~equcolos (($planet~colo[3] + ($planet~prod[3] * $planet~rate[3])) / 2)
+	setvar $colo_target $planet~equcolos
+	gosub :snapcolotarget
+	setvar $planet~equcolos $colo_target
+	if ($planet~equcolos < 250000)
+		setvar $e1 ($planet~colo[3] - ($planet~equcolos * 0.8))
+	else
+		setvar $e1 ($planet~colo[3] - ($planet~equcolos * 0.9))
+	end
+else
+	setvar $equmax 0
+	setvar $planet~equcolos 0
+	setvar $e1 0
+end
+setprecision 0
+gosub :planet~updateplanetcolos
+#echo "**fuelmax: "&$fuelmax&"(remove: "&$f1&")  orgmax: "&$orgmax&"(remove: "&$o1&")  equmax: "&$equmax&"(remove: "&$e1&")	**"
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:snapcolotarget
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setprecision 0
+round $colo_target 0
+if ($colo_target > 0)
+	add $colo_target 500
+	setvar $colo_target ($colo_target / 1000)
+	setvar $colo_target ($colo_target * 1000)
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:farm_set
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $i 2
+setvar $newfarmlist ""
+setvar $sectorsadded 0
+setvar $check ""
+while ($check <> "%%%")
+	getword $bot~user_command_line $check $i "%%%"
+	if ($check <> "%%%")
+		isnumber $test $check
+		if ($test)
+			if (($check > 0) and ($check <= sectors))
+				if ($newfarmlist = "")
+					setvar $newfarmlist $check
+				else
+					setvar $newfarmlist $newfarmlist&" "&$check
+				end
+				add $sectorsadded 1
+			end
+		end
+	end
+	add $i 1
+end
+if ($farmsectors = "") or ($farmsectors = 0)
+	setvar $farmsectors $newfarmlist
+else
+	setvar $farmsectors $farmsectors&" "&$newfarmlist
+end
+savevar $farmsectors
+setvar $switchboard~message ""&$sectorsadded&" Sectors added to Bot Farming Configuration.*"
+gosub :switchboard~switchboard
+halt
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :checkfull
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $skipsector false
 if ($planet~emptyfuel > 0)
 	setvar $oretofill ($planet~planet_fuel_max - $planet~planet_fuel)
-	if ($oretofill < $player~total_holds)
+	if ($planet~planet_fuel_max > 0) and (($planet~planet_fuel * 100) > ($planet~planet_fuel_max * 99))
+		setvar $oretofill 0
+	elseif ($oretofill < $player~total_holds)
 		setvar $oretofill 0
 	end
 else
@@ -441,7 +584,9 @@ else
 end
 if ($planet~emptyorganics > 0)
 	setvar $orgtofill ($planet~planet_organics_max - $planet~planet_organics)
-	if ($orgtofill < $player~total_holds)
+	if ($planet~planet_organics_max > 0) and (($planet~planet_organics * 100) > ($planet~planet_organics_max * 99))
+		setvar $orgtofill 0
+	elseif ($orgtofill < $player~total_holds)
 		setvar $orgtofill 0
 	end
 else
@@ -449,7 +594,9 @@ else
 end
 if ($planet~emptyequipment > 0)
 	setvar $equtofill ($planet~planet_equipment_max - $planet~planet_equipment)
-	if ($equtofill < $player~total_holds)
+	if ($planet~planet_equipment_max > 0) and (($planet~planet_equipment * 100) > ($planet~planet_equipment_max * 99))
+		setvar $equtofill 0
+	elseif ($equtofill < $player~total_holds)
 		setvar $equtofill 0
 	end
 else
@@ -457,7 +604,9 @@ else
 end
 if ($planet~emptyfigs > 0)
 	setvar $figstofill ($planet~planet_fighters_max - $planet~planet_fighters)
-	if ($figstofill < $ship~ship_fighters_max)
+	if ($planet~planet_fighters_max > 0) and (($planet~planet_fighters * 100) > ($planet~planet_fighters_max * 99))
+		setvar $figstofill 0
+	elseif ($figstofill < $ship~ship_fighters_max)
 		setvar $figstofill 0
 	end
 else
@@ -465,7 +614,9 @@ else
 end
 if ($planet~emptyfuelcolos > 0)
 	setvar $fuelcolstofill ($planet~planet_fuel_colonists_max - $planet~planet_fuel_colonists)
-	if ($fuelcolstofill < $player~total_holds)
+	if ($planet~planet_fuel_colonists_max > 0) and (($planet~planet_fuel_colonists * 100) > ($planet~planet_fuel_colonists_max * 99))
+		setvar $fuelcolstofill 0
+	elseif ($fuelcolstofill < $player~total_holds)
 		setvar $fuelcolstofill 0
 	end
 else
@@ -473,7 +624,9 @@ else
 end
 if ($planet~emptyorgcolos > 0)
 	setvar $orgcolstofill ($planet~planet_organics_colonists_max - $planet~planet_organics_colonists)
-	if ($orgcolstofill < $player~total_holds)
+	if ($planet~planet_organics_colonists_max > 0) and (($planet~planet_organics_colonists * 100) > ($planet~planet_organics_colonists_max * 99))
+		setvar $orgcolstofill 0
+	elseif ($orgcolstofill < $player~total_holds)
 		setvar $orgcolstofill 0
 	end
 else
@@ -481,7 +634,9 @@ else
 end
 if ($planet~emptyequcolos > 0)
 	setvar $equcolstofill ($planet~planet_equipment_colonists_max - $planet~planet_equipment_colonists)
-	if ($equcolstofill < $player~total_holds)
+	if ($planet~planet_equipment_colonists_max > 0) and (($planet~planet_equipment_colonists * 100) > ($planet~planet_equipment_colonists_max * 99))
+		setvar $equcolstofill 0
+	elseif ($equcolstofill < $player~total_holds)
 		setvar $equcolstofill 0
 	end
 else

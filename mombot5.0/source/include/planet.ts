@@ -208,6 +208,117 @@ end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:planet~updateplanetprods
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $prods_line $planet~planetfuel & " " & $planet~planetorg & " " & $planet~planetequip & " " & $planet~planet_class & "*"
+loadvar $planet~planet_prods_file
+fileexists $exists $planet~planet_prods_file
+if ($exists)
+	if ($skip_prods_read = 0)
+		readtoarray $planet~planet_prods_file $prods_file_array
+		setvar $skip_prods_read 0
+	end
+	setvar $prods_count $prods_file_array
+	setvar $foundit 0
+	setvar $i 1
+	while ($i <= $prods_count)
+		setvar $planetinf $prods_file_array[$i]
+		getwordpos $planetinf $pos "Class "
+		if ($pos > 0)
+			cuttext $planetinf $class $pos 999
+			if ($class = $planet~planet_class)
+				if ($planetinf = $prods_line)
+					return
+				else
+					setvar $prods_file_array[$i] $prods_line
+					setvar $foundit 1
+				end
+			end
+		end
+		add $i 1
+	end
+end
+if ($exists = false) or ($foundit = 0)
+	write $planet~planet_prods_file $prods_line
+else
+	delete $planet~planet_prods_file
+	setvar $i 1
+	while ($i <= $prods_count)
+		write $planet~planet_prods_file $prods_file_array[$i]
+		add $i 1
+	end
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:planet~updateplanetcolos
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($planet~fuelcolos = 0) and ($planet~orgcolos = 0) and ($planet~equcolos = 0)
+	return
+end
+setvar $planet_colos_line $planet~fuelcolos & " " & $planet~orgcolos & " " & $planet~equcolos & " " & $planet~planet_class & "*"
+loadvar $planet~planet_colos_file
+## temporary ##
+setvar $planet~planet_colos_file $bot~folder & "/planetcolos.cfg"
+savevar $planet~planet_colos_file
+fileexists $exists $planet~planet_colos_file
+if ($exists)
+	if ($skip_colos_read = 0)
+		readtoarray $planet~planet_colos_file $colos_file_array
+		setvar $skip_colos_read 0
+	end
+	setvar $colos_count $colos_file_array
+	setvar $foundit 0
+	setvar $i 1
+	while ($i <= $colos_count)
+		setvar $planetinf $colos_file_array[$i]
+		getwordpos $planetinf $pos "Class "
+		if ($pos > 0)
+			cuttext $planetinf $class $pos 999
+			if ($class = $planet~planet_class)
+				if ($planetinf = $planet_colos_line)
+					return
+				else
+					getword $planetinf $fuelcolos_tmp 1
+					getword $planetinf $orgcolos_tmp 2
+					getword $planetinf $equcolos_tmp 3
+					if ($fuelcolos > 0)
+						setvar $tmpline $fuelcolos & " "
+					else
+						setvar $tmpline $fuelcolos_tmp & " "
+					end
+					if ($orgcolos > 0)
+						setvar $tmpline $tmpline & $orgcolos & " "
+					else
+						setvar $tmpline $tmpline & $orgcolos_tmp & " "
+					end
+					if ($equcolos > 0)
+						setvar $tmpline $tmpline & $equcolos & " "
+					else
+						setvar $tmpline $tmpline & $equcolos_tmp & " "
+					end
+					setvar $tmpline $tmpline & $planet~planet_class & "*"
+					setvar $colos_file_array[$i] $tmpline
+					setvar $foundit 1
+				end
+			end
+		end
+		add $i 1
+	end
+end
+if ($exists = false)
+	write $planet~planet_colos_file $planet_colos_line
+elseif ($changed = 1)
+	delete $planet~planet_colos_file
+	setvar $i 1
+	while ($i <= $colos_count)
+		write $planet~planet_colos_file $colos_file_array[$i]
+		add $i 1
+	end
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :planet~getplanetinfo
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $planet~noheader 0
@@ -234,6 +345,7 @@ setvar $planet~buildtime 0
 setvar $planet~militaryreaction 0
 setvar $planet~creator ""
 setvar $planet~owner ""
+setvar $planet~planet_class "undefined"
 setvar $planet~planet_class_name "undefined"
 setvar $planet~planet_name "undefined"
 setvar $planet~under_construction false
@@ -297,10 +409,11 @@ settextlinetrigger owner :owner "Claimed by: "
 pause
 
 :planet~getclass
-getword currentline $planet~code 2
+setvar $planet_class currentline
+getword $planet_class $planet~code 2
 striptext $planet~code ","
 getlength $planet~code $len
-cuttext currentline $planet~planet_class_name ($len + 9) 999
+cuttext $planet_class $planet~planet_class_name ($len + 9) 999
 setvar $planet~class_name $planet~planet_class_name
 pause
 
@@ -989,6 +1102,36 @@ setvar $planet~planetstats true
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:planet~loadplanetcolos
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+loadvar $planet~planet_colos_file
+if ($planet~planet_colos_file = 0)
+	setvar $planet~planet_colos_file $bot~folder & "/planetcolos.cfg"
+	savevar $planet~planet_colos_file
+end
+fileexists $exists $planet~planet_colos_file
+if ($exists)
+	readtoarray $planet~planet_colos_file $colos_file_array
+	setvar $planet_colos_count $colos_file_array
+	setarray $planet_colos $planet_colos_count 3
+	setvar $i 1
+	setvar $j 1
+	while ($i <= $planet_colos_count)
+		setvar $planetinf $colos_file_array[$i]
+		getwordpos $planetinf $pos "Class "
+		if ($pos > 0)
+			cuttext $planetinf $planet_colos[$j] $pos 999
+			getword $planetinf $planet_colos[$j][1] 1
+			getword $planetinf $planet_colos[$j][2] 2
+			getword $planetinf $planet_colos[$j][3] 3
+			add $j 1
+		end
+		add $i 1
+	end
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :planet~moveproduct
 :planet~movefighters
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -1240,6 +1383,60 @@ setvar $oretofill ($planet~planet_fuel_max - $planet~planet_fuel)
 setvar $orgtofill ($planet~planet_organics_max - $planet~planet_organics)
 setvar $equtofill ($planet~planet_equipment_max - $planet~planet_equipment)
 setvar $figstofill ($planet~planet_fighters_max - $planet~planet_fighters)
+setvar $fuelcolstofill 999999999
+setvar $orgcolstofill 999999999
+setvar $equcolstofill 999999999
+if ($skip_over_99)
+	if ($planet~planet_fuel_max > 0) and (($planet~planet_fuel * 100) > ($planet~planet_fuel_max * 99))
+		setvar $oretofill 0
+	end
+	if ($planet~planet_organics_max > 0) and (($planet~planet_organics * 100) > ($planet~planet_organics_max * 99))
+		setvar $orgtofill 0
+	end
+	if ($planet~planet_equipment_max > 0) and (($planet~planet_equipment * 100) > ($planet~planet_equipment_max * 99))
+		setvar $equtofill 0
+	end
+	if ($planet~planet_fighters_max > 0) and (($planet~planet_fighters * 100) > ($planet~planet_fighters_max * 99))
+		setvar $figstofill 0
+	end
+	if ($planet~planet_fuel_colonists_max > 0)
+		setvar $fuelcolstofill ($planet~planet_fuel_colonists_max - $planet~planet_fuel_colonists)
+		if (($planet~planet_fuel_colonists * 100) > ($planet~planet_fuel_colonists_max * 99))
+			setvar $fuelcolstofill 0
+		end
+	end
+	if ($planet~planet_organics_colonists_max > 0)
+		setvar $orgcolstofill ($planet~planet_organics_colonists_max - $planet~planet_organics_colonists)
+		if (($planet~planet_organics_colonists * 100) > ($planet~planet_organics_colonists_max * 99))
+			setvar $orgcolstofill 0
+		end
+	end
+	if ($planet~planet_equipment_colonists_max > 0)
+		setvar $equcolstofill ($planet~planet_equipment_colonists_max - $planet~planet_equipment_colonists)
+		if (($planet~planet_equipment_colonists * 100) > ($planet~planet_equipment_colonists_max * 99))
+			setvar $equcolstofill 0
+		end
+	end
+end
+setvar $spacebuffer $player~total_holds
+if ($spacebuffer <= 0)
+	setvar $spacebuffer 1
+end
+if ($oretofill <= $spacebuffer)
+	setvar $oretofill 0
+else
+	subtract $oretofill $spacebuffer
+end
+if ($orgtofill <= $spacebuffer)
+	setvar $orgtofill 0
+else
+	subtract $orgtofill $spacebuffer
+end
+if ($equtofill <= $spacebuffer)
+	setvar $equtofill 0
+else
+	subtract $equtofill $spacebuffer
+end
 send "q"
 if ($ship~ship_fighters_max <= 0)
 	gosub :ship~getshipstats
@@ -1326,6 +1523,13 @@ if ($emptyequipment)
 end
 if ($emptyfuelcolos)
 	setvar $amount_to_strip $planet~planet_fuel_colonists
+	if ($skip_over_99)
+		if ($fuelcolstofill <= 0)
+			setvar $amount_to_strip 0
+		elseif ($amount_to_strip > $fuelcolstofill)
+			setvar $amount_to_strip $fuelcolstofill
+		end
+	end
 	if ($amount_to_strip > 0)
 		setvar $planet~category 1
 		setvar $planet~type "s"
@@ -1343,6 +1547,13 @@ if ($emptyfuelcolos)
 end
 if ($emptyorgcolos)
 	setvar $amount_to_strip $planet~planet_organics_colonists
+	if ($skip_over_99)
+		if ($orgcolstofill <= 0)
+			setvar $amount_to_strip 0
+		elseif ($amount_to_strip > $orgcolstofill)
+			setvar $amount_to_strip $orgcolstofill
+		end
+	end
 	if ($amount_to_strip > 0)
 		setvar $planet~category 2
 		setvar $planet~type "s"
@@ -1360,6 +1571,13 @@ if ($emptyorgcolos)
 end
 if ($emptyequcolos)
 	setvar $amount_to_strip $planet~planet_equipment_colonists
+	if ($skip_over_99)
+		if ($equcolstofill <= 0)
+			setvar $amount_to_strip 0
+		elseif ($amount_to_strip > $equcolstofill)
+			setvar $amount_to_strip $equcolstofill
+		end
+	end
 	if ($amount_to_strip > 0)
 		setvar $planet~category 3
 		setvar $planet~type "s"
