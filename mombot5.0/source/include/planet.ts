@@ -269,6 +269,7 @@ if ($exists)
 	end
 	setvar $colos_count $colos_file_array
 	setvar $foundit 0
+	setvar $changed 0
 	setvar $i 1
 	while ($i <= $colos_count)
 		setvar $planetinf $colos_file_array[$i]
@@ -279,6 +280,7 @@ if ($exists)
 				if ($planetinf = $planet_colos_line)
 					return
 				else
+					setvar $changed 1
 					getword $planetinf $fuelcolos_tmp 1
 					getword $planetinf $orgcolos_tmp 2
 					getword $planetinf $equcolos_tmp 3
@@ -306,7 +308,7 @@ if ($exists)
 		add $i 1
 	end
 end
-if ($exists = false)
+if ($exists = false) or ($foundit = 0)
 	write $planet~planet_colos_file $planet_colos_line
 elseif ($changed = 1)
 	delete $planet~planet_colos_file
@@ -1113,7 +1115,12 @@ fileexists $exists $planet~planet_colos_file
 if ($exists)
 	readtoarray $planet~planet_colos_file $colos_file_array
 	setvar $planet_colos_count $colos_file_array
-	setarray $planet_colos $planet_colos_count 3
+	setvar $planet_colos_capacity $planet_colos_count
+	add $planet_colos_capacity 100
+	if ($planet_colos_capacity < 100)
+		setvar $planet_colos_capacity 100
+	end
+	setarray $planet_colos $planet_colos_capacity 3
 	setvar $i 1
 	setvar $j 1
 	while ($i <= $planet_colos_count)
@@ -1128,6 +1135,10 @@ if ($exists)
 		end
 		add $i 1
 	end
+	setvar $planet_colos_count ($j - 1)
+else
+	setvar $planet_colos_count 0
+	setarray $planet_colos 100 3
 end
 return
 
@@ -1288,7 +1299,11 @@ waiton "Average Interval Lag"
 goto :moveamountloop
 
 :sendmoveproduct
-send "l j"&#8&$startingplanet&"* j"&$type&"* jt"&$category&$get&"* x q l j"&#8&$planet~planettofill&"* j"&$type&"* jl"&$category&"* x q "
+setvar $move_dest_category $category
+if ($type = "s") and ($destcategory > 0)
+	setvar $move_dest_category $destcategory
+end
+send "l j"&#8&$startingplanet&"* j"&$type&"* jt"&$category&$get&"* x q l j"&#8&$planet~planettofill&"* j"&$type&"* jl"&$move_dest_category&"* x q "
 return
 
 :sendmovefighters
@@ -1305,6 +1320,7 @@ killalltriggers
 setvar $planet~moveamount 0
 setvar $planet~moveholds 0
 setvar $planet~moveextra 0
+setvar $planet~destcategory 0
 if ($movefailed = true)
 	setvar $planet~movesuccess false
 else

@@ -232,25 +232,7 @@ else
 end
 :postplanetlist
 
-setvar $sector sectors
-setarray $sector sectors
-setvar $farmlistcount 0
-setvar $i 1
-:getfarmsector
-getword $farmsectors $check $i
-if ($check <> "") and ($check > 0)
-	isnumber $test $check
-	if ($test)
-		if (($check > 0) and ($check <= sectors))
-			if ($check <> $startinglocation)
-				add $farmlistcount 1
-				setvar $sector[$farmlistcount] $check
-			end
-		end
-	end
-	add $i 1
-	goto :getfarmsector
-end
+gosub :loadfarmsectorlist
 
 setvar $relog_nocitadel 1
 savevar $relog_nocitadel
@@ -418,47 +400,544 @@ halt
 :balanceplanets
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 gosub :planet~loadplanetcolos
-
-halt
-
-gosub :getcolosfromfile
-
-halt
+gosub :loadfarmsectorlist
+if ($farmlistcount <= 0)
+	setvar $switchboard~message "No sectors in farming list.*"
+	gosub :switchboard~switchboard
+	halt
+end
+if ($player~planet_scanner = "No")
+	setvar $switchboard~message "Farm balance must be run with a planet scanner.*"
+	gosub :switchboard~switchboard
+	halt
+end
+send "q"
+waiton "Planet command"
+gosub :planet~getplanetinfo
+setvar $class $planet~planet_class
 gosub :getplanetcolos
+if ($f1 > 0) or ($o1 > 0) or ($e1 > 0)
+	setvar $switchboard~message "Starting planet is overloaded; farm balance needs room on the starting planet.*"
+	gosub :switchboard~switchboard
+	halt
+end
+send "c"
+waiton "Citadel command"
+logging off
+setvar $relog_nocitadel 1
+savevar $relog_nocitadel
+setvar $balance_total_moved 0
+setvar $balance_sector_index 0
+while ($balance_sector_index < $farmlistcount)
+	add $balance_sector_index 1
+	gosub :balance_land_start_citadel
+	setvar $planet~warpto $sector[$balance_sector_index]
+	gosub :planet~pwarp
+	if ($planet~pwarpsuccess = true)
+		send "qqq**"
+		gosub :planet~countplanets
+		if ($planet~planetcount > 1)
+			gosub :balance_scan_sector
+			gosub :balance_process_sector
+		end
+	else
+		setvar $switchboard~message "Farm balance could not pwarp to sector "&$sector[$balance_sector_index]&"; skipping.*"
+		gosub :switchboard~switchboard
+	end
+end
+gosub :balance_land_start_citadel
+setvar $planet~warpto $startinglocation
+gosub :planet~pwarp
+gosub :balance_finish
+setvar $switchboard~message "Farm balance complete. Moved "&$balance_total_moved&" colonists.*"
+gosub :switchboard~switchboard
 halt
+
+:loadfarmsectorlist
+setvar $sector sectors
+setarray $sector sectors
+setvar $farmlistcount 0
+setvar $i 1
+while ($i <= sectors)
+	getword $farmsectors $check $i
+	if ($check = "")
+		return
+	end
+	isnumber $test $check
+	if ($test)
+		if ($check > 0) and ($check <= sectors)
+			if ($check <> $startinglocation)
+				add $farmlistcount 1
+				setvar $sector[$farmlistcount] $check
+			end
+		end
+	end
+	add $i 1
+end
+return
+
+:balance_land_start_citadel
+setvar $balance_land_id $startingplanet
+gosub :balance_land_planet
+if ($planet~sucessfulplanet <> true)
+	setvar $switchboard~message "Unable to land on starting planet; halting farm balance.*"
+	gosub :switchboard~switchboard
+	halt
+end
+send "c"
+waiton "Citadel command"
+return
+
+:balance_land_planet
+gosub :player~currentprompt
+if ($player~current_prompt = "Citadel")
+	send "q"
+	waiton "Planet command"
+	send "q"
+	waiton "Command ["
+elseif ($player~current_prompt = "Planet")
+	send "q"
+	waiton "Command ["
+end
+setvar $planet~planet $balance_land_id
+gosub :planet~landingsub
+return
+
+:balance_scan_sector
+setvar $balance_planet_count 0
+setvar $balance_start_index 0
+setarray $balance_planet 200
+setarray $balance_over 200 3
+setarray $balance_room 200 3
+setarray $balance_buffer_room 200 3
+setarray $balance_target 200 3
+setarray $balance_max 200 3
+setvar $j 0
+while ($j < $planet~planetcount)
+	add $j 1
+	setvar $balance_land_id $planet~planets[$j]
+	gosub :balance_land_planet
+	if ($planet~sucessfulplanet = true)
+		gosub :planet~getplanetinfo
+		add $balance_planet_count 1
+		setvar $balance_current_index $balance_planet_count
+		gosub :balance_record_current_planet
+		send "q"
+		waiton "Command ["
+	end
+end
+return
+
+:balance_record_current_planet
+setvar $balance_planet[$balance_current_index] $planet~planet
+if ($planet~planet = $startingplanet)
+	setvar $balance_start_index $balance_current_index
+end
+setvar $class $planet~planet_class
+gosub :getcolosfromfile
+gosub :getplanetcolos
+gosub :balance_apply_computed_targets
+gosub :balance_remember_current_class
+setvar $balance_target[$balance_current_index][1] $fuelcolos
+setvar $balance_target[$balance_current_index][2] $orgcolos
+setvar $balance_target[$balance_current_index][3] $equcolos
+setvar $balance_max[$balance_current_index][1] $fuelcolosmax
+setvar $balance_max[$balance_current_index][2] $orgcolosmax
+setvar $balance_max[$balance_current_index][3] $equcolosmax
+setvar $balance_over[$balance_current_index][1] $f1
+setvar $balance_over[$balance_current_index][2] $o1
+setvar $balance_over[$balance_current_index][3] $e1
+setvar $balance_cat 0
+while ($balance_cat < 3)
+	add $balance_cat 1
+	if ($balance_target[$balance_current_index][$balance_cat] > 0) and ($planet~colo[$balance_cat] > $balance_target[$balance_current_index][$balance_cat])
+		setvar $balance_target_over ($planet~colo[$balance_cat] - $balance_target[$balance_current_index][$balance_cat])
+		if ($balance_target_over > $balance_over[$balance_current_index][$balance_cat])
+			setvar $balance_over[$balance_current_index][$balance_cat] $balance_target_over
+		end
+	end
+	setvar $balance_room[$balance_current_index][$balance_cat] ($balance_target[$balance_current_index][$balance_cat] - $planet~colo[$balance_cat])
+	if ($balance_room[$balance_current_index][$balance_cat] < 0)
+		setvar $balance_room[$balance_current_index][$balance_cat] 0
+	end
+	if ($planet~planet = $startingplanet)
+		setvar $balance_buffer_room[$balance_current_index][$balance_cat] ($balance_max[$balance_current_index][$balance_cat] - $planet~colo[$balance_cat])
+		if ($balance_buffer_room[$balance_current_index][$balance_cat] < 0)
+			setvar $balance_buffer_room[$balance_current_index][$balance_cat] 0
+		end
+	else
+		setvar $balance_buffer_room[$balance_current_index][$balance_cat] 0
+	end
+end
+return
+
+:balance_apply_computed_targets
+if ($planet~fuelcolos > 0)
+	setvar $fuelcolosmax $planet~fuelcolos
+	setvar $colo_max $fuelcolosmax
+	gosub :targetfrommax
+	setvar $fuelcolos $colo_target
+end
+if ($planet~orgcolos > 0)
+	setvar $orgcolosmax $planet~orgcolos
+	setvar $colo_max $orgcolosmax
+	gosub :targetfrommax
+	setvar $orgcolos $colo_target
+end
+if ($planet~equcolos > 0)
+	setvar $equcolosmax $planet~equcolos
+	setvar $colo_max $equcolosmax
+	gosub :targetfrommax
+	setvar $equcolos $colo_target
+end
+return
+
+:balance_remember_current_class
+if ($fuelcolosmax <= 0) and ($orgcolosmax <= 0) and ($equcolosmax <= 0)
+	return
+end
+setvar $remember_index 0
+setvar $remember_i 0
+while ($remember_i < $planet~planet_colos_count)
+	add $remember_i 1
+	if ($planet~planet_colos[$remember_i] = $class)
+		setvar $remember_index $remember_i
+	end
+end
+if ($remember_index = 0)
+	add $planet~planet_colos_count 1
+	setvar $remember_index $planet~planet_colos_count
+	setvar $planet~planet_colos[$remember_index] $class
+end
+if ($fuelcolosmax > 0)
+	setvar $planet~planet_colos[$remember_index][1] $fuelcolosmax
+end
+if ($orgcolosmax > 0)
+	setvar $planet~planet_colos[$remember_index][2] $orgcolosmax
+end
+if ($equcolosmax > 0)
+	setvar $planet~planet_colos[$remember_index][3] $equcolosmax
+end
+return
+
+:balance_process_sector
+if ($balance_start_index > 0)
+	setvar $balance_source_index $balance_start_index
+	gosub :balance_move_source_to_sector_room
+end
+setvar $balance_source_index 0
+while ($balance_source_index < $balance_planet_count)
+	add $balance_source_index 1
+	if ($balance_source_index <> $balance_start_index)
+		gosub :balance_move_source_to_sector_room
+	end
+end
+if ($balance_start_index > 0)
+	setvar $balance_source_index 0
+	while ($balance_source_index < $balance_planet_count)
+		add $balance_source_index 1
+		if ($balance_source_index <> $balance_start_index)
+			gosub :balance_move_source_to_start
+		end
+	end
+end
+return
+
+:balance_move_source_to_sector_room
+setvar $balance_source_category 0
+while ($balance_source_category < 3)
+	add $balance_source_category 1
+	setvar $balance_remaining $balance_over[$balance_source_index][$balance_source_category]
+	while ($balance_remaining > 0)
+		gosub :balance_find_sector_room
+		if ($balance_dest_index <= 0)
+			setvar $balance_remaining 0
+		else
+			setvar $balance_dest_is_buffer false
+			gosub :balance_move_found_amount
+			setvar $balance_remaining $balance_over[$balance_source_index][$balance_source_category]
+		end
+	end
+end
+return
+
+:balance_move_source_to_start
+setvar $balance_source_category 0
+while ($balance_source_category < 3)
+	add $balance_source_category 1
+	setvar $balance_remaining $balance_over[$balance_source_index][$balance_source_category]
+	while ($balance_remaining > 0)
+		gosub :balance_find_start_room
+		if ($balance_dest_index <= 0)
+			setvar $balance_remaining 0
+		else
+			setvar $balance_dest_is_buffer true
+			gosub :balance_move_found_amount
+			setvar $balance_remaining $balance_over[$balance_source_index][$balance_source_category]
+		end
+	end
+end
+return
+
+:balance_find_sector_room
+setvar $balance_dest_index 0
+setvar $balance_dest_category 0
+setvar $balance_dest_room 0
+setvar $balance_find_index 0
+while ($balance_find_index < $balance_planet_count)
+	add $balance_find_index 1
+	if ($balance_find_index <> $balance_start_index)
+		setvar $balance_find_cat 0
+		while ($balance_find_cat < 3)
+			add $balance_find_cat 1
+			if ($balance_room[$balance_find_index][$balance_find_cat] > 0)
+				if ($balance_find_index <> $balance_source_index) or ($balance_find_cat <> $balance_source_category)
+					setvar $balance_dest_index $balance_find_index
+					setvar $balance_dest_category $balance_find_cat
+					setvar $balance_dest_room $balance_room[$balance_find_index][$balance_find_cat]
+					return
+				end
+			end
+		end
+	end
+end
+return
+
+:balance_find_start_room
+setvar $balance_dest_index 0
+setvar $balance_dest_category 0
+setvar $balance_dest_room 0
+if ($balance_start_index <= 0)
+	return
+end
+setvar $balance_find_cat 0
+while ($balance_find_cat < 3)
+	add $balance_find_cat 1
+	if ($balance_buffer_room[$balance_start_index][$balance_find_cat] > 0)
+		setvar $balance_dest_index $balance_start_index
+		setvar $balance_dest_category $balance_find_cat
+		setvar $balance_dest_room $balance_buffer_room[$balance_start_index][$balance_find_cat]
+		return
+	end
+end
+return
+
+:balance_move_found_amount
+setvar $balance_move_amount $balance_over[$balance_source_index][$balance_source_category]
+if ($balance_move_amount > $balance_dest_room)
+	setvar $balance_move_amount $balance_dest_room
+end
+if ($balance_move_amount <= 0)
+	return
+end
+setvar $balance_source_planet $balance_planet[$balance_source_index]
+setvar $balance_dest_planet $balance_planet[$balance_dest_index]
+gosub :balance_move_colos
+if ($balance_move_success = true)
+	subtract $balance_over[$balance_source_index][$balance_source_category] $balance_move_amount
+	if ($balance_over[$balance_source_index][$balance_source_category] < 0)
+		setvar $balance_over[$balance_source_index][$balance_source_category] 0
+	end
+	if ($balance_dest_is_buffer = true)
+		subtract $balance_buffer_room[$balance_dest_index][$balance_dest_category] $balance_move_amount
+		if ($balance_buffer_room[$balance_dest_index][$balance_dest_category] < 0)
+			setvar $balance_buffer_room[$balance_dest_index][$balance_dest_category] 0
+		end
+		if ($balance_room[$balance_dest_index][$balance_dest_category] > 0)
+			subtract $balance_room[$balance_dest_index][$balance_dest_category] $balance_move_amount
+			if ($balance_room[$balance_dest_index][$balance_dest_category] < 0)
+				setvar $balance_room[$balance_dest_index][$balance_dest_category] 0
+			end
+		end
+	else
+		subtract $balance_room[$balance_dest_index][$balance_dest_category] $balance_move_amount
+		if ($balance_room[$balance_dest_index][$balance_dest_category] < 0)
+			setvar $balance_room[$balance_dest_index][$balance_dest_category] 0
+		end
+	end
+	if ($balance_source_index = $balance_start_index)
+		add $balance_buffer_room[$balance_source_index][$balance_source_category] $balance_move_amount
+	end
+	add $balance_total_moved $balance_move_amount
+else
+	setvar $balance_over[$balance_source_index][$balance_source_category] 0
+end
+return
+
+:balance_move_colos
+setvar $balance_move_success false
+if ($balance_source_planet = $balance_dest_planet) and ($balance_source_category = $balance_dest_category)
+	return
+end
+if ($balance_move_amount <= 0)
+	return
+end
+setvar $balance_land_id $balance_source_planet
+gosub :balance_land_planet
+if ($planet~sucessfulplanet <> true)
+	return
+end
+if ($balance_source_planet = $balance_dest_planet)
+	gosub :balance_move_colos_same_planet
+	return
+end
+gosub :balance_move_colos_between_planets
+return
+
+:balance_move_colos_same_planet
+killalltriggers
+settextlinetrigger balance_same_success :balance_same_success "The Colonists drop what they were doing"
+settextlinetrigger balance_same_failed :balance_same_failed "You don't have that many"
+settexttrigger balance_same_prompt :balance_same_failed "Planet command"
+send "pn"&$balance_source_category&$balance_move_amount&"*"&$balance_dest_category
+pause
+
+:balance_same_success
+killalltriggers
+waiton "Planet command"
+setvar $balance_move_success true
+return
+
+:balance_same_failed
+killalltriggers
+setvar $balance_move_success false
+return
+
+:balance_move_colos_between_planets
+gosub :player~quikstats
+gosub :balance_check_empty_holds
+if ($balance_empty_holds <= 0)
+	gosub :balance_empty_ship_holds
+end
+if ($balance_empty_holds <= 0)
+	return
+end
+gosub :balance_leave_to_command
+setvar $balance_move_left $balance_move_amount
+setvar $balance_burst_count 0
+while ($balance_move_left > 0)
+	setvar $balance_get $balance_empty_holds
+	if ($balance_get > $balance_move_left)
+		setvar $balance_get $balance_move_left
+	end
+	send "l"&$balance_source_planet&"*snt"&$balance_source_category&$balance_get&"*q l"&$balance_dest_planet&"*snl"&$balance_dest_category&$balance_get&"*q "
+	subtract $balance_move_left $balance_get
+	add $balance_burst_count 1
+	if ($balance_burst_count >= 100)
+		send "@"
+		waiton "Average Interval Lag"
+		setvar $balance_burst_count 0
+	end
+end
+send "@"
+waiton "Average Interval Lag"
+setvar $balance_move_success true
+return
+
+:balance_check_empty_holds
+setvar $balance_empty_holds ($player~total_holds - $player~ore_holds - $player~organic_holds - $player~equipment_holds - $player~colonist_holds)
+if ($balance_empty_holds < 0)
+	setvar $balance_empty_holds 0
+end
+return
+
+:balance_empty_ship_holds
+gosub :player~currentprompt
+if ($player~current_prompt = "Command")
+	send "jy"
+	waiton "Command ["
+elseif ($player~current_prompt = "Citadel")
+	send "q"
+	waiton "Planet command"
+	gosub :balance_unload_holds_to_planet
+elseif ($player~current_prompt = "Planet")
+	gosub :balance_unload_holds_to_planet
+else
+	setvar $balance_land_id $balance_source_planet
+	gosub :balance_land_planet
+	if ($planet~sucessfulplanet <> true)
+		return
+	end
+	gosub :balance_unload_holds_to_planet
+end
+gosub :player~quikstats
+gosub :balance_check_empty_holds
+return
+
+:balance_unload_holds_to_planet
+send "tnl1*"
+waiton "Planet command"
+send "tnl2*"
+waiton "Planet command"
+send "tnl3*"
+waiton "Planet command"
+return
+
+:balance_leave_to_command
+gosub :player~currentprompt
+if ($player~current_prompt = "Citadel")
+	send "q"
+	waiton "Planet command"
+	send "q"
+	waiton "Command ["
+elseif ($player~current_prompt = "Planet")
+	send "q"
+	waiton "Command ["
+end
+return
+
+:balance_finish
+killalltriggers
+logging on
+setvar $relog_nocitadel 0
+savevar $relog_nocitadel
+return
 
 :getcolosfromfile
 setvar $i 0
 setvar $fuelcolos 0
 setvar $orgcolos 0
 setvar $equcolos 0
+setvar $fuelcolosmax 0
+setvar $orgcolosmax 0
+setvar $equcolosmax 0
 while ($i < $planet~planet_colos_count)
 	add $i 1
 	setvar $tmpclass $planet~planet_colos[$i]
 	if ($tmpclass = $class)
 		if ($planet~planet_colos[$i][1] > 0)
-			if ($planet~planet_colos[$i][1] < 250000)
-				setvar $fuelcolos ($planet~planet_colos[$i][1] * 0.8)
-			else
-				setvar $fuelcolos ($planet~planet_colos[$i][1] * 0.9)
-			end
+			setvar $fuelcolosmax $planet~planet_colos[$i][1]
+			setvar $colo_max $fuelcolosmax
+			gosub :targetfrommax
+			setvar $fuelcolos $colo_target
 		end
 		if ($planet~planet_colos[$i][2] > 0)
-			if ($planet~planet_colos[$i][2] < 250000)
-				setvar $orgcolos ($planet~planet_colos[$i][2] * 0.8)
-			else
-				setvar $orgcolos ($planet~planet_colos[$i][2] * 0.9)
-			end
+			setvar $orgcolosmax $planet~planet_colos[$i][2]
+			setvar $colo_max $orgcolosmax
+			gosub :targetfrommax
+			setvar $orgcolos $colo_target
 		end
 		if ($planet~planet_colos[$i][3] > 0)
-			if ($planet~planet_colos[$i][3] < 250000)
-				setvar $equcolos ($planet~planet_colos[$i][3] * 0.8)
-			else
-				setvar $equcolos ($planet~planet_colos[$i][3] * 0.9)
-			end
+			setvar $equcolosmax $planet~planet_colos[$i][3]
+			setvar $colo_max $equcolosmax
+			gosub :targetfrommax
+			setvar $equcolos $colo_target
 		end
 		#echo "*Class: "&$class&"  Fuel Colos: "&$fuelcolos&"  Org Colos: "&$orgcolos&"  Equ Colos: "&$equcolos&"*"
 	end
+end
+return
+
+:targetfrommax
+setvar $colo_target 0
+if ($colo_max > 0)
+	setprecision 0
+	if ($colo_max < 250000)
+		setvar $colo_target ($colo_max * 0.8)
+	else
+		setvar $colo_target ($colo_max * 0.9)
+	end
+	round $colo_target 0
 end
 return
 

@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 SOURCE="$ROOT/source"
 LIVE_ROOT="${MOMBOT_LIVE_ROOT:-/Users/mosleym/twx/scripts/mombot}"
+SOURCE_INCLUDE="$SOURCE/include"
+LIVE_INCLUDE="$LIVE_ROOT/include"
 
 if [[ ! -d "$SOURCE" ]]; then
   echo "Source tree not found: $SOURCE" >&2
@@ -38,6 +40,13 @@ sync_managed_dir() {
 for dir in commands modes daemons startups preload; do
   sync_managed_dir "$dir"
 done
+
+if [[ -d "$SOURCE_INCLUDE" ]]; then
+  mkdir -p "$LIVE_INCLUDE"
+  rsync -a --delete \
+    --exclude='.DS_Store' \
+    "$SOURCE_INCLUDE/" "$LIVE_INCLUDE/"
+fi
 
 find "$LIVE_ROOT" -maxdepth 1 -type f \( -name '*.ts' -o -name '*.ts_*' \) -delete
 for dir in commands modes daemons startups preload; do
