@@ -11,7 +11,7 @@ setvar $lsd_curent_version "4.0"
 setvar $lsd_taglineb "LSDv" & $lsd_curent_version
 setvar $lsd_shipdata_valid      false
 setvar $lsd_ships_names         "][LSD]["
-setvar $lsd_ships_file          $bot~folder&"/LSD_" & gamename & ".ships"
+setvar $lsd_ships_file          $bot~folder&"/games/"&GAMENAME&"/lsd.ships"
 setvar $lsd_shiplistmax         50
 setvar $lsd_botting         $bot~bot_name
 setvar $lsd__pad            "@"

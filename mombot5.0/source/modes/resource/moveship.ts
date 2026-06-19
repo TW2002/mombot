@@ -164,7 +164,7 @@ setvar $starting_credits $player~credits
 killtrigger player~getline2
 setvar $figcnt sector.figs.quantity[$startsector]
 setvar $figowner sector.figs.owner[$startsector]
-if (($figcnt = 0) or (($figowner <> "belong to your Corp") and ($figowner <> "yours")))
+if ($use_move=false) and (($figcnt = 0) or (($figowner <> "belong to your Corp") and ($figowner <> "yours")))
 	if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
 		gosub :planet~landingsub
 	end

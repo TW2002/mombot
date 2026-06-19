@@ -11,12 +11,12 @@ setvar $help~help[6] $help~tab&"  - [mode]    = [b]est or [s]peed or [w]orst - d
 setvar $help~help[7] $help~tab&"  - [cycles]  = number of cycles             - default is max"
 setvar $help~help[8] $help~tab&"  - [override] = allows product buydowns with less than 200 holds"
 setvar $help~help[9] $help~tab&"     "
-setvar $help~help[10] $help~tab&"  - buy [hardware] {amount}"
+setvar $help~help[10] $help~tab&"  - buy [hardware] {amount|dump}"
 setvar $help~help[11] $help~tab&"  - [hardware]= [fig]hters or [sh]ields"
-setvar $help~help[12] $help~tab&"  - [amount]  = number to purchase, default is maximum"
-setvar $help~help[13] $help~tab&"      "
-setvar $help~help[14] $help~tab&"  - Originally written by Cherokee.     "
-setvar $help~help[15] $help~tab&"  - Now integrated with EP Haggle if it is running "
+setvar $help~help[12] $help~tab&"  - [amount]  = number to purchase, default is maximum "
+setvar $help~help[13] $help~tab&"  -             (use dump to buy down figs and dump to sector) "
+setvar $help~help[14] $help~tab&"     "
+setvar $help~help[15] $help~tab&"  - Originally written by Cherokee.     "
 gosub :help~helpfile
 
 loadvar $game~port_max
@@ -488,8 +488,13 @@ return
 :fighter_start
 setvar $buys false
 setvar $canbuy 0
+setvar $fightercreditsstaged false
 if ($bot~parm2 = "")
 	setvar $bot~parm2 0
+end
+if ($bot~parm2 = "dump")
+	setvar $dumpfigs true
+	setvar $amounttobuy 0
 end
 setvar $amounttobuy $bot~parm2
 setvar $buyall false
@@ -497,6 +502,7 @@ setvar $totalfigspurchased 0
 isnumber $test $amounttobuy
 if ($test <> true)
 	setvar $buyall true
+	setvar $amounttobuy 0
 else
 	if ($amounttobuy <= 0)
 		setvar $buyall true
@@ -507,6 +513,8 @@ gosub :planet~getplanetinfo
 send " c "
 gosub :ship~getshipstats
 setvar $home $player~current_sector
+
+:fighter_rewarp
 if (($player~current_sector = $map~alpha_centauri) or ($player~current_sector = $map~rylos))
 	if (port.class[$player~current_sector] = 0)
 		goto :fighter_already
@@ -537,25 +545,20 @@ send " s* "
 gosub :player~quikstats
 if (port.class[$player~current_sector] = 0)
 	setvar $buys true
-	send "q m*l* q z* "
+#	send "q m*l* q z* "
+	send "q m*l* "
 	goto :fighter_arrived
 else
-	setvar $switchboard~message "Sector "&$map~alpha_centauri&" has no class 0 port in it!*"
-	gosub :switchboard~switchboard
 	goto :fighter_nowarp
 end
 
 :fighter_nofig
-setvar $switchboard~message "No Fighter at Alpha Centauri*"
-gosub :switchboard~switchboard
-
 :fighter_nowarp
 if ($map~alpha_centauri > 0)
 	setsectorparameter $map~alpha_centauri "FIGSEC" false
 end
 killalltriggers
-setvar $switchboard~message "Trying Rylos*"
-gosub :switchboard~switchboard
+
 if ($map~rylos > 0)
 	send "p"&$map~rylos&"*y"
 	settextlinetrigger warpit :fighter_warpit "All Systems Ready, shall we engage?"
@@ -575,7 +578,7 @@ gosub :player~quikstats
 if (port.class[$player~current_sector] = 0)
 	goto :fighter_arrived
 else
-	setvar $switchboard~message "Sector "&$map~rylos&" has no class 0 port in it!*"
+	setvar $switchboard~message "No fighter/port at either class 0!*"
 	gosub :switchboard~switchboard
 	goto :fighter_end
 end
@@ -592,7 +595,37 @@ goto :fighter_end
 
 :fighter_arrived
 killalltriggers
-send "q q* p t"
+send "c"
+waiton "Citadel treasury contains"
+getword currentline $citcreds 4
+striptext $citcreds ","
+gosub :player~quikstats
+setvar $startingcredits $player~credits
+send "tt "&$player~credits&"* "
+waiton "How much to transfer?"
+waiton "Citadel command"
+add $citcreds $player~credits
+setvar $player~credits 0
+setvar $fightercreditsstaged true
+send "q m*l*"
+
+:fighter_loop
+send "c"
+gosub :fighter_gettreasury
+setvar $credstoget (999999999 - $fightercurrentcredits)
+if ($credstoget < 0)
+	setvar $credstoget 0
+end
+if ($credstoget > $fightertreasury)
+	setvar $credstoget $fightertreasury
+end
+send $credstoget&"*"
+setvar $player~credits $fightercurrentcredits
+add $player~credits $credstoget
+setvar $citcreds $fightertreasury
+subtract $citcreds $credstoget
+
+send "q q p t"
 settexttrigger buyfiglimp :removelimp "removal? : (Y/N)"
 settexttrigger buyfignolimp :buythefigs "credits per fighter"
 pause
@@ -625,22 +658,68 @@ end
 :fighter_arrived2
 send "l " $planet~planet "*  mnl*"
 settexttrigger maxpfighters :fighter_maxpfighters "You can't put more than"
-settexttrigger fightersuccess :fighter_arrived "Done!"
+settexttrigger fightersuccess :fighter_loop "Done!"
 pause
 
 :fighter_maxpfighters
 killalltriggers
 send "c"
 setvar $buys true
-setvar $switchboard~message "Fighters maxxed out on planet "&$planet~planet&".*"
-gosub :switchboard~switchboard
+if ($dumpfigs = false)
+	goto :fighter_end
+end
+send "p " $home "*y q"
+waiton "You leave the citadel"
+send "mnl*"
+gosub :planet~getplanetinfo
+send "qd"
+waiton "Fighters: "
+getword currentline $sector_figs 2
+striptext $sector_figs ","
+setvar $move $planet~planet_fighters
+setvar $total_moved 0
+setvar $end_figs $sector_figs
+add $end_figs $move
+send "l " $planet~planet "* "
+while ($total_moved < $move)
+	add $sector_figs $ship~ship_fighters_max
+	if ($sector_figs > $end_figs)
+		setvar $sector_figs $end_figs
+	end
+	send "m  n  t  *  q  f z " &$sector_figs& "*  z c d  *  l " &$planet~planet& "*  "
+	add $total_moved $ship~ship_fighters_max
+end
+send "c"
+goto :fighter_rewarp
+
+:fighter_gettreasury
+send "tf"
+waiton "credits, and the Treasury has"
+getword currentline $fightercurrentcredits 3
+striptext $fightercurrentcredits ","
+getword currentline $fightertreasury 9
+striptext $fightertreasury ","
+return
 
 :fighter_end
+if ($fightercreditsstaged = true)
+	gosub :fighter_gettreasury
+	setvar $creditrestore ($startingcredits - $fightercurrentcredits)
+	if ($creditrestore > $fightertreasury)
+		setvar $creditrestore $fightertreasury
+	end
+	if ($creditrestore < 0)
+		setvar $creditrestore 0
+	end
+	send $creditrestore&"* "
+end
 if ($buys = false)
 	setvar $switchboard~message "No fighters able to be purchased*"
 	gosub :switchboard~switchboard
 else
-	gosub :player~quikstats
+	if ($fightercreditsstaged <> true)
+		gosub :player~quikstats
+	end
 	if ($home <> $player~current_sector)
 		setvar $switchboard~message "Buy down exiting.  Heading Back to Start Sector*"
 		gosub :switchboard~switchboard

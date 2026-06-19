@@ -6,7 +6,7 @@ setvar $help~help[1]  $help~tab&"MOVE - Product Mover"
 setvar $help~help[2]  $help~tab&" "
 setvar $help~help[3]  $help~tab&"    move [type] [planet] [rounds]"
 setvar $help~help[4]  $help~tab&" "
-setvar $help~help[5]  $help~tab&"    [type] - use [f]uel, [o]rg, [e]quip, [fig]hters"
+setvar $help~help[5]  $help~tab&"    [type] - use [f]uel, [o]rg, [e]quip, [fig]hters, [cr]eds"
 setvar $help~help[6]  $help~tab&"    [type] - use [fc] fuel colo, [oc] org colo, [ec] equip colo"
 setvar $help~help[7]  $help~tab&"    [planet] planet to move to"
 setvar $help~help[8]  $help~tab&"    [rounds] number of rounds to move product / colonists"
@@ -37,6 +37,8 @@ elseif ($parm1 = "ec")
 	setvar $stuffmoved "Equipment Colonists"
 elseif ($parm1 = "fig") or ($parm1 = "figs")
 	setvar $stuffmoved "Fighters"
+elseif ($parm1 = "cr") or ($parm1 = "creds")
+	setvar $stuffmoved "Creds"
 else
 	setvar $switchboard~message "Please use move [f/o/e/fc/oc/ec/fig] [planet] {[rounds]|[amount]} format*"
 	gosub :switchboard~switchboard
@@ -63,12 +65,10 @@ elseif ($parm3 <= 0)
 	setvar $switchboard~message "Must choose more than 0 rounds to move*"
 	gosub :switchboard~switchboard
 	halt
-elseif ($stuffmoved = "Fighters")
+elseif ($stuffmoved = "Fighters") or ($stuffmoved = "Creds")
 	setvar $moveamount $parm3
 	setvar $moveholds 0
 	setvar $moveextra 0
-	setvar $switchboard~message "Moving " & $parm3 & " total fighters.*"
-	gosub :switchboard~switchboard
 elseif ($parm3 > 1000)
 	gosub :player~quikstats
 	if ($player~total_holds <= 0)
@@ -140,7 +140,7 @@ if ($stuffmoved = "Fighters")
 			add $parm3 1
 		end
 	end
-	goto :movefighters
+#	goto :movefighters
 elseif (($stuffmoved = "Fuel") or ($stuffmoved = "Fuel Colonists"))
 	setvar $stuff 1
 	if ($moveall = true)
@@ -175,7 +175,7 @@ elseif (($stuffmoved = "Equipment") or ($stuffmoved = "Equipment Colonists"))
 		end
 	end
 end
-getwordpos $bot~user_command_line $pos "c"
+getwordpos $stuffmoved $pos "Colonists"
 if ($pos > 0)
 	#send "q  j  y l "&$planet&" *  "
 	#goto :movecolonists
@@ -186,7 +186,20 @@ if ($pos > 0)
 	setvar $planet~type "s"
 	setvar $planet~category $stuff
 	gosub :planet~moveproduct
-elseif ($stuffmoved <> "Fighters")
+elseif ($stuffmoved = "Fighters")
+	setvar $planet~planettofill $parm2
+	setvar $planet~moveholds $moveholds
+	setvar $planet~moveextra $moveextra
+	setvar $planet~moveamount $moveamount
+	setvar $planet~type "m"
+	setvar $planet~category 4
+	gosub :planet~moveproduct
+elseif ($stuffmoved = "Creds")
+	setvar $planet~planettofill $parm2
+	setvar $planet~moveamount $moveamount
+	setvar $planet~category 6
+	gosub :planet~moveproduct
+else
 	#send "q  j  y l "&$planet&" *  "
 	#goto :moveproduct
 	setvar $planet~planettofill $parm2
@@ -197,27 +210,7 @@ elseif ($stuffmoved <> "Fighters")
 	setvar $planet~category $stuff
 	gosub :planet~moveproduct
 end
-goto :movedone
 
-:movefighters
-setvar $planet~planettofill $parm2
-setvar $planet~moveholds $moveholds
-setvar $planet~moveextra $moveextra
-setvar $planet~moveamount $moveamount
-setvar $planet~type "m"
-setvar $planet~category 4
-gosub :planet~moveproduct
-
-#:movefighters
-#if ($rounds < $parm3)
-#	send "m  n  *  *  q  l  "&$parm2&"*  m  n  l  *  q  l  "&$planet&"*  "
-#	add $rounds 1
-#	goto :movefighters
-#elseif ($rounds < 1)
-#	goto :movedone
-#end
-
-:movedone
 if ($startlocation = "Citadel")
 	send "c"
 end

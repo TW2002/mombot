@@ -17,6 +17,7 @@ if ($startinglocation = "Command")
 elseif ($startinglocation = "Citadel")
 	send "q"
 	gosub :planet~getplanetinfo
+	setvar $startingplanet $planet~current_planet
 	send "q"
 elseif ($startinglocation = "Planet")
 	send "d"
@@ -134,6 +135,10 @@ setvar $6PERCENTFORMATTED $outputvariable
 setvar $figsgridded true
 if (($startinglocation = "Citadel") or ($startinglocation = "Planet"))
 	gosub :planet~landingsub
+	gosub :player~quikstats
+	if ($startinglocation = "Citadel") and ($player~current_prompt = "Planet")
+		send "c"
+	end
 end
 
 send "'*{"&$switchboard~bot_name&"}*          - Fighter Grid Report -*          - "&$count&" sectors, "&$personalcount&" personal. ("&$percent&"%) ("&$gridchange&" Change)*          - T: "&$tollcount&"  O: "&$offcount&"  D:"&$defcount&"*          - DE: "&$1SCOUNTFORMATTED&""&$1PERCENTFORMATTED&" 2S: "&$2SCOUNTFORMATTED&""&$2PERCENTFORMATTED&" 3S: "&$3SCOUNTFORMATTED&""&$3PERCENTFORMATTED&"*          - 4S: "&$4SCOUNTFORMATTED&""&$4PERCENTFORMATTED&" 5S: "&$5SCOUNTFORMATTED&""&$5PERCENTFORMATTED&" 6S: "&$6SCOUNTFORMATTED&""&$6PERCENTFORMATTED&"*          - Upgraded Sxx: "&$upgradedfuelcount&" ("&$gridfuelchange&" Change)*          - Upgraded xBx: "&$upgradedorgcount&" ("&$gridorgchange&" Change)*          - Upgraded xxB: "&$upgradedequipcount&" ("&$gridequipchange&" Change)*          - Upgraded xxS: "&$upgradedequipsellcount&" ("&$gridequipsellchange&" Change)*          - Upgraded Bxx: "&$upgradedfuelbuycount&" ("&$gridfuelbuychange&" Change)**"

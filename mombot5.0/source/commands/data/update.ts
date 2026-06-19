@@ -97,6 +97,10 @@ if ($cim)
 	if (($startinglocation = "Citadel") or ($startinglocation = "Planet"))
 		gosub :planet~landingsub
 	end
+	gosub :player~quikstats
+	if ($startinglocation = "Citadel") and ($player~current_prompt = "Planet")
+		send "c"
+	end
 else
 	gosub :player~turnoffansi
 	if ($all or $fighter)
@@ -111,6 +115,10 @@ else
 	gosub :player~turnonansi
 	if (($startinglocation = "Citadel") or ($startinglocation = "Planet"))
 		gosub :planet~landingsub
+		gosub :player~quikstats
+		if ($startinglocation = "Citadel") and ($player~current_prompt = "Planet")
+			send "c"
+		end
 	end
 
 	setvar $switchboard~message ""

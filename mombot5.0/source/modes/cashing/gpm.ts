@@ -938,8 +938,8 @@ return
 :selloff_planet
 killalltriggers
 setvar $temp currentline
-gettext $temp $planet "<" ">"
-striptext $planet " "
+gettext $temp $planet~planet "<" ">"
+striptext $planet~planet " "
 getwordpos $temp $pos ">"
 cuttext $temp $pinfo ($pos + 2) 999
 getwordpos $pinfo $plvl "        None"
@@ -952,8 +952,8 @@ goto :selloff_loop
 :selloff_landed
 killalltriggers
 waiton "Planet #"
-getword currentline $planet 2
-striptext $planet "#"
+getword currentline $planet~planet 2
+striptext $planet~planet "#"
 add $selloff_count 1
 setvar $selloff_list[$selloff_count] $planet
 
@@ -972,15 +972,15 @@ end
 setvar $i 0
 while ($i < $selloff_count)
 	add $i 1
-	setvar $planet $selloff_list[$i]
-	send "l " $planet "*"
+	setvar $planet~planet $selloff_list[$i]
+	send "l " $planet~planet "*"
 	waiton "Created by"
-	gosub :getplaninfo
+	gosub :planet~getplanetinfo
 	setvar $pmacro ""
 	if ($claimedby <> $my_name)
 		setvar $pmacro "  O  P"
 	end
-	if ($holds_ore < $holds_total) and ($fueltosell > 50)
+	if ($holds_ore < $holds_total) and ($planet~planetfuel > 50)
 		setvar $pmacro "  T  N  T  1  *  "
 	end
 	setvar $pmacro $pmacro & "q"
@@ -989,34 +989,34 @@ while ($i < $selloff_count)
 	waiton "Command [TL"
 
 	if ($debug = true)
-		echo "fueltosell " $fueltosell " orgtosell " $orgtosell " equiptosell " $equiptosell "*"
+		echo "fueltosell " $planet~planetfuel " orgtosell " $planet~planetorg " equiptosell " $planet~planetequip "*"
 		echo "orebuying " $buysell[fuel] " oretrading " $portqty[fuel] "*"
 		echo "orgbuying " $buysell[organics] " orgtrading " $portqty[organics] "*"
 		echo "equbuying " $buysell[equipment] " equtrading " $portqty[equipment] "*"
 	end
 
 	if ($sell_ore <> 1) or ($buysell[fuel] <> "BUYING") or ($percent[fuel] < 15)
-		setvar $fueltosell 0
+		setvar $planet~planetfuel 0
 	end
 
 	if ($sell_org <> 1) or ($buysell[organics] <> "BUYING") or ($percent[organics] < 15)
-		setvar $orgtosell 0
+		setvar $planet~planetorg 0
 	end
 
 	if ($sell_equ <> 1) or ($buysell[equipment] <> "BUYING") or ($percent[equipment] < 15)
-		setvar $equiptosell 0
+		setvar $planet~planetequip 0
 	end
 
-	if ($fueltosell = 0) and ($orgtosell = 0) and ($equiptosell = 0)
+	if ($planet~planetfuel = 0) and ($planet~planetorg = 0) and ($planet~planetequip = 0)
 		if ($debug = true)
-			echo "Nothing to sell on planet " $planet ", skipping*"
+			echo "Nothing to sell on planet " $planet~planet ", skipping*"
 			return
 		end
 	end
 
-	if ($fueltosell > 0) or ($orgtosell > 0) or ($equiptosell > 0)
+	if ($planet~planetfuel > 0) or ($planet~planetorg > 0) or ($planet~planetequip > 0)
 		if ($debug = true)
-			echo "Attempting to negotiate planet " $planet "*"
+			echo "Attempting to negotiate planet " $planet~planet "*"
 		end
 		gosub :planetneg
 		if ($neg_success = 1)
@@ -2849,7 +2849,7 @@ if ($madeone = 1)
 			add $overloadsdone 1
 			setvar $overloadtries 1
 		else
-			send "l " $planet & "*"
+			send "l " $planet~planet & "*"
 			waiton "Planet command"
 			gosub :blowplanet
 		end
@@ -2857,9 +2857,9 @@ if ($madeone = 1)
 	setvar $madeone 0
 end
 
-setvar $fueltosell 0
-setvar $orgtosell 0
-setvar $equiptosell 0
+setvar $planet~planetfuel 0
+setvar $planet~planetorg 0
+setvar $planet~planetequip 0
 setvar $ptr 1
 
 gosub :pop_planet
@@ -2868,7 +2868,7 @@ add $psec 1
 #Gosub :LAND_ON_PLANET
 gosub :getpnum
 
-if ($planet > $max_planetnum)
+if ($planet~planet > $max_planetnum)
 	setvar $max_planetnum $planet
 	setvar $game_planets $game~max_planets_in_game
 	subtract $game_planets $max_planetnum
@@ -2876,14 +2876,14 @@ end
 
 while ($planet~planetprods[$ptr] <> "0")
 	if ($planet~planetprods[$ptr] = $lookingfor)
-		setvar $fueltosell $planet~planetprods[$ptr][1]
-		setvar $orgtosell $planet~planetprods[$ptr][2]
-		setvar $equiptosell $planet~planetprods[$ptr][3]
-		if ($player~ore_holds < $player~total_holds) and ($fueltosell > 100)
-			send "l " $planet "* t n t1* q "
+		setvar $planet~planetfuel $planet~planetprods[$ptr][1]
+		setvar $planet~planetorg $planet~planetprods[$ptr][2]
+		setvar $planet~planetequip $planet~planetprods[$ptr][3]
+		if ($player~ore_holds < $player~total_holds) and ($planet~planetfuel > 100)
+			send "l " $planet~planet "* t n t1* q "
 			add $turncount 1
 		end
-		if ($fueltosell = 0) and ($orgtosell = 0) and ($equiptosell = 0)
+		if ($planet~planetfuel = 0) and ($planet~planetorg = 0) and ($planet~planetequip = 0)
 			goto :noselloff
 		else
 			goto :selloff
@@ -2895,22 +2895,12 @@ end
 setvar $hagglefailed 0
 
 # New Planet not in Catalog is Scanned and Saved
-send "l " $planet "*"
-gosub :getplaninfo
+send "l " $planet~planet "*"
+gosub :planet~getplanetinfo
+gosub :planet~updateplanetprods
 
-setvar $planet~planetprods[$ptr] $lookingfor
-setvar $planet~planetprods[$ptr][1] $fueltosell
-setvar $planet~planetprods[$ptr][2] $orgtosell
-setvar $planet~planetprods[$ptr][3] $equiptosell
-#SetVar $LINE $PLANET~PLANETPRODS[$PTR] & #9 & $PLANET~PLANETPRODS[$PTR][1] & " " & $PLANET~PLANETPRODS[$PTR][2] & " " & $PLANET~PLANETPRODS[$PTR][3]
-setvar $line $planet~planetprods[$ptr][1] & " " & $planet~planetprods[$ptr][2] & " " & $planet~planetprods[$ptr][3] & " " & $planet~planetprods[$ptr]
-write $planet~planet_prods_file $line
-setvar $nextptr $ptr
-add $nextptr 1
-setvar $planet~planetprods[$nextptr] "0"
-
-if ($player~ore_holds < $player~total_holds) and ($fueltosell > 100)
-	send "l " $planet "* t n t1* q "
+if ($player~ore_holds < $player~total_holds) and ($planet~planetfuel > 100)
+	send "l " $planet~planet "* t n t1* q "
 	add $turncount 1
 else
 	send "q "
@@ -2918,32 +2908,32 @@ end
 
 :selloff
 if ($debug = true)
-	echo "fueltosell " $fueltosell " orgtosell " $orgtosell " equiptosell " $equiptosell "*"
+	echo "fueltosell " $planet~planetfuel " orgtosell " $planet~planetorg " equiptosell " $planet~planetequip "*"
 	echo "orebuying " $buysell[fuel] " oretrading " $portqty[fuel] "*"
 	echo "orgbuying " $buysell[organics] " orgtrading " $portqty[organics] "*"
 	echo "equbuying " $buysell[equipment] " equtrading " $portqty[equipment] "*"
 end
 
 if ($sell_ore <> 1) or ($buysell[fuel] <> "BUYING") or ($percent[fuel] < 15)
-	setvar $fueltosell 0
+	setvar $planet~planetfuel 0
 end
 
 if ($sell_org <> 1) or ($buysell[organics] <> "BUYING") or ($percent[organics] < 15)
-	setvar $orgtosell 0
+	setvar $planet~planetorg 0
 end
 
 if ($sell_equ <> 1) or ($buysell[equipment] <> "BUYING") or ($percent[equipment] < 15)
-	setvar $equiptosell 0
+	setvar $planet~planetequip 0
 end
 
 if ($debug = true)
-	echo "fueltosell " $fueltosell " orgtosell " $orgtosell " equiptosell " $equiptosell "*"
+	echo "fueltosell " $planet~planetfuel " orgtosell " $planet~planetorg " equiptosell " $planet~planetequip "*"
 	echo "orebuying " $buysell[fuel] " oretrading " $portqty[fuel] "*"
 	echo "orgbuying " $buysell[organics] " orgtrading " $portqty[organics] "*"
 	echo "equbuying " $buysell[equipment] " equtrading " $portqty[equipment] "*"
 end
 
-if ($fueltosell > 0) or ($orgtosell > 0) or ($equiptosell > 0)
+if ($planet~planetfuel > 0) or ($planet~planetorg > 0) or ($planet~planetequip > 0)
 	if ($player~unlimitedgame = false) and ($player~turns <= $bot~bot_turn_limit)
 		setvar $switchboard~message "Out of turns, halting!*"
 		gosub :switchboard~switchboard
@@ -3058,7 +3048,7 @@ return
 #send #145
 gosub :current_prompt
 if ($player~current_prompt = "Command")
-	send "l " $planet "* "
+	send "l " $planet~planet "* "
 	waiton "Planet command"
 	#elseif ($PLAYER~CURRENT_PROMPT <> "Planet")
 	#	echo "**Unexpected prompt for blowPlanet: " $PLAYER~CURRENT_PROMPT "*"
@@ -3071,7 +3061,7 @@ if ($player~atomic = 0)
 end
 
 add $turncount 1
-if ($holds_ore < $holds_total) and ($fueltosell > 50)
+if ($holds_ore < $holds_total) and ($planet~planetfuel > 50)
 	send "  T  N  T  1  *  "
 end
 send "  Z  D  Y  *  "
@@ -3152,22 +3142,22 @@ goto :cleanup_done
 :cleanup_planet
 killalltriggers
 setvar $temp currentline
-gettext $temp $planet "<" ">"
-striptext $planet " "
+gettext $temp $planet~planet "<" ">"
+striptext $planet~planet " "
 getwordpos $temp $pos ">"
 cuttext $temp $pinfo ($pos + 2) 999
 getword $pinfo $cpname 1
 getlength $pname $plen
 cuttext $cpname $cptest 1 $plen
 if ($cptest = $pname)
-	send $planet & "*"
+	send $planet~planet & "*"
 	goto :cleanup_landed
 elseif ($planet_scanner = "Yes") and ($gopop_cleanall = "yes")
 	getwordpos $temp $pos ">"
 	cuttext $temp $pinfo ($pos + 2) 999
 	getwordpos $pinfo $plvl "        None"
 	if ($plvl > 0)
-		send $planet & "*"
+		send $planet~planet & "*"
 		goto :cleanup_landed
 	end
 end
@@ -3175,10 +3165,10 @@ goto :cleanuploop
 
 :cleanup_landed
 killalltriggers
-gosub :getplaninfo
+gosub :planet~getplanetinfo
 
 if ($player~fighters > $gopop_blowfigs)
-	if ($planetfuelcolos > 0) or ($planetorgcolos > 0) or ($planetequipcolos > 0)
+	if ($planet~planetfuelcolos > 0) or ($planet~planetorgcolos > 0) or ($planet~planetequipcolos > 0)
 		if ($debug = true)
 			echo "*Planet has colos, leavin that shit alone!*"
 		end
@@ -4224,37 +4214,22 @@ end
 return
 
 ##################################################################################################################################
-:getplaninfo
-gosub :planet~getplanetinfo
-setvar $planet $planet~planet
-setvar $planetfuel $planet~planetfuel
-setvar $planetorg $planet~planetorg
-setvar $planetequip $planet~planetequip
-setvar $planetfig $planet~planetfig
-setvar $citadel $planet~citadel
-setvar $citadelcredits $planet~citadel_credits
-setvar $fueltosell $planet~planetfuel
-setvar $orgtosell $planet~planetorg
-setvar $equiptosell $planet~planetequip
-return
-
-##################################################################################################################################
 :planetneg
 setvar $neg_success 0
 setvar $fuelsold 0
 setvar $orgsold 0
 setvar $equsold 0
 
-setvar $planethaggle~_ck_pnego_fueltosell $fueltosell
-setvar $planethaggle~_ck_pnego_orgtosell $orgtosell
-setvar $planethaggle~_ck_pnego_equiptosell $equiptosell
+setvar $planethaggle~_ck_pnego_fueltosell $planet~planetfuel
+setvar $planethaggle~_ck_pnego_orgtosell $planet~planetorg
+setvar $planethaggle~_ck_pnego_equiptosell $planet~planetequip
 
 setvar $planet~planet $planet
 setvar $planethaggle~oreprofit 0
 setvar $planethaggle~orgprofit 0
 setvar $planethaggle~equprofit 0
 
-send "l " & $planet & "*"
+send "l " & $planet~planet & "*"
 waiton "Planet command"
 setvar $player~current_prompt "Planet"
 gosub :planethaggle~planetneg
@@ -4378,18 +4353,18 @@ halt
 :scanning_for
 killalltriggers
 setvar $temp currentline
-gettext $temp $planet "<" ">"
-striptext $planet " "
+gettext $temp $planet~planet "<" ">"
+striptext $planet~planet " "
 waiton " <Q to abort> ?"
-#Send $planet & "*   "
+#Send $planet~planet & "*   "
 send "q* "
 return
 
 :scanning_landed
 killalltriggers
 waiton "Planet #"
-getword currentline $planet 2
-striptext $planet "#"
+getword currentline $planet~planet 2
+striptext $planet~planet "#"
 waiton "Planet command"
 send "q "
 #SetVar $PLAYER~CURRENT_PROMPT "Planet"
@@ -4412,10 +4387,10 @@ halt
 :scanning_for
 killalltriggers
 setvar $temp currentline
-gettext $temp $planet "<" ">"
-striptext $planet " "
+gettext $temp $planet~planet "<" ">"
+striptext $planet~planet " "
 waiton " <Q to abort> ?"
-send $planet & "*  "
+send $planet~planet & "*  "
 
 :scanning_landed
 killalltriggers

@@ -254,6 +254,7 @@ goto :endfarmer
 
 :farmplanet
 killalltriggers
+setvar $farmplanetdone false
 setvar $i 0
 
 :tryagain
@@ -312,10 +313,13 @@ while ($i <= $farmlistcount)
 			end
 			gosub :planet~getplanetinfo
 		end
-		gosub :checkfull
 		if ($planet~planet <> $planet~planettofill)
 			send "qqq**"
 			goto :retryland2
+		end
+		gosub :checkfull
+		if ($farmplanetdone = true)
+			goto :finishfarmplanet
 		end
 		if ($skipsector = true)
 			goto :tryagain2
@@ -354,8 +358,13 @@ while ($i <= $farmlistcount)
 		end
 	end
 	gosub :checkfull
+	if ($farmplanetdone = true)
+		goto :finishfarmplanet
+	end
 	add $i 1
 end
+
+:finishfarmplanet
 gosub :player~currentprompt
 if ($player~current_prompt = "Command")
 	setvar $planet~planet $planet~planettofill			
@@ -893,7 +902,9 @@ setvar $relog_nocitadel 0
 savevar $relog_nocitadel
 return
 
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :getcolosfromfile
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $i 0
 setvar $fuelcolos 0
 setvar $orgcolos 0
@@ -1123,9 +1134,10 @@ else
 end
 if ($oretofill <= 0) and ($orgtofill <= 0) and ($equtofill <= 0) and ($fuelcolstofill <= 0) and ($orgcolstofill <= 0) and ($equcolstofill <= 0)
 	if ($figstofill <= 0)
-		goto :endfarmer
+		setvar $farmplanetdone true
+		return
 	end
-	if ($planet~planets[$j][3] < ($ship~ship_fighters_max / 10))
+	if ($j <= $planet~planetcount) and ($planet~planets[$j][3] < ($ship~ship_fighters_max / 10))
 		setvar $skipsector true
 	end
 end

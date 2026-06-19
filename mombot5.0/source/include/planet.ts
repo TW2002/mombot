@@ -87,6 +87,166 @@ gosub :player~msgs_on
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:planet~getplanets
+#
+# Creates the following array:
+# $planetlistcount = number of planets
+# $planetlist[x] = planet id
+# $planetlist[x][1] = sector
+# $planetlist[x][2] = class
+# $planetlist[x][3] = citadel level
+# $planetlist[x][4] = shields
+# $planetlist[x][5] = ore production
+# $planetlist[x][6] = org production
+# $planetlist[x][7] = equ production
+# $planetlist[x][8] = ore on hand
+# $planetlist[x][9] = org on hand
+# $planetlist[x][10] = equ on hand
+# $planetlist[x][11] = fighters
+# $planetlist[x][12] = credits
+# $planetlist[x][13] = type (pers or corp)
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :player~currentprompt
+setvar $startingprompt $player~current_prompt
+if ($startingprompt = "Citadel")
+	send "q "
+end
+if ($startingprompt = "Planet") or ($startingprompt = "Citadel")
+	gosub :planet~getplanetinfo
+	setvar $startingplanet $planet~planet
+	send "q "
+end
+gosub :player~currentprompt
+if ($player~current_prompt <> "Command")
+	setvar $switchboard~message "Error - unknown prompt! :planet~getplanets exiting.*"
+	gosub :switchboard~switchboard
+	return
+end
+
+setarray $planetlist 2000 13
+setvar $planetlistcount 0
+setvar $pers false
+send "tl"
+
+:buildplanetlist
+waitfor "========="
+settextlinetrigger gotplanet :gotplanet "Class"
+settextlinetrigger endtl :endtl "======   ============"
+settextlinetrigger endtl2 :endtl "No Planets claimed"
+settextlinetrigger endtl3 :endtl "Computer command"
+pause
+
+:gotplanet
+setvar $line currentline
+getword $line $sector 1
+getword $line $pnum 2
+cuttext $pnum $pnum_first_char 1 1
+if ($pnum_first_char <> "#")
+	getword $line $pnum 3
+end
+striptext $pnum "#"
+getwordpos $line $pos "Class "
+cuttext $line $tmpclass $pos 999
+getwordpos $tmpclass $pos2 "   "
+cuttext $tmpclass $class 1 ($pos2 - 1)
+getwordpos $tmpclass $pos "Level "
+if ($pos > 0)
+	cuttext $tmpclass $lvl $pos 999
+	getword $lvl $level 2
+else
+	setvar $level 0
+end
+add $planetlistcount 1
+setvar $planetlist[$planetlistcount] $pnum
+setvar $planetlist[$planetlistcount][1] $sector
+setvar $planetlist[$planetlistcount][2] $class
+setvar $planetlist[$planetlistcount][3] $level
+settextlinetrigger gotplanet2 :gotplanet2 "  "
+pause
+:gotplanet2
+setvar $line currentline
+# shields
+getword $line $num 1
+gosub :convertnum
+setvar $planetlist[$planetlistcount][4] $num
+# ore production
+getword $line $num 3
+gosub :convertnum
+setvar $planetlist[$planetlistcount][5] $num
+# org production
+getword $line $num 4
+gosub :convertnum
+setvar $planetlist[$planetlistcount][6] $num
+# equ production
+getword $line $num 5
+gosub :convertnum
+setvar $planetlist[$planetlistcount][7] $num
+# ore on hand
+getword $line $num 6
+gosub :convertnum
+setvar $planetlist[$planetlistcount][8] $num
+# org on hand
+getword $line $num 7
+gosub :convertnum
+setvar $planetlist[$planetlistcount][9] $num
+# equ on hand
+getword $line $num 8
+gosub :convertnum
+setvar $planetlist[$planetlistcount][10] $num
+# fighters
+getword $line $num 9
+gosub :convertnum
+setvar $planetlist[$planetlistcount][11] $num
+# credits
+getword $line $num 10
+gosub :convertnum
+setvar $planetlist[$planetlistcount][12] $num
+if ($pers = true)
+	setvar $planetlist[$planetlistcount][13] "pers"
+else
+	setvar $planetlist[$planetlistcount][13] "corp"
+end
+settextlinetrigger gotplanet :gotplanet "Class"
+pause
+
+:endtl
+killalltriggers
+if ($pers = false)
+	setvar $pers true
+	send "qcy"
+	goto :buildplanetlist
+else
+	setvar $pers false
+end
+send "q "
+if ($startingprompt = "Citadel") or ($startingprompt = "Planet")
+	send "l " &$startingplanet&"* "
+end
+if ($startingprompt = "Citadel")
+	send "c "
+end
+return
+
+:convertnum
+if ($num = 0)
+	return
+end
+if ($num = "---")
+	setvar $num 0
+	return
+end
+getlength $num $len
+cuttext $num $multiplier $len $len
+if ($multiplier = "M")
+	cuttext $num $num2 1 ($len - 1)
+	setvar $num ($num2 * 1000000)
+elseif ($multiplier = "T")
+	cuttext $num $num2 1 ($len - 1)
+	setvar $num ($num2 * 1000)
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :planet~planetcheck
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $planet~planetcheck_i 1
@@ -725,6 +885,7 @@ goto :planet~shp_loop
 setvar $planet~planetstatloop 0
 
 :planet~shp_planetstats
+delete $planet~planet_file
 while ($planet~planetstatloop < $planet~totalplanets)
 	add $planet~planetstatloop 1
 	add $planet~alphaloop 1
@@ -739,66 +900,87 @@ while ($planet~planetstatloop < $planet~totalplanets)
 	:planet~sn
 	setvar $planet~line currentline
 	getwordpos $planet~line $planet~pos "Class"
-
 	cuttext $planet~line $planet~planet_name $planet~pos 999
-	setvar $planet~planet_fuel_colonists_min 50000
-	setvar $planet~planet_fuel_colonists_max 50000
-	setvar $planet~planet_org_colonists_min 50000
-	setvar $planet~planet_org_colonists_max 50000
-	setvar $planet~planet_equip_colonists_min 50000
-	setvar $planet~planet_equip_colonists_max 50000
+
+	setvar $planet~planet_fuel_colonists_max 0
+	setvar $planet~planet_fuel_colonists_rate 0
+	setvar $planet~planet_org_colonists_max 0
+	setvar $planet~planet_org_colonists_rate 0
+	setvar $planet~planet_equip_colonists_max 0
+	setvar $planet~planet_equip_colonists_rate 0
 	gosub :planet~readplanettypestats
-	write $planet~planet_file $planet~planet_fuel_colonists_min&" "&$planet~planet_fuel_colonists_max&" "&$planet~planet_org_colonists_min&" "&$planet~planet_org_colonists_max&" "&$planet~planet_equip_colonists_min&" "&$planet~planet_equip_colonists_max&" 0  "&$planet~planet_name
+	write $planet~planet_file $planet~planet_fuel_colonists_max&" "&$planet~planet_fuel_colonists_rate&" "&$planet~planet_org_colonists_max&" "&$planet~planet_org_colonists_rate&" "&$planet~planet_equip_colonists_max&" "&$planet~planet_equip_colonists_rate&" "&$planet~planet_name
 end
 send "qq"
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:planet~readplanettypestats
+:readplanettypestats
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:planet~readplanettypestats_wait
-settextlinetrigger planetstat_cols :planet~readplanettypestats_cols "Cols -"
-settexttrigger planetstat_done :planet~readplanettypestats_done "Which planet type are you interested in (?=List)"
+:readplanettypestats_wait
+settextlinetrigger planetstat_cols :readplanettypestats_cols "Cols -"
+settextlinetrigger planetstats_ore :readstatsprod "Fuel Ore"
+settextlinetrigger planetstats_org :readstatsprod "Organics"
+settextlinetrigger planetstats_equ :readstatsprod "Equipment"
+settexttrigger planetstat_done :readplanettypestats_done "Which planet type are you interested in (?=List)"
 pause
 
-:planet~readplanettypestats_cols
+:readplanettypestats_cols
 killalltriggers
-setvar $planet~stat_line currentline
-gosub :planet~getplanettypecols
-if ($planet~parsed_cols > 0)
-	getwordpos $planet~stat_line $planet~pos "Ore"
-	if ($planet~pos > 0)
-		setvar $planet~planet_fuel_colonists_min $planet~parsed_cols
-		setvar $planet~planet_fuel_colonists_max $planet~parsed_cols
+setvar $stat_line currentline
+setvar $parsed_cols 0
+gettext $stat_line $parsed_cols "Cols -" "/"
+striptext $parsed_cols " "
+striptext $parsed_cols ","
+isnumber $isnumber $parsed_cols
+if ($isnumber <> true)
+	setvar $parsed_cols 0
+end
+
+if ($parsed_cols > 0)
+	getwordpos $stat_line $pos "Ore"
+	if ($pos > 0)
+		setvar $planet_fuel_colonists_max $parsed_cols
 	end
-	getwordpos $planet~stat_line $planet~pos "Org"
-	if ($planet~pos > 0)
-		setvar $planet~planet_org_colonists_min $planet~parsed_cols
-		setvar $planet~planet_org_colonists_max $planet~parsed_cols
+	getwordpos $stat_line $pos "Org"
+	if ($pos > 0)
+		setvar $planet_org_colonists_max $parsed_cols
 	end
-	getwordpos $planet~stat_line $planet~pos "Eq"
-	if ($planet~pos > 0)
-		setvar $planet~planet_equip_colonists_min $planet~parsed_cols
-		setvar $planet~planet_equip_colonists_max $planet~parsed_cols
+	getwordpos $stat_line $pos "Eq"
+	if ($pos > 0)
+		setvar $planet_equip_colonists_max $parsed_cols
 	end
 end
-goto :planet~readplanettypestats_wait
+goto :readplanettypestats_wait
 
-:planet~readplanettypestats_done
+:readstatsprod
 killalltriggers
-return
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:planet~getplanettypecols
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $planet~parsed_cols 0
-gettext $planet~stat_line $planet~parsed_cols "Cols -" "/"
-striptext $planet~parsed_cols " "
-striptext $planet~parsed_cols ","
-isnumber $planet~isnumber $planet~parsed_cols
-if ($planet~isnumber <> true)
-	setvar $planet~parsed_cols 0
+setvar $stat_line currentline
+getwordpos $stat_line $pos ":1"
+cuttext $stat_line $parsed_num ($pos - 4) 4
+striptext $parsed_num " "
+striptext $parsed_num "│"
+#echo "**Parsed num: " & $parsed_num & "**"
+isnumber $isnumber $parsed_num
+if ($isnumber <> true)
+	setvar $parsed_num 0
 end
+getwordpos $stat_line $pos "Fuel Ore"
+if ($pos > 0)
+	setvar $planet_fuel_colonists_rate $parsed_num
+end
+getwordpos $stat_line $pos "Organics"
+if ($pos > 0)
+	setvar $planet_org_colonists_rate $parsed_num
+end
+getwordpos $stat_line $pos "Equipment"
+if ($pos > 0)
+	setvar $planet_equip_colonists_rate $parsed_num
+end
+goto :readplanettypestats_wait
+
+:readplanettypestats_done
+killalltriggers
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -1174,13 +1356,18 @@ setvar $startingplanet $planet~planet
 if ($planet~planettofill = 0)
 	return
 end
+
+if ($planet~category = 6)
+	goto :movecreds
+end
+
 if ($planet~type <> "t") and ($planet~type <> "s") and ($planet~type <> "m")
 	return
 end
 if (($planet~moveholds = 0) and ($planet~moveamount = 0) and ($planet~moveextra = 0))
 	return
 end
-if ($planet~category < 1) or ($planet~category > 4)
+if ($planet~category < 1) or ($planet~category > 6)
 	return
 end
 if ($category = 4)
@@ -1198,8 +1385,6 @@ gosub :player~quikstats
 setvar $player~turns ($player~turns-1)
 setvar $count 0
 setvar $planet~burstsize 1000
-
-send "q jy"
 
 :moveproductloop
 killtrigger success
@@ -1344,6 +1529,39 @@ else
 	setvar $movesuccess true
 end
 return
+
+:movecreds
+gosub :player~quikstats
+setvar $startingcredits $player~credits
+
+if ($player~credits >= $planet~moveamount)
+	send "q l "&$planet~planettofill&"* ctt"&$moveamount&"* q q l "&$startingplanet&"* ctf"&$moveamount&"* q q "
+	return
+end
+
+send "c"
+waiton "Citadel treasury contains"
+getword currentline $planet~citadel_credits 5
+striptext $planet~citadel_credits ","
+
+while ($moveamount > 0)
+	setvar $credstoget ($moveamount - $player~credits)
+	if ($credstoget > 999999999)
+		setvar $credstoget (999999999 - $player~credits)
+	end
+	send "tf" & $credstoget & "* "
+	add $player~credits $credstoget
+	subtract $moveamount $player~credits
+	send "q q l "&$planet~planettofill&"* ctt"&$player~credits&"* q q l "&$startingplanet&"* c"
+	setvar $player~credits 0
+end
+
+send "tf"&$startingcredits&"*"
+waiton "You have "
+getword currentline $player~credits 3
+striptext $player~credits ","
+send "q q l "&$startingplanet&"* "
+goto :move_done
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :planet~stripplanet

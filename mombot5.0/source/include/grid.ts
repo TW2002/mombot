@@ -36,6 +36,13 @@ end
 if ($ship~ship_max_attack > $player~fighters)
 	setvar $ship~ship_max_attack ($player~fighters / 2)
 end
+setvar $grid~avoidedsectors " "
+gosub :sector~getavoids
+setvar $grid~avoid_i 0
+while ($grid~avoid_i < $sector~avoidcount)
+	add $grid~avoid_i 1
+	setvar $grid~avoidedsectors $grid~avoidedsectors&$sector~avoids[$grid~avoid_i]&" "
+end
 
 setvar $grid~i 1
 setvar $grid~surroundstring "c v 0* y* "&$player~current_sector&"* q "
@@ -72,6 +79,7 @@ while (sector.warps[$player~current_sector][$grid~i] > 0)
 	setvar $grid~figowner sector.figs.owner[$grid~adj_sec]
 	setvar $grid~mineowner sector.mines.owner[$grid~adj_sec]
 	setvar $grid~limpowner sector.limpets.owner[$grid~adj_sec]
+	getwordpos $grid~avoidedsectors $grid~avoid_pos " "&$grid~adj_sec&" "
 	getword $grid~figowner $grid~aliencheck 1
 	lowercase $grid~aliencheck
 
@@ -85,6 +93,8 @@ while (sector.warps[$player~current_sector][$grid~i] > 0)
 		setvar $player~surroundoutput $player~surroundoutput&"(Surround) Too many fighters in sector "&$grid~adj_sec&".*"
 	elseif (($grid~adj_sec <= 10) or ($grid~adj_sec = $map~stardock))
 		setvar $player~surroundoutput $player~surroundoutput&"(Surround) Avoided Fed Space, sector "&$grid~adj_sec&".*"
+	elseif ($grid~avoid_pos > 0)
+		setvar $player~surroundoutput $player~surroundoutput&"(Surround) Avoided user-avoided sector "&$grid~adj_sec&".*"
 	elseif ((sector.planetcount[$grid~adj_sec] > 0) and $player~surroundavoidallplanets)
 		setvar $player~surroundoutput $player~surroundoutput&"(Surround) Avoided planet in sector "&$grid~adj_sec&".*"
 	elseif (($grid~containsshieldedplanet = true) and ($player~surroundavoidshieldedonly = true))
@@ -512,3 +522,4 @@ return
 include "source\include\ship"
 include "source\include\planet"
 include "source\include\player"
+include "source\include\sector"
