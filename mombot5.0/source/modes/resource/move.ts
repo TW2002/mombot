@@ -92,6 +92,8 @@ if ($startlocation = "Citadel")
 	send "q"
 end
 
+#send "q  j  y l "&$parm2&" *  "
+
 :startmover
 gosub :getplanetinfo
 if (($moveall = true) and (($stuffmoved = "Fuel Colonists") or ($stuffmoved = "Organic Colonists") or ($stuffmoved = "Equipment Colonists")))
@@ -213,6 +215,11 @@ end
 
 if ($startlocation = "Citadel")
 	send "c"
+end
+if ($planet~movesuccess = false)
+	setvar $switchboard~message "Move failed: "&$planet~moveerror&"*"
+	gosub :switchboard~switchboard
+	halt
 end
 if ($moveall = true)
 	setvar $switchboard~message "Moved all "&$stuffmoved&" from "&$planet&" to "&$parm2&".*"

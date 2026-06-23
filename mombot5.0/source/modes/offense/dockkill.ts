@@ -130,7 +130,8 @@ else
 	end
 end
 
-if ($ship~ship_max_attack <= 0)
+isnumber $shipstatsvalid $ship~ship_max_attack
+if (($shipstatsvalid = false) or ($ship~ship_max_attack <= 0) or ($ship~ship_fighters_max <= 0))
 	gosub :ship~getshipstats
 	savevar $ship~ship_fighters_max
 	savevar $ship~ship_max_attack
@@ -206,9 +207,13 @@ if ($player~fighters < $ship~ship_fighters_max)
 end
 if ($hide = true)
 	if ($player~current_sector = stardock)
-		send "P  S G Y G Q s p"
+		if ($player~current_prompt = "<StarDock>")
+			send "s p q q q "
+		else
+			send "P  S G Y G Q s p q q q "
+		end
 	else
-		send "p ty"
+		send "p ty q "
 	end
 	gosub :switchboard~switchboard
 	halt

@@ -1381,6 +1381,8 @@ if ($category = 4)
 	send "m n l*"
 end
 
+send "q j y l "&$startingplanet&"*"
+
 gosub :player~quikstats
 setvar $player~turns ($player~turns-1)
 setvar $count 0
@@ -1498,6 +1500,7 @@ return
 :move_failed
 killalltriggers
 setvar $movefailed true
+setvar $moveerror currentline
 send "q q * * j y "
 
 :move_done

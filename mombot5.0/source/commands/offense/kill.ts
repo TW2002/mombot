@@ -59,6 +59,7 @@ else
 	if ($ship~ship_max_attack <= 0)
 		gosub :ship~getshipstats
 	end
+	gosub :player~quikstats
 	setvar $player~isfound false
 	gosub :sector~getsectordata
 	gosub :combat~fastattack
