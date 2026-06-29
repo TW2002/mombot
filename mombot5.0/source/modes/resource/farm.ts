@@ -1,4 +1,5 @@
 gosub :loadvars~loadvars
+loadvar $bot~bot_name
 loadvar $farmsectors
 
 gosub :help~initialize
@@ -166,6 +167,10 @@ getwordpos " "&$bot~user_command_line&" " $pos2 " figs "
 if (($pos > 0) or ($pos2 > 0))
 	setvar $planet~emptyfigs true
 	setvar $prodstofarm true
+	getwordpos " "&$bot~user_command_line&" " $pos " dump "
+	if ($pos > 0)
+		setvar $planet~dumpfigs true
+	end
 else
 	setvar $planet~emptyfigs false
 end
@@ -243,8 +248,9 @@ while ($p < $planetlist_count)
 	setvar $planet~skip_over_99 true
 	send "qqq*"
 	setvar $planet~planet $planet~planettofill
+	setvar $planet~nocit true
 	gosub :planet~landingsub
-	if ($planet~sucessfulplanet = true)
+	if ($planet~successfulplanet = true)
 		setvar $switchboard~message "Farm is filling planet " $planet~planettofill ".*"
 		gosub :switchboard~switchboard
 		gosub :farmplanet
@@ -260,106 +266,61 @@ setvar $i 0
 :tryagain
 add $i 1
 while ($i <= $farmlistcount)
-	:retryland
-	gosub :player~currentprompt
-	if ($player~current_prompt = "Command")
-		setvar $planet~planet $planet~planettofill
-		gosub :planet~landingsub
-		if ($planet~sucessfulplanet = false)
-			goto :endfarmer
-		end
-		gosub :player~currentprompt
-	end
-	if ($player~current_prompt = "Planet")
-		send "c"
-	end
-	send "q"
-	gosub :planet~getplanetinfo
-	if ($planet~planet <> $planet~planettofill)
-		send "qqq**"
-		goto :retryland
-	end
+	gosub :landstartingplanet
 	send "c"
 	setvar $planet~warpto $sector[$i]
 	gosub :planet~pwarp
 	if ($planet~pwarpsuccess = false)
 		goto :tryagain
 	end
-
 	send "qqq**"
+
 	gosub :planet~countplanets
 	if ($planet~planetcount < 2)
 		goto :tryagain
 	end
 
+	gosub :landstartingplanet
+
+	setvar $dothissector false
+	setvar $c 0
+	:farmcountloop
+	add $c 1
+	while ($c <= $planet~planetcount)
+		if ($planet~planets[$c] = $planet~planettofill)
+			goto :farmcountloop
+		end
+		if ($planet~planets[$c][3] > ($ship~ship_fighters_max / 10))
+			setvar $dothissector true
+		end
+		add $c 1
+	end
+
+	if ($dothissector = false)
+		goto :tryagain
+	end
+
+	gosub :player~currentprompt
+	if ($player~current_prompt = "Citadel")
+		send "q"
+	end
+	send "mnl*"
+
 	setvar $j 0
 	:tryagain2
 	add $j 1
-
 	while ($j <= $planet~planetcount)
-		:retryland2
-		if ($skipsector = false)
-			gosub :player~currentprompt
-			if ($player~current_prompt = "Command")
-				setvar $planet~planet $planet~planettofill
-				gosub :planet~landingsub
-			end
-			if ($planet~sucessfulplanet = false)
-				goto :tryagain2
-			end
-			gosub :player~currentprompt
-			if ($player~current_prompt = "Citadel")
-				send "q"
-			end
-			gosub :planet~getplanetinfo
+		setvar $planet~planettostrip $planet~planets[$j]
+		:restrip
+		if ($planet~planettostrip <> $planet~planettofill)
+			gosub :planet~stripplanet
 		end
-		if ($planet~planet <> $planet~planettofill)
-			send "qqq**"
-			goto :retryland2
-		end
+		gosub :landstartingplanet
 		gosub :checkfull
 		if ($farmplanetdone = true)
 			goto :finishfarmplanet
 		end
-		if ($skipsector = true)
-			goto :tryagain2
-		end
-		setvar $planet~planettostrip $planet~planets[$j]
-		if ($planet~planettostrip <> $planet~planettofill)
-			gosub :planet~stripplanet
-		end
-		setvar $skipsector false
 		add $j 1
-	end
-
-	if ($silent <> true)
-		setvar $switchboard~message "Done farming sector " $sector[$i] ".*"
-		gosub :switchboard~switchboard
-	end
-
-	:retryland3
-	if ($skipsector = false)
-		gosub :player~currentprompt
-		if ($player~current_prompt = "Command")
-			setvar $planet~planet $planet~planettofill
-			gosub :planet~landingsub
-			if ($planet~sucessfulplanet = false)
-				goto :endfarmer
-			end
-			gosub :player~currentprompt
-		end
-		if ($player~current_prompt = "Citadel")
-			send "q"
-		end
-		gosub :planet~getplanetinfo
-		if ($planet~planet <> $planet~planettofill)
-			send "qqq**"
-			goto :retryland3
-		end
-	end
-	gosub :checkfull
-	if ($farmplanetdone = true)
-		goto :finishfarmplanet
 	end
 	add $i 1
 end
@@ -369,7 +330,7 @@ gosub :player~currentprompt
 if ($player~current_prompt = "Command")
 	setvar $planet~planet $planet~planettofill			
 	gosub :planet~landonplanetentercitadel
-	if ($planet~sucessfulplanet = false)
+	if ($planet~successfulplanet = false)
 		goto :endfarmer
 	end
 	gosub :player~currentprompt
@@ -378,6 +339,35 @@ elseif ($player~current_prompt = "Planet")
 end
 send "p "&$startinglocation&"  *y"
 return
+
+:landstartingplanet
+gosub :player~currentprompt
+if ($player~current_prompt = "Command")
+	setvar $planet~planet $planet~planettofill
+	setvar $planet~nocit true
+	gosub :planet~landingsub
+elseif ($player~current_prompt = "Citadel")
+	send "q"
+elseif ($player~current_prompt <> "Planet")
+	setvar $switchboard~message "Unknown Prompt: "&$player~current_prompt&"*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+gosub :planet~getplanetinfo
+if ($planet~planet = $planet~planettofill)
+	return
+end
+
+if ($lspfailed = false)
+	setvar $lspfailed true
+	send "qqq**"
+	goto :landstartingplanet
+else
+	setvar $switchboard~message "Could not land on starting planet; halting farm run.*"
+	gosub :switchboard~switchboard
+	halt
+end
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :endfarmer
@@ -488,7 +478,7 @@ return
 :balance_land_start_citadel
 setvar $balance_land_id $startingplanet
 gosub :balance_land_planet
-if ($planet~sucessfulplanet <> true)
+if ($planet~successfulplanet <> true)
 	setvar $switchboard~message "Unable to land on starting planet; halting farm balance.*"
 	gosub :switchboard~switchboard
 	halt
@@ -509,6 +499,7 @@ elseif ($player~current_prompt = "Planet")
 	waiton "Command ["
 end
 setvar $planet~planet $balance_land_id
+setvar $planet~nocit true
 gosub :planet~landingsub
 return
 
@@ -526,7 +517,7 @@ while ($j < $planet~planetcount)
 	add $j 1
 	setvar $balance_land_id $planet~planets[$j]
 	gosub :balance_land_planet
-	if ($planet~sucessfulplanet = true)
+	if ($planet~successfulplanet = true)
 		gosub :planet~getplanetinfo
 		add $balance_planet_count 1
 		setvar $balance_current_index $balance_planet_count
@@ -783,7 +774,7 @@ if ($balance_move_amount <= 0)
 end
 setvar $balance_land_id $balance_source_planet
 gosub :balance_land_planet
-if ($planet~sucessfulplanet <> true)
+if ($planet~successfulplanet <> true)
 	return
 end
 if ($balance_source_planet = $balance_dest_planet)
@@ -864,7 +855,7 @@ elseif ($player~current_prompt = "Planet")
 else
 	setvar $balance_land_id $balance_source_planet
 	gosub :balance_land_planet
-	if ($planet~sucessfulplanet <> true)
+	if ($planet~successfulplanet <> true)
 		return
 	end
 	gosub :balance_unload_holds_to_planet
@@ -1099,6 +1090,36 @@ if ($planet~emptyfigs > 0)
 	elseif ($figstofill < $ship~ship_fighters_max)
 		setvar $figstofill 0
 	end
+	if ($figstofill = 0) and ($planet~dumpfigs > 0)
+		setvar $planet~warpto $startinglocation
+		gosub :ensurecitadelforpwarp
+		gosub :planet~pwarp
+		if ($planet~pwarpsuccess = false)
+			setvar $switchboard~message "Unable to pwarp to sector "&$startinglocation&"*"
+			gosub :switchboard~switchboard
+			halt
+		end
+
+		send "'" & $bot~bot_name & " movefig s*"
+		waiton "{" & $bot~bot_name & "} - fighters moved"
+		setvar $figstofill $planet~planet_fighters_max
+
+		setvar $planet~warpto $sector[$i]
+		gosub :ensurecitadelforpwarp
+		gosub :planet~pwarp
+		if ($planet~pwarpsuccess = false)
+			setvar $switchboard~message "Unable to pwarp to sector "&$sector[$i]&"*"
+			gosub :switchboard~switchboard
+			halt
+		end
+
+		gosub :player~currentprompt
+		if ($player~current_prompt = "Citadel")
+			send "q"
+			waiton "Planet command"
+		end
+		goto :restrip
+	end
 else
 	setvar $figstofill 0
 end
@@ -1141,6 +1162,48 @@ if ($oretofill <= 0) and ($orgtofill <= 0) and ($equtofill <= 0) and ($fuelcolst
 		setvar $skipsector true
 	end
 end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:ensurecitadelforpwarp
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :player~quikstats
+if ($player~current_prompt = "Computer")
+	send "q"
+	gosub :player~quikstats
+end
+if ($player~current_prompt = "Command")
+	setvar $planet~nocit true
+	gosub :planet~landingsub
+	gosub :player~quikstats
+end
+if ($player~current_prompt = "Planet")
+	send "c "
+	settexttrigger farm_citadel_ready :farm_citadel_ready "Citadel command (?=help)"
+	settexttrigger farm_citadel_misroute :farm_citadel_misroute "Computer command [TL="
+	pause
+
+	:farm_citadel_ready
+	killalltriggers
+	gosub :player~quikstats
+	return
+
+	:farm_citadel_misroute
+	killalltriggers
+	send "q"
+	gosub :player~quikstats
+	if ($player~current_prompt = "Command")
+		setvar $planet~nocit true
+		gosub :planet~landingsub
+		gosub :player~quikstats
+	end
+	if ($player~current_prompt = "Planet")
+		send "c "
+		waiton "Citadel command (?=help)"
+		gosub :player~quikstats
+	end
+end
+setvar $planet~pwarp_scan false
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

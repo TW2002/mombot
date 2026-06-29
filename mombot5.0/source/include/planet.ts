@@ -4,7 +4,7 @@
 #
 # Creates the following array:
 # $planetcount = number of planets
-# $planets[1] = name of planet 1
+# $planets[1] = id of planet 1
 # $planets[1][1] = level of planet 1
 # $planets[1][2] = military response pct of planet 1
 # $planets[1][3] = number of fighters on planet 1
@@ -988,6 +988,9 @@ return
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 gosub :killlandingtriggers
 send "lz" #8 $planet~planet "*"
+setvar $planet~successfulcitadel false
+setvar $planet~successfulplanet false
+# old typo, leaving in place for old scripts
 setvar $planet~sucessfulcitadel false
 setvar $planet~sucessfulplanet false
 settextlinetrigger noplanet :noplanet "There isn't a planet in this sector."
@@ -1037,13 +1040,27 @@ killtrigger wrong_num
 setvar $planet~currentbotplanet $planet~planet
 savevar $planet~currentbotplanet
 savevar $planet~planet
+setvar $planet~successfulplanet true
 setvar $planet~sucessfulplanet true
+
 if ($planet~land_and_lift = true)
 	send "m* * * q  "
 	return
 end
-#send "m* * * c*"
-return
+
+if ($notakefigs <> true)
+	send "m* * * "
+else
+	setvar $notakefigs false
+end
+
+if ($planet~nocit = true)
+	setvar $planet~nocit false
+	return
+end
+
+send "c"
+
 settexttrigger build_cit :build_cit "Do you wish to construct one?"
 settexttrigger in_cit :in_cit "Citadel command"
 settexttrigger nocitallowed :build_cit "Citadels are not allowed in FedSpace."
@@ -1052,13 +1069,13 @@ pause
 
 :planet~build_cit
 gosub :killlandingtriggers
-setvar $planet~sucessfulplanet true
 setvar $planet~startinglocation "Planet"
 send "n"
 return
 
 :planet~in_cit
 gosub :killlandingtriggers
+setvar $planet~successfulcitadel true
 setvar $planet~sucessfulcitadel true
 setvar $planet~startinglocation "Citadel"
 return
@@ -1581,6 +1598,7 @@ elseif ($startingprompt = "Command")
 		gosub :switchboard~switchboard
 		return
 	end
+	setvar $planet~nocit true
 	setvar $planet~planet $planet~planettofill
 	gosub :landingsub
 elseif ($startingprompt <> "Planet")
@@ -1843,15 +1861,18 @@ if ($emptyfigs)
 		end
 	end
 	if ($amount_to_strip > 0)
+		send "l "&$planet~planettofill&"* m n l* q "
 		:tryfighters
 		killtrigger success
 		killtrigger emptyempty
 		killtrigger fullfill
+		killtrigger fullfill2
 		killtrigger empty
-		send "l j"&#8&$planet~planettostrip&"* jm ** *x q l j"&#8&$planet~planettofill&"* jm*jl*x q "
+		send "l j"&#8&$planet~planettostrip&"* jmnt*x q l j"&#8&$planet~planettofill&"* jmnl*x q "
 		settexttrigger success :tryfighters "The Fighters join your battle force."
 		settexttrigger emptyempty :strip_donewiththisplanet "There isn't room on the planet"
 		settexttrigger fullfill :strip_donewiththisplanet "They don't have room for that many "
+		settexttrigger fullfill2 :strip_donewiththisplanet "You can't put more than"
 		settexttrigger empty :strip_donewiththisplanet "How many Fighters do you want to take (0 Max) [0]"
 		pause
 	end
@@ -1863,10 +1884,11 @@ if ($startingplanet = 0)
 	return
 end
 setvar $planet~planet $startingplanet
+setvar $nocit true
 gosub :landingsub
-if ($startingprompt = "Command")
-	send "c"
-end
+#if ($startingprompt = "Command")
+#	send "c"
+#end
 return
 
 include "source\include\player"

@@ -164,14 +164,28 @@ setvar $starting_credits $player~credits
 killtrigger player~getline2
 setvar $figcnt sector.figs.quantity[$startsector]
 setvar $figowner sector.figs.owner[$startsector]
-if ($use_move=false) and (($figcnt = 0) or (($figowner <> "belong to your Corp") and ($figowner <> "yours")))
-	if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
-		gosub :planet~landingsub
-	end
-	setvar $switchboard~message "No friendly fighters deployed in current sector!*"
-	gosub :switchboard~switchboard
-	halt
+if (sector.figs.quantity[$startsector] = 0) or ((sector.figs.owner[$startsector] <> "belong to your Corp") and (sector.figs.owner[$startsector] <> "yours"))
+	setvar $isfigged false
+else
+	setvar $isfigged true
 end
+if ($startsector < 11) or ($startsector = STARDOCK)
+	setvar $startfed true
+else
+	setvar $startfed false
+end
+
+if ($use_move = false)
+	if ($isfigged = false) and (($startfed = false) or (($startfed = true) and ($player~alignment < 1000)))
+		if ($player~current_sector = $startingsector)
+			gosub :planet~landingsub
+		end
+		setvar $switchboard~message "No friendly fighters deployed in current sector!*"
+		gosub :switchboard~switchboard
+		halt
+	end
+end
+
 setvar $switchboard~message "Ship Mover starting up!  Starting ship scan..*"
 gosub :switchboard~switchboard
 if ($back = true)

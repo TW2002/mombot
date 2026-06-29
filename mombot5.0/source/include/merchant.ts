@@ -172,7 +172,6 @@ if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 
 	if ($salesman)
 		gosub :refreshtradeflags
-
 		setvar $planetroom ($planet~planetequipmax - $planet~planetequip)
 		if (($equipselling >= $merchant~minprod) and ($planetroom >= $merchant~minprod))
 			setvar $buyproduct "e"
@@ -191,22 +190,28 @@ if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 			setvar $buyavailable $fuelselling
 			gosub :buyproduct
 		end
-	
-		gosub :player~quikstats
-		if (($salesman <> true) and ($uporg = true))
-			getsectorparameter $nearfig "ORGMCIC" $tmp
-			if ($tmp <= $upmcic)
-				setvar $port~product 2
-				gosub :upgradeport
-			end
+	end
+
+	gosub :player~quikstats
+	if (($player~credits + $planet~citadel_credits) < 5000000) and ($checkmcic = true) and (($uporg = true) or ($upequ = true))
+		setvar $switchboard~message "Not enough credits to continue MCIC check*"
+		gosub :switchboard~switchboard
+		halt
+	end
+
+	if ($uporg = true)
+		getsectorparameter $nearfig "ORGMCIC" $tmp
+		if ($tmp <= $upmcic)
+			setvar $port~product 2
+			gosub :upgradeport
 		end
-	
-		if (($salesman <> true) and ($upequ = true))
-			getsectorparameter $nearfig "EQUMCIC" $tmp
-			if ($tmp <= $upmcic)
-				setvar $port~product 3
-				gosub :upgradeport
-			end
+	end
+
+	if ($upequ = true)
+		getsectorparameter $nearfig "EQUMCIC" $tmp
+		if ($tmp <= $upmcic)
+			setvar $port~product 3
+			gosub :upgradeport
 		end
 	end
 
@@ -617,13 +622,13 @@ if ($checkmcic = true)
 	if ($port~oretotal > 25000) or ($port~orgtotal > 25000) or ($port~equtotal > 25000)
 		return
 	end
-	if ($orebuying = "Buying") and ($port~oremcic = 0) and ($port~oretrading >= $minprod) and ($port~orepercent >= $minpct)
+	if ($port~orebuying = "Buying") and ($port~oremcic = 0) and ($port~oretrading >= $minprod) and ($port~orepercent >= $minpct)
 		setvar $cansellfuelhere true
 	end
-	if ($orgbuying = "Buying") and ($port~orgmcic = 0) and ($port~orgtrading >= $minprod) and ($port~orgpercent >= $minpct)
+	if ($port~orgbuying = "Buying") and ($port~orgmcic = 0) and ($port~orgtrading >= $minprod) and ($port~orgpercent >= $minpct)
 		setvar $cansellorghere true
 	end
-	if ($equbuying = "Buying") and ($port~equmcic = 0) and ($port~equtrading >= $minprod) and ($port~equpercent >= $minpct)
+	if ($port~equbuying = "Buying") and ($port~equmcic = 0) and ($port~equtrading >= $minprod) and ($port~equpercent >= $minpct)
 		setvar $cansellequiphere true
 	end
 	if ($cansellfuelhere = true) or ($cansellorghere = true) or ($cansellequiphere = true)

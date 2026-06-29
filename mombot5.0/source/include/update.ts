@@ -298,7 +298,8 @@ else
 	send "^rq"
 end
 waitfor ": ENDINTERROG"
-setarray $mcic sectors
+setarray $orgmcic sectors
+setarray $equmcic sectors
 setvar $cim_count 1
 
 :cim_looper
@@ -338,6 +339,22 @@ while ($cim_count <= sectors)
 		end
 		if ($isupped = true)
 			setvar $upped $upped&" "&$cim_count&" "
+		end
+		if (port.buyorg[$cim_count] = true)
+			getsectorparameter $cim_count "ORGMCIC" $tmp_orgmcic
+			if ($tmp_orgmcic <= "-65")
+				setvar $orgmcic[$cim_count] $tmp_orgmcic
+			else
+				setvar $orgmcic[$cim_count] 0
+			end
+		end
+		if (port.buyequip[$cim_count] = true)
+			getsectorparameter $cim_count "EQUMCIC" $tmp_equmcic
+			if ($tmp_equmcic <= "-60")
+				setvar $equmcic[$cim_count] $tmp_equmcic
+			else
+				setvar $equmcic[$cim_count] 0
+			end
 		end
 	end
 	add $cim_count 1
@@ -394,15 +411,14 @@ while ($cimout_count <= sectors)
 	end
 	add $cimout_count 1
 end
-setvar $switchboard~message $switchboard~message & "**"
 setvar $upped ""
 
-setvar $switchboard~message $switchboard~message & " Ports with MCIC at least -60/-65 :*"
+setvar $switchboard~message $switchboard~message & "* Ports with MCIC at least -60/-65 :*"
 
 :mcic_send_loop
 setvar $mcic_send_count 1
 while ($mcic_send_count <= sectors)
-	if ($mcic[$mcic_send_count] <> 0)
+	if ($orgmcic[$mcic_send_count] <> 0) or ($equmcic[$mcic_send_count] <> 0)
 		setvar $cimtemp $mcic_send_count & "("
 		if (port.buyfuel[$mcic_send_count] = 1)
 			setvar $cimtemp $cimtemp&"B"
@@ -420,7 +436,13 @@ while ($mcic_send_count <= sectors)
 			setvar $cimtemp $cimtemp&"S"
 		end
 		setvar $cimtemp $cimtemp&") "
-		setvar $switchboard~message $switchboard~message & $cimtemp & " MCIC = " & $mcic[$mcic_send_count] & "*"
+		if ($orgmcic[$mcic_send_count] <> 0)
+			setvar $cimtemp $cimtemp&" ORGMCIC="&$orgmcic[$mcic_send_count]&" "
+		end
+		if ($equmcic[$mcic_send_count] <> 0)
+			setvar $cimtemp $cimtemp&" EQUMCIC="&$equmcic[$mcic_send_count]&" "
+		end
+		setvar $switchboard~message $switchboard~message & $cimtemp & "*"
 	end
 	add $mcic_send_count 1
 end

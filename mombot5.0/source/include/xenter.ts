@@ -36,6 +36,7 @@ killtrigger 2
 killtrigger 3
 send $xenter~exit_enter
 waiton #179
+return
 
 :pickgame
 killtrigger 1

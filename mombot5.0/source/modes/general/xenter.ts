@@ -30,7 +30,7 @@ end
 setvar $xenter~i 1
 while ($xenter~i <= $bot~parm1)
 	gosub :xenter~xenter
-	if (($player~current_sector > 10) and ($player~current_sector <> $map~stardock))
+		if (($xenter~startinglocation = "Command") and ($player~current_sector > 10) and ($player~current_sector <> $map~stardock))
 		if ($xenter~refill = true)
 			gosub :player~topoff
 		else

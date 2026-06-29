@@ -233,8 +233,10 @@ while ($have_figs > $minimum_figs) and ($hit_turn_limit = false)
 		goto :end
 	end
 	gosub :send_macros
-	gosub :verify_end_of_run
-	gosub :update_density_scan_report
+	if ($macros_sent = true)
+		gosub :verify_end_of_run
+		gosub :update_density_scan_report
+	end
 end
 goto :end
 
@@ -261,13 +263,24 @@ halt
 setarray $target_sector 10
 setarray $result_distance 10
 setarray $macro $burst_size
+setarray $macro_start $burst_size
+setarray $macro_first_step $burst_size
 setarray $macro_path sectors
 setarray $path_sectors 0
 setvar $path_sector_count 0
 setvar $macro_hops 0
+setvar $macro_build_failed false
+setvar $macro_current_sector 0
 setvar $count1 1
 setvar $built_macros 0
 setvar $hit_turn_limit false
+setvar $tram_stats_sector 0
+gosub :tram_quikstats
+if ($player~current_sector <= 10)
+	setvar $switchboard~message "Unable to resolve current sector before building route; halting to prevent autopilot.*"
+	gosub :switchboard~switchboard
+	halt
+end
 setvar $focus_sector $player~current_sector
 setvar $previous_sector $player~current_sector
 setvar $final_sector $player~current_sector
@@ -303,39 +316,57 @@ while ($count1 <= $burst_size) and ($projected_turns > $minimum_turns)
 	setvar $projected_turns ($projected_turns - ($ship_tpw * $result_distance[$count1]))
 	if ($projected_turns > $minimum_turns)
 		setvar $final_sector $focus_sector
-		setvar $macro[$count1] ""
-		if ($using_chain = true)
-			setvar $step_count 1
-			setvar $last_step false
-			while ($step_count <= $path_length)
-				setvar $next_sector $macro_path[$step_count]
-				if ($step_count = $path_length)
-					setvar $last_step true
+			setvar $macro[$count1] ""
+			setvar $macro_start[$count1] $previous_sector
+			setvar $macro_current_sector $previous_sector
+			if ($using_chain = true)
+				setvar $step_count 1
+				setvar $last_step false
+				while ($step_count <= $path_length)
+					setvar $next_sector $macro_path[$step_count]
+					if ($step_count = $path_length)
+						setvar $last_step true
+					end
+					if ($macro[$count1] = "")
+						setvar $macro_first_step[$count1] $next_sector
+					end
+					gosub :build_move_macro_routine
+					if ($macro_build_failed = true)
+						setvar $switchboard~message "Invalid route step from " & $bad_macro_from & " to " & $bad_macro_to & "; halting to prevent autopilot.*"
+						gosub :switchboard~switchboard
+					halt
 				end
-				gosub :build_move_macro_routine
 				setvar $macro[$count1] $macro[$count1]&$macro_text
 				add $step_count 1
-			end
-			setvar $previous_sector $focus_sector
-			add $built_macros 1
-			add $total_targets $newgrid
-			add $total_hops $result_distance[$count1]
-		else
-			getcourse $route $previous_sector $focus_sector
-			if ($route <= 0)
-				setvar $hit_turn_limit true
-				return
-			end
-			setvar $result_distance[$count1] $route
-			setarray $gridded_sectors $route
-			setvar $step_count 2
-			setvar $last_step false
-			while ($step_count <= ($route + 1))
-				setvar $next_sector $route[$step_count]
-				if ($step_count = ($route + 1))
-					setvar $last_step true
 				end
-				gosub :build_move_macro_routine
+				setvar $previous_sector $focus_sector
+				add $built_macros 1
+				add $total_targets $newgrid
+				add $total_hops $result_distance[$count1]
+			else
+				getcourse $route $previous_sector $focus_sector
+				if ($route <= 0)
+					setvar $hit_turn_limit true
+					return
+				end
+				setvar $result_distance[$count1] $route
+				setarray $gridded_sectors $route
+				setvar $step_count 2
+				setvar $last_step false
+				while ($step_count <= ($route + 1))
+					setvar $next_sector $route[$step_count]
+					if ($step_count = ($route + 1))
+						setvar $last_step true
+					end
+					if ($macro[$count1] = "")
+						setvar $macro_first_step[$count1] $next_sector
+					end
+					gosub :build_move_macro_routine
+					if ($macro_build_failed = true)
+						setvar $switchboard~message "Invalid route step from " & $bad_macro_from & " to " & $bad_macro_to & "; halting to prevent autopilot.*"
+						gosub :switchboard~switchboard
+					halt
+				end
 				setvar $macro[$count1] $macro[$count1]&$macro_text
 				add $step_count 1
 			end
@@ -352,65 +383,162 @@ end
 return
 
 :send_macros
+setvar $macros_sent false
+if ($built_macros <= 0)
+	return
+end
+setvar $tram_stats_sector 0
+gosub :tram_quikstats
+if ($resolved_sector > 10) and ($resolved_sector <> $macro_start[1])
+	setvar $switchboard~message "Current sector changed from planned start " & $macro_start[1] & " to " & $resolved_sector & ". Rebuilding route.*"
+	gosub :switchboard~switchboard
+	return
+elseif ($resolved_sector <= 10)
+	setvar $switchboard~message "Unable to resolve current sector before sending route; halting to prevent autopilot.*"
+	gosub :switchboard~switchboard
+	halt
+end
+if ($macro_first_step[1] > 0)
+	setvar $macro_step_ok false
+	setvar $macro_warp_index 1
+	while ($macro_warp_index <= sector.warpcount[$resolved_sector])
+		if (sector.warps[$resolved_sector][$macro_warp_index] = $macro_first_step[1])
+			setvar $macro_step_ok true
+		end
+		add $macro_warp_index 1
+	end
+	if ($macro_step_ok = false)
+		setvar $switchboard~message "First route step " & $macro_first_step[1] & " is not adjacent to current sector " & $resolved_sector & ". Rebuilding route.*"
+		gosub :switchboard~switchboard
+		return
+	end
+end
 setvar $count2 1
 while ($count2 <= $built_macros)
 	send $macro[$count2]
 	add $count2 1
 end
+setvar $macros_sent true
 gosub :display_window_contents
 return
 
 :verify_end_of_run
-gosub :player~quikstats
+gosub :tram_quikstats
+if ($tram_stats_sector <= 0)
+	goto :ended_early
+end
+setvar $player~current_sector $tram_stats_sector
 if ($unlim = true)
 	setvar $have_turns 65520
 else
-	setvar $have_turns  $player~turns
+	setvar $have_turns $tram_stats_turns
 end
-setvar $have_figs $player~fighters
-setvar $focus_sector $player~current_sector
-gosub :get_current_prompt_sector
-if ($prompt_sector > 0)
-	setvar $focus_sector $prompt_sector
-	setvar $player~current_sector $prompt_sector
-end
+setvar $have_figs $tram_stats_figs
+setvar $focus_sector $tram_stats_sector
 if ($focus_sector <> $final_sector)
 	if ($focus_sector > 10)
 		if ($player~current_prompt = "Citadel")
 			send "q q "
-			gosub :player~quikstats
-			setvar $focus_sector $player~current_sector
-			gosub :get_current_prompt_sector
-			if ($prompt_sector > 0)
-				setvar $focus_sector $prompt_sector
-				setvar $player~current_sector $prompt_sector
-			end
+			gosub :tram_quikstats
+			setvar $focus_sector $tram_stats_sector
 		elseif ($player~current_prompt = "Planet")
 			send "q "
-			gosub :player~quikstats
-			setvar $focus_sector $player~current_sector
-			gosub :get_current_prompt_sector
-			if ($prompt_sector > 0)
-				setvar $focus_sector $prompt_sector
-				setvar $player~current_sector $prompt_sector
-			end
+			gosub :tram_quikstats
+			setvar $focus_sector $tram_stats_sector
 		elseif ($player~current_prompt = "Computer")
 			send "q"
-			gosub :player~quikstats
-			setvar $focus_sector $player~current_sector
-			gosub :get_current_prompt_sector
-			if ($prompt_sector > 0)
-				setvar $focus_sector $prompt_sector
-				setvar $player~current_sector $prompt_sector
-			end
+			gosub :tram_quikstats
+			setvar $focus_sector $tram_stats_sector
 		end
 	end
 	if ($focus_sector > 10)
-		setvar $switchboard~message "Route ended in " & $focus_sector & " instead of " & $final_sector & ". Resuming from current sector.*"
+		setvar $player~current_sector $focus_sector
+		setvar $switchboard~message "Route ended in " & $focus_sector & " instead of " & $final_sector & ". Rebuilding from current sector.*"
 		gosub :switchboard~switchboard
 		return
 	end
 	goto :ended_early
+end
+return
+
+:tram_quikstats
+setvar $tram_stats_sector 0
+setvar $tram_stats_turns -1
+setvar $tram_stats_figs -1
+setvar $player~full_current_prompt ""
+setvar $player~current_sector 0
+gosub :player~quikstats
+setvar $tram_stats_text $player~stats
+replacetext $tram_stats_text #179 " "
+replacetext $tram_stats_text #186 " "
+striptext $tram_stats_text ","
+setvar $tram_stats_word 1
+getword $tram_stats_text $tram_stats_token $tram_stats_word
+while ($tram_stats_token <> "@@@")
+	if ($tram_stats_token = "Sect")
+		getword $tram_stats_text $tram_stats_sector ($tram_stats_word + 1)
+		gosub :clean_tram_numeric_value
+		setvar $tram_stats_sector $clean_tram_value
+	elseif ($tram_stats_token = "Turns")
+		getword $tram_stats_text $tram_stats_turns ($tram_stats_word + 1)
+		gosub :clean_tram_numeric_value
+		setvar $tram_stats_turns $clean_tram_value
+	elseif ($tram_stats_token = "Figs")
+		getword $tram_stats_text $tram_stats_figs ($tram_stats_word + 1)
+		gosub :clean_tram_numeric_value
+		setvar $tram_stats_figs $clean_tram_value
+	end
+	add $tram_stats_word 1
+	getword $tram_stats_text $tram_stats_token $tram_stats_word
+end
+gosub :resolve_current_sector
+setvar $tram_stats_sector $resolved_sector
+if ($tram_stats_turns < 0)
+	setvar $tram_stats_turns $player~turns
+end
+if ($tram_stats_figs < 0)
+	setvar $tram_stats_figs $player~fighters
+end
+return
+
+:resolve_current_sector
+setvar $resolved_sector 0
+setvar $stats_sector 0
+setvar $prompt_sector 0
+isnumber $test $tram_stats_sector
+if ($test)
+	if ($tram_stats_sector > 10)
+		setvar $stats_sector $tram_stats_sector
+	end
+end
+gosub :player~currentprompt
+gosub :get_current_prompt_sector
+if ($prompt_sector > 10)
+	setvar $resolved_sector $prompt_sector
+elseif ($stats_sector > 10)
+	setvar $resolved_sector $stats_sector
+end
+if ($resolved_sector > 0)
+	setvar $player~current_sector $resolved_sector
+end
+return
+
+:clean_tram_numeric_value
+setvar $clean_tram_value 0
+if ($tram_stats_token = "Sect")
+	setvar $clean_tram_value $tram_stats_sector
+elseif ($tram_stats_token = "Turns")
+	setvar $clean_tram_value $tram_stats_turns
+elseif ($tram_stats_token = "Figs")
+	setvar $clean_tram_value $tram_stats_figs
+end
+replacetext $clean_tram_value #179 " "
+replacetext $clean_tram_value #186 " "
+striptext $clean_tram_value ","
+getword $clean_tram_value $clean_tram_value 1
+isnumber $test $clean_tram_value
+if ($test = 0)
+	setvar $clean_tram_value 0
 end
 return
 
@@ -619,6 +747,10 @@ return
 
 #########  BUILD MACRO ROUTINE ################################################
 :build_move_macro_routine
+gosub :validate_macro_step
+if ($macro_build_failed = true)
+	return
+end
 setvar $macro_text "m "&$next_sector
 setvar $last_mode "Charge"
 if ($next_sector > 10) and ($next_sector <> stardock) and ($next_sector <> $stardock)
@@ -652,6 +784,32 @@ add $path_sector_count 1
 setvar $path_sectors[$path_sector_count] $next_sector
 if ($next_sector > 0)
 	setvar $fig_grid[$next_sector] 1
+end
+setvar $macro_current_sector $next_sector
+return
+
+:validate_macro_step
+setvar $macro_build_failed false
+setvar $bad_macro_from 0
+setvar $bad_macro_to 0
+if ($macro_current_sector <= 0) or ($next_sector <= 0)
+	setvar $macro_build_failed true
+	setvar $bad_macro_from $macro_current_sector
+	setvar $bad_macro_to $next_sector
+	return
+end
+setvar $macro_step_ok false
+setvar $macro_warp_index 1
+while ($macro_warp_index <= sector.warpcount[$macro_current_sector])
+	if (sector.warps[$macro_current_sector][$macro_warp_index] = $next_sector)
+		setvar $macro_step_ok true
+	end
+	add $macro_warp_index 1
+end
+if ($macro_step_ok = false)
+	setvar $macro_build_failed true
+	setvar $bad_macro_from $macro_current_sector
+	setvar $bad_macro_to $next_sector
 end
 return
 
