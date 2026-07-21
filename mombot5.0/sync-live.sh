@@ -32,6 +32,8 @@ sync_managed_dir() {
     --include='*/' \
     --exclude='*.ts' \
     --exclude='*.ts_*' \
+    --exclude='*.t.o' \
+    --exclude='wsst2.cts' \
     --exclude='.DS_Store' \
     --include='*' \
     "$SOURCE/$dir/" "$LIVE_ROOT/$dir/"
@@ -51,7 +53,8 @@ fi
 find "$LIVE_ROOT" -maxdepth 1 -type f \( -name '*.ts' -o -name '*.ts_*' \) -delete
 for dir in commands modes daemons startups preload; do
   if [[ -d "$LIVE_ROOT/$dir" ]]; then
-    find "$LIVE_ROOT/$dir" -type f \( -name '*.ts' -o -name '*.ts_*' \) -delete
+    find "$LIVE_ROOT/$dir" -type f \( -name '*.ts' -o -name '*.ts_*' -o -name '*.t.o' \) -delete
+    find "$LIVE_ROOT/$dir" -type f -name 'wsst2.cts' -delete
     find "$LIVE_ROOT/$dir" -depth -type d -empty -delete
   fi
 done

@@ -58,6 +58,10 @@ getwordpos " "&$bot~user_command_line&" " $pos "ewarp"
 setvar $warptype "T"
 if ($pos > 0)
 	setvar $warptype "E"
+elseif ($player~twarp_type = 0)
+	setvar $switchboard~message "twarp specified but no twarp available, halting.*"
+	gosub :switchboard~switchboard
+	halt
 end
 
 getwordpos " "&$bot~user_command_line&" " $pos "strip"
@@ -143,8 +147,8 @@ setvar $figs $player~fighters
 setvar $shield $player~shields
 
 # see if we really can twarp
-if ((sector.figs.quantity[$sector] <= 0) or ((sector.figs.owner[$sector] <> "belong to your Corp") and (sector.figs.owner[$sector] = "yours")) or (($player~twarp_type = 0) or ($player~twarp_type = "No")) or ($player~alignment < 1000)) and ($warptype = "T")
-	setvar $switchboard~message "Cannot twarp safely, so halting.  Check alignment and make sure fighter is in sector.*"
+if ((sector.figs.quantity[$sector] <= 0) or ((sector.figs.owner[$sector] <> "belong to your Corp") and (sector.figs.owner[$sector] = "yours")))
+	setvar $switchboard~message "Cannot twarp safely, so halting.  Make sure fighter is in sector.*"
 	gosub :switchboard~switchboard
 	halt
 end
@@ -335,34 +339,24 @@ if ($warptype = "T")
 	# TWarp to stardock
 	gosub :calc_twarp_ore
 	if ($ore_short > 0)
-		if ($empty_holds <= 0)
-			setvar $switchboard~message "Need more ore for the round trip to StarDock, but the ship has no empty holds.*"
-			gosub :switchboard~switchboard
-			setvar $failed 1
-			return
-		end
-
 		if ($empty_holds < $ore_short)
-			setvar $switchboard~message "Need "&$ore_short&" holds of ore for the round trip to StarDock, but only "&$empty_holds&" holds are free.*"
-			gosub :switchboard~switchboard
-			setvar $failed 1
-			return
+			send "j y q * "
+			setvar $empty_holds $player~total_holds
 		end
 
-		setvar $seekproduct~product 1
-		setvar $seekproduct~holds $ore_short
+		setvar $seek_product 1
+		setvar $seek_holds $ore_short
 		gosub :seekproduct
 	end
 
-	if ($map~stardock < 600) or (sectors > 5000)
-		send $map~stardock "*yy"
-	else
-		send $map~stardock "yy"
+	setvar $player~warpto $map~stardock
+	gosub :move~twarp
+	gosub :player~quikstats
+	if ($player~twarpsuccess = false) or ($player~current_sector <> $map~stardock)
+		setvar $switchboard~message "twarp failed: " & $player~msg & "*"
+		gosub :switchboard~switchboard
+		halt
 	end
-else
-	setvar $warp~mode $warptype
-	setvar $warp~dest $map~stardock
-	gosub :warp
 end
 
 send "ps  g yg qh t"
@@ -409,17 +403,19 @@ end
 send "qq"
 
 if ($warptype = "T")
-	if ($sector < 600) or (sectors > 5000)
-		send $sector "*yy"
-	else
-		send $sector "yy"
+	setvar $player~warpto $sector
+	gosub :move~twarp
+	gosub :player~quikstats
+	if ($player~twarpsuccess = false) or ($player~current_sector <> $sector)
+		setvar $switchboard~message "twarp failed: " & $player~msg & "*"
+		gosub :switchboard~switchboard
+		halt
 	end
 else
 	setvar $warp~mode $warptype
 	setvar $warp~dest $sector
 	gosub :warp
 end
-
 return
 
 :seekproduct
@@ -602,4 +598,5 @@ include "source\include\findproduct"
 include "source\include\haggle"
 include "source\include\planetnames"
 include "source\include\help"
+include "source\include\move"
 include "source\include\switchboard.ts"

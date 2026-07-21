@@ -171,12 +171,12 @@ if (($player~current_sector = 1) or (port.class[$player~current_sector] = 0) or 
 	if (($figstobuy > 0) or ($shieldstobuy > 0))
 		send "b " $figstobuy "* c " $shieldstobuy "* "
 	end
-	gosub :player~quikstats
 	if ($player~current_sector = stardock)
 		send "q q q "
 	else
 		send "q "
 	end
+	gosub :player~quikstats
 	goto :execute
 end
 
@@ -285,6 +285,5 @@ return
 #INCLUDES:
 include "source\include\combat"
 include "source\include\loadvars"
-
 include "source\include\help"
 include "source\include\switchboard.ts"

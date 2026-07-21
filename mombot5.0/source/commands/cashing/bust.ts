@@ -10,12 +10,6 @@ loadvar $user_command_line
 loadvar $bot_turn_limit
 loadvar $parm1
 loadvar $parm2
-setvar $name[1] ".  n"
-setvar $name[2] ".  n"
-setvar $name[3] ".  n"
-setvar $name[4] ".  n"
-setvar $name[5] ".  n"
-setvar $count 0
 setvar $blow_planet "No"
 isnumber $test $parm1
 if ($test)
@@ -100,16 +94,25 @@ pause
 
 :create_planet
 killtrigger genesis
-send $name[$count] "*  c  l"
-if ($scanner = "Yes")
-	settexttrigger 3 :land "None"
-	pause
+getrnd $rnd 10000 99999
+setvar $name "bust" & $rnd
+send $name "*  c q * l"
+waiton "Should this be"
+waiton "-------"
+settextlinetrigger planet :planet $name
+settexttrigger noplanet :noplanet "Land on which"
+pause
 
-	:land
-	gettext currentline $planet "<" ">"
-	send $planet "*  "
-end
-send " z  d  y  "
+:noplanet
+killalltriggers
+setvar $switchboard~message "Planet Creation Failed.  Halting.*"
+gosub :switchboard~switchboard
+halt
+
+:planet
+killalltriggers
+gettext currentline $planet "<" ">"
+send $planet "*  z  d  y  "
 settexttrigger atomic :buy_atomic "You do not have any Atomic Detonators"
 settexttrigger blown :sub_run "For blowing up this planet you"
 pause

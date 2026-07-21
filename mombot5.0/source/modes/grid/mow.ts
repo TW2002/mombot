@@ -231,7 +231,7 @@ while ($j <= $player~courselength)
 				setvar $result $result&"za  "&$mow_ship_max_attack&"* *  "
 			end
 		end
-		if ((($figstodrop > 0) or ($hoover = true)) and ($player~course[$j] > 10) and ($player~course[$j] <> $map~stardock) and ($j > 2))
+		if ((($figstodrop > 0) or ($hoover = true)) and ($player~course[$j] > 10) and ($player~course[$j] <> $map~stardock) and ($j > 1))
 			if ($hoover = true)
 				setvar $result $result&"f * "
 			else

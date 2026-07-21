@@ -20,6 +20,7 @@ setvar $help~help[16] $help~tab&"   {checkmcic}   make small trades at non-upgra
 setvar $help~help[17] $help~tab&"    {upmcic #}   maximum mcic to upgrade (default: -60)"
 setvar $help~help[18] $help~tab&"  {sellmcic #}   minimum mcic to sell product (default: none)"
 setvar $help~help[19] $help~tab&"    {minpct #}   minimum percent to sell to a port (default: 50)"
+setvar $help~help[20] $help~tab&" {file [file]}   only go to sectors in [file], one sector per line"
 gosub :help~helpfile
 
 gosub :player~quikstats
@@ -94,6 +95,36 @@ if ($pos > 0)
 	setvar $merchant~buyfuel true
 else
 	setvar $merchant~buyfuel false
+end
+
+setvar $merchant~use_file false
+
+setvar $i 1
+setvar $merch_file ""
+while ($i <= 20)
+	getword $bot~user_command_line $word $i ""
+	if ($word = "")
+		goto :done_find_file
+	end
+	lowercase $word
+	if ($word = "file")
+		getword $bot~user_command_line $merch_file ($i + 1) ""
+		goto :done_find_file
+	end
+	add $i 1
+end
+
+:done_find_file
+if ($merch_file <> "")
+	fileexists $test $merch_file
+	if ($test = true)
+		readtoarray $merch_file $merchant~sectors
+		setvar $merchant~use_file true
+	else
+		setvar $switchboard~message "File "&$merch_file&" not found. Halting.*"
+		gosub :switchboard~switchboard
+		halt
+	end
 end
 
 setvar $merchant~salesman false

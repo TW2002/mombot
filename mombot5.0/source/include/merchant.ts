@@ -43,6 +43,10 @@ if ($checkmcic = true)
 	end
 end
 
+if ($merchant~use_file = true)
+	setvar $sector_idx 1
+end
+
 gosub :player~startcnsettings
 setvar $haggle~nativehagglemode $nativehagglemode
 gosub :haggle~configurenativehaggle
@@ -51,6 +55,7 @@ setarray $checkedports sectors
 setarray $que sectors
 setarray $checked sectors
 
+:select_next_port
 while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip and ($planet~planet_equipment >= $minprod)) or ($salesman = true)
 	if (($player~unlimitedgame = false) and ($player~turns <= $bot~bot_turn_limit))
 		setvar $switchboard~message "Turns too low to continue.*"
@@ -58,7 +63,23 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 		return
 	end
 
-	:select_next_port
+	if ($merchant~use_file = true)
+		setvar $nearfig 0
+		while ($sector_idx <= $merchant~sectors)
+			setvar $focus $merchant~sectors[$sector_idx]
+			add $sector_idx 1
+			gosub :checkport
+			if ($goodport = true)
+				setvar $nearfig $focus
+				setvar $checkedports[$nearfig] true
+				goto :merch_sector
+			end
+		end
+		if ($nearfig <= 0)
+			goto :done
+		end
+	end
+
 	# selloff first to all the high value ports
 	if ($checkmcic <> true)
 		setvar $sellscore 0
@@ -77,7 +98,7 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 		if ($sellsector > 0)
 			setvar $nearfig $sellsector
 			setvar $checkedports[$nearfig] true
-			goto :continueon2
+			goto :merch_sector
 		end
 	end
 
@@ -99,7 +120,7 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 		if ($goodport = true)
 			setvar $nearfig $focus
 			setvar $checkedports[$nearfig] true
-			goto :continueon2
+			goto :merch_sector
 		else
 			setvar $nearfig 0
 		end
@@ -126,11 +147,12 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 	return
 end
 
+:done
 setvar $switchboard~message "Merchant successfully completed.*"
 gosub :switchboard~switchboard
 return
 
-:continueon2
+:merch_sector
 if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 	killalltriggers
 	setvar $planet~warpto $nearfig
@@ -158,6 +180,10 @@ if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 	end
 	if ($salesman = true) and ($merchant~upgrade = true) and (port.exists[$player~current_sector] = true)
 		gosub :merchant~salesmanupgradeall
+	end
+	if ($salesman <> true) and ($cansellfuelhere <> true) and ($cansellorghere <> true) and ($cansellequiphere <> true)
+		gosub :postport
+		goto :select_next_port
 	end
 	if (($cansellfuelhere <> true) and ($cansellorghere <> true) and ($cansellequiphere <> true) and ($canbuyfuelhere <> true) and ($canbuyorghere <> true) and ($canbuyequiphere <> true))
 		gosub :postport
@@ -535,7 +561,7 @@ end
 send "q q q z a 999* * * * "
 gosub :port~domaxport
 gosub :player~quikstats
-gosub :planet~landonplanetentercitadel
+gosub :planet~landingsub
 gosub :refreshport
 return
 
@@ -679,7 +705,7 @@ if ($cansellfuelhere = true) or ($cansellorghere = true) or ($cansellequiphere =
 	setvar $goodport true
 end
 
-if ($canbuyfuelhere = true) or ($canbuyorghere = true) or ($canbuyequiphere = true)
+if ($salesman = true) and (($canbuyfuelhere = true) or ($canbuyorghere = true) or ($canbuyequiphere = true))
 	setvar $goodport true
 end
 
@@ -1073,8 +1099,9 @@ if ($player~warpto > 0)
 
 	:twarpnofuel
 	killalltriggers
-	setvar $msg "Not enough fuel for T-warp."
-	goto :twarpdone
+	setvar $switchboard~message "Not enough fuel for T-warp.*"
+	gosub :switchboard~switchboard
+	halt
 
 	:twarp_adj
 	killalltriggers

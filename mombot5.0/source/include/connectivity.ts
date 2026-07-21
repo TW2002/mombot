@@ -21,7 +21,8 @@ end
 if ($connectivity~last_prompt_seen = currentline)
 
 	if ((currentline = $game~game_menu_prompt) or (currentline = "Enter your choice: ") or (currentline = "Selection (? for menu): "))
-		if ($connectivity~relogging <> true)
+		loadvar $bot~mode
+		if (($connectivity~relogging <> true) and ($bot~mode <> "Xenter"))
 			setvar $connectivity~relog_message "Stuck on baffling prompt: ["&currentline&"], so I relogged.*"
 			savevar $connectivity~relog_message
 			disconnect

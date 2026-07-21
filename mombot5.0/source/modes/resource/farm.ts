@@ -304,7 +304,6 @@ while ($i <= $farmlistcount)
 	if ($player~current_prompt = "Citadel")
 		send "q"
 	end
-	send "mnl*"
 
 	setvar $j 0
 	:tryagain2
@@ -356,6 +355,7 @@ end
 
 gosub :planet~getplanetinfo
 if ($planet~planet = $planet~planettofill)
+	setvar $lspfailed false
 	return
 end
 
@@ -1018,6 +1018,7 @@ return
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :farm_set
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :loadfarmsectorlist
 setvar $i 2
 setvar $newfarmlist ""
 setvar $sectorsadded 0
@@ -1027,27 +1028,44 @@ while ($check <> "%%%")
 	if ($check <> "%%%")
 		isnumber $test $check
 		if ($test)
-			if (($check > 0) and ($check <= sectors))
-				if ($newfarmlist = "")
-					setvar $newfarmlist $check
-				else
-					setvar $newfarmlist $newfarmlist&" "&$check
-				end
-				add $sectorsadded 1
+			if ($check > 0) and ($check <= sectors) and ($check > 10)
+				setvar $farmsec $check
+				gosub :addtofarmlist
 			end
 		end
 	end
 	add $i 1
 end
-if ($farmsectors = "") or ($farmsectors = 0)
-	setvar $farmsectors $newfarmlist
-else
-	setvar $farmsectors $farmsectors&" "&$newfarmlist
-end
-savevar $farmsectors
+
 setvar $switchboard~message ""&$sectorsadded&" Sectors added to Bot Farming Configuration.*"
 gosub :switchboard~switchboard
 halt
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:addtofarmlist
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($farmsec = "") or ($farmsec = 0) or ($farmsec > sectors) or ($farmsec < 11)
+	setvar $switchboard~message "Invalid sector number to add to farm list.*"
+	gosub :switchboard~switchboard
+	halt
+end
+setvar $c 0
+while ($c < $farmlistcount)
+	add $c 1
+	if ($sector[$c] = $farmsec)
+		setvar $switchboard~message "Sector "&$farmsec&" is already in the farm list.*"
+		gosub :switchboard~switchboard
+		return
+	end
+end
+if ($farmsectors = "") or ($farmsectors = 0)
+	setvar $farmsectors $farmsec
+else
+	setvar $farmsectors $farmsectors&" "&$farmsec
+end
+add $sectorsadded 1
+savevar $farmsectors
+return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :checkfull
@@ -1099,7 +1117,16 @@ if ($planet~emptyfigs > 0)
 			gosub :switchboard~switchboard
 			halt
 		end
-
+		send "s"
+		waiton "<Scan Sector>"
+		waiton "Fighters:"
+		getword currentline $secfigs 2
+		striptext $secfigs ","
+		if ($secfigs >= (2000000000 - $ship~ship_fighters_max))
+			setvar $switchboard~message "Sector is at max fighters, stopping.*"
+			gosub :switchboard~switchboard
+			halt
+		end
 		send "'" & $bot~bot_name & " movefig s*"
 		waiton "{" & $bot~bot_name & "} - fighters moved"
 		setvar $figstofill $planet~planet_fighters_max

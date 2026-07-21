@@ -1054,7 +1054,7 @@ else
 	setvar $notakefigs false
 end
 
-if ($planet~nocit = true)
+if ($planet~nocit = "") or ($planet~nocit = true)
 	setvar $planet~nocit false
 	return
 end
@@ -1187,7 +1187,8 @@ return
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :planet~landonplanetentercitadel
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-send "l "&$planet~planet&"*tnl1*tnl2*tnl3*snl1*snl2*snl3*c "
+#send "l "&$planet~planet&"*tnl1*tnl2*tnl3*snl1*snl2*snl3*c* "
+send "l "&$planet~planet&"*c* "
 waiton "Fuel Ore"
 getword currentline $planet~planetfuel 6
 striptext $planet~planetfuel ","
@@ -1554,15 +1555,20 @@ return
 gosub :player~quikstats
 setvar $startingcredits $player~credits
 
-if ($player~credits >= $planet~moveamount)
-	send "q l "&$planet~planettofill&"* ctt"&$moveamount&"* q q l "&$startingplanet&"* ctf"&$moveamount&"* q q "
-	return
-end
-
 send "c"
 waiton "Citadel treasury contains"
-getword currentline $planet~citadel_credits 5
+getword currentline $planet~citadel_credits 4
 striptext $planet~citadel_credits ","
+
+if ($moveamount = 0) or ($moveamount = "")
+	setvar $moveamount $planet~citadel_credits
+end
+
+if ($player~credits >= $planet~moveamount)
+	send "q l "&$planet~planettofill&"* ctt"&$moveamount&"* q q l "&$startingplanet&"* ctf"&$moveamount&"* q q "
+	setvar $planet~movesuccess true
+	return
+end
 
 while ($moveamount > 0)
 	setvar $credstoget ($moveamount - $player~credits)
@@ -1588,6 +1594,7 @@ goto :move_done
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 gosub :player~currentprompt
 setvar $startingplanet 0
+setvar $restore_ship_fighters false
 gosub :player~currentprompt
 setvar $startingprompt $player~current_prompt
 if ($startingprompt = "Citadel")
@@ -1861,6 +1868,7 @@ if ($emptyfigs)
 		end
 	end
 	if ($amount_to_strip > 0)
+		setvar $restore_ship_fighters true
 		send "l "&$planet~planettofill&"* m n l* q "
 		:tryfighters
 		killtrigger success
@@ -1886,10 +1894,100 @@ end
 setvar $planet~planet $startingplanet
 setvar $nocit true
 gosub :landingsub
+if ($restore_ship_fighters)
+	send "m n t*"
+	waiton "Planet command"
+end
 #if ($startingprompt = "Command")
 #	send "c"
 #end
 return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:qset
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($planet~qset_setting = 0) or ($planet~qset_setting = "")
+	setvar $switchboard~message "Quasar Cannon settings are not defined.*"
+	gosub :switchboard~switchboard
+	return
+end
+if ($planet~qset_type = 0) or ($planet~qset_type = "")
+	setvar $switchboard~message "Quasar Cannon type is not defined.*"
+	gosub :switchboard~switchboard
+	return
+end
+
+gosub :player~currentprompt
+setvar $startinglocation $player~current_prompt
+
+setvar $totaldamage 0
+setvar $cannontype $planet~qset_type
+setvar $planet~qset_type 0
+setvar $cannondamage $planet~qset_setting
+setvar $planet~qset_setting 0
+
+if ($startinglocation = "Citadel")
+	send "q"
+elseif ($startinglocation <> "Planet")
+	setvar $switchboard~message "Qset must start from the Citadel or Planet prompt!*"
+	gosub :switchboard~switchboard
+	return
+end
+
+gosub :planet~getplanetinfo
+
+if ($planet~citadel < 3)
+	setvar $switchboard~message "Planet number " $planet~planet " does not have a quasar cannon.*"
+	gosub :switchboard~switchboard
+	if (($planet~citadel > 0) and ($startinglocation = "Citadel"))
+		send "c "
+	end
+end
+
+send "c "
+if ($cannontype = "s")
+	setvar $percenttoset (((3 * $cannondamage) * 100) / $planet~planet_fuel)
+	if (((($planet~planet_fuel * $percenttoset) / 100) / 3) < $cannondamage)
+		add $percenttoset 1
+	end
+	if ($percenttoset > 100)
+		setvar $percenttoset 100
+	end
+	add $totaldamage ((($planet~planet_fuel * $percenttoset) / 100) / 3)
+	send "l s "&$percenttoset&"* "
+	setvar $damagetype "Sector"
+else
+	if ($mbbs)
+		setvar $percenttoset ((($cannondamage / 2) * 100) / $planet~planet_fuel)
+		if (((($planet~planet_fuel * $percenttoset) / 100) * 2) < $cannondamage)
+			add $percenttoset 1
+		end
+	else
+		setvar $percenttoset (((2 * $cannondamage) * 100) / $planet~planet_fuel)
+		if (((($planet~planet_fuel * $percenttoset) / 100) / 2) < $cannondamage)
+			add $percenttoset 1
+		end
+		if ($percenttoset > 100)
+			setvar $percenttoset 100
+		end
+		if ($mbbs)
+			add $totaldamage ((($planet~planet_fuel * $percenttoset) / 100) * 2)
+		else
+			add $totaldamage ((($planet~planet_fuel * $percenttoset) / 100) / 2)
+		end
+		send "l a "&$percenttoset&"* "
+		setvar $damagetype "Atmosphere"
+	end
+end
+if ($startinglocation = "Planet")
+	send "q "
+end
+waiton "What level do you want"
+setvar $switchboard~message "Quasar Cannon on planet "&$planet~planet&" is set to "&$totaldamage&". ("&$damagetype&")*"
+gosub :switchboard~switchboard
+return
+
+# includes
 
 include "source\include\player"
 include "source\include\ship"

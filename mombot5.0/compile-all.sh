@@ -21,6 +21,13 @@ if [[ -n "${TWXC_FLAGS:-}" ]]; then
   read -r -a TWXC_FLAGS_ARRAY <<< "$TWXC_FLAGS"
 fi
 
+is_excluded_source() {
+  case "$(basename "$1")" in
+    wsst2.ts) return 0 ;;
+  esac
+  return 1
+}
+
 targets=("$SOURCE/mombot.ts")
 compile_roots=()
 for dir in "$SOURCE/commands" "$SOURCE/modes" "$SOURCE/daemons" "$SOURCE/preload" "$SOURCE/startups"; do
@@ -30,6 +37,10 @@ for dir in "$SOURCE/commands" "$SOURCE/modes" "$SOURCE/daemons" "$SOURCE/preload
 done
 
 while IFS= read -r file; do
+  if is_excluded_source "$file"; then
+    echo "Skipping ignored script ${file#$ROOT/}"
+    continue
+  fi
   targets+=("$file")
 done < <(find "${compile_roots[@]}" -name '*.ts' | sort)
 

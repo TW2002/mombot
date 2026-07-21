@@ -126,6 +126,9 @@ if ($switchboard~message <> "")
 				setvar $switchboard~trimming false
 			end
 		end
+		killtrigger switchboard_ss_delay
+		killtrigger switchboard_ss_open
+		killtrigger switchboard_ss_sent
 		setdelaytrigger switchboard_ss_delay :switchboard~ss_done 2000
 		settextlinetrigger switchboard_ss_open :switchboard~ss_done "Comm-link open on sub-space band"
 		settextlinetrigger switchboard_ss_sent :switchboard~ss_done "Message sent on sub-space channel"

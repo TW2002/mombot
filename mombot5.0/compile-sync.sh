@@ -21,6 +21,13 @@ if [[ -n "${TWXC_FLAGS:-}" ]]; then
   read -r -a TWXC_FLAGS_ARRAY <<< "$TWXC_FLAGS"
 fi
 
+is_excluded_source() {
+  case "$(basename "$1")" in
+    wsst2.ts) return 0 ;;
+  esac
+  return 1
+}
+
 if [[ $# -lt 1 ]]; then
   echo "Usage: $(basename "$0") <script.ts> [more scripts.ts ...]" >&2
   exit 1
@@ -41,6 +48,11 @@ for input in "$@"; do
   if [[ "$target" != "$ROOT/"* ]]; then
     echo "Script must live under $ROOT: $target" >&2
     exit 1
+  fi
+
+  if is_excluded_source "$target"; then
+    echo "Skipping ignored script ${target#$ROOT/}"
+    continue
   fi
 
   rel="${target#$ROOT/}"

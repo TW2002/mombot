@@ -12,7 +12,7 @@ setvar $help~help[6]  $help~tab&"   - [r/s/m/t/p] = [r]ed/[s]peed/[m]ilk/[t]imed
 setvar $help~help[7]  $help~tab&"     speed = cycles - cycles to grab colos (default max)"
 setvar $help~help[8]  $help~tab&"     milk  = min colos - min colos before grab (default 0)"
 setvar $help~help[9]  $help~tab&"     timed = delay  - time to wait each cycle (default 15 seconds)"
-setvar $help~help[10]  $help~tab&"    red   = jump sector - sector next to terra (can place planet there too)"
+setvar $help~help[10]  $help~tab&"     red   = jump sector - sector next to terra (can place planet there too)"
 setvar $help~help[11]  $help~tab&"     speed port   = same as speed but uses port for ore"
 setvar $help~help[12] $help~tab&"   - [misc]  = cycles/min colos/delay"
 setvar $help~help[13] $help~tab&"   - [t/b]   = [t]warp/[b]warp  (default is [t]warp)"
@@ -327,9 +327,9 @@ if ($colo_type = "m")
 		#KEEP RUNNING
 
 		if ($bwarp)
-			send "t * t 1"&$colo_fuel&"* c "
+			send "m * * * t * t 1"&$colo_fuel&"* c "
 		else
-			send "t * t 1"&$colo_fuel&"* q "
+			send "m * * * t * t 1"&$colo_fuel&"* q "
 		end
 		gosub :player~quikstats
 		killalltriggers
@@ -507,6 +507,9 @@ elseif ($colo_type = "s")
 			if ($doubleore = true)
 				if ($doubleoreget = true)
 					setvar $doubleoreget false
+					if ($player~experience > 1000)
+						setvar $coloburst $coloburst&" m * * * "
+					end
 					setvar $coloburst $coloburst&" t * t 1"&$colo_fuel&"* c "
 				else
 					setvar $doubleoreget true
@@ -514,13 +517,23 @@ elseif ($colo_type = "s")
 				end
 
 			else
-				setvar $coloburst $coloburst&"  t * t 1"&$colo_fuel&"* c "
+				if ($player~experience > 1000)
+					setvar $coloburst $coloburst&" m * * * "
+				end
+				setvar $coloburst $coloburst&" t * t 1"&$colo_fuel&"* c "
 			end
 
 		else
 			if ($colo_prod < 3)
-				setvar $coloburst $coloburst&"s * * "&($colo_prod+1)&"* t * t 1"&$colo_fuel&"* q q * "
+				setvar $coloburst $coloburst&"s * * "&($colo_prod+1)&"* "
+				if ($player~experience > 1000)
+					setvar $coloburst $coloburst&" m * * * "
+				end
+				setvar $coloburst $coloburst & "t * t 1"&$colo_fuel&"* q q * "
 			else
+				if ($player~experience > 1000)
+					setvar $coloburst $coloburst&" m * * * "
+				end
 				setvar $coloburst $coloburst&" t * t 1"&$colo_fuel&"* q "
 			end
 		end

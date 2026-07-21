@@ -190,14 +190,15 @@ halt
 :goodplanet
 killtrigger wrongplanet
 killtrigger badplanet
-if ($planet~emptyfigs)
-	send "m*l* "
-end
 
 logging off
 if ($deaf = true)
 	gosub :player~enter_menu_deaf
 end
+
+send "q *"
+gosub :sector~voidadjacent
+send "l " &$planet~planettofill&"*"
 
 while ($i <= $planet~planetcount)
 	if ($planet~planettofill <> $planet~planets[$i])
@@ -223,8 +224,14 @@ if ($deaf = true)
 end
 send "q q q * * "
 
+gosub :sector~clearvoidadjacent
+
 setvar $planet~planet $startingplanet
-gosub :planet~landonplanetentercitadel
+if ($startinglocation = "Citadel")
+	gosub :planet~landonplanetentercitadel
+else
+	send "l "&$planet~planet&"*"
+end
 gosub :player~quikstats
 gosub :endreport
 
@@ -306,3 +313,4 @@ include "source\include\loadvars"
 include "source\include\help"
 include "source\include\switchboard.ts"
 include "source\include\player.ts"
+include "source\include\sector.ts"

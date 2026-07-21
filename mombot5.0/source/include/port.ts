@@ -16,6 +16,7 @@ end
 if ($port~remoteport > 0)
 	send $port~remoteport
 	setvar $sector $port~remoteport
+	setvar $port~remoteport 0
 end
 send "*"
 

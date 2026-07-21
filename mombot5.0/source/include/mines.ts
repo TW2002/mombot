@@ -373,18 +373,20 @@ while ($i <= sectors)
 	end
 	add $i 1
 end
+setvar $armidgridcount $count
+setvar $armidgridpersonalcount $personalcount
 return
 
 :reportarmids
 loadvar $bot~armid_count
-setvar $percent (($count * 100) / sectors)
-setvar $gridchange $count - $bot~armid_count
+setvar $percent (($armidgridcount * 100) / sectors)
+setvar $gridchange $armidgridcount - $bot~armid_count
 if ($gridchange > 0)
 	setvar $gridchange "+"&$gridchange
 end
-setvar $bot~armid_count $count
+setvar $bot~armid_count $armidgridcount
 savevar $bot~armid_count
-setvar $switchboard~message $switchboard~message&"          - Armid Grid Report -*          - "&$count&" sectors, "&$personalcount&" personal. ("&$percent&"%) ("&$gridchange&" Change)**"
+setvar $switchboard~message $switchboard~message&"          - Armid Grid Report -*          - "&$armidgridcount&" sectors, "&$armidgridpersonalcount&" personal. ("&$percent&"%) ("&$gridchange&" Change)**"
 return
 
 :updatelimps
@@ -487,19 +489,22 @@ while ($i <= sectors)
 	end
 	add $i 1
 end
+setvar $limpetgridcount $count
+setvar $limpetgridpersonalcount $personalcount
+setvar $limpetgridoutput $limpetoutput
 return
 
 :reportlimps
 loadvar $bot~limpet_count
-setvar $percent (($count * 100) / sectors)
-setvar $gridchange ($count - $bot~limpet_count)
+setvar $percent (($limpetgridcount * 100) / sectors)
+setvar $gridchange ($limpetgridcount - $bot~limpet_count)
 if ($gridchange > 0)
 	setvar $gridchange "+"&$gridchange
 end
-setvar $bot~limpet_count $count
+setvar $bot~limpet_count $limpetgridcount
 savevar $bot~limpet_count
 setvar $player~limpetsgridded true
-setvar $switchboard~message $switchboard~message&"          - Limpet Grid Report -*          - "&$count&" sectors, "&$personalcount&" personal. ("&$percent&"%) ("&$gridchange&" Change)*          - Activated  Limpet  Scan*            *             Sector    Personal/Corp*            ========================*"&$limpetoutput&"*"
+setvar $switchboard~message $switchboard~message&"          - Limpet Grid Report -*          - "&$limpetgridcount&" sectors, "&$limpetgridpersonalcount&" personal. ("&$percent&"%) ("&$gridchange&" Change)*          - Activated  Limpet  Scan*            *             Sector    Personal/Corp*            ========================*"&$limpetgridoutput&"*"
 return
 
 :unfreezebot

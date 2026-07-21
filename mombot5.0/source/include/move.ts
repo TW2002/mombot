@@ -12,6 +12,7 @@
 :move~move
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 settextlinetrigger 1 :getsector "Sector  : "
+send "d"
 pause
 
 :move~getsector
@@ -340,7 +341,7 @@ while ($j <= $player~courselength)
 	if (($player~course[$j] > 10) and ($player~course[$j] <> $map~stardock))
 		setvar $macro $macro&"za  "&$ship~ship_max_attack&"* *  "
 	end
-	if (($player~course[$j] > 10) and ($player~course[$j] <> $map~stardock) and ($j > 2))
+	if (($player~course[$j] > 10) and ($player~course[$j] <> $map~stardock) and ($j > 1))
 		if ($player~surroundfigs > 0) and ($player~fighters > 50)
 			setvar $macro $macro&"f "&$player~surroundfigs&" * c d "
 			setvar $player~target $player~course[$j]
@@ -421,6 +422,12 @@ if ($ship~ship_max_attack = 0)
 end
 if (($player~fighters > 0) and ($player~fighters < $ship~ship_max_attack))
 	setvar $ship~ship_max_attack $player~fighters
+end
+
+getdistance $dist $player~current_sector $player~warpto
+if ($dist < 2)
+	setvar $player~msg "That sector is adjacent, just plain warping."
+	goto :move~move
 end
 
 setvar $player~weareadjdock false

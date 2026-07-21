@@ -366,12 +366,17 @@ while ($cim_count <= sectors)
 	end
 end
 
-setvar $switchboard~message "Upped Ports: (At least "&$upgradelimit&" product level)**"
+setvar $switchboard~message "Upped Ports: (At least "&$upgradelimit&" product level)"
 #setvar $i 0
 setvar $cimout_count 1
+setvar $cim_first_upped true
 while ($cimout_count <= sectors)
 	getwordpos $upped $pos " "&$cimout_count&" "
 	if ($pos > 0)
+		if ($cim_first_upped = true)
+			setvar $switchboard~message $switchboard~message & "*"
+			setvar $cim_first_upped false
+		end
 		setvar $cimtemp ""
 		striptext $cimout_count " "
 		if ($cimout_count < 10)
@@ -413,7 +418,7 @@ while ($cimout_count <= sectors)
 end
 setvar $upped ""
 
-setvar $switchboard~message $switchboard~message & "* Ports with MCIC at least -60/-65 :*"
+setvar $switchboard~message $switchboard~message & "*Ports with MCIC at least -60/-65 :"
 
 :mcic_send_loop
 setvar $mcic_send_count 1
@@ -442,11 +447,11 @@ while ($mcic_send_count <= sectors)
 		if ($equmcic[$mcic_send_count] <> 0)
 			setvar $cimtemp $cimtemp&" EQUMCIC="&$equmcic[$mcic_send_count]&" "
 		end
-		setvar $switchboard~message $switchboard~message & $cimtemp & "*"
+		setvar $switchboard~message $switchboard~message & "*" & $cimtemp
 	end
 	add $mcic_send_count 1
 end
-setvar $switchboard~message $switchboard~message & "* CIM Processing Complete!**"
+setvar $switchboard~message $switchboard~message & "*CIM Processing Complete!*"
 gosub :switchboard~switchboard
 setarray $mcic 10
 return

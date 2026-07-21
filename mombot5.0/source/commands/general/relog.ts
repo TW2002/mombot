@@ -26,7 +26,11 @@ pause
 
 :continuedoingrelog
 setvar $first_time true
+setvar $relog~entered_game false
 gosub :do_relog
+if ($relog~entered_game = true)
+	goto :alldone_relog
+end
 
 :enter
 gosub :relog_freeze_trigger
@@ -257,8 +261,33 @@ pause
 :continuerelog5
 gosub :killrelogtriggers
 settexttrigger firstpause :firstpause "[Pause]"
-settexttrigger enter :done_do_relog "Enter your choice"
+settexttrigger alive :done_do_relog "Command ["
+settexttrigger aliveonplanet :done_do_relog "Planet command (?=help) [D]"
+settexttrigger aliveincitadel :done_do_relog "Citadel command (?=help)"
+settexttrigger enter :enter_game_menu "Enter your choice"
+setdelaytrigger relogmenupromptcheck :relog_check_game_menu_prompt 100
 send $bot~letter
+pause
+
+:relog_check_game_menu_prompt
+setvar $relog~line currentline
+getwordpos $relog~line $relog~pos "Command ["
+if ($relog~pos > 0)
+	goto :done_do_relog
+end
+getwordpos $relog~line $relog~pos "Planet command (?=help) [D]"
+if ($relog~pos > 0)
+	goto :done_do_relog
+end
+getwordpos $relog~line $relog~pos "Citadel command (?=help)"
+if ($relog~pos > 0)
+	goto :done_do_relog
+end
+getwordpos $relog~line $relog~pos "Enter your choice"
+if ($relog~pos > 0)
+	goto :enter_game_menu
+end
+setdelaytrigger relogmenupromptcheck :relog_check_game_menu_prompt 100
 pause
 
 :firstpause
@@ -266,8 +295,50 @@ send "*"
 settexttrigger firstpause :firstpause "[Pause]"
 pause
 
+:enter_game_menu
+gosub :killrelogtriggers
+settexttrigger postgamepause :continue_relog_game_pause "[Pause]"
+settexttrigger password :continuepassword "A password is required to enter this game."
+settexttrigger alive :done_do_relog "Command ["
+settexttrigger aliveonplanet :done_do_relog "Planet command (?=help) [D]"
+settexttrigger aliveincitadel :done_do_relog "Citadel command (?=help)"
+setdelaytrigger relogenteredcheck :relog_check_entered_game 100
+send "T**"
+pause
+
+:continue_relog_game_pause
+gosub :relog_freeze_trigger
+killtrigger relogenteredcheck
+send "*"
+settexttrigger postgamepause :continue_relog_game_pause "[Pause]"
+settexttrigger password :continuepassword "A password is required to enter this game."
+settexttrigger alive :done_do_relog "Command ["
+settexttrigger aliveonplanet :done_do_relog "Planet command (?=help) [D]"
+settexttrigger aliveincitadel :done_do_relog "Citadel command (?=help)"
+setdelaytrigger relogenteredcheck :relog_check_entered_game 100
+setdelaytrigger unfreezingtrigger :relog_attempt 20000
+pause
+
+:relog_check_entered_game
+setvar $relog~line currentline
+getwordpos $relog~line $relog~pos "Command ["
+if ($relog~pos > 0)
+	goto :done_do_relog
+end
+getwordpos $relog~line $relog~pos "Planet command (?=help) [D]"
+if ($relog~pos > 0)
+	goto :done_do_relog
+end
+getwordpos $relog~line $relog~pos "Citadel command (?=help)"
+if ($relog~pos > 0)
+	goto :done_do_relog
+end
+setdelaytrigger relogenteredcheck :relog_check_entered_game 100
+pause
+
 :done_do_relog
 killalltriggers
+setvar $relog~entered_game true
 return
 
 :killrelogtriggers
@@ -282,7 +353,14 @@ killtrigger relog89
 killtrigger loginsuccessful
 killtrigger loginsuccessful2
 killtrigger firstpause
+killtrigger postgamepause
+killtrigger password
 killtrigger enter
+killtrigger relogmenupromptcheck
+killtrigger relogenteredcheck
+killtrigger alive
+killtrigger aliveonplanet
+killtrigger aliveincitadel
 setdelaytrigger thedelay2 :relog_attempt 20000
 return
 

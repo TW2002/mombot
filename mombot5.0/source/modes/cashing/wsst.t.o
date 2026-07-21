@@ -1,3 +1,5 @@
+reqrecording
+
 gosub :loadvars~loadvars
 gosub :help~initialize
 
@@ -72,7 +74,6 @@ savevar $player~turns
 return
 
 :gogo
-logging off
 window cash 300 170 ("World SST - " & gamename) ontop
 gosub :displaycredits
 while (true)
