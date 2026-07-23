@@ -1,3 +1,11 @@
+#            PPPPPP    SSSSSS   SSSSSS   TTTTTTTTTT       
+#            PP   PP  SS        SS            TT          Planet Steal-Steal-Transport
+#            PP   PP  SS        SS            TT          Original author unknown
+#            PPPPPP    SSSSS    SSSSS        TT         
+#            PP            SS       SS       TT           Version 5.0.1 by Shadow
+#            PP            SS       SS       TT           Released with MomBot 5.0
+#            PP       SSSSSS   SSSSSS       TT
+
 gosub :loadvars~loadvars
 loadvar $bot~folder
 loadvar $game~steal_factor
@@ -22,42 +30,69 @@ loadvar $game~steal_factor
 gosub :help~initialize
 setvar $help~help[1] $help~tab&"Planet SST using two ships and two planets."
 setvar $help~help[2] $help~tab&"   "
-setvar $help~help[3] $help~tab&"Usage:  psst [ship2#] [planet1#] [planet2#] {mcic}"
-setvar $help~help[4] $help~tab&"        psst clear_busts"
+setvar $help~help[3] $help~tab&"Steals equipment from xxB ports, xports between ships, and refurbishes."
+setvar $help~help[4] $help~tab&"Run from Command."
 setvar $help~help[5] $help~tab&"   "
-setvar $help~help[6] $help~tab&"   [ship2#] - empty second ship in the starting sector."
-setvar $help~help[7] $help~tab&"   [planet1#] [planet2#] - movable planets in the starting sector."
-setvar $help~help[8] $help~tab&"   [clear_busts] - clears cached bust data."
-setvar $help~help[9] $help~tab&"   Steals equipment from xxB ports, xports between ships, and refurbishes."
-setvar $help~help[10] $help~tab&"   Run from Command."
+setvar $help~help[6] $help~tab&"Usage:  psst [ship2#] [planet1#] [planet2#] {mcic} {buyfuel}"
+setvar $help~help[7] $help~tab&"        psst clear_busts"
+setvar $help~help[8] $help~tab&"   "
+setvar $help~help[9] $help~tab&"   [ship2#] - empty second ship in the starting sector."
+setvar $help~help[10] $help~tab&"   [planet1#] [planet2#] - movable planets in the starting sector."
+setvar $help~help[11] $help~tab&"   [clear_busts] - clears cached bust data."
+setvar $help~help[12] $help~tab&"   [mcic] - select ports by MCIC value."
+setvar $help~help[13] $help~tab&"   [buyfuel] - upgrade ports and buy fuel."
 gosub :help~helpfile
-
-#gosub :rankports
-#setvar $i 0
-#while ($i < $portcount)
-#	add $i 1
-#	echo "port sector " &$ports[$i] & " mcic " &$mcic[$ports[$i]] & "*"
-#end
-#halt
 
 lowercase $parm1
 lowercase $parm2
 lowercase $parm3
 lowercase $parm4
-setvar $mcicmode false
-if ($parm1 = "mcic")
-	setvar $mcicmode true
-	setvar $parm1 $parm2
-	setvar $parm2 $parm3
-	setvar $parm3 $parm4
-elseif ($parm4 = "mcic")
-	setvar $mcicmode true
+lowercase $parm5
+lowercase $parm6
+lowercase $parm7
+lowercase $parm8
+
+getWordPos $user_command_line $pos "mcic" 
+if ($pos > 0)
+	setVar $mcicmode TRUE
+else
+	setVar $mcicmode FALSE
 end
+
+getWordPos $user_command_line $pos "buyfuel" 
+if ($pos > 0)
+	setVar $buyfuel TRUE
+else
+	setVar $buyfuel FALSE
+end
+getWordPos $bot~user_command_line $pos "buyfuel"
+if ($pos > 0)
+	setVar $buyfuel TRUE
+end
+if (($parm1 = "buyfuel") or ($parm2 = "buyfuel") or ($parm3 = "buyfuel") or ($parm4 = "buyfuel") or ($parm5 = "buyfuel") or ($parm6 = "buyfuel") or ($parm7 = "buyfuel") or ($parm8 = "buyfuel"))
+	setVar $buyfuel TRUE
+end
+if (($bot~parm1 = "buyfuel") or ($bot~parm2 = "buyfuel") or ($bot~parm3 = "buyfuel") or ($bot~parm4 = "buyfuel") or ($bot~parm5 = "buyfuel") or ($bot~parm6 = "buyfuel") or ($bot~parm7 = "buyfuel") or ($bot~parm8 = "buyfuel"))
+	setVar $buyfuel TRUE
+end
+
 gosub :player~quikstats
 setvar $startinglocation $player~current_prompt
 isnumber $isparamonenumber $parm1
 isnumber $isparamtwonumber $parm2
 isnumber $isparamthreenumber $parm3
+
+if ($player~alignment > 0)
+	setvar $switchboard~message "You gotta be blue to run SST, bro.*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+if ($player~experience < 1000)
+	setvar $switchboard~message "You need at least 1000 experience to run Planet SST.*"
+	gosub :switchboard~switchboard
+	halt
+end
 
 if ($startinglocation <> "Command")
 	setvar $switchboard~message "Planet SST must be run from command prompt*"
@@ -168,6 +203,7 @@ waiton "Transport Range:"
 getword currentline $transportrange1 6
 getword currentline $maxholds1 3
 gosub :transport
+
 send "c;q"
 waiton "Transport Range:"
 getword currentline $transportrange2 6
@@ -179,6 +215,7 @@ if ($transportrange1 <= $transportrange2)
 else
 	setvar $transportrange $transportrange2
 end
+
 if ($maxholds1 >= $maxholds2)
 	setvar $minrefurb (($maxholds1 * 75) / 100)
 else
@@ -199,6 +236,7 @@ setarray $equipatport sectors
 setarray $seededmaxedport sectors
 setarray $fuelatport sectors
 setarray $invalidsstport sectors
+
 if ($mcicmode = true)
 	gosub :rankports
 end
@@ -208,7 +246,6 @@ gosub :displaycredits
 
 :psst
 gosub :findsstports
-
 if (($ship1needsport = true) or ($ship2needsport = true))
 	setvar $switchboard~message "No valid replacement Planet SST ports found.*"
 	gosub :switchboard~switchboard
@@ -246,258 +283,182 @@ if ($ship1needsport)
 	if ($inship1 <> true)
 		gosub :transport
 	end
-	setvar $mcicselection false
-	if (($mcicmode = true) and ($portcount > 0))
-		setvar $mcicselection true
-		setvar $nearest $portcount
-	else
-		getnearestwarps $nearest $ship1sector
+	setvar $candidate_ship 1
+	setvar $candidate_sector $ship1sector
+	setvar $candidate_other_sector $ship2sector
+	setvar $candidate_equipment $ship1equipment
+	setvar $candidate_planet $psst_planet1
+	setvar $candidate_pchk $p1chk
+	gosub :findsstcandidate
+	setvar $ship1sector $candidate_sector
+	setvar $ship1needsport $candidate_needsport
+	setvar $p1chk $candidate_pchk
+	if ($candidate_found = true)
+		setvar $ship1totalholds $candidate_totalholds
+		setvar $ship1equipment $candidate_equipment
 	end
+end
+
+if ($ship2needsport)
+	if ($inship1)
+		gosub :transport
+	end
+	setvar $candidate_ship 2
+	setvar $candidate_sector $ship2sector
+	setvar $candidate_other_sector $ship1sector
+	setvar $candidate_equipment $ship2equipment
+	setvar $candidate_planet $psst_planet2
+	setvar $candidate_pchk $p2chk
+	gosub :findsstcandidate
+	setvar $ship2sector $candidate_sector
+	setvar $ship2needsport $candidate_needsport
+	setvar $p2chk $candidate_pchk
+	if ($candidate_found = true)
+		setvar $ship2totalholds $candidate_totalholds
+		setvar $ship2equipment $candidate_equipment
+	end
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:findsstcandidate
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $candidate_found false
+setvar $candidate_needsport true
+setvar $mcicselection false
+if (($mcicmode = true) and ($portcount > 0))
+	setvar $mcicselection true
+	setvar $nearest $portcount
+else
+	getnearestwarps $nearest $candidate_sector
+end
+setvar $i 1
+
+:sstcandidate_loop
+while ($i <= $nearest)
+	if ($mcicselection = true)
+		setvar $focus $ports[$i]
+	else
+		setvar $focus $nearest[$i]
+	end
+	getsectorparameter $focus "BUSTED" $isbusted
+	getsectorparameter $focus "FIGSEC" $isfigged
+	setvar $porthassteal false
+	if ((port.equip[$focus] > 0) and (port.equip[$focus] < 65530))
+		setvar $porthassteal true
+	elseif ((port.equip[$focus] >= 65530) and ($candidate_equipment > 0))
+		setvar $porthassteal true
+	end
+	if (($isfigged = true) and (($isbusted <> true) and (((port.exists[$focus] = true) and (($porthassteal = true) and (port.buyequip[$focus] = true))) and (($focus <> $candidate_other_sector) and (($focus <> $candidate_sector) and ($invalidsstport[$focus] <> true))))))
+		getdistance $distancethere $candidate_other_sector $focus
+		getdistance $distanceback $focus $candidate_other_sector
+		if ($distancethere < 0)
+			send "^f"&$candidate_other_sector&"*"&$focus&"*q"
+			waiton "ENDINTERROG"
+			getdistance $distancethere $candidate_other_sector $focus
+		end
+		if ($distanceback < 0)
+			send "^f"&$focus&"*"&$candidate_other_sector&"*q"
+			waiton "ENDINTERROG"
+			getdistance $distanceback $focus $candidate_other_sector
+		end
+		if ($distancethere > $transportrange)
+			goto :sstcandidate_next
+		elseif ($distanceback > $transportrange)
+			goto :sstcandidate_next
+		else
+			killalltriggers
+			send "l "&$candidate_planet&"* c*"
+			settextlinetrigger onplanetcandidate :onplanetcandidate "Citadel treasury"
+			settextlinetrigger noplanetcandidate :noplanetcandidate "That planet is not"
+			pause
+
+			:noplanetcandidate
+			setvar $switchboard~message "Planet "&$candidate_planet&" is not in this sector. Halting Script.*"
+			gosub :switchboard~switchboard
+			halt
+
+			:onplanetcandidate
+			send "p "&$focus&"*y"
+			settextlinetrigger pwarpnoshipcandidate :pwarpnoshipcandidate "You do not have any fighters in Sector "
+			settextlinetrigger pwarpyescandidate :pwarpyescandidate " Planetary TransWarp Drive Engaged! "
+			settextlinetrigger pwarpnofuelcandidate :pwarpnofuelcandidate "You do not have enough Fuel Ore on this planet to make the jump."
+			pause
+
+			:pwarpnofuelcandidate
+			setvar $switchboard~message "Not enough fuel on planet "&$candidate_planet&". Halting Script.*"
+			gosub :switchboard~switchboard
+			goto :endsst
+
+			:pwarpyescandidate
+			killalltriggers
+			gosub :player~quikstats
+			setvar $candidate_sector $focus
+			gosub :getsstportinfo
+				if ($sstportvalid <> true)
+					setvar $candidate_needsport true
+					gosub :displaycredits
+					send "q *q *"
+					gosub :readcandidatefuel
+					goto :sstcandidate_next
+				end
+				if ($buyfuel = true)
+					gosub :player~currentprompt
+					setvar $merchant~buyfuel_minimum 10000
+					setvar $merchant~buyfuel_min_room_pct 10
+					gosub :merchant~buyfuel
+					if (($merchant~buyfuel_message = "Unable to reach Planet prompt while refreshing port.") or ($merchant~buyfuel_message = "Unable to reach Citadel prompt while refreshing port.") or ($merchant~buyfuel_message = "Prompt timed out while refreshing port."))
+						setvar $switchboard~message $merchant~buyfuel_message&" Halting Script.*"
+						gosub :switchboard~switchboard
+						goto :endsst
+					end
+					gosub :player~quikstats
+				end
+			setvar $candidate_needsport false
+			setvar $candidate_totalholds $player~total_holds
+			setvar $candidate_equipment $player~equipment_holds
+			gosub :displaycredits
+			send "q *q *"
+			gosub :readcandidatefuel
+			setvar $candidate_found true
+			return
+
+			:pwarpnoshipcandidate
+			killalltriggers
+			gosub :displaycredits
+			send "q q "
+		end
+	end
+	:sstcandidate_next
+	add $i 1
+end
+if ($mcicselection = true)
+	setvar $mcicselection false
+	getnearestwarps $nearest $candidate_sector
 	setvar $i 1
-	:ship1candidate_loop
-		while ($i <= $nearest)
-		if ($mcicselection = true)
-			setvar $focus $ports[$i]
-		else
-			setvar $focus $nearest[$i]
-			end
-			getsectorparameter $focus "BUSTED" $isbusted
-			getsectorparameter $focus "FIGSEC" $isfigged
-			setvar $porthassteal false
-			if ((port.equip[$focus] > 0) and (port.equip[$focus] < 65530))
-				setvar $porthassteal true
-			elseif ((port.equip[$focus] >= 65530) and ($ship1equipment > 0))
-				setvar $porthassteal true
-			end
-				if (($isfigged = true) and (($isbusted <> true) and (((port.exists[$focus] = true) and (($porthassteal = true) and (port.buyequip[$focus] = true))) and (($focus <> $ship2sector) and (($focus <> $ship1sector) and ($invalidsstport[$focus] <> true))))))
+	goto :sstcandidate_loop
+end
+return
 
-			getdistance $distancethere $ship2sector $focus
-			getdistance $distanceback $focus $ship2sector
-			if ($distancethere < 0)
-				send "^f"&$ship2sector&"*"&$focus&"*q"
-				waiton "ENDINTERROG"
-				getdistance $distancethere $ship2sector $focus
-			end
-			if ($distanceback < 0)
-				send "^f"&$focus&"*"&$ship2sector&"*q"
-				waiton "ENDINTERROG"
-				getdistance $distanceback $focus $ship2sector
-				end
-				if ($distancethere > $transportrange)
-					goto :canttransportship1
-				elseif ($distanceback > $transportrange)
-					goto :canttransportship1
-				else
-				killalltriggers
-				send "l "&$psst_planet1&"* c*"
-				settextlinetrigger onplanet1 :onplanet1 "Citadel treasury"
-				settextlinetrigger noplanet1 :noplanet1 "That planet is not"
-				pause
-
-				:noplanet1
-				setvar $switchboard~message "Planet "&$psst_planet1&" is not in this sector. Halting Script.*"
-				gosub :switchboard~switchboard
-				halt
-
-				:onplanet1
-				send "p "&$focus&"*y"
-				settextlinetrigger pwarpnoship1 :pwarpnoship1 "You do not have any fighters in Sector "
-				settextlinetrigger pwarpyesship1 :pwarpyesship1 " Planetary TransWarp Drive Engaged! "
-				settextlinetrigger pwarpnofuel1 :pwarpnofuel1 "You do not have enough Fuel Ore on this planet to make the jump."
-				pause
-
-				:pwarpnofuel1
-				setvar $switchboard~message "Not enough fuel on planet "&$psst_planet1&". Halting Script.*"
-				gosub :switchboard~switchboard
-				goto :endsst
-
-				:pwarpyesship1
-				killalltriggers
-				gosub :player~quikstats
-				setvar $ship1sector $focus
-				gosub :getsstportinfo
-				if ($sstportvalid <> true)
-					setvar $ship1needsport true
-					gosub :displaycredits
-					send "q *q *"
-					if ($p1chk = 1)
-						setvar $p1chk 2
-					elseif ($p1chk = 2)
-						setvar $p1chk 3
-					elseif ($p1chk = 3)
-						setvar $p1chk 1
-					end
-					waiton "Fuel Ore"
-					getword currentline $planet1fuel[$p1chk] 6
-					striptext $planet1fuel[$p1chk] ","
-					goto :canttransportship1
-				end
-				setvar $ship1needsport false
-				setvar $ship1totalholds $player~total_holds
-				setvar $ship1equipment $player~equipment_holds
-				gosub :displaycredits
-				send "q *q *"
-				if ($p1chk = 1)
-					setvar $p1chk 2
-				elseif ($p1chk = 2)
-					setvar $p1chk 3
-				elseif ($p1chk = 3)
-					setvar $p1chk 1
-				end
-				waiton "Fuel Ore"
-				getword currentline $planet1fuel[$p1chk] 6
-				striptext $planet1fuel[$p1chk] ","
-				goto :donefindship1
-
-				:pwarpnoship1
-				killalltriggers
-				gosub :displaycredits
-				send "q q "
-			end
-
-			end
-
-			:canttransportship1
-			add $i 1
-			:continueonship1
-			end
-		if ($mcicselection = true)
-			setvar $mcicselection false
-			getnearestwarps $nearest $ship1sector
-			setvar $i 1
-			goto :ship1candidate_loop
-		end
-		end
-
-	:donefindship1
-	if ($ship2needsport)
-		if ($inship1)
-			gosub :transport
-		end
-		setvar $mcicselection false
-		if (($mcicmode = true) and ($portcount > 0))
-			setvar $mcicselection true
-			setvar $nearest $portcount
-		else
-			getnearestwarps $nearest $ship2sector
-		end
-		setvar $i 1
-		:ship2candidate_loop
-			while ($i <= $nearest)
-			if ($mcicselection = true)
-				setvar $focus $ports[$i]
-			else
-				setvar $focus $nearest[$i]
-				end
-				getsectorparameter $focus "BUSTED" $isbusted
-				getsectorparameter $focus "FIGSEC" $isfigged
-				setvar $porthassteal false
-				if ((port.equip[$focus] > 0) and (port.equip[$focus] < 65530))
-					setvar $porthassteal true
-				elseif ((port.equip[$focus] >= 65530) and ($ship2equipment > 0))
-					setvar $porthassteal true
-				end
-					if (($isfigged = true) and (($isbusted <> true) and (((port.exists[$focus] = true) and (($porthassteal = true) and (port.buyequip[$focus] = true))) and (($focus <> $ship1sector) and (($focus <> $ship2sector) and ($invalidsstport[$focus] <> true))))))
-			getdistance $distancethere $ship1sector $focus
-			getdistance $distanceback $focus $ship1sector
-			if ($distancethere < 0)
-				send "^f"&$ship1sector&"*"&$focus&"*q"
-				waiton "ENDINTERROG"
-				getdistance $distancethere $ship1sector $focus
-			end
-			if ($distanceback < 0)
-				send "^f"&$focus&"*"&$ship1sector&"*q"
-				waiton "ENDINTERROG"
-				getdistance $distanceback $focus $ship1sector
-				end
-				if ($distancethere > $transportrange)
-					goto :canttransport
-				elseif ($distanceback > $transportrange)
-					goto :canttransport
-				else
-				killalltriggers
-				send "l "&$psst_planet2&"* c*"
-				settextlinetrigger onplanet2 :onplanet2 "Citadel treasury"
-				settextlinetrigger noplanet2 :noplanet2 "That planet is not"
-				pause
-
-				:noplanet2
-				setvar $switchboard~message "Planet "&$psst_planet2&" is not in this sector. Halting Script.*"
-				gosub :switchboard~switchboard
-				halt
-
-				:onplanet2
-				send "p "&$focus&"*y"
-				settextlinetrigger pwarpnoship2 :pwarpnoship2 "You do not have any fighters in Sector "
-				settextlinetrigger pwarpyesship2 :pwarpyesship2 " Planetary TransWarp Drive Engaged! "
-				settextlinetrigger pwarpnofuel2 :pwarpnofuel2 "You do not have enough Fuel Ore on this planet to make the jump."
-				pause
-
-				:pwarpnofuel2
-				setvar $switchboard~message "Not enough fuel on planet "&$psst_planet2&". Halting Script.*"
-				gosub :switchboard~switchboard
-				goto :endsst
-
-				:pwarpyesship2
-				killalltriggers
-				gosub :player~quikstats
-				setvar $ship2sector $focus
-				gosub :getsstportinfo
-				if ($sstportvalid <> true)
-					setvar $ship2needsport true
-					gosub :displaycredits
-					send "q *q *"
-					if ($p2chk = 1)
-						setvar $p2chk 2
-					elseif ($p2chk = 2)
-						setvar $p2chk 3
-					elseif ($p2chk = 3)
-						setvar $p2chk 1
-					end
-					waiton "Fuel Ore"
-					getword currentline $planet2fuel[$p2chk] 6
-					striptext $planet2fuel[$p2chk] ","
-					goto :canttransport
-				end
-				setvar $ship2needsport false
-				setvar $ship2totalholds $player~total_holds
-				setvar $ship2equipment $player~equipment_holds
-				gosub :displaycredits
-				send "q *q *"
-				if ($p2chk = 1)
-					setvar $p2chk 2
-				elseif ($p2chk = 2)
-					setvar $p2chk 3
-				elseif ($p2chk = 3)
-					setvar $p2chk 1
-				end
-				waiton "Fuel Ore"
-				getword currentline $planet2fuel[$p2chk] 6
-				striptext $planet2fuel[$p2chk] ","
-				goto :donefindship2
-
-				:pwarpnoship2
-				killalltriggers
-				gosub :displaycredits
-				send "q q "
-			end
-
-			end
-
-			:canttransport
-			add $i 1
-				:continueonship2
-				end
-			if ($mcicselection = true)
-				setvar $mcicselection false
-				getnearestwarps $nearest $ship2sector
-				setvar $i 1
-				goto :ship2candidate_loop
-			end
-			end
-
-	:donefindship2
-	return
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:readcandidatefuel
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($candidate_pchk = 1)
+	setvar $candidate_pchk 2
+elseif ($candidate_pchk = 2)
+	setvar $candidate_pchk 3
+elseif ($candidate_pchk = 3)
+	setvar $candidate_pchk 1
+end
+waiton "Fuel Ore"
+	if ($candidate_ship = 1)
+		getword currentline $planet1fuel[$candidate_pchk] 6
+		striptext $planet1fuel[$candidate_pchk] ","
+	else
+		getword currentline $planet2fuel[$candidate_pchk] 6
+		striptext $planet2fuel[$candidate_pchk] ","
+	end
+return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :steal
@@ -533,16 +494,16 @@ if (($isbusted1 <> true) and ($isbusted2 <> true))
 				add $equipatport[$ship1sector] ($upgrade * 10)
 			end
 
-			:doneupgradeship1
-			setvar $send $send&"p r* s   z3  "&$steal&"*  x    "
-			setvar $ship1equipment $steal
-			send $send&$psst_ship2&"*  * "
-			setvar $inship1 false
-			setvar $laststeal $ship1sector
+:doneupgradeship1
+setvar $send $send&"p r* s   z3  "&$steal&"*  x    "
+setvar $ship1equipment $steal
+setvar $stealship $psst_ship2
+setvar $inship1 false
+setvar $laststeal $ship1sector
 		else
-			if ($ship2totalholds < $maxsteal)
-				setvar $steal $ship2totalholds
-			else
+				if ($ship2totalholds < $maxsteal)
+					setvar $steal $ship2totalholds
+				else
 				setvar $steal $maxsteal
 			end
 			if (($seededmaxedport[$ship2sector] = true) and (($ship2equipment > 0) and ($ship2equipment < $steal)))
@@ -566,22 +527,22 @@ if (($isbusted1 <> true) and ($isbusted2 <> true))
 				setvar $send $send&"o 3"&$upgrade&"* * "
 				add $equipatport[$ship2sector] ($upgrade * 10)
 			end
-			:doneupgradeship2
-			setvar $send $send&"p r* s   z3  "&$steal&"*  x    "
-			setvar $ship2equipment $steal
-			send $send&$psst_ship1&"*  * "
-			setvar $inship1 true
-			setvar $laststeal $ship2sector
-	end
-end
+:doneupgradeship2
+setvar $send $send&"p r* s   z3  "&$steal&"*  x    "
+setvar $ship2equipment $steal
+setvar $stealship $psst_ship1
+setvar $inship1 true
+setvar $laststeal $ship2sector
+			end
+		end
 
-setvar $stake (($steal - 1) / 11)
+		setvar $stake (($steal - 1) / 11)
 
-waiton "(R)ob this port, (S)teal product"
 settextlinetrigger success :success "Success!"
 settextlinetrigger busted :busted "Suddenly you're Busted!"
 settextlinetrigger portmaxxed :badstealport "There aren't that many holds of Equipment at this port!"
 settextlinetrigger fakebust :badstealport "Do you want instructions (Y/N) [N]?"
+send $send&$stealship&"*  * "
 pause
 
 :badstealport
@@ -706,51 +667,65 @@ pause
 
 :shipdone
 killalltriggers
-
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :getsstportinfo
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $sstportvalid false
-send "s* cr*q"
-waiton "What sector is the port in? ["
+setvar $equipbuy 0
+setvar $equipperc 0
+setvar $equipatport[$focus] 0
+killalltriggers
+settextlinetrigger portscandone :portscandone "Warps to Sector(s)"
+setdelaytrigger portscantimeout :portscandone 10000
+send "s*"
+pause
 
-:portinfo
+:portscandone
+killalltriggers
 settextlinetrigger getportequip :getportequip "Equipment  Buying"
 settextlinetrigger noportequip :noequiphere "I have no information about a port in that sector."
+settextlinetrigger noportequip2 :noequiphere "Equipment  Selling"
+settextlinetrigger portinfodone :gotallportinfo "<Computer deactivated>"
+setdelaytrigger portinfotimeout :gotallportinfo 10000
+send "cr*q"
 pause
 
 :noequiphere
-killalltriggers
+killtrigger getportequip
+killtrigger noportequip
+killtrigger noportequip2
 setvar $equipbuy 0
 setvar $equipperc 0
 setvar $equipatport[$focus] 0
 setvar $invalidsstport[$focus] true
-goto :gotallportinfo
+goto :waitportinfodone
 
 :getportequip
-killalltriggers
-	setvar $sstportvalid true
-	setvar $seededmaxedport[$focus] false
-	getword currentline $equipbuy 3
-	getword currentline $equipperc 4
-	striptext $equipperc "%"
-		if ($equipbuy >= 65530)
-			if ($player~equipment_holds > 0)
-				setvar $seededmaxedport[$focus] true
-				setvar $equipatport[$focus] ($player~equipment_holds + 20)
-				goto :gotallportinfo
-			end
-			setvar $sstportvalid false
-			setvar $equipatport[$focus] 0
-			setvar $invalidsstport[$focus] true
-		goto :gotallportinfo
-	elseif ($equipperc = 0)
-		setvar $equipatport[$focus] ($player~total_holds + 50)
-	else
-		setvar $x 10000
-		divide $x $equipperc
+killtrigger getportequip
+killtrigger noportequip
+killtrigger noportequip2
+setvar $sstportvalid true
+setvar $seededmaxedport[$focus] false
+getword currentline $equipbuy 3
+getword currentline $equipperc 4
+striptext $equipperc "%"
+if ($equipbuy >= 65530)
+	if ($player~equipment_holds > 0)
+		setvar $seededmaxedport[$focus] true
+		setvar $equipatport[$focus] ($player~equipment_holds + 20)
+		goto :waitportinfodone
+	end
+	setvar $sstportvalid false
+	setvar $equipatport[$focus] 0
+	setvar $invalidsstport[$focus] true
+	goto :waitportinfodone
+elseif ($equipperc = 0)
+	setvar $equipatport[$focus] ($player~total_holds + 50)
+else
+	setvar $x 10000
+	divide $x $equipperc
 	multiply $x $equipbuy
 	divide $x 100
 	subtract $x 1
@@ -762,6 +737,9 @@ killalltriggers
 		setvar $equipatport[$focus] $x
 	end
 end
+
+:waitportinfodone
+pause
 
 :gotallportinfo
 killalltriggers
@@ -975,8 +953,10 @@ gosub :switchboard~switchboard
 halt
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:rankports
+# Added by Shadow for v5.0.1
+# Rank ports by MCIC value, highest to lowest
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:rankports
 setvar $sector 11
 setarray $mcic sectors
 setarray $tmpports sectors
@@ -1072,3 +1052,4 @@ include "source\include\loadvars.ts"
 include "source\include\help"
 include "source\include\port.ts"
 include "source\include\player"
+include "source\include\merchant.ts"

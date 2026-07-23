@@ -2,6 +2,7 @@ reqrecording
 gosub :loadvars~loadvars
 gosub :help~initialize
 loadvar $map~backdoor
+loadvar $map~stardock
 
 setvar $help~help[1] $help~tab&"PIMP - Makes planets and strips them of product "
 setvar $help~help[2] $help~tab&"   "

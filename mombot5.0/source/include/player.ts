@@ -707,6 +707,11 @@ goto :player~donequikstats
 killtrigger statlinetrig
 killtrigger getline2
 killtrigger prompt
+setvar $player~empty_holds $player~total_holds
+subtract $player~empty_holds $player~ore_holds
+subtract $player~empty_holds $player~organic_holds
+subtract $player~empty_holds $player~equipment_holds
+subtract $player~empty_holds $player~colonist_holds
 savevar $player~unlimitedgame
 if ($player~save)
 	savevar $player~corp
@@ -720,6 +725,7 @@ if ($player~save)
 	savevar $player~organic_holds
 	savevar $player~equipment_holds
 	savevar $player~colonist_holds
+	savevar $player~empty_holds
 	savevar $player~photons
 	savevar $player~armids
 	savevar $player~limpets

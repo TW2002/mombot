@@ -16,8 +16,10 @@ gosub :help~helpfile
 isnumber $tst $parm1
 if ($tst = 0)
 	setvar $target 0
+	setvar $mines~target 0
 else
 	setvar $target $parm1
+	setvar $mines~target $parm1
 end
 
 getwordpos $bot~user_command_line $pos "nscan"

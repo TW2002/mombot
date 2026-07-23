@@ -591,6 +591,131 @@ end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:merchant~buyfuel
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $merchant~buyfuel_success false
+setvar $merchant~buyfuel_bought false
+setvar $merchant~buyfuel_upgraded false
+setvar $merchant~buyfuel_message ""
+if ($merchant~buyfuel_minimum <= 0)
+	setvar $merchant~buyfuel_minimum 10000
+end
+gosub :player~quikstats
+if ($player~current_prompt <> "Citadel")
+	setvar $merchant~buyfuel_message "Merchant buyfuel must start from Citadel prompt."
+	return
+end
+if ($player~empty_holds <> $player~total_holds)
+	setvar $merchant~buyfuel_message "Ship holds are not empty."
+	return
+end
+gosub :refreshport
+if ($liveport <> true)
+	if ($merchant~refreshport_message <> "")
+		setvar $merchant~buyfuel_message $merchant~refreshport_message
+	else
+		setvar $merchant~buyfuel_message "No port in sector."
+	end
+	return
+end
+if ($port~orebuying <> "Selling")
+	setvar $merchant~buyfuel_message "Port is not selling fuel."
+	return
+end
+if ($planet~planet_fuel_max <= 0)
+	setvar $merchant~buyfuel_message "Planet fuel capacity is unknown."
+	return
+end
+setvar $planetroom ($planet~planet_fuel_max - $planet~planet_fuel)
+if ($planetroom <= 0)
+	setvar $merchant~buyfuel_message "Planet is full of fuel."
+	return
+end
+if ($merchant~buyfuel_min_room_pct > 0)
+	setvar $merchant~buyfuel_min_room ($planet~planet_fuel_max * $merchant~buyfuel_min_room_pct)
+	divide $merchant~buyfuel_min_room 100
+	if ($planetroom < $merchant~buyfuel_min_room)
+		setvar $merchant~buyfuel_message "Planet is not low enough on fuel."
+		return
+	end
+end
+setvar $merchant~buyfuel_capacity $port~oretrading
+if ($port~orepercent > 0)
+	setvar $merchant~buyfuel_capacity ($port~oretrading * 100)
+	divide $merchant~buyfuel_capacity $port~orepercent
+end
+if ($merchant~buyfuel_capacity < $merchant~buyfuel_minimum)
+	gosub :buyfuelupgrade
+	if ($merchant~buyfuel_upgrade_success <> true)
+		return
+	end
+	gosub :refreshport
+	if (($liveport <> true) or ($port~orebuying <> "Selling"))
+		if ($merchant~refreshport_message <> "")
+			setvar $merchant~buyfuel_message $merchant~refreshport_message
+		else
+			setvar $merchant~buyfuel_message "Fuel port unavailable after upgrade."
+		end
+		return
+	end
+end
+if ($port~oretrading <= 0)
+	setvar $merchant~buyfuel_message "No fuel available to buy."
+	return
+end
+setvar $merchant~buyfuel_restore_nohaggle $merchant~nohaggle
+setvar $merchant~buyfuel_restore_nativehaggle $merchant~nativehagglemode
+setvar $merchant~nohaggle true
+setvar $merchant~nativehagglemode false
+setvar $buyproduct "f"
+setvar $buyavailable $port~oretrading
+setvar $planetroom ($planet~planet_fuel_max - $planet~planet_fuel)
+gosub :buyproduct
+setvar $merchant~nohaggle $merchant~buyfuel_restore_nohaggle
+setvar $merchant~nativehagglemode $merchant~buyfuel_restore_nativehaggle
+if ($player~exit_message = "Normal Exit")
+	setvar $merchant~buyfuel_success true
+	setvar $merchant~buyfuel_bought true
+	setvar $merchant~buyfuel_message "Fuel bought."
+else
+	setvar $merchant~buyfuel_message $player~exit_message
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:merchant~buyfuelupgrade
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $merchant~buyfuel_upgrade_success false
+setvar $merchant~buyfuel_upgrade_needed ($merchant~buyfuel_minimum - $merchant~buyfuel_capacity)
+divide $merchant~buyfuel_upgrade_needed 10
+if (($merchant~buyfuel_capacity + ($merchant~buyfuel_upgrade_needed * 10)) < $merchant~buyfuel_minimum)
+	add $merchant~buyfuel_upgrade_needed 1
+end
+if ($merchant~buyfuel_upgrade_needed <= 0)
+	setvar $merchant~buyfuel_upgrade_success true
+	return
+end
+setvar $merchant~buyfuel_creds_needed ($merchant~buyfuel_upgrade_needed * 300)
+if ($merchant~buyfuel_creds_needed > $player~credits)
+	setvar $merchant~buyfuel_cashonhand $planet~citadel_credits
+	add $merchant~buyfuel_cashonhand $player~credits
+	if ($merchant~buyfuel_cashonhand >= $merchant~buyfuel_creds_needed)
+		send "t t " & $player~credits & "* "
+		send "t f " & $merchant~buyfuel_creds_needed & "* "
+		setvar $player~credits $merchant~buyfuel_creds_needed
+	else
+		setvar $merchant~buyfuel_message "Not enough cash to upgrade fuel port."
+		return
+	end
+end
+send "q q *o 1 " & $merchant~buyfuel_upgrade_needed & "* *cr*q"
+waiton "<Computer deactivated>"
+setvar $merchant~buyfuel_upgraded true
+setvar $merchant~buyfuel_upgrade_success true
+gosub :planet~landonplanetentercitadel
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :merchant~salesmanupgradeall
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $total_creds_needed ((300 * 100) + (500 * 100) + (700 * 100) + 500000)
@@ -809,11 +934,59 @@ return
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :merchant~refreshport
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-send "q"
-waiton "Planet command (?"
-gosub :planet~getplanetinfo
-send "c"
 setvar $liveport false
+setvar $merchant~refreshport_message ""
+gosub :player~currentprompt
+if ($player~current_prompt = "Computer")
+	send "q"
+	settexttrigger refreshportcomputer :refreshportcomputer "<Computer deactivated>"
+	setdelaytrigger refreshportfail :refreshportfail 5000
+	pause
+
+	:refreshportcomputer
+	killalltriggers
+	gosub :player~currentprompt
+end
+if ($player~current_prompt = "Citadel")
+	send "q"
+	settexttrigger refreshportplanet :refreshportplanet "Planet command (?"
+	setdelaytrigger refreshportfail :refreshportfail 5000
+	pause
+
+	:refreshportplanet
+	killalltriggers
+	gosub :player~currentprompt
+end
+if ($player~current_prompt <> "Planet")
+	setvar $merchant~refreshport_message "Unable to reach Planet prompt while refreshing port."
+	return
+end
+gosub :planet~getplanetinfo
+gosub :player~currentprompt
+if ($player~current_prompt = "Computer")
+	send "q"
+	settexttrigger refreshportcomputer2 :refreshportcomputer2 "<Computer deactivated>"
+	setdelaytrigger refreshportfail :refreshportfail 5000
+	pause
+
+	:refreshportcomputer2
+	killalltriggers
+	gosub :player~currentprompt
+end
+if ($player~current_prompt = "Planet")
+	send "c"
+	settexttrigger refreshportcitadel :refreshportcitadel "Citadel command"
+	setdelaytrigger refreshportfail :refreshportfail 5000
+	pause
+
+	:refreshportcitadel
+	killalltriggers
+	gosub :player~currentprompt
+end
+if ($player~current_prompt <> "Citadel")
+	setvar $merchant~refreshport_message "Unable to reach Citadel prompt while refreshing port."
+	return
+end
 setvar $fuelselling 0
 setvar $orgselling 0
 setvar $equipselling 0
@@ -831,6 +1004,15 @@ if ($port~orgbuying = "Selling")
 end
 if ($port~equbuying = "Selling")
 	setvar $equipselling $port~equtrading
+end
+return
+
+:refreshportfail
+killalltriggers
+setvar $merchant~refreshport_message "Prompt timed out while refreshing port."
+gosub :player~currentprompt
+if ($player~current_prompt = "Computer")
+	send "q"
 end
 return
 

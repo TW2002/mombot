@@ -195,6 +195,11 @@ if ($prodstofarm = false)
 	setvar $prodstofarm true
 end
 
+setvar $farmfightersonly false
+if ($planet~emptyfigs > 0) and ($planet~emptyfuel <= 0) and ($planet~emptyorganics <= 0) and ($planet~emptyequipment <= 0) and ($planet~emptyfuelcolos <= 0) and ($planet~emptyorgcolos <= 0) and ($planet~emptyequcolos <= 0) and ($planet~emptyshields <= 0)
+	setvar $farmfightersonly true
+end
+
 logging off
 
 if ($player~planet_scanner = "No")
@@ -282,18 +287,21 @@ while ($i <= $farmlistcount)
 
 	gosub :landstartingplanet
 
-	setvar $dothissector false
-	setvar $c 0
-	:farmcountloop
-	add $c 1
-	while ($c <= $planet~planetcount)
-		if ($planet~planets[$c] = $planet~planettofill)
-			goto :farmcountloop
-		end
-		if ($planet~planets[$c][3] > ($ship~ship_fighters_max / 10))
-			setvar $dothissector true
-		end
+	setvar $dothissector true
+	if ($farmfightersonly = true)
+		setvar $dothissector false
+		setvar $c 0
+		:farmcountloop
 		add $c 1
+		while ($c <= $planet~planetcount)
+			if ($planet~planets[$c] = $planet~planettofill)
+				goto :farmcountloop
+			end
+			if ($planet~planets[$c][3] > ($ship~ship_fighters_max / 10))
+				setvar $dothissector true
+			end
+			add $c 1
+		end
 	end
 
 	if ($dothissector = false)
@@ -1185,7 +1193,7 @@ if ($oretofill <= 0) and ($orgtofill <= 0) and ($equtofill <= 0) and ($fuelcolst
 		setvar $farmplanetdone true
 		return
 	end
-	if ($j <= $planet~planetcount) and ($planet~planets[$j][3] < ($ship~ship_fighters_max / 10))
+	if ($farmfightersonly = true) and ($j <= $planet~planetcount) and ($planet~planets[$j][3] < ($ship~ship_fighters_max / 10))
 		setvar $skipsector true
 	end
 end
