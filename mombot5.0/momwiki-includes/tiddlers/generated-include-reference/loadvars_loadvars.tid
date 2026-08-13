@@ -1,0 +1,76 @@
+created: 20260813201411000
+modified: 20260813201411000
+title: loadvars~loadvars
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-loadvars
+caption: loadvars~loadvars
+
+! loadvars~loadvars
+
+Loads shared state or cached data for later command use.
+
+''Include:'' [[loadvars.ts]]
+''Defined at:'' `/include/loadvars.ts:2`
+
+!! Loaded Variables
+* `$bot~bot_turn_limit`
+* `$bot~botisdeaf`
+* `$bot~command`
+* `$bot~command_typed`
+* `$bot~command_caller`
+* `$bot~folder`
+* `$bot~letter`
+* `$bot~mode`
+* `$bot~mombot_directory`
+* `$bot~mombot_config_file`
+* `$bot~parm1`
+* `$bot~parm2`
+* `$bot~parm3`
+* `$bot~parm4`
+* `$bot~parm5`
+* `$bot~parm6`
+* `$bot~parm7`
+* `$bot~parm8`
+* `$bot~password`
+* `$bot~silent_running`
+* `$bot~user_command_line`
+* `$game~port_max`
+* `$game~photon_duration`
+* `$game~goldenabled`
+* `$game~mbbs`
+* `$game~ptradesetting`
+* `$game~rob_factor`
+* `$game~production_ra`
+* `$map~stardock`
+* `$map~rylos`
+* `$map~alpha_centauri`
+* `$map~home_sector`
+* `$map~backdoor`
+* `$player~fighter_deploy_type`
+* `$planet~planet`
+* `$planet~planet_file`
+* `$player~dropoffensive`
+* `$player~droptoll`
+* `$player~override`
+* `$player~surroundfigs`
+* `$player~surroundlimp`
+* `$player~surroundmine`
+* `$player~unlimitedgame`
+* `$ship~cap_file`
+* `$switchboard~bot_name`
+* `$switchboard~self_command`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+loadvar $bot~bot_turn_limit
+loadvar $bot~botisdeaf
+loadvar $bot~command
+loadvar $bot~command_typed
+loadvar $bot~command_caller
+loadvar $bot~folder
+loadvar $bot~letter
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

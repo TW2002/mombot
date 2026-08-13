@@ -1,23 +1,26 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLANET~LOADPLANETINFO
+created: 20260813201411000
+modified: 20260813201411000
+title: planet~loadplanetinfo
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-planet
-caption: PLANET~LOADPLANETINFO
+caption: planet~loadplanetinfo
 
-! PLANET~LOADPLANETINFO
+! planet~loadplanetinfo
 
 Loads cached planet-file data into shared planet variables and arrays.
 
 ''Include:'' [[planet.ts]]
-''Defined at:'' `/include/planet.ts:686`
+''Defined at:'' `/include/planet.ts:1212`
+
+!! Loaded Variables
+* `$planet~planet_file`
 
 !! Source Excerpt
 <pre>
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLANET~PLANETCOUNTER 1
-loadvar $PLANET~PLANET_FILE
-fileexists $PLANET~EXISTS $PLANET~PLANET_FILE
+setvar $planet~planetcounter 1
+loadvar $planet~planet_file
+fileexists $planet~exists $planet~planet_file
 </pre>
 
 !! Notes

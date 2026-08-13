@@ -74,17 +74,18 @@ pause
 :connectivity~continuerelog3
 gosub :killrelogtriggers
 
-settexttrigger loginsuccessful :continuerelog4v1 "Trade Wars 2002 Game Server v1"
-settexttrigger loginsuccessful2 :continuerelog4v2 "TWGS v2"
+settexttrigger loginsuccessful :continuerelog4v1 "Game Server v1"
+settexttrigger loginsuccessful2 :continuerelog4v2 "v2"
+settexttrigger loginsuccessful3 :continuerelog4v2 "OpenTW Server"
 send $bot~servername&"*"
 pause
 
 :connectivity~continuerelog4v1
-setvar $connectivity~twgsversion 1
+setvar $connectivity~serverversion 1
 goto :continuerelog4
 
 :connectivity~continuerelog4v2
-setvar $connectivity~twgsversion 2
+setvar $connectivity~serverversion 2
 goto :continuerelog4
 
 :connectivity~continuerelog4
@@ -96,14 +97,13 @@ if ($connectivity~first_time)
 end
 settexttrigger relog69 :continuerelog5 "Make a Selection:"
 settexttrigger relog3 :continuerelog5 "Selection (? for menu):"
-send "#"&#8
 pause
 
 :connectivity~continuerelog5
 gosub :killrelogtriggers
 
 if ($connectivity~newgame)
-	if ($connectivity~twgsversion = 1)
+	if ($connectivity~serverversion = 1)
 		settexttrigger firstpause :firstpause "[Pause]"
 		settexttrigger enter :done_do_relog "Would you like to start a new character in this game?"
 		settexttrigger v1enter :v1enter "Enter your choice"
@@ -138,7 +138,7 @@ pause
 
 :connectivity~done_do_relog
 killalltriggers
-if ($connectivity~newgame and ($connectivity~twgsversion = 2)) or ($connectivity~newgame = false)
+if ($connectivity~newgame and ($connectivity~serverversion = 2)) or ($connectivity~newgame = false)
 	send "T***"
 end
 return
@@ -150,7 +150,7 @@ if (connected <> true)
 end
 
 if ($connectivity~newgame)
-	if ($connectivity~twgsversion = 1)
+	if ($connectivity~serverversion = 1)
 
 		add $connectivity~newgamecounter 1
 		if ($connectivity~newgamecounter > 20)
@@ -197,7 +197,7 @@ goto :game_not_open
 goto :game_not_open
 
 :connectivity~tryagainnewgameday1
-if ($connectivity~newgame and ($connectivity~twgsversion = 2)) or ($connectivity~newgame = false)
+if ($connectivity~newgame and ($connectivity~serverversion = 2)) or ($connectivity~newgame = false)
 
 	send "T ***"
 end
@@ -230,6 +230,7 @@ killtrigger relog69
 killtrigger relog89
 killtrigger loginsuccessful
 killtrigger loginsuccessful2
+killtrigger loginsuccessful3
 killtrigger firstpause
 killtrigger enter
 killtrigger notopen
@@ -240,7 +241,7 @@ setdelaytrigger thedelay2 :thedelay 5000
 return
 
 :connectivity~enter_new_game
-setvar $connectivity~twgsversion ""
+setvar $connectivity~serverversion ""
 
 :connectivity~try_again
 gosub :do_relog
@@ -248,7 +249,7 @@ gosub :do_relog
 :connectivity~gameclosed
 killalltriggers
 settextlinetrigger 1 :closed "I'm sorry, but this is a closed game."
-settextlinetrigger 2 :closed "www.tradewars.com                                   Epic Interactive Strategy"
+settextlinetrigger 2 :closed "Epic Interactive Strategy"
 settextlinetrigger 3 :closed " day(s) to get back in."
 setdelaytrigger 4 :closed 5000
 settextlinetrigger 5 :on_planet "What do you want to name your home planet?"
@@ -262,7 +263,7 @@ if ($connectivity~newgame)
 	settexttrigger 10 :noalias "Choose a name carefully as you will have it for a while!"
 else
 	send $bot~password&"* * ************"
-	waiton "What do you want to name your ship? (30 letters)"
+	waiton "What do you want to name your ship?"
 	if ($menus~landonterra = true)
 		send $bot~startshipname&"*Y l "
 		return
@@ -274,23 +275,43 @@ pause
 
 :connectivity~whosplay
 killtrigger 8
-killtrigger 9
-killtrigger 10
-send "*N"&$bot~username&"*Y"&$bot~startshipname&"*Y * "
+send "*"
 pause
 
 :connectivity~newname
 killtrigger 8
-killtrigger 9
 killtrigger 10
-send "N"&$bot~username&"*Y"&$bot~startshipname&"*Y"
+send "N"
+settexttrigger aliasprompt :connectivity~aliasprompt "What Alias do you want to use?"
 pause
 
 :connectivity~noalias
 killtrigger 8
 killtrigger 9
-killtrigger 10
-send $bot~startshipname&"*Y * "
+settexttrigger shipprompt :connectivity~shipprompt "What do you want to name your ship?"
+pause
+
+:connectivity~aliasprompt
+killtrigger aliasprompt
+send $bot~username&"*"
+settexttrigger aliasconfirm :connectivity~aliasconfirm " is what you want? (Y/N)"
+pause
+
+:connectivity~aliasconfirm
+killtrigger aliasconfirm
+send "Y"
+settexttrigger shipprompt :connectivity~shipprompt "What do you want to name your ship?"
+pause
+
+:connectivity~shipprompt
+killtrigger shipprompt
+send $bot~startshipname&"*"
+settexttrigger shipconfirm :connectivity~shipconfirm " is what you want?"
+pause
+
+:connectivity~shipconfirm
+killtrigger shipconfirm
+send "Y"
 pause
 
 :connectivity~wrong_name
@@ -309,7 +330,7 @@ if (connected <> true)
 	goto :try_again
 end
 setdelaytrigger 2 :new_game_delay 300
-settextlinetrigger 3 :tryagainnewgameday1 "T - Play Trade Wars 2002"
+settextlinetrigger 3 :tryagainnewgameday1 "T - Play "
 pause
 
 :connectivity~new_game_delay
@@ -376,7 +397,7 @@ if (($menus~mowdestination = 0) or ($menus~mowdestination = "0"))
 	setvar $menus~mowdestination ""
 end
 
-if ($menus~mowdestination <> "")
+if (($menus~mowdestination <> "") and ($connectivity~newgame <> true))
 	gosub :moving
 end
 
@@ -441,7 +462,7 @@ if ($connectivity~newgame)
 	gosub :connectivity~applypostloginprefs
 
 end
-if ($menus~mowdestination = "")
+if (($menus~mowdestination = "") or ($connectivity~newgame = true))
 	gosub :moving
 end
 
@@ -480,24 +501,36 @@ return
 
 :connectivity~moving
 echo #27 "[30D                        " #27 "[30D"
+if ($bot~mowtodock or $menus~fmowtodock)
+	if ((stardock > 11) and (($map~stardock = 0) or ($map~stardock = "")))
+		setvar $map~stardock stardock
+		savevar $map~stardock
+	end
+	if (($map~stardock = 0) or ($map~stardock = ""))
+		settextlinetrigger connectivity_found_stardock :connectivity~foundstardock "The StarDock is located in sector"
+		settexttrigger connectivity_game_config_done :connectivity~gameconfigdone "-=-=-=-  Current "
+		send "v"
+		pause
+
+		:connectivity~foundstardock
+		getword currentline $map~stardock 7
+		striptext $map~stardock "."
+		savevar $map~stardock
+		pause
+
+		:connectivity~gameconfigdone
+		killtrigger connectivity_found_stardock
+		killtrigger connectivity_game_config_done
+	end
+	if (($map~stardock = 0) or ($map~stardock = ""))
+		setvar $switchboard~message "Stardock appears to be hidden in this game. Aborting mow.*"
+		gosub :switchboard~switchboard
+	else
+		setvar $menus~mowdestination $map~stardock
+	end
+end
 isnumber $connectivity~isnumber $menus~mowdestination
 if ($connectivity~isnumber and ($bot~mowtodock or $menus~mowtorylos or $menus~mowtoalpha or $menus~mowtoother or $menus~fmowtodock))
-	if ($bot~mowtodock or $menus~fmowtodock)
-		if (((stardock = 0) or (stardock = "")) and ($map~stardock = 0))
-			send "v"
-			waiton "-=-=-=-  Current "
-		end
-		if (((stardock = 0) or (stardock = "")) and ($map~stardock = 0))
-			setvar $switchboard~message "Stardock appears to be hidden in this game. Aborting mow.*"
-			gosub :switchboard~switchboard
-		else
-			if ((stardock <> 0) and (stardock <> ""))
-				setvar $map~stardock stardock
-				savevar $map~stardock
-			end
-			setvar $menus~mowdestination $map~stardock
-		end
-	end
 	if ($menus~fmowtodock = true)
 		setvar $bot~user_command_line "fmow "&$menus~mowdestination&" 1 "
 	else

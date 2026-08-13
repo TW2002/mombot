@@ -1,25 +1,28 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: MENUS~DONEPREFER
+created: 20260813201411000
+modified: 20260813201411000
+title: menus~doneprefer
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-menus
-caption: MENUS~DONEPREFER
+caption: menus~doneprefer
 
-! MENUS~DONEPREFER
+! menus~doneprefer
 
 Completes preference editing and returns from the native preferences menu.
 
 ''Include:'' [[menus.ts]]
-''Defined at:'' `/include/menus.ts:447`
+''Defined at:'' `/include/menus.ts:452`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-gosub :BOT~EXIT_MENU_DEAF
+gosub :bot~exit_menu_deaf
 echo &quot;*Saving preferences..*&quot;
-gosub :BOT~SAVE_THE_VARIABLES
+gosub :bot~save_the_variables
 echo #27 &quot;[30D                        &quot; #27 &quot;[30D&quot;
-echo CURRENTANSILINE
-goto :BOT~WAIT_FOR_COMMAND
+echo currentansiline
+goto :bot~wait_for_command
 return
 </pre>
 

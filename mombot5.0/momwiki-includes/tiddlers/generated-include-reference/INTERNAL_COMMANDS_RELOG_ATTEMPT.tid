@@ -1,21 +1,24 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: INTERNAL_COMMANDS~RELOG_ATTEMPT
+created: 20260813201411000
+modified: 20260813201411000
+title: internal_commands~relog_attempt
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-internal_commands
-caption: INTERNAL_COMMANDS~RELOG_ATTEMPT
+caption: internal_commands~relog_attempt
 
-! INTERNAL_COMMANDS~RELOG_ATTEMPT
+! internal_commands~relog_attempt
 
 Shared `internal_commands` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
 
 ''Include:'' [[internal_commands.ts]]
-''Defined at:'' `/include/internal_commands.ts:612`
+''Defined at:'' `/include/internal_commands.ts:599`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-setvar $BOT~USER_COMMAND_LINE &quot;relog &quot;&amp;$BOT~PARM1&amp;&quot; &quot;&amp;$BOT~PARM2&amp;&quot; &quot;&amp;$BOT~PARM3&amp;&quot; &quot;&amp;$BOT~PARM4&amp;&quot; &quot;&amp;$BOT~PARM5&amp;&quot; &quot;&amp;$BOT~PARM6&amp;&quot; &quot;&amp;$BOT~PARM7&amp;&quot; &quot;&amp;$BOT~PARM8
-goto :USER_INTERFACE~RUNUSERCOMMANDLINE
+setvar $bot~user_command_line &quot;relog &quot;&amp;$bot~parm1&amp;&quot; &quot;&amp;$bot~parm2&amp;&quot; &quot;&amp;$bot~parm3&amp;&quot; &quot;&amp;$bot~parm4&amp;&quot; &quot;&amp;$bot~parm5&amp;&quot; &quot;&amp;$bot~parm6&amp;&quot; &quot;&amp;$bot~parm7&amp;&quot; &quot;&amp;$bot~parm8
+goto :user_interface~runusercommandline
 </pre>
 
 !! Notes

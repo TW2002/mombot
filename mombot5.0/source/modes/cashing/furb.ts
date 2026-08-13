@@ -129,7 +129,7 @@ else
 				send "q t*l3*t*t1*c "
 				setvar $player~warpto stardock
 				if ($bwarp)
-					gosub :player~bwarp
+					gosub :move~bwarp
 				else
 					send "q q * * "
 					gosub :move~twarp

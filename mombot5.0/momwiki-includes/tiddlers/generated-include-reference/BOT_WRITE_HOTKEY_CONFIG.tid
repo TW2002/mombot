@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: BOT~WRITE_HOTKEY_CONFIG
+created: 20260813201411000
+modified: 20260813201411000
+title: bot~write_hotkey_config
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-bot
-caption: BOT~WRITE_HOTKEY_CONFIG
+caption: bot~write_hotkey_config
 
-! BOT~WRITE_HOTKEY_CONFIG
+! bot~write_hotkey_config
 
 Shared `bot` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
 
 ''Include:'' [[bot.ts]]
-''Defined at:'' `/include/bot.ts:1553`
+''Defined at:'' `/include/bot.ts:1073`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-delete $BOT~MOMBOT_CONFIG_FILE
-setvar $BOT~I 1
-while ($BOT~I &lt;= 33)
-  setvar $BOT~HOTKEY_KEY_TOKEN $BOT~CUSTOM_KEYS[$BOT~I]
-  gosub :BOT~ENCODE_HOTKEY_TOKEN
-  setvar $BOT~HOTKEY_COMMAND_TOKEN $BOT~CUSTOM_COMMANDS[$BOT~I]
-  if (($BOT~HOTKEY_COMMAND_TOKEN = &quot;&quot;) or ($BOT~HOTKEY_COMMAND_TOKEN = 0))
-    setvar $BOT~HOTKEY_COMMAND_TOKEN &quot;0&quot;
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+delete $bot~mombot_config_file
+setvar $bot~i 1
+while ($bot~i &lt;= 33)
+	setvar $bot~hotkey_key_token $bot~custom_keys[$bot~i]
+	gosub :bot~encode_hotkey_token
+	setvar $bot~hotkey_command_token $bot~custom_commands[$bot~i]
+	if (($bot~hotkey_command_token = &quot;&quot;) or ($bot~hotkey_command_token = 0))
 </pre>
 
 !! Notes

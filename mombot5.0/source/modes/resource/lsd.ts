@@ -200,7 +200,9 @@ end
 
 getword $cmd $_lrscan 10
 if ($_lrscan <> "")
-	if ($_lrscan <> "y")
+	if ($_lrscan = "y")
+		setvar $_lrscan "h"
+	elseif (($_lrscan <> "h") and ($_lrscan <> "d"))
 		setvar $_lrscan ""
 	end
 end
@@ -968,7 +970,7 @@ if ($_lrscan  <> "")
 
 	:canbuylrscan
 	killalltriggers
-	send "h"
+	send $_lrscan
 	waitfor "<Hardware Emporium>"
 
 	:cantbuylrscan

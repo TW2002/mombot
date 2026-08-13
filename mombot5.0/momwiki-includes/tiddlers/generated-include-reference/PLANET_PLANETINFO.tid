@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLANET~PLANETINFO
+created: 20260813201411000
+modified: 20260813201411000
+title: planet~planetinfo
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-planet
-caption: PLANET~PLANETINFO
+caption: planet~planetinfo
 
-! PLANET~PLANETINFO
+! planet~planetinfo
 
 Runs the deeper planet parser used by callers that need full production arrays and construction state.
 
 ''Include:'' [[planet.ts]]
-''Defined at:'' `/include/planet.ts:165`
+''Defined at:'' `/include/planet.ts:488`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-setvar $PLANET~PLANET 0
-setvar $PLANET~CURRENT_SECTOR 0
-setvar $PLANET~PLANET_FUEL 0
-setvar $PLANET~PLANET_FUEL_MAX 0
-setvar $PLANET~PLANET_ORGANICS 0
-setvar $PLANET~PLANET_ORGANICS_MAX 0
-setvar $PLANET~PLANET_EQUIPMENT 0
-setvar $PLANET~PLANET_EQUIPMENT_MAX 0
+setvar $planet~planet 0
+setvar $planet~current_sector 0
+setvar $planet~planet_fuel 0
+setvar $planet~planet_fuel_max 0
+setvar $planet~planet_organics 0
+setvar $planet~planet_organics_max 0
+setvar $planet~planet_equipment 0
+setvar $planet~planet_equipment_max 0
 </pre>
 
 !! Notes

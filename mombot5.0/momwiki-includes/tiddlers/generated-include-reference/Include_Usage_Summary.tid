@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: Include Usage Summary
 type: text/vnd.tiddlywiki
 tags: mombot include-reference directory
@@ -9,25 +9,25 @@ tags: mombot include-reference directory
 This page shows direct include usage based on current non-retired `source/*.ts` files.
 
 !! Most Used Includes
-* [[player.ts]] - 144 direct include users
-* [[bot.ts]] - 135 direct include users
-* [[planet.ts]] - 80 direct include users
-* [[ship.ts]] - 31 direct include users
-* [[combat.ts]] - 14 direct include users
-* [[sector.ts]] - 13 direct include users
-* [[map.ts]] - 7 direct include users
-* [[switchboard.ts]] - 6 direct include users
-* [[validation.ts]] - 6 direct include users
-* [[game.ts]] - 4 direct include users
+* [[help.ts]] - 177 direct include users
+* [[loadvars.ts]] - 153 direct include users
+* [[planet.ts]] - 81 direct include users
+* [[player.ts]] - 77 direct include users
+* [[ship.ts]] - 21 direct include users
+* [[move.ts]] - 19 direct include users
+* [[combat.ts]] - 18 direct include users
+* [[sector.ts]] - 18 direct include users
+* [[switchboard.ts]] - 16 direct include users
+* [[haggle.ts]] - 12 direct include users
 
 !! Least Used Includes
+* [[invader.ts]] - 0 direct include users
 * [[connectivity.ts]] - 1 direct include users
-* [[invader.ts]] - 1 direct include users
+* [[lsd.ts]] - 1 direct include users
 * [[planetnames.ts]] - 1 direct include users
 * [[search.ts]] - 1 direct include users
-* [[update.ts]] - 1 direct include users
-* [[fighter.ts]] - 2 direct include users
+* [[fighters.ts]] - 2 direct include users
 * [[findproduct.ts]] - 2 direct include users
 * [[internal_commands.ts]] - 2 direct include users
 * [[menus.ts]] - 2 direct include users
-* [[user_interface.ts]] - 2 direct include users
+* [[merchant.ts]] - 2 direct include users

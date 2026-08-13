@@ -8,7 +8,8 @@ setvar $help~help[5] $help~tab&"   [p] - move sector fighters to the planet."
 setvar $help~help[6] $help~tab&"   [s] - move planet fighters to the sector."
 setvar $help~help[7] $help~tab&"   [amount | all] - fighter amount to move."
 setvar $help~help[8] $help~tab&"   {all} with s - pull fighters from all planets in sector."
-setvar $help~help[9] $help~tab&"   Run from Planet or Citadel."
+setvar $help~help[9] $help~tab&"   Default/all with s leaves one shipload onboard."
+setvar $help~help[10] $help~tab&"   Run from Planet or Citadel."
 gosub :help~helpfile
 
 loadvar $bot_name
@@ -132,8 +133,24 @@ while ($i <= $planetcount)
 	:start
 	killalltriggers
 	if ($movetosector = "s")
+		setvar $reserve_ship_fighters false
+		setvar $reserve_ship_figs_taken 0
 		if ($move = 0)
+			setvar $reserve_ship_fighters true
+			setvar $ship_figs_room $ship_fighters_max
+			subtract $ship_figs_room $player~fighters
+			if ($ship_figs_room < 0)
+				setvar $ship_figs_room 0
+			end
+			setvar $reserve_ship_figs_taken $ship_figs_room
+			if ($reserve_ship_figs_taken > $planet~planet_fighters)
+				setvar $reserve_ship_figs_taken $planet~planet_fighters
+			end
 			setvar $move $planet~planet_fighters
+			subtract $move $reserve_ship_figs_taken
+			if ($move < 0)
+				setvar $move 0
+			end
 			setvar $total_moved 0
 		end
 		setvar $end_figs $sector_figs
@@ -153,6 +170,13 @@ while ($i <= $planetcount)
 			end
 			send "m  n  t  *  q  f z " $sector_figs "*  z c d  *  l " $planets[$i] "*  "
 			add $total_moved $ship_fighters_max
+		end
+		if ($reserve_ship_fighters)
+			send "m  n  t  *  "
+			add $player~fighters $reserve_ship_figs_taken
+			if ($player~fighters > $ship_fighters_max)
+				setvar $player~fighters $ship_fighters_max
+			end
 		end
 		send "q q * "
 	end
@@ -193,19 +217,28 @@ gosub :switchboard~switchboard
 halt
 
 :landingsub
-send "l" $planet "*z  n  z  n  *  "
+send "l" $planet "*"
 setvar $sucessfulcitadel false
 setvar $sucessfulplanet false
 settextlinetrigger noplanet :noplanet "There isn't a planet in this sector."
 settextlinetrigger no_land :no_land "since it couldn't possibly stand"
 settextlinetrigger planet :planet "Planet #"
 settextlinetrigger wrongone :wrong_num "That planet is not in this sector."
+settexttrigger planetprompt :displayplanet "Planet command (?=help)"
+pause
+
+:displayplanet
+killtrigger planet
+killtrigger planetprompt
+send "*"
+settextlinetrigger planet :planet "Planet #"
 pause
 
 :noplanet
 killtrigger no_land
 killtrigger planet
 killtrigger wrongone
+killtrigger planetprompt
 setvar $switchboard~message "No Planet in Sector!*"
 gosub :switchboard~switchboard
 return
@@ -214,11 +247,13 @@ return
 killtrigger noplanet
 killtrigger planet
 killtrigger wrongone
+killtrigger planetprompt
 setvar $switchboard~message "This ship cannot land!*"
 gosub :switchboard~switchboard
 return
 
 :planet
+killtrigger planetprompt
 getword currentline $pnum_ck 2
 striptext $pnum_ck "#"
 if ($pnum_ck <> $planet)

@@ -1,20 +1,24 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: SHIP~SAVETHESHIP
+created: 20260813201411000
+modified: 20260813201411000
+title: ship~savetheship
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-ship
-caption: SHIP~SAVETHESHIP
+caption: ship~savetheship
 
-! SHIP~SAVETHESHIP
+! ship~savetheship
 
 Persists the current ship’s saved data back to storage.
 
 ''Include:'' [[ship.ts]]
-''Defined at:'' `/include/ship.ts:268`
+''Defined at:'' `/include/ship.ts:304`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-setvar $SHIP~SHIPCOUNTER 1
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $ship~shipcounter 1
 </pre>
 
 !! Notes

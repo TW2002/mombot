@@ -1,20 +1,24 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: SHIP~LOADSHIPINFO
+created: 20260813201411000
+modified: 20260813201411000
+title: ship~loadshipinfo
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-ship
-caption: SHIP~LOADSHIPINFO
+caption: ship~loadshipinfo
 
-! SHIP~LOADSHIPINFO
+! ship~loadshipinfo
 
 Loads cached ship information from saved ship data.
 
 ''Include:'' [[ship.ts]]
-''Defined at:'' `/include/ship.ts:209`
+''Defined at:'' `/include/ship.ts:240`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-setvar $SHIP~SHIPCOUNTER 1
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $ship~shipcounter 1
 </pre>
 
 !! Notes

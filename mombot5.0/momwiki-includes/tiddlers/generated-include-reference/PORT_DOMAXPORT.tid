@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PORT~DOMAXPORT
+created: 20260813201411000
+modified: 20260813201411000
+title: port~domaxport
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-port
-caption: PORT~DOMAXPORT
+caption: port~domaxport
 
-! PORT~DOMAXPORT
+! port~domaxport
 
 Runs the max-port helper path used by merch/maxport flows.
 
 ''Include:'' [[port.ts]]
-''Defined at:'' `/include/port.ts:142`
+''Defined at:'' `/include/port.ts:531`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-send &quot;o z&quot; $PORT~PRODUCT &quot;z0* &quot;
-settextlinetrigger NOREALPORTHERE :WRONGPORTTYPE &quot;Do you want to initiate construction on this port?&quot;
-settextlinetrigger CONSTRUCTION :WRONGPORTTYPE &quot;Do you want instructions (Y/N)&quot;
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+send &quot;o z&quot; $port~product &quot;z0* &quot;
+settextlinetrigger norealporthere :wrongporttype &quot;Do you want to initiate construction on this port?&quot;
+settextlinetrigger construction :wrongporttype &quot;Do you want instructions (Y/N)&quot;
 waiton &quot;, 0 to quit)&quot;
 killalltriggers
-getword CURRENTLINE $PORT~UPGRADEAMOUNT 9
-striptext $PORT~UPGRADEAMOUNT &quot;(&quot;
-send &quot;o &quot;
+getword currentline $port~upgradeamount 9
+striptext $port~upgradeamount &quot;(&quot;
 </pre>
 
 !! Notes

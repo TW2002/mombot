@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: SHIP~GETSHIPSTATS
+created: 20260813201411000
+modified: 20260813201411000
+title: ship~getshipstats
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-ship
-caption: SHIP~GETSHIPSTATS
+caption: ship~getshipstats
 
-! SHIP~GETSHIPSTATS
+! ship~getshipstats
 
 Parses the ship computer/stat screen and loads shared ship values.
 
 ''Include:'' [[ship.ts]]
-''Defined at:'' `/include/ship.ts:148`
+''Defined at:'' `/include/ship.ts:152`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send &quot;c;&quot;
-settextlinetrigger GETSHIPOFFENSE :SHIPOFFENSEODDS &quot;Offensive Odds: &quot;
-settextlinetrigger GETSHIPFIGHTERS :SHIPMAXFIGSPERATTACK &quot; TransWarp Drive:   &quot;
-settextlinetrigger GETSHIPMINES :SHIPMAXMINES &quot; Mine Max:  &quot;
-settextlinetrigger GETSHIPGENESIS :SHIPMAXGENESIS &quot; Genesis Max:  &quot;
-settextlinetrigger GETSHIPSHIELDS :SHIPMAXSHIELDS &quot;Maximum Shields:&quot;
-settextlinetrigger GETSHIPRANGE :SHIPTRANSPORTRANGE &quot;Transport Range:&quot;
-pause
+settextlinetrigger getshipoffense :ship~shipoffenseodds &quot;Offensive Odds: &quot;
+settextlinetrigger getshipfighters :ship~shipmaxfigsperattack &quot; TransWarp Drive:   &quot;
+settextlinetrigger getshipmines :ship~shipmaxmines &quot; Mine Max:  &quot;
+settextlinetrigger getshipgenesis :ship~shipmaxgenesis &quot; Genesis Max:  &quot;
+settextlinetrigger getshipshields :ship~shipmaxshields &quot;Maximum Shields:&quot;
+settextlinetrigger getshiprange :ship~shiptransportrange &quot;Transport Range:&quot;
 </pre>
 
 !! Notes

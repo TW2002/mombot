@@ -1,0 +1,31 @@
+created: 20260813201411000
+modified: 20260813201411000
+title: port~getportinfo
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-port
+caption: port~getportinfo
+
+! port~getportinfo
+
+Reads live game or cached state into shared include variables.
+
+''Include:'' [[port.ts]]
+''Defined at:'' `/include/port.ts:2`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :player~quikstats
+setvar $sector $player~current_sector
+setvar $startinglocation $player~current_prompt
+setvar $port~restore_messages false
+if ($player~current_prompt = &quot;Citadel&quot;)
+	gosub :player~msgs_off
+	if ($player~was_silent &lt;&gt; true)
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

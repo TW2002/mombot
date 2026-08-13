@@ -204,9 +204,17 @@ return
 
 :planetloop_sub_check
 settextlinetrigger check_getplanet :planetloop_check_getplanet "Planet #"
+settexttrigger check_planetprompt :planetloop_displayplanet "Planet command (?=help)"
+pause
+
+:planetloop_displayplanet
+killtrigger check_getplanet
+send "*"
+settextlinetrigger check_getplanet :planetloop_check_getplanet "Planet #"
 pause
 
 :planetloop_check_getplanet
+killtrigger check_planetprompt
 getword currentline $planetloop~check_planet 2
 striptext $planetloop~check_planet "#"
 
@@ -827,7 +835,6 @@ else
 	end
 
 	setvar $gameprefs~bank "MOVEPRODUCT"
-	setvar $gameprefs~abortdisplayall[$gameprefs~bank] "ON"
 	setvar $gameprefs~ansi[$gameprefs~bank] "ON"
 	gosub :gameprefs~setgameprefs
 

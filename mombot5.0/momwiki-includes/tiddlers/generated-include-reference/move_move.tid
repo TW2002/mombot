@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: move~move
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-move
@@ -10,11 +10,16 @@ caption: move~move
 Executes the shared move-product movement routine used by upgrade and makeplanet paths.
 
 ''Include:'' [[move.ts]]
-''Defined at:'' `/include/move.ts:1`
+''Defined at:'' `/include/move.ts:12`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-settextlinetrigger 1 :GETSECTOR &quot;Sector  : &quot;
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+settextlinetrigger 1 :getsector &quot;Sector  : &quot;
+send &quot;d&quot;
 pause
 </pre>
 

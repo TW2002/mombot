@@ -8,7 +8,7 @@ setvar $help~help[1] $help~tab&"ping   "
 setvar $help~help[2] $help~tab&"      Measures and reports on your round-trip ping times to the server.  "
 gosub :help~helpfile
 
-send "|"
+gosub :player~msgs_off
 
 send "'*"
 setdelaytrigger noss :noss 3000
@@ -16,6 +16,7 @@ settexttrigger begin :begin "Type sub-space message"
 pause
 
 :noss
+gosub :player~msgs_on
 echo ansi_12 "**You appear to be at a non-friendly prompt for SS messages.*"
 echo ansi_12 "*This could be that ISP is off (bad, bad sysOp)*"
 echo ansi_11 "*Try this script from the sector Command or Citadel prompts*"
@@ -92,7 +93,7 @@ pause
 
 :waitforprompt
 killalltriggers
-send "|"
+gosub :player~msgs_on
 halt
 
 :lag
@@ -141,3 +142,4 @@ end
 return
 
 include "source\include\help"
+include "source\include\player"

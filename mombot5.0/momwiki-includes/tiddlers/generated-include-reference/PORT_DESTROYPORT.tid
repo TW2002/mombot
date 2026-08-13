@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PORT~DESTROYPORT
+created: 20260813201411000
+modified: 20260813201411000
+title: port~destroyport
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-port
-caption: PORT~DESTROYPORT
+caption: port~destroyport
 
-! PORT~DESTROYPORT
+! port~destroyport
 
 Destroys a port through the shared port helper path.
 
 ''Include:'' [[port.ts]]
-''Defined at:'' `/include/port.ts:67`
+''Defined at:'' `/include/port.ts:307`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-gosub :PLAYER~QUIKSTATS
-setvar $BOT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $PORT~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-setvar $BOT~VALIDPROMPTS &quot;Citadel Command&quot;
-gosub :BOT~CHECKSTARTINGPROMPT
-if ($PORT~STARTINGLOCATION = &quot;Command&quot;)
-  send &quot;** &quot;
-  waiton &quot;Warps to Sector(s)&quot;
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :player~quikstats
+setvar $bot~startinglocation $player~current_prompt
+setvar $port~startinglocation $player~current_prompt
+setvar $bot~validprompts &quot;Citadel Command&quot;
+gosub :player~checkstartingprompt
+if ($port~startinglocation = &quot;Command&quot;)
+	send &quot;** &quot;
 </pre>
 
 !! Notes

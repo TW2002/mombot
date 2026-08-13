@@ -35,7 +35,7 @@ setvar $bot~validprompts "Citadel"
 gosub :player~checkstartingprompt
 gosub :player~checkfortravelname
 gosub :travelprotections
-gosub :player~bwarp
+gosub :move~bwarp
 goto :wait_for_command
 # ======================     END BWARP SUBROUTINES     ==========================
 :travelprotections
@@ -76,6 +76,7 @@ halt
 
 # includes:
 include "source\include\player"
+include "source\include\move"
 include "source\include\loadvars"
 
 include "source\include\help"

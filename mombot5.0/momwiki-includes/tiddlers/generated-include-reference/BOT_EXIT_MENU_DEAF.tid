@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: BOT~EXIT_MENU_DEAF
+created: 20260813201411000
+modified: 20260813201411000
+title: bot~exit_menu_deaf
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-bot
-caption: BOT~EXIT_MENU_DEAF
+caption: bot~exit_menu_deaf
 
-! BOT~EXIT_MENU_DEAF
+! bot~exit_menu_deaf
 
 Shared `bot` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
 
 ''Include:'' [[bot.ts]]
-''Defined at:'' `/include/bot.ts:1574`
+''Defined at:'' `/include/bot.ts:1094`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-if ($BOT~MENU_DEAF_DEPTH &gt; 0)
-  subtract $BOT~MENU_DEAF_DEPTH 1
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($bot~menu_deaf_depth &gt; 0)
+	subtract $bot~menu_deaf_depth 1
 end
-if ($BOT~MENU_DEAF_DEPTH &lt;= 0)
-  if ($BOT~MENU_DEAF_RESTORE = TRUE)
-    setdeafclients TRUE
-    setvar $BOT~BOTISDEAF TRUE
-  else
+if ($bot~menu_deaf_depth &lt;= 0)
+	if ($bot~menu_deaf_restore = true)
+		setdeafclients true
+		setvar $bot~botisdeaf true
 </pre>
 
 !! Notes

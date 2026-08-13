@@ -3,7 +3,12 @@
 gosub :player~quikstats
 loadvar $game~game_menu_prompt
 
-setvar $xenter~startinglocation $player~current_prompt
+if ($xenter~startinglocation_override <> 0)
+	setvar $xenter~startinglocation $xenter~startinglocation_override
+	setvar $xenter~startinglocation_override 0
+else
+	setvar $xenter~startinglocation $player~current_prompt
+end
 setvar $bot~validprompts "Command Citadel"
 gosub :player~checkstartingprompt
 if ($xenter~startinglocation = "Citadel")

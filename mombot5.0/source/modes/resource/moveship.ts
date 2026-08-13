@@ -1,5 +1,6 @@
 gosub :loadvars~loadvars
 gosub :help~initialize
+loadvar $map~stardock
 
 setvar $help~help[1]  $help~tab&"Moves empty ships from one sector to another."
 setvar $help~help[2]  $help~tab&"                "
@@ -31,7 +32,7 @@ if ($player~twarp_type = "No")
 	halt
 end
 setvar $startsector $player~current_sector
-setarray $theships 1000
+setarray $theships 0
 isnumber $test $bot~parm1
 if ($test)
 	if ($bot~parm1 > 0)
@@ -116,7 +117,7 @@ end
 setvar $startinglocation $player~current_prompt
 send "** "
 setvar $fuelinsector false
-if (($startinglocation <> "Citadel") and ($startingsector <> "Planet"))
+if (($startinglocation <> "Citadel") and ($startinglocation <> "Planet"))
 	if ($startinglocation = "Command")
 		if ($use_move = false)
 			getsectorparameter $player~current_sector "BUSTED" $isbusted
@@ -169,15 +170,15 @@ if (sector.figs.quantity[$startsector] = 0) or ((sector.figs.owner[$startsector]
 else
 	setvar $isfigged true
 end
-if ($startsector < 11) or ($startsector = STARDOCK)
+if ($startsector < 11) or ($startsector = $map~stardock)
 	setvar $startfed true
 else
 	setvar $startfed false
 end
 
 if ($use_move = false)
-	if ($isfigged = false) and (($startfed = false) or (($startfed = true) and ($player~alignment < 1000)))
-		if ($player~current_sector = $startingsector)
+	if ($isfigged = false) and ($startsector <> $map~stardock)
+		if ($player~current_sector = $startsector)
 			gosub :planet~landingsub
 		end
 		setvar $switchboard~message "No friendly fighters deployed in current sector!*"
@@ -210,9 +211,10 @@ if ($back = true)
 			end
 			halt
 		end
-	else
-		gosub :move~twarp
-		if ($player~twarpsuccess = false)
+		else
+			setvar $move~force_command true
+			gosub :move~twarp
+			if ($player~twarpsuccess = false)
 			setvar $switchboard~message "Can not make it to move sector, shutting down*"
 			gosub :switchboard~switchboard
 			setvar $switchboard~message "Not all ships were moved*"
@@ -226,12 +228,13 @@ if ($back = true)
 end
 
 :tryshipscan
+gosub :player~msgs_off
 settextlinetrigger statlinetrig :shipline "-----------------------------------------------------------------------------"
 settextlinetrigger towalreadyon :continuetowon "You shut off your Tractor Beam."
 settextlinetrigger enter :enter "[Pause]"
 settexttrigger enter2 :gotships "Choose which ship to tow (Q=Quit)"
 settexttrigger enter3 :gotships "You do not own any other ships in this sector!"
-send "|w*"
+send "w*"
 pause
 
 :continuetowon
@@ -298,7 +301,7 @@ else
 end
 
 :gotships
-send "*|"
+send "*"
 killtrigger statlinetrig
 killtrigger towalreadyon
 killtrigger doneships
@@ -307,6 +310,7 @@ killtrigger towalreadyon
 killtrigger enter
 killtrigger enter2
 killtrigger enter3
+gosub :player~msgs_on
 if ($back = true)
 	gosub :player~quikstats
 	setvar $player~warpto $startsector
@@ -321,21 +325,22 @@ if ($back = true)
 				gosub :planet~landingsub
 			end
 			halt
-		end
-	else
-		gosub :move~twarp
-		if ($player~twarpsuccess = false)
-			setvar $switchboard~message "Can not make it back home, shutting down*"
-			gosub :switchboard~switchboard
-			if ($i >= $shipcount)
-				setvar $switchboard~message "All ships were moved*"
+		else
+			gosub :move~twarp
+			if ($player~twarpsuccess = false)
+				echo "*** startsector: "&$startsector&" movesector: "&$movesector&"**"
+				setvar $switchboard~message "Can not make it back home, shutting down*"
 				gosub :switchboard~switchboard
-			else
-				setvar $switchboard~message "Not all ships were moved*"
-				gosub :switchboard~switchboard
+				if ($i >= $shipcount)
+					setvar $switchboard~message "All ships were moved*"
+					gosub :switchboard~switchboard
+				else
+					setvar $switchboard~message "Not all ships were moved*"
+					gosub :switchboard~switchboard
+				end
+				gosub :planet~landingsub
+				halt
 			end
-			gosub :planet~landingsub
-			halt
 		end
 	end
 end
@@ -368,9 +373,10 @@ while ($i <= $shipcount)
 					end
 					halt
 				end
-			else
-				gosub :move~twarp
-				if ($player~twarpsuccess = false)
+				else
+					setvar $move~force_command true
+					gosub :move~twarp
+					if ($player~twarpsuccess = false)
 					setvar $switchboard~message "Can not make it to move sector, shutting down*"
 					gosub :switchboard~switchboard
 					setvar $switchboard~message "Not all ships were moved*"
@@ -381,7 +387,8 @@ while ($i <= $shipcount)
 					halt
 				end
 			end
-			send "w  "
+			send "w"
+			waiton "<Tow Control>"
 			if (($movesector = $map~stardock) and ($sellship = true))
 				gosub :player~quikstats
 				gosub :port~shipsell
@@ -403,6 +410,7 @@ while ($i <= $shipcount)
 				end
 			else
 				gosub :move~twarp
+#				echo "*** startsector: "&$startsector&" movesector: "&$movesector&"**"
 				if ($player~twarpsuccess = false)
 					setvar $switchboard~message "Can not make it back home, shutting down*"
 					gosub :switchboard~switchboard
@@ -432,9 +440,10 @@ while ($i <= $shipcount)
 					end
 					halt
 				end
-			else
-				gosub :move~twarp
-				if ($player~twarpsuccess = false)
+				else
+					setvar $move~force_command true
+					gosub :move~twarp
+					if ($player~twarpsuccess = false)
 					setvar $switchboard~message "Can not make it to move sector, shutting down*"
 					gosub :switchboard~switchboard
 					setvar $switchboard~message "Not all ships were moved*"
@@ -445,11 +454,12 @@ while ($i <= $shipcount)
 					halt
 				end
 			end
-			send "w n "&$theships[$i]&"* "
-			setvar $player~current_sector $movesector
-			setvar $player~warpto $startsector
-			gosub :move~twarp
-			if ($player~twarpsuccess = false)
+				send "w n "&$theships[$i]&"* "
+				setvar $player~current_sector $movesector
+				setvar $player~warpto $startsector
+				setvar $move~force_command true
+				gosub :move~twarp
+				if ($player~twarpsuccess = false)
 				setvar $switchboard~message "Can not make it back home, shutting down*"
 				gosub :switchboard~switchboard
 				if ($i >= $shipcount)
@@ -471,7 +481,6 @@ if (($startinglocation = "Planet") or ($startinglocation = "Citadel"))
 	gosub :planet~landingsub
 	if ($dep = true)
 		setvar $bot~command "dep"
-		loadvar $map~stardock
 
 		if ($bot~silent_running = true)
 			setvar $bot~user_command_line " dep "&($player~credits-$starting_credits)&" silent"

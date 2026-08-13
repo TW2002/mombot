@@ -25,6 +25,18 @@ setvar $spentcredits 0
 setvar $half_port_max $game~port_max
 divide $half_port_max 2
 setvar $merch_sample_amount $player~total_holds
+setvar $fuelstop false
+setvar $startingfuel 0
+setvar $minimumfuel 0
+
+if ($stop_at_fuel_quarter = true)
+	setvar $startingfuel $planet~planet_fuel
+	setvar $minimumfuel $startingfuel
+	divide $minimumfuel 4
+	if ($minimumfuel < 1)
+		setvar $minimumfuel 1
+	end
+end
 
 if ($merch_sample_amount <= 0)
 	setvar $merch_sample_amount 255
@@ -57,6 +69,11 @@ setarray $checked sectors
 
 :select_next_port
 while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip and ($planet~planet_equipment >= $minprod)) or ($salesman = true)
+	gosub :checkfuelreserve
+	if ($fuelstop = true)
+		return
+	end
+
 	if (($player~unlimitedgame = false) and ($player~turns <= $bot~bot_turn_limit))
 		setvar $switchboard~message "Turns too low to continue.*"
 		gosub :switchboard~switchboard
@@ -154,6 +171,10 @@ return
 
 :merch_sector
 if ($nearfig > 0) and ($nearfig <> $player~current_sector)
+	gosub :checkfuelreserve
+	if ($fuelstop = true)
+		return
+	end
 	killalltriggers
 	setvar $planet~warpto $nearfig
 	gosub :planet~pwarp
@@ -254,6 +275,23 @@ if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 end
 gosub :postport
 goto :select_next_port
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:checkfuelreserve
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $fuelstop false
+if ($stop_at_fuel_quarter <> true)
+	return
+end
+if ($startingfuel <= 0)
+	return
+end
+if ($planet~planet_fuel <= $minimumfuel)
+	setvar $fuelstop true
+	setvar $switchboard~message "Planet fuel reserve reached ("&$planet~planet_fuel&"/"&$startingfuel&"). Returning home.*"
+	gosub :switchboard~switchboard
+end
+return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :sellhaggle

@@ -1,27 +1,31 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: COMBAT~FASTCAPTURE
+created: 20260813201411000
+modified: 20260813201411000
+title: combat~fastcapture
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-combat
-caption: COMBAT~FASTCAPTURE
+caption: combat~fastcapture
 
-! COMBAT~FASTCAPTURE
+! combat~fastcapture
 
 Runs the fast capture path used by cap and capture-oriented scripts.
 
 ''Include:'' [[combat.ts]]
-''Defined at:'' `/include/combat.ts:150`
+''Defined at:'' `/include/combat.ts:208`
+
+!! Loaded Variables
+* `$ship~ship_max_attack`
+* `$ship~ship_offensive_odds`
 
 !! Source Excerpt
 <pre>
-setvar $PLAYER~ISFOUND FALSE
-setvar $COMBAT~TARGETISALIEN FALSE
-setvar $COMBAT~STILLSHIELDS FALSE
-setvar $COMBAT~SHIP_FIGHTERS 0
-loadvar $SHIP~SHIP_MAX_ATTACK
-loadvar $SHIP~SHIP_OFFENSIVE_ODDS
-if ($SHIP~SHIP_MAX_ATTACK &lt;= 0)
-  gosub :SHIP~GETSHIPSTATS
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $player~isfound false
+setvar $targetisalien false
+setvar $stillshields false
+setvar $ship_fighters 0
+loadvar $ship~ship_max_attack
+loadvar $ship~ship_offensive_odds
+if ($ship~ship_max_attack &lt;= 0)
 </pre>
 
 !! Notes

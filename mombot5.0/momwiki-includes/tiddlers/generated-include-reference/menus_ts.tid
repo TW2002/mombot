@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: menus.ts
 type: text/vnd.tiddlywiki
 tags: mombot include-reference include
@@ -11,16 +11,46 @@ Native menu-building, splash-screen, and preference UI helpers.
 
 ''Source:'' `/include/menus.ts`
 
+!! Loaded Variables
+* `$bot~password`
+* `$switchboard~bot_name`
+* `$bot~startshipname`
+* `$bot~mowtodock`
+* `$bot~mowtodockbackdoor`
+* `$bot~startgamedelay`
+* `$bot~isceo`
+* `$bot~corpname`
+* `$bot~subspace`
+* `$menus~corpnumber`
+* `$bot~corppassword`
+* `$bot~username`
+* `$bot~letter`
+* `$menus~command_to_issue`
+* `$menus~start_mow_option`
+* `$bot~startmacro`
+* `$planet~planet`
+* `$player~unlimitedgame`
+* `$player~trader_name`
+* `$map~stardock`
+* `$map~alpha_centauri`
+* `$map~rylos`
+* `$map~backdoor`
+* `$ship~ship_fighters_max`
+* `$ship~ship_max_attack`
+* `$player~turns_per_warp`
+* `$bot~who_is_online`
+* `$window_content`
+* `$switchboard~window_content`
+
 !! Significant Exported Routines
-* [[MENUS~DOSPLASHSCREEN]] - Builds or displays the native splash screen.
-* [[MENUS~ADD_GAME]] - Shared `menus` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
-* [[MENUS~DONEPREFER]] - Completes preference editing and returns from the native preferences menu.
-* [[MENUS~ECHOHOTKEYS]] - Displays shared output through the bot UI layer.
-* [[MENUS~PREGAMEMENULOAD]] - Shared `menus` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[menus~add_game]] - Shared `menus` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[menus~doneprefer]] - Completes preference editing and returns from the native preferences menu.
+* [[menus~echohotkeys]] - Displays shared output through the bot UI layer.
+* [[menus~pregamemenuload]] - Shared `menus` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
 
 !! Direct Include Users
 * `/commands/general/help.ts`
-* `/mombot.ts`
+* `/include/bot.ts`
 
 !! Maintenance
 This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

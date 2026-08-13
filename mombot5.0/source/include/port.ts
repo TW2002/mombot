@@ -4,10 +4,19 @@
 gosub :player~quikstats
 setvar $sector $player~current_sector
 setvar $startinglocation $player~current_prompt
+setvar $port~restore_messages false
 if ($player~current_prompt = "Citadel")
-	send "|S*CR"
+	gosub :player~msgs_off
+	if ($player~was_silent <> true)
+		setvar $port~restore_messages true
+	end
+	send "S*CR"
 elseif ($player~current_prompt = "Command")
-	send "|CR"
+	gosub :player~msgs_off
+	if ($player~was_silent <> true)
+		setvar $port~restore_messages true
+	end
+	send "CR"
 else
 	setvar $switchboard~message "Must be at Command or Citadel prompt to get port info.*"
 	gosub :switchboard~switchboard
@@ -51,6 +60,9 @@ killalltriggers
 setvar $port~noport 1
 setvar $port~foundport false
 send "q"
+if ($port~restore_messages = true)
+	gosub :player~msgs_on
+end
 return
 
 :foundport
@@ -86,7 +98,10 @@ pause
 
 :gotcr
 killalltriggers
-send "Q|"
+send "Q"
+if ($port~restore_messages = true)
+	gosub :player~msgs_on
+end
 getsectorparameter $sector "OREMCIC" $tmp
 isnumber $test $tmp
 if ($test = true)
@@ -577,8 +592,9 @@ end
 :port~startshipsell
 setvar $port~cash $player~credits
 setvar $port~inc 0
-send "|S|"
-waitfor "-------------------------------------------"
+	gosub :player~msgs_off
+	send "S"
+	waitfor "-------------------------------------------"
 settextlinetrigger noship :shipselldone "You do not own any other ships orbiting the Stardock!"
 settexttrigger done :done "Choose which ship to sell (Q=Quit)"
 settextlinetrigger line :line
@@ -596,9 +612,10 @@ end
 settextlinetrigger line :line
 pause
 
-:port~done
-killalltriggers
-send "  Q  "
+	:port~done
+	killalltriggers
+	gosub :player~msgs_on
+	send "  Q  "
 setvar $port~i 1
 if ($port~inc <> 0)
 	while ($port~i <= $port~inc)

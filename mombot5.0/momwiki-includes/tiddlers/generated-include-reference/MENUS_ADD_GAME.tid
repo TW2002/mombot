@@ -1,26 +1,29 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: MENUS~ADD_GAME
+created: 20260813201411000
+modified: 20260813201411000
+title: menus~add_game
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-menus
-caption: MENUS~ADD_GAME
+caption: menus~add_game
 
-! MENUS~ADD_GAME
+! menus~add_game
 
 Shared `menus` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
 
 ''Include:'' [[menus.ts]]
-''Defined at:'' `/include/menus.ts:1113`
+''Defined at:'' `/include/menus.ts:1121`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-setvar $MENUS~NEW_BOT_NAME &quot;&quot;
-getinput $MENUS~NEW_BOT_NAME ANSI_13&amp;&quot;What is the &#x27;in game&#x27; name of the bot? (one word, no spaces)&quot;&amp;ANSI_7
-striptext $MENUS~NEW_BOT_NAME &quot;^&quot;
-striptext $MENUS~NEW_BOT_NAME &quot; &quot;
-lowercase $MENUS~NEW_BOT_NAME
-if ($MENUS~NEW_BOT_NAME = &quot;&quot;)
-  goto :ADD_GAME
+setvar $menus~new_bot_name &quot;&quot;
+getinput $menus~new_bot_name ansi_13&amp;&quot;What is the &#x27;in game&#x27; name of the bot? (one word, no spaces)&quot;&amp;ansi_7
+striptext $menus~new_bot_name &quot;^&quot;
+striptext $menus~new_bot_name &quot; &quot;
+lowercase $menus~new_bot_name
+if ($menus~new_bot_name = &quot;&quot;)
+	goto :add_game
 end
 </pre>
 

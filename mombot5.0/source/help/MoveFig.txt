@@ -7,7 +7,8 @@
      Usage:  movefig [p | s] [amount | all] {all}
         
         [p] - move sector fighters to the planet.
-        [s] - move planet fighters to the sector.
-        [amount | all] - fighter amount to move.
-        {all} with s - pull fighters from all planets in sector.
-        Run from Planet or Citadel.
+       [s] - move planet fighters to the sector.
+       [amount | all] - fighter amount to move.
+       {all} with s - pull fighters from all planets in sector.
+       Default/all with s leaves one shipload onboard.
+       Run from Planet or Citadel.

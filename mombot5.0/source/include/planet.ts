@@ -552,6 +552,7 @@ getword currentline $planet~planet 2
 striptext $planet~planet "#"
 isnumber $planet~tst $planet~planet
 if ($planet~tst <> true)
+	killtrigger planetinfo2
 	settextlinetrigger planetinfo2 :planetinfo2 "Planet #"
 	pause
 end
@@ -1013,6 +1014,7 @@ gosub :switchboard~switchboard
 return
 
 :planet~displayplanet
+killtrigger planetprompt
 send "*"
 waiton "Planet #"
 
@@ -1054,7 +1056,7 @@ else
 	setvar $notakefigs false
 end
 
-if ($planet~nocit = "") or ($planet~nocit = true)
+if ($planet~nocit = true)
 	setvar $planet~nocit false
 	return
 end
@@ -1140,7 +1142,11 @@ return
 :pwarp_lock
 killalltriggers
 send "y"
-waiton "Planet is now in sector"
+#waiton "Planet is now in sector"
+settextlinetrigger pwarp_success :pwarp_success "-=-=-=- Planetary TransWarp Drive Engaged! -=-=-=-"
+pause
+:pwarp_success
+killalltriggers
 setvar $planet~pwarpsuccess true
 setvar $planet~msg "Planet #"&$planet~planet&" moved to sector "&$planet~warpto&"."
 setvar $switchboard~message $planet~msg&"*"
@@ -1176,6 +1182,7 @@ return
 killtrigger noplanet
 killtrigger no_land
 killtrigger planet
+killtrigger planetprompt
 killtrigger wrongone
 killtrigger in_cit
 killtrigger nocitallowed
@@ -1346,6 +1353,7 @@ return
 :planet~moveproduct
 :planet~movefighters
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+loadvar $map~stardock
 setvar $movesuccess false
 setvar $planet~movesuccess false
 setvar $movefailed false
@@ -1399,12 +1407,18 @@ if ($category = 4)
 	send "m n l*"
 end
 
-send "q j y l "&$startingplanet&"*"
+if ($planet~current_sector = $map~stardock)
+	send "t n l1* t n l2* t n l3* s n l1* s n l2* s n l3* "
+else
+	send "q j y l "&$startingplanet&"*"
+end
 
 gosub :player~quikstats
 setvar $player~turns ($player~turns-1)
 setvar $count 0
-setvar $planet~burstsize 1000
+if ($planet~burstsize <= 0)
+	setvar $planet~burstsize 1000
+end
 
 :moveproductloop
 killtrigger success
@@ -1519,7 +1533,9 @@ return
 killalltriggers
 setvar $movefailed true
 setvar $moveerror currentline
-send "q q * * j y "
+if ($planet~current_sector <> $map~stardock)
+	send "q q * * j y "
+end
 
 :move_done
 killalltriggers
@@ -1564,8 +1580,14 @@ if ($moveamount = 0) or ($moveamount = "")
 	setvar $moveamount $planet~citadel_credits
 end
 
+gosub :movecredsverifydestination
+if ($movefailed = true)
+	setvar $planet~movesuccess false
+	return
+end
+
 if ($player~credits >= $planet~moveamount)
-	send "q l "&$planet~planettofill&"* ctt"&$moveamount&"* q q l "&$startingplanet&"* ctf"&$moveamount&"* q q "
+	send "q q l "&$planet~planettofill&"* ctt"&$moveamount&"* q q l "&$startingplanet&"* ctf"&$moveamount&"* q q "
 	setvar $planet~movesuccess true
 	return
 end
@@ -1589,17 +1611,72 @@ striptext $player~credits ","
 send "q q l "&$startingplanet&"* "
 goto :move_done
 
+:movecredsverifydestination
+killalltriggers
+send "q q l "&$planet~planettofill&"*"
+settexttrigger movecredsdestinationok :movecredsdestinationok "Planet command"
+settextlinetrigger movecredsdestinationmissing :movecredsdestinationmissing "That planet is not in this sector."
+settextlinetrigger movecredsdestinationinvalid :movecredsdestinationinvalid "Invalid registry number, landing aborted."
+pause
+
+:movecredsdestinationok
+killalltriggers
+send "c"
+settexttrigger movecredsdestinationcitadel :movecredsdestinationcitadel "Citadel command"
+settexttrigger movecredsdestinationbuild :movecredsdestinationbuild "Do you wish to construct one?"
+settexttrigger movecredsdestinationnocitadel :movecredsdestinationnocitadel "Citadels are not allowed in FedSpace."
+settexttrigger movecredsdestinationnocitadel2 :movecredsdestinationnocitadel "Be patient, your Citadel is not yet finished."
+pause
+
+:movecredsdestinationcitadel
+killalltriggers
+send "q q l "&$startingplanet&"* c"
+waiton "Citadel command"
+return
+
+:movecredsdestinationmissing
+killalltriggers
+setvar $movefailed true
+setvar $moveerror "Destination planet "&$planet~planettofill&" is not in this sector."
+send "q l "&$startingplanet&"*"
+waiton "Planet command"
+return
+
+:movecredsdestinationinvalid
+killalltriggers
+setvar $movefailed true
+setvar $moveerror "Destination planet "&$planet~planettofill&" is invalid."
+send "l "&$startingplanet&"*"
+waiton "Planet command"
+return
+
+:movecredsdestinationbuild
+killalltriggers
+setvar $movefailed true
+setvar $moveerror "Destination planet "&$planet~planettofill&" does not have an accessible citadel."
+send "n q l "&$startingplanet&"*"
+waiton "Planet command"
+return
+
+:movecredsdestinationnocitadel
+killalltriggers
+setvar $movefailed true
+setvar $moveerror "Destination planet "&$planet~planettofill&" does not have an accessible citadel."
+send "q l "&$startingplanet&"*"
+waiton "Planet command"
+return
+
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :planet~stripplanet
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 gosub :player~currentprompt
-setvar $startingplanet 0
-setvar $restore_ship_fighters false
+setvar $strip_startingplanet 0
+setvar $strip_restore_ship_fighters false
 gosub :player~currentprompt
-setvar $startingprompt $player~current_prompt
-if ($startingprompt = "Citadel")
+setvar $strip_startingprompt $player~current_prompt
+if ($strip_startingprompt = "Citadel")
 	send "q"
-elseif ($startingprompt = "Command")
+elseif ($strip_startingprompt = "Command")
 	if ($planet~planettofill = 0)
 		setvar $switchboard~message "No destination planet selected to fill!*"
 		gosub :switchboard~switchboard
@@ -1608,7 +1685,7 @@ elseif ($startingprompt = "Command")
 	setvar $planet~nocit true
 	setvar $planet~planet $planet~planettofill
 	gosub :landingsub
-elseif ($startingprompt <> "Planet")
+elseif ($strip_startingprompt <> "Planet")
 	setvar $switchboard~message "You must start from the Citadel, Planet or Command prompt!*"
 	gosub :switchboard~switchboard
 	return
@@ -1623,7 +1700,7 @@ if ($planet~planettostrip = $planet~planettofill)
 	gosub :switchboard~switchboard
 	return
 end
-gosub :planetinfo
+gosub :planet~getplanetinfo
 isnumber $test $planet~planet
 if ($test = false)
 	setvar $switchboard~message "Could not read source planet info, halting strip.*"
@@ -1634,8 +1711,8 @@ elseif ($planet~planet <= 0)
 	gosub :switchboard~switchboard
 	halt
 end
-if ($startingprompt <> "Command")
-	setvar $startingplanet $planet~planet
+if ($strip_startingprompt <> "Command")
+	setvar $strip_startingplanet $planet~planet
 end
 setvar $countfuel 0
 setvar $countorganics 0
@@ -1728,9 +1805,7 @@ if ($emptyfuel)
 		setvar $planet~moveamount $amount_to_strip
 		gosub :planet~moveproduct
 		if ($movesuccess = false)
-			setvar $switchboard~message "Failed to move product, halting.*"
-			gosub :switchboard~switchboard
-			halt
+			goto :strip_move_failed
 		end
 		add $countfuel $planet~count
 	end
@@ -1752,9 +1827,7 @@ if ($emptyorganics)
 		setvar $planet~moveamount $amount_to_strip
 		gosub :planet~moveproduct
 		if ($movesuccess = false)
-			setvar $switchboard~message "Failed to move product, halting.*"
-			gosub :switchboard~switchboard
-			halt
+			goto :strip_move_failed
 		end
 		add $countorganics $planet~count
 	end
@@ -1776,9 +1849,7 @@ if ($emptyequipment)
 		setvar $planet~moveamount $amount_to_strip
 		gosub :planet~moveproduct
 		if ($movesuccess = false)
-			setvar $switchboard~message "Failed to move product, halting.*"
-			gosub :switchboard~switchboard
-			halt
+			goto :strip_move_failed
 		end
 		add $countequipment $planet~count
 	end
@@ -1800,9 +1871,7 @@ if ($emptyfuelcolos)
 		setvar $planet~moveamount $amount_to_strip
 		gosub :planet~moveproduct
 		if ($movesuccess = false)
-			setvar $switchboard~message "Failed to move product, halting.*"
-			gosub :switchboard~switchboard
-			halt
+			goto :strip_move_failed
 		end
 		add $countcolonists $planet~count
 	end
@@ -1824,9 +1893,7 @@ if ($emptyorgcolos)
 		setvar $planet~moveamount $amount_to_strip
 		gosub :planet~moveproduct
 		if ($movesuccess = false)
-			setvar $switchboard~message "Failed to move product, halting.*"
-			gosub :switchboard~switchboard
-			halt
+			goto :strip_move_failed
 		end
 		add $countcolonists $planet~count
 	end
@@ -1848,9 +1915,7 @@ if ($emptyequcolos)
 		setvar $planet~moveamount $amount_to_strip
 		gosub :planet~moveproduct
 		if ($movesuccess = false)
-			setvar $switchboard~message "Failed to move product, halting.*"
-			gosub :switchboard~switchboard
-			halt
+			goto :strip_move_failed
 		end
 		add $countcolonists $planet~count
 	end
@@ -1868,7 +1933,7 @@ if ($emptyfigs)
 		end
 	end
 	if ($amount_to_strip > 0)
-		setvar $restore_ship_fighters true
+		setvar $strip_restore_ship_fighters true
 		send "l "&$planet~planettofill&"* m n l* q "
 		:tryfighters
 		killtrigger success
@@ -1888,20 +1953,30 @@ end
 
 :strip_donewiththisplanet
 killalltriggers
-if ($startingplanet = 0)
+if ($strip_startingplanet = 0)
 	return
 end
-setvar $planet~planet $startingplanet
-setvar $nocit true
+setvar $planet~planet $strip_startingplanet
+setvar $planet~nocit true
 gosub :landingsub
-if ($restore_ship_fighters)
+if ($strip_restore_ship_fighters)
 	send "m n t*"
 	waiton "Planet command"
 end
 #if ($startingprompt = "Command")
-#	send "c"
-#end
+	#	send "c"
+	#end
 return
+
+:strip_move_failed
+getwordpos $moveerror $strip_full_pos "They don't have room for that many"
+getwordpos $moveerror $strip_empty_colos_pos "There isn't room on the planet"
+if ($strip_full_pos > 0) or ($strip_empty_colos_pos > 0)
+	goto :strip_donewiththisplanet
+end
+setvar $switchboard~message "Failed to move product, halting.*"
+gosub :switchboard~switchboard
+halt
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :qset

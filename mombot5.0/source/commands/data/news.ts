@@ -1432,7 +1432,9 @@ return
 delete $news_file
 setvar $stop_date ""
 savevar $news_yest
-send "'{"&$bot_name&"} - Reading Log To File... Comms will be off during this...*| C D"
+send "'{"&$bot_name&"} - Reading Log To File... Comms will be off during this...*"
+gosub :player~msgs_off
+send "C D"
 setvar $s time&"-"&date
 gettime $s "h:nna/p - d/m/yyy"
 write $news_file $s
@@ -1522,7 +1524,7 @@ else
 end
 
 :topoflog_spoof
-settexttrigger topoflog :topoflog "-=-=-=-=-=-=-=-=-=- Trade Wars 2002"
+settexttrigger topoflog :topoflog "-=-=-=-=-=-=-=-=-=- "
 pause
 
 :topoflog
@@ -1569,7 +1571,7 @@ setvar $ansi currentansiline
 getwordpos $ansi $pos $news_empty
 if ($pos <> 0)
 	write $news_file $news_empty
-	send "***  Q|"
+	send "***  Q"
 	goto :done_reading_news
 else
 	goto :end_of_lines_spoof
@@ -1582,14 +1584,14 @@ killtrigger line_trig
 if ($news_yest)
 	getwordpos currentansiline $pos "[1;34m-="
 	if ($pos <> 0)
-		send "*  *   *  ** Q|"
+		send "*  *   *  ** Q"
 	else
 		goto :end_of_lines_spoof
 	end
 else
 	getwordpos currentansiline $pos "[1;33mTL"
 	if ($pos <> 0)
-		send " Q|"
+		send " Q"
 	else
 		goto :end_of_lines_spoof
 	end
@@ -1598,6 +1600,7 @@ end
 :done_reading_news
 setvar $news_read true
 waiton "<Computer deactivated>"
+gosub :player~msgs_on
 return
 include "source\include\loadvars"
 include "source\include\player"

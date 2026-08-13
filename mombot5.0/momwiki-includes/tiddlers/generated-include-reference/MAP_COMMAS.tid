@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: MAP~COMMAS
+created: 20260813201411000
+modified: 20260813201411000
+title: map~commas
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-map
-caption: MAP~COMMAS
+caption: map~commas
 
-! MAP~COMMAS
+! map~commas
 
 Formats large numeric values with comma separators for display.
 
 ''Include:'' [[map.ts]]
-''Defined at:'' `/include/map.ts:1`
+''Defined at:'' `/include/map.ts:38`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-if ($MAP~VALUE &lt; 1000)
-elseif ($MAP~VALUE &lt; 1000000)
-  getlength $MAP~VALUE $MAP~LEN
-  setvar $MAP~LEN ($MAP~LEN - 3)
-  cuttext $MAP~VALUE $MAP~TMP 1 $MAP~LEN
-  cuttext $MAP~VALUE $MAP~TMP1 ($MAP~LEN + 1) 999
-  setvar $MAP~TMP $MAP~TMP&amp;&quot;,&quot;&amp;$MAP~TMP1
-  setvar $MAP~VALUE $MAP~TMP
+if ($map~value &lt; 1000)
+elseif ($map~value &lt; 1000000)
+	getlength $map~value $map~len
+	setvar $map~len ($map~len - 3)
+	cuttext $map~value $map~tmp 1 $map~len
+	cuttext $map~value $map~tmp1 ($map~len + 1) 999
+	setvar $map~tmp $map~tmp&amp;&quot;,&quot;&amp;$map~tmp1
+	setvar $map~value $map~tmp
 </pre>
 
 !! Notes

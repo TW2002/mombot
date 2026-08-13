@@ -1,16 +1,19 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLAYER~TURNOFFANSI
+created: 20260813201411000
+modified: 20260813201411000
+title: player~turnoffansi
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-player
-caption: PLAYER~TURNOFFANSI
+caption: player~turnoffansi
 
-! PLAYER~TURNOFFANSI
+! player~turnoffansi
 
 Turns ANSI off through the shared player prompt path.
 
 ''Include:'' [[player.ts]]
-''Defined at:'' `/include/player.ts:1167`
+''Defined at:'' `/include/player.ts:860`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
@@ -18,10 +21,10 @@ Turns ANSI off through the shared player prompt path.
 send &quot;c n&quot;
 killalltriggers
 waiton &quot;(1) ANSI graphics&quot;
-getword CURRENTLINE $PLAYER~ANSISTATUS 5
+getword currentline $player~ansistatus 5
 waiton &quot;(2) Animation display&quot;
-getword CURRENTLINE $PLAYER~ANIMATIONSTATUS 5
-if ($PLAYER~ANIMATIONSTATUS = &quot;On&quot;)
+getword currentline $player~animationstatus 5
+if ($player~animationstatus = &quot;On&quot;)
 </pre>
 
 !! Notes

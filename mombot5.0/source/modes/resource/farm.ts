@@ -201,6 +201,7 @@ if ($planet~emptyfigs > 0) and ($planet~emptyfuel <= 0) and ($planet~emptyorgani
 end
 
 logging off
+setvar $planet~burstsize 50
 
 if ($player~planet_scanner = "No")
 	setvar $switchboard~message "Planet Farmer must be run with a planet scanner.*"

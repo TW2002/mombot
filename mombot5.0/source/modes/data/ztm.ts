@@ -76,6 +76,9 @@ setvar $forwardi 2
 setvar $backi $maxsector
 # How many paths to do at once.
 setvar $sectorstofind 40
+if (sectors <= $sectorstofind)
+	setvar $sectorstofind (sectors - 1)
+end
 setvar $forwardsectors 0
 
 # ADD THESE IN LATER

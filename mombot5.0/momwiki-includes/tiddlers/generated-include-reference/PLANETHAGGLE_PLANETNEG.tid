@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLANETHAGGLE~PLANETNEG
+created: 20260813201411000
+modified: 20260813201411000
+title: planethaggle~planetneg
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-planethaggle
-caption: PLANETHAGGLE~PLANETNEG
+caption: planethaggle~planetneg
 
-! PLANETHAGGLE~PLANETNEG
+! planethaggle~planetneg
 
 Runs the shared planet sell negotiation path.
 
 ''Include:'' [[planethaggle.ts]]
 ''Defined at:'' `/include/planethaggle.ts:2`
 
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
+
 !! Source Excerpt
 <pre>
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLANETHAGGLE~OUTPUT_FILE &quot;&quot;
-setvar $PLANETHAGGLE~SELLDELAY 0
-setvar $PLANETHAGGLE~OREMCIC &quot;-90&quot;
-setvar $PLANETHAGGLE~ORGMCIC &quot;-75&quot;
-setvar $PLANETHAGGLE~EQUMCIC &quot;-65&quot;
-setvar $PLANETHAGGLE~VERSION &quot;3.0.0&quot;
-setvar $PLANETHAGGLE~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
+setvar $planethaggle~output_file &quot;&quot;
+setvar $planethaggle~selldelay 0
+setvar $planethaggle~oremcic &quot;-90&quot;
+setvar $planethaggle~orgmcic &quot;-75&quot;
+setvar $planethaggle~equmcic &quot;-65&quot;
+setvar $planethaggle~version &quot;3.0.0&quot;
+setvar $planethaggle~startinglocation $player~current_prompt
 </pre>
 
 !! Notes

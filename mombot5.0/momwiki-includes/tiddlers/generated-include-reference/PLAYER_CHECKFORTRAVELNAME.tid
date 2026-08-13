@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLAYER~CHECKFORTRAVELNAME
+created: 20260813201411000
+modified: 20260813201411000
+title: player~checkfortravelname
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-player
-caption: PLAYER~CHECKFORTRAVELNAME
+caption: player~checkfortravelname
 
-! PLAYER~CHECKFORTRAVELNAME
+! player~checkfortravelname
 
 Checks a prerequisite or validates current state before the caller continues.
 
 ''Include:'' [[player.ts]]
-''Defined at:'' `/include/player.ts:116`
+''Defined at:'' `/include/player.ts:87`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if ($BOT~PARM1 = &quot;me&quot;)
-  if ($BOT~COMMAND_CALLER = &quot;self&quot;)
-    setvar $SWITCHBOARD~MESSAGE &quot;I don&#x27;t think you need to travel to yourself.*&quot;
-    gosub :SWITCHBOARD~SWITCHBOARD
-    halt
-  end
-  setvar $PLAYER~WHO_CALLED_ME $BOT~COMMAND_CALLER
+if ($parm1 = &quot;me&quot;)
+	if ($command_caller = &quot;self&quot;)
+		setvar $switchboard~message &quot;I don&#x27;t think you need to travel to yourself.*&quot;
+		gosub :switchboard~switchboard
+		halt
+	end
+	setvar $player~who_called_me $command_caller
 </pre>
 
 !! Notes

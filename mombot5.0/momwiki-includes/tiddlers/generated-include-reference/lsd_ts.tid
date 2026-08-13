@@ -1,0 +1,30 @@
+created: 20260813201411000
+modified: 20260813201411000
+title: lsd.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: lsd.ts
+
+! lsd.ts
+
+Shared `lsd` include routines and support labels used across the Mombot source tree.
+
+''Source:'' `/include/lsd.ts`
+
+!! Loaded Variables
+* `$bot~bot_name`
+* `$bot~unlimitedgame`
+* `$map~stardock`
+* `$bot~bot_turn_limit`
+* `$bot~user_command_line`
+* `$lsd_order`
+* `$bot~folder`
+
+!! Significant Exported Routines
+* [[lsd~lsd]] - Shared `lsd` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+!! Direct Include Users
+* `/modes/cashing/twsst.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

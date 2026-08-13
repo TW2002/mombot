@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: game.ts
 type: text/vnd.tiddlywiki
 tags: mombot include-reference include
@@ -11,12 +11,18 @@ Game-wide metadata parsing, especially game stats and universe-level information
 
 ''Source:'' `/include/game.ts`
 
+!! Loaded Variables
+* `$bot~password`
+* `$bot~letter`
+
 !! Significant Exported Routines
-* [[GAME~GAMESTATS]] - Pulls game stats and updates shared game-wide values from the live game prompt.
+* [[game~gamestats]] - Pulls game stats and updates shared game-wide values from the live game prompt.
 
 !! Direct Include Users
 * `/commands/data/getnear.ts`
 * `/commands/general/refresh.ts`
+* `/include/bot.ts`
+* `/include/xenter.ts`
 * `/mombot.ts`
 * `/preload/_dock_shopper.ts`
 

@@ -1,0 +1,31 @@
+created: 20260813201411000
+modified: 20260813201411000
+title: map~displaynavigation
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-map
+caption: map~displaynavigation
+
+! map~displaynavigation
+
+Displays shared output through the bot UI layer.
+
+''Include:'' [[map.ts]]
+''Defined at:'' `/include/map.ts:288`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
+
+!! Source Excerpt
+<pre>
+setvar $map~i 1
+setvar $map~map &quot;&quot;
+setarray $map~sectors_array 6
+setvar $map~sectors_array[1] &quot;&quot;
+setvar $map~sectors_array[2] &quot;&quot;
+setvar $map~sectors_array[3] &quot;&quot;
+setvar $map~sectors_array[4] &quot;&quot;
+setvar $map~sectors_array[5] &quot;&quot;
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

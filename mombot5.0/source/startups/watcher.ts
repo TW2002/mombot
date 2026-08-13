@@ -55,6 +55,7 @@ settextlinetrigger lracheck :lracheck "For stealing from this port, your alignme
 settextlinetrigger lracheck2 :lracheck "For robbing this port, your alignment"
 settextlinetrigger busted :busted "For getting caught your alignment went down by"
 settextlinetrigger fakebusted :fakebusted "(You realize the guards saw you last time!)"
+settextlinetrigger fakebusted2 :fakebusted "(You suddenly remember that you were caught stealing here before)"
 settextlinetrigger manualsubspace :manualsubspace "Ok, you will send and receive sub-space messages on channel "
 settextlinetrigger foundbigbubble :foundbigbubble "[Found Big Bubble]"
 settextlinetrigger foundbigtunnel :foundbigtunnel "[Found Big Tunnel]"
@@ -129,8 +130,10 @@ pause
 
 :fakebusted
 loadvar $player~current_sector
+setsectorparameter $player~current_sector "BUSTED" true
 setsectorparameter $player~current_sector "FAKEBUST" true
 settextlinetrigger fakebusted :fakebusted "(You realize the guards saw you last time!)"
+settextlinetrigger fakebusted2 :fakebusted "(You suddenly remember that you were caught stealing here before)"
 pause
 
 :lracheck
@@ -352,8 +355,8 @@ if ($temp <> "")
 	isnumber $test $temp
 	if ($test)
 		if (($temp <= sectors) and ($temp > 0))
-			setsectorparameter $temp "BUSTED" false
-			setsectorparameter $temp "FAKEBUST" false
+				setsectorparameter $temp "BUSTED" false
+				setsectorparameter $temp "FAKEBUST" false
 		end
 	end
 end

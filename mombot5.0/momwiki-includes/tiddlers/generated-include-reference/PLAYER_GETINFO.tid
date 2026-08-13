@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLAYER~GETINFO
+created: 20260813201411000
+modified: 20260813201411000
+title: player~getinfo
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-player
-caption: PLAYER~GETINFO
+caption: player~getinfo
 
-! PLAYER~GETINFO
+! player~getinfo
 
 Loads broader player state than quikstats, including prompt and game context details.
 
 ''Include:'' [[player.ts]]
-''Defined at:'' `/include/player.ts:362`
+''Defined at:'' `/include/player.ts:262`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLAYER~NOFLIP TRUE
-setvar $PLAYER~PHOTONS 0
-setvar $PLAYER~TOWED &quot;&quot;
-setvar $PLAYER~SCAN_TYPE &quot;None&quot;
-setvar $PLAYER~TWARP_TYPE 0
-setvar $PLAYER~CORPSTRING &quot;[0]&quot;
-setvar $PLAYER~IGSTAT 0
+setvar $player~noflip true
+setvar $player~photons 0
+setvar $player~towed &quot;&quot;
+setvar $player~scan_type &quot;None&quot;
+setvar $player~twarp_type 0
+setvar $player~corpstring &quot;[0]&quot;
+setvar $player~igstat 0
 </pre>
 
 !! Notes

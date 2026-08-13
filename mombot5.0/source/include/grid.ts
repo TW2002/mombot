@@ -155,6 +155,8 @@ return
 loadvar $map~stardock
 loadvar $ship~ship_max_attack
 
+setvar $pgridsector $grid~pgridsector
+
 if ($pgridsector = 0)
 	setvar $switchboard~message "Invalid sector number.*"
 	gosub :switchboard~switchboard
@@ -187,6 +189,20 @@ if ($grid~pgrid_surrender = 0)
 	setvar $grid~pgrid_surrender true
 end
 
+if ($grid~pgrid_xporting = "")
+	setvar $grid~pgrid_xporting false
+end
+
+setvar $fighterdrop $grid~pgrid_fighterdrop
+setvar $pgrid_waves $grid~pgrid_waves
+setvar $pgrid_scan $grid~pgrid_scan
+setvar $pgrid_surrender $grid~pgrid_surrender
+setvar $pgrid_xportship $grid~pgrid_xportship
+setvar $xporting $grid~pgrid_xporting
+setvar $unsafe $grid~pgrid_unsafe
+setvar $pgrid_retreat $grid~pgrid_retreat
+setvar $pgrid_maxdensity $grid~pgrid_maxdensity
+
 gosub :player~quikstats
 setvar $startinglocation $player~current_prompt
 setvar $startingsector $player~current_sector
@@ -198,10 +214,6 @@ if ($startinglocation = "Citadel")
 	setvar $incitadel "Q Q "
 else
 	setvar $incitadel ""
-end
-
-if ($grid~pgrid_xporting = "")
-	setvar $grid~pgrid_xporting false
 end
 
 setvar $pgrid_xportshipfound false
@@ -490,23 +502,41 @@ else
 			end
 
 		end
-	else
-		gosub :emergencylanding
-		gosub :player~quikstats
-		if (($player~current_sector <> $pgridsector))
-			setvar $switchboard~message "Unsuccessful P-grid into sector " & $pgridsector & ". Someone make sure bot is picked up.*"
-			gosub :switchboard~switchboard
 		else
-			setvar $switchboard~message "Successfully P-gridded into sector " & $pgridsector & "*"
-			gosub :switchboard~switchboard
-			setvar $target $pgridsector
-			setsectorparameter $target "FIGSEC" true
+			gosub :emergencylanding
+			gosub :player~quikstats
+			if (($player~current_sector <> $pgridsector))
+				setvar $switchboard~message "Unsuccessful P-grid into sector " & $pgridsector & ". Someone make sure bot is picked up.*"
+				gosub :switchboard~switchboard
+			else
+				setvar $pgrid_fig_deployed false
+				isnumber $pgrid_fighter_quantity_ok sector.fighters.quantity[$pgridsector]
+				if ($pgrid_fighter_quantity_ok = true)
+					if (sector.fighters.quantity[$pgridsector] > 0)
+						setvar $pgrid_fig_deployed true
+					end
+				end
+				if ($pgrid_fig_deployed = false)
+					getsectorparameter $pgridsector "FIGSEC" $pgrid_figsec
+					if ($pgrid_figsec = true)
+						setvar $pgrid_fig_deployed true
+					end
+				end
+				if ($pgrid_fig_deployed = true)
+					setvar $switchboard~message "Successfully P-gridded into sector " & $pgridsector & "*"
+					gosub :switchboard~switchboard
+					setvar $target $pgridsector
+					setsectorparameter $target "FIGSEC" true
+				else
+					setvar $switchboard~message "P-gridded into sector " & $pgridsector & " but no fighter deployed.*"
+					gosub :switchboard~switchboard
+				end
 		end
 	end
-end
-halt
+	end
+	halt
 
-:emergencylanding
+	:emergencylanding
 setvar $i 0
 while ($i < 15)
 	add $i 1

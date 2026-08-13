@@ -1,21 +1,24 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: BOT~BIGDELAY_KILLTHETRIGGERS
+created: 20260813201411000
+modified: 20260813201411000
+title: bot~bigdelay_killthetriggers
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-bot
-caption: BOT~BIGDELAY_KILLTHETRIGGERS
+caption: bot~bigdelay_killthetriggers
 
-! BOT~BIGDELAY_KILLTHETRIGGERS
+! bot~bigdelay_killthetriggers
 
 Runs or prepares a shared combat sequence.
 
 ''Include:'' [[bot.ts]]
-''Defined at:'' `/include/bot.ts:18`
+''Defined at:'' `/include/bot.ts:8`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
 killalltriggers
-setdelaytrigger UNFREEZINGTRIGGERBIGDELAY :UNFREEZEBOT 1800000
+setdelaytrigger unfreezingtriggerbigdelay :unfreezebot 1800000
 return
 </pre>
 

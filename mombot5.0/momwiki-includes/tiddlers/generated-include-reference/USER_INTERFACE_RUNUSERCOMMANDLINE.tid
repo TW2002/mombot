@@ -1,24 +1,27 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: USER_INTERFACE~RUNUSERCOMMANDLINE
+created: 20260813201411000
+modified: 20260813201411000
+title: user_interface~runusercommandline
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-user_interface
-caption: USER_INTERFACE~RUNUSERCOMMANDLINE
+caption: user_interface~runusercommandline
 
-! USER_INTERFACE~RUNUSERCOMMANDLINE
+! user_interface~runusercommandline
 
 Dispatches a resolved command line through the bot user-interface layer.
 
 ''Include:'' [[user_interface.ts]]
-''Defined at:'' `/include/user_interface.ts:155`
+''Defined at:'' `/include/user_interface.ts:157`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-setvar $BOT~USER_COMMAND_LINE $BOT~USER_COMMAND_LINE&amp;&quot;              &quot;
-setvar $USER_INTERFACE~AUTHORIZATION 9
-setvar $USER_INTERFACE~USER_SEC_LEVEL 9
-gosub :CHECK_FOR_MULTI_COMMANDS
-goto :COMMAND_PROCESSING
+setvar $bot~user_command_line $bot~user_command_line&amp;&quot;              &quot;
+setvar $user_interface~authorization 9
+setvar $user_interface~user_sec_level 9
+gosub :check_for_multi_commands
+goto :command_processing
 </pre>
 
 !! Notes

@@ -4,12 +4,6 @@ setvar $help~help[1] $help~tab&"bust [Experience Desired]"
 setvar $help~help[2] $help~tab&"Creates and busts planets until the desired experience is reached."
 gosub :help~helpfile
 
-:load_variables
-loadvar $bot_name
-loadvar $user_command_line
-loadvar $bot_turn_limit
-loadvar $parm1
-loadvar $parm2
 setvar $blow_planet "No"
 isnumber $test $parm1
 if ($test)
@@ -23,11 +17,11 @@ end
 :start
 gosub :player~quikstats
 setvar $start_prompt $player~current_prompt
-if ($player~credits < 1000000)
-	setvar $switchboard~message "Not Enough Cash on Hand*"
-	gosub :switchboard~switchboard
-	halt
-end
+#if ($player~credits < 1000000)
+#	setvar $switchboard~message "Not Enough Cash on Hand*"
+#	gosub :switchboard~switchboard
+#	halt
+#end
 isnumber $test $parm1
 if ($test)
 	setvar $experienceamount $parm1
@@ -80,12 +74,12 @@ if ($count > 5)
 	goto :run
 end
 gosub :player~quikstats
-if (($player~credits < 1000000) and ($player~atomic < 1)) or (($player~credits < 1000000) and ($player~genesis < 1))
-	if ($start_prompt = "<StarDock>")
-		send "p  s"
-	end
-	halt
-end
+#if (($player~credits < 1000000) and ($player~atomic < 1)) or (($player~credits < 1000000) and ($player~genesis < 1))
+#	if ($start_prompt = "<StarDock>")
+#		send "p  s"
+##	end
+##	halt
+#end
 killalltriggers
 send "u y  "
 settexttrigger genesis :buy_more "You don't have any Genesis Torpedoes"
@@ -97,8 +91,8 @@ killtrigger genesis
 getrnd $rnd 10000 99999
 setvar $name "bust" & $rnd
 send $name "*  c q * l"
-waiton "Should this be"
-waiton "-------"
+#waiton "Should this be"
+waiton "<Preparing"
 settextlinetrigger planet :planet $name
 settexttrigger noplanet :noplanet "Land on which"
 pause

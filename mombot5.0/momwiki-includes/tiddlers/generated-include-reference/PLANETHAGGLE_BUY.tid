@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLANETHAGGLE~BUY
+created: 20260813201411000
+modified: 20260813201411000
+title: planethaggle~buy
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-planethaggle
-caption: PLANETHAGGLE~BUY
+caption: planethaggle~buy
 
-! PLANETHAGGLE~BUY
+! planethaggle~buy
 
 Runs the shared planet buy/buydown path for merch, salesman, and patp.
 
 ''Include:'' [[planethaggle.ts]]
-''Defined at:'' `/include/planethaggle.ts:1433`
+''Defined at:'' `/include/planethaggle.ts:1462`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLAYER~OVERHAGGLEMULTIPLE 147
-setvar $PLAYER~CYCLEBUFFER 1
-setvar $PLAYER~CYCLEBUFFERLIMIT 20
-setvar $PLAYER~BUYDOWN_RESTORE_HAGGLE 0
-setvar $PLAYER~BUYDOWN_USENATIVEHAGGLE 0
-if (HAGGLE)
-  if ($PLAYER~BUYTYPE = &quot;s&quot;)
+setvar $player~overhagglemultiple 147
+setvar $player~cyclebuffer 1
+setvar $player~cyclebufferlimit 20
+setvar $player~buydown_restore_haggle 0
+setvar $player~buydown_usenativehaggle 0
+if (haggle)
+	if ($player~buytype = &quot;s&quot;)
 </pre>
 
 !! Notes

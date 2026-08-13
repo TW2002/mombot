@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: CONNECTIVITY~MOVING
+created: 20260813201411000
+modified: 20260813201411000
+title: connectivity~moving
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-connectivity
-caption: CONNECTIVITY~MOVING
+caption: connectivity~moving
 
-! CONNECTIVITY~MOVING
+! connectivity~moving
 
 Marks and handles transient movement state during login or reconnect flows.
 
 ''Include:'' [[connectivity.ts]]
-''Defined at:'' `/include/connectivity.ts:450`
+''Defined at:'' `/include/connectivity.ts:502`
+
+!! Loaded Variables
+* `$map~backdoor`
 
 !! Source Excerpt
 <pre>
 echo #27 &quot;[30D                        &quot; #27 &quot;[30D&quot;
-isnumber $CONNECTIVITY~ISNUMBER $MENUS~MOWDESTINATION
-if ($CONNECTIVITY~ISNUMBER and ($BOT~MOWTODOCK or $MENUS~MOWTORYLOS or $MENUS~MOWTOALPHA or $MENUS~MOWTOOTHER or $MENUS~FMOWTODOCK))
-  if ($BOT~MOWTODOCK or $MENUS~FMOWTODOCK)
-    if (((STARDOCK = 0) or (STARDOCK = &quot;&quot;)) and ($MAP~STARDOCK = 0))
-      send &quot;v&quot;
-      waiton &quot;-=-=-=-  Current &quot;
-    end
+if ($bot~mowtodock or $menus~fmowtodock)
+	if ((stardock &gt; 11) and (($map~stardock = 0) or ($map~stardock = &quot;&quot;)))
+		setvar $map~stardock stardock
+		savevar $map~stardock
+	end
+	if (($map~stardock = 0) or ($map~stardock = &quot;&quot;))
+		settextlinetrigger connectivity_found_stardock :connectivity~foundstardock &quot;The StarDock is located in sector&quot;
 </pre>
 
 !! Notes

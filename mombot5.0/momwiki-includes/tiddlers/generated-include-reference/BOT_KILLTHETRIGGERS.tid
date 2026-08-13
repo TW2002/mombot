@@ -1,21 +1,25 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: BOT~KILLTHETRIGGERS
+created: 20260813201411000
+modified: 20260813201411000
+title: bot~killthetriggers
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-bot
-caption: BOT~KILLTHETRIGGERS
+caption: bot~killthetriggers
 
-! BOT~KILLTHETRIGGERS
+! bot~killthetriggers
 
 Clears bot-managed triggers before switching flows or re-entering a prompt parser.
 
 ''Include:'' [[bot.ts]]
-''Defined at:'' `/include/bot.ts:12`
+''Defined at:'' `/include/bot.ts:2`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 killalltriggers
-setdelaytrigger UNFREEZINGTRIGGER :UNFREEZEBOT 100000
+setdelaytrigger unfreezingtrigger :unfreezebot 100000
 return
 </pre>
 

@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: findproduct~findproduct
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-findproduct
@@ -12,14 +12,17 @@ Searches candidate planets for the product or colonist profile a caller needs.
 ''Include:'' [[findproduct.ts]]
 ''Defined at:'' `/include/findproduct.ts:1`
 
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
+
 !! Source Excerpt
 <pre>
 if ($findproduct~sector = 0)
-  send &quot;d&quot;
-  settextlinetrigger GETSECTOR :GETSECTOR &quot;Sector  : &quot;
-  pause
-  :findproduct~getsector
-  getword CURRENTLINE $findproduct~sector 3
+	send &quot;d&quot;
+	settextlinetrigger getsector :getsector &quot;Sector  : &quot;
+	pause
+	:findproduct~getsector
+	getword currentline $findproduct~sector 3
 end
 setvar $findproduct~location 0
 </pre>

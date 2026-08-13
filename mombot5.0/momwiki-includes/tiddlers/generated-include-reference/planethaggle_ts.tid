@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: planethaggle.ts
 type: text/vnd.tiddlywiki
 tags: mombot include-reference include
@@ -11,14 +11,22 @@ Planet buy/sell haggle routines split out from the larger planet include.
 
 ''Source:'' `/include/planethaggle.ts`
 
+!! Loaded Variables
+No `loadvar` statements were detected in this include.
+
 !! Significant Exported Routines
-* [[PLANETHAGGLE~BUY]] - Runs the shared planet buy/buydown path for merch, salesman, and patp.
-* [[PLANETHAGGLE~PLANETNEG]] - Runs the shared planet sell negotiation path.
+* [[planethaggle~planetneg]] - Runs the shared planet sell negotiation path.
+* [[planethaggle~buy]] - Runs the shared planet buy/buydown path for merch, salesman, and patp.
+* [[planethaggle~buyhaggle]] - Handles a shared trade or negotiation path.
+* [[planethaggle~buynohaggle]] - Handles a shared trade or negotiation path.
+* [[planethaggle~getpercts]] - Reads live game or cached state into shared include variables.
 
 !! Direct Include Users
 * `/commands/cashing/neg.ts`
-* `/modes/cashing/merch.ts`
+* `/commands/resource/buy.ts`
+* `/include/merchant.ts`
 * `/modes/cashing/salesman.ts`
+* `/modes/cashing/wrob.ts`
 * `/modes/resource/patp.ts`
 
 !! Maintenance

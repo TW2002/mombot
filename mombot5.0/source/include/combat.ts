@@ -116,56 +116,92 @@ else
 
 	goto :stoppingpoint
 end
-if ($player~isfound = true)
-	setvar $combat~attackstring ""
-	if (($player~genesis > 0) and ($combat~defender = true))
-		setvar $combat~attackstring "u y n.* c "
-		setvar $player~genesis ($player~genesis - 1)
-	end
-
-	setvar $starting_fighters $player~fighters
-	while ($player~fighters > 0)
-		if ($player~fighters < $ship~ship_max_attack)
-			if ($player~shotgun)
-				setvar $combat~attackstring $combat~attackstring&$targetshotgun&$player~refurbstring
-			else
-				if ($player~doubletap)
-					setvar $combat~attackstring $combat~attackstring&$targetstring&$player~fighters&"* * "&$targetstring&$player~fighters&"* * "&$player~refurbstring
-				else
-					setvar $combat~attackstring $combat~attackstring&$targetstring&$player~fighters&"* * "&$player~refurbstring
-				end
-			end
-			setvar $player~fighters 0
-		else
-			if ($player~shotgun)
-				setvar $combat~attackstring $combat~attackstring&$targetshotgun&$player~refurbstring
-			else
-				if ($player~doubletap)
-					setvar $combat~attackstring $combat~attackstring&$targetstring&$ship~ship_max_attack&"* * "&$targetstring&$ship~ship_max_attack&"* * "&$player~refurbstring
-					setvar $player~fighters ($player~fighters - $ship~ship_max_attack)
-				else
-					setvar $combat~attackstring $combat~attackstring&$targetstring&$ship~ship_max_attack&"* * "&$player~refurbstring
-				end
-			end
-			setvar $player~fighters ($player~fighters - $ship~ship_max_attack)
+	if ($player~isfound = true)
+		setvar $combat~attackstring ""
+		if (($player~genesis > 0) and ($combat~defender = true))
+			setvar $combat~attackstring "u y n.* c "
+			setvar $player~genesis ($player~genesis - 1)
 		end
-	end
-else
+
+		setvar $starting_fighters $player~fighters
+		setvar $combat~fighters_available $player~fighters
+		setvar $combat~waves_sent 0
+		isnumber $combat~isnumber $ship~ship_fighters_max
+		if (($combat~isnumber = true) and ($ship~ship_fighters_max > 0))
+			if ($ship~ship_fighters_max < $player~fighters)
+				setvar $ship~ship_fighters_max $player~fighters
+				savevar $ship~ship_fighters_max
+			end
+			if ($ship~ship_fighters_max < $combat~fighters_available)
+				setvar $combat~fighters_available $ship~ship_fighters_max
+			end
+		end
+		while ($combat~fighters_available > 0)
+			if ($combat~fighters_available < $ship~ship_max_attack)
+				if ($player~shotgun)
+					setvar $combat~attackstring $combat~attackstring&$targetshotgun&$player~refurbstring
+					add $combat~waves_sent 3
+				else
+					if ($player~doubletap)
+						setvar $combat~attackstring $combat~attackstring&$targetstring&$combat~fighters_available&"* * "&$targetstring&$combat~fighters_available&"* * "&$player~refurbstring
+						add $combat~waves_sent 2
+					else
+						setvar $combat~attackstring $combat~attackstring&$targetstring&$combat~fighters_available&"* * "&$player~refurbstring
+						add $combat~waves_sent 1
+					end
+				end
+				setvar $combat~fighters_available 0
+			else
+				if ($player~shotgun)
+					setvar $combat~attackstring $combat~attackstring&$targetshotgun&$player~refurbstring
+					add $combat~waves_sent 3
+					setvar $combat~fighters_available ($combat~fighters_available - ($ship~ship_max_attack * 2))
+				else
+					if ($player~doubletap)
+						setvar $combat~attackstring $combat~attackstring&$targetstring&$ship~ship_max_attack&"* * "&$targetstring&$ship~ship_max_attack&"* * "&$player~refurbstring
+						setvar $combat~fighters_available ($combat~fighters_available - $ship~ship_max_attack)
+						add $combat~waves_sent 2
+					else
+						setvar $combat~attackstring $combat~attackstring&$targetstring&$ship~ship_max_attack&"* * "&$player~refurbstring
+						add $combat~waves_sent 1
+					end
+				end
+				setvar $combat~fighters_available ($combat~fighters_available - $ship~ship_max_attack)
+			end
+		end
+	else
 
 	setvar $switchboard~message "*You have no valid targets.*"
 	gosub :player~echo
 
 	goto :stoppingpoint
 end
-if (($sector~passive = true) and ($starting_fighters < $enemy_fighters))
-	setvar $player~fighters $starting_fighters
-	setvar $switchboard~message "*Enemy has too many fighters to attack auto ("&$enemy_fighters&").*"
-	gosub :player~echo
-else
-	send $combat~attackstring&"* "
-end
+	if (($sector~passive = true) and ($starting_fighters < $enemy_fighters))
+		setvar $switchboard~message "*Enemy has too many fighters to attack auto ("&$enemy_fighters&").*"
+		gosub :player~echo
+	else
+		send $combat~attackstring&"* "
+		setvar $combat~command_prompts_seen 0
+		settexttrigger combat_batch_done :combat~fastattack_batch_done "Command [TL="
+		pause
 
-:stoppingpoint
+		:combat~fastattack_batch_done
+		killtrigger combat_batch_done
+		add $combat~command_prompts_seen 1
+		if ($combat~command_prompts_seen < $combat~waves_sent)
+			settexttrigger combat_batch_done :combat~fastattack_batch_done "Command [TL="
+			pause
+		end
+		gosub :player~quikstats
+		if ($player~fighters > 0)
+			gosub :sector~getsectordata
+			if (($sector~emptyshipcount + ($sector~faketradercount + $sector~realtradercount)) > 0)
+				goto :combat~fastattack
+			end
+		end
+	end
+
+	:stoppingpoint
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -316,6 +352,13 @@ else
 	setvar $ship_fighters 0
 	setvar $player~lasttarget ""
 	setvar $firstloop true
+	setvar $unknown_ship_type false
+	setvar $unknown_probe_target ""
+	setvar $unknown_probe_count 0
+	setvar $unknown_probe_sent 0
+	setvar $unknown_probe_damage 0
+	setvar $unknown_probe_last_points 0
+	setvar $unknown_probe_calibrated false
 	while ($player~fighters > 0)
 		killalltriggers
 		setvar $stillshields false
@@ -347,7 +390,7 @@ else
 		killtrigger checkcaptarget
 		killtrigger wrongtarget
 		setvar $cap_ship_info currentline
-		getwordpos $cap_ship_info $targetpos " ["&$player~corp&"]'s unmanned "
+		getwordpos $cap_ship_info $targetpos "["&$player~corp&"]"
 		if ($targetpos > 0)
 			goto :nocappingtargets
 		end
@@ -401,6 +444,15 @@ else
 		end
 
 		:ship_type
+		setvar $unknown_ship_type false
+		getwordpos $cap_ship_info $unman "'s unmanned "
+		getwordpos $cap_ship_info $unman2 "s' unmanned "
+		if (($unman > 0) or ($unman2 > 0))
+			setvar $unmanned true
+			setvar $targetisalien false
+		else
+			setvar $unmanned false
+		end
 		setvar $type_count 0
 		setvar $is_ship 0
 		if ($ship~shipcounter <= 0)
@@ -410,15 +462,6 @@ else
 		while ($type_count < $ship~shipcounter)
 			add $type_count 1
 			getwordpos $cap_ship_info $is_ship $ship~shiplist[$type_count]
-			getwordpos $cap_ship_info $unman "'s unmanned "
-			getwordpos $cap_ship_info $unman2 "s' unmanned "
-			if (($unman > 0) or ($unman2 > 0))
-				setvar $unmanned true
-
-			else
-
-				setvar $unmanned false
-			end
 			if (($is_ship > 0) and ($ship~shiplist[$type_count] <> 0))
 				getword $ship~ship[$ship~shiplist[$type_count]] $player~shields 1
 				getword $ship~ship[$ship~shiplist[$type_count]] $defodds 2
@@ -426,7 +469,16 @@ else
 			end
 		end
 
-		echo "*Unknown ship type, cannot calculate attack.  I'm going to guess. ["&$cap_ship_info&"]"
+		echo "*Unknown ship type, probing attack odds. ["&$cap_ship_info&"]"
+		setvar $unknown_ship_type true
+		if ($unknown_probe_target <> $thistarget)
+			setvar $unknown_probe_target $thistarget
+			setvar $unknown_probe_count 0
+			setvar $unknown_probe_sent 0
+			setvar $unknown_probe_damage 0
+			setvar $unknown_probe_last_points 0
+			setvar $unknown_probe_calibrated false
+		end
 		setvar $shieldpoints 16000
 		setvar $defodds 5
 
@@ -444,12 +496,22 @@ else
 
 		if ($cap_info <> "")
 
-			gettext $cap_info $ship_fighters " (" ")"
+			gettext $cap_info $ship_points " (" ")"
 		else
-			gettext $cap_ship_info $ship_fighters " (" ") (Y/N)"
+			gettext $cap_ship_info $ship_points " (" ") (Y/N)"
 		end
-		gettext $ship_fighters&"ENDOFLINE" $ship_fighters "-" "ENDOFLINE"
+		getwordpos $ship_points $ship_points_dash "-"
+		if ($ship_points_dash > 0)
+			cuttext $ship_points $enemy_ship_fighters 1 $ship_points_dash
+			striptext $enemy_ship_fighters "-"
+			striptext $enemy_ship_fighters ","
+			gettext $ship_points&"ENDOFLINE" $ship_fighters "-" "ENDOFLINE"
+		else
+			setvar $enemy_ship_fighters $ship_points
+			setvar $ship_fighters $ship_points
+		end
 		striptext $ship_fighters ","
+		striptext $enemy_ship_fighters ","
 		setvar $stillshields false
 		setvar $ship_shield_percent 0
 		setvar $shieldpoints 0
@@ -491,34 +553,76 @@ else
 			setvar $ship_fighters 1
 		end
 
-		setvar $cap_points (($shieldpoints + $ship_fighters) * $defodds)
+		setvar $unknown_probe_attack false
+		if ($unknown_ship_type = true)
+			if (($unknown_probe_count > 0) and ($unknown_probe_last_points > $ship_fighters))
+				setvar $unknown_probe_this_damage ($unknown_probe_last_points - $ship_fighters)
+				setvar $unknown_probe_damage ($unknown_probe_damage + $unknown_probe_this_damage)
+			end
+			if ($unknown_probe_count < 3)
+				setvar $unknown_probe_figs $ship~ship_max_attack
+				setvar $unknown_probe_limit ($enemy_ship_fighters / 10)
+				if ($unknown_probe_limit <= 0)
+					setvar $unknown_probe_limit 1
+				end
+				if ($unknown_probe_limit < $unknown_probe_figs)
+					setvar $unknown_probe_figs $unknown_probe_limit
+				end
+				if ($unknown_probe_figs > $max_figs)
+					setvar $unknown_probe_figs $max_figs
+				end
+				if ($unknown_probe_figs > $player~fighters)
+					setvar $unknown_probe_figs $player~fighters
+				end
+				if ($unknown_probe_figs <= 0)
+					setvar $unknown_probe_figs 1
+				end
+				setvar $cap_points $unknown_probe_figs
+				setvar $unknown_probe_sent ($unknown_probe_sent + $cap_points)
+				add $unknown_probe_count 1
+				setvar $unknown_probe_last_points $ship_fighters
+				setvar $unknown_probe_attack true
+			elseif ($unknown_probe_calibrated <> true)
+				if ($unknown_probe_damage > 0)
+					setvar $defodds (($unknown_probe_sent * $own_odds) / $unknown_probe_damage)
+					if ($defodds <= 0)
+						setvar $defodds 1
+					end
+				end
+				setvar $unknown_probe_calibrated true
+			end
+		end
 
-		if ((($player~defendercapping = true) and ($unmanned <> true)) and ($targetisalien = true))
-			if ($stillshields = true)
-				if ($ship_fighters > 3500)
-					setvar $cap_points (($shieldpoints / $own_odds) + ($cap_points / 100))
+		if ($unknown_probe_attack <> true)
+			setvar $cap_points (($shieldpoints + $ship_fighters) * $defodds)
+
+			if ((($player~defendercapping = true) and ($unmanned <> true)) and ($targetisalien = true))
+				if ($stillshields = true)
+					if ($ship_fighters > 3500)
+						setvar $cap_points (($shieldpoints / $own_odds) + ($cap_points / 100))
+					else
+						setvar $cap_points (($shieldpoints / $own_odds) + 1)
+					end
 				else
-					setvar $cap_points (($shieldpoints / $own_odds) + 1)
+					# Changes imported from TBH version
+					#if ($SHIP_FIGHTERS > 750)
+					#  setvar $CAP_POINTS (($CAP_POINTS / $OWN_ODDS) - ($CAP_POINTS / 70))
+					#else
+					setvar $cap_points 1
+					#end
 				end
 			else
-				# Changes imported from TBH version
-				#if ($SHIP_FIGHTERS > 750)
-				#  setvar $CAP_POINTS (($CAP_POINTS / $OWN_ODDS) - ($CAP_POINTS / 70))
-				#else
-				setvar $cap_points 1
-				#end
+				setvar $cap_points ($cap_points / $own_odds)
 			end
-		else
-			setvar $cap_points ($cap_points / $own_odds)
-		end
-		if ($unmanned = true)
-			setvar $cap_points ($cap_points / 2)
-		end
-		setvar $cap_points (($cap_points * 70) / 100)
-		if ($cap_points <= 0)
-			setvar $cap_points 1
-		elseif ($cap_points > $max_figs)
-			setvar $cap_points $max_figs
+			if ($unmanned = true)
+				setvar $cap_points ($cap_points / 2)
+			end
+			setvar $cap_points (($cap_points * 70) / 100)
+			if ($cap_points <= 0)
+				setvar $cap_points 1
+			elseif ($cap_points > $max_figs)
+				setvar $cap_points $max_figs
+			end
 		end
 		#echo ANSI_15&"sendattack: z"&$cap_points&"*  "
 		#echo "shieldperc:["&$shieldperc&"]*"

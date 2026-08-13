@@ -1,26 +1,29 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLAYER~QUIKSTATS
+created: 20260813201411000
+modified: 20260813201411000
+title: player~quikstats
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-player
-caption: PLAYER~QUIKSTATS
+caption: player~quikstats
 
-! PLAYER~QUIKSTATS
+! player~quikstats
 
 Refreshes the current prompt and player/ship quickstats from the live game output.
 
 ''Include:'' [[player.ts]]
-''Defined at:'' `/include/player.ts:730`
+''Defined at:'' `/include/player.ts:482`
+
+!! Loaded Variables
+* `$player~unlimitedgame`
 
 !! Source Excerpt
 <pre>
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLAYER~CURRENT_PROMPT &quot;Undefined&quot;
-setvar $PLAYER~QUIKSTATS_RETRY 0
-if ($PLAYER~TOWED = 0)
-  setvar $PLAYER~TOWED &quot;&quot;
+setvar $player~current_prompt &quot;Undefined&quot;
+setvar $player~quikstats_retry 0
+if ($player~towed = 0)
+	setvar $player~towed &quot;&quot;
 end
-loadvar $PLAYER~UNLIMITEDGAME
+loadvar $player~unlimitedgame
 </pre>
 
 !! Notes

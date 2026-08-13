@@ -238,6 +238,7 @@ end
 setvar $switchboard~message "Planet Merchant starting up!*"
 gosub :switchboard~switchboard
 
+setvar $merchant~stop_at_fuel_quarter true
 gosub :merchant~merchant
 gosub :haggle~restoreautohaggle
 
@@ -245,7 +246,11 @@ gosub :player~quikstats
 if ($startingsector <> $player~current_sector)
 	send "p"&$startingsector&"*y"
 end
-setvar $switchboard~message "Planet Merchant completed.*"
+if ($merchant~fuelstop = true)
+	setvar $switchboard~message "Planet Merchant stopped at fuel reserve and returned home.*"
+else
+	setvar $switchboard~message "Planet Merchant completed.*"
+end
 gosub :switchboard~switchboard
 halt
 

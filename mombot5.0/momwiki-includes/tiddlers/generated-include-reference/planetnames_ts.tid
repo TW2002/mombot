@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: planetnames.ts
 type: text/vnd.tiddlywiki
 tags: mombot include-reference include
@@ -11,8 +11,11 @@ Planet-name array and planet-list helper routines.
 
 ''Source:'' `/include/planetnames.ts`
 
+!! Loaded Variables
+No `loadvar` statements were detected in this include.
+
 !! Significant Exported Routines
-* [[PLANETNAMES~MAKE_PLANET_ARRAY]] - Builds the planet-name array used by makeplanet and related planet-list logic.
+* [[planetnames~make_planet_array]] - Builds the planet-name array used by makeplanet and related planet-list logic.
 
 !! Direct Include Users
 * `/modes/resource/makeplanet.ts`

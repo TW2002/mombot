@@ -69,7 +69,12 @@ if (($emptyorganics = false) and ($emptyequipment = false) and ($emptyfuel = fal
 	halt
 end
 
-setvar $om_sdloc $map~stardock
+if ($map~stardock = 0) or ($map~stardock = "")
+	setvar $om_sdloc STARDOCK
+else
+	setvar $om_sdloc $map~stardock
+end
+
 setvar $totalplanets 0
 setvar $stripables 0
 
@@ -137,7 +142,7 @@ if ($starting_location = "Citadel")
 end
 
 #Empty Holds to Planet
-send "m * * * T * L 1*T*L2*T*L3*S*L1*Q j y"
+send "m * * * t n l 1* t n l 2* t n l 3* s* l 1* q "
 
 seteventtrigger discod1 	:discod     	"CONNECTION LOST"
 seteventtrigger	discod2		:discod     	"Connections have been temporarily disabled."
@@ -342,6 +347,11 @@ goto  :findplanet
 
 :restock
 killalltriggers
+setvar $already_at_dock false
+if (($player~current_sector = $map~stardock) or (currentsector = $map~stardock))
+	setvar $already_at_dock true
+	goto :sdyes
+end
 send "d"
 settextlinetrigger 	figprompt 	:figprompt 		"Fighters:"
 settextlinetrigger 	nofigprompt :nofigprompt	"Warps to Sector(s) :"
@@ -387,7 +397,12 @@ gosub :switchboard~switchboard
 halt
 
 :sdyes
-send "QL " & $target & "* T * T 1 * M * * * Q"
+killalltriggers
+if ($already_at_dock)
+	send "L " & $target & "* T * T 1 * M * * * Q"
+else
+	send "QL " & $target & "* T * T 1 * M * * * Q"
+end
 waitfor "Command [TL"
 send "** "
 gosub :player~quikstats
@@ -396,53 +411,32 @@ if (($player~ore_holds < $player~total_holds) and ((port.buyfuel[$player~current
 	setvar $switchboard~message "Didn't have full fuel for restocking pimp. Buying fuel from port and trying again!*"
 	gosub :switchboard~switchboard
 end
-if ($om_redsector <> 0) and ($player~alignment < 1000)
-	if ($player~unlimitedgame)
-		setvar $switchboard~message "Running product pimp with unlimited turns and "&$player~credits&" credits left*"
-		gosub :switchboard~switchboard
-	else
-		setvar $switchboard~message "Running product pimp with "&$player~turns&" turns and "&$player~credits&" credits left*"
-		gosub :switchboard~switchboard
-	end
-	killalltriggers
-	seteventtrigger 	discod1 	:discod     	"CONNECTION LOST"
-	seteventtrigger		discod2		:discod     	"Connections have been temporarily disabled."
-	settexttrigger nofig :nofig "Do you want to make this jump blind?"
-	settexttrigger ready1 :ready1 "Locating beam pinpointed,"
-	settexttrigger nofuel2 :nofuel "You do not have enough Fuel Ore to make the jump"
-	send "m" $om_redsector "*y"
-	pause
-	pause
+if ($player~unlimitedgame)
+	setvar $switchboard~message "Running product pimp with unlimited turns and "&$player~credits&" credits left*"
+	gosub :switchboard~switchboard
+else
+	setvar $switchboard~message "Running product pimp with "&$player~turns&" turns and "&$player~credits&" credits left*"
+	gosub :switchboard~switchboard
 end
-setvar $switchboard~message "Running product pimp with "&$player~turns&" turns and "&$player~credits&" credits left*"
-gosub :switchboard~switchboard
-settexttrigger nofig :nofig "Do you want to make this jump blind?"
-settexttrigger ready2 :ready2 "All Systems Ready, shall we engage?"
-settexttrigger nofuel1 :nofuel "You do not have enough Fuel Ore to make the jump"
-send "nsy"
-pause
-pause
-
-:nofig
 killalltriggers
-send "n"
-setvar $switchboard~message "No fig at target sector. Shutting Down*"
-gosub :switchboard~switchboard
-halt
-
-:nofuel
-killalltriggers
-setvar $switchboard~message "No fuel for twarp. Shutting Down*"
-gosub :switchboard~switchboard
-halt
-
-:ready1
+seteventtrigger 	discod1 	:discod     	"CONNECTION LOST"
+seteventtrigger		discod2		:discod     	"Connections have been temporarily disabled."
+setvar $retsec $player~current_sector
+if ($already_at_dock = false)
+	setvar $player~warpto $map~stardock
+	gosub :move~twarp
+	if ($player~twarpsuccess <> TRUE)
+		setvar $switchboard~message "Unable to twarp to Stardock: " &$player~msg&"*"
+		gosub :switchboard~switchboard
+		halt
+	end
+end
 killalltriggers
 seteventtrigger 	discod1 	:discod     	"CONNECTION LOST"
 seteventtrigger		discod2		:discod     	"Connections have been temporarily disabled."
 settexttrigger limpet :limpet "ort official runs up"
 settexttrigger buytorps :buytorps "<StarDock> Where to?"
-send "YNS P S"
+send "P S"
 pause
 pause
 
@@ -481,16 +475,17 @@ pause
 getword currentline $numdets 9
 striptext $numdets ")"
 send $numdets & "*"
-send "Q Q M " & $player~current_sector & " * Y Y "
-settexttrigger nofig :nofig "Do you want to make this jump blind?"
-settexttrigger ready3 :ready3 "All Systems Ready, shall we engage?"
-settexttrigger nofuel :nofuel "You do not have enough Fuel Ore to make the jump"
-pause
-pause
-
-:ready3
-waitfor "Command [TL"
-send "l "&$target&"* t n l 1* q q * j y * "
+send "Q Q * "
+if ($already_at_dock = false)
+	setvar $player~warpto $retsec
+	gosub :move~twarp
+	if ($player~twarpsuccess <> TRUE)
+		setvar $switchboard~message "Unable to twarp back to starting sector: " &$player~msg&"*"
+		gosub :switchboard~switchboard
+		halt
+	end
+end
+send "l "&$target&"* t n l 1* t n l 2* t n l 3* q "
 return
 
 :planetfull
@@ -590,5 +585,6 @@ end
 #INCLUDES:
 include "source\include\planet"
 include "source\include\loadvars"
+include "source\include\move"
 include "source\include\help"
 include "source\include\switchboard.ts"

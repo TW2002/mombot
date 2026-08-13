@@ -75,6 +75,7 @@ if ($pos > 0)
 	if ($player~current_sector = 1)
 		gosub :voidfirstnotfed
 	end
+	setvar $sector~destination $player~destination
 	gosub :sector~getbackdoor
 end
 

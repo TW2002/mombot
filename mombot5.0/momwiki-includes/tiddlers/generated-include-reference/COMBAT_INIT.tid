@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: COMBAT~INIT
+created: 20260813201411000
+modified: 20260813201411000
+title: combat~init
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-combat
-caption: COMBAT~INIT
+caption: combat~init
 
-! COMBAT~INIT
+! combat~init
 
 Initializes shared combat state and attack settings before a combat macro runs.
 
 ''Include:'' [[combat.ts]]
-''Defined at:'' `/include/combat.ts:1024`
+''Defined at:'' `/include/combat.ts:1204`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-setvar $PLAYER~REALTRADERCOUNT 0
-setvar $PLAYER~FAKETRADERCOUNT 0
-setvar $PLAYER~CORPIECOUNT 0
-setvar $PLAYER~EMPTYSHIPCOUNT 0
-setvar $PLAYER~CONTAINSBEACON FALSE
-setarray $PLAYER~TRADERS 200
-setarray $PLAYER~FAKETRADERS 100
-setarray $PLAYER~EMPTYSHIPS 100
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $player~realtradercount 0
+setvar $player~faketradercount 0
+setvar $player~corpiecount 0
+setvar $player~emptyshipcount 0
+setvar $player~containsbeacon false
+setarray $player~traders 200
+setarray $player~faketraders 100
 </pre>
 
 !! Notes

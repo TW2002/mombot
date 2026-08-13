@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: COMBAT~FASTATTACK
+created: 20260813201411000
+modified: 20260813201411000
+title: combat~fastattack
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-combat
-caption: COMBAT~FASTATTACK
+caption: combat~fastattack
 
-! COMBAT~FASTATTACK
+! combat~fastattack
 
 Runs the fast-attack combat macro against the current target.
 
 ''Include:'' [[combat.ts]]
-''Defined at:'' `/include/combat.ts:1`
+''Defined at:'' `/include/combat.ts:20`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-setvar $COMBAT~TARGETSTRING &quot;a&quot;
-setvar $PLAYER~ISFOUND FALSE
-setvar $COMBAT~TARGETSHOTGUN &quot;a z z y z&quot;&amp;$SHIP~SHIP_MAX_ATTACK&amp;&quot;* * a z z * y z&quot;&amp;$SHIP~SHIP_MAX_ATTACK&amp;&quot;* * a z z * * y z&quot;&amp;$SHIP~SHIP_MAX_ATTACK&amp;&quot;* * &quot;
-if ($SHIP~SHIP_MAX_ATTACK &lt;= 0)
-  gosub :SHIP~GETSHIPSTATS
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $targetstring &quot;a&quot;
+setvar $player~isfound false
+setvar $targetshotgun &quot;a z z y z&quot;&amp;$ship~ship_max_attack&amp;&quot;* * a z z * y z&quot;&amp;$ship~ship_max_attack&amp;&quot;* * a z z * * y z&quot;&amp;$ship~ship_max_attack&amp;&quot;* * &quot;
+if ($ship~ship_max_attack &lt;= 0)
+	gosub :ship~getshipstats
 end
-setvar $COMBAT~FEDSPACE FALSE
-if (($PLAYER~CURRENT_SECTOR = STARDOCK) or ($PLAYER~CURRENT_SECTOR &lt;= 10))
+setvar $fedspace false
 </pre>
 
 !! Notes

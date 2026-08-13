@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: player.ts
 type: text/vnd.tiddlywiki
 tags: mombot include-reference include
@@ -11,176 +11,114 @@ Prompt, quikstats, movement, formatting, CN, and shared player-state helpers.
 
 ''Source:'' `/include/player.ts`
 
+!! Loaded Variables
+* `$bot~botisdeaf`
+* `$bot~validprompts`
+* `$player~unlimitedgame`
+* `$player~swathoff`
+
 !! Significant Exported Routines
-* [[PLAYER~QUIKSTATS]] - Refreshes the current prompt and player/ship quickstats from the live game output.
-* [[PLAYER~CURRENTPROMPT]] - Parses the current prompt and updates shared prompt/location state.
-* [[PLAYER~GETINFO]] - Loads broader player state than quikstats, including prompt and game context details.
-* [[PLAYER~TWARP]] - Runs the shared transwarp movement path.
-* [[PLAYER~STARTHAGGLE]] - Initializes the shared haggle setup used before haggle-capable flows.
-* [[PLAYER~TURNOFFANSI]] - Turns ANSI off through the shared player prompt path.
-* [[PLAYER~TURNONANSI]] - Turns ANSI back on through the shared player prompt path.
-* [[PLAYER~MOVEINTOSECTOR]] - Moves into a target sector while preserving shared movement state.
-* [[PLAYER~CHECKFORTRAVELNAME]] - Checks a prerequisite or validates current state before the caller continues.
-* [[PLAYER~GETCOURSE]] - Resolves a course/path between sectors for callers that need route data.
-* [[PLAYER~VOIDADJACENT]] - Sets adjacent-sector avoids for the current ship/session.
-* [[PLAYER~BWARP]] - Runs the shared blind-warp movement path.
-* [[PLAYER~CLEARADJACENT]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
-* [[PLAYER~FORMATNUMBERFORSPACES]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
-* [[PLAYER~FORMATPERCENTAGESFORSPACES]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
-* [[PLAYER~PWARP]] - Runs the shared pwarp movement path.
-* [[PLAYER~STARTCNSETTINGS]] - Loads or initializes CN settings through the shared player path.
-* [[PLAYER~TOPOFF]] - Tops off holds or resources through the shared player helper path.
-* [[PLAYER~ADDFIGTODATA]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
-* [[PLAYER~CLEARVOIDADJACENT]] - Clears adjacent-sector avoids that were previously set.
-* [[PLAYER~FINDJUMPSECTOR]] - Loads or renders shared sector state for the caller.
-* [[PLAYER~GETPORTINFO]] - Reads live game or cached state into shared include variables.
-* [[PLAYER~SWATHOFF]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[player~quikstats]] - Refreshes the current prompt and player/ship quickstats from the live game output.
+* [[player~currentprompt]] - Parses the current prompt and updates shared prompt/location state.
+* [[player~checkstartingprompt]] - Checks a prerequisite or validates current state before the caller continues.
+* [[player~getinfo]] - Loads broader player state than quikstats, including prompt and game context details.
+* [[player~msgs_on]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[player~getcourse]] - Resolves a course/path between sectors for callers that need route data.
+* [[player~msgs_off]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[player~addfigtodata]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[player~checkfortravelname]] - Checks a prerequisite or validates current state before the caller continues.
+* [[player~enter_menu_deaf]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[player~startcnsettings]] - Loads or initializes CN settings through the shared player path.
+* [[player~turnoffansi]] - Turns ANSI off through the shared player prompt path.
+* [[player~turnonansi]] - Turns ANSI back on through the shared player prompt path.
+* [[player~exit_menu_deaf]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[player~formatnumberforspaces]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[player~formatpercentagesforspaces]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[player~removefigfromdata]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[player~commasize]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[player~echo]] - Displays shared output through the bot UI layer.
+* [[player~initranks]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[player~swathoff]] - Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[player~topoff]] - Tops off holds or resources through the shared player helper path.
 
 !! Direct Include Users
 * `/commands/cashing/bust.ts`
-* `/commands/cashing/mega.ts`
-* `/commands/cashing/neg.ts`
 * `/commands/cashing/ppt.ts`
-* `/commands/cashing/rob.ts`
 * `/commands/cashing/trade.ts`
 * `/commands/cashing/tricon.ts`
 * `/commands/data/armids.ts`
 * `/commands/data/avoids.ts`
-* `/commands/data/cim.ts`
-* `/commands/data/corpinfo.ts`
 * `/commands/data/course.ts`
-* `/commands/data/disp.ts`
-* `/commands/data/dscan.ts`
-* `/commands/data/figs.ts`
-* `/commands/data/getnear.ts`
-* `/commands/data/holo.ts`
+* `/commands/data/findplanet.ts`
 * `/commands/data/limps.ts`
 * `/commands/data/msgs.ts`
 * `/commands/data/news.ts`
-* `/commands/data/overload.ts`
-* `/commands/data/plist.ts`
-* `/commands/data/pscan.ts`
-* `/commands/data/qreport.ts`
-* `/commands/data/slist.ts`
+* `/commands/data/ping.ts`
+* `/commands/data/probe.ts`
 * `/commands/data/status.ts`
 * `/commands/data/storeship.ts`
-* `/commands/data/update.ts`
 * `/commands/defense/call.ts`
-* `/commands/defense/evac.ts`
-* `/commands/defense/hazkill.ts`
 * `/commands/general/bwarp.ts`
 * `/commands/general/callout.ts`
 * `/commands/general/cn9.ts`
 * `/commands/general/corp.ts`
-* `/commands/general/dep.ts`
 * `/commands/general/help.ts`
 * `/commands/general/keep.ts`
-* `/commands/general/land.ts`
 * `/commands/general/login.ts`
-* `/commands/general/logoff.ts`
 * `/commands/general/mac.ts`
 * `/commands/general/nmac.ts`
-* `/commands/general/port.ts`
-* `/commands/general/pwarp.ts`
-* `/commands/general/qset.ts`
 * `/commands/general/refresh.ts`
-* `/commands/general/relog.ts`
-* `/commands/general/scrub.ts`
 * `/commands/general/subspace.ts`
-* `/commands/general/topoff.ts`
-* `/commands/general/tow.ts`
-* `/commands/general/twarp.ts`
 * `/commands/general/unlock.ts`
-* `/commands/general/with.ts`
-* `/commands/general/xport.ts`
-* `/commands/grid/clear.ts`
-* `/commands/grid/clearfig.ts`
-* `/commands/grid/deploy.ts`
-* `/commands/grid/exit.ts`
 * `/commands/grid/haz.ts`
-* `/commands/grid/pgrid.ts`
-* `/commands/grid/port.ts`
-* `/commands/grid/surround.ts`
-* `/commands/offense/cap.ts`
-* `/commands/offense/htorp.ts`
-* `/commands/offense/invader.ts`
-* `/commands/offense/kill.ts`
 * `/commands/offense/mex.ts`
 * `/commands/offense/mxex.ts`
-* `/commands/offense/photon.ts`
-* `/commands/resource/buy.ts`
-* `/commands/resource/dump.ts`
-* `/commands/resource/max.ts`
-* `/commands/resource/refurb.ts`
+* `/commands/resource/hagexp.ts`
 * `/commands/resource/scruball.ts`
-* `/commands/resource/sellship.ts`
 * `/daemons/fillsector.ts`
-* `/daemons/teammega.ts`
-* `/include/targeting.ts`
-* `/modes/cashing/alienhunt.ts`
+* `/include/bot.ts`
+* `/include/combat.ts`
+* `/include/connectivity.ts`
+* `/include/fighters.ts`
+* `/include/game.ts`
+* `/include/grid.ts`
+* `/include/lsd.ts`
+* `/include/map.ts`
+* `/include/merchant.ts`
+* `/include/mines.ts`
+* `/include/move.ts`
+* `/include/planet.ts`
+* `/include/planethaggle.ts`
+* `/include/port.ts`
+* `/include/sector.ts`
+* `/include/update.ts`
+* `/include/xenter.ts`
 * `/modes/cashing/bbb.ts`
-* `/modes/cashing/furb.ts`
 * `/modes/cashing/marco.ts`
 * `/modes/cashing/merch.ts`
 * `/modes/cashing/psst.ts`
 * `/modes/cashing/salesman.ts`
 * `/modes/cashing/sdt.ts`
+* `/modes/cashing/sst.ts`
 * `/modes/cashing/tbust.ts`
 * `/modes/cashing/wppt.ts`
-* `/modes/cashing/wrob.ts`
-* `/modes/cashing/wsst.ts`
-* `/modes/data/proztm.ts`
 * `/modes/data/ztm.ts`
-* `/modes/defense/citfill.ts`
 * `/modes/defense/ig.ts`
-* `/modes/defense/reloader.ts`
-* `/modes/defense/runaway.ts`
-* `/modes/defense/saveme.ts`
 * `/modes/defense/tsaveme.ts`
-* `/modes/defense/unstack.ts`
 * `/modes/general/xenter.ts`
 * `/modes/grid/disr.ts`
 * `/modes/grid/dora.ts`
-* `/modes/grid/gridcheck.ts`
-* `/modes/grid/limpshovel.ts`
-* `/modes/grid/minesweep.ts`
-* `/modes/grid/mow.ts`
 * `/modes/grid/mowfuel.ts`
 * `/modes/grid/passgrid.ts`
 * `/modes/grid/pgridder.ts`
-* `/modes/grid/plimper.ts`
 * `/modes/grid/ramgrid.ts`
-* `/modes/grid/ugrid.ts`
+* `/modes/grid/tram.ts`
 * `/modes/grid/wall.ts`
-* `/modes/grid/wander.ts`
-* `/modes/offense/boton.ts`
-* `/modes/offense/citcap.ts`
-* `/modes/offense/citkill.ts`
-* `/modes/offense/density.ts`
-* `/modes/offense/dockkill.ts`
-* `/modes/offense/drop.ts`
-* `/modes/offense/foton.ts`
-* `/modes/offense/pdrop.ts`
-* `/modes/offense/plock.ts`
-* `/modes/resource/colo.ts`
-* `/modes/resource/dump.ts`
-* `/modes/resource/ecolo.ts`
-* `/modes/resource/fillships.ts`
+* `/modes/resource/farm.ts`
 * `/modes/resource/lsd.ts`
-* `/modes/resource/makeplanet.ts`
-* `/modes/resource/move.ts`
-* `/modes/resource/movefig.ts`
+* `/modes/resource/milk.ts`
 * `/modes/resource/moveship.ts`
-* `/modes/resource/patp.ts`
-* `/modes/resource/pimp.ts`
-* `/modes/resource/strip.ts`
-* `/modes/resource/stripships.ts`
-* `/modes/resource/upgrade.ts`
-* `/mombot.ts`
-* `/preload/_dock_shopper.ts`
-* `/preload/_kazi.ts`
-* `/preload/_ldrop.ts`
-* `/preload/_macro_kit.ts`
+* `/modes/resource/tmilk.ts`
 
 !! Maintenance
 This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

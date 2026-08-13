@@ -7,81 +7,9 @@
 # :player~currentprompt - Gets the player's current prompt and saves it to $PLAYER~CURRENT_PROMPT
 # :player~checkstartingprompt - Checks if the player's current prompt is valid for the command they are trying to use.
 # :player~getinfo - Gets various pieces of player info by parsing the output of the 'I' command.
-# :player~bwarp - B-warp to a sector, with checking for range, fighter lock, and fuel.
 # :player~getcourse - Find a course from a sector to a sector and save the result in $PLAYER~COURSE
 # :player~turnonansi / :player~turnoffansi - Turns on or off the player's ANSI setting
 # :player~voidadjacent / :player~clearadjacent - Voids or clears voids on all adjacent sectors to the player's current sector.
-
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:player~bwarp
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-send "b"
-settexttrigger nobwarp :nobwarp "Would you like to place a subspace order for one? "
-settexttrigger yesbwarp :yesbwarp "Beam to what sector? (U="
-settexttrigger igbwarp :bwarpphotoned "Your ship was hit by a Photon and has been disabled"
-pause
-
-:player~nobwarp
-gosub :killbwarptriggers
-send "*"
-setvar $switchboard~message "No Bwarp installed on this planet*"
-gosub :switchboard~switchboard
-return
-
-:player~yesbwarp
-gosub :killbwarptriggers
-send $player~warpto&"*"
-settexttrigger bwarp_lock :bwarp_no_range "This planetary transporter does not have the range."
-settexttrigger no_bwrp_lock :no_bwarp_lock "Do you want to make this transport blind?"
-settexttrigger bwarp_ready :bwarp_lock "All Systems Ready, shall we engage?"
-settextlinetrigger no_bwarpfuel :bwarpnofuel "This planet does not have enough Fuel Ore to transport you."
-pause
-
-:player~bwarp_no_range
-gosub :killbwarptriggers
-setvar $switchboard~message "Not enough range on this planet's transporter.*"
-gosub :switchboard~switchboard
-return
-
-:player~no_bwarp_lock
-gosub :killbwarptriggers
-send "* "
-setvar $player~target $player~warpto
-setsectorparameter $player~target "FIGSEC" false
-setvar $switchboard~message "No fighter down at that destination, aborting*"
-gosub :switchboard~switchboard
-return
-
-:player~bwarp_lock
-gosub :killbwarptriggers
-send "y     * "
-setvar $player~target $player~warpto
-setsectorparameter $player~target "FIGSEC" true
-setvar $switchboard~message "B-warp completed.*"
-gosub :switchboard~switchboard
-return
-
-:player~bwarpnofuel
-gosub :killbwarptriggers
-setvar $switchboard~message "Not enough fuel on the planet to make the transport!*"
-gosub :switchboard~switchboard
-return
-
-:player~bwarpphotoned
-gosub :killbwarptriggers
-setvar $switchboard~message "I have been photoned and can not B-warp!*"
-gosub :switchboard~switchboard
-return
-
-:player~killbwarptriggers
-killtrigger yesbwarp
-killtrigger igbwarp
-killtrigger nobwarp
-killtrigger bwarp_lock
-killtrigger no_bwrp_lock
-killtrigger bwarp_ready
-killtrigger no_bwarpfuel
-return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :player~echo
@@ -249,6 +177,8 @@ return
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :player~currentprompt
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+killtrigger prompt
+killtrigger prompt_delay
 settexttrigger prompt :allpromptscatch #145&#8
 setdelaytrigger prompt_delay :current_prompt_delay 5000
 send #145
@@ -1188,6 +1118,7 @@ return
 :player~msgs_off
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $was_silent false
+setvar $player~was_silent false
 
 :msgs_off_again
 settexttrigger onmsgs_on :onmsgs_on "Displaying all messages."
@@ -1198,6 +1129,7 @@ pause
 :onmsgs_on
 killtrigger onmsgs_off
 setvar $was_silent true
+setvar $player~was_silent true
 goto :msgs_off_again
 
 :onmsgs_off
@@ -1208,16 +1140,18 @@ return
 :player~msgs_on
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $was_silent true
+setvar $player~was_silent true
 
 :msgs_on_again
-settexttrigger onmsgs_on2 :onmsgs_on "Displaying all messages."
-settexttrigger onmsgs_off2 :onmsgs_off "Silencing all messages."
+settexttrigger onmsgs_on2 :onmsgs_on2 "Displaying all messages."
+settexttrigger onmsgs_off2 :onmsgs_off2 "Silencing all messages."
 send "|"
 pause
 
 :onmsgs_off2
 killtrigger onmsgs_on2
 setvar $was_silent false
+setvar $player~was_silent false
 goto :msgs_on_again
 
 :onmsgs_on2

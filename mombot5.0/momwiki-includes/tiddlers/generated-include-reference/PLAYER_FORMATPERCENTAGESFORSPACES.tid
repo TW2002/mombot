@@ -1,26 +1,29 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLAYER~FORMATPERCENTAGESFORSPACES
+created: 20260813201411000
+modified: 20260813201411000
+title: player~formatpercentagesforspaces
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-player
-caption: PLAYER~FORMATPERCENTAGESFORSPACES
+caption: player~formatpercentagesforspaces
 
-! PLAYER~FORMATPERCENTAGESFORSPACES
+! player~formatpercentagesforspaces
 
 Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
 
 ''Include:'' [[player.ts]]
-''Defined at:'' `/include/player.ts:348`
+''Defined at:'' `/include/player.ts:248`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if ($PLAYER~INPUTVARIABLE &lt; 10)
-  setvar $PLAYER~OUTPUTVARIABLE &quot;  (&quot;&amp;$PLAYER~INPUTVARIABLE&amp;&quot;%)&quot;
-elseif ($PLAYER~INPUTVARIABLE &lt; 100)
-  setvar $PLAYER~OUTPUTVARIABLE &quot; (&quot;&amp;$PLAYER~INPUTVARIABLE&amp;&quot;%)&quot;
-elseif ($PLAYER~INPUTVARIABLE &lt; 1000)
-  setvar $PLAYER~OUTPUTVARIABLE &quot;(&quot;&amp;$PLAYER~INPUTVARIABLE&amp;&quot;%)&quot;
+if ($player~inputvariable &lt; 10)
+	setvar $player~outputvariable &quot;  (&quot;&amp;$player~inputvariable&amp;&quot;%)&quot;
+elseif ($player~inputvariable &lt; 100)
+	setvar $player~outputvariable &quot; (&quot;&amp;$player~inputvariable&amp;&quot;%)&quot;
+elseif ($player~inputvariable &lt; 1000)
+	setvar $player~outputvariable &quot;(&quot;&amp;$player~inputvariable&amp;&quot;%)&quot;
 else
 </pre>
 

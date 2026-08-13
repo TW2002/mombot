@@ -1,22 +1,27 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLAYER~CURRENTPROMPT
+created: 20260813201411000
+modified: 20260813201411000
+title: player~currentprompt
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-player
-caption: PLAYER~CURRENTPROMPT
+caption: player~currentprompt
 
-! PLAYER~CURRENTPROMPT
+! player~currentprompt
 
 Parses the current prompt and updates shared prompt/location state.
 
 ''Include:'' [[player.ts]]
-''Defined at:'' `/include/player.ts:205`
+''Defined at:'' `/include/player.ts:178`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-settexttrigger PROMPT :ALLPROMPTSCATCH #145&amp;#8
-setdelaytrigger PROMPT_DELAY :CURRENT_PROMPT_DELAY 5000
+killtrigger prompt
+killtrigger prompt_delay
+settexttrigger prompt :allpromptscatch #145&amp;#8
+setdelaytrigger prompt_delay :current_prompt_delay 5000
 send #145
 pause
 </pre>

@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: update~cim
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-update
@@ -10,18 +10,25 @@ caption: update~cim
 Runs the shared CIM update routine.
 
 ''Include:'' [[update.ts]]
-''Defined at:'' `/include/update.ts:269`
+''Defined at:'' `/include/update.ts:270`
+
+!! Loaded Variables
+* `$player~unlimitedgame`
+* `$game~ptradesetting`
+* `$bot~bot_turn_limit`
+* `$game~port_max`
+* `$bot~mcic_file`
 
 !! Source Excerpt
 <pre>
-loadVar $PLAYER~unlimitedGame
-	loadvar $GAME~ptradesetting
-	loadvar $bot~bot_turn_limit
-	loadVar $game~port_max
-	loadVar $game~ptradesetting
-	loadvar $bot~MCIC_FILE
-	gosub :player~quikstats
-	setVar $startingLocation $player~current_prompt
+loadvar $player~unlimitedgame
+loadvar $game~ptradesetting
+loadvar $bot~bot_turn_limit
+loadvar $game~port_max
+loadvar $game~ptradesetting
+loadvar $bot~mcic_file
+gosub :player~quikstats
+setvar $startinglocation $player~current_prompt
 </pre>
 
 !! Notes

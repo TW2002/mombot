@@ -248,17 +248,11 @@ if ($strip = true)
 	gosub :player~currentprompt
 	if ($player~current_prompt = "Citadel")
 		send "q"
-		elseif ($player~current_prompt = "Command")
-			setvar $planet~planet $planetid
-			gosub :planet~landingsub
-		end
-	gosub :planet~getplanetinfo
-	if ($planet~planet <> $planetid)
-		setvar $switchboard~message "Landed on wrong planet, halting strip.*"
-		gosub :switchboard~switchboard
-		halt
+			elseif ($player~current_prompt = "Command")
+				setvar $planet~planet $planetid
+				gosub :planet~landingsub
+			end
 	end
-end
 # nuke it
 send "zdy  "
 subtract $dets 1

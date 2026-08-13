@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: gameprefs~setgameprefs
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-gameprefs
@@ -12,16 +12,19 @@ Applies stored game preferences back into the current game session.
 ''Include:'' [[gameprefs.ts]]
 ''Defined at:'' `/include/gameprefs.ts:1`
 
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
+
 !! Source Excerpt
 <pre>
 send &quot;cn&quot;
 waiton &quot;&lt;Set ANSI and misc settings&gt;&quot;
-settextlinetrigger LIBSILENT :GAMEPREFS~ANSI &quot;ANSI graphics&quot;
-settextlinetrigger ANIMATION :GAMEPREFS~ANIMATION &quot;Animation display&quot;
-settextlinetrigger PAGEMESSAGES :GAMEPREFS~PAGEMESSAGES &quot;Page on messages&quot;
-settextlinetrigger SUBSPACE :GAMEPREFS~SUBSPACE &quot;Sub-space radio channel&quot;
-settextlinetrigger FEDCOM :GAMEPREFS~FEDCOM &quot;Federation comm-link&quot;
-settextlinetrigger HAILS :GAMEPREFS~HAILS &quot;Receive private hails&quot;
+settextlinetrigger libsilent :gameprefs~ansi &quot;ANSI graphics&quot;
+settextlinetrigger animation :gameprefs~animation &quot;Animation display&quot;
+settextlinetrigger pagemessages :gameprefs~pagemessages &quot;Page on messages&quot;
+settextlinetrigger subspace :gameprefs~subspace &quot;Sub-space radio channel&quot;
+settextlinetrigger fedcom :gameprefs~fedcom &quot;Federation comm-link&quot;
+settextlinetrigger hails :gameprefs~hails &quot;Receive private hails&quot;
 </pre>
 
 !! Notes

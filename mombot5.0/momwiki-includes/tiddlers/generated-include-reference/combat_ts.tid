@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: combat.ts
 type: text/vnd.tiddlywiki
 tags: mombot include-reference include
@@ -11,17 +11,25 @@ Shared fast-attack, capture, citadel-attack, and holo-kill combat helpers.
 
 ''Source:'' `/include/combat.ts`
 
+!! Loaded Variables
+* `$ship~ship_max_attack`
+* `$ship~ship_offensive_odds`
+
 !! Significant Exported Routines
-* [[COMBAT~INIT]] - Initializes shared combat state and attack settings before a combat macro runs.
-* [[COMBAT~FASTCAPTURE]] - Runs the fast capture path used by cap and capture-oriented scripts.
-* [[COMBAT~FASTATTACK]] - Runs the fast-attack combat macro against the current target.
-* [[COMBAT~FASTCITADELATTACK]] - Runs the citadel-specific fast-attack sequence.
-* [[COMBAT~HOLOKILL]] - Coordinates holo kill logic after a scan or targeting pass.
+* [[combat~init]] - Initializes shared combat state and attack settings before a combat macro runs.
+* [[combat~fastcapture]] - Runs the fast capture path used by cap and capture-oriented scripts.
+* [[combat~fastcitadelattack]] - Runs the citadel-specific fast-attack sequence.
+* [[combat~fastattack]] - Runs the fast-attack combat macro against the current target.
+* [[combat~holokill]] - Coordinates holo kill logic after a scan or targeting pass.
+* [[combat~callsaveme]] - Shared `combat` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
 
 !! Direct Include Users
+* `/commands/defense/call.ts`
 * `/commands/offense/cap.ts`
 * `/commands/offense/kill.ts`
 * `/daemons/teammega.ts`
+* `/include/bot.ts`
+* `/include/merchant.ts`
 * `/modes/cashing/alienhunt.ts`
 * `/modes/grid/mow.ts`
 * `/modes/grid/wander.ts`
@@ -33,6 +41,7 @@ Shared fast-attack, capture, citadel-attack, and holo-kill combat helpers.
 * `/modes/offense/pdrop.ts`
 * `/modes/offense/plock.ts`
 * `/mombot.ts`
+* `/preload/_ldrop.ts`
 
 !! Maintenance
 This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

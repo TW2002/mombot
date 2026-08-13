@@ -1,22 +1,25 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLAYER~ADDFIGTODATA
+created: 20260813201411000
+modified: 20260813201411000
+title: player~addfigtodata
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-player
-caption: PLAYER~ADDFIGTODATA
+caption: player~addfigtodata
 
-! PLAYER~ADDFIGTODATA
+! player~addfigtodata
 
 Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
 
 ''Include:'' [[player.ts]]
-''Defined at:'' `/include/player.ts:3`
+''Defined at:'' `/include/player.ts:1068`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if (($PLAYER~TARGET &gt; 0) and ($PLAYER~TARGET &lt;= SECTORS))
-  setsectorparameter $PLAYER~TARGET &quot;FIGSEC&quot; TRUE
+if (($player~target &gt; 0) and ($player~target &lt;= sectors))
+	setsectorparameter $player~target &quot;FIGSEC&quot; true
 end
 return
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

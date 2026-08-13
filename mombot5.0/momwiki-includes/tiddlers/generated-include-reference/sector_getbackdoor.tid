@@ -1,0 +1,31 @@
+created: 20260813201411000
+modified: 20260813201411000
+title: sector~getbackdoor
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-sector
+caption: sector~getbackdoor
+
+! sector~getbackdoor
+
+Reads live game or cached state into shared include variables.
+
+''Include:'' [[sector.ts]]
+''Defined at:'' `/include/sector.ts:164`
+
+!! Loaded Variables
+* `$map~stardock`
+
+!! Source Excerpt
+<pre>
+##################################################################################################################################
+loadvar $map~stardock
+setvar $isdock false
+if ($sector~destination = $map~stardock)
+	if ($map~stardock &gt; 10) and (sector.warpcount[$map~stardock] = 6)
+		setvar $isdock true
+	else
+		setvar $switchboard~message &quot;Unable to determine backdoor because stardock is not set correctly.*&quot;
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

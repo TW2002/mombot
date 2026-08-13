@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: update.ts
 type: text/vnd.tiddlywiki
 tags: mombot include-reference include
@@ -11,12 +11,21 @@ CIM and fighter update helpers used by update/report paths.
 
 ''Source:'' `/include/update.ts`
 
+!! Loaded Variables
+* `$player~unlimitedgame`
+* `$game~ptradesetting`
+* `$bot~bot_turn_limit`
+* `$game~port_max`
+* `$bot~mcic_file`
+
 !! Significant Exported Routines
 * [[update~cim]] - Runs the shared CIM update routine.
 * [[update~fighters]] - Runs the shared fighter update/import routine.
 * [[update~report]] - Builds the shared update report output.
 
 !! Direct Include Users
+* `/commands/data/cim.ts`
+* `/commands/data/figs.ts`
 * `/commands/data/update.ts`
 
 !! Maintenance

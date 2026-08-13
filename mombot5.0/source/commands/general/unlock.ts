@@ -14,7 +14,7 @@ setvar $switchboard~message "Unlock ship initiated*"
 gosub :switchboard~switchboard
 send "ryy"
 settextlinetrigger unlock_menu :unlock_menu "Game Server"
-settextlinetrigger enter_game :enter_game "==-- Trade Wars 2002 --=="
+settextlinetrigger enter_game :enter_game "==-- "
 
 :unlock_tryagain
 setdelaytrigger unlock_ansimenu :unlock_ansimenu 2000

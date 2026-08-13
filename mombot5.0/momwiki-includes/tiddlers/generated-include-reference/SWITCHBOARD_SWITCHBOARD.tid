@@ -1,27 +1,37 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: SWITCHBOARD~SWITCHBOARD
+created: 20260813201411000
+modified: 20260813201411000
+title: switchboard~switchboard
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-switchboard
-caption: SWITCHBOARD~SWITCHBOARD
+caption: switchboard~switchboard
 
-! SWITCHBOARD~SWITCHBOARD
+! switchboard~switchboard
 
 Sends formatted status or report lines through the shared switchboard/subspace path.
 
 ''Include:'' [[switchboard.ts]]
 ''Defined at:'' `/include/switchboard.ts:1`
 
+!! Loaded Variables
+* `$bot~botisdeaf`
+* `$bot~mode`
+* `$bot~command`
+* `$bot~user_command_line`
+* `$bot~silent_running`
+* `$bot~only_help`
+* `$switchboard~nodiscord`
+* `$switchboard~fedspace_output`
+
 !! Source Excerpt
 <pre>
-if (($SWITCHBOARD~MESSAGE = 0) or ($SWITCHBOARD~MESSAGE = &quot;&quot;))
-  return
+if (($switchboard~message = 0) or ($switchboard~message = &quot;&quot;))
+	return
 end
-setvar $SWITCHBOARD~DISCORD_IGNORE &quot;-- &quot;
-setvar $SWITCHBOARD~DISCORD_IGNORE_LENGTH 3
-loadvar $BOT~BOTISDEAF
-loadvar $BOT~MODE
-loadvar $SWITCHBOARD~NODISCORD
+setvar $switchboard~discord_ignore &quot;-- &quot;
+setvar $switchboard~discord_ignore_length 3
+getdeafclients $switchboard~botisdeaf
+loadvar $bot~botisdeaf
+loadvar $bot~mode
 </pre>
 
 !! Notes

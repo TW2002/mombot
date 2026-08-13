@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLANET~LANDONPLANETENTERCITADEL
+created: 20260813201411000
+modified: 20260813201411000
+title: planet~landonplanetentercitadel
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-planet
-caption: PLANET~LANDONPLANETENTERCITADEL
+caption: planet~landonplanetentercitadel
 
-! PLANET~LANDONPLANETENTERCITADEL
+! planet~landonplanetentercitadel
 
 Lands on a planet and enters the citadel in one shared path.
 
 ''Include:'' [[planet.ts]]
-''Defined at:'' `/include/planet.ts:670`
+''Defined at:'' `/include/planet.ts:1195`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-send &quot;l &quot;&amp;$PLANET~PLANET&amp;&quot;*tnl1*tnl2*tnl3*snl1*snl2*snl3*c &quot;
+#send &quot;l &quot;&amp;$planet~planet&amp;&quot;*tnl1*tnl2*tnl3*snl1*snl2*snl3*c* &quot;
+send &quot;l &quot;&amp;$planet~planet&amp;&quot;*c* &quot;
 waiton &quot;Fuel Ore&quot;
-getword CURRENTLINE $PLANET~PLANETFUEL 6
-striptext $PLANET~PLANETFUEL &quot;,&quot;
-getword CURRENTLINE $PLANET~PLANET_FUEL 6
-striptext $PLANET~PLANET_FUEL &quot;,&quot;
-send &quot;/&quot;
+getword currentline $planet~planetfuel 6
+striptext $planet~planetfuel &quot;,&quot;
+getword currentline $planet~planet_fuel 6
+striptext $planet~planet_fuel &quot;,&quot;
 </pre>
 
 !! Notes

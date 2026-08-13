@@ -1,0 +1,26 @@
+created: 20260813201411000
+modified: 20260813201411000
+title: planet~planetcheck
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-planet
+caption: planet~planetcheck
+
+! planet~planetcheck
+
+Loads or parses shared planet state for the caller.
+
+''Include:'' [[planet.ts]]
+''Defined at:'' `/include/planet.ts:250`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $planet~planetcheck_i 1
+setvar $planet~planetcheck_ignorecount 0
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

@@ -3,6 +3,7 @@ gosub :loadvars~loadvars
 gosub :help~initialize
 setvar $bot~command "strip"
 loadvar $bot~bot_turn_limit
+loadvar $map~stardock
 
 setvar $help~help[1]  $help~tab&"Strips planets of resources and places them on starting planet.  "
 setvar $help~help[2]  $help~tab&" "
@@ -25,12 +26,19 @@ setvar $help~help[18] $help~tab&"          Originally written by Mind Dagger"
 gosub :help~helpfile
 
 gosub :player~quikstats
+setvar $startingsector $player~current_sector
 setvar $startinglocation $player~current_prompt
 if (($startinglocation <> "Citadel") and ($startinglocation <> "Planet"))
 	setvar $switchboard~message "Planet Stripper must be started from Citadel or Planet prompt*"
 	gosub :switchboard~switchboard
 	halt
 end
+if ($startinglocation = "Planet")
+	setvar $relog_nocitadel 1
+else
+	setvar $relog_nocitadel 0
+end
+savevar $relog_nocitadel
 
 isnumber $test $bot~parm1
 if (($test = false) and ($bot~parm1 <> "all"))
@@ -145,7 +153,9 @@ end
 
 gosub :planet~getplanetinfo
 setvar $startingplanet $planet~planet
-send "q ** jy "
+if ($startingsector > 10) and ($startingsector <> $map~stardock)
+	send "q ** jy "
+end
 gosub :player~quikstats
 
 setvar $planet~planettofill $planet~planet
@@ -153,6 +163,11 @@ if ($bot~parm1 <> "all")
 	setvar $planet~planetcount 1
 	setvar $planet~planets[1] $bot~parm1
 else
+	if ($player~current_prompt = "Planet")
+		send "q"
+		waitfor "Command [TL"
+		setvar $player~current_prompt "Command"
+	end
 	gosub :planet~countplanets
 	if ($planet~planetcount < 2)
 		setvar $switchboard~message "This script must be run with at least two planets in the sector*"
@@ -169,7 +184,7 @@ setvar $countfuel 0
 setvar $countorganics 0
 setvar $countequipment 0
 setvar $countcolonists 0
-send "l "&$planet~planettofill&"*"
+send "l "&$planet~planettofill&"**"
 killtrigger wrongplanet
 killtrigger badplanet
 killtrigger goodplanet
@@ -219,6 +234,8 @@ end
 
 :strip_done
 logging on
+setvar $relog_nocitadel 0
+savevar $relog_nocitadel
 if ($deaf = true)
 	gosub :player~enter_menu_deaf
 end

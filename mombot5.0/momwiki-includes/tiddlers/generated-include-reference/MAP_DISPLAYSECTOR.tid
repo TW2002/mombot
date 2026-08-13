@@ -1,26 +1,29 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: MAP~DISPLAYSECTOR
+created: 20260813201411000
+modified: 20260813201411000
+title: map~displaysector
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-map
-caption: MAP~DISPLAYSECTOR
+caption: map~displaysector
 
-! MAP~DISPLAYSECTOR
+! map~displaysector
 
 Renders the sector display view used by sector/data commands.
 
 ''Include:'' [[map.ts]]
-''Defined at:'' `/include/map.ts:461`
+''Defined at:'' `/include/map.ts:488`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-setvar $MAP~I $MAP~DISPLAYSECTOR
-setvar $MAP~OUTPUT ANSI_10&amp;&quot;    Sector  &quot;&amp;ANSI_14&amp;&quot;: &quot;&amp;ANSI_11&amp;$MAP~I&amp;ANSI_2&amp;&quot; in &quot;
-setvar $MAP~CONSTELLATION SECTOR.CONSTELLATION[$MAP~I]
-if ($MAP~CONSTELLATION = &quot;The Federation.&quot;)
-  setvar $MAP~OUTPUT $MAP~OUTPUT&amp;ANSI_10&amp;$MAP~CONSTELLATION&amp;&quot;*&quot;
+setvar $map~i $map~displaysector
+setvar $map~output ansi_10&amp;&quot;    Sector  &quot;&amp;ansi_14&amp;&quot;: &quot;&amp;ansi_11&amp;$map~i&amp;ansi_2&amp;&quot; in &quot;
+setvar $map~constellation sector.constellation[$map~i]
+if ($map~constellation = &quot;The Federation.&quot;)
+	setvar $map~output $map~output&amp;ansi_10&amp;$map~constellation&amp;&quot;*&quot;
 else
-  setvar $MAP~OUTPUT $MAP~OUTPUT&amp;ANSI_1&amp;$MAP~CONSTELLATION&amp;&quot;*&quot;
+	setvar $map~output $map~output&amp;ansi_1&amp;$map~constellation&amp;&quot;*&quot;
 end
 </pre>
 

@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: COMBAT~FASTCITADELATTACK
+created: 20260813201411000
+modified: 20260813201411000
+title: combat~fastcitadelattack
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-combat
-caption: COMBAT~FASTCITADELATTACK
+caption: combat~fastcitadelattack
 
-! COMBAT~FASTCITADELATTACK
+! combat~fastcitadelattack
 
 Runs the citadel-specific fast-attack sequence.
 
 ''Include:'' [[combat.ts]]
-''Defined at:'' `/include/combat.ts:592`
+''Defined at:'' `/include/combat.ts:711`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-if ($SHIP~SHIP_MAX_ATTACK &lt;= 0)
-  gosub :SHIP~GETSHIPSTATS
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($ship~ship_max_attack &lt;= 0)
+	gosub :ship~getshipstats
 end
-setvar $COMBAT~REFURBSTRING &quot; l &quot;&amp;$PLANET~PLANET&amp;&quot; * n n * j m * * * &quot;
-setvar $COMBAT~ATTACKSTRING &quot;&quot;
-setvar $COMBAT~TARGETSTRING &quot;a z &quot;
-setvar $COMBAT~TARGETSHOTGUN &quot;a z z y z&quot;&amp;$SHIP~SHIP_MAX_ATTACK&amp;&quot;* * a z z * y z&quot;&amp;$SHIP~SHIP_MAX_ATTACK&amp;&quot;* * a z z * * y z&quot;&amp;$COMBAT~SHIP_MAX_ATTACK&amp;&quot;* * &quot;
-setvar $PLAYER~ISFOUND FALSE
+setvar $refurbstring &quot; l &quot;&amp;$planet~planet&amp;&quot; * n n * j m * * * &quot;
+setvar $combat~attackstring &quot;&quot;
+setvar $targetstring &quot;a z &quot;
+setvar $targetshotgun &quot;a z z y z&quot;&amp;$ship~ship_max_attack&amp;&quot;* * a z z * y z&quot;&amp;$ship~ship_max_attack&amp;&quot;* * a z z * * y z&quot;&amp;$ship_max_attack&amp;&quot;* * &quot;
 </pre>
 
 !! Notes

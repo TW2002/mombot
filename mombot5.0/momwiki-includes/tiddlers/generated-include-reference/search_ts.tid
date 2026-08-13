@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: search.ts
 type: text/vnd.tiddlywiki
 tags: mombot include-reference include
@@ -11,8 +11,12 @@ Search helpers for sector and path-based lookups.
 
 ''Source:'' `/include/search.ts`
 
+!! Loaded Variables
+* `$bot~parm1`
+* `$bot~parm2`
+
 !! Significant Exported Routines
-* [[SEARCH~FIND]] - Runs the shared search routine used by the find command.
+* [[search~find]] - Runs the shared search routine used by the find command.
 
 !! Direct Include Users
 * `/commands/data/find.ts`

@@ -16,6 +16,10 @@ SOURCE_MOMBOT_CFG="$ROOT/source/mombot.cfg"
 SOURCE_MOMBOT_CTS="$ROOT/source/mombot.cts"
 SOURCE_INCLUDE="$ROOT/source/include"
 WIKI_HTML="$ROOT/mombot-scripting-wiki/Mombot_Scripting.html"
+SCRIPTING_WIKI_BUILDER="${MOMBOT_SCRIPTING_WIKI_BUILDER:-/Users/mosleym/.codex/skills/twx-mombot/scripts/mombot-build-scripting-wiki}"
+INCLUDE_WIKI_DIR="$ROOT/momwiki-includes"
+INCLUDE_WIKI_GENERATOR="$INCLUDE_WIKI_DIR/scripts/build_include_wiki.py"
+INCLUDE_WIKI_HTML="$INCLUDE_WIKI_DIR/output/mombot-include-reference.html"
 ZIP_PATH="$RELEASE_ROOT/mombot.zip"
 HELP_SOURCE="$(mktemp -d "${TMPDIR:-/tmp}/mombot-help-source.XXXXXX")"
 GENERATED_HELP="$(mktemp -d "${TMPDIR:-/tmp}/mombot-help.XXXXXX")"
@@ -50,9 +54,23 @@ if [[ ! -d "$SOURCE_INCLUDE" ]]; then
   exit 1
 fi
 
-if [[ ! -f "$WIKI_HTML" ]]; then
-  echo "Mombot scripting wiki not found: $WIKI_HTML" >&2
-  echo "Rebuild it with: /opt/homebrew/bin/ruby /Users/mosleym/.codex/skills/twx-mombot/scripts/mombot-build-scripting-wiki --publish-release" >&2
+if [[ ! -x "$SCRIPTING_WIKI_BUILDER" ]]; then
+  echo "Mombot scripting wiki builder not found or not executable: $SCRIPTING_WIKI_BUILDER" >&2
+  exit 1
+fi
+
+if [[ ! -f "$INCLUDE_WIKI_GENERATOR" ]]; then
+  echo "Mombot include reference generator not found: $INCLUDE_WIKI_GENERATOR" >&2
+  exit 1
+fi
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "python3 is required to build the Mombot include reference" >&2
+  exit 1
+fi
+
+if ! command -v tiddlywiki >/dev/null 2>&1; then
+  echo "tiddlywiki is required to build Mombot wiki references" >&2
   exit 1
 fi
 
@@ -106,6 +124,18 @@ done
 
 echo "Synced runtime artifacts from $SOURCE to $RELEASE_TREE"
 
+"$SCRIPTING_WIKI_BUILDER"
+if [[ ! -f "$WIKI_HTML" ]]; then
+  echo "Mombot scripting wiki build did not produce: $WIKI_HTML" >&2
+  exit 1
+fi
+
+(cd "$INCLUDE_WIKI_DIR" && python3 "$INCLUDE_WIKI_GENERATOR")
+if [[ ! -f "$INCLUDE_WIKI_HTML" ]]; then
+  echo "Mombot include reference build did not produce: $INCLUDE_WIKI_HTML" >&2
+  exit 1
+fi
+
 rsync -a --delete \
   --exclude='modes/cashing/wsst2.ts' \
   "$ROOT/source/" "$HELP_SOURCE/"
@@ -137,6 +167,9 @@ echo "Copied $SOURCE_MOMBOT_CTS to $RELEASE_TREE/mombot.cts"
 
 cp "$WIKI_HTML" "$RELEASE_TREE/Mombot_Scripting.html"
 echo "Copied $WIKI_HTML to $RELEASE_TREE/Mombot_Scripting.html"
+
+cp "$INCLUDE_WIKI_HTML" "$RELEASE_TREE/Mombot_Reference.html"
+echo "Copied $INCLUDE_WIKI_HTML to $RELEASE_TREE/Mombot_Reference.html"
 
 rsync -a --delete "$GENERATED_HELP/" "$RELEASE_HELP/"
 

@@ -1,3 +1,4 @@
+:lsd~lsd
 gosub :loadvars~loadvars
 loadvar $bot~bot_name
 loadvar $bot~unlimitedgame
@@ -19,11 +20,18 @@ setvar $ships_file 			$bot~folder&"/LSD_" & gamename & ".ships"
 setvar $shiplistmax			50
 setarray $shiplist			$shiplistmax 3
 setvar $lsd__pad "@"
-setvar $cmd ($bot~user_command_line & "^^%%@@")
+
+if ($lsd~lsd_command = "") or ($lsd~lsd_command = 0)
+	setvar $switchboard~message "Please enter a valid LSD command.*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+setvar $cmd ($lsd~lsd_command & "^^%%@@")
 setvar $minlength "M@M@M@M@M@Y@M@M@M@Y@M@M@Y@M@M@M@0@0@0@0"
 
 getlength $minlength $mlen
-getlength $bot~user_command_line $prmlength
+getlength $lsd~lsd_command $prmlength
 
 if ($player~credits < 10000)
 	setvar $switchboard~message "Must have more than 10,000 Creds on hand!**"
@@ -43,7 +51,7 @@ if ($prmlength < $mlen)
 	halt
 end
 
-gosub :player~getavoids
+gosub :sector~getavoids
 clearallavoids
 
 #stripText $cmd $LSD__PAD
@@ -532,9 +540,9 @@ else
 	gosub :switchboard~switchboard
 	waitfor "Message sent on sub-space channel"
 end
-halt
+return
 #=---------------------------------------- THE BIG FINISH --------------------------------------------=#
-halt
+return
 
 #=--------                                                                       -------=#
 #=------------------------------      SUB ROUTINES      ------------------------------=#
@@ -1737,5 +1745,6 @@ end
 return
 
 include "source\include\player"
+include "source\include\sector"
 include "source\include\switchboard.ts"
 include "source\include\help"

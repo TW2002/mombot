@@ -221,14 +221,16 @@ gosub :switchboard~switchboard
 halt
 
 :count_planets
-send "qq*  |l"
+send "qq*"
+gosub :player~msgs_off
+send "l"
 waiton "Registry# and Planet Name"
 setvar $planet~planetcount 0
 killalltriggers
 settextlinetrigger planetgrabber :planetline "   <"
 settextlinetrigger bedone :done "Land on which planet "
 settextlinetrigger noplanets :done "You can create one with a Genesis Torpedo."
-send "* |"
+send "*"
 pause
 
 :planetline
@@ -248,6 +250,7 @@ pause
 
 :done
 killalltriggers
+gosub :player~msgs_on
 return
 
 :get_tl_list

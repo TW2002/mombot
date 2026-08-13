@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: BOT~LOAD_HOTKEY_CONFIG
+created: 20260813201411000
+modified: 20260813201411000
+title: bot~load_hotkey_config
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-bot
-caption: BOT~LOAD_HOTKEY_CONFIG
+caption: bot~load_hotkey_config
 
-! BOT~LOAD_HOTKEY_CONFIG
+! bot~load_hotkey_config
 
 Loads shared state or cached data for later command use.
 
 ''Include:'' [[bot.ts]]
-''Defined at:'' `/include/bot.ts:1395`
+''Defined at:'' `/include/bot.ts:915`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-gosub :BOT~INIT_HOTKEY_DEFAULTS
-fileexists $BOT~CONFIG_EXISTS $BOT~MOMBOT_CONFIG_FILE
-if ($BOT~CONFIG_EXISTS)
-  readtoarray $BOT~MOMBOT_CONFIG_FILE $BOT~HOTKEY_CONFIG_LINES
-  if ($BOT~HOTKEY_CONFIG_LINES = 33)
-    gosub :BOT~APPLY_HOTKEY_CONFIG
-    if ($BOT~HOTKEY_CONFIG_VALID = TRUE)
-      delete &quot;scripts/&quot;&amp;$BOT~MOMBOT_DIRECTORY&amp;&quot;/hotkeys.cfg&quot;
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :bot~init_hotkey_defaults
+fileexists $bot~config_exists $bot~mombot_config_file
+if ($bot~config_exists)
+	readtoarray $bot~mombot_config_file $bot~hotkey_config_lines
+	if ($bot~hotkey_config_lines = 33)
+		gosub :bot~apply_hotkey_config
+		if ($bot~hotkey_config_valid = true)
 </pre>
 
 !! Notes

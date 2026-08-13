@@ -582,7 +582,8 @@ send "Q"
 gosub :getinfo
 send "*"
 
-send "|CR"&$player~current_sector&"*Q|"
+	gosub :player~msgs_off
+	send "CR"&$player~current_sector&"*Q"
 
 settextlinetrigger foundport :foundport "Items     Status  Trading % of max OnBoard"
 settextlinetrigger noport :noport "I have no information about a port in that sector."
@@ -628,9 +629,10 @@ getword currentline $player~current_sector.equpercent 4
 striptext $player~current_sector.equpercent "%"
 goto :foundport
 
-:gotcr
-setdelaytrigger justasec :justasec 500
-pause
+	:gotcr
+	gosub :player~msgs_on
+	setdelaytrigger justasec :justasec 500
+	pause
 
 :justasec
 :initinfo
@@ -696,9 +698,10 @@ if (($fueltosell <> 0) or ($orgtosell <> 0) or ($equiptosell <> 0))
 	setvar $orgprofit 0
 	setvar $equprofit 0
 
-	send "|"
-	gosub :sell
-	gosub :negotiateland
+		gosub :player~msgs_off
+		gosub :sell
+		gosub :player~msgs_on
+		gosub :negotiateland
 	if ($startinglocation = "Citadel")
 
 		if ($oreprofit <> 0)
@@ -715,9 +718,7 @@ if (($fueltosell <> 0) or ($orgtosell <> 0) or ($equiptosell <> 0))
 		end
 	end
 
-	send "|"
-
-	setvar $generaloutput "*Sector "&$player~current_sector&"*"
+		setvar $generaloutput "*Sector "&$player~current_sector&"*"
 	if ($output_file <> "")
 		write $output_file $generaloutput
 	end

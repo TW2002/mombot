@@ -1,0 +1,31 @@
+created: 20260813201411000
+modified: 20260813201411000
+title: mines~refresh_clear_sector_state
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-mines
+caption: mines~refresh_clear_sector_state
+
+! mines~refresh_clear_sector_state
+
+Loads or renders shared sector state for the caller.
+
+''Include:'' [[mines.ts]]
+''Defined at:'' `/include/mines.ts:715`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
+
+!! Source Excerpt
+<pre>
+setvar $mines~limpetowner sector.limpets.owner[$player~current_sector]
+setvar $mines~armidowner sector.mines.owner[$player~current_sector]
+setvar $mines~limpetcount sector.limpets.quantity[$player~current_sector]
+setvar $mines~armidcount sector.mines.quantity[$player~current_sector]
+setvar $mines~sectorclear false
+if ((($mines~limpetcount &lt;= 0) or (($mines~limpetowner = &quot;belong to your Corp&quot;) or ($mines~limpetowner = &quot;yours&quot;))) and ((($mines~armidcount &lt;= 0) or (($mines~armidowner = &quot;belong to your Corp&quot;) or ($mines~armidowner = &quot;yours&quot;)))))
+	setvar $mines~sectorclear true
+end
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

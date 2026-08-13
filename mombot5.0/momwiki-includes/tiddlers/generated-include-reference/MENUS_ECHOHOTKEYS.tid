@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: MENUS~ECHOHOTKEYS
+created: 20260813201411000
+modified: 20260813201411000
+title: menus~echohotkeys
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-menus
-caption: MENUS~ECHOHOTKEYS
+caption: menus~echohotkeys
 
-! MENUS~ECHOHOTKEYS
+! menus~echohotkeys
 
 Displays shared output through the bot UI layer.
 
 ''Include:'' [[menus.ts]]
-''Defined at:'' `/include/menus.ts:1037`
+''Defined at:'' `/include/menus.ts:1048`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-setarray $MENUS~H 34
-setarray $MENUS~QSS 34
-setvar $MENUS~H[1] &quot;Auto Kill            &quot;
-setvar $MENUS~H[2] &quot;Auto Capture         &quot;
-setvar $MENUS~H[3] &quot;Auto Refurb          &quot;
-setvar $MENUS~H[4] &quot;Surround             &quot;
-setvar $MENUS~H[5] &quot;Holo-Torp            &quot;
-setvar $MENUS~H[6] &quot;Transwarp Drive      &quot;
+setarray $menus~h 34
+setarray $menus~qss 34
+setvar $menus~h[1] &quot;Auto Kill            &quot;
+setvar $menus~h[2] &quot;Auto Capture         &quot;
+setvar $menus~h[3] &quot;Auto Refurb          &quot;
+setvar $menus~h[4] &quot;Surround             &quot;
+setvar $menus~h[5] &quot;Holo-Torp            &quot;
+setvar $menus~h[6] &quot;Transwarp Drive      &quot;
 </pre>
 
 !! Notes

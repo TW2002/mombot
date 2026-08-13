@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLAYER~STARTCNSETTINGS
+created: 20260813201411000
+modified: 20260813201411000
+title: player~startcnsettings
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-player
-caption: PLAYER~STARTCNSETTINGS
+caption: player~startcnsettings
 
-! PLAYER~STARTCNSETTINGS
+! player~startcnsettings
 
 Loads or initializes CN settings through the shared player path.
 
 ''Include:'' [[player.ts]]
-''Defined at:'' `/include/player.ts:973`
+''Defined at:'' `/include/player.ts:756`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send &quot;CN&quot;
-settextlinetrigger ANSI1 :CNCHECK &quot;(1) ANSI graphics            - Off&quot;
-settextlinetrigger ANIM1 :CNCHECK &quot;(2) Animation display        - On&quot;
-settextlinetrigger PAGE1 :CNCHECK &quot;(3) Page on messages         - On&quot;
-settextlinetrigger SETSSCHN :SETSSCHN &quot;(4) Sub-space radio channel&quot;
-settextlinetrigger SILENCE1 :CNCHECK &quot;(7) Silence ALL messages     - Yes&quot;
-settextlinetrigger ABORTDISPLAY1 :CNCHECK &quot;(9) Abort display on keys    - ALL KEYS&quot;
+settextlinetrigger ansi1 :cncheck &quot;(1) ANSI graphics            - Off&quot;
+settextlinetrigger anim1 :cncheck &quot;(2) Animation display        - On&quot;
+settextlinetrigger page1 :cncheck &quot;(3) Page on messages         - On&quot;
+settextlinetrigger setsschn :setsschn &quot;(4) Sub-space radio channel&quot;
+settextlinetrigger silence1 :cncheck &quot;(7) Silence ALL messages     - Yes&quot;
+settextlinetrigger abortdisplay1 :cncheck &quot;(9) Abort display on keys    - ALL KEYS&quot;
 </pre>
 
 !! Notes

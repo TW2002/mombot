@@ -1,27 +1,31 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: GAME~GAMESTATS
+created: 20260813201411000
+modified: 20260813201411000
+title: game~gamestats
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-game
-caption: GAME~GAMESTATS
+caption: game~gamestats
 
-! GAME~GAMESTATS
+! game~gamestats
 
 Pulls game stats and updates shared game-wide values from the live game prompt.
 
 ''Include:'' [[game.ts]]
 ''Defined at:'' `/include/game.ts:1`
 
+!! Loaded Variables
+* `$bot~password`
+* `$bot~letter`
+
 !! Source Excerpt
 <pre>
-setvar $GAME~DID_GAMESTATS FALSE
-if (($PLAYER~STARTINGLOCATION = &quot;0&quot;) OR ($PLAYER~STARTINGLOCATION = &quot;&quot;))
-  if (($PLAYER~CURRENT_PROMPT = &quot;Command&quot;) OR ($PLAYER~CURRENT_PROMPT = &quot;Citadel&quot;))
-    setvar $PLAYER~STARTINGLOCATION $PLAYER~CURRENT_PROMPT
-  end
+setvar $game~did_gamestats false
+if (($player~startinglocation = &quot;0&quot;) or ($player~startinglocation = &quot;&quot;))
+	if (($player~current_prompt = &quot;Command&quot;) or ($player~current_prompt = &quot;Citadel&quot;))
+		setvar $player~startinglocation $player~current_prompt
+	end
 end
-if ($PLAYER~STARTINGLOCATION = &quot;Citadel&quot;)
-  send &quot;qqzn&quot;
+if ($player~startinglocation = &quot;Citadel&quot;)
+	send &quot;qqzn&quot;
 </pre>
 
 !! Notes

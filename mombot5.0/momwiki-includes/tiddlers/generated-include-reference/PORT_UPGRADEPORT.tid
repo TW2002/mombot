@@ -1,20 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PORT~UPGRADEPORT
+created: 20260813201411000
+modified: 20260813201411000
+title: port~upgradeport
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-port
-caption: PORT~UPGRADEPORT
+caption: port~upgradeport
 
-! PORT~UPGRADEPORT
+! port~upgradeport
 
 Upgrades a port through the shared port helper path.
 
 ''Include:'' [[port.ts]]
-''Defined at:'' `/include/port.ts:321`
+''Defined at:'' `/include/port.ts:387`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-goto :PORT~MAX
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+killalltriggers
+gosub :player~quikstats
+setvar $bot~startinglocation $player~current_prompt
+setvar $port~startinglocation $player~current_prompt
+setvar $bot~validprompts &quot;Citadel Command&quot;
+gosub :player~checkstartingprompt
+getwordpos &quot; &quot;&amp;$bot~user_command_line&amp;&quot; &quot; $port~pos &quot; f &quot;
 </pre>
 
 !! Notes

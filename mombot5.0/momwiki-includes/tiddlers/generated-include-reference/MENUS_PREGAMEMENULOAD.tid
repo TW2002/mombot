@@ -1,27 +1,42 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: MENUS~PREGAMEMENULOAD
+created: 20260813201411000
+modified: 20260813201411000
+title: menus~pregamemenuload
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-menus
-caption: MENUS~PREGAMEMENULOAD
+caption: menus~pregamemenuload
 
-! MENUS~PREGAMEMENULOAD
+! menus~pregamemenuload
 
 Shared `menus` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
 
 ''Include:'' [[menus.ts]]
-''Defined at:'' `/include/menus.ts:1149`
+''Defined at:'' `/include/menus.ts:1154`
+
+!! Loaded Variables
+* `$bot~password`
+* `$switchboard~bot_name`
+* `$bot~startshipname`
+* `$bot~mowtodock`
+* `$bot~mowtodockbackdoor`
+* `$bot~startgamedelay`
+* `$bot~isceo`
+* `$bot~corpname`
+* `$bot~subspace`
+* `$menus~corpnumber`
+* `$bot~corppassword`
+* `$bot~username`
+* `$bot~letter`
 
 !! Source Excerpt
 <pre>
 killalltriggers
-loadvar $BOT~PASSWORD
-loadvar $SWITCHBOARD~BOT_NAME
-setvar $BOT~BOT_NAME $SWITCHBOARD~BOT_NAME
-loadvar $BOT~STARTSHIPNAME
-loadvar $BOT~MOWTODOCK
-loadvar $BOT~MOWTODOCKBACKDOOR
-loadvar $BOT~STARTGAMEDELAY
+loadvar $bot~password
+loadvar $switchboard~bot_name
+setvar $bot~bot_name $switchboard~bot_name
+loadvar $bot~startshipname
+loadvar $bot~mowtodock
+loadvar $bot~mowtodockbackdoor
+loadvar $bot~startgamedelay
 </pre>
 
 !! Notes

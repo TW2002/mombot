@@ -1,0 +1,25 @@
+created: 20260813201411000
+modified: 20260813201411000
+title: fighters.ts
+type: text/vnd.tiddlywiki
+tags: mombot include-reference include
+caption: fighters.ts
+
+! fighters.ts
+
+Shared `fighters` include routines and support labels used across the Mombot source tree.
+
+''Source:'' `/include/fighters.ts`
+
+!! Loaded Variables
+* `$map~stardock`
+
+!! Significant Exported Routines
+* [[fighters~deploy]] - Shared `fighters` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+!! Direct Include Users
+* `/commands/grid/deploy.ts`
+* `/modes/cashing/alienhunt.ts`
+
+!! Maintenance
+This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

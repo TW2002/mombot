@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: SECTOR~GETSECTORDATA
+created: 20260813201411000
+modified: 20260813201411000
+title: sector~getsectordata
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-sector
-caption: SECTOR~GETSECTORDATA
+caption: sector~getsectordata
 
-! SECTOR~GETSECTORDATA
+! sector~getsectordata
 
 Loads sector data for a specific sector into the shared sector variables.
 
 ''Include:'' [[sector.ts]]
-''Defined at:'' `/include/sector.ts:236`
+''Defined at:'' `/include/sector.ts:272`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-setvar $SECTOR~ENDLINE &quot;_ENDLINE_&quot;
-setvar $SECTOR~STARTLINE &quot;_STARTLINE_&quot;
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $sector~endline &quot;_ENDLINE_&quot;
+setvar $sector~startline &quot;_STARTLINE_&quot;
 killalltriggers
-if ($SECTOR~PASSIVE)
-else
-  if ($PLAYER~STARTINGLOCATION = &quot;Citadel&quot;)
-    send &quot;s&quot;
-  else
+if ($sector~passive = false)
+	if ($player~startinglocation = &quot;Citadel&quot;)
+		send &quot;s&quot;
+	else
 </pre>
 
 !! Notes

@@ -63,6 +63,7 @@ killalltriggers
 add $mycount 1
 getword currentline $figsector 1
 getword currentline $num 2
+striptext $num ","
 setvar $fighter[$mycount] $figsector
 getwordpos $num $pos "T"
 if ($pos > 1)

@@ -370,6 +370,7 @@ end
 
 :donepatp
 gosub :haggle~restoreautohaggle
+gosub :player~msgs_on
 send "p"&$startingsector&"*y"
 setvar $formattedspentcredits ""
 getlength $spentcredits $length

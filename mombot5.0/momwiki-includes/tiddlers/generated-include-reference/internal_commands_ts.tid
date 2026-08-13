@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: internal_commands.ts
 type: text/vnd.tiddlywiki
 tags: mombot include-reference include
@@ -11,13 +11,20 @@ Native-bot internal command helpers for timing, relog, and control actions.
 
 ''Source:'' `/include/internal_commands.ts`
 
+!! Loaded Variables
+* `$bot~botisdeaf`
+* `$player~surround_before_hkill`
+* `$bot~mode`
+* `$ship~ship_max_attack`
+* `$ship~ship_fighters_max`
+* `$ship~ship_offensive_odds`
+
 !! Significant Exported Routines
-* [[INTERNAL_COMMANDS~CALCTIME]] - Shared `internal_commands` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
-* [[INTERNAL_COMMANDS~RELOG_ATTEMPT]] - Shared `internal_commands` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+* [[internal_commands~relog_attempt]] - Shared `internal_commands` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
 
 !! Direct Include Users
-* `/commands/general/run.ts`
-* `/mombot.ts`
+* `/include/menus.ts`
+* `/include/user_interface.ts`
 
 !! Maintenance
 This tiddler is generated from the source tree. Re-run the builder after include refactors so caller counts and routine links stay current.

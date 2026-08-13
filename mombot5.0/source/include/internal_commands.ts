@@ -322,7 +322,7 @@ if (($internal_commands~cloakingout = true) and ($player~cloaks > 0))
 		gosub :switchboard~switchboard
 	end
 	send "q q q q  * * * * q q q q y y x *"
-	waiton "==-- Trade Wars 2002 --=="
+	waiton "==-- "
 else
 	if ($internal_commands~quittingwithnotimer)
 		setvar $switchboard~message "Logging out until I am at keys to login again.*"
@@ -336,7 +336,7 @@ else
 		waiton "Game Server"
 	else
 		send "q q q q  * * * * q q q q y*"
-		waiton "==-- Trade Wars 2002 --=="
+		waiton "==-- "
 	end
 end
 disconnect
@@ -522,15 +522,13 @@ if ($player~startinglocation <> "Command")
 	end
 	goto :bot~wait_for_command
 end
-loadvar $ship~ship_max_attack
-loadvar $ship~ship_fighters_max
-loadvar $ship~ship_offensive_odds
-if ($ship~ship_max_attack <= 0)
+	loadvar $ship~ship_max_attack
+	loadvar $ship~ship_fighters_max
+	loadvar $ship~ship_offensive_odds
 	gosub :ship~getshipstats
-end
-setvar $player~isfound false
-gosub :sector~getsectordata
-gosub :combat~fastattack
+	setvar $player~isfound false
+	gosub :sector~getsectordata
+	gosub :combat~fastattack
 if ((($player~current_sector = 1) or ($player~current_sector = $map~stardock)) and ($internal_commands~furb = true))
 	if ($player~isfound)
 		load "scripts\"&$bot~mombot_directory&"\commands\resource\refurb.cts"

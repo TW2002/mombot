@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLAYER~FORMATNUMBERFORSPACES
+created: 20260813201411000
+modified: 20260813201411000
+title: player~formatnumberforspaces
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-player
-caption: PLAYER~FORMATNUMBERFORSPACES
+caption: player~formatnumberforspaces
 
-! PLAYER~FORMATNUMBERFORSPACES
+! player~formatnumberforspaces
 
 Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
 
 ''Include:'' [[player.ts]]
-''Defined at:'' `/include/player.ts:332`
+''Defined at:'' `/include/player.ts:232`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-if ($PLAYER~INPUTVARIABLE &lt; 10)
-  setvar $PLAYER~OUTPUTVARIABLE &quot;    &quot;&amp;$PLAYER~INPUTVARIABLE
-elseif ($PLAYER~INPUTVARIABLE &lt; 100)
-  setvar $PLAYER~OUTPUTVARIABLE &quot;   &quot;&amp;$PLAYER~INPUTVARIABLE
-elseif ($PLAYER~INPUTVARIABLE &lt; 1000)
-  setvar $PLAYER~OUTPUTVARIABLE &quot;  &quot;&amp;$PLAYER~INPUTVARIABLE
-elseif ($PLAYER~INPUTVARIABLE &lt; 10000)
+if ($player~inputvariable &lt; 10)
+	setvar $player~outputvariable &quot;    &quot;&amp;$player~inputvariable
+elseif ($player~inputvariable &lt; 100)
+	setvar $player~outputvariable &quot;   &quot;&amp;$player~inputvariable
+elseif ($player~inputvariable &lt; 1000)
+	setvar $player~outputvariable &quot;  &quot;&amp;$player~inputvariable
+elseif ($player~inputvariable &lt; 10000)
 </pre>
 
 !! Notes

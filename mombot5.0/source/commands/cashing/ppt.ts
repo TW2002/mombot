@@ -340,16 +340,28 @@ setvar $sec2_maxequip 0
 setvar $skip_first 0
 setprecision 2
 if ($tradefuel = 1)
-	setvar $sec1_maxfuel (port.fuel[$sec1.index] * (100/port.percentfuel[$sec1.index]))
-	setvar $sec2_maxfuel (port.fuel[$sec2.index] * (100/port.percentfuel[$sec2.index]))
+	if (port.percentfuel[$sec1.index] > 0)
+		setvar $sec1_maxfuel (port.fuel[$sec1.index] * (100/port.percentfuel[$sec1.index]))
+	end
+	if (port.percentfuel[$sec2.index] > 0)
+		setvar $sec2_maxfuel (port.fuel[$sec2.index] * (100/port.percentfuel[$sec2.index]))
+	end
 end
 if ($tradeorg = 1)
-	setvar $sec1_maxorg ($sec1.port.org * (100/port.percentorg[$sec1.index]))
-	setvar $sec2_maxorg ($sec2.port.org * (100/port.percentorg[$sec2.index]))
+	if (port.percentorg[$sec1.index] > 0)
+		setvar $sec1_maxorg ($sec1.port.org * (100/port.percentorg[$sec1.index]))
+	end
+	if (port.percentorg[$sec2.index] > 0)
+		setvar $sec2_maxorg ($sec2.port.org * (100/port.percentorg[$sec2.index]))
+	end
 end
 if ($tradeequip = 1)
-	setvar $sec1_maxequip ($sec1.port.equip * (100/port.percentequip[$sec1.index]))
-	setvar $sec2_maxequip ($sec2.port.equip * (100/port.percentequip[$sec2.index]))
+	if (port.percentequip[$sec1.index] > 0)
+		setvar $sec1_maxequip ($sec1.port.equip * (100/port.percentequip[$sec1.index]))
+	end
+	if (port.percentequip[$sec2.index] > 0)
+		setvar $sec2_maxequip ($sec2.port.equip * (100/port.percentequip[$sec2.index]))
+	end
 end
 setprecision 0
 
@@ -404,6 +416,12 @@ setvar $report 0
 setvar $reportfuelcheck $player~ore_holds
 setvar $port1ok 1
 setvar $port2ok 1
+setvar $orglaneok 0
+setvar $equiplaneok 0
+gosub :refreshtradelanes
+if (($port1ok = 0) and ($port2ok = 0))
+	goto :complete
+end
 
 if ($skip_first = 0)
 	# Trade first sector
@@ -513,6 +531,7 @@ while ($test = 1)
 end
 
 #gosub :clearadjacent
+:complete
 setvar $switchboard~message "PPT Complete.*"
 gosub :switchboard~switchboard
 halt
@@ -544,9 +563,8 @@ settextlinetrigger portfail :portfail "ou don't have anything they want, and the
 pause
 
 :portfail
-setvar $switchboard~message "Oops nothing to trade; script fail?*"
-gosub :switchboard~switchboard
-halt
+killalltriggers
+goto :complete
 
 :checkcash
 killalltriggers
@@ -611,7 +629,7 @@ setvar $tradegood 5
 
 if ($skiprest = 1)
 	gosub :notrade
-elseif ($tradeorg = 1)
+elseif (($tradeorg = 1) and ($orglaneok = 1))
 	gosub :dotrade
 else
 	gosub :notrade
@@ -624,7 +642,7 @@ setvar $player~multiplier 95
 setvar $tradegood 6
 if ($skiprest = 1)
 	gosub :notrade
-elseif ($tradeequip = 1)
+elseif (($tradeequip = 1) and ($equiplaneok = 1))
 	gosub :dotrade
 else
 	gosub :notrade
@@ -678,56 +696,54 @@ if ($tradeequip = 1)
 	setvar $cequip ($cequip - $player~total_holds)
 end
 
-setprecision 2
-if (currentsector = $sec1.index)
-	setvar $portgoodok 1
-	if ($tradefuel = 1)
-		setvar $cpercfuel (($cfuel/$sec1_maxfuel) * 100)
-		if ($cpercfuel < $tradingminper)
-			setvar $portgoodok 0
-		end
+gosub :refreshtradelanes
+return
+
+:refreshtradelanes
+setvar $orglaneok 0
+setvar $equiplaneok 0
+
+if ($tradeorg = 1)
+	if (port.buyorg[$sec1.index] = 0)
+		setvar $orgseller port.org[$sec1.index]
+		setvar $orgsellerpct port.percentorg[$sec1.index]
+		setvar $orgbuyer port.org[$sec2.index]
+		setvar $orgbuyerpct port.percentorg[$sec2.index]
+	else
+		setvar $orgseller port.org[$sec2.index]
+		setvar $orgsellerpct port.percentorg[$sec2.index]
+		setvar $orgbuyer port.org[$sec1.index]
+		setvar $orgbuyerpct port.percentorg[$sec1.index]
 	end
-	if ($tradeorg = 1)
-		setvar $cpercorg (($corg/$sec1_maxorg) * 100)
-		if ($cpercorg < $tradingminper)
-			setvar $portgoodok 0
-		end
-	end
-	if ($tradeequip = 1)
-		setvar $cpercequip (($cequip/$sec1_maxequip) * 100)
-		if ($cpercequip < $tradingminper)
-			setvar $portgoodok 0
-		end
-	end
-	if ($portgoodok = 0)
-		setvar $port1ok 0
-	end
-else
-	setvar $portgoodok 1
-	if ($tradefuel = 1)
-		setvar $cpercfuel (($cfuel/$sec2_maxfuel) * 100)
-		if ($cpercfuel < $tradingminper)
-			setvar $portgoodok 0
-		end
-	end
-	if ($tradeorg = 1)
-		setvar $cpercorg (($corg/$sec2_maxorg) * 100)
-		if ($cpercorg < $tradingminper)
-			setvar $portgoodok 0
-		end
-	end
-	if ($tradeequip = 1)
-		setvar $cpercequip (($cequip/$sec2_maxequip) * 100)
-		if ($cpercequip < $tradingminper)
-			setvar $portgoodok 0
-		end
-	end
-	if ($portgoodok = 0)
-		setvar $port2ok 0
+	if (($orgseller > 0) and ($orgbuyer > 0) and ($orgsellerpct > 0) and ($orgbuyerpct > 0))
+		setvar $orglaneok 1
 	end
 end
 
-setprecision 0
+if ($tradeequip = 1)
+	if (port.buyequip[$sec1.index] = 0)
+		setvar $equipseller port.equip[$sec1.index]
+		setvar $equipsellerpct port.percentequip[$sec1.index]
+		setvar $equipbuyer port.equip[$sec2.index]
+		setvar $equipbuyerpct port.percentequip[$sec2.index]
+	else
+		setvar $equipseller port.equip[$sec2.index]
+		setvar $equipsellerpct port.percentequip[$sec2.index]
+		setvar $equipbuyer port.equip[$sec1.index]
+		setvar $equipbuyerpct port.percentequip[$sec1.index]
+	end
+	if (($equipseller > 0) and ($equipbuyer > 0) and ($equipsellerpct > 0) and ($equipbuyerpct > 0))
+		setvar $equiplaneok 1
+	end
+end
+
+if (($orglaneok = 0) and ($equiplaneok = 0))
+	setvar $port1ok 0
+	setvar $port2ok 0
+else
+	setvar $port1ok 1
+	setvar $port2ok 1
+end
 return
 
 :notrade
@@ -869,10 +885,6 @@ setvar $tradeequip 0
 setvar $portcantrade 0
 setvar $tradingtype 0
 
-if (port.buyfuel[$porttest1] <> port.buyfuel[$porttest2])
-	setvar $tradefuel 1
-	add $portcantrade 1
-end
 if (port.buyorg[$porttest1] <> port.buyorg[$porttest2])
 	setvar $tradeorg 1
 	add $portcantrade 1

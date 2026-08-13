@@ -23,10 +23,106 @@ gosub :help~helpfile
 setvar $switchboard~message "Colonizer starting up!*"
 gosub :switchboard~switchboard
 
-# ======================     START COLO (COLO) SUBROUTINE    ==========================
-goto :start_up_routines
+getwordpos " "&$bot~user_command_line&" " $pos " b "
+if ($pos > 0)
+	setvar $bwarp true
+	getwordpos " "&$bot~user_command_line&" " $pos " f "
+	if ($pos > 0)
+		setvar $doubleore true
+		setvar $doubleoreget true
+	else
+		setvar $doubleore false
+	end
+else
+	setvar $bwarp false
+end
 
-:colo_next
+getwordpos " "&$bot~user_command_line&" " $pos " allore "
+if ($pos > 0)
+	setvar $allore true
+else
+	setvar $allore false
+end
+
+getwordpos " "&$bot~user_command_line&" " $pos " c:"
+if ($pos > 0)
+	gettext " "&$bot~user_command_line&" " $camo_holds "c:" " "
+	isnumber $test $camo_holds
+	if ($test)
+		setvar $camoholds true
+	else
+		setvar $switchboard~message "Invalid camo holds entered*"
+		gosub :switchboard~switchboard
+	end
+
+else
+	setvar $camoholds false
+end
+
+gosub :player~quikstats
+getword $bot~user_command_line $bot~parm1 1
+getword $bot~user_command_line $bot~parm2 2
+getword $bot~user_command_line $bot~parm3 3
+getword $bot~user_command_line $bot~parm4 4
+getword $bot~user_command_line $bot~parm5 5
+getword $bot~user_command_line $bot~parm6 6
+
+setvar $startinglocation $player~current_prompt
+if (($startinglocation <> "Citadel") and ($startinglocation <> "Planet"))
+	setvar $switchboard~message "Colo must be run from Planet or Citadel prompt*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+if (($bot~parm1 <> "s") and ($bot~parm1 <> "m") and ($bot~parm1 <> "t") and ($bot~parm1 <> "r") and ($bot~parm1 <> "p"))
+	setvar $switchboard~message "Please use colo [s]peed, [m]ilk, [r]ed, [t]imed*, or speed [p]ort*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+setvar $colo_type $bot~parm1
+
+if (($colo_type = "p") and (port.exists[currentsector] = 0))
+	setvar $switchboard~message "No port here to buy fuel ore.*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+if (($colo_type = "p") and (port.buyfuel[currentsector] = 1))
+	setvar $switchboard~message "Port must sell fuel to use speed port colo.*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+if (($player~alignment < 1000) and ($colo_type <> "r"))
+	setvar $switchboard~message "Alignment is to low to colo for blue colo. Try colo r for red colo.*"
+	gosub :switchboard~switchboard
+	halt
+elseif ($player~twarp_type <> "1") and ($player~twarp_type <> "2")
+	setvar $switchboard~message "Must have Type 1 or 2 Twarp for Colo*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+isnumber $test $bot~parm2
+if ($test <> true)
+	setvar $bot~parm2 0
+end
+
+setvar $colo_misc $bot~parm2
+setvar $colo_prod 1
+setvar $colo_delay 1000
+
+if ($startinglocation = "Citadel")
+	send "Q"
+end
+
+getdistance $dist1 $player~current_sector 1
+getdistance $dist2 1 $player~current_sector
+
+gosub :planet~getplanetinfo
+send " t n l 1* t n l 2* t n l 3* s n l 1* s n l 2* s n l 3* q c u y q f 1* cd "
+gosub :player~getinfo
 setvar $colo_sector $player~current_sector
 setvar $mcol_holds $player~total_holds
 
@@ -187,6 +283,12 @@ else
 	send "q "
 end
 
+if ($dist1 = 1)
+	setvar $move_mac "m 1*"
+else
+	setvar $move_mac "m 1* y y"
+end
+
 if ($player~planet_scanner = "No")
 	setvar $land_mac "  L  T  " & $bot~parm2 & "*   "
 else
@@ -213,7 +315,7 @@ if ($colo_type = "m")
 			send "b 1*y "
 			settextlinetrigger 36 :nofuel2 "This planet does not have enough Fuel Ore to transport you."
 		else
-			send "m 1* y y "
+			send $move_mac
 			settextlinetrigger 36 :nofuel2 "<Set NavPoint>"
 		end
 		settextlinetrigger 37 :colo_wait "All Systems Ready, shall we engage?"
@@ -366,9 +468,9 @@ elseif ($colo_type = "p")
 			end
 		else
 			if ($player~planet_scanner = "No")
-				setvar $coloburst "m 1* y y    l * * "
+				setvar $coloburst $move_mac&"    l * * "
 			else
-				setvar $coloburst "m 1* y y    l 1* * * "
+				setvar $coloburst $move_mac&"    l 1* * * "
 			end
 
 		end
@@ -491,9 +593,9 @@ elseif ($colo_type = "s")
 			end
 		else
 			if ($player~planet_scanner = "No")
-				setvar $coloburst "m 1* y y    l * * "
+				setvar $coloburst $move_mac&"    l * * "
 			else
-				setvar $coloburst "m 1* y y    l 1* * * "
+				setvar $coloburst $move_mac&"    l 1* * * "
 			end
 
 		end
@@ -638,9 +740,9 @@ elseif ($colo_type = "t")
 			end
 		else
 			if ($player~planet_scanner = "No")
-				setvar $coloburst "m 1* y y    l * "
+				setvar $coloburst $move_mac&"    l * "
 			else
-				setvar $coloburst "m 1* y y    l 1* * "
+				setvar $coloburst $move_mac&"    l 1* * "
 			end
 		end
 		send $coloburst
@@ -846,102 +948,6 @@ end
 
 # ======================     END COLO MILKER (colo) SUBROUTINE     ==========================
 halt
-
-:start_up_routines
-getwordpos " "&$bot~user_command_line&" " $pos " b "
-if ($pos > 0)
-	setvar $bwarp true
-	getwordpos " "&$bot~user_command_line&" " $pos " f "
-	if ($pos > 0)
-		setvar $doubleore true
-		setvar $doubleoreget true
-	else
-		setvar $doubleore false
-	end
-else
-	setvar $bwarp false
-end
-
-getwordpos " "&$bot~user_command_line&" " $pos " allore "
-if ($pos > 0)
-	setvar $allore true
-else
-	setvar $allore false
-end
-
-getwordpos " "&$bot~user_command_line&" " $pos " c:"
-if ($pos > 0)
-	gettext " "&$bot~user_command_line&" " $camo_holds "c:" " "
-	isnumber $test $camo_holds
-	if ($test)
-		setvar $camoholds true
-	else
-		setvar $switchboard~message "Invalid camo holds entered*"
-		gosub :switchboard~switchboard
-	end
-
-else
-	setvar $camoholds false
-end
-
-# ======================     START COLO  (COLO) SUBROUTINE    ==========================
-:colo_setup
-gosub :player~quikstats
-getword $bot~user_command_line $bot~parm1 1
-getword $bot~user_command_line $bot~parm2 2
-getword $bot~user_command_line $bot~parm3 3
-getword $bot~user_command_line $bot~parm4 4
-getword $bot~user_command_line $bot~parm5 5
-getword $bot~user_command_line $bot~parm6 6
-
-setvar $startinglocation $player~current_prompt
-if (($startinglocation <> "Citadel") and ($startinglocation <> "Planet"))
-	setvar $switchboard~message "Colo must be run from Planet or Citadel prompt*"
-	gosub :switchboard~switchboard
-	halt
-end
-
-if (($bot~parm1 <> "s") and ($bot~parm1 <> "m") and ($bot~parm1 <> "t") and ($bot~parm1 <> "r") and ($bot~parm1 <> "p"))
-	setvar $switchboard~message "Please use colo [s]peed, [m]ilk, [r]ed, [t]imed*, or speed [p]ort*"
-	gosub :switchboard~switchboard
-	halt
-end
-
-setvar $colo_type $bot~parm1
-if (($colo_type = "p") and (port.exists[currentsector] = 0))
-	setvar $switchboard~message "No port here to buy fuel ore.*"
-	gosub :switchboard~switchboard
-	halt
-end
-if (($colo_type = "p") and (port.buyfuel[currentsector] = 1))
-	setvar $switchboard~message "Port must sell fuel to use speed port colo.*"
-	gosub :switchboard~switchboard
-	halt
-end
-if (($player~alignment < 1000) and ($colo_type <> "r"))
-	setvar $switchboard~message "Alignment is to low to colo for blue colo. Try colo r for red colo.*"
-	gosub :switchboard~switchboard
-	halt
-elseif ($player~twarp_type <> "1") and ($player~twarp_type <> "2")
-	setvar $switchboard~message "Must have Type 1 or 2 Twarp for Colo*"
-	gosub :switchboard~switchboard
-	halt
-end
-isnumber $test $bot~parm2
-if ($test <> true)
-	setvar $bot~parm2 0
-end
-setvar $colo_misc $bot~parm2
-# ======================     END COLO (COLO) SUBROUTINE     ==========================
-setvar $colo_prod 1
-setvar $colo_delay 1000
-if ($startinglocation = "Citadel")
-	send "Q"
-end
-gosub :planet~getplanetinfo
-send " t n l 1* t n l 2* t n l 3* s n l 1* s n l 2* s n l 3* q c u y q f 1* cd "
-gosub :player~getinfo
-goto :colo_next
 
 #INCLUDES:
 include "source\include\planet"

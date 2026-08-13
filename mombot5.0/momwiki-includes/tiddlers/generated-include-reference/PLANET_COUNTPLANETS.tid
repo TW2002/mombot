@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLANET~COUNTPLANETS
+created: 20260813201411000
+modified: 20260813201411000
+title: planet~countplanets
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-planet
-caption: PLANET~COUNTPLANETS
+caption: planet~countplanets
 
-! PLANET~COUNTPLANETS
+! planet~countplanets
 
 Counts planets in the current sector or current working set.
 
 ''Include:'' [[planet.ts]]
-''Defined at:'' `/include/planet.ts:2`
+''Defined at:'' `/include/planet.ts:3`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-setvar $PLANET~PLANETCOUNT 0
-killtrigger PLANETGRABBER
-killtrigger BEDONE
-send &quot;/&quot;
-waiton &quot;Creds&quot;
-settextlinetrigger PLANETGRABBER :PLANETLINE &quot;   &lt;&quot;
-settextlinetrigger BEDONE :COUNTDONE &quot;Land on which planet &quot;
+#
+# Creates the following array:
+# $planetcount = number of planets
+# $planets[1] = id of planet 1
+# $planets[1][1] = level of planet 1
+# $planets[1][2] = military response pct of planet 1
+# $planets[1][3] = number of fighters on planet 1
+# $planets[1][4] = sector cannon pct on planet 1
 </pre>
 
 !! Notes

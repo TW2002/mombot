@@ -1,25 +1,34 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: BOT~LOAD_WATCHER_VARIABLES
+created: 20260813201411000
+modified: 20260813201411000
+title: bot~load_watcher_variables
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-bot
-caption: BOT~LOAD_WATCHER_VARIABLES
+caption: bot~load_watcher_variables
 
-! BOT~LOAD_WATCHER_VARIABLES
+! bot~load_watcher_variables
 
 Loads shared state or cached data for later command use.
 
 ''Include:'' [[bot.ts]]
-''Defined at:'' `/include/bot.ts:823`
+''Defined at:'' `/include/bot.ts:850`
+
+!! Loaded Variables
+* `$ship~ship_max_attack`
+* `$ship~ship_fighters_max`
+* `$ship~ship_offensive_odds`
+* `$planet~planet`
+* `$player~current_sector`
 
 !! Source Excerpt
 <pre>
-loadvar $SHIP~SHIP_MAX_ATTACK
-loadvar $SHIP~SHIP_FIGHTERS_MAX
-loadvar $SHIP~SHIP_OFFENSIVE_ODDS
-loadvar $PLANET~PLANET
-loadvar $PLAYER~CURRENT_SECTOR
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+loadvar $ship~ship_max_attack
+loadvar $ship~ship_fighters_max
+loadvar $ship~ship_offensive_odds
+loadvar $planet~planet
+loadvar $player~current_sector
 return
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 </pre>
 
 !! Notes

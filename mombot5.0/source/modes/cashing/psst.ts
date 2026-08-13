@@ -368,7 +368,7 @@ while ($i <= $nearest)
 			goto :sstcandidate_next
 		else
 			killalltriggers
-			send "l "&$candidate_planet&"* c*"
+			send "l "&$candidate_planet&"* m n t * c*"
 			settextlinetrigger onplanetcandidate :onplanetcandidate "Citadel treasury"
 			settextlinetrigger noplanetcandidate :noplanetcandidate "That planet is not"
 			pause
@@ -390,11 +390,11 @@ while ($i <= $nearest)
 			gosub :switchboard~switchboard
 			goto :endsst
 
-			:pwarpyescandidate
-			killalltriggers
-			gosub :player~quikstats
-			setvar $candidate_sector $focus
-			gosub :getsstportinfo
+				:pwarpyescandidate
+				killalltriggers
+				gosub :player~quikstats
+				setvar $candidate_sector $focus
+				gosub :getsstportinfo
 				if ($sstportvalid <> true)
 					setvar $candidate_needsport true
 					gosub :displaycredits
@@ -402,8 +402,10 @@ while ($i <= $nearest)
 					gosub :readcandidatefuel
 					goto :sstcandidate_next
 				end
-				if ($buyfuel = true)
+				getsectorparameter $candidate_sector "BUSTED" $isbusted
+				if ($buyfuel = true) and ($isbusted <> true)
 					gosub :player~currentprompt
+					gosub :clearcandidatecargo
 					setvar $merchant~buyfuel_minimum 10000
 					setvar $merchant~buyfuel_min_room_pct 10
 					gosub :merchant~buyfuel
@@ -412,13 +414,26 @@ while ($i <= $nearest)
 						gosub :switchboard~switchboard
 						goto :endsst
 					end
+					if ($merchant~buyfuel_bought = true)
+						send "q q jy l "&$candidate_planet&"* c*"
+						waiton "Citadel treasury contains"
+					end
 					gosub :player~quikstats
 				end
-			setvar $candidate_needsport false
-			setvar $candidate_totalholds $player~total_holds
-			setvar $candidate_equipment $player~equipment_holds
-			gosub :displaycredits
-			send "q *q *"
+				gosub :clearcandidatecargo
+				if (($player~empty_holds <= 0) and ($player~equipment_holds <= 0))
+					setvar $invalidsstport[$candidate_sector] true
+					setvar $candidate_needsport true
+					gosub :displaycredits
+					send "q *q *"
+					gosub :readcandidatefuel
+					goto :sstcandidate_next
+				end
+				setvar $candidate_needsport false
+				setvar $candidate_totalholds $player~total_holds
+				setvar $candidate_equipment $player~equipment_holds
+				gosub :displaycredits
+				send "q *q *"
 			gosub :readcandidatefuel
 			setvar $candidate_found true
 			return
@@ -461,6 +476,21 @@ waiton "Fuel Ore"
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:clearcandidatecargo
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if (($player~ore_holds > 0) or (($player~organic_holds > 0) or ($player~colonist_holds > 0)))
+	if ($player~equipment_holds > 0)
+		setvar $switchboard~message "Mixed cargo found on SST ship in sector "&$candidate_sector&". Halting Script.*"
+		gosub :switchboard~switchboard
+		goto :endsst
+	end
+	send "q q jy l "&$candidate_planet&"* c*"
+	waiton "Citadel treasury contains"
+	gosub :player~quikstats
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :steal
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 if (($isbusted1 <> true) and ($isbusted2 <> true))
@@ -477,7 +507,6 @@ if (($isbusted1 <> true) and ($isbusted2 <> true))
 			end
 
 			if ($ship1equipment > 0)
-
 				setvar $send $send&"p t * * 0* 0* "
 				add $equipatport[$ship1sector] $ship1equipment
 				setvar $ship1equipment 0
@@ -749,9 +778,9 @@ return
 :refurb
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 if ($inship1)
-	send "l "&$psst_planet1&"* c p "&$refurbport&"*y"
+	send "l "&$psst_planet1&"* m n t * c p "&$refurbport&"*y"
 else
-	send "l "&$psst_planet2&"* c p "&$refurbport&"*y"
+	send "l "&$psst_planet2&"* m n t * c p "&$refurbport&"*y"
 end
 settextlinetrigger pwarpnorefurb :pwarpnorefurbfig "You do not have any fighters in Sector "
 settextlinetrigger pwarpyesrefurb :pwarpyesrefurb " Planetary TransWarp Drive Engaged! "

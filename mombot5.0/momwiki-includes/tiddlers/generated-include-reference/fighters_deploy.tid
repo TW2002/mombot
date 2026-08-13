@@ -1,0 +1,31 @@
+created: 20260813201411000
+modified: 20260813201411000
+title: fighters~deploy
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-fighters
+caption: fighters~deploy
+
+! fighters~deploy
+
+Shared `fighters` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
+
+''Include:'' [[fighters.ts]]
+''Defined at:'' `/include/fighters.ts:2`
+
+!! Loaded Variables
+* `$map~stardock`
+
+!! Source Excerpt
+<pre>
+# Deploy fighters to sector.  Uses the following variables which can be set:
+# $fighters~personal	Make fighters personal (TRUE/FALSE; default=corporate)
+# $fighters~toll		Drop toll fighters (default=defensive)
+# $fighters~offensive	Drop offensive fighters (default=defensive)
+# $fighters~amount		Amount of fighters to deploy (required)
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+loadvar $map~stardock
+gosub :player~quikstats
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

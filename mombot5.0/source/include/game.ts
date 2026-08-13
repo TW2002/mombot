@@ -542,7 +542,7 @@ if (($player~startinglocation = "Command") or ($player~startinglocation = "Citad
 	:game~tryagainsettings
 	killalltriggers
 	settextlinetrigger gameclosed1 :gameclosedsettings "I'm sorry, but this is a closed game."
-	settextlinetrigger gameclosed2 :gameclosedsettings "www.tradewars.com                                   Epic Interactive Strategy"
+	settextlinetrigger gameclosed2 :gameclosedsettings "Epic Interactive Strategy"
 	settextlinetrigger gameclosed3 :gameclosedsettings " day(s) to get back in."
 	settexttrigger phew :back_to_game "Command [TL"
 	setdelaytrigger delay_close :gameclosedsettings 5000
@@ -561,7 +561,7 @@ if (($player~startinglocation = "Command") or ($player~startinglocation = "Citad
 		goto :tryagainsettings
 	end
 	setdelaytrigger whistlewhileyouworksettings :whistlewhileyouworksettings 1500
-	settextlinetrigger at_game_menu :tryagainsettings "T - Play Trade Wars 2002"
+	settextlinetrigger at_game_menu :tryagainsettings "T - Play "
 	pause
 
 	:game~whistlewhileyouworksettings

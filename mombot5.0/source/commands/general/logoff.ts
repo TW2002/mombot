@@ -57,7 +57,7 @@ if (($cloakingout = true) and ($player~cloaks > 0))
 		gosub :switchboard~switchboard
 	end
 	send "q q q q  * * * * q q q q y y x *"
-	waiton "==-- Trade Wars 2002 --=="
+	waiton "==-- "
 else
 	if ($quittingwithnotimer)
 		setvar $switchboard~message "Logging out until I am at keys to login again.*"
@@ -71,7 +71,7 @@ else
 		waiton "Game Server"
 	else
 		send "q q q q  * * * * q q q q y*"
-		waiton "==-- Trade Wars 2002 --=="
+		waiton "==-- "
 	end
 end
 disconnect

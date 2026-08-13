@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: haggle.ts
 type: text/vnd.tiddlywiki
 tags: mombot include-reference include
@@ -11,12 +11,27 @@ Port haggle and negotiated trade helper logic.
 
 ''Source:'' `/include/haggle.ts`
 
+!! Loaded Variables
+No `loadvar` statements were detected in this include.
+
 !! Significant Exported Routines
 * [[haggle~haggle]] - Performs the standard port haggle routine and updates shared haggle values.
+* [[haggle~restoreautohaggle]] - Handles a shared trade or negotiation path.
+* [[haggle~starthaggle]] - Handles a shared trade or negotiation path.
+* [[haggle~configurenativehaggle]] - Handles a shared trade or negotiation path.
 
 !! Direct Include Users
+* `/commands/cashing/ppt.ts`
+* `/commands/cashing/trade.ts`
+* `/commands/resource/hagexp.ts`
+* `/include/merchant.ts`
+* `/modes/cashing/bbb.ts`
+* `/modes/cashing/salesman.ts`
 * `/modes/cashing/wppt.ts`
+* `/modes/cashing/wsst.ts`
+* `/modes/grid/wander.ts`
 * `/modes/resource/makeplanet.ts`
+* `/modes/resource/patp.ts`
 * `/modes/resource/upgrade.ts`
 
 !! Maintenance

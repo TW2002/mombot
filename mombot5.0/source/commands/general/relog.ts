@@ -65,6 +65,7 @@ gosub :relog_freeze_trigger
 settextlinetrigger dead :dead "What do you want to name your ship? (30 letters)"
 settexttrigger alive :alldone_relog "Command ["
 settexttrigger aliveonplanet :alldone_relog "Planet command (?=help) [D]"
+settexttrigger aliveincitadel :alldone_relog "Citadel command (?=help)"
 settexttrigger avoids :continueavoids "Do you wish to clear some avoids? (Y/N) [N]"
 settexttrigger messages :continuemessages "[Pause]"
 settexttrigger delete :continuedelete "[Pause] - Delete messages? (Y/N)"
@@ -177,29 +178,41 @@ killtrigger avoids
 killtrigger messages
 killtrigger alive
 killtrigger aliveonplanet
+killtrigger aliveincitadel
 killtrigger delete
-send "Z*  *  Z*  Z   A 9999*  Z*  "
+gosub :relog_freeze_trigger
+killtrigger 1
+setdelaytrigger 1 :didnotmakeittogame 10000
+gosub :player~quikstats
+killtrigger 1
+setvar $relog~starting_prompt $player~current_prompt
+if (($relog~starting_prompt <> "Planet") and ($relog~starting_prompt <> "Citadel"))
+	send "Z*  *  Z*  Z   A 9999*  Z*  "
+end
 setvar $switchboard~message "Auto-relog activated*"
 gosub :switchboard~switchboard
 loadvar $bot~startmacro
 if ($bot~startmacro <> "")
 	halt
 end
-gosub :relog_freeze_trigger
-killtrigger 1
-setdelaytrigger 1 :didnotmakeittogame 10000
-gosub :player~quikstats
-killtrigger 1
 
 :continuerelogmessage
 gosub :player~quikstats
 gosub :relog_freeze_trigger
 loadvar $planet~planet
 loadvar $relog_nocitadel
-if (($planet~planet <> 0) and ($player~current_sector <> 1) and ($player~current_sector <> $map~stardock))
+if (($planet~planet <> 0) and ($player~current_prompt = "Command") and ($player~current_sector <> 1) and ($player~current_sector <> $map~stardock))
 	gosub :planet~landingsub
 end
+if (($planet~successfulcitadel = true) and ($relog_nocitadel < 1))
+	setvar $switchboard~message "In citadel, planet "&$planet~planet&".*"
+	gosub :switchboard~switchboard
+	halt
+end
 gosub :player~currentprompt
+if ($player~current_prompt = "Citadel")
+	goto :relog_send_message
+end
 if ($player~current_prompt = "Planet")
 	gosub :planet~getplanetinfo
 	if ($planet~citadel > 0) and ($relog_nocitadel < 1)
@@ -212,6 +225,8 @@ if ($player~current_prompt = "Planet")
 	gosub :switchboard~switchboard
 	halt
 end
+
+:relog_send_message
 loadvar $relog_message
 if (($relog_message <> "") and ($relog_message <> "0"))
 	setvar $switchboard~message $relog_message
@@ -246,8 +261,9 @@ pause
 
 :continuerelog3
 gosub :killrelogtriggers
-settexttrigger loginsuccessful :continuerelog4 "Trade Wars 2002"
+settexttrigger loginsuccessful :continuerelog4 "==-- "
 settexttrigger loginsuccessful2 :continuerelog4 "Copyright (C) EIS"
+settexttrigger loginsuccessful3 :continuerelog4 "OpenTW Server"
 send $bot~servername & "*"
 pause
 
@@ -255,7 +271,8 @@ pause
 gosub :killrelogtriggers
 settexttrigger relog69 :continuerelog5 "Make a Selection:"
 settexttrigger relog3 :continuerelog5 "Selection (? for menu):"
-send "#"&#8
+settexttrigger relog5 :continuerelog5 ": "
+#send "#"&#8
 pause
 
 :continuerelog5
@@ -297,13 +314,21 @@ pause
 
 :enter_game_menu
 gosub :killrelogtriggers
+settexttrigger gamelogprompt :continue_relog_game_log "Show today's log?"
+setdelaytrigger unfreezingtrigger :relog_attempt 20000
+send "T*"
+pause
+
+:continue_relog_game_log
+gosub :relog_freeze_trigger
+killtrigger gamelogprompt
 settexttrigger postgamepause :continue_relog_game_pause "[Pause]"
 settexttrigger password :continuepassword "A password is required to enter this game."
 settexttrigger alive :done_do_relog "Command ["
 settexttrigger aliveonplanet :done_do_relog "Planet command (?=help) [D]"
 settexttrigger aliveincitadel :done_do_relog "Citadel command (?=help)"
 setdelaytrigger relogenteredcheck :relog_check_entered_game 100
-send "T**"
+send "*"
 pause
 
 :continue_relog_game_pause
@@ -352,10 +377,12 @@ killtrigger relog69
 killtrigger relog89
 killtrigger loginsuccessful
 killtrigger loginsuccessful2
+killtrigger loginsuccessful3
 killtrigger firstpause
 killtrigger postgamepause
 killtrigger password
 killtrigger enter
+killtrigger gamelogprompt
 killtrigger relogmenupromptcheck
 killtrigger relogenteredcheck
 killtrigger alive

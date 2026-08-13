@@ -1,27 +1,30 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: PLAYER~SWATHOFF
+created: 20260813201411000
+modified: 20260813201411000
+title: player~swathoff
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-player
-caption: PLAYER~SWATHOFF
+caption: player~swathoff
 
-! PLAYER~SWATHOFF
+! player~swathoff
 
 Shared `player` routine exported for cross-file use. Use the caller list and source excerpt below to confirm the exact behavior.
 
 ''Include:'' [[player.ts]]
-''Defined at:'' `/include/player.ts:1116`
+''Defined at:'' `/include/player.ts:808`
+
+!! Loaded Variables
+* `$player~swathoff`
 
 !! Source Excerpt
 <pre>
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-loadvar $PLAYER~SWATHOFF
-if ($PLAYER~SWATHOFF = FALSE)
-  settexttrigger SWATHISON :SWATHISON &quot;Command [TL=&quot;
-  setdelaytrigger SWATHISOFF :SWATHISOFF 2000
-  pause
-  :PLAYER~SWATHISON
-  killtrigger SWATHISOFF
+loadvar $player~swathoff
+if ($player~swathoff = false)
+	settexttrigger swathison :swathison &quot;Command [TL=&quot;
+	setdelaytrigger swathisoff :swathisoff 2000
+	pause
+	:player~swathison
+	killtrigger swathisoff
 </pre>
 
 !! Notes

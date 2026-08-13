@@ -1,0 +1,31 @@
+created: 20260813201411000
+modified: 20260813201411000
+title: move~twarp
+type: text/vnd.tiddlywiki
+tags: mombot include-reference routine include-move
+caption: move~twarp
+
+! move~twarp
+
+Runs a shared movement or warp helper path.
+
+''Include:'' [[move.ts]]
+''Defined at:'' `/include/move.ts:399`
+
+!! Loaded Variables
+* `$ship~ship_max_attack`
+
+!! Source Excerpt
+<pre>
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $player~twarpsuccess false
+setvar $player~original 9999999
+setvar $player~target 0
+if ($player~current_sector = $player~warpto)
+	setvar $player~msg &quot;Already in that sector!&quot;
+	goto :move~twarpdone
+elseif (($player~warpto &lt;= 0) or ($player~warpto &gt; sectors))
+</pre>
+
+!! Notes
+This summary is generated from the routine name plus a curated override list for the busiest shared helpers. Treat it as a navigation aid, then verify against the source if the exact side effects matter.

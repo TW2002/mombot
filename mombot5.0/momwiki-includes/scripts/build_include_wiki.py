@@ -24,6 +24,7 @@ GENERATED_DIR = TIDDLERS_DIR / "generated-include-reference"
 LABEL_RE = re.compile(r"^:([A-Za-z0-9_~]+)\s*$", re.MULTILINE)
 CALL_RE = re.compile(r"\b(?:gosub|goto)\s*:([A-Za-z0-9_~]+)\b", re.IGNORECASE)
 INCLUDE_RE = re.compile(r'include\s+"source\\include\\([^"\\]+)"', re.IGNORECASE)
+LOADVAR_RE = re.compile(r"\bloadvar\s+(\$[A-Za-z0-9_~]+)\b", re.IGNORECASE)
 
 INCLUDE_OVERVIEWS = {
     "bot": "Core bot bootstrap, banner, help, hotkey, menu, and variable-loading routines.",
@@ -145,6 +146,7 @@ class LabelInfo:
     normalized_label: str
     line_no: int
     excerpt: str
+    loadvars: list[str] = field(default_factory=list)
     callers: set[str] = field(default_factory=set)
 
 
@@ -153,6 +155,7 @@ class IncludeInfo:
     stem: str
     path: Path
     labels: list[LabelInfo] = field(default_factory=list)
+    loadvars: list[str] = field(default_factory=list)
     consumers: set[str] = field(default_factory=set)
 
 
@@ -224,6 +227,24 @@ def build_excerpt(body: str, max_lines: int = 8) -> str:
     return "\n".join(collected).strip()
 
 
+def extract_loadvars(body: str) -> list[str]:
+    variables: list[str] = []
+    seen: set[str] = set()
+    for raw_line in body.splitlines():
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#") or stripped.startswith("//"):
+            continue
+        match = LOADVAR_RE.search(stripped)
+        if not match:
+            continue
+        variable = match.group(1).lower()
+        if variable in seen:
+            continue
+        seen.add(variable)
+        variables.append(variable)
+    return variables
+
+
 def parse_include_files(source_root: Path) -> dict[str, IncludeInfo]:
     include_dir = source_root / "include"
     includes: dict[str, IncludeInfo] = {}
@@ -231,6 +252,7 @@ def parse_include_files(source_root: Path) -> dict[str, IncludeInfo]:
         text = read_text(path)
         matches = list(LABEL_RE.finditer(text))
         info = IncludeInfo(stem=path.stem, path=path)
+        info.loadvars = extract_loadvars(text)
         for idx, match in enumerate(matches):
             label = match.group(1)
             start = match.end()
@@ -243,6 +265,7 @@ def parse_include_files(source_root: Path) -> dict[str, IncludeInfo]:
                     normalized_label=label.upper(),
                     line_no=line_no,
                     excerpt=build_excerpt(body),
+                    loadvars=extract_loadvars(body),
                 )
             )
         includes[path.stem] = info
@@ -355,6 +378,26 @@ def format_code_list(items: Iterable[str]) -> list[str]:
     return [f"* `/{item}`" for item in items]
 
 
+def format_variable_list(items: Iterable[str]) -> list[str]:
+    return [f"* `{item}`" for item in items]
+
+
+def group_variables_by_namespace(variables: Iterable[str]) -> dict[str, list[str]]:
+    grouped: dict[str, list[str]] = defaultdict(list)
+    for variable in variables:
+        namespace = variable.split("~", 1)[0] + "~" if "~" in variable else variable
+        grouped[namespace].append(variable)
+    return dict(sorted(grouped.items(), key=lambda item: item[0]))
+
+
+def find_label(includes: list[IncludeInfo], normalized_label: str) -> tuple[IncludeInfo, LabelInfo] | None:
+    for include_info in includes:
+        for label in include_info.labels:
+            if label.normalized_label == normalized_label:
+                return include_info, label
+    return None
+
+
 def function_tiddler_title(label: str) -> str:
     return label
 
@@ -363,7 +406,7 @@ def include_tiddler_title(filename: str) -> str:
     return filename
 
 
-def build_home_body(includes: list[IncludeInfo], routine_count: int) -> str:
+def build_home_body(includes: list[IncludeInfo], routine_count: int, variable_count: int) -> str:
     lines = [
         "! Mombot Include Reference",
         "",
@@ -371,21 +414,25 @@ def build_home_body(includes: list[IncludeInfo], routine_count: int) -> str:
         "",
         f"* Include files documented: {len(includes)}",
         f"* Significant exported routines documented: {routine_count}",
+        f"* Standard variables loaded by `loadvars~loadvars`: {variable_count}",
         "",
         "!! Browse",
         "* [[Include Directory]]",
         "* [[Routine Directory]]",
+        "* [[Variable Reference]]",
         "* [[Include Usage Summary]]",
         "* [[Include Reference Conventions]]",
         "",
         "!! Scope",
         "* One tiddler per include file",
         "* One tiddler per significant exported include routine",
+        "* Standard variable reference generated from `loadvars~loadvars`",
         "* Caller lists based on current non-retired `source/*.ts` files",
         "",
         "!! Notes",
         "* Significant routines are namespaced include labels with at least one caller outside their own file.",
         "* Routine summaries are generated from the label name plus a curated override table for the busiest shared helpers.",
+        "* Loaded variable names are normalized to lowercase because TWX script variables are case-insensitive.",
         "* Use the source excerpt and caller list when exact behavior matters.",
     ]
     return "\n".join(lines)
@@ -398,10 +445,11 @@ def build_conventions_body() -> str:
             "",
             "* ''Include file:'' a file under `source/include`.",
             "* ''Significant exported routine:'' a namespaced label like `PLAYER~QUIKSTATS` or `PLANET~GETPLANETINFO` that is called from outside its own include file.",
+            "* ''Variable reference:'' the distinct variables loaded by the standard `loadvars~loadvars` include routine.",
             "* ''Direct include users:'' files that explicitly `include \"source\\include\\...\"` that include file.",
             "* ''External callers:'' files that `gosub` or `goto` the routine label from outside its owning include file.",
             "",
-            "Retired scripts are intentionally excluded from the caller counts so the reference stays focused on the current tree.",
+            "Retired scripts are intentionally excluded from the caller counts so the reference stays focused on the current tree. Loaded variable names are lowercased in generated pages for consistent lookup.",
         ]
     )
 
@@ -479,6 +527,42 @@ def build_include_usage_summary_body(includes: list[IncludeInfo]) -> str:
     return "\n".join(lines)
 
 
+def build_variable_reference_body(includes: list[IncludeInfo], source_root: Path) -> str:
+    found = find_label(includes, "LOADVARS~LOADVARS")
+    if found is None:
+        return "\n".join(
+            [
+                "! Variable Reference",
+                "",
+                "The `loadvars~loadvars` routine was not found in the current include tree.",
+            ]
+        )
+
+    include_info, label = found
+    rel_path = relative_source_path(include_info.path, source_root)
+    grouped = group_variables_by_namespace(label.loadvars)
+    lines = [
+        "! Variable Reference",
+        "",
+        f"Standard variables loaded by [[{function_tiddler_title(label.raw_label)}]] in [[{include_tiddler_title(include_info.path.name)}]].",
+        "",
+        f"* Source: `/{rel_path}:{label.line_no}`",
+        f"* Distinct loaded variables: {len(label.loadvars)}",
+        "",
+        "!! Variables Loaded By Namespace",
+    ]
+
+    if not label.loadvars:
+        lines.append("No `loadvar` statements were detected in `loadvars~loadvars`.")
+        return "\n".join(lines)
+
+    for namespace, variables in grouped.items():
+        lines.extend(["", f"!!! `{namespace}`"])
+        lines.extend(format_variable_list(variables))
+
+    return "\n".join(lines)
+
+
 def build_include_body(include_info: IncludeInfo, source_root: Path) -> str:
     routines = significant_labels(include_info)
     rel_path = relative_source_path(include_info.path, source_root)
@@ -489,8 +573,18 @@ def build_include_body(include_info: IncludeInfo, source_root: Path) -> str:
         "",
         f"''Source:'' `/{rel_path}`",
         "",
-        "!! Significant Exported Routines",
+        "!! Loaded Variables",
     ]
+
+    if include_info.loadvars:
+        lines.extend(format_variable_list(include_info.loadvars))
+    else:
+        lines.append("No `loadvar` statements were detected in this include.")
+
+    lines.extend([
+        "",
+        "!! Significant Exported Routines",
+    ])
 
     if routines:
         for label in routines:
@@ -527,8 +621,17 @@ def build_function_body(include_info: IncludeInfo, label: LabelInfo, source_root
         f"''Include:'' [[{include_tiddler_title(include_info.path.name)}]]",
         f"''Defined at:'' `/{rel_path}:{label.line_no}`",
         "",
-        "!! Source Excerpt",
+        "!! Loaded Variables",
     ]
+    if label.loadvars:
+        lines.extend(format_variable_list(label.loadvars))
+    else:
+        lines.append("No `loadvar` statements were detected in this routine.")
+
+    lines.extend([
+        "",
+        "!! Source Excerpt",
+    ])
     if label.excerpt:
         lines.append("<pre>")
         lines.append(html.escape(label.excerpt))
@@ -546,9 +649,9 @@ def build_function_body(include_info: IncludeInfo, label: LabelInfo, source_root
     return "\n".join(lines)
 
 
-def seed_manual_tiddlers(tiddlers_dir: Path, includes: list[IncludeInfo], routine_count: int) -> None:
+def seed_manual_tiddlers(tiddlers_dir: Path, includes: list[IncludeInfo], routine_count: int, variable_count: int) -> None:
     seeds = {
-        "Mombot Include Reference": build_home_body(includes, routine_count),
+        "Mombot Include Reference": build_home_body(includes, routine_count, variable_count),
         "Include Reference Conventions": build_conventions_body(),
     }
     for title, body in seeds.items():
@@ -573,6 +676,8 @@ def main() -> int:
 
     includes = sorted(includes_by_stem.values(), key=lambda item: item.path.name.lower())
     routine_count = sum(len(significant_labels(include_info)) for include_info in includes)
+    loadvars_label = find_label(includes, "LOADVARS~LOADVARS")
+    variable_count = len(loadvars_label[1].loadvars) if loadvars_label is not None else 0
 
     write_tid(
         tid_path(generated_dir, "Include Directory"),
@@ -590,6 +695,12 @@ def main() -> int:
         tid_path(generated_dir, "Include Usage Summary"),
         "Include Usage Summary",
         build_include_usage_summary_body(includes),
+        tags=("mombot", "include-reference", "directory"),
+    )
+    write_tid(
+        tid_path(generated_dir, "Variable Reference"),
+        "Variable Reference",
+        build_variable_reference_body(includes, source_root),
         tags=("mombot", "include-reference", "directory"),
     )
 
@@ -610,7 +721,7 @@ def main() -> int:
                 extra_fields={"caption": label.raw_label},
             )
 
-    seed_manual_tiddlers(tiddlers_dir, includes, routine_count)
+    seed_manual_tiddlers(tiddlers_dir, includes, routine_count, variable_count)
 
     if args.skip_build:
         print(f"Generated include reference tiddlers in {generated_dir}")

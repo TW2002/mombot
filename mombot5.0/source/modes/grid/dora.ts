@@ -291,7 +291,7 @@ setvar $pathbacki 0
 # Before going back, check we are not locked in.
 setarray $pathbackhasoptions $maxpathback
 
-# we store this because tradewars stores it based on warp data, not density scan
+# Store this from warp data rather than the density scan.
 setarray $warpcount sectors
 
 setvar $futuredestsadded 0

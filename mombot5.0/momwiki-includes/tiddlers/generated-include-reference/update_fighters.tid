@@ -1,5 +1,5 @@
-created: 20260424133603000
-modified: 20260424133603000
+created: 20260813201411000
+modified: 20260813201411000
 title: update~fighters
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-update
@@ -12,16 +12,19 @@ Runs the shared fighter update/import routine.
 ''Include:'' [[update.ts]]
 ''Defined at:'' `/include/update.ts:2`
 
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
+
 !! Source Excerpt
 <pre>
 setvar $switchboard~message &quot;Loading current fighter locations. . .*&quot;
-	gosub :switchboard~switchboard
-	getSectorParameter 2 &quot;FIG_COUNTR&quot; $previousCount
-	getSectorParameter 2 &quot;FUEL_COUNT&quot; $previousFuelCount
-	getSectorParameter 2 &quot;ORG_COUNT&quot; $previousOrgCount
-	getSectorParameter 2 &quot;EQU_COUNT&quot; $previousEquipCount
-	getSectorParameter 2 &quot;EQS_COUNT&quot; $previousEquipSellCount
-	getSectorParameter 2 &quot;FB_COUNT&quot; $previousFuelBuyCount
+gosub :switchboard~switchboard
+getsectorparameter 2 &quot;FIG_COUNTR&quot; $previouscount
+getsectorparameter 2 &quot;FUEL_COUNT&quot; $previousfuelcount
+getsectorparameter 2 &quot;ORG_COUNT&quot; $previousorgcount
+getsectorparameter 2 &quot;EQU_COUNT&quot; $previousequipcount
+getsectorparameter 2 &quot;EQS_COUNT&quot; $previousequipsellcount
+getsectorparameter 2 &quot;FB_COUNT&quot; $previousfuelbuycount
 </pre>
 
 !! Notes

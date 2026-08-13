@@ -287,6 +287,9 @@ setvar $move~success false
 gosub :player~quikstats
 gosub :ship~getshipstats
 setvar $player~startinglocation $player~current_prompt
+if ($player~startinglocation = "Command")
+	setvar $player~ondock 0
+end
 
 # uses $bot~startinglocation in mow.ts command
 
@@ -456,34 +459,8 @@ if (($player~alignment < 1000) and ((($player~weareadjdock = false) and (($playe
 		goto :move~twarpdone
 	end
 end
-if ($player~red_adj <> 0)
-	send "* mz" $player~warpto "*"
-else
-	if ($player~ondock = 1)
-		#    send "q q * c u y q mz" $PLAYER~WARPTO "*"
-		send "q q * mz" $player~warpto "*"
-		setvar $player~ondock 0
-	elseif ($player~startinglocation = "Citadel")
-		#    send "q t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
-		send "q t*t1* q q * mz" $player~warpto "*"
-	elseif ($player~startinglocation = "Planet")
-		#    send "t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
-		send "t*t1* q q * mz" $player~warpto "*"
-	else
-		if ($player~fasttwarp)
-			send "mz" $player~warpto "*"
-		else
-			#      send "q q q n n 0 * c u y q mz" $PLAYER~WARPTO "*"
-			send "q q q n n 0 * mz" $player~warpto "*"
-		end
-	end
-end
-
-# Added by Shadow 5/13/24
-settextlinetrigger twarpstart :twarpstart "That Warp Lane is not adjacent."
-pause
-
-:twarpstart
+gosub :player~currentprompt
+gosub :move~killtwarptriggers
 settexttrigger there :move~adj_warp "You are already in that sector!"
 settextlinetrigger adj_warp :move~adj_warp "Sector  : "&$player~warpto&" "
 settexttrigger locking :move~locking "Do you want to engage the TransWarp drive?"
@@ -491,6 +468,29 @@ settexttrigger igd :move~twarpigd "An Interdictor Generator in this sector holds
 settexttrigger noturns :move~twarpphotoned "Your ship was hit by a Photon and has been disabled"
 settexttrigger noroute :move~twarpnoroute "Do you really want to warp there? (Y/N)"
 settextlinetrigger no_fuel :move~twarpnofuel "You do not have enough Fuel Ore"
+settexttrigger autopilot :move~twarpautopilot "Engage the Autopilot?"
+
+if ($player~red_adj <> 0)
+	send "* mz" $player~warpto "*"
+else
+	if ($player~ondock = 1)
+		#    send "q q * c u y q mz" $PLAYER~WARPTO "*"
+		send "q q * mz" $player~warpto "*"
+		setvar $player~ondock 0
+	elseif ($player~current_prompt = "Citadel")
+		#    send "q t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
+		send "q t*t1* q q * mz" $player~warpto "*"
+	elseif ($player~current_prompt = "Planet")
+		#    send "t*t1* q q * c u y q mz" $PLAYER~WARPTO "*"
+		send "t*t1* q q * mz" $player~warpto "*"
+	else
+		if ($player~fasttwarp)
+			send "mz" $player~warpto "*"
+		else
+			send "* mz" $player~warpto "*"
+		end
+	end
+end
 pause
 
 :move~adj_warp
@@ -505,6 +505,7 @@ settextlinetrigger twarp_lock :move~twarp_lock "TransWarp Locked"
 settextlinetrigger no_twrp_lock :move~no_twarp_lock "No locating beam found"
 settextlinetrigger twarp_adj :move~twarp_adj "<Set NavPoint>"
 settextlinetrigger no_fuel :move~twarpnofuel "You do not have enough Fuel Ore"
+settexttrigger autopilot :move~twarpautopilot "Engage the Autopilot?"
 pause
 
 :move~twarpnofuel
@@ -523,6 +524,12 @@ goto :move~twarpdone
 gosub :move~killtwarptriggers
 send "n* z* "
 setvar $player~msg "No route available to that sector!"
+goto :move~twarpdone
+
+:move~twarpautopilot
+gosub :move~killtwarptriggers
+send "n"
+setvar $player~msg "AutoPilot refused during T-warp."
 goto :move~twarpdone
 
 :move~no_twarp_lock
@@ -567,10 +574,95 @@ killtrigger locking
 killtrigger igd
 killtrigger noturns
 killtrigger noroute
+killtrigger autopilot
 killtrigger twarp_lock
 killtrigger no_twrp_lock
 killtrigger twarp_adj
 killtrigger no_fuel
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:move~bwarp
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $player~bwarpsuccess false
+
+send "b"
+settexttrigger nobwarp :nobwarp "Would you like to place a subspace order for one? "
+settexttrigger yesbwarp :yesbwarp "Beam to what sector? (U="
+settexttrigger igbwarp :bwarpphotoned "Your ship was hit by a Photon and has been disabled"
+pause
+
+:move~nobwarp
+gosub :killbwarptriggers
+send "*"
+setvar $player~msg "No Bwarp installed on this planet*"
+#gosub :switchboard~switchboard
+return
+
+:move~yesbwarp
+gosub :killbwarptriggers
+send $player~warpto&"*"
+settexttrigger bwarp_lock :bwarp_no_range "This planetary transporter does not have the range."
+settexttrigger no_bwrp_lock :no_bwarp_lock "Do you want to make this transport blind?"
+settexttrigger bwarp_ready :bwarp_lock "All Systems Ready, shall we engage?"
+settexttrigger bwarp_avoid :bwarp_avoid "Do you really want to transport there?"
+settextlinetrigger no_bwarpfuel :bwarpnofuel "This planet does not have enough Fuel Ore to transport you."
+pause
+
+:move~bwarp_no_range
+gosub :killbwarptriggers
+setvar $player~msg "Not enough range on this planet's transporter.*"
+#gosub :switchboard~switchboard
+return
+
+:move~no_bwarp_lock
+gosub :killbwarptriggers
+send "* "
+setvar $player~target $player~warpto
+setsectorparameter $player~target "FIGSEC" false
+setvar $player~msg "No fighter down at that destination, aborting*"
+#gosub :switchboard~switchboard
+return
+
+:move~bwarp_avoid
+gosub :killbwarptriggers
+send "* "
+setvar $player~target $player~warpto
+#setsectorparameter $player~target "FIGSEC" false
+setvar $player~msg "Sector is avoided, aborting*"
+#gosub :switchboard~switchboard
+return
+
+:move~bwarp_lock
+gosub :killbwarptriggers
+send "y     * "
+setvar $player~target $player~warpto
+setsectorparameter $player~target "FIGSEC" true
+#setvar $switchboard~message "B-warp completed.*"
+#gosub :switchboard~switchboard
+setvar $player~bwarpsuccess true
+return
+
+:move~bwarpnofuel
+gosub :killbwarptriggers
+setvar $player~msg "Not enough fuel on the planet to make the transport!*"
+#gosub :switchboard~switchboard
+return
+
+:move~bwarpphotoned
+gosub :killbwarptriggers
+setvar $player~msg "I have been photoned and can not B-warp!*"
+#gosub :switchboard~switchboard
+return
+
+:move~killbwarptriggers
+killtrigger yesbwarp
+killtrigger igbwarp
+killtrigger nobwarp
+killtrigger bwarp_lock
+killtrigger no_bwrp_lock
+killtrigger bwarp_ready
+killtrigger no_bwarpfuel
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -586,9 +678,12 @@ end
 setvar $player~k 1
 while (sector.backdoors[$player~target][$player~k] > 0)
 	setvar $player~red_adj sector.backdoors[$player~target][$player~k]
-	gosub :move~test_red_sector
-	if ($player~foundsector = true)
-		goto :move~sectorlocked
+	# fig check added by shadow; could remove to have it actually test them but this gives a result faster if figs are known
+	if ($player~red_adj > 11) and (sector.figs.quantity[$player~red_adj] > 0) and ((sector.figs.owner[$player~red_adj] = "belong to your Corp") or (sector.figs.owner[$player~red_adj] = "yours"))
+		gosub :move~test_red_sector
+		if ($player~foundsector = true)
+			goto :move~sectorlocked
+		end
 	end
 	add $player~k 1
 end
@@ -624,27 +719,38 @@ settexttrigger twarpblind :move~twarpblind "Do you want to make this jump blind?
 settexttrigger twarplocked :move~twarplocked "All Systems Ready, shall we engage? "
 settextlinetrigger twarpvoided :move~twarpvoided "Danger Warning Overridden"
 settextlinetrigger twarpadj :move~twarpadj "<Set NavPoint>"
+settexttrigger twarpautopilot :move~twarpfindautopilot "Engage the Autopilot?"
 pause
 
 :move~twarpadj
 gosub :move~killfindjumpsectors
 send " * "
+waitfor "Command [TL="
 return
 
 :move~twarpvoided
 gosub :move~killfindjumpsectors
 send " N N "
+waitfor "Command [TL="
 return
 
 :move~twarplocked
 gosub :move~killfindjumpsectors
 send " * "
+waitfor "Command [TL="
 setvar $player~foundsector true
 return
 
 :move~twarpblind
 gosub :move~killfindjumpsectors
 send " N "
+waitfor "Command [TL="
+return
+
+:move~twarpfindautopilot
+gosub :move~killfindjumpsectors
+send " N "
+waitfor "Command [TL="
 return
 
 :move~killfindjumpsectors
@@ -652,6 +758,7 @@ killtrigger twarpblind
 killtrigger twarplocked
 killtrigger twarpvoided
 killtrigger twarpadj
+killtrigger twarpautopilot
 return
 
 include "source\include\switchboard"

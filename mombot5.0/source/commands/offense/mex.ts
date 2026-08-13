@@ -1,16 +1,19 @@
+gosub :loadvars~loadvars
 gosub :help~initialize
-setvar $help~help[1] $help~tab&"Move/attack/export using a safe ship."
+setvar $help~help[1] $help~tab&"MEX - Mass Enter Export"
 setvar $help~help[2] $help~tab&"   "
-setvar $help~help[3] $help~tab&"Usage:  mex [target sector] [safe ship] {tow ship}"
-setvar $help~help[4] $help~tab&"   "
-setvar $help~help[5] $help~tab&"   [target sector] - adjacent sector to attack."
-setvar $help~help[6] $help~tab&"   [safe ship] - ship to xport into after attack."
-setvar $help~help[7] $help~tab&"   {tow ship} - optional ship to tow."
-setvar $help~help[8] $help~tab&"   Run from Command or Citadel."
+setvar $help~help[3] $help~tab&"Triggers off a photon fired from current sector.   "
+setvar $help~help[4] $help~tab&"Moves you into attack sector, then exports to  "
+setvar $help~help[5] $help~tab&"the safe ship.   "
+setvar $help~help[6] $help~tab&"   "
+setvar $help~help[7] $help~tab&"Usage:  mex [target sector] [safe ship] {tow ship}"
+setvar $help~help[8] $help~tab&"   "
+setvar $help~help[9] $help~tab&"   [target sector] - adjacent sector to attack."
+setvar $help~help[10] $help~tab&"   [safe ship] - ship to xport into after attack."
+setvar $help~help[11] $help~tab&"   {tow ship} - optional ship to tow."
+setvar $help~help[12] $help~tab&"   "
+setvar $help~help[13] $help~tab&"Once set, triggers will timeout after 5 minutes."
 gosub :help~helpfile
-
-loadvar $user_command_line
-loadvar $bot_name
 
 gosub :player~quikstats
 if (($player~current_prompt <> "Citadel") and ($player~current_prompt <> "Command"))
@@ -42,21 +45,21 @@ else
 	waiton "Command [TL="
 end
 setvar $nojoy false
-getword $user_command_line $parm1 1
+getword $bot~user_command_line $parm1 1
 isnumber $tst $parm1
 if ($tst = 0)
 	setvar $nojoy true
 elseif ($parm1 < 1)
 	setvar $nojoy true
 end
-getword $user_command_line $parm2 2
+getword $bot~user_command_line $parm2 2
 isnumber $tst $parm2
 if ($tst = 0)
 	setvar $nojoy true
 elseif ($parm2 < 1)
 	setvar $nojoy true
 end
-getword $user_command_line $parm3 3
+getword $bot~user_command_line $parm3 3
 isnumber $tst $parm3
 if ($tst = 0)
 	setvar $nojoy true
@@ -177,7 +180,7 @@ setvar $idx 1
 setarray $scanarray 1000
 setvar $tmp currentansiline
 
-getwordpos $tmp $pos "[0;32m just"
+getwordpos $tmp $pos #27&"[0;32m just"
 if ($pos = 0)
 	goto :reload
 end
@@ -194,35 +197,30 @@ settextlinetrigger damage :collect_damage "The console reports damages of "
 pause
 
 :collect_pod
-setvar $scan_array[$idx] currentline
+setvar $scanarray[$idx] currentline
 add $idx 1
 
 :damage_done
 killalltriggers
 if ($idx > 1)
-	send "'*"
-	waiton "Comm-link open on sub-space band"
+	setvar $switchboard~message ""
 	setvar $j 1
 	while ($j < $idx)
-		send $scanarray[$j]&"*"
+		setvar $switchboard~message $switchboard~message&$scanarray[$j]&"*"
 		add $j 1
 	end
-	send "*"
-	waiton "Sub-space comm-link terminated"
+	gosub :switchboard~switchboard
 end
 halt
 
 :status
-send "'*"
-waiton "Type sub-space message"
-send "{" $bot_name "} - MEX Attacking: "&$parm1&", SAFE Ship: "&$parm2
+setvar $switchboard~message "MEX Attacking: "&$parm1&", SAFE Ship: "&$parm2
 if ($parm3 >= 1)
-	send ", Towing Ship: "&$parm3
+	setvar $switchboard~message $switchboard~message&", Towing Ship: "&$parm3
 end
-send "**"
-waiton "Sub-space comm-link terminated"
+setvar $switchboard~message $switchboard~message&"*"
+gosub :switchboard~switchboard
 return
-include "source\include\player"
 
 :pad
 setvar $pad ""
@@ -237,5 +235,9 @@ elseif ($len = 4)
 	setvar $pad " "
 end
 return
-include "source\include\switchboard.ts"
+
+# includes:
+include "source\include\loadvars"
+include "source\include\player"
 include "source\include\help"
+include "source\include\switchboard.ts"

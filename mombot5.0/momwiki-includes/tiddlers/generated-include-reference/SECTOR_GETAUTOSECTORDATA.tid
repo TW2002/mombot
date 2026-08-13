@@ -1,24 +1,28 @@
-created: 20260424133603000
-modified: 20260424133603000
-title: SECTOR~GETAUTOSECTORDATA
+created: 20260813201411000
+modified: 20260813201411000
+title: sector~getautosectordata
 type: text/vnd.tiddlywiki
 tags: mombot include-reference routine include-sector
-caption: SECTOR~GETAUTOSECTORDATA
+caption: sector~getautosectordata
 
-! SECTOR~GETAUTOSECTORDATA
+! sector~getautosectordata
 
 Loads sector data for the current/implicit sector.
 
 ''Include:'' [[sector.ts]]
-''Defined at:'' `/include/sector.ts:1`
+''Defined at:'' `/include/sector.ts:334`
+
+!! Loaded Variables
+No `loadvar` statements were detected in this routine.
 
 !! Source Excerpt
 <pre>
-setvar $SECTOR~ENDLINE &quot;_ENDLINE_&quot;
-setvar $SECTOR~STARTLINE &quot;_STARTLINE_&quot;
-setarray $SECTOR~ADJACENT 7
-setarray $SECTOR~ADJACENT_SECTOR 7
-setvar $SECTOR~ADJCOUNT 1
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $sector~endline &quot;_ENDLINE_&quot;
+setvar $sector~startline &quot;_STARTLINE_&quot;
+setarray $sector~adjacent 7
+setarray $sector~adjacent_sector 7
+setvar $sector~adjcount 1
 killalltriggers
 </pre>
 
