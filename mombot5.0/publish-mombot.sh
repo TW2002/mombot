@@ -20,6 +20,8 @@ SCRIPTING_WIKI_BUILDER="${MOMBOT_SCRIPTING_WIKI_BUILDER:-/Users/mosleym/.codex/s
 INCLUDE_WIKI_DIR="$ROOT/momwiki-includes"
 INCLUDE_WIKI_GENERATOR="$INCLUDE_WIKI_DIR/scripts/build_include_wiki.py"
 INCLUDE_WIKI_HTML="$INCLUDE_WIKI_DIR/output/mombot-include-reference.html"
+LIVE_SCRIPTING_WIKI="$LIVE_ROOT/Mombot_Scripting.html"
+LIVE_INCLUDE_WIKI="$LIVE_ROOT/Mombot_Reference.html"
 ZIP_PATH="$RELEASE_ROOT/mombot.zip"
 HELP_SOURCE="$(mktemp -d "${TMPDIR:-/tmp}/mombot-help-source.XXXXXX")"
 GENERATED_HELP="$(mktemp -d "${TMPDIR:-/tmp}/mombot-help.XXXXXX")"
@@ -168,8 +170,14 @@ echo "Copied $SOURCE_MOMBOT_CTS to $RELEASE_TREE/mombot.cts"
 cp "$WIKI_HTML" "$RELEASE_TREE/Mombot_Scripting.html"
 echo "Copied $WIKI_HTML to $RELEASE_TREE/Mombot_Scripting.html"
 
+cp "$WIKI_HTML" "$LIVE_SCRIPTING_WIKI"
+echo "Copied $WIKI_HTML to $LIVE_SCRIPTING_WIKI"
+
 cp "$INCLUDE_WIKI_HTML" "$RELEASE_TREE/Mombot_Reference.html"
 echo "Copied $INCLUDE_WIKI_HTML to $RELEASE_TREE/Mombot_Reference.html"
+
+cp "$INCLUDE_WIKI_HTML" "$LIVE_INCLUDE_WIKI"
+echo "Copied $INCLUDE_WIKI_HTML to $LIVE_INCLUDE_WIKI"
 
 rsync -a --delete "$GENERATED_HELP/" "$RELEASE_HELP/"
 

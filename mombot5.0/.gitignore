@@ -17,6 +17,10 @@
 [Ss]trip[Ee]xample.cts
 /source/modes/cashing/wsst2.ts
 /source/modes/cashing/wsst2.cts
+/source/modes/cashing/twsst.ts
+/source/modes/cashing/twsst.cts
+/momwiki-includes/tiddlers/*.tid
+/momwiki-includes/tiddlers/**/*.tid
 MakeMSI.exe.config
 MakeBot.exe.config
 *.wixpdb
