@@ -354,12 +354,17 @@ gettext currentline&" [XX][XX][XX]" $temp ">[Busted:" "]<"
 if ($temp <> "")
 	isnumber $test $temp
 	if ($test)
-		if (($temp <= sectors) and ($temp > 0))
-				setsectorparameter $temp "BUSTED" false
-				setsectorparameter $temp "FAKEBUST" false
+			if (($temp <= sectors) and ($temp > 0))
+					setsectorparameter $temp "BUSTED" false
+					setsectorparameter $temp "FAKEBUST" false
+					loadvar $laststealrobsector
+					if ($laststealrobsector = $temp)
+						setvar $laststealrobsector 0
+						savevar $laststealrobsector
+					end
+			end
 		end
 	end
-end
 settextlinetrigger  clearbusts      :erasebusts     ">[Busted:"
 pause
 

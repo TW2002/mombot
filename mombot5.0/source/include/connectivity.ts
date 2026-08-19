@@ -22,7 +22,11 @@ if ($connectivity~last_prompt_seen = currentline)
 
 	if ((currentline = $game~game_menu_prompt) or (currentline = "Enter your choice: ") or (currentline = "Selection (? for menu): "))
 		loadvar $bot~mode
-		if (($connectivity~relogging <> true) and ($bot~mode <> "Xenter"))
+		loadvar $xenter~active
+		if (($xenter~active = true) and ($bot~mode <> "Xenter"))
+			setvar $xenter~active false
+			savevar $xenter~active
+		elseif (($connectivity~relogging <> true) and ($bot~mode <> "Xenter"))
 			setvar $connectivity~relog_message "Stuck on baffling prompt: ["&currentline&"], so I relogged.*"
 			savevar $connectivity~relog_message
 			disconnect
@@ -97,6 +101,7 @@ if ($connectivity~first_time)
 end
 settexttrigger relog69 :continuerelog5 "Make a Selection:"
 settexttrigger relog3 :continuerelog5 "Selection (? for menu):"
+settexttrigger relog5 :continuerelog5 "Select a game"
 pause
 
 :connectivity~continuerelog5
@@ -112,19 +117,42 @@ if ($connectivity~newgame)
 		pause
 	else
 		settexttrigger firstpause :firstpause "[Pause]"
-		settexttrigger enter :done_do_relog "Enter your choice"
+		settexttrigger enter :enter_game_menu "Enter your choice"
 		settexttrigger notopen :game_not_open "This game will open"
+		setdelaytrigger relogmenupromptcheck :check_game_menu_prompt 100
 		send $bot~letter
 		pause
 	end
 
 else
 	settexttrigger firstpause :firstpause "[Pause]"
-	settexttrigger enter :done_do_relog "Enter your choice"
+	settexttrigger enter :enter_game_menu "Enter your choice"
 	settexttrigger notopen :game_not_open "This game will open"
+	setdelaytrigger relogmenupromptcheck :check_game_menu_prompt 100
 	send $bot~letter
 	pause
 end
+
+:connectivity~check_game_menu_prompt
+setvar $connectivity~line currentline
+getwordpos $connectivity~line $connectivity~pos "Command ["
+if ($connectivity~pos > 0)
+	goto :done_do_relog
+end
+getwordpos $connectivity~line $connectivity~pos "Planet command (?=help) [D]"
+if ($connectivity~pos > 0)
+	goto :done_do_relog
+end
+getwordpos $connectivity~line $connectivity~pos "Citadel command (?=help)"
+if ($connectivity~pos > 0)
+	goto :done_do_relog
+end
+getwordpos $connectivity~line $connectivity~pos "Enter your choice"
+if ($connectivity~pos > 0)
+	goto :enter_game_menu
+end
+setdelaytrigger relogmenupromptcheck :check_game_menu_prompt 100
+pause
 
 :connectivity~firstpause
 send "*"
@@ -136,11 +164,15 @@ killtrigger firstpause
 send "* T ***"
 pause
 
-:connectivity~done_do_relog
-killalltriggers
+:connectivity~enter_game_menu
+gosub :killrelogtriggers
 if ($connectivity~newgame and ($connectivity~serverversion = 2)) or ($connectivity~newgame = false)
 	send "T***"
 end
+return
+
+:connectivity~done_do_relog
+killalltriggers
 return
 
 :connectivity~game_not_open
@@ -226,8 +258,10 @@ killtrigger thedelay2
 killtrigger relog
 killtrigger relog2
 killtrigger relog3
+killtrigger relog5
 killtrigger relog69
 killtrigger relog89
+killtrigger relogmenupromptcheck
 killtrigger loginsuccessful
 killtrigger loginsuccessful2
 killtrigger loginsuccessful3

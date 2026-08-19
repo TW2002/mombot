@@ -24,5 +24,6 @@
 		end
 	end
 	send $result
+	setvar $player~current_sector $moveIntoSector
 return
 

@@ -184,6 +184,9 @@ setvar $countfuel 0
 setvar $countorganics 0
 setvar $countequipment 0
 setvar $countcolonists 0
+setvar $strip~active true
+setvar $strip~resume_requested false
+setvar $planet~disconnected false
 send "l "&$planet~planettofill&"**"
 killtrigger wrongplanet
 killtrigger badplanet
@@ -223,7 +226,14 @@ while ($i <= $planet~planetcount)
 		send "q * l "&$planet~planettofill&"*"
 		#setvar $planet~noheader 1
 		setvar $planet~planettostrip $planet~planets[$i]
+	:strip_planet_retry
+		setvar $strip~resume_requested false
+		setvar $planet~disconnected false
 		gosub :planet~stripplanet
+		if ($strip~resume_requested = true) or ($planet~disconnected = true)
+			gosub :strip_resume_after_disconnect
+			goto :strip_planet_retry
+		end
 		add $countfuel $planet~countfuel
 		add $countorganics $planet~countorganics
 		add $countequipment $planet~countequipment
@@ -234,6 +244,7 @@ end
 
 :strip_done
 logging on
+setvar $strip~active false
 setvar $relog_nocitadel 0
 savevar $relog_nocitadel
 if ($deaf = true)
@@ -255,6 +266,81 @@ gosub :endreport
 setvar $switchboard~message "Planet Stripper Shutting Down*"
 gosub :switchboard~switchboard
 halt
+
+:strip_resume_after_disconnect
+killalltriggers
+echo "**[Strip] Disconnected - waiting for relog before resuming current planet.**"
+
+:strip_wait_connected
+if (connected <> true)
+	setdelaytrigger stripwaitconnected :strip_wait_connected 3000
+	pause
+end
+
+:strip_wait_prompt
+killtrigger stripcommand
+killtrigger stripplanet
+killtrigger stripcitadel
+killtrigger strippromptdelay
+settexttrigger stripcommand :strip_prompt_ready "Command [TL"
+settexttrigger stripplanet :strip_prompt_ready "Planet command (?=help) [D]"
+settexttrigger stripcitadel :strip_prompt_ready "Citadel command (?=help)"
+setdelaytrigger strippromptdelay :strip_prompt_check 3000
+pause
+
+:strip_prompt_check
+killtrigger stripcommand
+killtrigger stripplanet
+killtrigger stripcitadel
+killtrigger strippromptdelay
+if (connected <> true)
+	goto :strip_wait_connected
+end
+setvar $strip~line currentline
+getwordpos $strip~line $strip~pos "Command [TL"
+if ($strip~pos > 0)
+	goto :strip_prompt_ready
+end
+getwordpos $strip~line $strip~pos "Planet command (?=help) [D]"
+if ($strip~pos > 0)
+	goto :strip_prompt_ready
+end
+getwordpos $strip~line $strip~pos "Citadel command (?=help)"
+if ($strip~pos > 0)
+	goto :strip_prompt_ready
+end
+goto :strip_wait_prompt
+
+:strip_prompt_ready
+killtrigger stripcommand
+killtrigger stripplanet
+killtrigger stripcitadel
+killtrigger strippromptdelay
+gosub :player~quikstats
+
+:strip_restore_fill_planet
+if ($player~current_sector <> $startingsector)
+	setvar $strip~active false
+	setvar $switchboard~message "Strip reconnected in sector "&$player~current_sector&" instead of starting sector "&$startingsector&"; halting for safety.*"
+	gosub :switchboard~switchboard
+	halt
+end
+if ($player~current_prompt = "Citadel")
+	send "q"
+	waiton "Planet command"
+elseif ($player~current_prompt = "Command")
+	setvar $planet~planet $planet~planettofill
+	setvar $planet~nocit true
+	gosub :planet~landingsub
+elseif ($player~current_prompt <> "Planet")
+	goto :strip_wait_prompt
+end
+setvar $planet~planet $planet~planettofill
+gosub :planet~getplanetinfo
+setvar $planet~disconnected false
+setvar $strip~resume_requested false
+echo "**[Strip] Recovered - retrying planet "&$planet~planettostrip&".**"
+return
 
 :endreport
 setvar $formattedcountfuel ""

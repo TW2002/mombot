@@ -306,6 +306,13 @@ if (($ppt~sellamounta <= "-1") or ($ppt~buyamountb <= "-1"))
 	return
 end
 
+getdistance $ppt~distance $ppt~sectora $ppt~sectorb
+if ($ppt~distance <> 1)
+	setvar $ppt~sector $ppt~sectora
+	setvar $ppt~aborted 1
+	return
+end
+
 if (($ppt~sectorb < 600) or (sectors > 5000))
 	send $ppt~sectorb "*"
 else
@@ -414,6 +421,13 @@ if (($ppt~sellamountb <= "-1") or ($ppt~buyamounta <= "-1"))
 	return
 end
 
+getdistance $ppt~distance $ppt~sectorb $ppt~sectora
+if ($ppt~distance <> 1)
+	setvar $ppt~sector $ppt~sectorb
+	setvar $ppt~aborted 1
+	return
+end
+
 if (($ppt~sectora < 600) or (sectors > 5000))
 	send $ppt~sectora "*"
 else
@@ -446,7 +460,6 @@ if (($bot~bot_turn_limit > 0) and ($player~unlimitedgame <> true))
 	end
 end
 
-send "d"
 setvar $move~checksub ":~movecheck"
 gosub :move~move
 goto :worldtrade_start
@@ -510,9 +523,10 @@ end
 if ($portcheck~scanned = 1)
 	setvar $portcheck~holoscan 0
 	setvar $portcheck~i 1
+	getsector $portcheck~sector $portcheck~sectorinfo
 
-	while ($portcheck~i <= sector.warpcount[$portcheck~sector])
-		setvar $portcheck~sect sector.warps[$portcheck~sector][$portcheck~i]
+	while ($portcheck~i <= $portcheck~sectorinfo.warps)
+		setvar $portcheck~sect $portcheck~sectorinfo.warp[$portcheck~i]
 
 		if ((port.class[$portcheck~sect] > 0) or (sector.density[$portcheck~sect] >= 100))
 			setvar $portcheck~holoscan 1
@@ -534,10 +548,14 @@ if ($portcheck~scanned = 2)
 	setvar $portcheck~class port.class[$portcheck~sector]
 	setvar $portcheck~tradeproda ""
 	setvar $portcheck~tradeprodb ""
+	getsector $portcheck~sector $portcheck~sectorinfo
 
-	while (($portcheck~i <= sector.warpcount[$portcheck~sector]) and ($portcheck~tradeproda = ""))
-		setvar $portcheck~sect sector.warps[$portcheck~sector][$portcheck~i]
+	while (($portcheck~i <= $portcheck~sectorinfo.warps) and ($portcheck~tradeproda = ""))
+		setvar $portcheck~sect $portcheck~sectorinfo.warp[$portcheck~i]
 		setvar $portcheck~pairclass port.class[$portcheck~sect]
+		if ($portcheck~sect = $portcheck~sector)
+			setvar $portcheck~pairclass 0
+		end
 
 		if (($portcheck~pairclass > 0) and ((($portcheck~pairclass < 9) and ((((sector.figs.quantity[$portcheck~sect] = 0) or (sector.figs.owner[$portcheck~sect] = "yours") or (sector.figs.owner[$portcheck~sect] = "belong to your Corp") or ((($portcheck~danger = 1) and (sector.figs.owner[$portcheck~sect] <> "Rogue Mercenaries")) and (sector.figs.quantity[$portcheck~sect] <= 20)) or ($portcheck~danger = 2)) and ((((sector.mines.quantity[$portcheck~sect] = 0) or (sector.mines.owner[$portcheck~sect] = "yours") or (sector.mines.owner[$portcheck~sect] = "belong to your Corp") or (($portcheck~danger = 1) and (sector.mines.quantity[$portcheck~sect] <= 5)) or ($portcheck~danger = 2)) and ((((sector.navhaz[$portcheck~sect] = 0) or ((sector.navhaz[$portcheck~sect] <= 3) and ($portcheck~danger = 1)) or ($portcheck~danger = 2)) and ((((sector.planetcount[$portcheck~sect] = 0) or ($portcheck~danger = 2)) and ((sector.tradercount[$portcheck~sect] = 0) or ($portcheck~danger = 2)))))))))))))
 			if ($portcheck~porttype = 1)
@@ -547,16 +565,16 @@ if ($portcheck~scanned = 2)
 					setvar $portcheck~tradeproda "Equipment"
 				end
 			end
+		end
 
-			if ($portcheck~tradeproda <> "")
-				subtract $portcheck~ignore 1
+		if ($portcheck~tradeproda <> "")
+			subtract $portcheck~ignore 1
 
-				if ($portcheck~ignore >= 0)
-					setvar $portcheck~tradeproda ""
-					setvar $portcheck~tradeprodb ""
-				else
-					setvar $portcheck~pair $portcheck~sect
-				end
+			if ($portcheck~ignore >= 0)
+				setvar $portcheck~tradeproda ""
+				setvar $portcheck~tradeprodb ""
+			else
+				setvar $portcheck~pair $portcheck~sect
 			end
 		end
 

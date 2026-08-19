@@ -2,6 +2,8 @@
 :xenter~xenter
 gosub :player~quikstats
 loadvar $game~game_menu_prompt
+setvar $xenter~active true
+savevar $xenter~active
 
 if ($xenter~startinglocation_override <> 0)
 	setvar $xenter~startinglocation $xenter~startinglocation_override
@@ -128,9 +130,9 @@ killtrigger xenterpause
 killtrigger xenterpassword
 killtrigger xenterenteredcheck
 gosub :player~currentprompt
-if ($xenter~startinglocation = "Citadel")
-	if ($player~current_prompt = "Planet")
-		send "c"
+	if ($xenter~startinglocation = "Citadel")
+		if ($player~current_prompt = "Planet")
+			send "c"
 		waiton "Citadel command"
 	elseif ($player~current_prompt = "Command")
 		gosub :planet~landingsub
@@ -141,9 +143,11 @@ elseif ($xenter~startinglocation = "Command")
 		waiton "Command ["
 	elseif ($player~current_prompt = "Planet")
 		send "q "
-		waiton "Command ["
+			waiton "Command ["
+		end
 	end
-end
+	setvar $xenter~active false
+	savevar $xenter~active
 return
 
 :pickgame

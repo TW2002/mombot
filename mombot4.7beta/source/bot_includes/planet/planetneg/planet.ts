@@ -24,6 +24,7 @@ setVar $startingLocation $PLAYER~current_prompt
 
 # ----- PTRADE SETTING-----
 setVar $_ck_ptradesetting $GAME~ptradesetting
+setVar $quantityUnknown 0
 
 if ($startingLocation = "Citadel")
 	send "Q"
@@ -36,7 +37,7 @@ gosub :PLAYER~getInfo
 send "*"
 
 
-send "|CR" & $PLAYER~current_sector & "*Q|"
+send "|CR" & $PLAYER~current_sector & "*"
 
 setTextLineTrigger foundport :foundport "Items     Status  Trading % of max OnBoard"
 setTextLineTrigger noport :noport "I have no information about a port in that sector."
@@ -45,6 +46,7 @@ setTextLineTrigger noport3 :noport "credits / next hold"
 pause
 
 :noport
+	send "Q|"
 	killtrigger foundport
 	killtrigger noport
 	killtrigger noport2
@@ -65,35 +67,24 @@ pause
 	pause
 
 	:portinfo1
-		killtrigger portinfo1
-		killtrigger portinfo2
-		killtrigger portinfo3
-		killtrigger gotCR
 		getWord CURRENTLINE $PLAYER~current_sector.orebuying 3
 		getWord CURRENTLINE $PLAYER~current_sector.oretrading 4
 		getWord CURRENTLINE $PLAYER~current_sector.orepercent 5
 		striptext $PLAYER~current_sector.orepercent "%"
-		goto :foundport
+		pause
 	:portinfo2
-		killtrigger portinfo1
-		killtrigger portinfo2
-		killtrigger portinfo3
-		killtrigger gotCR
 		getWord CURRENTLINE $PLAYER~current_sector.orgbuying 2
 		getWord CURRENTLINE $PLAYER~current_sector.orgtrading 3
 		getWord CURRENTLINE $PLAYER~current_sector.orgpercent 4
 		striptext $PLAYER~current_sector.orgpercent "%"
-		goto :foundport
+		pause
 	:portinfo3
-		killtrigger portinfo1
-		killtrigger portinfo2
-		killtrigger portinfo3
-		killtrigger gotCR
 		getWord CURRENTLINE $PLAYER~current_sector.equbuying 2
 		getWord CURRENTLINE $PLAYER~current_sector.equtrading 3
 		getWord CURRENTLINE $PLAYER~current_sector.equpercent 4
 		striptext $PLAYER~current_sector.equpercent "%"
-		goto :foundport
+		send "Q|"
+		pause
 	:gotCR
 		killtrigger portinfo1
 		killtrigger portinfo2
@@ -101,7 +92,7 @@ pause
 		killtrigger gotCR
 
 
-setDelayTrigger justasec :justasec 500
+setDelayTrigger justasec :justasec 200
 pause
 :justasec
 
@@ -121,7 +112,7 @@ pause
 	if ($_ck_pnego_fueltosell = "-1")
 		setVar $fueltosell 0
 	elseif ($_ck_pnego_fueltosell = "max")
-		setVar $fueltosell $planetorg
+		setVar $fueltosell $planetfuel
 	else
 		setvar $fueltosell $_ck_pnego_fueltosell
 	end
@@ -213,7 +204,7 @@ pause
 			if ($SWITCHBOARD~self_command <> TRUE)
 				setVar $SWITCHBOARD~self_command 2
 			end
-			gosub :SWITCHBOARD~switchboard
+			#gosub :SWITCHBOARD~switchboard
 
 			write $output_file $oreselloutput
 		end
@@ -223,7 +214,7 @@ pause
 			if ($SWITCHBOARD~self_command <> TRUE)
 				setVar $SWITCHBOARD~self_command 2
 			end
-			gosub :SWITCHBOARD~switchboard
+			#gosub :SWITCHBOARD~switchboard
 			write $output_file $orgselloutput
 		end
 		if ($equselloutput <> "")
@@ -232,7 +223,7 @@ pause
 			if ($SWITCHBOARD~self_command <> TRUE)
 				setVar $SWITCHBOARD~self_command 2
 			end
-			gosub :SWITCHBOARD~switchboard
+			#gosub :SWITCHBOARD~switchboard
 			write $output_file $equselloutput
 		end
 		setVar $exit_message "Done with port"
@@ -248,6 +239,7 @@ pause
 
 
 :sell
+	
 	:resell
 		if ($PLAYER~turns <= 0)
 			send "'I'm out of turns*"
@@ -256,7 +248,27 @@ pause
 		setVar $thisorefailed 0
 		setVar $thisorgfailed 0
 		setVar $thisequfailed 0
-		send "PN" & $planet & "*"
+		if ($fueltosell > 0)
+			setVar $attemptore 1
+			setVar $attemptoreconfirmed 0
+		end
+		if ($orgtosell > 0)
+			setVar $attemptorg 1
+			setVar $attemptorgconfirmed 0
+		end
+		if ($equiptosell > 0)
+			setVar $attemptequ 1
+			setVar $attemptequconfirmed 0
+		end
+		isNumber $number $planet
+		setVar $findPlanet 0
+		if ($number = 0)
+			send "PN"
+			setVar $findPlanet 1
+		else
+			send "PN" 
+		end
+		
 		subtract $PLAYER~turns 1
 			:getpercts
 				setTextLineTrigger orepct :orepct "Fuel Ore   Buying"
@@ -305,27 +317,89 @@ pause
 					goto :getpercts
 
 				:gotpercts
+					# We have been getting the occasional not a number error on some of these - so adding error checking
+					isNumber $test1 $PLAYER~current_sector.oretrading 
+					isNumber $test2 $PLAYER~current_sector.orepercent 
+					if ($test1 = 0) or ($test2 = 0)
+send "'DEBUG: NAN on oretrading:" & $test1 & " orepercent:" $test2 "*"
+						setVar $PLAYER~current_sector.orepercent 1
+						setVar $PLAYER~current_sector.oretrading 1
+					end
+					isNumber $test3 $PLAYER~current_sector.orgtrading 
+					isNumber $test4 $PLAYER~current_sector.orgpercent 
+					if ($test3 = 0) or ($test2 = 0)
+send "'DEBUG: NAN on orgtrading:" & $test3 & " orgpercent:" $test4 "*"
+						setVar $PLAYER~current_sector.orgpercent 1
+						setVar $PLAYER~current_sector.orgtrading 1
+					end
+
+					isNumber $test5 $PLAYER~current_sector.equtrading 
+					isNumber $test6 $PLAYER~current_sector.equpercent 
+					if ($test5 = 0) or ($test6 = 0)
+send "'DEBUG: NAN on equtrading:" & $test5 & " equpercent:" $test6 "*"
+						setVar $PLAYER~current_sector.equpercent 1
+						setVar $PLAYER~current_sector.equtrading 1
+					end
 					killtrigger orepct
 					killtrigger orgpct
 					killtrigger equpct
 					killtrigger gotpercts
+					if ($findPlanet = 1)
+						setTextLineTrigger planetNum :planetNum "> "&$planet
+						setDelayTrigger noPlanetNum :noPlanetNum 3000
+						pause
+						:noPlanetNum
+							killalltriggers
+							setVar $exit_message "Could not determine port number!"
+							send "q*"
+							goto :exitneg
+						:planetNum
+							killtrigger planetNum
+							killtrigger noPlanetNum
+							getWord CURRENTLINE $planet 1
+							striptext $planet ">"
+							send $planet "*"
+					else
+						send $planet "*"
+					end
 
+			
 			:sellproduct
 				setTextTrigger sellfuel :sellfuel "How many units of Fuel Ore"
 				setTextTrigger sellorg :sellorg "How many units of Organics"
 				setTextTrigger sellequ :sellequ "How many units of Equipment"
 				setTextTrigger donewithport :donewithport "Command [TL="
+				killtrigger notours
+				settexttrigger notours :notours "You don't own that planet!  Were you expecting us to invade it?"
 				pause
 
+			:notours	
+				send "*"
+				setvar $exit_message "We don't own this planet!"
+				pause
 			:sellfuel
 				killtrigger sellfuel
 				killtrigger sellorg
 				killtrigger sellequ
 				killtrigger donewithport
+				if ($quantityUnknown = 1)
+					getword CURRENTLINE $fueltosell 12
+					striptext $fueltosell "["
+					striptext $fueltosell "]"
+					striptext $fueltosell "?"
+				end
+
+				# DEBUGGING FOR NAN RANDOM ERRORS
+				isNumber $test $fueltosell
+				if ($test = 0)
+					send "'DEBUG: NAN on fueltosell:" & $fueltosell "*"
+					setVar $fueltosell 0
+				end
 				if (($PLAYER~current_sector.orepercent >= 15) and ($fueltosell > 0))
 					if ($fueltosell > $PLAYER~current_sector.oretrading)
 						setVar $fueltosell $PLAYER~current_sector.oretrading
 					end
+					setVar $attemptoreconfirmed 1
 					setVar $prodtosell "ore"
 					setVar $portbuying $fueltosell
 					gosub :sellhaggle
@@ -337,7 +411,8 @@ pause
 						setVar $orehaggle "failed"
 					end
 				else
-					send "0*"
+					send "az0*"
+					setVar $fueltosell 0
 				end
 				goto :sellproduct
 
@@ -346,10 +421,23 @@ pause
 				killtrigger sellorg
 				killtrigger sellequ
 				killtrigger donewithport
+				if ($quantityUnknown = 1)
+					getword CURRENTLINE $orgtosell 11
+					striptext $orgtosell "["
+					striptext $orgtosell "]"
+					striptext $orgtosell "?"
+				end
+				# DEBUGGING FOR NAN RANDOM ERRORS
+				isNumber $test $orgtosell
+				if ($test = 0)
+					send "'DEBUG: NAN on orgtosell:" & $orgtosell "*"
+					setVar $orgtosell 0
+				end
 				if (($PLAYER~current_sector.orgpercent >= 15) and ($orgtosell > 0))
 					if ($orgtosell > $PLAYER~current_sector.orgtrading)
 						setVar $orgtosell $PLAYER~current_sector.orgtrading
 					end
+					setVar $attemptorgconfirmed 1
 					setVar $prodtosell "org"
 					setVar $portbuying $orgtosell
 					gosub :sellhaggle
@@ -361,19 +449,34 @@ pause
 						setVar $orghaggle "failed"
 					end
 				else
-					send "0*"
+					send "az0*"
+					setVar $orgtosell 0
 				end
 				goto :sellproduct
 
 			:sellequ
+
 				killtrigger sellfuel
 				killtrigger sellorg
 				killtrigger sellequ
 				killtrigger donewithport
+				if ($quantityUnknown = 1)
+					getword CURRENTLINE $equiptosell 11
+					striptext $equiptosell "["
+					striptext $equiptosell "]"
+					striptext $equiptosell "?"
+				end
+				# DEBUGGING FOR NAN RANDOM ERRORS
+				isNumber $test $equiptosell
+				if ($test = 0)
+					send "'DEBUG: NAN on equiptosell:" & $equiptosell "*"
+					setVar $equiptosell 0
+				end
 				if (($PLAYER~current_sector.equpercent >= 15) and ($equiptosell > 0))
 					if ($equiptosell > $PLAYER~current_sector.equtrading)
 						setVar $equiptosell $PLAYER~current_sector.equtrading
 					end
+					setVar $attemptequconfirmed 1
 					setVar $prodtosell "equ"
 					setVar $portbuying $equiptosell
 					gosub :sellhaggle
@@ -385,7 +488,8 @@ pause
 						setVar $equhaggle "failed"
 					end
 				else
-					send "0*"
+					send "az0*"
+					setVar $equiptosell 0
 				end
 				goto :sellproduct
 
@@ -394,11 +498,25 @@ pause
 				killtrigger sellorg
 				killtrigger sellequ
 				killtrigger donewithport
+
+				if ($attemptore = 1) and ($attemptoreconfirmed = 0)
+					# means we had a setup issue and there was no ore to sell so to stop endless loop we set it to 0
+					setVar $fueltosell 0
+				end
+				if ($attemptorg = 1) and ($attemptorgconfirmed = 0)
+					setVar $orgtosell 0
+				end
+				if ($attemptequ = 1) and ($attemptequconfirmed = 0)
+					setVar $equiptosell 0
+				end
+
 				if (($ore_sell_failures > 1) or ($org_sell_failures > 4) or ($equ_sell_failures > 4))
 					setVar $selloutput $selloutput & "Multiple Haggle Failures - Please cut and paste this haggling session and email to Cherokee*"
 					return
 				elseif (($fueltosell = 0) and ($orgtosell = 0) and ($equiptosell = 0))
-					setvar $exit_message "Nothing to sell here!"
+					if ($attemptoreconfirmed = 0) and ($attemptorgconfirmed = 0) and ($attemptequconfirmed = 0)
+						setvar $exit_message "Nothing to sell here!"
+					end
 					return
 				else
 					goto :resell
@@ -409,7 +527,7 @@ pause
 
 :sellhaggle
 	setTextLineTrigger sellfirstoffer :sellfirstoffer "We'll buy them for"
-	send $portbuying & "*"
+	send "az" & $portbuying & "*"
 	pause
 
 	:sellfirstoffer
@@ -509,6 +627,7 @@ pause
 		# ----- LOOKUP the counteroffer percentage to use at this "quality" port -----
 
 		if ($prodtosell = "ore")
+
 			if ($portmaxinit >= 436)
 				setVar $MCIC "-90"
 				setVar $multiple "1494"
@@ -555,7 +674,7 @@ pause
 
 			elseif ($portmaxinit >= 416)
 				setVar $MCIC "-79"
-				setVar $multiple "1429"
+				setVar $multiple "1428"
 
 			elseif ($portmaxinit >= 414)
 				setVar $MCIC "-78"
@@ -615,7 +734,7 @@ pause
 
 			elseif ($portmaxinit >= 388)
 				setVar $MCIC "-64"
-				setVar $multiple "1342"
+				setVar $multiple "1341"
 
 			elseif ($portmaxinit >= 386)
 				setVar $MCIC "-63"
@@ -1106,7 +1225,7 @@ pause
 		divide $counter 10
 		multiply $counter $multiple
 		divide $counter 100
-		send $counter & "*"
+		send "az" & $counter & "*"
 		setVar $midhaggles 0
 	:sellofferloop
 		setTextLineTrigger sellprice :sellprice "We'll buy them for"
@@ -1159,7 +1278,7 @@ pause
 	# I'm wondering if this is a version issue? i.e. between v1 and v2.
 		multiply $counter 98
 		divide $counter 100
-		send $counter & "*"
+		send "az" & $counter & "*"
 		goto :sellofferloop
 	:sellprice
 		killtrigger sellprice 
@@ -1206,7 +1325,7 @@ pause
 				subtract $counter $offer_change
 				subtract $counter 10
 			end
-		send $counter & "*"
+		send "az"& $counter & "*"
 		goto :sellofferloop
 	:sellfinaloffer
 		killtrigger sellprice 
@@ -1276,10 +1395,10 @@ pause
 			divide $offer_change 10
 			subtract $counter $offer_change
 			subtract $counter 10
-			send $counter & "*"
+			send "az" & $counter & "*"
 		else
 			# fail the haggle on purpose
-			send $counter & "*"
+			send "az" & $counter & "*"
 		end
 		goto :sellofferloop
 	:sellnotinterested

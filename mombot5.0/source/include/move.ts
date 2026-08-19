@@ -101,11 +101,12 @@ setvar $move~bestattack 0
 setvar $move~willholo 0
 
 :move~testwarp
-if ($move~cursector.warp[$move~i] > 0)
+setvar $move~candidate sector.warps[$move~cursector][$move~i]
+if ($move~candidate > 0)
 	setvar $move~score 0
 	setvar $move~safe 1
 
-	getsector $move~cursector.warp[$move~i] $move~thissector
+	getsector $move~candidate $move~thissector
 
 	if ($move~evasion <> 2)
 		if ($move~scannedholo = 0)
@@ -165,7 +166,7 @@ if ($move~cursector.warp[$move~i] > 0)
 
 	:move~checkhistory
 	if ($move~x <= 10)
-		if ($move~history[$move~x] = $move~cursector.warp[$move~i])
+		if ($move~history[$move~x] = $move~candidate)
 			setvar $move~m 10
 			subtract $move~m $move~x
 			multiply $move~m 10
@@ -194,7 +195,7 @@ if ($move~cursector.warp[$move~i] > 0)
 
 	if ($move~score < $move~bestscore)
 		setvar $move~bestscore $move~score
-		setvar $move~bestwarp $move~cursector.warp[$move~i]
+		setvar $move~bestwarp $move~candidate
 		setvar $move~bestsafe $move~safe
 	end
 
@@ -235,12 +236,12 @@ else
 	setvar $move~warpsuffix "."
 end
 
-if (($move~bestsafe = 2) and ($move~attack = 1)) or ($move~attack = 2)
-	send $move~bestwarp $move~warpsuffix "*na9999**"
-else
-	send $move~bestwarp $move~warpsuffix
-	setvar $move~confirmsector 1
-end
+	if ($move~noconfirm = true) and ((($move~bestsafe = 2) and ($move~attack = 1)) or ($move~attack = 2))
+		send $move~bestwarp $move~warpsuffix "*na9999**"
+	else
+		send $move~bestwarp $move~warpsuffix
+		setvar $move~confirmsector 1
+	end
 goto :move~move
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -256,28 +257,48 @@ if (($move~moveintosector > 10) and ($move~moveintosector <> $map~stardock))
 		setvar $move~result $move~result&"za"&$player~fighters&"* * "
 	end
 end
-if ($player~surroundfigs <= 0)
-	setvar $player~surroundfigs 1
-end
+#if ($player~surroundfigs <= 0)
+#	setvar $player~surroundfigs 1
+#end
 if (($move~moveintosector > 10) and ($move~moveintosector <> $map~stardock))
-	if ($player~surroundfigs > 0)
+	if ($player~surroundfigs > 0) and ($player~fighters >= $player~surroundfigs)
+		#setvar $move~waiton "How many fighters"
 		setvar $move~result $move~result&"f  z  "&$player~surroundfigs&"* z  c  d  *  "
 	end
-	if ($player~surroundlimp > 0)
+	if ($player~surroundlimp > 0) and ($player~limpets >= $player~surroundlimp)
+		#setvar $move~waiton "How many Limpet"
 		setvar $move~result $move~result&"  H  2  Z  "&$player~surroundlimp&"*  Z C  *  "
 	end
-	if ($player~surroundmine > 0)
+	if ($player~surroundmine > 0) and ($player~armids >= $player~surroundmine)
+		#setvar $move~waiton "How many Armid"
 		setvar $move~result $move~result&"  H  1  Z  "&$player~surroundmine&"*  Z C  *  "
 	end
 end
+setvar $move~result $move~result&"@"
+#send $move~result
+settextlinetrigger figdrop :figdrop "fighter(s) in close support"
+settextlinetrigger limpdrop :limpdrop "Limpet mine(s) on board"
+settextlinetrigger minedrop :minedrop "Armid mine(s) on board"
+settextlinetrigger movedone :movedone "Average Interval Lag"
 send $move~result
+pause
+:figdrop
+getword currentline $player~fighters 4
+pause
+:limpdrop
+getword currentline $player~limpets 4
+pause
+:minedrop
+getword currentline $player~armids 4
+pause
+:movedone
+killalltriggers
 setvar $player~current_sector $move~moveintosector
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :move~mow
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
 loadvar $player~fighter_deploy_type
 loadvar $player~surroundfigs
 loadvar $player~surroundlimp
@@ -430,7 +451,12 @@ end
 getdistance $dist $player~current_sector $player~warpto
 if ($dist < 2)
 	setvar $player~msg "That sector is adjacent, just plain warping."
-	goto :move~move
+	setvar $move~moveintosector $player~warpto
+	gosub :move~moveintosector
+	if ($player~current_sector = $player~warpto)
+		setvar $player~twarpsuccess true
+	end
+	goto :move~twarpdone
 end
 
 setvar $player~weareadjdock false

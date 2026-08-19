@@ -8,16 +8,32 @@
 
 :_limp
 	gosub :mineProtections
-	if ($amount > $PLAYER~LIMPETS)
+	if ($PLAYER~LIMPETS <= 0)
+		if ($PLAYER~startingLocation = "Citadel")
+			
+			send "s* "
+			waitfor "Warps to Sector(s) :"
+		elseif ($PLAYER~startingLocation = "Command")
+			send "d* "
+		end
+		if (SECTOR.LIMPETS.OWNER[CURRENTSECTOR] = "belong to your Corp") or (SECTOR.LIMPETS.OWNER[CURRENTSECTOR] = "yours")
+			# we will use what is available in sector
+			if ($amount > SECTOR.LIMPETS.QUANTITY[CURRENTSECTOR])
+				setVar $amount SECTOR.LIMPETS.QUANTITY[CURRENTSECTOR]
+			end
+			
+		else
+			setvar $switchboard~message "Out of limpets!*"
+			gosub :SWITCHBOARD~switchboard
+			return
+		end
+	elseif ($amount > $PLAYER~LIMPETS)
 		setVar $amount $PLAYER~LIMPETS
 	end
 :plimp1
+	:retryLimp
 	killalltriggers
-	if ($PLAYER~LIMPETS <= 0)
-		setvar $switchboard~message "Out of limpets!*"
-		gosub :SWITCHBOARD~switchboard
-		return
-	end
+	
 	if ($PLAYER~startingLocation = "Citadel")
 		send "q q z* h2z" $amount "* z " $limp " z * * *l " $planet~planet "* c"
 	elseif ($PLAYER~startingLocation = "Command")
@@ -26,12 +42,11 @@
 	setTextLineTrigger toomanypl :toomany_limp "!  You are limited to "
 	setTextLineTrigger plclear :plclear_limp "Done. You have "
 	setTextLineTrigger enemypl :noperdown_limp "These mines are not under your control."
-	setTextLineTrigger notenough :toomany_limp "You don't have that many mines available."
+	setTextLineTrigger notenough :notenough_limp "You don't have that many mines available."
 	pause
 :plclear_limp
 	killalltriggers
 	setVar $isLimped TRUE
-
 	if ($PLAYER~startingLocation = "Citadel")
 		waiton "Citadel command (?=help)"
 		send "s* "
@@ -59,7 +74,22 @@
 	setVar $isLimped FALSE
 	goto :done_limp
 :toomany_limp
-	setVar $SWITCHBOARD~message "Too many mines in the sector!*"
+
+	getWord CURRENTLINE $max_mines 11
+	
+	if (SECTOR.LIMPETS.OWNER[CURRENTSECTOR] = "belong to your Corp") or (SECTOR.LIMPETS.OWNER[CURRENTSECTOR] = "yours")
+		# should always be true.. but!
+		setVar $SWITCHBOARD~message "Your ship only holds "&$max_mines&", retrying!*"
+		gosub :SWITCHBOARD~switchboard
+		setVar $amount ((SECTOR.LIMPETS.QUANTITY[CURRENTSECTOR] + $PLAYER~LIMPETS) - $max_mines)
+		goto :retryLimp
+	else
+		setVar $SWITCHBOARD~message "Too many mines in the sector!*"
+		gosub :SWITCHBOARD~switchboard
+		goto :done_limp
+	end
+:notenough_limp
+	setVar $SWITCHBOARD~message "You don't have that many available!*"
 	gosub :SWITCHBOARD~switchboard
 :done_limp
 	if ($isLimped)

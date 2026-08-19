@@ -65,18 +65,36 @@ settextlinetrigger donenofigs 		:donecounting 	"No fighters deployed"
 pause
 
 :personalcount
+getword currentline $sector 1
+isnumber $validsector $sector
+if ($validsector <> true)
+	settextlinetrigger personal 		:personalcount	"Personal "
+	pause
+end
+if (($sector < 1) or ($sector > sectors))
+	settextlinetrigger personal 		:personalcount	"Personal "
+	pause
+end
 add $count 1
 add $personalcount 1
-getword currentline $sector 1
 getword currentline $type 4
 setvar $personaloutput $personaloutput&" "&$sector&"  "
 settextlinetrigger personal 		:personalcount	"Personal "
 pause
 
 :corpcount
+getword currentline $sector 1
+isnumber $validsector $sector
+if ($validsector <> true)
+	settextlinetrigger corporate 		:corpcount 	" Corp"
+	pause
+end
+if (($sector < 1) or ($sector > sectors))
+	settextlinetrigger corporate 		:corpcount 	" Corp"
+	pause
+end
 add $count 1
 add $player~corpcount 1
-getword currentline $sector 1
 getword currentline $type 4
 if ($type = "Toll")
 	add $tollcount 1

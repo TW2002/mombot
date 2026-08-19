@@ -201,7 +201,11 @@ gosub :player~quikstats
 gosub :relog_freeze_trigger
 loadvar $planet~planet
 loadvar $relog_nocitadel
-if (($planet~planet <> 0) and ($player~current_prompt = "Command") and ($player~current_sector <> 1) and ($player~current_sector <> $map~stardock))
+setvar $relog~planet_sector 0
+if ($planet~planet <> 0)
+	getsectorparameter $planet~planet "PSECTOR" $relog~planet_sector
+end
+if (($planet~planet <> 0) and ($player~current_prompt = "Command") and ($player~current_sector <> 1) and ($player~current_sector <> $map~stardock) and ($player~current_sector = $relog~planet_sector) and (sector.planetcount[$player~current_sector] > 0))
 	gosub :planet~landingsub
 end
 if (($planet~successfulcitadel = true) and ($relog_nocitadel < 1))
@@ -271,7 +275,8 @@ pause
 gosub :killrelogtriggers
 settexttrigger relog69 :continuerelog5 "Make a Selection:"
 settexttrigger relog3 :continuerelog5 "Selection (? for menu):"
-settexttrigger relog5 :continuerelog5 ": "
+settexttrigger relog5 :continuerelog5 "Selection:"
+settexttrigger relogselect :continuerelog5 "Select a game"
 #send "#"&#8
 pause
 
@@ -374,6 +379,8 @@ killtrigger relog
 killtrigger relog2
 killtrigger relog3
 killtrigger relog69
+killtrigger relog5
+killtrigger relogselect
 killtrigger relog89
 killtrigger loginsuccessful
 killtrigger loginsuccessful2

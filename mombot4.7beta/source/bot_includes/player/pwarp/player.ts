@@ -1,5 +1,6 @@
 :pwarpto
 :pwarp
+	setvar $pwarpSuccess false
 	if ($scan)
 		send "q *c p" $PLAYER~warpto "*ys"
 	else
@@ -18,32 +19,33 @@
 	setTextLineTrigger wrong_number     :wrong_number   "Invalid Sector number,"
 	pause
 	:wrong_number
+		setvar $pwarpSuccess false
 		gosub :killpwarptriggers
-		setVar $SWITCHBOARD~message "Not a valid sector to pwarp to!*"
-		gosub :SWITCHBOARD~switchboard
+		setVar $msg "Not a valid sector to pwarp to!*"
 		return
 		
 	:noPwarp
+		setvar $pwarpSuccess false
 		gosub :killpwarptriggers
-		setVar $SWITCHBOARD~message "Planet Does Not Have A Planetary TransWarp Drive!*"
-		gosub :SWITCHBOARD~switchboard
+		setVar $msg "Planet Does Not Have A Planetary TransWarp Drive!*"
 		return
 	:no_pwarp_lock
+		setvar $pwarpSuccess false
 		gosub :killpwarptriggers
 		setVar $bot~target $PLAYER~warpto
 		gosub :bot~removefigfromdata
-		setVar $SWITCHBOARD~message "No fighter down at that location!*"
-		gosub :SWITCHBOARD~switchboard
+		setVar $msg "No fighter down at that location!*"
 		return
 	:no_ore
+		setvar $pwarpSuccess false
 		gosub :killpwarptriggers
-		setVar $SWITCHBOARD~message "Not enough fuel for that pwarp.*"
-		gosub :SWITCHBOARD~switchboard
+		setVar $msg "Not enough fuel for that pwarp.*"
 		return
 	:pwarp_lock
+		setvar $pwarpSuccess true
 		gosub :killpwarptriggers
 		waitOn "Planet is now in sector"
-		setVar $SWITCHBOARD~message "Planet #"&$planet~planet&" moved to sector "&$PLAYER~warpto&".*"
+		setVar $msg "Planet #"&$planet~planet&" moved to sector "&$PLAYER~warpto&".*"
 		gosub :SWITCHBOARD~switchboard
 		setVar $bot~target $PLAYER~warpto
 		loadVar $planet~planet
@@ -56,9 +58,9 @@
 		gosub :bot~addfigtodata
 		return
 	:already
+		setvar $pwarpSuccess true
 		gosub :killpwarptriggers
-		setVar $SWITCHBOARD~message "Planet already in that sector!.*"
-		gosub :SWITCHBOARD~switchboard
+		setVar $msg "Planet already in that sector!.*"
 return
 
 :killpwarptriggers

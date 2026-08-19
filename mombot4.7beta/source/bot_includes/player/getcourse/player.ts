@@ -1,11 +1,11 @@
 	:getCourse
 		setArray $mowCourse 80
 		setVar $sectors ""
-		if ($starting_point <= 0)
+		if (($starting_point <= 0) and ($starting_point <> ""))
 			setVar $starting_point ""
 		end
 		setTextLineTrigger sectorlinetrig :sectorsline " > "
-		send "^f"&$starting_point&"*"&$destination&"**q"
+		send "^f"&$starting_point&"*"&$destination&"*"
 		pause
 	:sectorsline
 		killtrigger sectorlinetrig
@@ -34,6 +34,7 @@
 		getWordPos $line $pos2 "("&$destination&")"
 		getWordPos $line $pos3 "TO"
 		if ((($pos > 0) OR ($pos2 > 0)) AND ($pos3 <= 0))
+			send "* q "
 			goto :gotSectors
 		else
 			setTextLineTrigger sectorlinetrig :sectorsline " > "
@@ -55,8 +56,10 @@
 			add $index 1
 			getWord $sectors $mowCourse[$index] $index
 		end
-		return
+		setvar $mowCourse $courseLength
+	return
 	:noPath
-
 		send "q '{" $SWITCHBOARD~bot_name "} - No path to that sector!*"
-		return
+		setvar $mowCourse 0
+		setvar $courseLength 0
+	return

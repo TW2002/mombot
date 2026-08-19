@@ -1437,6 +1437,7 @@ if (($planet~moveamount <= 0) and ($planet~moveholds <= 0) and ($planet~moveextr
 	goto :move_done
 end
 
+gosub :setmoveproductdisconnecttriggers
 settexttrigger empty         :move_done "There aren't that many "
 settexttrigger full          :move_failed "They don't have room for that many "
 settexttrigger empty_colos   :move_failed "There isn't room on the planet"
@@ -1543,6 +1544,11 @@ setvar $planet~moveamount 0
 setvar $planet~moveholds 0
 setvar $planet~moveextra 0
 setvar $planet~destcategory 0
+if ($planet~disconnected = true)
+	setvar $planet~movesuccess false
+	setvar $movesuccess false
+	return
+end
 if ($movefailed = true)
 	setvar $planet~movesuccess false
 else
@@ -1566,6 +1572,25 @@ else
 	setvar $movesuccess true
 end
 return
+
+:setmoveproductdisconnecttriggers
+if ($strip~active = true)
+	killtrigger moveproductdisco1
+	killtrigger moveproductdisco2
+	killtrigger moveproductdisco3
+	seteventtrigger moveproductdisco1 :moveproductdisconnected "CONNECTION LOST"
+	seteventtrigger moveproductdisco2 :moveproductdisconnected "Connection lost"
+	seteventtrigger moveproductdisco3 :moveproductdisconnected "Connections have been temporarily disabled."
+end
+return
+
+:moveproductdisconnected
+killalltriggers
+setvar $movefailed true
+setvar $moveerror "Connection lost while moving product."
+setvar $planet~disconnected true
+setvar $strip~resume_requested true
+goto :move_done
 
 :movecreds
 gosub :player~quikstats
@@ -1941,6 +1966,7 @@ if ($emptyfigs)
 		killtrigger fullfill
 		killtrigger fullfill2
 		killtrigger empty
+		gosub :setstripplanetdisconnecttriggers
 		send "l j"&#8&$planet~planettostrip&"* jmnt*x q l j"&#8&$planet~planettofill&"* jmnl*x q "
 		settexttrigger success :tryfighters "The Fighters join your battle force."
 		settexttrigger emptyempty :strip_donewiththisplanet "There isn't room on the planet"
@@ -1953,6 +1979,9 @@ end
 
 :strip_donewiththisplanet
 killalltriggers
+if ($planet~disconnected = true)
+	return
+end
 if ($strip_startingplanet = 0)
 	return
 end
@@ -1969,6 +1998,9 @@ end
 return
 
 :strip_move_failed
+if ($planet~disconnected = true)
+	return
+end
 getwordpos $moveerror $strip_full_pos "They don't have room for that many"
 getwordpos $moveerror $strip_empty_colos_pos "There isn't room on the planet"
 if ($strip_full_pos > 0) or ($strip_empty_colos_pos > 0)
@@ -1977,6 +2009,23 @@ end
 setvar $switchboard~message "Failed to move product, halting.*"
 gosub :switchboard~switchboard
 halt
+
+:setstripplanetdisconnecttriggers
+if ($strip~active = true)
+	killtrigger stripplanetdisco1
+	killtrigger stripplanetdisco2
+	killtrigger stripplanetdisco3
+	seteventtrigger stripplanetdisco1 :stripplanetdisconnected "CONNECTION LOST"
+	seteventtrigger stripplanetdisco2 :stripplanetdisconnected "Connection lost"
+	seteventtrigger stripplanetdisco3 :stripplanetdisconnected "Connections have been temporarily disabled."
+end
+return
+
+:stripplanetdisconnected
+killalltriggers
+setvar $planet~disconnected true
+setvar $strip~resume_requested true
+goto :strip_donewiththisplanet
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :qset

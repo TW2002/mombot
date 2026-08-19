@@ -14,6 +14,12 @@
 		setVar $msg "No T-warp drive on this ship!"
 		goto :twarpDone
 	end
+	if (($PHOTONS > 0) and ($settings~override <> true))
+		setVar $switchboard~message "You can't twarp with photons without override!*"
+		gosub :switchboard~switchboard
+		setvar $msg "You can't twarp with photons without override!"
+		goto :twarpDone
+	end
 	loadvar $ship~SHIP_MAX_ATTACK
 	if ($ship~SHIP_MAX_ATTACK = 0)
 		setvar $ship~SHIP_MAX_ATTACK 9999
@@ -49,18 +55,19 @@
 		end
 	end
 	if ($RED_adj <> 0)
-		goto :twarp_lock
-	end
-	if ($startingLocation = "Citadel")
-		send "q t*t1* q q * c u y q mz" $warpto "*"
-	elseif ($startingLocation = "Planet")
-		send "t*t1* q q * c u y q mz" $warpto "*"
+		send "* mz" $warpto "*"
 	else
-		if ($fasttwarp)
-			send "mz" $warpto "*"		
+		if ($startingLocation = "Citadel")
+			send "q t*t1* q q * c u y q mz" $warpto "*"
+		elseif ($startingLocation = "Planet")
+			send "t*t1* q q * c u y q mz" $warpto "*"
 		else
-			send "q q q n n 0 * c u y q mz" $warpto "*"
-		end
+			if ($fasttwarp)
+				send "mz" $warpto "*"		
+			else
+				send "q q q n n 0 * c u y q mz" $warpto "*"
+			end
+		end	
 	end
 	setTextTrigger      there      :adj_warp       "You are already in that sector!"
 	setTextLineTrigger  adj_warp   :adj_warp       "Sector  : "&$warpto&" "

@@ -358,11 +358,14 @@ while ($i <= $shipcount)
 			end
 		end
 		if ($back = false)
-			send "w n "&$theships[$i]&"* "
+			send "w n "&$theships[$i]&"*  "
 			setvar $player~current_sector $startsector
 			setvar $player~warpto $movesector
 			if ($use_move = true)
-				gosub :move
+				#gosub :move
+				send $movesector&"*  "
+				waiton $movesector
+				setvar $player~movesuccess true
 				if ($player~movesuccess = false)
 					setvar $switchboard~message "Can not make it to move sector, shutting down*"
 					gosub :switchboard~switchboard
@@ -397,7 +400,10 @@ while ($i <= $shipcount)
 			setvar $player~current_sector $movesector
 			setvar $player~warpto $startsector
 			if ($use_move = true)
-				gosub :move
+				#gosub :move
+				send $startsector&"*  "
+				waiton $startsector
+				setvar $player~movesuccess true
 				if ($player~movesuccess = false)
 					setvar $switchboard~message "Can not make it to move sector, shutting down*"
 					gosub :switchboard~switchboard
