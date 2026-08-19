@@ -2,7 +2,17 @@
 
 M()MBot is a set of [TWX Proxy](https://github.com/TW2002/twxp) scripts that automate common tasks in TradeWars 2002.
 
+M()MBot was created by The Bounty Hunter, Mind Dagger, Lonestar, and Hammer.  Many authors contributed scripts over the
+years, including but not limited to:
+
+Oz, Zentock, SupG, Dynarri, Cherokee, Alexio, Xide, Phx, Rincrast,
+Voltron, Traitor, Parrothead, PSI, Elder Prophet, Caretaker, Deign
+
 This repository preserves the public M()MBot lineage and contains the current development version for TWX 3.0.
+
+## Current Version
+
+M()MBot 5.0 was updated for TWX 3.0 by Matt Mosley (Shadow) and includes significant bug fixes and additional functionality.
 
 ## Versions
 
