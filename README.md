@@ -1,7 +1,8 @@
-# MoM Bot
+# About M()MBot
 
-This repository preserves the public MoM Bot lineage and contains the current
-development version for TradeWars 2002.
+M()MBot is a set of [TWX Proxy](https://github.com/TW2002/twxp) scripts that automate common tasks in TradeWars 2002.
+
+This repository preserves the public M()MBot lineage and contains the current development version for TWX 3.0.
 
 ## Versions
 
@@ -25,4 +26,4 @@ for the major changes since 4.7beta.
 
 ## License
 
-MoM Bot is distributed under the [GNU General Public License v3.0](LICENSE).
+M()MBot is distributed under the [GNU General Public License v3.0](LICENSE).
