@@ -10,9 +10,10 @@ Voltron, Traitor, Parrothead, PSI, Elder Prophet, Caretaker, Deign
 
 This repository preserves the public M()MBot lineage and contains the current development version for TWX 3.0.
 
-## Current Version
+## Current Release
 
 M()MBot 5.0 was updated for TWX 3.0 by Matt Mosley (Shadow) and includes significant bug fixes and additional functionality.
+The current release is available here:  [mombot.zip](https://github.com/TW2002/mombot/blob/master/mombot5.0/Release/mombot.zip)
 
 ## Versions
 
