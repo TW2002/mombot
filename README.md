@@ -12,7 +12,8 @@ This repository preserves the public M()MBot lineage and contains the current de
 
 ## Current Release
 
-M()MBot 5.0 was updated for TWX 3.0 by Matt Mosley (Shadow) and includes significant bug fixes and additional functionality.
+M()MBot 5.0 was updated for TWX 3.0 by Matt Mosley (Shadow) and includes significant bug fixes and additional functionality.  Credit for testing goes to The Bounty Hunter, Rider, DoomeD, Madam Airlock, and Ohmz.
+
 The current release is available here:  [mombot.zip](https://github.com/TW2002/mombot/blob/master/mombot5.0/Release/mombot.zip)
 
 ## Versions
