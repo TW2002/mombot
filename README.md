@@ -6,7 +6,8 @@ M()MBot was created by The Bounty Hunter, Mind Dagger, Lonestar, and Hammer.  Ma
 years, including but not limited to:
 
 Oz, Zentock, SupG, Dynarri, Cherokee, Alexio, Xide, Phx, Rincrast,
-Voltron, Traitor, Parrothead, PSI, Elder Prophet, Caretaker, Deign
+Voltron, Traitor, Parrothead, PSI, Elder Prophet, Caretaker, Deign,
+Shadow, Rider.
 
 This repository preserves the public M()MBot lineage and contains the current development version for TWX 3.0.
 
