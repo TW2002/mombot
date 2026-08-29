@@ -349,7 +349,6 @@ while ($i <= $sector)
 		setsectorparameter $i "MINESEC" true
 	else
 		setvar $output $output&"0*"
-		setsectorparameter $i "MINESEC" false
 	end
 	add $i 1
 end
@@ -369,7 +368,6 @@ while ($i <= sectors)
 		setsectorparameter $i "MINESEC" true
 	else
 		setvar $output $output&"0*"
-		setsectorparameter $i "MINESEC" false
 	end
 	add $i 1
 end
@@ -441,7 +439,6 @@ while ($i <= $sector)
 		setsectorparameter $i "LIMPSEC" true
 	else
 		setvar $output $output&"0*"
-		setsectorparameter $i "LIMPSEC" false
 	end
 	add $i 1
 end
@@ -485,7 +482,6 @@ while ($i <= sectors)
 		setsectorparameter $i "LIMPSEC" true
 	else
 		setvar $output $output&"0*"
-		setsectorparameter $i "LIMPSEC" false
 	end
 	add $i 1
 end

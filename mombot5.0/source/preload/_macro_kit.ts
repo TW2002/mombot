@@ -416,7 +416,7 @@ if ($startinglocation = "Citadel")
 	:donepsimacs
 	echo #27 "[30D                           " #27 "[30D"
 	halt
-elseif (($startinglocation = "Do") or ($startinglocation = "How"))
+elseif (((currentsector = 1) or ($player~current_sector = 1)) or (($startinglocation = "Do") or ($startinglocation = "How")))
 
 	:print_the__terra_menu
 	gosub :player~quikstats

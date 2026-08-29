@@ -174,7 +174,6 @@ while ($i <= $sector)
 	else
 		setvar $output $output&"0*"
 		setvar $ckoutput $ckoutput&"0  "
-		setsectorparameter $i "FIGSEC" false
 	end
 	add $i 1
 end
@@ -192,7 +191,6 @@ while ($i <= sectors)
 	else
 		setvar $ckoutput $ckoutput&"0  "
 		setvar $output $output&"0*"
-		setsectorparameter $i "FIGSEC" false
 	end
 	add $i 1
 end

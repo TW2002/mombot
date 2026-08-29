@@ -21,6 +21,7 @@ setvar $help~help[17] $help~tab&"    {upmcic #}   maximum mcic to upgrade (defau
 setvar $help~help[18] $help~tab&"  {sellmcic #}   minimum mcic to sell product (default: none)"
 setvar $help~help[19] $help~tab&"    {minpct #}   minimum percent to sell to a port (default: 50)"
 setvar $help~help[20] $help~tab&" {file [file]}   only go to sectors in [file], one sector per line"
+setvar $help~help[21] $help~tab&"   {equmcic #}   equipment mcic threshold for upgrading"
 gosub :help~helpfile
 
 gosub :player~quikstats
@@ -212,6 +213,23 @@ if ($pos > 0)
 		end
 	else
 		setvar $switchboard~message "Invalid mcic value for sellmcic argument"
+		gosub :switchboard~switchboard
+		halt
+	end
+end
+
+getwordpos $bot~user_command_line $pos "equmcic"
+if ($pos > 0)
+	cuttext $bot~user_command_line $tmp_command_line $pos 999
+	getword $tmp_command_line $tmpval 2
+	isnumber $test $tmpval
+	if ($test = true)
+		if ($tmpval > 0)
+			setvar $tmpval (0 - $tmpval)
+		end
+		setvar $merchant~upmcic $tmpval
+	else
+		setvar $switchboard~message "Invalid mcic value for equmcic argument"
 		gosub :switchboard~switchboard
 		halt
 	end

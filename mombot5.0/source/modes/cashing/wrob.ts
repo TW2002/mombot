@@ -1,17 +1,5 @@
 logging "OFF"
-loadvar $bot_name
-loadvar $unlimitedgame
-loadvar $ptradesetting
-loadvar $bot_turn_limit
-loadvar $user_command_line
-loadvar $parm1
-loadvar $parm2
-loadvar $parm3
-loadvar $parm4
-loadvar $parm5
-loadvar $parm6
-loadvar $parm7
-loadvar $parm8
+gosub :loadvars~loadvars
 loadvar $atomic_cost
 loadvar $beacon_cost
 loadvar $corbo_cost
@@ -29,39 +17,23 @@ loadvar $twarpi_cost
 loadvar $twarpii_cost
 loadvar $psychic_cost
 loadvar $photons_enabled
-loadvar $photon_duration
 loadvar $max_commands
-loadvar $goldenabled
-loadvar $mbbs
 loadvar $multiple_photons
 loadvar $colonist_regen
-loadvar $ptradesetting
 loadvar $steal_factor
-loadvar $rob_factor
 loadvar $clear_bust_days
 loadvar $game~steal_factor
-loadvar $game~rob_factor
 loadvar $game~clear_bust_days
-loadvar $port_max
-loadvar $game~port_max
 loadvar $production_rate
 loadvar $production_regen
 loadvar $debris_loss
 loadvar $radiation_lifetime
 loadvar $limpet_removal_cost
 loadvar $max_planets_per_sector
-loadvar $bot~folder
-if (($port_max = 0) and ($game~port_max > 0))
-	setvar $port_max $game~port_max
-	savevar $port_max
-end
+
 if (($steal_factor = 0) and ($game~steal_factor > 0))
 	setvar $steal_factor $game~steal_factor
 	savevar $steal_factor
-end
-if (($rob_factor = 0) and ($game~rob_factor > 0))
-	setvar $rob_factor $game~rob_factor
-	savevar $rob_factor
 end
 if (($clear_bust_days = 0) and ($game~clear_bust_days > 0))
 	setvar $clear_bust_days $game~clear_bust_days
@@ -69,37 +41,21 @@ if (($clear_bust_days = 0) and ($game~clear_bust_days > 0))
 end
 setvar $no_credits_file $bot~folder&"/MOM_"&gamename&"_No_Credits.txt"
 
-loadvar $password
 loadvar $newprompt
 loadvar $surroundavoidshieldedonly
 loadvar $surroundautocapture
 loadvar $surroundavoidallplanets
 loadvar $surrounddontavoid
-loadvar $stardock
-loadvar $backdoor
-loadvar $rylos
-loadvar $alpha_centauri
-loadvar $home_sector
-loadvar $surroundfigs
-loadvar $surroundlimp
-loadvar $surroundmine
 loadvar $surroundoverwrite
 loadvar $surroundpassive
 loadvar $surroundnormal
 loadvar $username
-loadvar $letter
 loadvar $defendercapping
-loadvar $bot_turn_limit
 loadvar $safe_ship
 loadvar $bot_team_name
 loadvar $subspace
-loadvar $command
-goto :wrob_start
-include "source\include\planethaggle"
-include "source\include\sector"
 
 :wrob_start
-gosub :loadvars~loadvars
 gosub :help~initialize
 setvar $help~help[1] $help~tab&"Travels universe robbing ports."
 setvar $help~help[2] $help~tab&"       "
@@ -109,7 +65,8 @@ setvar $help~help[5] $help~tab&"Options:"
 setvar $help~help[6] $help~tab&"   [minimum rob amount]  Amount that must be on port before robbing."
 setvar $help~help[7] $help~tab&"   {upgraded}            Only visit upgraded ports."
 setvar $help~help[8] $help~tab&"   {skipcim}             Skip CIM port report before running."
-setvar $help~help[9] $help~tab&"   {clear_empty}         Delete the empty port file."
+setvar $help~help[9] $help~tab&"   {skipxxb}             Skip EQU buyers."
+setvar $help~help[10] $help~tab&"   {clear_empty}         Delete the empty port file."
 gosub :help~helpfile
 
 :merchant
@@ -121,7 +78,7 @@ if ($startinglocation <> "Citadel")
 	halt
 end
 
-setvar $minimumport $parm1
+setvar $minimumport $bot~parm1
 isnumber $number $minimumport
 if ($number <> 1)
 	setvar $switchboard~message "Minimum rob amount entered is not a number!*"
@@ -134,18 +91,25 @@ if ($minimumport <= 0)
 	halt
 end
 
-getwordpos $user_command_line $pos "cim"
+getwordpos $bot~user_command_line $pos "skipcim"
 if ($pos > 0)
 	setvar $skipcim true
 else
 	setvar $skipcim false
 end
 
-getwordpos $user_command_line $pos "upgrade"
+getwordpos $bot~user_command_line $pos "upgraded"
 if ($pos > 0)
 	setvar $visitupgraded true
 else
 	setvar $visitupgraded false
+end
+
+getwordpos $bot~user_command_line $pos "skipxxb"
+if ($pos > 0)
+	setvar $skipxxb true
+else
+	setvar $skipxxb false
 end
 
 :merchant
@@ -176,13 +140,15 @@ if ($skipcim = false)
 	setvar $switchboard~message "World Rob CIM Port Data Complete - Comms Back On*"
 	gosub :switchboard~switchboard
 end
-lowercase $parm1
-if ($parm1 = "clear_empty")
+
+lowercase $bot~parm1
+if ($bot~parm1 = "clear_empty")
 	delete $no_credits_file
 	setvar $switchboard~message "'No Money' file for this bot has been cleared.*"
 	gosub :switchboard~switchboard
 	halt
 end
+
 setarray $empty_grid sectors
 fileexists $exists $no_credits_file
 if ($exists)
@@ -203,22 +169,33 @@ end
 
 setvar $infinity 1000
 while (1 < $infinity)
-	if (($unlimitedgame = false) and ($player~turns <= $bot_turn_limit))
+	if (($player~unlimitedgame = false) and ($player~turns <= $bot~bot_turn_limit))
 		setvar $switchboard~message "Turns too low to continue.*"
 		gosub :switchboard~switchboard
 		goto :doneworldrob
 	end
 	setvar $isfigged false
+	:nextsec
 	while ($isfigged <> true)
 		gosub :findnearestrobport
 		gosub :checkport
-		if ($foundport = true)
-			gosub :pwarp
-			getsectorparameter $nearfig "FIGSEC" $isfigged
+		if ($foundport <> true)
+			goto :nextsec
 		end
+		setvar $planet~warpto $nearfig
+		gosub :planet~pwarp
+		if ($planet~pwarpsuccess <> TRUE)
+			setvar $switchboard~message $planet~msg&"*"
+			gosub :switchboard~switchboard
+			goto :nextsec
+		end
+		getsectorparameter $nearfig "FIGSEC" $isfigged
+		if ($isfigged <> true)
+			goto :nextsec
+		end
+		gosub :rob
+		gosub :player~quikstats
 	end
-	gosub :rob
-	gosub :player~quikstats
 end
 
 :doneworldrob
@@ -229,45 +206,29 @@ halt
 
 :checkport
 setvar $foundport false
-send "c r "&$nearfig&"*q "
-waiton "What sector is the port in? ["&$player~current_sector&"] "&$nearfig
-killalltriggers
-settextlinetrigger crchecknothere :checkporttryagain "I have no information about a port in that sector."
-settextlinetrigger crneverbeenthere :checkport2 "You have never visted sector"
-settextlinetrigger crclass0 :checkporttryagain "A  Cargo holds     :"
-waiton " Items     Status  Trading % of max OnBoard"
-
-:checkport2
-killalltriggers
-setvar $foundport true
-
-:checkporttryagain
-killalltriggers
-if ($foundport <> true)
-	setvar $checkedports[$nearfig] true
+setvar $port~target $nearfig
+gosub :port~getportdbinfo
+if ($port~foundport = true)
+	if ($skipxxb = true) and (port.buyequip[$nearfig] = true)
+		setvar $checkedports[$nearfig] true
+		setvar $foundport false
+		return
+	else
+		setvar $foundport true
+		return
+	end
 end
-return
-
-:pwarp
-killalltriggers
-send "p"&$nearfig&"*y"
-settextlinetrigger warped :emptyport2 "-=-=-=- Planetary TransWarp Drive Engaged! -=-=-=-"
-settextlinetrigger same :emptyport2 "You are already in that sector!"
-settextlinetrigger didnotwarp :nofigatlocation "Your own fighters must be in the destination to make a safe jump."
-settextlinetrigger notenoughfuel :donenofuel2 "You do not have enough Fuel Ore on this planet to make the jump."
-pause
-
-:emptyport2
-setsectorparameter $nearfig "FIGSEC" true
-return
-
-:nofigatlocation
+setvar $port~remoteport $nearfig
+gosub :port~getportinfo
+if ($port~foundport = true)
+	if ($skipxxb = true) and (port.buyequip[$nearfig] = true)
+		setvar $foundport false
+	else
+		setvar $foundport true
+	end
+end
 setvar $checkedports[$nearfig] true
-setsectorparameter $nearfig "FIGSEC" false
 return
-
-:donenofuel2
-halt
 
 :findnearestrobport
 setvar $bottom 1
@@ -391,7 +352,7 @@ return
 :rob_ok
 killalltriggers
 
-setvar $rob ($rob_factor * $player~experience)
+setvar $rob ($game~rob_factor * $player~experience)
 getword currentline $port_cash 11
 striptext $port_cash ","
 setvar $original_port_cash $port_cash
@@ -505,7 +466,7 @@ pause
 
 :wrong_num
 killtrigger planet
-send "**'{" $bot_name "} - Incorrect Planet Number*"
+send "**'{" $switchboard~bot_name "} - Incorrect Planet Number*"
 return
 
 :planet_prompt
@@ -570,7 +531,7 @@ if (($startinglocation <> "Citadel") and ($startinglocation <> "Planet "))
 	goto :exitneg
 end
 
-setvar $_ck_ptradesetting $ptradesetting
+setvar $_ck_ptradesetting $game~ptradesetting
 
 if ($startinglocation = "Citadel")
 	send "Q"
@@ -1808,7 +1769,7 @@ if ($player~credits < $total_creds_needed)
 	return
 end
 setvar $creditsbefore $player~credits
-if (($unlimitedgame = false) and (($player~turns - $turnstoempty) <= $bot_turn_limit))
+if (($player~unlimitedgame = false) and (($player~turns - $turnstoempty) <= $bot~bot_turn_limit))
 	setvar $turnstoolow true
 	gosub :landonplanetentercitadel
 	return
@@ -1827,7 +1788,7 @@ while ($turnstoempty > 1)
 	end
 end
 gosub :player~quikstats
-if (($player~turns < $bot_turn_limit) and ($unlimitedgame = false))
+if (($player~turns < $bot~bot_turn_limit) and ($player~unlimitedgame = false))
 	gosub :landonplanetentercitadel
 	return
 end
@@ -1845,6 +1806,10 @@ return
 send "l " $planet "*   c t f"&$total_creds_needed&"*qq"
 gosub :player~quikstats
 return
+
+# includes
 include "source\include\switchboard.ts"
 include "source\include\loadvars"
 include "source\include\help"
+include "source\include\planethaggle"
+include "source\include\sector"

@@ -359,6 +359,7 @@ else
 	setvar $unknown_probe_damage 0
 	setvar $unknown_probe_last_points 0
 	setvar $unknown_probe_calibrated false
+	setvar $unknown_probe_target_id ""
 	while ($player~fighters > 0)
 		killalltriggers
 		setvar $stillshields false
@@ -471,7 +472,13 @@ else
 
 		echo "*Unknown ship type, probing attack odds. ["&$cap_ship_info&"]"
 		setvar $unknown_ship_type true
-		if ($unknown_probe_target <> $thistarget)
+		setvar $unknown_probe_current_id $thistarget
+		getwordpos $unknown_probe_current_id $unknown_probe_id_pos " ("
+		if ($unknown_probe_id_pos > 0)
+			cuttext $unknown_probe_current_id $unknown_probe_current_id 1 $unknown_probe_id_pos
+		end
+		if ($unknown_probe_target_id <> $unknown_probe_current_id)
+			setvar $unknown_probe_target_id $unknown_probe_current_id
 			setvar $unknown_probe_target $thistarget
 			setvar $unknown_probe_count 0
 			setvar $unknown_probe_sent 0
@@ -532,6 +539,11 @@ else
 		pause
 
 		:theyattacked
+		getwordpos currentline $pos " prevented "
+		if ($pos > 0)
+			settextlinetrigger theyattacked :theyattacked "Shipboard Computers "
+			pause
+		end
 		getwordpos currentline $pos " The Interdictor Generator on "
 		if ($pos > 0)
 			settextlinetrigger theyattacked :theyattacked "Shipboard Computers "
@@ -596,7 +608,7 @@ else
 		if ($unknown_probe_attack <> true)
 			setvar $cap_points (($shieldpoints + $ship_fighters) * $defodds)
 
-			if ((($player~defendercapping = true) and ($unmanned <> true)) and ($targetisalien = true))
+			if (((($player~defendercapping = true) and ($unmanned <> true)) and ($targetisalien = true)) and ($unknown_ship_type <> true))
 				if ($stillshields = true)
 					if ($ship_fighters > 3500)
 						setvar $cap_points (($shieldpoints / $own_odds) + ($cap_points / 100))
@@ -643,7 +655,10 @@ else
 				setvar $added_attack 2
 			end
 		end
-		setvar $last_shield_percentage $shieldperc
+			setvar $last_shield_percentage $shieldperc
+			if (($ship_fighters < 10) and ($stillshields <> true))
+				setvar $cap_points 1
+			end
 		setvar $sendattack "z"&$cap_points&"*  "
 		if ($player~startinglocation = "Citadel")
 			setvar $sendattack $sendattack&$refurbstring

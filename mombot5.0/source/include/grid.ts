@@ -429,9 +429,9 @@ end
 if ($pgrid_retreat)
 	send $incitadel & "m " & $pgridsector & $mac & "< n n n * "
 
-	if ($pgrid_surrender = true)
-		send " h s y * "
-	end
+	#if ($pgrid_surrender = true)
+	#	send " h s y * "
+	#end
 	if ($planet~planet > 0)
 		send "l j" & #8 & $planet~planet & "*  *  "
 	end
@@ -467,9 +467,9 @@ else
 	if ($xporting)
 		setvar $pgridstring $pgridstring & "x   " & $pgrid_xportship & "* * "
 	else
-		if ($pgrid_surrender = true)
-			setvar $pgridstring $pgridstring & " h s y * "
-		end
+		#if ($pgrid_surrender = true)
+		#	setvar $pgridstring $pgridstring & " h s y * "
+		#end
 	end
 	send $pgridstring
 	if ($xporting)

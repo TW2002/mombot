@@ -299,7 +299,27 @@ else
 	send $bot~password&"* * ************"
 	waiton "What do you want to name your ship?"
 	if ($menus~landonterra = true)
-		send $bot~startshipname&"*Y l "
+		setvar $menus~landonterra false
+		savevar $menus~landonterra
+		settexttrigger return_ship_confirm :return_ship_confirm " is what you want?"
+		send $bot~startshipname&"*"
+		pause
+
+		:connectivity~return_ship_confirm
+		killtrigger return_ship_confirm
+		settexttrigger return_landed_on_terra :return_landed_on_terra "Do you wish to (L)eave or (T)ake Colonists?"
+		setdelaytrigger return_terra_timeout :return_terra_timeout 10000
+		send "YL"
+		pause
+
+		:connectivity~return_landed_on_terra
+		killtrigger return_landed_on_terra
+		killtrigger return_terra_timeout
+		return
+
+		:connectivity~return_terra_timeout
+		killtrigger return_landed_on_terra
+		killtrigger return_terra_timeout
 		return
 	else
 		send $bot~startshipname&"*Y "

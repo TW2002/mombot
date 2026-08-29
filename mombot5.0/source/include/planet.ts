@@ -534,6 +534,7 @@ setvar $planet~max[4] 0
 
 if ($planet~noheader = 0)
 	send "*"
+	:planetheaderstart
 	killtrigger planetinfo2
 	settextlinetrigger planetinfo2 :planetinfo2 "Planet #"
 	pause
@@ -544,6 +545,10 @@ end
 goto :planetinfostart
 
 :planet~planetinfo2
+getwordpos currentline $pos "Planet #"
+if ($pos > 1)
+	goto :planetheaderstart
+end
 setvar $planet~citadel 0
 setvar $planet~sector_cannon 0
 setvar $planet~atmosphere_cannon 0

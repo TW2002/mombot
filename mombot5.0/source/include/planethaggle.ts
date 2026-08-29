@@ -45,15 +45,27 @@ if ($planethaggle~hasprods = 0)
 end
 
 :planethaggle~initinfo
-if ($player~turns <= 0)
+if ($player~unlimitedgame <> true) and ($player~turns <= 0)
 	gosub :negotiateland
 	setvar $planethaggle~exit_message "I have no turns to negotiate this planet"
 	goto :exitneg
 end
 if ($player~credits > 900000000)
-	gosub :negotiateland
-	setvar $planethaggle~exit_message "I have too much cash on hand"
-	goto :exitneg
+	if ($planethaggle~startinglocation = "Citadel")
+		setvar $planethaggle~bankcredits ($player~credits - 100000000)
+		gosub :negotiateland
+		send "TT"&$planethaggle~bankcredits&"*"
+		subtract $player~credits $planethaggle~bankcredits
+		send "Q"
+		gosub :planet~getplanetinfo
+		send "Q"
+		gosub :player~getinfo
+		send "*"
+	else
+		gosub :negotiateland
+		setvar $planethaggle~exit_message "I have too much cash on hand"
+		goto :exitneg
+	end
 end
 
 if ($planethaggle~_ck_pnego_fueltosell = "-1")
@@ -187,7 +199,7 @@ end
 
 :planethaggle~sell
 :planethaggle~resell
-if ($player~turns <= 0)
+if ($player~unlimitedgame <> true) and ($player~turns <= 0)
 	send "'I'm out of turns*"
 	return
 end
@@ -215,7 +227,9 @@ else
 	send "PN"
 end
 
-subtract $player~turns 1
+if ($player~unlimitedgame <> true)
+	subtract $player~turns 1
+end
 
 :planethaggle~getpercts
 settextlinetrigger orepct :orepct "Fuel Ore   Buying"

@@ -152,7 +152,8 @@ return
 :ship~getshipstats
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "c;"
-settextlinetrigger getshipoffense :ship~shipoffenseodds "Offensive Odds: "
+settextlinetrigger getshipoffense :ship~shipoffenseodds "Offensive Odds:"
+settextlinetrigger getshipdefense :ship~shipdefenseodds "Defensive Odds:"
 settextlinetrigger getshipfighters :ship~shipmaxfigsperattack " TransWarp Drive:   "
 settextlinetrigger getshipmines :ship~shipmaxmines " Mine Max:  "
 settextlinetrigger getshipgenesis :ship~shipmaxgenesis " Genesis Max:  "
@@ -190,6 +191,24 @@ else
 		striptext $ship~ship_fighters_max " "
 		savevar $ship~ship_fighters_max
 		savevar $ship~ship_offensive_odds
+	end
+end
+pause
+
+:ship~shipdefenseodds
+getwordpos currentansiline $ship~pos "[0;31m:[1;36m1"
+if ($ship~pos > 0)
+	gettext currentansiline $ship~ship_defensive_odds "Defensive Odds[1;33m:[36m " "[0;31m:[1;36m1"
+	striptext $ship~ship_defensive_odds "."
+	striptext $ship~ship_defensive_odds " "
+	savevar $ship~ship_defensive_odds
+else
+	getwordpos currentline $ship~pos "Defensive Odds:"
+	if ($ship~pos > 0)
+		gettext currentline $ship~ship_defensive_odds "Defensive Odds:" ":1"
+		striptext $ship~ship_defensive_odds "."
+		striptext $ship~ship_defensive_odds " "
+		savevar $ship~ship_defensive_odds
 	end
 end
 pause

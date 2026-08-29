@@ -621,6 +621,11 @@ if ($port~inc <> 0)
 	while ($port~i <= $port~inc)
 		send " S  "&$port~selling[$port~i]&"* Y  "
 		waiton "You have "
+		getword currentline $player~credits 3
+		striptext $player~credits ","
+		if ($player~credits >= 800000000)
+			goto :port~shipselldone
+		end
 		add $port~i 1
 	end
 end

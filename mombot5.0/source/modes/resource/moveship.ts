@@ -199,7 +199,8 @@ if ($back = true)
 	end
 	setvar $player~current_sector $startsector
 	setvar $player~warpto $movesector
-	if ($use_move = true)
+	gosub :setmovetype
+	if ($use_direction_move = true)
 		gosub :move
 		if ($player~movesuccess = false)
 			setvar $switchboard~message "Can not make it to move sector, shutting down*"
@@ -311,13 +312,14 @@ killtrigger enter
 killtrigger enter2
 killtrigger enter3
 gosub :player~msgs_on
-if ($back = true)
-	gosub :player~quikstats
-	setvar $player~warpto $startsector
-	if ($use_move = true)
-		gosub :move
-		if ($player~movesuccess = false)
-			setvar $switchboard~message "Can not make it to move sector, shutting down*"
+	if ($back = true)
+		gosub :player~quikstats
+		setvar $player~warpto $startsector
+		gosub :setmovetype
+		if ($use_direction_move = true)
+			gosub :move
+			if ($player~movesuccess = false)
+				setvar $switchboard~message "Can not make it to move sector, shutting down*"
 			gosub :switchboard~switchboard
 			setvar $switchboard~message "Not all ships were moved*"
 			gosub :switchboard~switchboard
@@ -361,11 +363,12 @@ while ($i <= $shipcount)
 			send "w n "&$theships[$i]&"*  "
 			setvar $player~current_sector $startsector
 			setvar $player~warpto $movesector
-			if ($use_move = true)
-				#gosub :move
-				send $movesector&"*  "
-				waiton $movesector
-				setvar $player~movesuccess true
+			gosub :setmovetype
+			if ($use_direction_move = true)
+				gosub :move
+				#send $movesector&"*  "
+				#waiton $movesector
+				#setvar $player~movesuccess true
 				if ($player~movesuccess = false)
 					setvar $switchboard~message "Can not make it to move sector, shutting down*"
 					gosub :switchboard~switchboard
@@ -399,11 +402,14 @@ while ($i <= $shipcount)
 			end
 			setvar $player~current_sector $movesector
 			setvar $player~warpto $startsector
-			if ($use_move = true)
-				#gosub :move
-				send $startsector&"*  "
-				waiton $startsector
-				setvar $player~movesuccess true
+			gosub :player~quikstats
+			setvar $player~warpto $startsector
+			gosub :setmovetype
+			if ($use_direction_move = true)
+				gosub :move
+				#send $startsector&"*  "
+				#waiton $startsector
+				#setvar $player~movesuccess true
 				if ($player~movesuccess = false)
 					setvar $switchboard~message "Can not make it to move sector, shutting down*"
 					gosub :switchboard~switchboard
@@ -434,7 +440,8 @@ while ($i <= $shipcount)
 		else
 			setvar $player~current_sector $startsector
 			setvar $player~warpto $movesector
-			if ($use_move = true)
+			gosub :setmovetype
+			if ($use_direction_move = true)
 				gosub :move
 				if ($player~movesuccess = false)
 					setvar $switchboard~message "Can not make it to move sector, shutting down*"
@@ -510,6 +517,14 @@ gosub :switchboard~switchboard
 halt
 # ============================== END Move Ship (moveship) Sub ==============================
 
+:setmovetype
+setvar $use_direction_move false
+getdistance $direction_distance $player~current_sector $player~warpto
+if ($direction_distance = 1)
+	setvar $use_direction_move true
+end
+return
+
 :move
 setvar $player~movesuccess false
 setvar $player~current_sector currentsector
@@ -524,8 +539,9 @@ settexttrigger move_twarp :move_failed "Do you want to engage the TransWarp driv
 settexttrigger move_igd :move_failed "An Interdictor Generator in this sector holds you fast!"
 settexttrigger move_photon :move_failed "Your ship was hit by a Photon and has been disabled"
 settexttrigger move_noroute :move_failed "Do you really want to warp there? (Y/N)"
+settexttrigger move_autopilot :move_autopilot_failed "Engage the Autopilot?"
 settextlinetrigger move_no_fuel :move_failed "You do not have enough Fuel Ore"
-send "m "&$player~warpto&"**"
+send "m "&$player~warpto&"*"
 pause
 
 :move_good
@@ -535,7 +551,19 @@ return
 
 :move_failed
 killalltriggers
-send "***"
+send "n"
+settexttrigger move_autopilot :move_autopilot_failed "Engage the Autopilot?"
+settexttrigger move_command :move_failed_done "Command [TL="
+pause
+
+:move_autopilot_failed
+killalltriggers
+send "n"
+settexttrigger move_command :move_failed_done "Command [TL="
+pause
+
+:move_failed_done
+killalltriggers
 return
 
 #INCLUDES:

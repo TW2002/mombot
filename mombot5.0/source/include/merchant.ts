@@ -28,6 +28,9 @@ setvar $merch_sample_amount $player~total_holds
 setvar $fuelstop false
 setvar $startingfuel 0
 setvar $minimumfuel 0
+setvar $fuel_half_port_max $half_port_max
+setvar $org_half_port_max $half_port_max
+setvar $equip_half_port_max $half_port_max
 
 if ($stop_at_fuel_quarter = true)
 	setvar $startingfuel $planet~planet_fuel
@@ -303,7 +306,7 @@ if ($cansellfuelhere)
 	if ($checkmcic = true)
 		setvar $planethaggle~_ck_pnego_fueltosell $merch_neg_sample_amount
 	elseif ($sellhalf)
-		setvar $fuel_to_sell ($port~oretrading - $half_port_max)
+		setvar $fuel_to_sell ($port~oretrading - $fuel_half_port_max)
 		if ($fuel_to_sell <= 0)
 			setvar $planethaggle~_ck_pnego_fueltosell "-1"
 		else
@@ -320,7 +323,7 @@ if ($cansellorghere)
 	if ($checkmcic = true)
 		setvar $planethaggle~_ck_pnego_orgtosell $merch_neg_sample_amount
 	elseif ($sellhalf)
-		setvar $org_to_sell ($port~orgtrading - $half_port_max)
+		setvar $org_to_sell ($port~orgtrading - $org_half_port_max)
 		if ($org_to_sell <= 0)
 			setvar $planethaggle~_ck_pnego_orgtosell "-1"
 		else
@@ -336,7 +339,7 @@ if ($cansellequiphere)
 	if ($checkmcic = true)
 		setvar $planethaggle~_ck_pnego_equiptosell $merch_neg_sample_amount
 	elseif ($sellhalf)
-		setvar $equip_to_sell ($port~equtrading - $half_port_max)
+		setvar $equip_to_sell ($port~equtrading - $equip_half_port_max)
 		if ($equip_to_sell <= 0)
 			setvar $planethaggle~_ck_pnego_equiptosell "-1"
 		else
@@ -805,19 +808,20 @@ end
 
 setvar $port~target $focus
 gosub :port~getportdbinfo
+gosub :merchant~calculatehalfportamounts
 
 # If running in checkmcic mode, skip ports that are upgraded or that we already have MCIC for
 if ($checkmcic = true)
 	if ($port~oretotal > 25000) or ($port~orgtotal > 25000) or ($port~equtotal > 25000)
 		return
 	end
-	if ($port~orebuying = "Buying") and ($port~oremcic = 0) and ($port~oretrading >= $minprod) and ($port~orepercent >= $minpct)
+	if ($sellingfuel = true) and ($port~orebuying = "Buying") and ($port~oremcic = 0) and ($port~oretrading >= $minprod) and ($port~orepercent >= $minpct)
 		setvar $cansellfuelhere true
 	end
-	if ($port~orgbuying = "Buying") and ($port~orgmcic = 0) and ($port~orgtrading >= $minprod) and ($port~orgpercent >= $minpct)
+	if ($sellingorg = true) and ($port~orgbuying = "Buying") and ($port~orgmcic = 0) and ($port~orgtrading >= $minprod) and ($port~orgpercent >= $minpct)
 		setvar $cansellorghere true
 	end
-	if ($port~equbuying = "Buying") and ($port~equmcic = 0) and ($port~equtrading >= $minprod) and ($port~equpercent >= $minpct)
+	if ($sellingequip = true) and ($port~equbuying = "Buying") and ($port~equmcic = 0) and ($port~equtrading >= $minprod) and ($port~equpercent >= $minpct)
 		setvar $cansellequiphere true
 	end
 	if ($cansellfuelhere = true) or ($cansellorghere = true) or ($cansellequiphere = true)
@@ -830,19 +834,34 @@ end
 
 if ($sellingfuel = true)
 	if ($planet~planet_fuel >= 100000) and ($port~orebuying = "Buying") and ($port~oretrading >= $minprod) and ($port~orepercent >= $minpct)
-		setvar $cansellfuelhere true
+		setvar $sellmcicsector $focus
+		setvar $mcicparameter "OREMCIC"
+		gosub :merchant~sellmcicok
+		if ($sellmcicok = true) and (($sellhalf <> true) or ($port~oretrading > $fuel_half_port_max))
+			setvar $cansellfuelhere true
+		end
 	end
 end
 
 if ($sellingorg = true)
 	if ($planet~planet_organics >= $minprod) and ($port~orgbuying = "Buying") and ($port~orgtrading >= $minprod) and ($port~orgpercent >= $minpct)
-		setvar $cansellorghere true
+		setvar $sellmcicsector $focus
+		setvar $mcicparameter "ORGMCIC"
+		gosub :merchant~sellmcicok
+		if ($sellmcicok = true) and (($sellhalf <> true) or ($port~orgtrading > $org_half_port_max))
+			setvar $cansellorghere true
+		end
 	end
 end
 
 if ($sellingequip = true)
 	if ($planet~planet_equipment >= $minprod) and ($port~equbuying = "Buying") and ($port~equtrading >= $minprod) and ($port~equpercent >= $minpct)
-		setvar $cansellequiphere true
+		setvar $sellmcicsector $focus
+		setvar $mcicparameter "EQUMCIC"
+		gosub :merchant~sellmcicok
+		if ($sellmcicok = true) and (($sellhalf <> true) or ($port~equtrading > $equip_half_port_max))
+			setvar $cansellequiphere true
+		end
 	end
 end
 
@@ -883,10 +902,14 @@ setvar $cansellequiphere false
 setvar $canbuyfuelhere false
 setvar $canbuyorghere false
 setvar $canbuyequiphere false
+gosub :merchant~calculatehalfportamounts
 
 if ($sellingfuel = true)
 	if (($planet~planet_fuel >= 100000) and ($port~orebuying = "Buying") and ($port~oretrading >= $minprod))
-		if (($checkmcic = true) or ($salesman = true) or ($sellhalf <> true) or (($port~orepercent >= $minpct) and ($port~oretrading > $half_port_max)))
+		setvar $sellmcicsector $player~current_sector
+		setvar $mcicparameter "OREMCIC"
+		gosub :merchant~sellmcicok
+		if ($sellmcicok = true) and (($checkmcic = true) or ($salesman = true) or ($sellhalf <> true) or (($port~orepercent >= $minpct) and ($port~oretrading > $fuel_half_port_max)))
 			setvar $cansellfuelhere true
 		end
 	end
@@ -894,7 +917,10 @@ end
 
 if ($sellingorg = true)
 	if (((($salesman = true) and ($planet~planet_organics >= $minprod)) or (($salesman <> true) and ($planet~planet_organics >= $minprod))) and ($port~orgbuying = "Buying") and ($port~orgtrading >= $minprod))
-		if (($checkmcic = true) or ($salesman = true) or ($sellhalf <> true) or (($port~orgpercent >= $minpct) and ($port~orgtrading > $half_port_max)))
+		setvar $sellmcicsector $player~current_sector
+		setvar $mcicparameter "ORGMCIC"
+		gosub :merchant~sellmcicok
+		if ($sellmcicok = true) and (($checkmcic = true) or ($salesman = true) or ($sellhalf <> true) or (($port~orgpercent >= $minpct) and ($port~orgtrading > $org_half_port_max)))
 			setvar $cansellorghere true
 		end
 	end
@@ -902,7 +928,10 @@ end
 
 if ($sellingequip = true)
 	if (((($salesman = true) and ($planet~planet_equipment >= $minprod)) or (($salesman <> true) and ($planet~planet_equipment >= $minprod))) and ($port~equbuying = "Buying") and ($port~equtrading >= $minprod))
-		if (($checkmcic = true) or ($salesman = true) or ($sellhalf <> true) or (($port~equpercent >= $minpct) and ($port~equtrading > $half_port_max)))
+		setvar $sellmcicsector $player~current_sector
+		setvar $mcicparameter "EQUMCIC"
+		gosub :merchant~sellmcicok
+		if ($sellmcicok = true) and (($checkmcic = true) or ($salesman = true) or ($sellhalf <> true) or (($port~equpercent >= $minpct) and ($port~equtrading > $equip_half_port_max)))
 			setvar $cansellequiphere true
 		end
 	end
@@ -923,6 +952,39 @@ if ($salesman = true)
 	setvar $planetroom ($planet~planet_organics_max - $planet~planet_organics)
 	if (($port~orgbuying = "Selling") and ($planetroom >= $minprod) and ($port~orgtrading >= $minprod))
 		setvar $canbuyorghere true
+	end
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:merchant~calculatehalfportamounts
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $fuel_half_port_max $half_port_max
+setvar $org_half_port_max $half_port_max
+setvar $equip_half_port_max $half_port_max
+if ($port~orepercent > 0)
+	setvar $fuel_half_port_max (($port~oretrading * 100) / $port~orepercent)
+	divide $fuel_half_port_max 2
+end
+if ($port~orgpercent > 0)
+	setvar $org_half_port_max (($port~orgtrading * 100) / $port~orgpercent)
+	divide $org_half_port_max 2
+end
+if ($port~equpercent > 0)
+	setvar $equip_half_port_max (($port~equtrading * 100) / $port~equpercent)
+	divide $equip_half_port_max 2
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:merchant~sellmcicok
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $sellmcicok true
+if ($sellmcic <> 0)
+	getsectorparameter $sellmcicsector $mcicparameter $sellmcictmp
+	isnumber $sellmcictest $sellmcictmp
+	if ($sellmcictest = true) and ($sellmcictmp <> 0) and ($sellmcictmp > $sellmcic)
+		setvar $sellmcicok false
 	end
 end
 return
@@ -1034,6 +1096,8 @@ if ($port~noport = 1)
 	return
 end
 setvar $liveport true
+setvar $port~target $player~current_sector
+gosub :port~getportdbinfo
 if ($port~orebuying = "Selling")
 	setvar $fuelselling $port~oretrading
 end

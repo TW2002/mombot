@@ -6,39 +6,40 @@ gosub :help~initialize
 setvar $help~help[1] $help~tab&"Visits sectors in list and farms the planets there."
 setvar $help~help[2] $help~tab&"       "
 setvar $help~help[3] $help~tab&"  Usage:  farm set {sector1} {sector2} {...}"
-setvar $help~help[4] $help~tab&"  Usage:  farm list"
-setvar $help~help[5] $help~tab&"  Usage:  farm clear"
-setvar $help~help[6] $help~tab&"  Usage:  farm balance"
-setvar $help~help[7] $help~tab&"  Usage:  farm fill {planets}/{all} {options}"
-setvar $help~help[8] $help~tab&"  Usage:  farm "
-setvar $help~help[9] $help~tab&"       "
-setvar $help~help[10] $help~tab&"Examples:"
-setvar $help~help[11] $help~tab&"       "
-setvar $help~help[12] $help~tab&"  >farm set 1224 1925 3176     "
-setvar $help~help[13] $help~tab&"  >farm     "
-setvar $help~help[14] $help~tab&"  >farm fill 12 13 14     "
-setvar $help~help[15] $help~tab&"  >farm fill all     "
-setvar $help~help[16] $help~tab&"       "
-setvar $help~help[17] $help~tab&"Modes:"
-setvar $help~help[18] $help~tab&"       "
-setvar $help~help[19] $help~tab&"   set - Adds sectors in the order entered into the farm set."
-setvar $help~help[20] $help~tab&"   list - Lists all sectors in the farm set."
-setvar $help~help[21] $help~tab&"   clear - Removes all sectors from the farm set."
-setvar $help~help[22] $help~tab&"   balance - Attempts to balance colos on farm planets."
-setvar $help~help[23] $help~tab&"      "
-setvar $help~help[24] $help~tab&"   Running farm with no options attempts to farm all products."
-setvar $help~help[25] $help~tab&"   If you specify one or more options, only those will be farmed."
-setvar $help~help[26] $help~tab&"   Planet numbers or 'all' specify planets to be filled."
-setvar $help~help[27] $help~tab&"       "
-setvar $help~help[28] $help~tab&"       Product Options:"
-setvar $help~help[29] $help~tab&"            {f}   - Farm fuel ore"
-setvar $help~help[30] $help~tab&"            {o}   - Farm organics"
-setvar $help~help[31] $help~tab&"            {e}   - Farm equipment"
-setvar $help~help[32] $help~tab&"           {fc}   - Farm fuel ore colonists"
-setvar $help~help[33] $help~tab&"           {oc}   - Farm organic colonists"
-setvar $help~help[34] $help~tab&"           {ec}   - Farm equipment colonists"
-setvar $help~help[35] $help~tab&"          {fig}   - Farm fighters"
-setvar $help~help[36] $help~tab&"           {sh}   - Farm shields"
+setvar $help~help[4] $help~tab&"  Usage:  farm remove {sector1} {sector2} {...}"
+setvar $help~help[5] $help~tab&"  Usage:  farm list"
+setvar $help~help[6] $help~tab&"  Usage:  farm clear"
+setvar $help~help[7] $help~tab&"  Usage:  farm balance"
+setvar $help~help[8] $help~tab&"  Usage:  farm fill {planets}/{all} {options}"
+setvar $help~help[9] $help~tab&"  Usage:  farm "
+setvar $help~help[10] $help~tab&"    "
+setvar $help~help[11] $help~tab&"Examples:"
+setvar $help~help[12] $help~tab&"       "
+setvar $help~help[13] $help~tab&"  >farm set 1224 1925 3176     "
+setvar $help~help[14] $help~tab&"  >farm     "
+setvar $help~help[15] $help~tab&"  >farm fill 12 13 14     "
+setvar $help~help[16] $help~tab&"  >farm fill all     "
+setvar $help~help[17] $help~tab&"       "
+setvar $help~help[18] $help~tab&"Modes:"
+setvar $help~help[19] $help~tab&"       "
+setvar $help~help[20] $help~tab&"   set - Adds sectors in the order entered into the farm set."
+setvar $help~help[21] $help~tab&"   list - Lists all sectors in the farm set."
+setvar $help~help[22] $help~tab&"   clear - Removes all sectors from the farm set."
+setvar $help~help[23] $help~tab&"   balance - Attempts to balance colos on farm planets."
+setvar $help~help[24] $help~tab&"      "
+setvar $help~help[25] $help~tab&"   Running farm with no options attempts to farm all products."
+setvar $help~help[26] $help~tab&"   If you specify one or more options, only those will be farmed."
+setvar $help~help[27] $help~tab&"   Planet numbers or 'all' specify planets to be filled."
+setvar $help~help[28] $help~tab&"       "
+setvar $help~help[29] $help~tab&"       Product Options:"
+setvar $help~help[30] $help~tab&"            {f}   - Farm fuel ore"
+setvar $help~help[31] $help~tab&"            {o}   - Farm organics"
+setvar $help~help[32] $help~tab&"            {e}   - Farm equipment"
+setvar $help~help[33] $help~tab&"           {fc}   - Farm fuel ore colonists"
+setvar $help~help[34] $help~tab&"           {oc}   - Farm organic colonists"
+setvar $help~help[35] $help~tab&"           {ec}   - Farm equipment colonists"
+setvar $help~help[36] $help~tab&"          {fig}   - Farm fighters"
+setvar $help~help[37] $help~tab&"           {sh}   - Farm shields"
 gosub :help~helpfile
 
 getwordpos $bot~user_command_line $pos "silent"
@@ -73,6 +74,21 @@ end
 getwordpos $bot~parm1 $pos "set"
 if ($pos > 0)
 	goto :farm_set
+end
+
+getwordpos $bot~parm1 $pos "add"
+if ($pos > 0)
+	goto :farm_set
+end
+
+getwordpos $bot~parm1 $pos "remove"
+if ($pos > 0)
+	goto :farm_remove
+end
+
+getwordpos $bot~parm1 $pos "delete"
+if ($pos > 0)
+	goto :farm_remove
 end
 
 gosub :player~quikstats
@@ -1051,6 +1067,37 @@ gosub :switchboard~switchboard
 halt
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:farm_remove
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :loadfarmsectorlist
+if ($farmsectors = "") or ($farmlistcount <= 0)
+	setvar $switchboard~message "No sectors in farming list.*"
+	gosub :switchboard~switchboard
+	halt
+end
+setvar $i 2
+setvar $newfarmlist ""
+setvar $sectorsremoved 0
+setvar $check ""
+while ($check <> "%%%")
+	getword $bot~user_command_line $check $i "%%%"
+	if ($check <> "%%%")
+		isnumber $test $check
+		if ($test)
+			if ($check > 0) and ($check <= sectors) and ($check > 10)
+				setvar $farmsec $check
+				gosub :removefromlist
+			end
+		end
+	end
+	add $i 1
+end
+
+setvar $switchboard~message ""&$sectorsremoved&" Sectors removed from Bot Farming Configuration.*"
+gosub :switchboard~switchboard
+halt
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :addtofarmlist
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 if ($farmsec = "") or ($farmsec = 0) or ($farmsec > sectors) or ($farmsec < 11)
@@ -1073,6 +1120,32 @@ else
 	setvar $farmsectors $farmsectors&" "&$farmsec
 end
 add $sectorsadded 1
+add $farmlistcount 1
+setvar $sector[$farmlistcount] $farmsec
+savevar $farmsectors
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:removefromlist
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $c 0
+setvar $d 0
+setvar $newfarmlist ""
+while ($c < $farmlistcount)
+	add $c 1
+	if ($sector[$c] = $farmsec)
+		add $sectorsremoved 1
+	else
+		if ($d = 0)
+			setvar $newfarmlist $sector[$c]
+		else
+			setvar $newfarmlist $newfarmlist&" "&$sector[$c]
+		end
+		add $d 1
+	end
+end
+setvar $farmsectors $newfarmlist
+setvar $farmlistcount $d
 savevar $farmsectors
 return
 

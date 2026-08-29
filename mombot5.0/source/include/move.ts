@@ -274,12 +274,16 @@ if (($move~moveintosector > 10) and ($move~moveintosector <> $map~stardock))
 		setvar $move~result $move~result&"  H  1  Z  "&$player~surroundmine&"*  Z C  *  "
 	end
 end
-setvar $move~result $move~result&"@"
 #send $move~result
 settextlinetrigger figdrop :figdrop "fighter(s) in close support"
 settextlinetrigger limpdrop :limpdrop "Limpet mine(s) on board"
 settextlinetrigger minedrop :minedrop "Armid mine(s) on board"
-settextlinetrigger movedone :movedone "Average Interval Lag"
+if ($move~skipstats = true)
+	settexttrigger movedone :movedone "Command [TL="
+else
+	setvar $move~result $move~result&"@"
+	settextlinetrigger movedone :movedone "Average Interval Lag"
+end
 send $move~result
 pause
 :figdrop
