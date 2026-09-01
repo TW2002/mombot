@@ -1,4 +1,4 @@
-# Mombot 5.0 Changes From 4.7beta
+# Mombot 5.1beta Changes From 4.7beta
 
 Comparison date: 2026-06-02
 
@@ -19,7 +19,7 @@ Notes:
 
 ## Inventory Summary
 
-| Area | 4.7beta | 5.0 |
+| Area | 4.7beta | 5.1beta |
 |---|---:|---:|
 | Active top-level `.ts` scripts under commands/modes/daemons/startups/preload | 76 | 183 |
 | Active top-level `.cts` runtime scripts under commands/modes/daemons/startups/preload | 127 | 183 |
@@ -167,15 +167,15 @@ In 4.7beta, some of those lived directly under `commands` or `daemons`, or exist
 - `$bot~major_version = "4"`
 - `$bot~minor_version = "01p"`
 
-5.0 version state:
+5.1beta version state:
 
 - `$bot~major_version = "5"`
-- `$bot~minor_version = "0"`
+- `$bot~minor_version = "1beta"`
 
 5.0 also adds:
 
 - `$bot~default_bot_directory = "mombot"`
-- `scripts/mombot5_0.cfg`, which stores the selected Mombot directory name
+- `scripts/mombot5_1beta.cfg`, which stores the selected Mombot directory name
 - `$bot~mombot_directory`, which is used to build paths such as `scripts/<mombot_directory>/mombot.cfg`
 
 ### Game State Moved Out Of The Mombot Script Tree
@@ -379,8 +379,8 @@ This section focuses on scripts with a 4.7beta source counterpart and meaningful
 
 `mombot.ts`
 
-- Version changed from `4.01p` to `5.0`.
-- Startup now chooses a configurable Mombot directory through `scripts/mombot5_0.cfg`.
+- Version changed from `4.01p` to `5.1beta`.
+- Startup now chooses a configurable Mombot directory through `scripts/mombot5_1beta.cfg`.
 - Game files now target `games/<GAMENAME>` and run a migration helper for legacy `scripts/mombot/games/<GAMENAME>` data.
 - Startup initializes new shared state such as `$planet~planet_prods_file`.
 - Command lists and aliases were updated for the larger 5.0 command/mode set.
