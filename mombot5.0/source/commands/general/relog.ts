@@ -56,17 +56,17 @@ pause
 :continuepause2
 gosub :relog_freeze_trigger
 send "*"
-settexttrigger password :continuepassword "A password is required to enter this game."
+setstrigger password :continuepassword "A password is required to enter this game."
 setdelaytrigger unfreezingtrigger :relog_attempt 20000
 pause
 
 :continuepassword
 gosub :relog_freeze_trigger
-settextlinetrigger dead :dead "What do you want to name your ship? (30 letters)"
-settexttrigger alive :alldone_relog "Command ["
-settexttrigger aliveonplanet :alldone_relog "Planet command (?=help) [D]"
-settexttrigger aliveincitadel :alldone_relog "Citadel command (?=help)"
-settexttrigger avoids :continueavoids "Do you wish to clear some avoids? (Y/N) [N]"
+setslinetrigger dead :dead "What do you want to name your ship? (30 letters)"
+setstrigger alive :alldone_relog "Command ["
+setstrigger aliveonplanet :alldone_relog "Planet command (?=help) [D]"
+setstrigger aliveincitadel :alldone_relog "Citadel command (?=help)"
+setstrigger avoids :continueavoids "Do you wish to clear some avoids? (Y/N) [N]"
 settexttrigger messages :continuemessages "[Pause]"
 settexttrigger delete :continuedelete "[Pause] - Delete messages? (Y/N)"
 settexttrigger timed :timed_game_closed "Access to this game is limited.  Access modes are as follows:"
@@ -260,7 +260,7 @@ pause
 
 :continuelogin
 gosub :killrelogtriggers
-settexttrigger relog3 :continuerelog3 "Please enter your name"
+setstrigger relog3 :continuerelog3 "Please enter your name"
 pause
 
 :continuerelog3
@@ -273,20 +273,20 @@ pause
 
 :continuerelog4
 gosub :killrelogtriggers
-settexttrigger relog69 :continuerelog5 "Make a Selection:"
-settexttrigger relog3 :continuerelog5 "Selection (? for menu):"
-settexttrigger relog5 :continuerelog5 "Selection:"
-settexttrigger relogselect :continuerelog5 "Select a game"
+setstrigger relog69 :continuerelog5 "Make a Selection:"
+setstrigger relog3 :continuerelog5 "Selection (? for menu):"
+setstrigger relog5 :continuerelog5 "Selection:"
+setstrigger relogselect :continuerelog5 "Select a game"
 #send "#"&#8
 pause
 
 :continuerelog5
 gosub :killrelogtriggers
 settexttrigger firstpause :firstpause "[Pause]"
-settexttrigger alive :done_do_relog "Command ["
-settexttrigger aliveonplanet :done_do_relog "Planet command (?=help) [D]"
-settexttrigger aliveincitadel :done_do_relog "Citadel command (?=help)"
-settexttrigger enter :enter_game_menu "Enter your choice"
+setstrigger alive :done_do_relog "Command ["
+setstrigger aliveonplanet :done_do_relog "Planet command (?=help) [D]"
+setstrigger aliveincitadel :done_do_relog "Citadel command (?=help)"
+setstrigger enter :enter_game_menu "Enter your choice"
 setdelaytrigger relogmenupromptcheck :relog_check_game_menu_prompt 100
 send $bot~letter
 pause
@@ -328,10 +328,10 @@ pause
 gosub :relog_freeze_trigger
 killtrigger gamelogprompt
 settexttrigger postgamepause :continue_relog_game_pause "[Pause]"
-settexttrigger password :continuepassword "A password is required to enter this game."
-settexttrigger alive :done_do_relog "Command ["
-settexttrigger aliveonplanet :done_do_relog "Planet command (?=help) [D]"
-settexttrigger aliveincitadel :done_do_relog "Citadel command (?=help)"
+setstrigger password :continuepassword "A password is required to enter this game."
+setstrigger alive :done_do_relog "Command ["
+setstrigger aliveonplanet :done_do_relog "Planet command (?=help) [D]"
+setstrigger aliveincitadel :done_do_relog "Citadel command (?=help)"
 setdelaytrigger relogenteredcheck :relog_check_entered_game 100
 send "*"
 pause
@@ -341,10 +341,10 @@ gosub :relog_freeze_trigger
 killtrigger relogenteredcheck
 send "*"
 settexttrigger postgamepause :continue_relog_game_pause "[Pause]"
-settexttrigger password :continuepassword "A password is required to enter this game."
-settexttrigger alive :done_do_relog "Command ["
-settexttrigger aliveonplanet :done_do_relog "Planet command (?=help) [D]"
-settexttrigger aliveincitadel :done_do_relog "Citadel command (?=help)"
+setstrigger password :continuepassword "A password is required to enter this game."
+setstrigger alive :done_do_relog "Command ["
+setstrigger aliveonplanet :done_do_relog "Planet command (?=help) [D]"
+setstrigger aliveincitadel :done_do_relog "Citadel command (?=help)"
 setdelaytrigger relogenteredcheck :relog_check_entered_game 100
 setdelaytrigger unfreezingtrigger :relog_attempt 20000
 pause

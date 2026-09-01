@@ -48,10 +48,10 @@ setvar $ig_mode 0
 setdelaytrigger ig_timeout :photon_ig_damage_trigger 3000
 settexttrigger no_ig_trigger :no_ig_available "is not equipped with an Interdictor Generator!"
 settexttrigger no_ig_beam :no_ig_beam "Beam to what sector? (U=Upgrade Q=Quit)"
-settexttrigger no_ig_cby :no_ig_cby "ARE YOU SURE CAPTAIN? (Y/N)"
+setstrigger no_ig_cby :no_ig_cby "ARE YOU SURE CAPTAIN? (Y/N)"
 settexttrigger need_ig :ig_was_off "Your Interdictor generator is now OFF"
 settexttrigger ig_fine :ig_was_on "Your Interdictor generator is now ON"
-settexttrigger do_ig :do_ig_thing "Do you wish to change it? (Y/N)"
+setstrigger do_ig :do_ig_thing "Do you wish to change it? (Y/N)"
 send "q q q q* b"
 pause
 

@@ -570,7 +570,7 @@ setvar $laststeal $ship2sector
 settextlinetrigger success :success "Success!"
 settextlinetrigger busted :busted "Suddenly you're Busted!"
 settextlinetrigger portmaxxed :badstealport "There aren't that many holds of Equipment at this port!"
-settextlinetrigger fakebust :badstealport "Do you want instructions (Y/N) [N]?"
+setslinetrigger fakebust :badstealport "Do you want instructions (Y/N) [N]?"
 send $send&$stealship&"*  * "
 pause
 
@@ -652,7 +652,7 @@ killalltriggers
 :numberingplanets
 killalltriggers
 settextlinetrigger planetgrabber :planetline "   <"
-settextlinetrigger bedone :done "Land on which planet "
+setslinetrigger bedone :done "Land on which planet "
 send "lq*"
 pause
 
@@ -669,7 +669,7 @@ elseif ($temp = $psst_planet2)
 	setvar $foundplanet2 true
 end
 settextlinetrigger getline2 :planetline "   <"
-settextlinetrigger getend :done "Land on which planet "
+setslinetrigger getend :done "Land on which planet "
 pause
 
 :done
@@ -691,7 +691,7 @@ if ($tempid = $psst_ship2)
 	setvar $foundship2 true
 end
 settextlinetrigger other :shipline " "&$player~current_sector&" "
-settextlinetrigger nomore :shipdone "Choose which ship to tow "
+setslinetrigger nomore :shipdone "Choose which ship to tow "
 pause
 
 :shipdone

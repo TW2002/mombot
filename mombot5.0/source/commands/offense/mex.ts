@@ -103,7 +103,7 @@ if ($parm3 >= 1)
 	gosub :pad
 	settextlinetrigger town :town $parm3&" "&$pad&$player~current_sector&" "
 end
-settextlinetrigger done :done "Choose which ship to tow (Q=Quit)"
+setslinetrigger done :done "Choose which ship to tow (Q=Quit)"
 pause
 
 :nadda

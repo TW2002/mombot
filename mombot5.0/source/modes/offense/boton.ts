@@ -114,8 +114,8 @@ end
 
 if (($scrub_sect <> 0) and $auto_return)
 
-	settexttrigger sector_is_good :sector_is_good "All Systems Ready, shall we engage?"
-	settexttrigger sector_is_bad1 :sector_is_bad "Do you want to make this transport blind"
+	setstrigger sector_is_good :sector_is_good "All Systems Ready, shall we engage?"
+	setstrigger sector_is_bad1 :sector_is_bad "Do you want to make this transport blind"
 	settextlinetrigger sector_is_bad2 :sector_is_bad "This planetary transporter does not have the range."
 	settextlinetrigger sector_is_bad3 :sector_is_bad "This planet does not have enough Fuel Ore to transport you."
 	send "B"&$scrub_sect&"*N*  "
@@ -148,9 +148,9 @@ send #27
 seteventtrigger discod1 :discod "CONNECTION LOST"
 seteventtrigger discod2 :discod "Connections have been temporarily disabled."
 setdelaytrigger banner :banner 350000
-settexttrigger bwarp_blind :bwarp_blind "Do you want to make this transport blind"
-settexttrigger bwarp_go :bwarp_go "All Systems Ready, shall we engage?"
-settextlinetrigger bwarp_miss :bwarp_miss "Computer command [TL="
+setstrigger bwarp_blind :bwarp_blind "Do you want to make this transport blind"
+setstrigger bwarp_go :bwarp_go "All Systems Ready, shall we engage?"
+setslinetrigger bwarp_miss :bwarp_miss "Computer command [TL="
 settextlinetrigger gotem :gotem "Photon Missile launched into sector"
 settextlinetrigger wrong :wrong "That is not an adjacent sector"
 
@@ -202,7 +202,7 @@ killalltriggers
 gosub :player~quikstats
 if ($player~current_prompt = "Command")
 	send " L Z"&#8&$planet~planet&"*  *  J  C  *  "
-	settextlinetrigger notlanded :notlanded "Are you sure you want to jettison all cargo?"
+	setslinetrigger notlanded :notlanded "Are you sure you want to jettison all cargo?"
 	settextlinetrigger landed :landed "<Enter Citadel>"
 	setdelaytrigger testconn :testconn 3000
 	pause
@@ -379,7 +379,7 @@ if ($auto_return)
 			gosub :switchboard~switchboard
 			send $suffix
 		end
-		settexttrigger returnedsafe :returnedsafe "Are you sure you want to jettison all cargo"
+		setstrigger returnedsafe :returnedsafe "Are you sure you want to jettison all cargo"
 		setdelaytrigger notsafe2 :whatsup 4000
 		pause
 
@@ -404,7 +404,7 @@ if ($auto_return)
 			send $suffix
 		end
 		settextlinetrigger landed :doscan_landed "Enter Citadel"
-		settexttrigger notlanded :doscan_notlanded "Are you sure you want to jettison all cargo"
+		setstrigger notlanded :doscan_notlanded "Are you sure you want to jettison all cargo"
 		setdelaytrigger whatsup :whatsup 4000
 		pause
 
@@ -665,7 +665,7 @@ settextlinetrigger cn9 :cn9 " Abort display on keys    - ALL KEYS"
 settextlinetrigger cna :cna " Message Display Mode     - Long"
 settextlinetrigger cnb :cnb " Screen Pauses            - Yes"
 settextlinetrigger cnc :cnc " Online Auto Flee         - On"
-settexttrigger cnd :cnd "Settings command (?=Help)"
+setstrigger cnd :cnd "Settings command (?=Help)"
 pause
 
 :cn1
@@ -815,8 +815,8 @@ return
 setvar $line_pointer 1
 send "  S  D*  J  *  "
 waitfor "-------------------------------------------"
-settexttrigger donescan_d :donescan_d "Command [TL="
-settexttrigger end_of_lines_d :end_of_lines_d "Are you sure you want to jettison all cargo"
+setstrigger donescan_d :donescan_d "Command [TL="
+setstrigger end_of_lines_d :end_of_lines_d "Are you sure you want to jettison all cargo"
 
 :reset_trigger_d
 settextlinetrigger line :line_d
@@ -850,8 +850,8 @@ return
 setvar $line_pointer 1
 send " S H*  J  *  "
 settextlinetrigger donescan :donescan "Warps to Sector(s) :"
-settextlinetrigger noscan :noscan "Handle which mine type, 1 Armid or 2 Limpet"
-settexttrigger end_of_lines :end_of_lines "Are you sure you want to jettison all cargo"
+setslinetrigger noscan :noscan "Handle which mine type, 1 Armid or 2 Limpet"
+setstrigger end_of_lines :end_of_lines "Are you sure you want to jettison all cargo"
 
 :reset_trigger
 settextlinetrigger line :line
@@ -1018,9 +1018,9 @@ killalltriggers
 
 gosub :player~quikstats
 
-settexttrigger buy_fotons_blind :buy_fotons_blind "Do you want to make this transport blind"
-settexttrigger buy_fotons_go :buy_fotons_go "All Systems Ready, shall we engage?"
-settextlinetrigger buy_fotons_miss :buy_fotons_miss "Computer command [TL="
+setstrigger buy_fotons_blind :buy_fotons_blind "Do you want to make this transport blind"
+setstrigger buy_fotons_go :buy_fotons_go "All Systems Ready, shall we engage?"
+setslinetrigger buy_fotons_miss :buy_fotons_miss "Computer command [TL="
 send " B "&stardock&"* C Q "
 pause
 
@@ -1043,8 +1043,8 @@ waitfor "How many Photon Missiles do you want"
 gettext currentline $lets_buy "(Max " ")"
 send $lets_buy "*"
 
-settexttrigger buy_fotonstwarp_lock :buy_fotonstwarp_lock "All Systems Ready, shall we engage"
-settexttrigger buy_fotonsno_twrp_lock :buy_fotonsno_twarp_lock "Do you want to make this jump blind"
+setstrigger buy_fotonstwarp_lock :buy_fotonstwarp_lock "All Systems Ready, shall we engage"
+setstrigger buy_fotonsno_twrp_lock :buy_fotonsno_twarp_lock "Do you want to make this jump blind"
 send "Q  Q  Q  Z  N  *  M"&$start_sector&"* Y "
 pause
 
@@ -1059,7 +1059,7 @@ halt
 killalltriggers
 send " Y *  *  L Z"&#8&$planet~planet&"*  * JC*"
 gosub :switchboard~switchboard
-settextlinetrigger buy_fotons_notlanded1 :buy_fotons_notlanded1 "Are you sure you want to jettison all cargo?"
+setslinetrigger buy_fotons_notlanded1 :buy_fotons_notlanded1 "Are you sure you want to jettison all cargo?"
 setdelaytrigger buy_fotons_notlanded2 :buy_fotons_notlanded2 4000
 settextlinetrigger buy_fotons_landed :buy_fotons_landed "<Enter Citadel>"
 pause

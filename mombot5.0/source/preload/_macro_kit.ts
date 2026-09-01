@@ -474,10 +474,10 @@ elseif (((currentsector = 1) or ($player~current_sector = 1)) or (($startingloca
 		end
 		setvar $msg ""
 		killalltriggers
-		settextlinetrigger tdet_trg1 :tdet_blnd "Do you want to make this jump blind?"
+		setslinetrigger tdet_trg1 :tdet_blnd "Do you want to make this jump blind?"
 		settextlinetrigger tdet_trg2 :tdet_fuel "You do not have enough Fuel Ore to make the jump."
 		settextlinetrigger tdet_trg3 :tdet_good "Locating beam pinpointed, TransWarp Locked."
-		settexttrigger tdet_trg4 :tdet_dock "Do you wish to (L)eave or (T)ake Colonists?"
+		setstrigger tdet_trg4 :tdet_dock "Do you wish to (L)eave or (T)ake Colonists?"
 		send "* *   m  " & $sector & "  *  y*  *  *  l 1*   "
 		pause
 		goto :print_the_menu
@@ -575,9 +575,9 @@ elseif (((currentsector = 1) or ($player~current_sector = 1)) or (($startingloca
 		settextlinetrigger tdet_trg3 :txport_security "SECURITY BREACH! Invalid Password, unable to link transporters."
 		settextlinetrigger tdet_trg4 :txport_noaccess "Access denied!"
 		settextlinetrigger tdet_trg5 :txport_xprtgood "Security code accepted, engaging transporter control."
-		settexttrigger tdet_trg6 :txport_go_ahead "Do you wish to (L)eave or (T)ake Colonists?"
+		setstrigger tdet_trg6 :txport_go_ahead "Do you wish to (L)eave or (T)ake Colonists?"
 		settexttrigger tdet_trg7 :txport_go_ahead "That planet is not in this sector."
-		settexttrigger tdet_trg8 :txport_go_ahead "Are you sure you want to jettison all cargo? (Y/N)"
+		setstrigger tdet_trg8 :txport_go_ahead "Are you sure you want to jettison all cargo? (Y/N)"
 		send "* *  x    z" & $shipnum & "*  *    l j"&#8&" 1*  "
 		pause
 		goto :print_the_menu
@@ -755,7 +755,7 @@ else
 		end
 		setvar $msg ""
 		killalltriggers
-		settextlinetrigger det_trg1 :det_blnd "Do you want to make this jump blind?"
+		setslinetrigger det_trg1 :det_blnd "Do you want to make this jump blind?"
 		settextlinetrigger det_trg2 :det_fuel "You do not have enough Fuel Ore to make the jump."
 		settextlinetrigger det_trg3 :det_good "Locating beam pinpointed, TransWarp Locked."
 		settextlinetrigger det_trg4 :det_dock "Landing on Federation StarDock."
@@ -986,7 +986,7 @@ else
 		end
 		setvar $msg ""
 		killalltriggers
-		settextlinetrigger det_trg1 :pland_trg_1 "Engage the Autopilot?"
+		setslinetrigger det_trg1 :pland_trg_1 "Engage the Autopilot?"
 		settextlinetrigger det_trg2 :pland_trg_2 "That planet is not in this sector."
 		settextlinetrigger det_trg3 :pland_trg_3 "<Take all>"
 		settextlinetrigger det_trg4 :pland_trg_4 "<Take/Leave Products>"
@@ -1006,7 +1006,7 @@ else
 		end
 		setvar $msg ""
 		killalltriggers
-		settextlinetrigger det_trg1 :pland_trg_1 "Engage the Autopilot?"
+		setslinetrigger det_trg1 :pland_trg_1 "Engage the Autopilot?"
 		settextlinetrigger det_trg2 :pland_trg_2 "That planet is not in this sector."
 		settextlinetrigger det_trg3 :pland_trg_3 "<Take all>"
 		settextlinetrigger det_trg4 :pland_trg_4 "<Take/Leave Products>"
@@ -1030,12 +1030,12 @@ else
 		end
 		setvar $msg ""
 		killalltriggers
-		settextlinetrigger det_trg1 :pland_trg_1 "Engage the Autopilot?"
+		setslinetrigger det_trg1 :pland_trg_1 "Engage the Autopilot?"
 		settextlinetrigger det_trg2 :pland_trg_2 "That planet is not in this sector."
 		settextlinetrigger det_trg3 :pland_trg_3 "<Take all>"
 		settextlinetrigger det_trg4 :pland_trg_4 "<Take/Leave Products>"
 		settextlinetrigger det_trg5 :pland_trg_5 "Landing on Federation StarDock."
-		settextlinetrigger det_trg6 :pland_trg_6 "<DANGER> Are you sure you want to do this?"
+		setslinetrigger det_trg6 :pland_trg_6 "<DANGER> Are you sure you want to do this?"
 		send "qqq  z  n  l " & $pnum & "  *  *  z  n  z  n  *  z  d  y  p  s  h "
 		pause
 	elseif ($chosen_option = "Z")
@@ -1162,7 +1162,7 @@ else
 	setarray $p_array 255
 	killalltriggers
 	settextlinetrigger plist_trig :plist_line ">"
-	settextlinetrigger plist_end  :plist_end  "Land on which planet"
+	setslinetrigger plist_end  :plist_end  "Land on which planet"
 	pause
 	halt
 
@@ -1201,7 +1201,7 @@ else
 	getrnd $rnd_idx 1 $p_array_idx
 	setvar $pnum $p_array[$rnd_idx]
 	killalltriggers
-	settextlinetrigger result_trg1 :res_baddd "Engage the Autopilot?"
+	setslinetrigger result_trg1 :res_baddd "Engage the Autopilot?"
 	settextlinetrigger result_trg2 :res_baddd "That planet is not in this sector."
 	settextlinetrigger result_trg3 :res_land2 "<Take/Leave Products>"
 	settextlinetrigger result_trg4 :res_backd "Landing on Federation StarDock."
@@ -1239,7 +1239,7 @@ else
 	settextlinetrigger result_trg3 :swap_xport_security "SECURITY BREACH! Invalid Password, unable to link transporters."
 	settextlinetrigger result_trg4 :swap_xport_noaccess "Access denied!"
 	settextlinetrigger result_trg5 :swap_xport_xprtgood "Security code accepted, engaging transporter control."
-	settextlinetrigger result_trg6 :swap_pland_noplnet1 "Engage the Autopilot?"
+	setslinetrigger result_trg6 :swap_pland_noplnet1 "Engage the Autopilot?"
 	settextlinetrigger result_trg7 :swap_pland_noplnet2 "That planet is not in this sector."
 	settextlinetrigger result_trg8 :swap_pland_noplnet3 "Invalid registry number, landing aborted."
 	settextlinetrigger result_trg9 :swap_pland_prodtakn "<Take all>"

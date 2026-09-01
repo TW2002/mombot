@@ -224,7 +224,7 @@ settextlinetrigger noplanet :noplanet "There isn't a planet in this sector."
 settextlinetrigger no_land :no_land "since it couldn't possibly stand"
 settextlinetrigger planet :planet "Planet #"
 settextlinetrigger wrongone :wrong_num "That planet is not in this sector."
-settexttrigger planetprompt :displayplanet "Planet command (?=help)"
+setstrigger planetprompt :displayplanet "Planet command (?=help)"
 pause
 
 :displayplanet
@@ -267,7 +267,7 @@ killtrigger noplanet
 killtrigger no_land
 killtrigger wrongone
 settexttrigger wrong_num :wrong_num "That planet is not in this sector."
-settexttrigger planet :planet_prompt "Planet command"
+setstrigger planet :planet_prompt "Planet command"
 pause
 
 :wrong_num
@@ -280,8 +280,8 @@ killtrigger wrong_num
 setvar $currentbotplanet $planet
 savevar $currentbotplanet
 send "m* * * c"
-settexttrigger build_cit :build_cit "Do you wish to construct one?"
-settexttrigger in_cit :in_cit "Citadel command"
+setstrigger build_cit :build_cit "Do you wish to construct one?"
+setstrigger in_cit :in_cit "Citadel command"
 settexttrigger nocitallowed :build_cit "Citadels are not allowed in FedSpace."
 settexttrigger citnotbuiltyet :build_cit "Be patient, your Citadel is not yet finished."
 pause
@@ -309,7 +309,7 @@ return
 setvar $planetcount 0
 killalltriggers
 settextlinetrigger planetgrabber :planetline "   <"
-settextlinetrigger bedone :done "Land on which planet "
+setslinetrigger bedone :done "Land on which planet "
 send "lq*"
 pause
 
@@ -325,7 +325,7 @@ if ($pos <= 0)
 	getword $line $planets[$planetcount] 1
 end
 settextlinetrigger getline2 :planetline "   <"
-settextlinetrigger getend :done "Land on which planet "
+setslinetrigger getend :done "Land on which planet "
 pause
 
 :done

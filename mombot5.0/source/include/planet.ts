@@ -19,7 +19,7 @@ gosub :player~msgs_off
 send "lq*"
 waiton "Registry"
 settextlinetrigger planetgrabber :planetline "   <"
-settextlinetrigger bedone :countdone "Land on which planet "
+setslinetrigger bedone :countdone "Land on which planet "
 pause
 
 :planet~planetline
@@ -61,7 +61,7 @@ if ($pos > 0)
 end
 settextlinetrigger ownedby :ownedby "Owned by: "
 settextlinetrigger planetgrabber :planetline "   <"
-settextlinetrigger getend :countdone "Land on which planet "
+setslinetrigger getend :countdone "Land on which planet "
 pause
 
 :ownedby
@@ -78,7 +78,7 @@ else
 	setvar $planets[$planetcount][6] $owner
 end
 settextlinetrigger planetgrabber :planetline "   <"
-settextlinetrigger getend :countdone "Land on which planet "
+setslinetrigger getend :countdone "Land on which planet "
 pause
 
 :countdone
@@ -133,7 +133,7 @@ waitfor "========="
 settextlinetrigger gotplanet :gotplanet "Class"
 settextlinetrigger endtl :endtl "======   ============"
 settextlinetrigger endtl2 :endtl "No Planets claimed"
-settextlinetrigger endtl3 :endtl "Computer command"
+setslinetrigger endtl3 :endtl "Computer command"
 pause
 
 :gotplanet
@@ -280,7 +280,7 @@ killtrigger planetcheck_noplanet
 setvar $planet~planetcheck_lastid 0
 
 :planet~planetcheck_nextplanet
-settexttrigger planetcheck_planetschecked :planet~planetcheck_planetschecked "Land on which planet <Q to abort>"
+setstrigger planetcheck_planetschecked :planet~planetcheck_planetschecked "Land on which planet <Q to abort>"
 settextlinetrigger planetcheck_getid :planet~planetcheck_getid "<"
 pause
 
@@ -616,7 +616,7 @@ settextlinetrigger citadelstart :citadelstart "Planet has a level"
 settextlinetrigger cannon :cannonstart ", AtmosLvl="
 settexttrigger maxedig :maxedig "Planetary Interdictor Generator ="
 settexttrigger underconst :underconst "under construction,"
-settexttrigger planetinfodone :planetinfodone "Planet command (?=help)"
+setstrigger planetinfodone :planetinfodone "Planet command (?=help)"
 pause
 
 :planet~underconst
@@ -933,7 +933,7 @@ settextlinetrigger planetstat_cols :readplanettypestats_cols "Cols -"
 settextlinetrigger planetstats_ore :readstatsprod "Fuel Ore"
 settextlinetrigger planetstats_org :readstatsprod "Organics"
 settextlinetrigger planetstats_equ :readstatsprod "Equipment"
-settexttrigger planetstat_done :readplanettypestats_done "Which planet type are you interested in (?=List)"
+setstrigger planetstat_done :readplanettypestats_done "Which planet type are you interested in (?=List)"
 pause
 
 :readplanettypestats_cols
@@ -1042,7 +1042,7 @@ if ($planet~pnum_ck <> $planet~planet)
 	goto :wrong_num
 end
 settexttrigger wrong_num :wrong_num "That planet is not in this sector."
-settexttrigger planet :planet_prompt "Planet command"
+setstrigger planet :planet_prompt "Planet command"
 pause
 
 :planet~wrong_num
@@ -1078,8 +1078,8 @@ end
 
 send "c"
 
-settexttrigger build_cit :build_cit "Do you wish to construct one?"
-settexttrigger in_cit :in_cit "Citadel command"
+setstrigger build_cit :build_cit "Do you wish to construct one?"
+setstrigger in_cit :in_cit "Citadel command"
 settexttrigger nocitallowed :build_cit "Citadels are not allowed in FedSpace."
 settexttrigger citnotbuiltyet :build_cit "Be patient, your Citadel is not yet finished."
 pause
@@ -1661,7 +1661,7 @@ goto :move_done
 :movecredsverifydestination
 killalltriggers
 send "q q l "&$planet~planettofill&"*"
-settexttrigger movecredsdestinationok :movecredsdestinationok "Planet command"
+setstrigger movecredsdestinationok :movecredsdestinationok "Planet command"
 settextlinetrigger movecredsdestinationmissing :movecredsdestinationmissing "That planet is not in this sector."
 settextlinetrigger movecredsdestinationinvalid :movecredsdestinationinvalid "Invalid registry number, landing aborted."
 pause
@@ -1669,8 +1669,8 @@ pause
 :movecredsdestinationok
 killalltriggers
 send "c"
-settexttrigger movecredsdestinationcitadel :movecredsdestinationcitadel "Citadel command"
-settexttrigger movecredsdestinationbuild :movecredsdestinationbuild "Do you wish to construct one?"
+setstrigger movecredsdestinationcitadel :movecredsdestinationcitadel "Citadel command"
+setstrigger movecredsdestinationbuild :movecredsdestinationbuild "Do you wish to construct one?"
 settexttrigger movecredsdestinationnocitadel :movecredsdestinationnocitadel "Citadels are not allowed in FedSpace."
 settexttrigger movecredsdestinationnocitadel2 :movecredsdestinationnocitadel "Be patient, your Citadel is not yet finished."
 pause
@@ -1994,7 +1994,7 @@ if ($emptyfigs)
 		settexttrigger emptyempty :strip_donewiththisplanet "There isn't room on the planet"
 		settexttrigger fullfill :strip_donewiththisplanet "They don't have room for that many "
 		settexttrigger fullfill2 :strip_donewiththisplanet "You can't put more than"
-		settexttrigger empty :strip_donewiththisplanet "How many Fighters do you want to take (0 Max) [0]"
+		setstrigger empty :strip_donewiththisplanet "How many Fighters do you want to take (0 Max) [0]"
 		pause
 	end
 end

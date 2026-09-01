@@ -26,7 +26,7 @@ else
 	gosub :switchboard~switchboard
 	send "cn4"
 	settextlinetrigger 1 :bad "You cannot change the sub-space radio channel for another"
-	settextlinetrigger 2 :good "Enter a number from 0 to "
+	setslinetrigger 2 :good "Enter a number from 0 to "
 	pause
 
 	:bad

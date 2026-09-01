@@ -22,7 +22,7 @@ send "cx"
 waiton "<List Avoided Sectors>"
 
 :avoidloop
-settexttrigger endavoid :endavoid "Computer command"
+setstrigger endavoid :endavoid "Computer command"
 settextlinetrigger endavoid2 :endavoid "No Sectors are currently"
 settextlinetrigger gotavoids :gotavoids " "
 pause
@@ -63,8 +63,8 @@ goto :avoidloop
 :endavoid
 killalltriggers
 send "q"
-settexttrigger sector_avoids_command :sector~avoids_prompt "Command [TL"
-settexttrigger sector_avoids_citadel :sector~avoids_prompt "Citadel command"
+setstrigger sector_avoids_command :sector~avoids_prompt "Command [TL"
+setstrigger sector_avoids_citadel :sector~avoids_prompt "Citadel command"
 pause
 
 :sector~avoids_prompt
@@ -234,7 +234,7 @@ goto :endgetbackdoor
 
 :void1
 killalltriggers
-settexttrigger voiddone :voiddone "Computer command [TL"
+setstrigger voiddone :voiddone "Computer command [TL"
 settextlinetrigger void2 :void2 ">"
 pause
 
@@ -305,9 +305,9 @@ pause
 
 :gotsectordata
 killtrigger getline
-settexttrigger nomines :nomines "Citadel command (?=help)"
-settexttrigger nomines2 :nomines "Command ["
-settexttrigger mines :mines "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
+setstrigger nomines :nomines "Citadel command (?=help)"
+setstrigger nomines2 :nomines "Command ["
+setstrigger mines :mines "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
 pause
 
 :mines
@@ -373,9 +373,9 @@ end
 pause
 
 :gotautosectordata
-settexttrigger nomines :nominesauto "Citadel command (?=help)"
-settexttrigger nomines2 :nominesauto "Command ["
-settexttrigger mines :minesauto "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
+setstrigger nomines :nominesauto "Citadel command (?=help)"
+setstrigger nomines2 :nominesauto "Command ["
+setstrigger mines :minesauto "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
 pause
 
 :minesauto

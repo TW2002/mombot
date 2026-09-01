@@ -87,7 +87,7 @@ setarray $registry 10
 setvar $i 1
 send " L"
 waitfor "--------------------------------------------------"
-settexttrigger donedrawing :donedrawing "Land on which planet <Q to abort>"
+setstrigger donedrawing :donedrawing "Land on which planet <Q to abort>"
 
 :loop
 waiton "> "&$id

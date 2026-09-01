@@ -455,13 +455,13 @@ end
 :to_the_top
 gosub :restorehaggle
 setvar $anon_ptr 1
-settextlinetrigger	turnsgone	:turnsgone	"Do you want instructions (Y/N) [N]?"
+setslinetrigger	turnsgone	:turnsgone	"Do you want instructions (Y/N) [N]?"
 
 send "SZND*"
 waiton "Relative Density Scan"
 killalltriggers
 settextlinetrigger	1	:getwarp "Sector "
-settexttrigger		2	:gotwarpinfo "Command [TL="
+setstrigger		2	:gotwarpinfo "Command [TL="
 pause
 
 :getwarp
@@ -1581,16 +1581,16 @@ if (port.class[$player~current_sector] = 1) or (port.class[$player~current_secto
 	settexttrigger noport :noport "Corp Menu"
 	send "pt"
 	waiton "<Port>"
-	settexttrigger	nofuel		:nofuel		"How many holds of Fuel Ore do you want to buy"
-	settexttrigger	noorg		:noorg		"How many holds of Organics do you want to buy"
-	settexttrigger	equp		:equp		"How many holds of Equipment do you want to sell ["
-	settexttrigger	buyequp		:buyequp	"How many holds of Equipment do you want to buy"
+	setstrigger	nofuel		:nofuel		"How many holds of Fuel Ore do you want to buy"
+	setstrigger	noorg		:noorg		"How many holds of Organics do you want to buy"
+	setstrigger	equp		:equp		"How many holds of Equipment do you want to sell ["
+	setstrigger	buyequp		:buyequp	"How many holds of Equipment do you want to buy"
 	settexttrigger	nosell		:nosell		"You don't have anything they want"
-	settexttrigger	fuelsell 	:fuelsell	"How many holds of Fuel Ore do you want to sell"
-	settexttrigger	orgsell 	:orgsell	"How many holds of Organics do you want to sell"
+	setstrigger	fuelsell 	:fuelsell	"How many holds of Fuel Ore do you want to sell"
+	setstrigger	orgsell 	:orgsell	"How many holds of Organics do you want to sell"
 	settexttrigger	offer		:offer		"Your offer ["
 	settexttrigger	finaloffer	:offer		"Our final offer"
-	settexttrigger	done		:done		"Command [TL"
+	setstrigger	done		:done		"Command [TL"
 	pause
 
 	:noport
@@ -1601,7 +1601,7 @@ if (port.class[$player~current_sector] = 1) or (port.class[$player~current_secto
 
 	:done
 	if ($tradestarted = 0)
-		settexttrigger	done		:done		"Command [TL"
+		setstrigger	done		:done		"Command [TL"
 		pause
 	end
 	killalltriggers
@@ -1691,7 +1691,7 @@ return
 setarray $holooutput 2000
 setvar $line_pointer 1
 send "SzH*  "
-settextlinetrigger	turnsgone		:turnsgone		"Do you want instructions (Y/N) [N]?"
+setslinetrigger	turnsgone		:turnsgone		"Do you want instructions (Y/N) [N]?"
 settextlinetrigger	donescan		:donescan		"Warps to Sector(s) :"
 
 waiton "Long Range Scan"

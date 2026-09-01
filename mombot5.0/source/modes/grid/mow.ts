@@ -384,7 +384,7 @@ killalltriggers
 
 :keepadding
 settextlinetrigger addcourse :addcourse ">"
-settexttrigger endcourse :endcourse "Computer command ["
+setstrigger endcourse :endcourse "Computer command ["
 pause
 
 :addcourse
@@ -437,7 +437,7 @@ killalltriggers
 
 :keepaddingfed
 settextlinetrigger addcoursefed :addcoursefed ">"
-settexttrigger endcoursefed :endcoursefed "Computer command ["
+setstrigger endcoursefed :endcoursefed "Computer command ["
 pause
 
 :addcoursefed

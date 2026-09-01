@@ -326,7 +326,7 @@ if ($nearfig > 0)
 		gosub :player~quikstats
 		if ($player~fighters > $ship~maxfigattack)
 			send "p"
-			settexttrigger portalreadygone :donedestroying "Captain! Are you sure you want to port here?"
+			setstrigger portalreadygone :donedestroying "Captain! Are you sure you want to port here?"
 			settexttrigger porthere :continuedestroy "<A> Attack this Port"
 			pause
 

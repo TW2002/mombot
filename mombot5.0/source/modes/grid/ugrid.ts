@@ -999,10 +999,10 @@ if ($warpto > 0)
 	send "q q ** mz"&$warpto " * "
 	settexttrigger there :adj_warp "You are already in that sector!"
 	settextlinetrigger adj_warp :adj_warp "Sector  : "&$warpto&" "
-	settexttrigger locking :locking "Do you want to engage the TransWarp drive?"
+	setstrigger locking :locking "Do you want to engage the TransWarp drive?"
 	settexttrigger igd :twarpigd "An Interdictor Generator in this sector holds you fast!"
 	settexttrigger noturns :twarpphotoned "Your ship was hit by a Photon and has been disabled"
-	settexttrigger noroute :twarpnoroute "Do you really want to warp there? (Y/N)"
+	setstrigger noroute :twarpnoroute "Do you really want to warp there? (Y/N)"
 	pause
 
 	:adj_warp
@@ -1108,8 +1108,8 @@ send "qq*"
 while (sector.warpsin[$stardock][$i] > 0)
 	setvar $red_adj sector.warpsin[$stardock][$i]
 	send "m "&$red_adj&"* y"
-	settexttrigger twarpblind :twarpblind "Do you want to make this jump blind? "
-	settexttrigger twarplocked :twarplocked "All Systems Ready, shall we engage? "
+	setstrigger twarpblind :twarpblind "Do you want to make this jump blind? "
+	setstrigger twarplocked :twarplocked "All Systems Ready, shall we engage? "
 	settextlinetrigger twarpvoided :twarpvoided "Danger Warning Overridden"
 	settextlinetrigger twarpadj :twarpadj "<Set NavPoint>"
 	pause

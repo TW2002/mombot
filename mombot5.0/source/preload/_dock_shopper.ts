@@ -580,8 +580,8 @@ waitfor "Commerce report for:"
 settextlinetrigger lsd_cargoholds   :lsd_cargoholds "A  Cargo holds     : "
 settextlinetrigger lsd_fighters     :lsd_fighters "B  Fighters        : "
 settextlinetrigger lsd_shields      :lsd_shields "C  Shield Points   : "
-settexttrigger lsd_fini1        :lsd_fini "Command [TL="
-settexttrigger lsd_fini2        :lsd_fini "Citadel command (?"
+setstrigger lsd_fini1        :lsd_fini "Command [TL="
+setstrigger lsd_fini2        :lsd_fini "Citadel command (?"
 pause
 
 :lsd_cargoholds

@@ -62,7 +62,7 @@ end
 settextlinetrigger bad_ship_trig    :ship_not_available     "That is not an available ship."
 settextlinetrigger bad_range_trg    :out_of_range           "only has a transport range of"
 settextlinetrigger cannot_xport     :cannot_xport           "Access denied!"
-settexttrigger     xport_passw      :xport_password         "Enter the password for"
+setstrigger     xport_passw      :xport_password         "Enter the password for"
 settextlinetrigger xport_good       :xport_good             "Security code accepted, engaging transporter control."
 if ($bot~parm2 = "")
 	send "x   " & $bot~parm1 & "*    "

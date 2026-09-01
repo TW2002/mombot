@@ -131,7 +131,7 @@ setarray $scan_array 30
 setvar $idx 0
 
 :continuescan
-settexttrigger done :done "Planet command"
+setstrigger done :done "Planet command"
 settextlinetrigger line_trig :parse_scan_line
 pause
 

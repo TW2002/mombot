@@ -134,15 +134,15 @@ settextlinetrigger 2 :reloadfigme "deploys some fighters"
 if ($auto = true)
 	setdelaytrigger 3 :reloadfigme 300000
 end
-settexttrigger 		pause 	:pausing 		"Planet command (?="
-settexttrigger 		pause2 	:pausing 		"Computer command ["
-settexttrigger 		pause3 	:pausing 		"Corporate command ["
+setstrigger 		pause 	:pausing 		"Planet command (?="
+setstrigger 		pause2 	:pausing 		"Computer command ["
+setstrigger 		pause3 	:pausing 		"Corporate command ["
 pause
 
 :pausing
 killalltriggers
 echo ansi_6 "*[" ansi_14 "Citadel Filler paused. To restart, re-enter citadel prompt" ansi_6 "]*" ansi_7
-settexttrigger restart :restarting "Citadel command ("
+setstrigger restart :restarting "Citadel command ("
 pause
 
 :restarting
@@ -295,7 +295,7 @@ if ($liverefillamount <= 0)
 end
 killalltriggers
 settextlinetrigger knownshiptoomany :knownshiptoomany "can only carry"
-settexttrigger knownshipdone :knownshipdone "Corporate command ["
+setstrigger knownshipdone :knownshipdone "Corporate command ["
 send $liverefillamount "* "
 pause
 
@@ -336,7 +336,7 @@ return
 setvar $targetshipfull false
 killalltriggers
 settextlinetrigger unknownshipchunkfull :unknownshipchunkfull "can only carry"
-settexttrigger unknownshipchunkdone :unknownshipchunkdone "Corporate command ["
+setstrigger unknownshipchunkdone :unknownshipchunkdone "Corporate command ["
 send "f "&$targetstring&" * z"&$refillamount&"* "
 pause
 

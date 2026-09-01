@@ -72,7 +72,7 @@ while ($player~fighters = $ship~ship_fighters_max)
 	settexttrigger 		invadeshields 		:keepinvading 		"You have to destroy the fighters defending the planet to land."
 	settexttrigger 		invadecontinue 		:shieldinvade 		"You have to destroy the Planetary Shields defending the planet to land."
 	settexttrigger 		invadedone     		:invaded 		"<Destroy Planet>"
-	settexttrigger  	blockedinvade		:blockedinvading 	"Do you want instructions (Y/N)"
+	setstrigger  	blockedinvade		:blockedinvading 	"Do you want instructions (Y/N)"
 	settextlinetrigger      noplanet                :noplanettoinvade       "Invalid registry number, landing aborted."
 	settextlinetrigger	invadequick		:invaded		"  Item    Colonists  Colonists    Daily     Planet      Ship      Planet"
 	settextlinetrigger	noland			:doneinvading		"since it couldn't possibly stand the stress of landing."

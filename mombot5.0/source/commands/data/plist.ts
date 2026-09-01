@@ -38,7 +38,7 @@ pause
 :planet_listing_beginscan
 killalltriggers
 settextlinetrigger nothing2do :planet_listing_nothing2do "You can create one with a Genesis Torpedo"
-settexttrigger pscandone :planet_listing_pscandone "Land on which planet"
+setstrigger pscandone :planet_listing_pscandone "Land on which planet"
 settextlinetrigger line_trig :planet_listing_parse_scan_line
 pause
 

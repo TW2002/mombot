@@ -148,7 +148,7 @@ if ($saveme)
 	settextlinetrigger s2 :announce "Script?"
 	settextlinetrigger s3 :savecall "=saveme"
 end
-settexttrigger 		p1 		:paused "Planet command (?=help) [D]"
+setstrigger 		p1 		:paused "Planet command (?=help) [D]"
 settexttrigger 		p2 		:paused "] (?=Help)?"
 settexttrigger 		p3 		:paused "Beam to what sector? (U=Upgrade Q=Quit)"
 settexttrigger 		p4 		:paused "Transfer To or From the Planetary Shield System (T/F) [T]?"
@@ -158,7 +158,7 @@ settexttrigger 		p7 		:paused "Do you want to change this setting? (Y/N)"
 settexttrigger 		p8 		:paused "What sector do you want to warp this planet to? (Q to Abort)"
 settexttrigger 		p9 		:paused "Transfer To or From the Treasury (T/F) [F]?"
 settexttrigger 		p10 	:paused "[Pause]"
-settexttrigger 		p11 	:paused "Sub-space radio"
+setstrigger 		p11 	:paused "Sub-space radio"
 settexttrigger 		p12 	:paused "Federation comm-link:"
 pause
 

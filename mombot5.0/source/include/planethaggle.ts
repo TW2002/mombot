@@ -326,10 +326,10 @@ else
 end
 
 :planethaggle~sellproduct
-settexttrigger sellfuel :sellfuel "How many units of Fuel Ore"
-settexttrigger sellorg :sellorg "How many units of Organics"
-settexttrigger sellequ :sellequ "How many units of Equipment"
-settexttrigger donewithport :donewithport "Command [TL="
+setstrigger sellfuel :sellfuel "How many units of Fuel Ore"
+setstrigger sellorg :sellorg "How many units of Organics"
+setstrigger sellequ :sellequ "How many units of Equipment"
+setstrigger donewithport :donewithport "Command [TL="
 killtrigger notours
 settexttrigger notours :notours "You don't own that planet!  Were you expecting us to invade it?"
 pause
@@ -504,7 +504,7 @@ killalltriggers
 settextlinetrigger nativesellexperience :planethaggle~nativesellexperience "experience point(s)"
 settextlinetrigger nativesellyouhave :planethaggle~nativesellyouhave "You have"
 settextlinetrigger nativesellnotinterested :planethaggle~nativesellnotinterested "We're not interested."
-settextlinetrigger nativesellprompt :planethaggle~nativesellprompt "Command [TL="
+setslinetrigger nativesellprompt :planethaggle~nativesellprompt "Command [TL="
 pause
 
 :planethaggle~nativesellexperience
@@ -1837,7 +1837,7 @@ setvar $player~empty $player~total_holds
 send "*"
 settextlinetrigger planetbuyempty :planethaggle~buyempty "empty cargo holds"
 settextlinetrigger planetbuynotinterested :planethaggle~buynotinterested "We're not interested."
-settexttrigger planetbuynativedone :planethaggle~buyhagglesucceeded "Command [TL="
+setstrigger planetbuynativedone :planethaggle~buyhagglesucceeded "Command [TL="
 pause
 
 :planethaggle~buyhaggle

@@ -78,7 +78,7 @@ end
 send "czq"
 waiton "-----------------------------------------------------------------------------"
 settextlinetrigger shipnumber :getshipnumber "Corp"
-settextlinetrigger doneships :doneships "Computer command ["
+setslinetrigger doneships :doneships "Computer command ["
 pause
 
 :getshipnumber
@@ -245,7 +245,7 @@ settextlinetrigger getexpandalign :getexpandalign "Rank and Exp"
 settextlinetrigger getturns :getturns "Turns left"
 settextlinetrigger getholds :getholds "Total Holds"
 settextlinetrigger getcredits :getcredits "Credits"
-settexttrigger getinfodone :getinfodone "Command [TL="
+setstrigger getinfodone :getinfodone "Command [TL="
 pause
 pause
 
@@ -326,7 +326,7 @@ return
 send "D"
 waitfor "<Re-Display>"
 settextlinetrigger getport :getport "Ports   :"
-settextlinetrigger noport :noport "Command [TL="
+setslinetrigger noport :noport "Command [TL="
 pause
 pause
 
@@ -865,10 +865,10 @@ settextlinetrigger nativeportstart2 :nativeporttradeprogress "Docking..."
 settexttrigger nativeportstart3 :nativeporttradeprogress "Your offer ["
 settexttrigger nativeportstart4 :nativeporttradeprogress "Our final offer"
 settexttrigger nativeportstart5 :nativeporttradeprogress "Agreed,"
-settexttrigger nativeportqty :nativeporttradeqty "How many holds of "
+setstrigger nativeportqty :nativeporttradeqty "How many holds of "
 if ($nativeportactive = 1)
-	settexttrigger nativeportdone1 :nativeporttradedone "Command [TL="
-	settexttrigger nativeportdone2 :nativeporttradedone "Citadel command"
+	setstrigger nativeportdone1 :nativeporttradedone "Command [TL="
+	setstrigger nativeportdone2 :nativeporttradedone "Citadel command"
 end
 pause
 
@@ -1196,7 +1196,7 @@ else
 	send $xportstring
 	settextlinetrigger noxportship :noxportship "That is not an available ship"
 	settextlinetrigger noxportrange :noxportrange "only has a transport range"
-	settextlinetrigger noxportpassword :noxportpassword "Enter the password for"
+	setslinetrigger noxportpassword :noxportpassword "Enter the password for"
 	settextlinetrigger xportsuccess :xportsuccess "Security code accepted"
 	pause
 	pause
@@ -1336,8 +1336,8 @@ gosub :sendcnstring
 send "?"
 waitfor "Settings command (?=Help)"
 send "QQ"
-settexttrigger substartcncontinue1 :substartcncontinue "Command [TL="
-settexttrigger substartcncontinue2 :substartcncontinue "Citadel command (?=help)"
+setstrigger substartcncontinue1 :substartcncontinue "Command [TL="
+setstrigger substartcncontinue2 :substartcncontinue "Citadel command (?=help)"
 pause
 
 :substartcncontinue
@@ -1351,8 +1351,8 @@ gosub :sendcnstring
 send "?"
 waitfor "Settings command (?=Help)"
 send "QQ"
-settexttrigger subendcncontinue1 :subendcncontinue "Command [TL="
-settexttrigger subendcncontinue2 :subendcncontinue "Citadel command (?=help)"
+setstrigger subendcncontinue1 :subendcncontinue "Command [TL="
+setstrigger subendcncontinue2 :subendcncontinue "Citadel command (?=help)"
 pause
 
 :subendcncontinue

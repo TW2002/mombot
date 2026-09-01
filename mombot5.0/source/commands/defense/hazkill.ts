@@ -59,8 +59,8 @@ if ($2Bpopped > $player~genesis)
 end
 while ($2Bpopped > 0)
 	send "U Y "
-	settextlinetrigger planetname :planetname "What do you want to name this planet?"
-	settexttrigger override :override "Do you wish to abort?"
+	setslinetrigger planetname :planetname "What do you want to name this planet?"
+	setstrigger override :override "Do you wish to abort?"
 	pause
 
 	:override

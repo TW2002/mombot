@@ -110,7 +110,7 @@ if ($twarp < 1)
 end
 
 killalltriggers
-settexttrigger no_blind :no_blind "Do you want to make this jump blind?"
+setstrigger no_blind :no_blind "Do you want to make this jump blind?"
 settexttrigger no_ore :no_ore "You do not have enough Fuel Ore to make the jump."
 settexttrigger no_range :no_range "This planetary transporter does not have the range."
 
@@ -136,7 +136,7 @@ send " y "
 :terra_loop_start
 killalltriggers
 setvar $land_planet 1
-settexttrigger planet_scanner :planet_scanner "Land on which planet <Q to abort>"
+setstrigger planet_scanner :planet_scanner "Land on which planet <Q to abort>"
 settexttrigger handle_terra :handle_terra "colonists ready to leave Terra."
 settexttrigger cannot_land_1 :planet_not_found "That planet is not in this sector."
 settexttrigger cannot_land_2 :planet_not_found "Invalid registry number, landing aborted."
@@ -233,7 +233,7 @@ halt
 
 :warp_home
 killalltriggers
-settexttrigger no_blind :no_blind "Do you want to make this jump blind?"
+setstrigger no_blind :no_blind "Do you want to make this jump blind?"
 settexttrigger no_ore :no_ore "You do not have enough Fuel Ore to make the jump."
 settexttrigger no_range :no_range "This planetary transporter does not have the range."
 send " q 0 * q z n "

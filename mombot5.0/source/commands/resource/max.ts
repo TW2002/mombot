@@ -133,8 +133,8 @@ halt
 
 :domaxport
 send "o z" $product "z0* "
-settextlinetrigger norealporthere :wrongporttype "Do you want to initiate construction on this port?"
-settextlinetrigger construction :wrongporttype "Do you want instructions (Y/N)"
+setslinetrigger norealporthere :wrongporttype "Do you want to initiate construction on this port?"
+setslinetrigger construction :wrongporttype "Do you want instructions (Y/N)"
 waiton ", 0 to quit)"
 killalltriggers
 getword currentline $upgradeamount 9

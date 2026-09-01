@@ -300,8 +300,8 @@ waiton "Registry# and Planet Name"
 setvar $planet~planetcount 0
 setvar $planet~planetskip 0
 settexttrigger planetgrabber :evac_planetline "   <"
-settexttrigger bedone :evac_done "Land on which planet "
-settexttrigger no_scanner :evac_no_scanner "Planet command (?=help)"
+setstrigger bedone :evac_done "Land on which planet "
+setstrigger no_scanner :evac_no_scanner "Planet command (?=help)"
 pause
 
 :evac_planetline
@@ -317,7 +317,7 @@ striptext $line ","
 add $planet~planetcount 1
 getword $line $planet~planet[$planet~planetcount] 1
 settextlinetrigger getline2 :evac_planetline "   <"
-settextlinetrigger getend :evac_done "Land on which planet "
+setslinetrigger getend :evac_done "Land on which planet "
 pause
 
 :evac_no_scanner
@@ -351,7 +351,7 @@ if ($planet~planetcount = $evac_total)
 	goto :evac_end
 end
 send "qq  z  n  *  m" $evac_home "*y"
-settexttrigger warp :evac_twarp "All Systems Ready, shall we engage?"
+setstrigger warp :evac_twarp "All Systems Ready, shall we engage?"
 settexttrigger no_warp :evac_no_warp_back "Do you want to make"
 pause
 

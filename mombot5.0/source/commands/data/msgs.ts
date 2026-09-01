@@ -53,15 +53,15 @@ else
 	send "cm"
 	waiton "<Read messages>"
 	settexttrigger 1 :pause "[Pause]"
-	settexttrigger 2 :pause "[Press Space or Enter to continue]"
-	settexttrigger 3 :fini "Computer command ["
+	setstrigger 2 :pause "[Press Space or Enter to continue]"
+	setstrigger 3 :fini "Computer command ["
 	pause
 
 	:pause
 	killtrigger 1
 	killtrigger 2
 	settexttrigger 1 :pause "[Pause]"
-	settexttrigger 2 :pause "[Press Space or Enter to continue]"
+	setstrigger 2 :pause "[Press Space or Enter to continue]"
 	send "*"
 	pause
 

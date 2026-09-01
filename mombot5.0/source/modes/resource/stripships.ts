@@ -150,7 +150,7 @@ killtrigger noplanet
 killtrigger no_land
 killtrigger wrongone
 settexttrigger wrong_num :wrong_num "That planet is not in this sector."
-settexttrigger planet :planet_prompt "Planet command"
+setstrigger planet :planet_prompt "Planet command"
 pause
 
 :wrong_num
@@ -163,8 +163,8 @@ killtrigger wrong_num
 setvar $currentbotplanet $planet
 savevar $currentbotplanet
 send "c"
-settexttrigger build_cit :build_cit "Do you wish to construct one?"
-settexttrigger in_cit :in_cit "Citadel command"
+setstrigger build_cit :build_cit "Do you wish to construct one?"
+setstrigger in_cit :in_cit "Citadel command"
 settexttrigger nocitallowed :build_cit "Citadels are not allowed in FedSpace."
 settexttrigger citnotbuiltyet :build_cit "Be patient, your Citadel is not yet finished."
 pause
@@ -237,10 +237,10 @@ else
 end
 settexttrigger there :adj_warp "You are already in that sector!"
 settextlinetrigger adj_warp :adj_warp "Sector  : "&$warpto&" "
-settexttrigger locking :locking "Do you want to engage the TransWarp drive?"
+setstrigger locking :locking "Do you want to engage the TransWarp drive?"
 settexttrigger igd :twarpigd "An Interdictor Generator in this sector holds you fast!"
 settexttrigger noturns :twarpphotoned "Your ship was hit by a Photon and has been disabled"
-settexttrigger noroute :twarpnoroute "Do you really want to warp there? (Y/N)"
+setstrigger noroute :twarpnoroute "Do you really want to warp there? (Y/N)"
 pause
 
 :adj_warp

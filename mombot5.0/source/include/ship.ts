@@ -247,8 +247,8 @@ gettext currentline $ship~ship_xport_range "Transport Range:" "Photon Missiles:"
 striptext $ship~ship_xport_range " "
 savevar $ship~ship_xport_range
 send "q"
-settexttrigger waiton45 :ship~getshipstats_returnprompt "Command [TL="
-settexttrigger waiton45citadel :ship~getshipstats_returnprompt "Citadel command (?=help)"
+setstrigger waiton45 :ship~getshipstats_returnprompt "Command [TL="
+setstrigger waiton45citadel :ship~getshipstats_returnprompt "Citadel command (?=help)"
 pause
 
 :ship~getshipstats_returnprompt

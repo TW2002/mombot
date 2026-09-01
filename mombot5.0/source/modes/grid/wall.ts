@@ -423,7 +423,7 @@ end
 
 :keepadding2
 settextlinetrigger addcourse2 :addcourse2 ">"
-settexttrigger endcourse2 :endcourse2 "Computer command ["
+setstrigger endcourse2 :endcourse2 "Computer command ["
 pause
 
 :addcourse2
@@ -556,7 +556,7 @@ while ($successplots < 10)
 
 	:keepadding
 	settextlinetrigger addcourse :addcourse ">"
-	settexttrigger endcourse :endcourse "Computer command ["
+	setstrigger endcourse :endcourse "Computer command ["
 	pause
 
 	:addcourse

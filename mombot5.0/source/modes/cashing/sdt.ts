@@ -116,7 +116,7 @@ gosub :switchboard~switchboard
 send "czq"
 waiton "-----------------------------------------------------------------------------"
 settextlinetrigger     shipnumber     :getshipnumber "Corp"
-settextlinetrigger     doneships      :init "Computer command ["
+setslinetrigger     doneships      :init "Computer command ["
 pause
 
 :getshipnumber
@@ -366,7 +366,7 @@ return
 send "D"
 waitfor "<Re-Display>"
 settextlinetrigger getport :getport "Ports   :"
-settexttrigger noport :noport "Command [TL="
+setstrigger noport :noport "Command [TL="
 pause
 pause
 
@@ -484,10 +484,10 @@ if ($planet~planet[$current_ship].equ > 0)
 	striptext $player~current_sector.equpercent "%"
 
 	:sellproduct
-	settexttrigger sellfuel :sellfuel "How many units of Fuel Ore"
-	settexttrigger sellorg :sellorg "How many units of Organics"
-	settexttrigger sellequ :sellequ "How many units of Equipment"
-	settexttrigger noequ :noequ "Command ["
+	setstrigger sellfuel :sellfuel "How many units of Fuel Ore"
+	setstrigger sellorg :sellorg "How many units of Organics"
+	setstrigger sellequ :sellequ "How many units of Equipment"
+	setstrigger noequ :noequ "Command ["
 
 	pause
 	pause
@@ -945,12 +945,12 @@ settextlinetrigger nativeplanetstart2 :nativeplanettradeprogress "Docking..."
 settexttrigger nativeplanetstart3 :nativeplanettradeprogress "Your offer ["
 settexttrigger nativeplanetstart4 :nativeplanettradeprogress "Our final offer"
 settextlinetrigger nativeplanetstart5 :nativeplanettradeagreed "Agreed,"
-settexttrigger nativeplanetqty :nativeplanettradeqty "How many units of "
+setstrigger nativeplanetqty :nativeplanettradeqty "How many units of "
 if ($nativeplanettradeactive = 1)
-	settexttrigger nativeplanetdone1 :nativeplanettradedone "Planet command"
-	settexttrigger nativeplanetdone2 :nativeplanettradedone "Command [TL="
-	settexttrigger nativeplanetdone3 :nativeplanettradedone "Citadel command"
-	settexttrigger nativeplanetdone4 :nativeplanettradedone "Corporate command [TL="
+	setstrigger nativeplanetdone1 :nativeplanettradedone "Planet command"
+	setstrigger nativeplanetdone2 :nativeplanettradedone "Command [TL="
+	setstrigger nativeplanetdone3 :nativeplanettradedone "Citadel command"
+	setstrigger nativeplanetdone4 :nativeplanettradedone "Corporate command [TL="
 end
 pause
 
@@ -1239,8 +1239,8 @@ gosub :sendcnstring
 #        send "?"
 #        waitfor "Settings command (?=Help)"
 send "QQ"
-settexttrigger substartcncontinue1 :substartcncontinue "Command [TL="
-settexttrigger substartcncontinue2 :substartcncontinue "Citadel command (?=help)"
+setstrigger substartcncontinue1 :substartcncontinue "Command [TL="
+setstrigger substartcncontinue2 :substartcncontinue "Citadel command (?=help)"
 pause
 
 :substartcncontinue
@@ -1255,8 +1255,8 @@ gosub :sendcnstring
 send "?"
 waitfor "Settings command (?=Help)"
 send "QQ"
-settexttrigger subendcncontinue1 :subendcncontinue "Command [TL="
-settexttrigger subendcncontinue2 :subendcncontinue "Citadel command (?=help)"
+setstrigger subendcncontinue1 :subendcncontinue "Command [TL="
+setstrigger subendcncontinue2 :subendcncontinue "Citadel command (?=help)"
 pause
 
 :subendcncontinue
@@ -1313,8 +1313,8 @@ settextlinetrigger getscantype :getscantype "LongRange Scan :"
 settextlinetrigger gettwarptype1 :gettwarptype1 "  (Type 1 Jump):"
 settextlinetrigger gettwarptype2 :gettwarptype2 "  (Type 2 Jump):"
 settextlinetrigger getcredits :getcredits "Credits"
-settexttrigger getinfodone :getinfodone "Command [TL="
-settexttrigger getinfodone2 :getinfodone "Citadel command"
+setstrigger getinfodone :getinfodone "Command [TL="
+setstrigger getinfodone2 :getinfodone "Citadel command"
 pause
 pause
 
@@ -1519,7 +1519,7 @@ settextlinetrigger orgstart :orgstart "Organics"
 settextlinetrigger equipstart :equipstart "Equipment"
 settextlinetrigger figstart :figstart "Fighters        N/A"
 settextlinetrigger citadelstart :citadelstart "Planet has a level"
-settexttrigger planetinfodone :planetinfodone "Planet command (?=help)"
+setstrigger planetinfodone :planetinfodone "Planet command (?=help)"
 pause
 
 :fuelstart
@@ -1566,7 +1566,7 @@ return
 :swathoff
 loadvar $swathoff
 if ($swathoff = 0)
-	settexttrigger swathison :swathison "Command [TL="
+	setstrigger swathison :swathison "Command [TL="
 	setdelaytrigger swathisoff :swathisoff 2000
 	pause
 

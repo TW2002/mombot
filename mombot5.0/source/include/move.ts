@@ -37,7 +37,7 @@ if ($move~confirmsector = 1)
 	settextlinetrigger tollfigs :tollfigs "You have to destroy the fighters or pay"
 	settextlinetrigger figs :figs "You have to destroy the fighters to remain"
 	settexttrigger mines :mineprompt "Mined Sector:"
-	settexttrigger arrived :arrived "Command [TL="
+	setstrigger arrived :arrived "Command [TL="
 	pause
 
 	:move~tollfigs
@@ -279,7 +279,7 @@ settextlinetrigger figdrop :figdrop "fighter(s) in close support"
 settextlinetrigger limpdrop :limpdrop "Limpet mine(s) on board"
 settextlinetrigger minedrop :minedrop "Armid mine(s) on board"
 if ($move~skipstats = true)
-	settexttrigger movedone :movedone "Command [TL="
+	setstrigger movedone :movedone "Command [TL="
 else
 	setvar $move~result $move~result&"@"
 	settextlinetrigger movedone :movedone "Average Interval Lag"
@@ -493,12 +493,12 @@ gosub :player~currentprompt
 gosub :move~killtwarptriggers
 settexttrigger there :move~adj_warp "You are already in that sector!"
 settextlinetrigger adj_warp :move~adj_warp "Sector  : "&$player~warpto&" "
-settexttrigger locking :move~locking "Do you want to engage the TransWarp drive?"
+setstrigger locking :move~locking "Do you want to engage the TransWarp drive?"
 settexttrigger igd :move~twarpigd "An Interdictor Generator in this sector holds you fast!"
 settexttrigger noturns :move~twarpphotoned "Your ship was hit by a Photon and has been disabled"
-settexttrigger noroute :move~twarpnoroute "Do you really want to warp there? (Y/N)"
+setstrigger noroute :move~twarpnoroute "Do you really want to warp there? (Y/N)"
 settextlinetrigger no_fuel :move~twarpnofuel "You do not have enough Fuel Ore"
-settexttrigger autopilot :move~twarpautopilot "Engage the Autopilot?"
+setstrigger autopilot :move~twarpautopilot "Engage the Autopilot?"
 
 if ($player~red_adj <> 0)
 	send "* mz" $player~warpto "*"
@@ -535,7 +535,7 @@ settextlinetrigger twarp_lock :move~twarp_lock "TransWarp Locked"
 settextlinetrigger no_twrp_lock :move~no_twarp_lock "No locating beam found"
 settextlinetrigger twarp_adj :move~twarp_adj "<Set NavPoint>"
 settextlinetrigger no_fuel :move~twarpnofuel "You do not have enough Fuel Ore"
-settexttrigger autopilot :move~twarpautopilot "Engage the Autopilot?"
+setstrigger autopilot :move~twarpautopilot "Engage the Autopilot?"
 pause
 
 :move~twarpnofuel
@@ -633,9 +633,9 @@ return
 gosub :killbwarptriggers
 send $player~warpto&"*"
 settexttrigger bwarp_lock :bwarp_no_range "This planetary transporter does not have the range."
-settexttrigger no_bwrp_lock :no_bwarp_lock "Do you want to make this transport blind?"
-settexttrigger bwarp_ready :bwarp_lock "All Systems Ready, shall we engage?"
-settexttrigger bwarp_avoid :bwarp_avoid "Do you really want to transport there?"
+setstrigger no_bwrp_lock :no_bwarp_lock "Do you want to make this transport blind?"
+setstrigger bwarp_ready :bwarp_lock "All Systems Ready, shall we engage?"
+setstrigger bwarp_avoid :bwarp_avoid "Do you really want to transport there?"
 settextlinetrigger no_bwarpfuel :bwarpnofuel "This planet does not have enough Fuel Ore to transport you."
 pause
 
@@ -745,11 +745,11 @@ return
 
 setvar $player~foundsector false
 send "m "&$player~red_adj&"* y"
-settexttrigger twarpblind :move~twarpblind "Do you want to make this jump blind? "
-settexttrigger twarplocked :move~twarplocked "All Systems Ready, shall we engage? "
+setstrigger twarpblind :move~twarpblind "Do you want to make this jump blind? "
+setstrigger twarplocked :move~twarplocked "All Systems Ready, shall we engage? "
 settextlinetrigger twarpvoided :move~twarpvoided "Danger Warning Overridden"
 settextlinetrigger twarpadj :move~twarpadj "<Set NavPoint>"
-settexttrigger twarpautopilot :move~twarpfindautopilot "Engage the Autopilot?"
+setstrigger twarpautopilot :move~twarpfindautopilot "Engage the Autopilot?"
 pause
 
 :move~twarpadj

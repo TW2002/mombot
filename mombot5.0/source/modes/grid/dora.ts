@@ -1219,7 +1219,7 @@ send "y  "
 send "p   sh"
 
 send "a"
-settexttrigger shipcheckbuyatomics :shipcheckbuyatomics "How many Atomic Detonators do you want"
+setstrigger shipcheckbuyatomics :shipcheckbuyatomics "How many Atomic Detonators do you want"
 pause
 
 :shipcheckbuyatomics
@@ -1234,7 +1234,7 @@ else
 end
 
 send "t"
-settexttrigger shipcheckbuytorps :shipcheckbuytorps "How many Genesis Torpedoes do you want"
+setstrigger shipcheckbuytorps :shipcheckbuytorps "How many Genesis Torpedoes do you want"
 pause
 
 :shipcheckbuytorps

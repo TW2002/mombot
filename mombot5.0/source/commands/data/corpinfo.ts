@@ -52,9 +52,9 @@ waitfor "==="
 :buildfigarray
 settexttrigger corpfig :addtolist "Corp"
 if ($minesdeployed = "No")
-	settexttrigger listdone :chkships "Command"
+	setstrigger listdone :chkships "Command"
 else
-	settexttrigger listcomplete :mineassets "Command"
+	setstrigger listcomplete :mineassets "Command"
 end
 pause
 
@@ -363,7 +363,7 @@ killalltriggers
 
 settextlinetrigger ship :corpship ""
 if ($shiptypes = "All")
-	settexttrigger allships :chkplanets "Computer command [TL"
+	setstrigger allships :chkplanets "Computer command [TL"
 else
 	settexttrigger endship :chkplanets "details"
 	settexttrigger noships :noships "You do not own"
@@ -416,7 +416,7 @@ waitfor "========="
 :buildplanetlist
 settextlinetrigger more :findplanet "Class"
 settextlinetrigger bottom :botline "======   ============"
-settexttrigger nomore :pldisplay "Corporate command [TL="
+setstrigger nomore :pldisplay "Corporate command [TL="
 pause
 
 :pldisplay

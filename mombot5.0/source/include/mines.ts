@@ -617,8 +617,8 @@ if ($mines~bwarp = true)
 			killtrigger 2
 			killtrigger 3
 			killtrigger 4
-			settexttrigger 1 :no_bwarp_lock "Do you want to make this transport blind?"
-			settexttrigger 2 :bwarp_lock "All Systems Ready, shall we engage?"
+			setstrigger 1 :no_bwarp_lock "Do you want to make this transport blind?"
+			setstrigger 2 :bwarp_lock "All Systems Ready, shall we engage?"
 			settextlinetrigger 3 :bwarpnofuel "This planet does not have enough Fuel Ore to transport you."
 			settexttrigger 4 :switchtononbwarp "Your ship was hit by a Photon and has been disabled."
 			send $mines~bwarp_move

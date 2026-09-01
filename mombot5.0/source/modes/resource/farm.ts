@@ -903,7 +903,7 @@ return
 killalltriggers
 settextlinetrigger balance_same_success :balance_same_success "The Colonists drop what they were doing"
 settextlinetrigger balance_same_failed :balance_same_failed "You don't have that many"
-settexttrigger balance_same_prompt :balance_same_failed "Planet command"
+setstrigger balance_same_prompt :balance_same_failed "Planet command"
 send "pn"&$balance_source_category&$balance_move_amount&"*"&$balance_dest_category
 pause
 
@@ -1339,9 +1339,9 @@ killtrigger farmcommand
 killtrigger farmplanet
 killtrigger farmcitadel
 killtrigger farmpromptdelay
-settexttrigger farmcommand :farm_prompt_ready "Command [TL"
-settexttrigger farmplanet :farm_prompt_ready "Planet command (?=help) [D]"
-settexttrigger farmcitadel :farm_prompt_ready "Citadel command (?=help)"
+setstrigger farmcommand :farm_prompt_ready "Command [TL"
+setstrigger farmplanet :farm_prompt_ready "Planet command (?=help) [D]"
+setstrigger farmcitadel :farm_prompt_ready "Citadel command (?=help)"
 setdelaytrigger farmpromptdelay :farm_prompt_check 3000
 pause
 
@@ -1542,8 +1542,8 @@ if ($player~current_prompt = "Command")
 end
 if ($player~current_prompt = "Planet")
 	send "c "
-	settexttrigger farm_citadel_ready :farm_citadel_ready "Citadel command (?=help)"
-	settexttrigger farm_citadel_misroute :farm_citadel_misroute "Computer command [TL="
+	setstrigger farm_citadel_ready :farm_citadel_ready "Citadel command (?=help)"
+	setstrigger farm_citadel_misroute :farm_citadel_misroute "Computer command [TL="
 	pause
 
 	:farm_citadel_ready
@@ -1596,7 +1596,7 @@ killalltriggers
 gosub :player~quikstats
 if ($player~current_prompt = "Command")
 	send " L Z"&#8&$planet~planet&"*  *  J  C  *  "
-	settextlinetrigger notlanded :notlanded "Are you sure you want to jettison all cargo?"
+	setslinetrigger notlanded :notlanded "Are you sure you want to jettison all cargo?"
 	settextlinetrigger landed :landed "<Enter Citadel>"
 	setdelaytrigger testconn :testconn 3000
 	pause

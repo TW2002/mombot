@@ -182,14 +182,14 @@ end
 	else
 		send $combat~attackstring&"* "
 		setvar $combat~command_prompts_seen 0
-		settexttrigger combat_batch_done :combat~fastattack_batch_done "Command [TL="
+		setstrigger combat_batch_done :combat~fastattack_batch_done "Command [TL="
 		pause
 
 		:combat~fastattack_batch_done
 		killtrigger combat_batch_done
 		add $combat~command_prompts_seen 1
 		if ($combat~command_prompts_seen < $combat~waves_sent)
-			settexttrigger combat_batch_done :combat~fastattack_batch_done "Command [TL="
+			setstrigger combat_batch_done :combat~fastattack_batch_done "Command [TL="
 			pause
 		end
 		gosub :player~quikstats
@@ -369,7 +369,7 @@ else
 		killtrigger checkcaptarget
 		settexttrigger foundcaptarget :foundcaptarget "(Y/N) [N]? Y"
 		settexttrigger checkcaptarget :checkcaptarget "Yes"
-		settextlinetrigger noctarget :nocappingtargets "Do you want instructions (Y/N) [N]?"
+		setslinetrigger noctarget :nocappingtargets "Do you want instructions (Y/N) [N]?"
 		send $targetstring
 		pause
 		pause
@@ -524,8 +524,8 @@ else
 		setvar $shieldpoints 0
 		setvar $shieldperc 0
 		settextlinetrigger combat :combat_scan "Combat scanners show enemy shields at"
-		settexttrigger nocombat :cap_it "How many fighters do you wish to use"
-		settextlinetrigger notarget :nocappingtargets "Do you want instructions (Y/N) [N]?"
+		setstrigger nocombat :cap_it "How many fighters do you wish to use"
+		setslinetrigger notarget :nocappingtargets "Do you want instructions (Y/N) [N]?"
 		settextlinetrigger notarget2 :nocappingtargets "'s unmanned"
 		pause
 		pause
@@ -803,7 +803,7 @@ if ($player~isfound = true)
 				end
 			end
 			settexttrigger foundkilltarget :foundkilltarget "(Y/N) [N]? Y"
-			settextlinetrigger noktarget :nokilltargets "Do you want instructions (Y/N) [N]?"
+			setslinetrigger noktarget :nokilltargets "Do you want instructions (Y/N) [N]?"
 			pause
 
 			:foundkilltarget
@@ -915,7 +915,7 @@ end
 
 setvar $too_many_fighters ($ship~ship_offensive_odds * $ship~ship_max_attack)
 divide $too_many_fighters 12
-settexttrigger noscan1 :holo_kill_noscanner "Handle which mine type, 1 Armid or 2 Limpet"
+setstrigger noscan1 :holo_kill_noscanner "Handle which mine type, 1 Armid or 2 Limpet"
 settextlinetrigger noscan2 :holo_kill_noscanner "You don't have a long range scanner."
 if ($player~current_prompt = "Citadel")
 	send " q q * sh"

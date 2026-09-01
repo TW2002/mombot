@@ -10,7 +10,7 @@
 waiton "Commerce report for"
 settextlinetrigger sell :sell "We are buying up to "
 settextlinetrigger buy :buy "We are selling up to "
-settexttrigger done :done "Command [TL="
+setstrigger done :done "Command [TL="
 pause
 
 :sell
@@ -104,7 +104,7 @@ if (haggle = false)
 		add $sellfactor[$sector] 6
 	end
 end
-settexttrigger done :done "Command [TL="
+setstrigger done :done "Command [TL="
 pause
 
 :buy
@@ -116,7 +116,7 @@ getword currentline $product 5
 if ($product <> $buyprod)
 	send "0*"
 	settextlinetrigger buy :buy "We are selling up to "
-	settexttrigger done :done "Command [TL="
+	setstrigger done :done "Command [TL="
 	pause
 end
 
@@ -222,7 +222,7 @@ if (haggle = false)
 end
 
 settextlinetrigger buy :buy "We are selling up to "
-settexttrigger done :done "Command [TL="
+setstrigger done :done "Command [TL="
 pause
 
 :abort
@@ -234,13 +234,13 @@ killtrigger line
 killtrigger offer
 settextlinetrigger buy :buy "We are selling up to "
 settextlinetrigger sell :sell "We are buying up to "
-settexttrigger done :done "Command [TL="
+setstrigger done :done "Command [TL="
 pause
 
 :done
 cuttext currentline $test 1 12
 if ($test <> "Command [TL=")
-	settexttrigger done :done "Command [TL="
+	setstrigger done :done "Command [TL="
 	pause
 end
 killtrigger abort

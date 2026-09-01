@@ -94,7 +94,7 @@ else
 
 		:eachship
 		settextlinetrigger shiploc :shiploc " "&$bustship&" "
-		settextlinetrigger nofind :nofind "Computer command [TL="
+		setslinetrigger nofind :nofind "Computer command [TL="
 		pause
 
 		:nofind
@@ -339,7 +339,7 @@ waitfor "<Active Ship Scan>"
 
 :eachshiploc
 settextlinetrigger shiploc :shiplocf " "&$bustship&" "
-settextlinetrigger nofind :nofindf "Computer command [TL="
+setslinetrigger nofind :nofindf "Computer command [TL="
 pause
 
 :nofindf
@@ -699,7 +699,7 @@ send "S"
 waitfor "<Sell an old Ship>"
 settextlinetrigger notefurb :notefurb $shipname
 settextlinetrigger nofurb :nofurb "You do not own any other ships orbiting the Stardock!"
-settexttrigger nofurb2 :nofurb "Choose which ship to sell (Q=Quit)"
+setstrigger nofurb2 :nofurb "Choose which ship to sell (Q=Quit)"
 pause
 
 :nofurb

@@ -526,7 +526,7 @@ if ($map~alpha_centauri > 0)
 	setvar $switchboard~message "Warping Planet to Alpha Centauri*"
 	gosub :switchboard~switchboard
 	send "p"&$map~alpha_centauri&"*y"
-	settextlinetrigger warpit :fighter_warpit "All Systems Ready, shall we engage?"
+	setslinetrigger warpit :fighter_warpit "All Systems Ready, shall we engage?"
 	settextlinetrigger nowarp :fighter_nowarp "You do not have any fighters in Sector"
 	settextlinetrigger nowarp2 :fighter_already "You are already in that sector!"
 	pause
@@ -561,7 +561,7 @@ killalltriggers
 
 if ($map~rylos > 0)
 	send "p"&$map~rylos&"*y"
-	settextlinetrigger warpit :fighter_warpit "All Systems Ready, shall we engage?"
+	setslinetrigger warpit :fighter_warpit "All Systems Ready, shall we engage?"
 	settextlinetrigger nowarp :fighter_nowarp2 "You do not have any fighters in Sector"
 	settextlinetrigger nowarp2 :fighter_already "You are already in that sector!"
 	pause
@@ -761,7 +761,7 @@ elseif ($map~alpha_centauri > 0)
 	setvar $switchboard~message "Warping Planet to ALPHA*"
 	gosub :switchboard~switchboard
 	send "p"&$map~alpha_centauri&"*y"
-	settextlinetrigger warpit :shield_warpit "All Systems Ready, shall we engage?"
+	setslinetrigger warpit :shield_warpit "All Systems Ready, shall we engage?"
 	settextlinetrigger nowarp :shield_nofig "You do not have any fighters in Sector"
 	pause
 else
@@ -797,7 +797,7 @@ setvar $switchboard~message "Trying Rylos*"
 gosub :switchboard~switchboard
 if ($map~rylos > 0)
 	send "p"&$map~rylos&"*y"
-	settextlinetrigger warpit :shield_warpit "All Systems Ready, shall we engage?"
+	setslinetrigger warpit :shield_warpit "All Systems Ready, shall we engage?"
 	settextlinetrigger nowarp :shield_nowarp2 "You do not have any fighters in Sector"
 	settextlinetrigger nowarp2 :shield_checkit "You are already in that sector!"
 	pause
@@ -851,7 +851,7 @@ getword currentline $current_shields 3
 divide $current_shields 10
 send $current_shields "*"
 settexttrigger maxpshields :shield_maxpshields "The planet is limited to"
-settexttrigger shieldsuccess :shield_arrived "Citadel command"
+setstrigger shieldsuccess :shield_arrived "Citadel command"
 pause
 
 :shield_maxpshields

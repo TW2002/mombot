@@ -282,9 +282,9 @@ killtrigger stripcommand
 killtrigger stripplanet
 killtrigger stripcitadel
 killtrigger strippromptdelay
-settexttrigger stripcommand :strip_prompt_ready "Command [TL"
-settexttrigger stripplanet :strip_prompt_ready "Planet command (?=help) [D]"
-settexttrigger stripcitadel :strip_prompt_ready "Citadel command (?=help)"
+setstrigger stripcommand :strip_prompt_ready "Command [TL"
+setstrigger stripplanet :strip_prompt_ready "Planet command (?=help) [D]"
+setstrigger stripcitadel :strip_prompt_ready "Citadel command (?=help)"
 setdelaytrigger strippromptdelay :strip_prompt_check 3000
 pause
 

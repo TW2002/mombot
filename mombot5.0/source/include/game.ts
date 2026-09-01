@@ -544,7 +544,7 @@ if (($player~startinglocation = "Command") or ($player~startinglocation = "Citad
 	settextlinetrigger gameclosed1 :gameclosedsettings "I'm sorry, but this is a closed game."
 	settextlinetrigger gameclosed2 :gameclosedsettings "Epic Interactive Strategy"
 	settextlinetrigger gameclosed3 :gameclosedsettings " day(s) to get back in."
-	settexttrigger phew :back_to_game "Command [TL"
+	setstrigger phew :back_to_game "Command [TL"
 	setdelaytrigger delay_close :gameclosedsettings 5000
 	loadvar $bot~password
 	send "T***"&$bot~password&"*    *    *    "

@@ -49,12 +49,12 @@ elseif ($bot~parm1 = "join")
 	if ($player~current_prompt = "Command")
 		send "tj" $player~corpnumber "*"
 		settextlinetrigger oncorpalready :oncorpalready "You are already on a Corp silly"
-		settexttrigger joincorp      :joincorp      "Enter the Password to join"
+		setstrigger joincorp      :joincorp      "Enter the Password to join"
 		pause
 	elseif ($player~current_prompt = "Citadel")
 		send "xj"
 		settextlinetrigger oncorpalready :oncorpalready "You are already on a Corp silly"
-		settextlinetrigger joincorp      :joincorp      "Enter the Password to join"
+		setslinetrigger joincorp      :joincorp      "Enter the Password to join"
 		pause
 	end
 end

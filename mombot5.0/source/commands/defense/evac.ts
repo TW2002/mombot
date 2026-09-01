@@ -55,8 +55,8 @@ waiton "Registry# and Planet Name"
 setvar $planet~planetcount 0
 setvar $planet~planetskip 0
 settexttrigger planetgrabber :evac_planetline "   <"
-settexttrigger bedone :evac_done "Land on which planet "
-settexttrigger no_scanner :evac_no_scanner "Planet command (?=help)"
+setstrigger bedone :evac_done "Land on which planet "
+setstrigger no_scanner :evac_no_scanner "Planet command (?=help)"
 pause
 
 :evac_planetline
@@ -76,7 +76,7 @@ if ($temp > 0)
 	setvar $planet~planet[$planet~planetcount] $temp
 end
 settextlinetrigger getline2 :evac_planetline "   <"
-settextlinetrigger getend :evac_done "Land on which planet "
+setslinetrigger getend :evac_done "Land on which planet "
 pause
 
 :evac_no_scanner
@@ -105,7 +105,7 @@ while ($i <= $evac_total)
 		killtrigger no_warp
 		send "y*"
 		if ($i < $evac_total)
-			settexttrigger twarp_engage :evac_twarp_engage "Do you want to engage the TransWarp drive?"
+			setstrigger twarp_engage :evac_twarp_engage "Do you want to engage the TransWarp drive?"
 			settextlinetrigger adj_warp :evac_adj_warp_back "Sector  : "&$evac_home&" "
 			send "qq  z  n  *  m" $evac_home "*"
 			pause
@@ -113,8 +113,8 @@ while ($i <= $evac_total)
 			:evac_twarp_engage
 			killtrigger twarp_engage
 			send "y"
-			settexttrigger warp :evac_twarp "All Systems Ready, shall we engage?"
-			settexttrigger no_warp :evac_no_warp_back "Do you want to make this jump blind?"
+			setstrigger warp :evac_twarp "All Systems Ready, shall we engage?"
+			setstrigger no_warp :evac_no_warp_back "Do you want to make this jump blind?"
 			pause
 
 			:evac_twarp

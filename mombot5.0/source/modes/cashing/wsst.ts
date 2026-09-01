@@ -468,7 +468,7 @@ if ($tempid = $wsst_ship2)
 	setvar $foundship2 true
 end
 settextlinetrigger other :shipline " "&$player~current_sector&" "
-settextlinetrigger nomore :shipdone "Choose which ship to tow "
+setslinetrigger nomore :shipdone "Choose which ship to tow "
 pause
 
 :shipdone
@@ -1765,7 +1765,7 @@ killtrigger 7
 settextlinetrigger 1 :success "Success!"
 settextlinetrigger 2 :bustdetected "Suddenly you're Busted!"
 settextlinetrigger 3 :busted "There aren't that many holds of Equipment at this port!"
-settextlinetrigger 4 :fakebusted "Do you want instructions (Y/N) [N]?"
+setslinetrigger 4 :fakebusted "Do you want instructions (Y/N) [N]?"
 settextlinetrigger 7 :stealleftport "You leave the port."
 pause
 
@@ -1787,7 +1787,7 @@ goto :continue
 killalltriggers
 settextlinetrigger 5 :fakebusted "(You suddenly remember that you were caught stealing here before)"
 settextlinetrigger 6 :fakebusted "(You realize the guards saw you last time!)"
-settexttrigger 2 :busted "Command [TL="
+setstrigger 2 :busted "Command [TL="
 pause
 
 :stealleftport
@@ -1876,13 +1876,13 @@ goto :continue
 killalltriggers
 settextlinetrigger syncaccepted :syncafterstealaccepted "Security code accepted"
 settextlinetrigger synclist :syncaftersteallist "--<  Available Ships in Sector >--"
-settexttrigger synccommand :syncafterstealcommand "Command [TL="
+setstrigger synccommand :syncafterstealcommand "Command [TL="
 setdelaytrigger synctimeout :syncafterstealdone 3000
 pause
 
 :syncafterstealaccepted
 killalltriggers
-settexttrigger synccommand2 :syncafterstealdone "Command [TL="
+setstrigger synccommand2 :syncafterstealdone "Command [TL="
 setdelaytrigger synctimeout2 :syncafterstealdone 3000
 pause
 
@@ -1959,10 +1959,10 @@ settextlinetrigger wsstsellstart2 :wsstsellprogress "Docking..."
 settexttrigger wsstsellstart3 :wsstsellprogress "Your offer ["
 settexttrigger wsstsellstart4 :wsstsellprogress "Our final offer"
 settexttrigger wsstsellstart5 :wsstsellprogress "Agreed,"
-settexttrigger wsstsellqty :wsstsellqty "How many holds of "
+setstrigger wsstsellqty :wsstsellqty "How many holds of "
 if ($wsstportactive = 1)
-	settexttrigger wsstselldone1 :wsstselldone "Command [TL="
-	settexttrigger wsstselldone2 :wsstselldone "Citadel command"
+	setstrigger wsstselldone1 :wsstselldone "Command [TL="
+	setstrigger wsstselldone2 :wsstselldone "Citadel command"
 end
 pause
 
@@ -2047,7 +2047,7 @@ killtrigger 4
 settextlinetrigger 1 :getportequip "Equipment  Buying"
 settextlinetrigger 2  :noequiphere "I have no information about a port in that sector."
 settextlinetrigger 3  :noequiphere "A  Cargo holds     :"
-settexttrigger 4 :noequiphere "Command [TL="
+setstrigger 4 :noequiphere "Command [TL="
 pause
 
 :noequiphere
@@ -3071,7 +3071,7 @@ halt
 :cont
 killalltriggers
 settexttrigger routenavprompt       :routenavprompt "Choose NavPoint (?=Help)"
-settexttrigger routecmdprompt       :routecmdprompt "Command [TL="
+setstrigger routecmdprompt       :routecmdprompt "Command [TL="
 setdelaytrigger routepromptdelay    :routepromptdelay 1000
 pause
 
@@ -3309,7 +3309,7 @@ waiton "What sector is the port in?"
 settextlinetrigger wsstfuelportline :wsstfuelportline "Fuel Ore"
 settextlinetrigger wsstnofuelport1 :wsstnofuelport "I have no information about a port in that sector."
 settextlinetrigger wsstnofuelport2 :wsstnofuelport "You have never visted sector"
-settexttrigger wsstfuelportdone :wsstfuelportdone "Command [TL="
+setstrigger wsstfuelportdone :wsstfuelportdone "Command [TL="
 send $focus & "*q"
 pause
 
@@ -3378,9 +3378,9 @@ while (sector.warpsin[$map~stardock][$i] > 0)
 		goto :tryingnextadj
 	end
 	send "m " & $red_adj & "*"
-	settexttrigger twarpengage 		:twarpengage "Do you want to engage the TransWarp drive? "
-	settexttrigger twarpblind 		:twarpblind "Do you want to make this jump blind? "
-	settexttrigger twarplocked		:twarplocked "All Systems Ready, shall we engage? "
+	setstrigger twarpengage 		:twarpengage "Do you want to engage the TransWarp drive? "
+	setstrigger twarpblind 		:twarpblind "Do you want to make this jump blind? "
+	setstrigger twarplocked		:twarplocked "All Systems Ready, shall we engage? "
 	settextlinetrigger twarpvoided			:twarpvoided "Danger Warning Overridden"
 	settextlinetrigger twarpmoved			:twarpmoved "Sector  : " & $red_adj & " "
 	settexttrigger twarpalready			:twarpalready "You are already in that sector!"
@@ -3611,10 +3611,10 @@ if ($warpto > 0)
 	send "q q * * mz" & $warpto "*"
 	settexttrigger there        :adj_warp "You are already in that sector!"
 	settextlinetrigger adj_warp :adj_warp "Sector  : " & $warpto & " "
-	settexttrigger locking      :locking "Do you want to engage the TransWarp drive?"
+	setstrigger locking      :locking "Do you want to engage the TransWarp drive?"
 	settexttrigger igd          :twarpigd "An Interdictor Generator in this sector holds you fast!"
 	settexttrigger noturns      :twarpphotoned "Your ship was hit by a Photon and has been disabled"
-	settexttrigger noroute      :twarpnoroute "Do you really want to warp there? (Y/N)"
+	setstrigger noroute      :twarpnoroute "Do you really want to warp there? (Y/N)"
 	pause
 
 	:adj_warp

@@ -208,8 +208,8 @@ settexttrigger autooff :autooff "SUPGSCRIPT_AUTO_OFF"
 settexttrigger bwarpoff :bwarpoff "SUPGSCRIPT_BWARP_OFF"
 settexttrigger figkilloff :killoff "SUPGSCRIPT_KILL_OFF"
 if ($ahaggle = "On")
-	settexttrigger ptrade :bunits "do you want to buy"
-	settexttrigger strade :sunits "do you want to sell"
+	setstrigger ptrade :bunits "do you want to buy"
+	setstrigger strade :sunits "do you want to sell"
 	settexttrigger planettrade :plnttrade "<Negotiate Planetary TradeAgreement>"
 end
 if ($asteal = "On")
@@ -224,8 +224,8 @@ if ($figkill = "On")
 	settexttrigger citmine :moving "<Scan Sector>"
 end
 if ($bwarp = "On")
-	settexttrigger bwarp :bwarp "Do you want to make this jump blind?"
-	settexttrigger bbwar :bwarp "Do you want to make this transport blind?"
+	setstrigger bwarp :bwarp "Do you want to make this jump blind?"
+	setstrigger bbwar :bwarp "Do you want to make this transport blind?"
 end
 settexttrigger busted :busted "Suddenly you're Busted"
 settexttrigger nobust :ssteal "Success!"
@@ -265,8 +265,8 @@ killtrigger ptrade
 killtrigger strade
 killtrigger go
 killtrigger done
-settexttrigger ptrade :bunits "do you want to buy ["
-settexttrigger strade :sunits "do you want to sell ["
+setstrigger ptrade :bunits "do you want to buy ["
+setstrigger strade :sunits "do you want to sell ["
 settextlinetrigger go :finishhaggle "Agreed, "
 settextlinetrigger done :donehaggle "empty cargo holds."
 pause
@@ -749,9 +749,9 @@ end
 
 :sellproduct
 echo "*Sell product*"
-settexttrigger sellfuel :sellfuel "How many units of Fuel Ore"
-settexttrigger sellorg :sellorg "How many units of Organics"
-settexttrigger sellequ :sellequ "How many units of Equipment"
+setstrigger sellfuel :sellfuel "How many units of Fuel Ore"
+setstrigger sellorg :sellorg "How many units of Organics"
+setstrigger sellequ :sellequ "How many units of Equipment"
 settextlinetrigger selling :amnt_selling "Agreed, "
 settexttrigger donewithport :donewithport "] (?=Help)"
 pause
@@ -1469,7 +1469,7 @@ setvar $nocred 0
 killtrigger 1
 killtrigger 0
 killtrigger donehaggling
-settexttrigger donehag :done_haggle "Command [TL="
+setstrigger donehag :done_haggle "Command [TL="
 settexttrigger donehaggling :done_haggle "empty cargo holds."
 settexttrigger offerme :offerme "Your offer"
 pause
@@ -1495,7 +1495,7 @@ if ($multiplier > 100)
 else
 	add $multiplier 1
 end
-settexttrigger 0 :done_haggle "How many holds of"
+setstrigger 0 :done_haggle "How many holds of"
 settexttrigger 1 :rehaggle "Your offer"
 settexttrigger 2 :donehag "We're not interested."
 settexttrigger 3 :nocreds "You only have"
@@ -1584,7 +1584,7 @@ pause
 :traders
 killtrigger nomore
 settexttrigger sellorbuy :sellorbuy "]?"
-settexttrigger offport :offport "Command [TL="
+setstrigger offport :offport "Command [TL="
 pause
 
 :sellorbuy
@@ -1726,10 +1726,10 @@ return
 
 :express
 send "m" $expressto "*"
-settexttrigger twarp :no_twarp "Do you want to engage the TransWarp drive?"
-settexttrigger express :express_warp "Engage the Autopilot?"
+setstrigger twarp :no_twarp "Do you want to engage the TransWarp drive?"
+setstrigger express :express_warp "Engage the Autopilot?"
 settexttrigger in_adj :there "Sector  : " & $expressto
-settexttrigger voided_sec :voided "Do you really want to warp there?"
+setstrigger voided_sec :voided "Do you really want to warp there?"
 settexttrigger insec :there "You are already in that sector!"
 settexttrigger ig :igd "An Interdictor Generator in this sector holds you fast!"
 settexttrigger ig2 :igd "<Re-Display>"
@@ -1801,9 +1801,9 @@ return
 
 :clear_sector
 settexttrigger hitfig :hit_fig "Your fighters:"
-settexttrigger hitmine :hit_mine "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
+setstrigger hitmine :hit_mine "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
 settexttrigger clear :ready_state "Autopilot disengaging."
-settexttrigger done :ready_state "Command [TL="
+setstrigger done :ready_state "Command [TL="
 if ($singlestep = 1)
 	settexttrigger continue :ready_state "Stop in this sector"
 else
@@ -1831,7 +1831,7 @@ pause
 
 :hit_mine
 send "n"
-settexttrigger hitmine :hit_mine "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
+setstrigger hitmine :hit_mine "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
 pause
 
 :ready_state
@@ -1869,7 +1869,7 @@ return
 
 :twarp
 send "m" $twarpto "*"
-settexttrigger twarp :tw_twarp "Do you want to engage the TransWarp drive?"
+setstrigger twarp :tw_twarp "Do you want to engage the TransWarp drive?"
 settexttrigger notwarp :tw_notwarp "The shortest path ("
 settexttrigger adjacent :tw_there "Sector  : " & $twarpto
 settexttrigger ig :tw_ig "An Interdictor Generator in this sector holds you fast!"
@@ -1886,9 +1886,9 @@ killtrigger notwarp
 killtrigger adjacent
 killtrigger ig
 send "y"
-settexttrigger gogo :tw_safe "All Systems Ready, shall we engage?"
+setstrigger gogo :tw_safe "All Systems Ready, shall we engage?"
 settexttrigger outafuel :tw_outafuel "You do not have enough Fuel Ore to make the jump."
-settexttrigger nogo :tw_blind "Do you want to make this jump blind?"
+setstrigger nogo :tw_blind "Do you want to make this jump blind?"
 pause
 
 :tw_safe
@@ -1965,7 +1965,7 @@ return
 
 :xport
 send "x  "
-settexttrigger choose :xp_choose "Choose which ship to"
+setstrigger choose :xp_choose "Choose which ship to"
 settexttrigger noships :xp_noships "You do not own any other ships!"
 pause
 
@@ -2196,7 +2196,7 @@ end
 
 :sport
 send "p  r  *  s  t  "
-settexttrigger fake :fbusted "Corporate command [TL="
+setstrigger fake :fbusted "Corporate command [TL="
 settexttrigger good :cont "Which product?"
 pause
 
@@ -2282,7 +2282,7 @@ setvar $nocred 0
 killtrigger 1
 killtrigger 0
 killtrigger donehaggling
-settexttrigger donehag :done_haggle "Command [TL="
+setstrigger donehag :done_haggle "Command [TL="
 settexttrigger donehaggling :done_haggle "empty cargo holds."
 settexttrigger offerme :offerme "Your offer"
 pause
@@ -2308,7 +2308,7 @@ if ($multiplier > 100)
 else
 	add $multiplier 1
 end
-settexttrigger 0 :done_haggle "How many holds of"
+setstrigger 0 :done_haggle "How many holds of"
 settexttrigger 1 :rehaggle "Your offer"
 settexttrigger 2 :donehag "We're not interested."
 settexttrigger 3 :nocreds "You only have"

@@ -188,7 +188,7 @@ end
 
 send "uy n " #8 #8
 subtract $torps 1
-settextlinetrigger 1 :bust_testplanet "What do you want to name"
+setslinetrigger 1 :bust_testplanet "What do you want to name"
 pause
 
 :bust_testplanet
@@ -527,7 +527,7 @@ pause
 
 :warp_begin
 killtrigger makeplanet_warp_arrived
-settexttrigger makeplanet_warp_start :warp_start "Engage the Autopilot?"
+setstrigger makeplanet_warp_start :warp_start "Engage the Autopilot?"
 settexttrigger makeplanet_warp_twarp :warp_twarp "Do you want to engage"
 settextlinetrigger makeplanet_warp_single :warp_single "Sector  :"
 pause
@@ -558,7 +558,7 @@ settextlinetrigger makeplanet_warp_tollfigs :warp_tollfigs "You have to destroy 
 settextlinetrigger makeplanet_warp_figs :warp_figs "You have to destroy the fighters to remain"
 settexttrigger makeplanet_warp_stopprompt :warp_stopprompt "Stop in this sector"
 settexttrigger makeplanet_warp_minesprompt :warp_minesprompt "Mined Sector:"
-settexttrigger makeplanet_warp_arrived :warp_arrived "Command [TL="
+setstrigger makeplanet_warp_arrived :warp_arrived "Command [TL="
 pause
 
 :warp_nextsector

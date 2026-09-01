@@ -57,8 +57,8 @@ else
 	waiton "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
 end
 if ($scan_macro = "s")
-	settexttrigger end_of_line2 :end_of_lines "Citadel command (?=help)"
-	settexttrigger end_of_line3 :end_of_lines "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
+	setstrigger end_of_line2 :end_of_lines "Citadel command (?=help)"
+	setstrigger end_of_line3 :end_of_lines "Mined Sector: Do you wish to Avoid this sector in the future? (Y/N)"
 elseif ($scan_macro = "x** * ")
 	settexttrigger end_of_line4 :end_of_lines "<I> Ship details"
 	add $idx 1
@@ -68,7 +68,7 @@ elseif ($scan_macro = "x** * ")
 	add $idx 1
 	setvar $scan_array[$idx] "----------------------------------------------------------------------"
 else
-	settexttrigger end_of_line1 :end_of_lines "Command [TL="
+	setstrigger end_of_line1 :end_of_lines "Command [TL="
 end
 
 settextlinetrigger line_trig :parse_scan_line

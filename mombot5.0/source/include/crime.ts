@@ -82,7 +82,7 @@ setvar $laststeal $ship2sector
 settextlinetrigger success :success "Success!"
 settextlinetrigger busted :busted "Suddenly you're Busted!"
 settextlinetrigger portmaxxed :badstealport "There aren't that many holds of Equipment at this port!"
-settextlinetrigger fakebust :badstealport "Do you want instructions (Y/N) [N]?"
+setslinetrigger fakebust :badstealport "Do you want instructions (Y/N) [N]?"
 send $send&$stealship&"*  * "
 pause
 

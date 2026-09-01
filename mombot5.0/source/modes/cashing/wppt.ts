@@ -150,7 +150,7 @@ pause
 killalltriggers
 settextlinetrigger getsellproducta :ppt_getsellproducta $ppt~proda
 settextlinetrigger getbuyproducta :ppt_getbuyproducta $ppt~prodb
-settexttrigger gotproducta :ppt_gotproducta "Computer command"
+setstrigger gotproducta :ppt_gotproducta "Computer command"
 pause
 
 :ppt_getsellproducta
@@ -176,7 +176,7 @@ pause
 killalltriggers
 settextlinetrigger getsellproductb :ppt_getsellproductb $ppt~prodb
 settextlinetrigger getbuyproductb :ppt_getbuyproductb $ppt~proda
-settexttrigger gotproductb :ppt_gotproductb "Computer command"
+setstrigger gotproductb :ppt_gotproductb "Computer command"
 pause
 
 :ppt_getsellproductb

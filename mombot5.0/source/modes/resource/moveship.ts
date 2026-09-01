@@ -233,7 +233,7 @@ gosub :player~msgs_off
 settextlinetrigger statlinetrig :shipline "-----------------------------------------------------------------------------"
 settextlinetrigger towalreadyon :continuetowon "You shut off your Tractor Beam."
 settextlinetrigger enter :enter "[Pause]"
-settexttrigger enter2 :gotships "Choose which ship to tow (Q=Quit)"
+setstrigger enter2 :gotships "Choose which ship to tow (Q=Quit)"
 settexttrigger enter3 :gotships "You do not own any other ships in this sector!"
 send "w*"
 pause
@@ -535,11 +535,11 @@ if ($player~current_sector = $player~warpto) or ($player~warpto = 0)
 end
 settexttrigger move_there :move_good "You are already in that sector!"
 settextlinetrigger move_good :move_good "Sector  : "&$player~warpto&" "
-settexttrigger move_twarp :move_failed "Do you want to engage the TransWarp drive?"
+setstrigger move_twarp :move_failed "Do you want to engage the TransWarp drive?"
 settexttrigger move_igd :move_failed "An Interdictor Generator in this sector holds you fast!"
 settexttrigger move_photon :move_failed "Your ship was hit by a Photon and has been disabled"
-settexttrigger move_noroute :move_failed "Do you really want to warp there? (Y/N)"
-settexttrigger move_autopilot :move_autopilot_failed "Engage the Autopilot?"
+setstrigger move_noroute :move_failed "Do you really want to warp there? (Y/N)"
+setstrigger move_autopilot :move_autopilot_failed "Engage the Autopilot?"
 settextlinetrigger move_no_fuel :move_failed "You do not have enough Fuel Ore"
 send "m "&$player~warpto&"*"
 pause
@@ -552,14 +552,14 @@ return
 :move_failed
 killalltriggers
 send "n"
-settexttrigger move_autopilot :move_autopilot_failed "Engage the Autopilot?"
-settexttrigger move_command :move_failed_done "Command [TL="
+setstrigger move_autopilot :move_autopilot_failed "Engage the Autopilot?"
+setstrigger move_command :move_failed_done "Command [TL="
 pause
 
 :move_autopilot_failed
 killalltriggers
 send "n"
-settexttrigger move_command :move_failed_done "Command [TL="
+setstrigger move_command :move_failed_done "Command [TL="
 pause
 
 :move_failed_done

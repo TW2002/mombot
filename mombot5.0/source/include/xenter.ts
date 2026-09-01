@@ -33,8 +33,8 @@ killtrigger 2
 killtrigger 3
 killtrigger xenterpromptcheck
 send $xenter~exit_mac
-settexttrigger 1 :pickgame "Selection (? for menu)"
-settexttrigger 2 :enter_choice_xenter "Enter your choice:"
+setstrigger 1 :pickgame "Selection (? for menu)"
+setstrigger 2 :enter_choice_xenter "Enter your choice:"
 if ($game~game_menu_prompt <> 0)
 	settexttrigger 3 :pickgame $game~game_menu_prompt
 end
@@ -66,10 +66,10 @@ killtrigger 2
 killtrigger 3
 killtrigger xenterpromptcheck
 settexttrigger xenterpause :xenter_continue_entry_pause "[Pause]"
-settexttrigger xenterpassword :xenter_continue_password "A password is required to enter this game."
-settexttrigger xentercommand :xenter_entered_game "Command ["
-settexttrigger xenterplanet :xenter_entered_game "Planet command (?=help) [D]"
-settexttrigger xentercitadel :xenter_entered_game "Citadel command (?=help)"
+setstrigger xenterpassword :xenter_continue_password "A password is required to enter this game."
+setstrigger xentercommand :xenter_entered_game "Command ["
+setstrigger xenterplanet :xenter_entered_game "Planet command (?=help) [D]"
+setstrigger xentercitadel :xenter_entered_game "Citadel command (?=help)"
 setdelaytrigger xenterenteredcheck :xenter_check_entered_game 100
 send "T**"
 pause
@@ -78,10 +78,10 @@ pause
 killtrigger xenterenteredcheck
 send "*"
 settexttrigger xenterpause :xenter_continue_entry_pause "[Pause]"
-settexttrigger xenterpassword :xenter_continue_password "A password is required to enter this game."
-settexttrigger xentercommand :xenter_entered_game "Command ["
-settexttrigger xenterplanet :xenter_entered_game "Planet command (?=help) [D]"
-settexttrigger xentercitadel :xenter_entered_game "Citadel command (?=help)"
+setstrigger xenterpassword :xenter_continue_password "A password is required to enter this game."
+setstrigger xentercommand :xenter_entered_game "Command ["
+setstrigger xenterplanet :xenter_entered_game "Planet command (?=help) [D]"
+setstrigger xentercitadel :xenter_entered_game "Citadel command (?=help)"
 setdelaytrigger xenterenteredcheck :xenter_check_entered_game 100
 pause
 
@@ -89,10 +89,10 @@ pause
 killtrigger xenterenteredcheck
 send $bot~password & "**  *  *  "
 settexttrigger xenterpause :xenter_continue_entry_pause "[Pause]"
-settexttrigger xentercommand :xenter_entered_game "Command ["
-settexttrigger xenterplanet :xenter_entered_game "Planet command (?=help) [D]"
+setstrigger xentercommand :xenter_entered_game "Command ["
+setstrigger xenterplanet :xenter_entered_game "Planet command (?=help) [D]"
 settexttrigger xenterfigs :xenter_figs "Option?"
-settexttrigger xentercitadel :xenter_entered_game "Citadel command (?=help)"
+setstrigger xentercitadel :xenter_entered_game "Citadel command (?=help)"
 setdelaytrigger xenterenteredcheck :xenter_check_entered_game 100
 pause
 

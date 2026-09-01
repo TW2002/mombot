@@ -318,7 +318,7 @@ if ($colo_type = "m")
 			send $move_mac
 			settextlinetrigger 36 :nofuel2 "<Set NavPoint>"
 		end
-		settextlinetrigger 37 :colo_wait "All Systems Ready, shall we engage?"
+		setslinetrigger 37 :colo_wait "All Systems Ready, shall we engage?"
 		pause
 
 		:nofuel2
@@ -383,8 +383,8 @@ if ($colo_type = "m")
 
 		send " M"& $colo_sector & "* Y "
 		settextlinetrigger	whoops			:whoops			"You don't have enough turns left"
-		settexttrigger 		twarp_lock		:twarp_lock 	"All Systems Ready, shall we engage"
-		settexttrigger 		no_twrp_lock	:no_twarp_lock	"Do you want to make this jump blind"
+		setstrigger 		twarp_lock		:twarp_lock 	"All Systems Ready, shall we engage"
+		setstrigger 		no_twrp_lock	:no_twarp_lock	"Do you want to make this jump blind"
 		pause
 
 		:whoops
@@ -500,7 +500,7 @@ elseif ($colo_type = "p")
 		else
 			settextlinetrigger 136 :nofuelport "<Set NavPoint>"
 		end
-		settextlinetrigger 137 :fuelport "All Systems Ready, shall we engage?"
+		setslinetrigger 137 :fuelport "All Systems Ready, shall we engage?"
 		pause
 
 		:fuelport
@@ -645,7 +645,7 @@ elseif ($colo_type = "s")
 		else
 			settextlinetrigger 36 :nofuel "<Set NavPoint>"
 		end
-		settextlinetrigger 37 :fuel "All Systems Ready, shall we engage?"
+		setslinetrigger 37 :fuel "All Systems Ready, shall we engage?"
 		pause
 
 		:fuel
@@ -775,7 +775,7 @@ elseif ($colo_type = "t")
 		else
 			settextlinetrigger 36 :nofueltimed "<Set NavPoint>"
 		end
-		settextlinetrigger 37 :fueltimed "All Systems Ready, shall we engage?"
+		setslinetrigger 37 :fueltimed "All Systems Ready, shall we engage?"
 		pause
 
 		:fueltimed
@@ -885,7 +885,7 @@ elseif ($colo_type = "r")
 		else
 			settextlinetrigger 36 :nofuelred "<Set NavPoint>"
 		end
-		settextlinetrigger 37 :fuelred "All Systems Ready, shall we engage?"
+		setslinetrigger 37 :fuelred "All Systems Ready, shall we engage?"
 		pause
 
 		:fuelred

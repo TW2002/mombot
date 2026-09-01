@@ -4,7 +4,7 @@ waiton "<Set ANSI and misc settings>"
 settextlinetrigger libsilent :gameprefs~ansi "ANSI graphics"
 settextlinetrigger animation :gameprefs~animation "Animation display"
 settextlinetrigger pagemessages :gameprefs~pagemessages "Page on messages"
-settextlinetrigger subspace :gameprefs~subspace "Sub-space radio channel"
+setslinetrigger subspace :gameprefs~subspace "Sub-space radio channel"
 settextlinetrigger fedcom :gameprefs~fedcom "Federation comm-link"
 settextlinetrigger hails :gameprefs~hails "Receive private hails"
 settextlinetrigger silencemessages :gameprefs~silencemessages "Silence ALL messages"
@@ -12,7 +12,7 @@ settextlinetrigger abortdisplayall :gameprefs~abortdisplayall "Abort display on 
 settextlinetrigger messagedisplaylong :gameprefs~messagedisplaylong "Message Display Mode"
 settextlinetrigger screenpauses :gameprefs~screenpauses "Screen Pauses"
 settextlinetrigger autoflee :gameprefs~autoflee "Online Auto Flee"
-settexttrigger displaydone :gameprefs~displaydone "Settings command (?=Help)"
+setstrigger displaydone :gameprefs~displaydone "Settings command (?=Help)"
 pause
 
 :gameprefs~ansi

@@ -4,8 +4,8 @@
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 if ($player~surroundpassive)
 	send "szd"
-	settextlinetrigger surroundscanden :donesurroundscanden "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] D"
-	settexttrigger surroundscanfailden :donesurroundscan "Do you want instructions (Y/N) [N]?"
+	setslinetrigger surroundscanden :donesurroundscanden "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] D"
+	setstrigger surroundscanfailden :donesurroundscan "Do you want instructions (Y/N) [N]?"
 	pause
 
 	:grid~donesurroundscanden
@@ -16,8 +16,8 @@ if ($player~surroundpassive)
 	send "* "
 else
 	send "szh"
-	settextlinetrigger surroundscan :donesurroundscan "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
-	settexttrigger surroundscanfail :donesurroundscan "Do you want instructions (Y/N) [N]?"
+	setslinetrigger surroundscan :donesurroundscan "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
+	setstrigger surroundscanfail :donesurroundscan "Do you want instructions (Y/N) [N]?"
 	pause
 
 	:grid~donesurroundscan
@@ -223,7 +223,7 @@ if ($grid~pgrid_xporting = true)
 	waitfor "-----------------------------------------------------------------------------"
 
 	:shipsagain
-	settexttrigger shipsdone :shipsdone "Computer command ["
+	setstrigger shipsdone :shipsdone "Computer command ["
 	settextlinetrigger shipfound :shipfound ""
 	pause
 

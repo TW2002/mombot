@@ -254,7 +254,7 @@ waiton "Relative Density Scan"
 killtrigger alldone
 setvar $attack_sector_found false
 settextlinetrigger getsec :getsec "Sector"
-settexttrigger alldone :alldone "Command [TL="
+setstrigger alldone :alldone "Command [TL="
 pause
 
 :getsec
@@ -316,7 +316,7 @@ killtrigger getsec
 killtrigger alldone
 killtrigger donelook
 settextlinetrigger getsec :looksec "Sector"
-settexttrigger donelook :donelook "Command [TL="
+setstrigger donelook :donelook "Command [TL="
 pause
 
 :looksec

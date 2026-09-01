@@ -548,7 +548,7 @@ waitfor "Relative Density Scan"
 # now we retrieve new warp info
 setvar $i 1
 settextlinetrigger 1 :getwarp "Sector "
-settexttrigger 2 :gotwarps "Command [TL="
+setstrigger 2 :gotwarps "Command [TL="
 pause
 
 :getwarp
@@ -926,7 +926,7 @@ send "L"
 :selloff_loop
 killalltriggers
 settexttrigger  	selloff_landed  :selloff_landed "Landing sequence engaged..."
-settexttrigger		selloff_pdone	:selloff_pdone	"Land on which planet"
+setstrigger		selloff_pdone	:selloff_pdone	"Land on which planet"
 settexttrigger		selloff_pdone2	:selloff_none	"There isn't a planet in this sector"
 settextlinetrigger	selloff_planet	:selloff_planet	"   <"
 pause
@@ -1129,7 +1129,7 @@ setvar $holo_enemies 0
 
 settextlinetrigger holo_none		:holo_fail	"You don't have a long range scanner."
 settextlinetrigger holo_dens		:holo_fail	"Relative Density Scan"
-settexttrigger holo_good		:holo_good	"Select (H)olo Scan"
+setstrigger holo_good		:holo_good	"Select (H)olo Scan"
 send "s"
 pause
 
@@ -1158,7 +1158,7 @@ settextlinetrigger holo_fighters	:holo_fighters 	"Fighters: "
 settextlinetrigger holo_mines		:holo_mines	"Mines   :"
 settextlinetrigger holo_navhaz 		:holo_navhaz	"NavHaz  :"
 settexttrigger holo_warps 		:holo_done	"Warps to Sector(s) : "
-settexttrigger holo_command 		:holo_done	"Command [TL"
+setstrigger holo_command 		:holo_done	"Command [TL"
 settexttrigger holo_aliens 		:holo_aliens	": "
 pause
 
@@ -1615,7 +1615,7 @@ if ($bestsec > 0)
 	settexttrigger probedead :probedead "Probe Destroyed"
 	settexttrigger probeend :probeend "Probe Self Destructs"
 	settexttrigger probesec :probesec "Probe entering sector : "
-	settexttrigger probeend2 :probeend "Command [TL"
+	setstrigger probeend2 :probeend "Command [TL"
 	pause
 
 	:probedead
@@ -2666,7 +2666,7 @@ setvar $percent[equipment] 0
 settextlinetrigger gpm_rport_ore :gpm_rport_ore "Fuel Ore"
 settextlinetrigger gpm_rport_org :gpm_rport_org "Organics"
 settextlinetrigger gpm_rport_equ :gpm_rport_equ "Equipment"
-settextlinetrigger gpm_rport_done :gpm_rport_done "Computer command [TL="
+setslinetrigger gpm_rport_done :gpm_rport_done "Computer command [TL="
 settextlinetrigger gpm_rport_none :gpm_rport_none "I have no information about a port in that sector."
 settextlinetrigger gpm_rport_never :gpm_rport_none "You have never visted sector"
 send "R" & $port & "*"
@@ -3123,7 +3123,7 @@ send "L"
 :cleanuploop
 settexttrigger  	cleanup_landed     	:cleanup_landed 	"Landing sequence engaged..."
 settextlinetrigger	cleanup_done		:cleanup_done		"There isn't a planet"
-settexttrigger		cleanup_done2		:cleanup_end		"Land on which planet"
+setstrigger		cleanup_done2		:cleanup_end		"Land on which planet"
 settextlinetrigger	cleanup_planet		:cleanup_planet		"   <"
 setdelaytrigger		cleanup_fail		:cleanup_fail     	5000
 pause
@@ -3386,7 +3386,7 @@ if ($player~credits < 2500000)
 end
 
 send "o3"
-settexttrigger upgradeunits :upgradeunits "How many units"
+setstrigger upgradeunits :upgradeunits "How many units"
 pause
 
 :upgradeunits
@@ -4290,11 +4290,11 @@ add $turnsused 1
 send "u"
 waiton "Do you wish to launch"
 send "y "
-settextlinetrigger nooverload	:nooverload 	"What do you want to name this planet?"
+setslinetrigger nooverload	:nooverload 	"What do you want to name this planet?"
 #setTExtLineTrigger NeedGenTs	:NeedGenTs 	"You don't have any Genesis Torpedoes to launch!"
-settexttrigger overload 	:overload 	"Do you wish to abort?"
+setstrigger overload 	:overload 	"Do you wish to abort?"
 settextlinetrigger yikes	:yikes 		"I'm sorry, but not enough free matter exists."
-settexttrigger yikes2		:yikes 		"Command [TL"
+setstrigger yikes2		:yikes 		"Command [TL"
 pause
 
 :needgents
@@ -4321,7 +4321,7 @@ setvar $currentplanet ($planetname & $rnd3)
 
 send $currentplanet "*"
 settexttrigger makingitcorp		:makingitcorp	"Should this be a (C)orporate planet or (P)ersonal planet? "
-settexttrigger letsgo			:letsgo 	"Command [TL="
+setstrigger letsgo			:letsgo 	"Command [TL="
 pause
 
 :makingitcorp
@@ -4545,10 +4545,10 @@ else
 end
 settexttrigger     there       :adj_warp       "You are already in that sector!"
 settextlinetrigger adj_warp    :adj_warp       "Sector  : "&$warpto&" "
-settexttrigger     locking     :locking        "Do you want to engage the TransWarp drive?"
+setstrigger     locking     :locking        "Do you want to engage the TransWarp drive?"
 settexttrigger     igd         :twarpigd       "An Interdictor Generator in this sector holds you fast!"
 settexttrigger     noturns     :twarpphotoned  "Your ship was hit by a Photon and has been disabled"
-settexttrigger     noroute     :twarpnoroute   "Do you really want to warp there? (Y/N)"
+setstrigger     noroute     :twarpnoroute   "Do you really want to warp there? (Y/N)"
 pause
 
 :adj_warp
@@ -4617,7 +4617,7 @@ setvar $player~twarpsuccess true
 killalltriggers
 add $gopop_moves 1
 settexttrigger trytwarp_mined :trytwarp_mined "Mined Sector: Do you wish"
-settexttrigger trytwarp_ok :trytwarp_ok "Command [TL"
+setstrigger trytwarp_ok :trytwarp_ok "Command [TL"
 pause
 
 :trytwarp_mined
@@ -4647,8 +4647,8 @@ while (sector.warpsin[$target][$i] > 0)
 	setvar $red_adj sector.warpsin[$target][$i]
 	if ($red_adj > 10)
 		send "m " & $red_adj & "* y"
-		settexttrigger twarpblind 			:twarpblind "Do you want to make this jump blind? "
-		settexttrigger twarplocked			:twarplocked "All Systems Ready, shall we engage? "
+		setstrigger twarpblind 			:twarpblind "Do you want to make this jump blind? "
+		setstrigger twarplocked			:twarplocked "All Systems Ready, shall we engage? "
 		settextlinetrigger twarpvoided		:twarpvoided "Danger Warning Overridden"
 		settextlinetrigger twarpadj			:twarpadj "<Set NavPoint>"
 		pause

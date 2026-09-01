@@ -72,7 +72,7 @@ if ($player~current_prompt = "Command") or ($player~current_prompt = "Citadel")
 			if ($bot~parm2 > 0) and ($bot~parm2 <= sectors)
 				send "cv"&$bot~parm2&"*q"
 				settextlinetrigger		setted		:setted		"will now be avoided in future navigation calculations."
-				settexttrigger			notset		:notset		"Do you wish to clear some avoids?"
+				setstrigger			notset		:notset		"Do you wish to clear some avoids?"
 				pause
 
 				:notset
@@ -103,7 +103,7 @@ if ($player~current_prompt = "Command") or ($player~current_prompt = "Citadel")
 		send "cxq"
 		waitfor "<List Avoided Sectors>"
 		settextlinetrigger		noavoid	:noavoid	"No Sectors are currently being avoided."
-		settextlinetrigger		done	:savedone	"Computer command"
+		setslinetrigger		done	:savedone	"Computer command"
 		settextlinetrigger		line	:saveline
 		pause
 
@@ -133,7 +133,7 @@ else
 end
 waitfor "<List Avoided Sectors>"
 settextlinetrigger		noavoid	:noavoid	"No Sectors are currently being avoided."
-settextlinetrigger		done	:done		"Computer command"
+setslinetrigger		done	:done		"Computer command"
 settextlinetrigger		line	:line
 pause
 

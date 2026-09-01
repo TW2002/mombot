@@ -296,7 +296,7 @@ if (($returnhome = true) and ($ismanual <> true) and ($player~current_sector <> 
 	setdelaytrigger homedelay :gohome $timeinmilli
 end
 settextlinetrigger manual :manualpwarp "Planetary TransWarp Drive Engaged!"
-settextlinetrigger manual2 :manualtwarp "All Systems Ready, shall we engage? Yes"
+setslinetrigger manual2 :manualtwarp "All Systems Ready, shall we engage? Yes"
 if (($triggerdescription = "Fighters and Mines") or ($triggerdescription = "Mines") or ($triggerdescription = "Unfigged Mines"))
 	if ($targetingperson = false)
 		settexttrigger limp :attacksectorlimpet "Limpet mine in "
@@ -309,9 +309,9 @@ end
 #setTextLineTrigger save :saveCall "=saveme"
 
 settextlinetrigger warn :keepalive "INACTIVITY WARNING:"
-settexttrigger pause :pausing "Planet command (?="
-settexttrigger pause2 :pausing "Computer command ["
-settexttrigger pause3 :pausing "Corporate command ["
+setstrigger pause :pausing "Planet command (?="
+setstrigger pause2 :pausing "Computer command ["
+setstrigger pause3 :pausing "Corporate command ["
 settexttrigger pause4 :pausing "Transfer To or From the Treasury (T/F)"
 settexttrigger pause5 :pausing "Qcannon Control Type :"
 settexttrigger pause6 :pausing "Beam to what sector? (U=Upgrade"
@@ -336,10 +336,10 @@ goto :starttargeting
 killalltriggers
 if ($isplanetdrop)
 	echo ansi_6 "*[" ansi_14 $script_ver " paused. To restart, re-enter Citadel Prompt" ansi_6 "]*" ansi_7
-	settexttrigger restart :restarting "Citadel command ("
+	setstrigger restart :restarting "Citadel command ("
 else
 	echo ansi_6 "*[" ansi_14 $script_ver " paused. To restart, re-enter Command Prompt" ansi_6 "]*" ansi_7
-	settexttrigger restart :restarting "Command [TL="
+	setstrigger restart :restarting "Command [TL="
 end
 pause
 
@@ -826,8 +826,8 @@ waitfor "<Info>"
 
 :waitforname
 settextlinetrigger getname :gettradername "Trader Name    :"
-settexttrigger getnamedone :getnamedone "Command [TL="
-settexttrigger getnamedone2 :getnamedone "Citadel command"
+setstrigger getnamedone :getnamedone "Command [TL="
+setstrigger getnamedone2 :getnamedone "Citadel command"
 pause
 
 :gettradername

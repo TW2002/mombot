@@ -33,21 +33,21 @@ end
 killalltriggers
 send "w"
 settexttrigger towoffcontinue   :towcheck "You shut off your Tractor Beam."
-settexttrigger towoff           :towcontinue "Do you wish to tow a manned ship? (Y/N)"
+setstrigger towoff           :towcontinue "Do you wish to tow a manned ship? (Y/N)"
 pause
 
 :towcontinue
 killalltriggers
 send "*"
 settexttrigger townogo          :townogo "You do not own any other ships in this sector!"
-settexttrigger towready         :towoff "Choose which ship to tow (Q=Quit)"
+setstrigger towready         :towoff "Choose which ship to tow (Q=Quit)"
 pause
 
 :towoff
 killalltriggers
 send $shiptotow & "*"
-settexttrigger townogo2           :townogo2 "Command [TL="
-settexttrigger tow_password   :tow_password "Enter the password for"
+setstrigger townogo2           :townogo2 "Command [TL="
+setstrigger tow_password   :tow_password "Enter the password for"
 settextlinetrigger waitontow      :goodtow "You lock your Tractor Beam on "
 pause
 

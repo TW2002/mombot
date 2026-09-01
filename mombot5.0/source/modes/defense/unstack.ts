@@ -151,7 +151,7 @@ if ($planet~citadels[$player~current_sector] > $game~max_planets_per_sector)
 						killtrigger 2
 						killtrigger 3
 						send "c p "& $focus &"  *ys* "
-						settextlinetrigger 1 :warp_it_balance "All Systems Ready, shall we engage?"
+						setslinetrigger 1 :warp_it_balance "All Systems Ready, shall we engage?"
 						settextlinetrigger 2 :no_warp_balance "You do not have any fighters in Sector"
 						settextlinetrigger 3 :warp_it_balance "You are already in that sector!"
 						pause
@@ -228,7 +228,7 @@ waiton "Registry# and Planet Name"
 setvar $planet~planetcount 0
 killalltriggers
 settextlinetrigger planetgrabber :planetline "   <"
-settextlinetrigger bedone :done "Land on which planet "
+setslinetrigger bedone :done "Land on which planet "
 settextlinetrigger noplanets :done "You can create one with a Genesis Torpedo."
 send "*"
 pause
@@ -245,7 +245,7 @@ if ($pos <= 0)
 	getword $line $planet~planets[$planet~planetcount] 1
 end
 settextlinetrigger getline2 :planetline "   <"
-settextlinetrigger getend :done "Land on which planet "
+setslinetrigger getend :done "Land on which planet "
 pause
 
 :done
@@ -337,7 +337,7 @@ while ($i <= 10000)
 		killtrigger 2
 		killtrigger 3
 		send "c p "& $starting_sector &"  *ys* "
-		settextlinetrigger 1 :warp_it_unbalance "All Systems Ready, shall we engage?"
+		setslinetrigger 1 :warp_it_unbalance "All Systems Ready, shall we engage?"
 		settextlinetrigger 2 :no_warp_unbalance "You do not have any fighters in Sector"
 		settextlinetrigger 3 :warp_it_unbalance "You are already in that sector!"
 		pause

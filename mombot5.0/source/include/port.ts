@@ -69,7 +69,7 @@ setvar $port~noport 0
 settextlinetrigger portinfo1 :portinfo1 "Fuel Ore "
 settextlinetrigger portinfo2 :portinfo2 "Organics"
 settextlinetrigger portinfo3 :portinfo3 "Equipment"
-settexttrigger gotcr :gotcr "Computer command [TL="
+setstrigger gotcr :gotcr "Computer command [TL="
 pause
 
 :portinfo1
@@ -357,7 +357,7 @@ if (port.exists[$player~current_sector] = true)
 			send "q q q * *  "
 		end
 		send "p"
-		settexttrigger 1 :portalreadygone "Captain! Are you sure you want to port here?"
+		setstrigger 1 :portalreadygone "Captain! Are you sure you want to port here?"
 		settexttrigger 2 :continuedestroy "<A> Attack this Port"
 		pause
 
@@ -545,8 +545,8 @@ return
 :port~domaxport
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "o z" $port~product "z0* "
-settextlinetrigger norealporthere :wrongporttype "Do you want to initiate construction on this port?"
-settextlinetrigger construction :wrongporttype "Do you want instructions (Y/N)"
+setslinetrigger norealporthere :wrongporttype "Do you want to initiate construction on this port?"
+setslinetrigger construction :wrongporttype "Do you want instructions (Y/N)"
 waiton ", 0 to quit)"
 killalltriggers
 getword currentline $port~upgradeamount 9
@@ -610,7 +610,7 @@ setvar $port~inc 0
 	send "S"
 	waitfor "-------------------------------------------"
 settextlinetrigger noship :shipselldone "You do not own any other ships orbiting the Stardock!"
-settexttrigger done :done "Choose which ship to sell (Q=Quit)"
+setstrigger done :done "Choose which ship to sell (Q=Quit)"
 settextlinetrigger line :line
 pause
 

@@ -413,9 +413,9 @@ if (($triggerdescription = "Fighters and Mines") or ($triggerdescription = "Figh
 	settexttrigger fig :attacksectorfighter "Deployed Fighters "
 end
 settextlinetrigger warn :keepalive "INACTIVITY WARNING:"
-settexttrigger pause :pausing "Planet command (?="
-settexttrigger pause2 :pausing "Computer command ["
-settexttrigger pause3 :pausing "Corporate command ["
+setstrigger pause :pausing "Planet command (?="
+setstrigger pause2 :pausing "Computer command ["
+setstrigger pause3 :pausing "Corporate command ["
 settexttrigger pause4 :pausing "Transfer To or From the Treasury (T/F)"
 settexttrigger pause5 :pausing "Qcannon Control Type :"
 settexttrigger pause6 :pausing "Beam to what sector? (U=Upgrade"
@@ -458,7 +458,7 @@ goto :starttargeting
 :pausing
 killalltriggers
 echo ansi_6 "*[" ansi_14 $script_ver " paused. To restart, re-enter Citadel Prompt" ansi_6 "]*" ansi_7
-settexttrigger restart :restarting "Citadel command ("
+setstrigger restart :restarting "Citadel command ("
 pause
 
 :restarting
@@ -1101,8 +1101,8 @@ waitfor "<Info>"
 
 :waitforname
 settextlinetrigger getname :gettradername "Trader Name    :"
-settexttrigger getnamedone :getnamedone "Command [TL="
-settexttrigger getnamedone2 :getnamedone "Citadel command"
+setstrigger getnamedone :getnamedone "Command [TL="
+setstrigger getnamedone2 :getnamedone "Citadel command"
 pause
 
 :gettradername
@@ -1365,7 +1365,7 @@ waiton "Relative Density Scan"
 killtrigger alldone
 setvar $attack_sector_found false
 settextlinetrigger getsec :getsec "Sector"
-settexttrigger alldone :alldone "Command [TL="
+setstrigger alldone :alldone "Command [TL="
 pause
 
 :getsec
@@ -1431,7 +1431,7 @@ killtrigger donelook
 killtrigger manual_stop
 settextlinetrigger dtop_dtorp :manual_stop $bot~bot_name & " foton off"
 settextlinetrigger getsec :looksec "Sector"
-settexttrigger donelook :donelook "Command [TL="
+setstrigger donelook :donelook "Command [TL="
 
 pause
 

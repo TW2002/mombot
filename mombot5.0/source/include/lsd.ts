@@ -82,7 +82,7 @@ elseif ($location = "Citadel")
 	#		end
 elseif ($location = "Planet")
 	setvar $theres_citadel false
-	settexttrigger theres_no_cit :theres_no_cit "Planet command (?=help)"
+	setstrigger theres_no_cit :theres_no_cit "Planet command (?=help)"
 	settextlinetrigger there_cit :theres_cit "Planet has a level "
 	pause
 
@@ -631,7 +631,7 @@ end
 if ($_pscan  <> "")
 	send "F "
 	settexttrigger canpscan		:canpscan "I can let you have one for"
-	settexttrigger cantpscan	:cantpscan "<Hardware Emporium> So what are you looking for"
+	setstrigger cantpscan	:cantpscan "<Hardware Emporium> So what are you looking for"
 	pause
 
 	:canpscan
@@ -670,8 +670,8 @@ if ($_mines  <> "")
 end
 #=============================================== PURCHASE PHOTONS
 if ($_photon  <> "")
-	settexttrigger canhouse :canhouse "How many Photon Missiles do you want"
-	settexttrigger canthouse :canthouse "<Hardware Emporium> So what are you looking for"
+	setstrigger canhouse :canhouse "How many Photon Missiles do you want"
+	setstrigger canthouse :canthouse "<Hardware Emporium> So what are you looking for"
 	send "P "
 	pause
 
@@ -690,8 +690,8 @@ if ($_photon  <> "")
 end
 #=============================================== PURCHASE LRSCAN
 if ($_lrscan  <> "")
-	settexttrigger canbuylrscan		:canbuylrscan "Which would you like?"
-	settexttrigger cantbuylrscan	:cantbuylrscan "<Hardware Emporium> So what are you looking for"
+	setstrigger canbuylrscan		:canbuylrscan "Which would you like?"
+	setstrigger cantbuylrscan	:cantbuylrscan "<Hardware Emporium> So what are you looking for"
 	send "R "
 	pause
 
@@ -730,8 +730,8 @@ end
 #=============================================== PURCHASE TWARP DRIVE
 if ($_t2twarp  <> "")
 	send "W "
-	settexttrigger cantwarp :cantwarp "Which would you like? (1/2/U/Quit)"
-	settexttrigger canttwarp :canttwarp "<Hardware Emporium> So what are you looking for"
+	setstrigger cantwarp :cantwarp "Which would you like? (1/2/U/Quit)"
+	setstrigger canttwarp :canttwarp "<Hardware Emporium> So what are you looking for"
 	pause
 
 	:cantwarp
@@ -793,7 +793,7 @@ return
 :trylockagain
 setvar $player~turns_req2tow 0
 send "W"
-settexttrigger dotow 		:dotow "Do you wish to tow a manned ship? "
+setstrigger dotow 		:dotow "Do you wish to tow a manned ship? "
 settextlinetrigger beamoff	:beamoff "You shut off your Tractor Beam"
 pause
 
@@ -817,7 +817,7 @@ send "N"
 killalltriggers
 settextlinetrigger noships	:nothere "You do not own any other ships in this sector!"
 settexttrigger shipscan		:shipscan $towingpadded
-settexttrigger nothere		:nothere "Choose which ship to tow "
+setstrigger nothere		:nothere "Choose which ship to tow "
 pause
 
 :nothere
@@ -830,7 +830,7 @@ halt
 :shipscan
 killalltriggers
 send $_tow & "**"
-settexttrigger pwprotected		:pwprotected "Enter the password for "
+setstrigger pwprotected		:pwprotected "Enter the password for "
 settextlinetrigger turnsreq		:towengaged "It will now cost you "
 pause
 
@@ -915,10 +915,10 @@ if ($twarpto > 0)
 	send "mz" & $twarpto " * "
 	settexttrigger there        :adj_warp "You are already in that sector!"
 	settextlinetrigger adj_warp :adj_warp "Sector  : " & $twarpto & " "
-	settexttrigger locking      :locking "Do you want to engage the TransWarp drive?"
+	setstrigger locking      :locking "Do you want to engage the TransWarp drive?"
 	settexttrigger igd          :twarpigd "An Interdictor Generator in this sector holds you fast!"
 	settexttrigger noturns      :twarpphotoned "Your ship was hit by a Photon and has been disabled"
-	settexttrigger noroute      :twarpnoroute "Do you really want to warp there? (Y/N)"
+	setstrigger noroute      :twarpnoroute "Do you really want to warp there? (Y/N)"
 	pause
 
 	:adj_warp
@@ -999,7 +999,7 @@ end
 send "S S"
 settextlinetrigger nothing2sell		:nothing2sell "You do not own any other ships orbiting the Stardock!"
 settextlinetrigger something2sell	:something2sell $sellingship
-settexttrigger notinlist			:notinlist "Choose which ship to sell "
+setstrigger notinlist			:notinlist "Choose which ship to sell "
 pause
 
 :notinlist
@@ -1035,8 +1035,8 @@ end
 
 send "*"
 
-settexttrigger makecorp		:makecorp "Should this be a (C)orporate ship or (P)ersonal ship? "
-settexttrigger notanoption	:notanoption "Computer command [TL="
+setstrigger makecorp		:makecorp "Should this be a (C)orporate ship or (P)ersonal ship? "
+setstrigger notanoption	:notanoption "Computer command [TL="
 pause
 
 :makecorp
@@ -1099,8 +1099,8 @@ setvar $red_adj 0
 while (sector.warpsin[$map~stardock][$i] > 0)
 	setvar $red_adj sector.warpsin[$map~stardock][$i]
 	send "m " & $red_adj & "* y"
-	settexttrigger twarpblind 			:twarpblind "Do you want to make this jump blind? "
-	settexttrigger twarplocked			:twarplocked "All Systems Ready, shall we engage? "
+	setstrigger twarpblind 			:twarpblind "Do you want to make this jump blind? "
+	setstrigger twarplocked			:twarplocked "All Systems Ready, shall we engage? "
 	settextlinetrigger twarpvoided		:twarpvoided "Danger Warning Overridden"
 	settextlinetrigger twarpadj			:twarpadj "<Set NavPoint>"
 	pause
@@ -1141,10 +1141,10 @@ killalltriggers
 setvar $ig_mode 0
 settexttrigger no_ig_trigger :no_ig_available "is not equipped with an Interdictor Generator!"
 settexttrigger no_ig_beam    :no_ig_beam "Beam to what sector? (U=Upgrade Q=Quit)"
-settexttrigger no_ig_cby     :no_ig_cby "ARE YOU SURE CAPTAIN? (Y/N)"
+setstrigger no_ig_cby     :no_ig_cby "ARE YOU SURE CAPTAIN? (Y/N)"
 settexttrigger need_ig       :ig_was_off "Your Interdictor generator is now OFF"
 settexttrigger ig_fine       :ig_was_on "Your Interdictor generator is now ON"
-settexttrigger do_ig         :do_ig_thing "Do you wish to change it? (Y/N)"
+setstrigger do_ig         :do_ig_thing "Do you wish to change it? (Y/N)"
 send " b"
 pause
 
@@ -1241,8 +1241,8 @@ send "S B N Y " & $selectedship & "Y"
 settextlinetrigger notenoughcash	:notenoughcash "You can not afford it!"
 settextlinetrigger notenoughexp		:notenoughexp "Hey!  You need at least "
 settextlinetrigger notcommished     :notcommished "Hey!  You're not commissioned by the Federation to fly the"
-settexttrigger makeshipcorp			:makeshipcorp "Should this be a (C)orporate ship or (P)ersonal ship?"
-settextlinetrigger nametheship		:nametheship "What do you want to name this ship?"
+setstrigger makeshipcorp			:makeshipcorp "Should this be a (C)orporate ship or (P)ersonal ship?"
+setslinetrigger nametheship		:nametheship "What do you want to name this ship?"
 settextlinetrigger shipsboughtout	:shipsboughtout "Well if that don't beat all, looks like we don't have anymore ships"
 pause
 
@@ -1292,7 +1292,7 @@ getrnd $registrynumber 100000 999999
 send "LSDREG#" & $registrynumber & "*N * S"
 settextlinetrigger purchasedfailed 		:purchasedfailed "You do not own any other ships orbiting the Stardock!"
 settextlinetrigger getnewshipnumber		:getnewshipnumber " " & $map~stardock & " " & "LSDREG#" & $registrynumber
-settexttrigger gotnewshipnumber			:gotnewshipnumber "Choose which ship to sell "
+setstrigger gotnewshipnumber			:gotnewshipnumber "Choose which ship to sell "
 pause
 
 :purchasedfailed

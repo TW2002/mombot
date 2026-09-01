@@ -236,7 +236,7 @@ if ((($planet~planetfuel < $player~total_holds) or ($emptyfuel = false)) and (($
 		seteventtrigger discod1 	:discod     	"CONNECTION LOST"
 		seteventtrigger	discod2		:discod     	"Connections have been temporarily disabled."
 		settexttrigger 6 :nodets "You do not have any Atomic Detonators!"
-		settexttrigger 7 :makeplanet "Command [TL="
+		setstrigger 7 :makeplanet "Command [TL="
 		pause
 	end
 end
@@ -458,8 +458,8 @@ pause
 killalltriggers
 seteventtrigger 	discod1 	:discod     	"CONNECTION LOST"
 seteventtrigger		discod2		:discod     	"Connections have been temporarily disabled."
-settexttrigger torps :torps "How many Genesis Torpedoes do you want"
-settexttrigger dets  :dets  "How many Atomic Detonators do you want"
+setstrigger torps :torps "How many Genesis Torpedoes do you want"
+setstrigger dets  :dets  "How many Atomic Detonators do you want"
 send "HT"
 pause
 pause
@@ -532,7 +532,7 @@ killalltriggers
 gosub :player~quikstats
 if ($player~current_prompt = "Command")
 	send " L Z" & #8 & $target & "*  *  J  C  *  "
-	settextlinetrigger	notlanded	:notlanded		"Are you sure you want to jettison all cargo?"
+	setslinetrigger	notlanded	:notlanded		"Are you sure you want to jettison all cargo?"
 	settextlinetrigger	landed		:landed			"<Enter Citadel>"
 	setdelaytrigger		testconn	:testconn		3000
 	pause

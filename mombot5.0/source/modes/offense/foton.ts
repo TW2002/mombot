@@ -783,7 +783,7 @@ waiton "Relative Density Scan"
 :dtorp_start
 killtrigger alldone
 settextlinetrigger getsec :getsec "Sector"
-settexttrigger alldone :alldone "Command [TL="
+setstrigger alldone :alldone "Command [TL="
 pause
 
 :getsec
@@ -867,7 +867,7 @@ killtrigger alldone
 settextouttrigger manual_stop :manual_stop "-"
 settextlinetrigger dtop_dtorp :manual_stop $bot~bot_name & " foton off"
 settextlinetrigger getsec :looksec "Sector"
-settexttrigger alldone :donelook "Command [TL="
+setstrigger alldone :donelook "Command [TL="
 pause
 
 :looksec
@@ -1858,7 +1858,7 @@ end
 :xportrestartgo
 send "w"
 settextlinetrigger xportrestart :xportrestart "You shut off your Tractor Beam."
-settexttrigger xportstart :xportstart "Do you wish to tow a manned ship?"
+setstrigger xportstart :xportstart "Do you wish to tow a manned ship?"
 pause
 
 :xportrestart

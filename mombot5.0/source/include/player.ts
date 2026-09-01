@@ -788,8 +788,8 @@ gosub :getcnc
 send "QQ"
 killtrigger 1
 killtrigger 2
-settexttrigger 1 :substartcncontinue "Command [TL="
-settexttrigger 2 :substartcncontinue "Citadel command (?=help)"
+setstrigger 1 :substartcncontinue "Command [TL="
+setstrigger 2 :substartcncontinue "Citadel command (?=help)"
 pause
 
 :player~substartcncontinue
@@ -810,7 +810,7 @@ return
 loadvar $player~swathoff
 
 if ($player~swathoff = false)
-	settexttrigger swathison :swathison "Command [TL="
+	setstrigger swathison :swathison "Command [TL="
 	setdelaytrigger swathisoff :swathisoff 2000
 	pause
 

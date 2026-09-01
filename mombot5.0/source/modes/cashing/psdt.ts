@@ -683,7 +683,7 @@ end
 settextlinetrigger success :success "Success!"
 settextlinetrigger busted :busted "Suddenly you're Busted!"
 settextlinetrigger portmaxxed :notenoughsteal "There aren't that many holds of Equipment at this port!"
-settextlinetrigger fakebust :badstealport "Do you want instructions (Y/N) [N]?"
+setslinetrigger fakebust :badstealport "Do you want instructions (Y/N) [N]?"
 send "p r* s   z3  "&$steal&"* "
 pause
 
@@ -807,7 +807,7 @@ return
 killalltriggers
 settextlinetrigger dumpfull :sdtplanetfull "There isn't room on the planet"
 settextlinetrigger dumpfull2 :sdtplanetfull "They don't have room for that many"
-settexttrigger dumpdone :sdtdumpdone "Command [TL"
+setstrigger dumpdone :sdtdumpdone "Command [TL"
 send "l "&$active_planet&"* t n l 3* q "
 pause
 
@@ -840,7 +840,7 @@ killalltriggers
 :numberingplanets
 killalltriggers
 settextlinetrigger planetgrabber :planetline "   <"
-settextlinetrigger bedone :done "Land on which planet "
+setslinetrigger bedone :done "Land on which planet "
 send "lq*"
 pause
 
@@ -857,7 +857,7 @@ elseif ($temp = $psdt_planet2)
 	setvar $foundplanet2 true
 end
 settextlinetrigger getline2 :planetline "   <"
-settextlinetrigger getend :done "Land on which planet "
+setslinetrigger getend :done "Land on which planet "
 pause
 
 :done
@@ -879,7 +879,7 @@ if ($tempid = $psdt_ship2)
 	setvar $foundship2 true
 end
 settextlinetrigger other :shipline " "&$player~current_sector&" "
-settextlinetrigger nomore :shipdone "Choose which ship to tow "
+setslinetrigger nomore :shipdone "Choose which ship to tow "
 pause
 
 :shipdone

@@ -158,15 +158,15 @@ settextlinetrigger  atomic  :scanit_cit_cap    	" appears from the planetary rub
 settextlinetrigger 	exits 	:scanit_cit_cap 	"exits the game."
 settextlinetrigger 	enters 	:scanit_cit_cap 	"enters the game."
 setdelaytrigger		delay	:scanit_cit_cap		30000
-settexttrigger 		pause 	:pausing 			"Planet command (?="
-settexttrigger 		pause2 	:pausing 			"Computer command ["
-settexttrigger 		pause3 	:pausing 			"Corporate command ["
+setstrigger 		pause 	:pausing 			"Planet command (?="
+setstrigger 		pause2 	:pausing 			"Computer command ["
+setstrigger 		pause3 	:pausing 			"Corporate command ["
 pause
 
 :pausing
 killalltriggers
 echo ansi_6 "*[" ansi_14 "Citadel Capture paused. To restart, re-enter citadel prompt" ansi_6 "]*" ansi_7
-settexttrigger restart :restarting "Citadel command ("
+setstrigger restart :restarting "Citadel command ("
 pause
 
 :restarting

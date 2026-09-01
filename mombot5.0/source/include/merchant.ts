@@ -1049,7 +1049,7 @@ if ($player~current_prompt = "Computer")
 end
 if ($player~current_prompt = "Citadel")
 	send "q"
-	settexttrigger refreshportplanet :refreshportplanet "Planet command (?"
+	setstrigger refreshportplanet :refreshportplanet "Planet command (?"
 	setdelaytrigger refreshportfail :refreshportfail 5000
 	pause
 
@@ -1075,7 +1075,7 @@ if ($player~current_prompt = "Computer")
 end
 if ($player~current_prompt = "Planet")
 	send "c"
-	settexttrigger refreshportcitadel :refreshportcitadel "Citadel command"
+	setstrigger refreshportcitadel :refreshportcitadel "Citadel command"
 	setdelaytrigger refreshportfail :refreshportfail 5000
 	pause
 
@@ -1381,10 +1381,10 @@ if ($player~warpto > 0)
 	send "q t * t 1*  q * * mz" & $player~warpto "*"
 	settexttrigger there        :adj_warp "You are already in that sector!"
 	settextlinetrigger adj_warp :adj_warp "Sector  : " & $player~warpto & " "
-	settexttrigger locking      :locking "Do you want to engage the TransWarp drive?"
+	setstrigger locking      :locking "Do you want to engage the TransWarp drive?"
 	settexttrigger igd          :twarpigd "An Interdictor Generator in this sector holds you fast!"
 	settexttrigger noturns      :twarpphotoned "Your ship was hit by a Photon and has been disabled"
-	settexttrigger noroute      :twarpnoroute "Do you really want to warp there? (Y/N)"
+	setstrigger noroute      :twarpnoroute "Do you really want to warp there? (Y/N)"
 	pause
 
 	:adj_warp

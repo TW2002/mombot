@@ -356,13 +356,13 @@ killalltriggers
 killalltriggers
 
 :tradeloop
-settexttrigger sell1 :sell1 "How many holds of Fuel Ore do you want to sell"
-settexttrigger sell2 :sell2 "How many holds of Organics do you want to sell"
-settexttrigger sell3 :sell3 "How many holds of Equipment do you want to sell"
-settexttrigger buy1 :buy1 "How many holds of Fuel Ore do you want to buy"
-settexttrigger buy2 :buy2 "How many holds of Organics do you want to buy"
-settexttrigger buy3 :buy3 "How many holds of Equipment do you want to buy"
-settexttrigger tradeloopdone :tradeloopdone "Command ["
+setstrigger sell1 :sell1 "How many holds of Fuel Ore do you want to sell"
+setstrigger sell2 :sell2 "How many holds of Organics do you want to sell"
+setstrigger sell3 :sell3 "How many holds of Equipment do you want to sell"
+setstrigger buy1 :buy1 "How many holds of Fuel Ore do you want to buy"
+setstrigger buy2 :buy2 "How many holds of Organics do you want to buy"
+setstrigger buy3 :buy3 "How many holds of Equipment do you want to buy"
+setstrigger tradeloopdone :tradeloopdone "Command ["
 pause
 
 :sell1

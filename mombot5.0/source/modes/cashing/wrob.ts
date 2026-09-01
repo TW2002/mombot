@@ -461,7 +461,7 @@ killtrigger noplanet
 killtrigger no_land
 killtrigger wrongone
 settexttrigger wrong_num :wrong_num "That planet is not in this sector."
-settexttrigger planet :planet_prompt "Planet command"
+setstrigger planet :planet_prompt "Planet command"
 pause
 
 :wrong_num
@@ -474,8 +474,8 @@ killtrigger wrong_num
 setvar $currentbotplanet $planet
 savevar $currentbotplanet
 send "c"
-settexttrigger build_cit :build_cit "Do you wish to construct one?"
-settexttrigger in_cit :in_cit "Citadel command"
+setstrigger build_cit :build_cit "Do you wish to construct one?"
+setstrigger in_cit :in_cit "Citadel command"
 settexttrigger nocitallowed :build_cit "Citadels are not allowed in FedSpace."
 settexttrigger citnotbuiltyet :build_cit "Be patient, your Citadel is not yet finished."
 pause
@@ -563,7 +563,7 @@ killalltriggers
 settextlinetrigger portinfo1 :portinfo1 "Fuel Ore "
 settextlinetrigger portinfo2 :portinfo2 "Organics"
 settextlinetrigger portinfo3 :portinfo3 "Equipment"
-settextlinetrigger gotcr :gotcr "Computer command [TL="
+setslinetrigger gotcr :gotcr "Computer command [TL="
 pause
 
 :portinfo1
@@ -726,10 +726,10 @@ subtract $player~turns 1
 gosub :planethaggle~getpercts
 
 :sellproduct
-settexttrigger sellfuel :sellfuel "How many units of Fuel Ore"
-settexttrigger sellorg :sellorg "How many units of Organics"
-settexttrigger sellequ :sellequ "How many units of Equipment"
-settexttrigger donewithport :donewithport "Command [TL="
+setstrigger sellfuel :sellfuel "How many units of Fuel Ore"
+setstrigger sellorg :sellorg "How many units of Organics"
+setstrigger sellequ :sellequ "How many units of Equipment"
+setstrigger donewithport :donewithport "Command [TL="
 pause
 
 :sellfuel
@@ -1696,7 +1696,7 @@ return
 
 :swathoff
 if ($swathoff = false)
-	settexttrigger swathison :swathison "Command [TL="
+	setstrigger swathison :swathison "Command [TL="
 	setdelaytrigger swathisoff :swathisoff 2000
 	pause
 

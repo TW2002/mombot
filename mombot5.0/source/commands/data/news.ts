@@ -1440,7 +1440,7 @@ gettime $s "h:nna/p - d/m/yyy"
 write $news_file $s
 
 :getdate_spoof
-settexttrigger getdate :getdate "Enter the beginning date you wish to read from. Today is"
+setstrigger getdate :getdate "Enter the beginning date you wish to read from. Today is"
 pause
 
 :getdate
@@ -1539,7 +1539,7 @@ end
 if ($news_yest)
 	settextlinetrigger end_of_lines1 :end_of_lines "S.D. "&$stop_date
 else
-	settexttrigger end_of_lines2 :end_of_lines "command [TL="
+	setstrigger end_of_lines2 :end_of_lines "command [TL="
 end
 settextlinetrigger nothing_2_do :nothing_2_do "No log entries today."
 

@@ -245,7 +245,7 @@ return
 setvar $planet~planetcount 0
 killalltriggers
 settextlinetrigger planetgrabber :planetline "   <"
-settextlinetrigger bedone :done "Land on which planet "
+setslinetrigger bedone :done "Land on which planet "
 send "lq*"
 pause
 
@@ -261,7 +261,7 @@ if ($pos <= 0)
 	getword $line $planet~planets[$planet~planetcount] 1
 end
 settextlinetrigger getline2 :planetline "   <"
-settextlinetrigger getend :done "Land on which planet "
+setslinetrigger getend :done "Land on which planet "
 pause
 
 :done

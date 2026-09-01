@@ -29,7 +29,7 @@ if ($player~startinglocation = "Citadel")
 else
 	send "szh* "
 end
-settextlinetrigger checkforholo :continuecheckholo "Select (H)olo Scan or (D)ensity Scan or (Q)uit?"
+setslinetrigger checkforholo :continuecheckholo "Select (H)olo Scan or (D)ensity Scan or (Q)uit?"
 settextlinetrigger checkfordens :photonedhtorp "Relative Density Scan"
 pause
 
@@ -74,7 +74,7 @@ while (sector.warps[$player~current_sector][$i] > 0)
 	add $i 1
 end
 if ($player~startinglocation = "Citadel")
-	settexttrigger waitforcit :continuewaitforcit "Citadel command (?=help)"
+	setstrigger waitforcit :continuewaitforcit "Citadel command (?=help)"
 	pause
 
 	:continuewaitforcit

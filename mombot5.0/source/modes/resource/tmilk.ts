@@ -390,7 +390,7 @@ end
 killalltriggers
 settextlinetrigger colosleft :leavecolos_left "The Colonists disembark"
 settextlinetrigger colosfull :leavecolos_full "There isn't room on the planet"
-settexttrigger colosprompt :leavecolos_done "Planet command (?=help)"
+setstrigger colosprompt :leavecolos_done "Planet command (?=help)"
 send "s n l "&$colo_prod&"*"
 pause
 

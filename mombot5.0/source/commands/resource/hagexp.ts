@@ -243,7 +243,7 @@ settextlinetrigger fuelinfo :productinfo "Fuel Ore"
 settextlinetrigger orgsinfo :productinfo "Organics"
 settextlinetrigger equipinfo :productinfo "Equipment"
 #settexttrigger PORTOUT :PORTOUT "have anything they want"
-settexttrigger haggledone :haggledone "Command [TL"
+setstrigger haggledone :haggledone "Command [TL"
 pause
 
 :neglectedport
@@ -289,9 +289,9 @@ if ($round > 0) and ($credits = $lastcredits)
 end
 setvar $lastcredits $credits
 setvar $finaloffer 0
-settexttrigger buy :buy "do you want to buy"
-settexttrigger sell :sell "do you want to sell"
-settexttrigger haggledone :haggledone "Command [TL"
+setstrigger buy :buy "do you want to buy"
+setstrigger sell :sell "do you want to sell"
+setstrigger haggledone :haggledone "Command [TL"
 pause
 
 :buy
@@ -308,7 +308,7 @@ send $u "*"
 add $round 1
 if (haggle)
 	settextlinetrigger startcredits :startcredits "credits"
-	settexttrigger haggledone :haggledone "Command [TL"
+	setstrigger haggledone :haggledone "Command [TL"
 	pause
 end
 gosub :haggle~haggle
@@ -321,7 +321,7 @@ send "*"
 add $round 1
 if (haggle)
 	settextlinetrigger startcredits :startcredits "credits"
-	settexttrigger haggledone :haggledone "Command [TL"
+	setstrigger haggledone :haggledone "Command [TL"
 	pause
 end
 gosub :haggle~haggle

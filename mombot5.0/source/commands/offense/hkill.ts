@@ -38,9 +38,9 @@ setvar $waves_to_send ($max_figs / $max_fig_wave)
 killtrigger noscan1
 killtrigger noscan2
 killtrigger scanned
-settextlinetrigger noscan1 :noscanner "Handle which mine type, 1 Armid or 2 Limpet"
+setslinetrigger noscan1 :noscanner "Handle which mine type, 1 Armid or 2 Limpet"
 settextlinetrigger noscan2 :noscanner "You don't have a long range scanner."
-settextlinetrigger scanned :scandone  "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
+setslinetrigger scanned :scandone  "Select (H)olo Scan or (D)ensity Scan or (Q)uit? [D] H"
 send " sh*  "
 pause
 

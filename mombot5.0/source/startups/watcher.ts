@@ -39,7 +39,7 @@ settextlinetrigger  pgridremove    :pgridremove   "Unsuccessful P-grid into sect
 settextlinetrigger  clearbusts      :erasebusts     ">[Busted:"
 settextlinetrigger  addfigs      :addfigs     ">[Figged:"
 settextlinetrigger  planetmoved      :updateplanetmovement     " moved to sector "
-settextlinetrigger      fightersadd     :addfig         "Should they be (D)efensive, (O)ffensive or Charge a (T)oll ?"
+setslinetrigger      fightersadd     :addfig         "Should they be (D)efensive, (O)ffensive or Charge a (T)oll ?"
 settextlinetrigger  getplanetnumber :setplanetnumber    "Planet #"
 settextlinetrigger  getshipstats    :setshipoffensiveodds   "Offensive Odds: "
 settextlinetrigger  getshipmaxfighters  :setshipmaxfigattack    " TransWarp Drive:   "
@@ -47,8 +47,8 @@ settextlinetrigger  capturelevelplanet  :capturelevelplanet " Level "
 settextlinetrigger  capturenolevelplanet  :capturenolevelplanet " No Citadel"
 settextlinetrigger  emergency_reboot      :emergency_reboot "<EMERGENCY REBOOT>"&$bot~bot_password
 settextlinetrigger  shipdestroyed         :shipdestroyed "You will have to start over from scratch!"
-settextlinetrigger  getplanetnumberraw    :setplanetnumberraw "Land on which planet <Q to abort> ? "
-settextlinetrigger  getshipnumberraw       :setshipnumberraw "Choose which ship to beam to (Q=Quit) "
+setslinetrigger  getplanetnumberraw    :setplanetnumberraw "Land on which planet <Q to abort> ? "
+setslinetrigger  getshipnumberraw       :setshipnumberraw "Choose which ship to beam to (Q=Quit) "
 killtrigger         checkifbotalive
 setdelaytrigger		checkifbotalive       :checkifbotalive 60000
 settextlinetrigger lracheck :lracheck "For stealing from this port, your alignment"
@@ -154,7 +154,7 @@ if ($spoof = "Choose")
 		savevar $player~ship_number
 	end
 end
-settextlinetrigger  getshipnumberraw       :setshipnumberraw "Choose which ship to beam to (Q=Quit) "
+setslinetrigger  getshipnumberraw       :setshipnumberraw "Choose which ship to beam to (Q=Quit) "
 pause
 
 pause
@@ -168,7 +168,7 @@ if ($spoof = "Land")
 		savevar $planet~planet
 	end
 end
-settextlinetrigger  getplanetnumberraw    :setplanetnumberraw "Land on which planet <Q to abort> ? "
+setslinetrigger  getplanetnumberraw    :setplanetnumberraw "Land on which planet <Q to abort> ? "
 pause
 
 pause
@@ -537,7 +537,7 @@ if ($test)
 		gosub :addfigtodata
 	end
 end
-settextlinetrigger      fightersadd     :addfig         "Should they be (D)efensive, (O)ffensive or Charge a (T)oll ?"
+setslinetrigger      fightersadd     :addfig         "Should they be (D)efensive, (O)ffensive or Charge a (T)oll ?"
 pause
 
 :removefigfromdata

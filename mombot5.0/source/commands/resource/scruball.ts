@@ -15,7 +15,7 @@ if ($player~current_prompt = "<StarDock>")
 	send "ss"
 	waiton "-----------------------------------------------------"
 	settextlinetrigger noship :noship "You do not own any other ships orbiting the Stardock!"
-	settexttrigger done :done "Choose which ship to sell (Q=Quit)"
+	setstrigger done :done "Choose which ship to sell (Q=Quit)"
 	settextlinetrigger line :line
 	pause
 

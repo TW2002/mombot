@@ -157,7 +157,7 @@ killtrigger noplanet
 setvar $planetloop~lastid 0
 
 :planetloop_nextplanet
-settexttrigger planetschecked :planetloop_planetschecked "Land on which planet <Q to abort>"
+setstrigger planetschecked :planetloop_planetschecked "Land on which planet <Q to abort>"
 settextlinetrigger getid :planetloop_getid "<"
 pause
 
@@ -209,7 +209,7 @@ return
 
 :planetloop_sub_check
 settextlinetrigger check_getplanet :planetloop_check_getplanet "Planet #"
-settexttrigger check_planetprompt :planetloop_displayplanet "Planet command (?=help)"
+setstrigger check_planetprompt :planetloop_displayplanet "Planet command (?=help)"
 pause
 
 :planetloop_displayplanet
@@ -934,7 +934,7 @@ if ($safe)
 		striptext $credits ","
 		settextlinetrigger buy :buy "We are selling up to "
 		settextlinetrigger sell :sell "We are buying up to "
-		settexttrigger haggledone :haggledone "Command [TL="
+		setstrigger haggledone :haggledone "Command [TL="
 		pause
 
 		:haggledone
@@ -1141,7 +1141,7 @@ pause
 
 :warp_begin
 killtrigger moveproduct_warp_arrived
-settexttrigger moveproduct_warp_start :warp_start "Engage the Autopilot?"
+setstrigger moveproduct_warp_start :warp_start "Engage the Autopilot?"
 settexttrigger moveproduct_warp_twarp :warp_twarp "Do you want to engage"
 settextlinetrigger moveproduct_warp_single :warp_single "Sector  :"
 pause
@@ -1174,7 +1174,7 @@ settextlinetrigger moveproduct_warp_tollfigs :warp_tollfigs "You have to destroy
 settextlinetrigger moveproduct_warp_figs :warp_figs "You have to destroy the fighters to remain"
 settexttrigger moveproduct_warp_stopprompt :warp_stopprompt "Stop in this sector"
 settexttrigger moveproduct_warp_mines :warp_minesprompt "Mined Sector:"
-settexttrigger moveproduct_warp_done :warp_arrived "Command [TL="
+setstrigger moveproduct_warp_done :warp_arrived "Command [TL="
 pause
 
 :warp_nextsector

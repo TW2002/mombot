@@ -72,7 +72,7 @@ pause
 
 :connectivity~continuelogin
 gosub :killrelogtriggers
-settexttrigger relog3 :continuerelog3 "Please enter your name"
+setstrigger relog3 :continuerelog3 "Please enter your name"
 pause
 
 :connectivity~continuerelog3
@@ -99,9 +99,9 @@ if ($connectivity~first_time)
 	disconnect
 	goto :do_relog
 end
-settexttrigger relog69 :continuerelog5 "Make a Selection:"
-settexttrigger relog3 :continuerelog5 "Selection (? for menu):"
-settexttrigger relog5 :continuerelog5 "Select a game"
+setstrigger relog69 :continuerelog5 "Make a Selection:"
+setstrigger relog3 :continuerelog5 "Selection (? for menu):"
+setstrigger relog5 :continuerelog5 "Select a game"
 pause
 
 :connectivity~continuerelog5
@@ -111,13 +111,13 @@ if ($connectivity~newgame)
 	if ($connectivity~serverversion = 1)
 		settexttrigger firstpause :firstpause "[Pause]"
 		settexttrigger enter :done_do_relog "Would you like to start a new character in this game?"
-		settexttrigger v1enter :v1enter "Enter your choice"
+		setstrigger v1enter :v1enter "Enter your choice"
 		settextlinetrigger notopen :game_not_open "but this is a closed game."
 		send $bot~letter&"                                           * "
 		pause
 	else
 		settexttrigger firstpause :firstpause "[Pause]"
-		settexttrigger enter :enter_game_menu "Enter your choice"
+		setstrigger enter :enter_game_menu "Enter your choice"
 		settexttrigger notopen :game_not_open "This game will open"
 		setdelaytrigger relogmenupromptcheck :check_game_menu_prompt 100
 		send $bot~letter
@@ -126,7 +126,7 @@ if ($connectivity~newgame)
 
 else
 	settexttrigger firstpause :firstpause "[Pause]"
-	settexttrigger enter :enter_game_menu "Enter your choice"
+	setstrigger enter :enter_game_menu "Enter your choice"
 	settexttrigger notopen :game_not_open "This game will open"
 	setdelaytrigger relogmenupromptcheck :check_game_menu_prompt 100
 	send $bot~letter
@@ -197,7 +197,7 @@ if ($connectivity~newgame)
 		end
 
 		settexttrigger v1pause :v1pause "[Pause]"
-		settexttrigger v1enter2 :v1enter2 "Enter your choice"
+		setstrigger v1enter2 :v1enter2 "Enter your choice"
 		setdelaytrigger 2 :new_game_delay2 1000
 		settexttrigger 3 :tryagainnewgameday1 "Would you like to start a new character in this game?"
 		settextlinetrigger 4 :tryagainentergame "but this is a closed game."
@@ -207,7 +207,7 @@ if ($connectivity~newgame)
 	else
 
 		setdelaytrigger 2 :new_game_delay2 5000
-		settexttrigger 3 :tryagainnewgameday1 "Enter your choice:"
+		setstrigger 3 :tryagainnewgameday1 "Enter your choice:"
 		settextlinetrigger 4 :tryagainentergame "This game will open"
 		send $bot~letter&" * "
 		pause
@@ -216,7 +216,7 @@ if ($connectivity~newgame)
 else
 
 	setdelaytrigger 2 :new_game_delay2 5000
-	settexttrigger 3 :tryagainnewgameday1 "Enter your choice:"
+	setstrigger 3 :tryagainnewgameday1 "Enter your choice:"
 	settextlinetrigger 4 :tryagainentergame "This game will open"
 	send $bot~letter&" * "
 	pause
@@ -286,9 +286,9 @@ settextlinetrigger 1 :closed "I'm sorry, but this is a closed game."
 settextlinetrigger 2 :closed "Epic Interactive Strategy"
 settextlinetrigger 3 :closed " day(s) to get back in."
 setdelaytrigger 4 :closed 5000
-settextlinetrigger 5 :on_planet "What do you want to name your home planet?"
+setslinetrigger 5 :on_planet "What do you want to name your home planet?"
 settexttrigger 6 :wrong_name "Sorry, you cannot use the name "
-settexttrigger 7 :back_in_game "Command [TL"
+setstrigger 7 :back_in_game "Command [TL"
 
 if ($connectivity~newgame)
 	send "Y"&$bot~password&"*"&$bot~password&"*"
@@ -307,7 +307,7 @@ else
 
 		:connectivity~return_ship_confirm
 		killtrigger return_ship_confirm
-		settexttrigger return_landed_on_terra :return_landed_on_terra "Do you wish to (L)eave or (T)ake Colonists?"
+		setstrigger return_landed_on_terra :return_landed_on_terra "Do you wish to (L)eave or (T)ake Colonists?"
 		setdelaytrigger return_terra_timeout :return_terra_timeout 10000
 		send "YL"
 		pause
@@ -336,13 +336,13 @@ pause
 killtrigger 8
 killtrigger 10
 send "N"
-settexttrigger aliasprompt :connectivity~aliasprompt "What Alias do you want to use?"
+setstrigger aliasprompt :connectivity~aliasprompt "What Alias do you want to use?"
 pause
 
 :connectivity~noalias
 killtrigger 8
 killtrigger 9
-settexttrigger shipprompt :connectivity~shipprompt "What do you want to name your ship?"
+setstrigger shipprompt :connectivity~shipprompt "What do you want to name your ship?"
 pause
 
 :connectivity~aliasprompt
@@ -354,7 +354,7 @@ pause
 :connectivity~aliasconfirm
 killtrigger aliasconfirm
 send "Y"
-settexttrigger shipprompt :connectivity~shipprompt "What do you want to name your ship?"
+setstrigger shipprompt :connectivity~shipprompt "What do you want to name your ship?"
 pause
 
 :connectivity~shipprompt
@@ -425,7 +425,7 @@ if ($connectivity~newgame and (($bot~isceo = false) and (($bot~corpname <> "") a
 	send "*TD"
 	gosub :player~quikstats
 	settextlinetrigger 1 :thereismycorp2 "    "&$bot~corpname
-	settexttrigger 2 :nocorpthatname2 "Corporate command ["
+	setstrigger 2 :nocorpthatname2 "Corporate command ["
 	send "L"
 	pause
 
@@ -479,7 +479,7 @@ if ($connectivity~newgame)
 			send "*TD"
 			gosub :player~quikstats
 			settextlinetrigger 1 :thereismycorp "    "&$bot~corpname
-			settexttrigger 2 :nocorpthatname "Corporate command ["
+			setstrigger 2 :nocorpthatname "Corporate command ["
 			send "L"
 			pause
 
@@ -623,7 +623,7 @@ else
 		send "x    "&$menus~mowdestination&"  "
 	else
 		if ($menus~landonterra = true)
-			settexttrigger 1 :landed_on_terra "Do you wish to (L)eave or (T)ake Colonists?"
+			setstrigger 1 :landed_on_terra "Do you wish to (L)eave or (T)ake Colonists?"
 			setdelaytrigger 2 :landing_timeout 5000
 			send "l "
 			pause

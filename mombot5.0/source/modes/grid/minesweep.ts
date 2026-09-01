@@ -629,8 +629,8 @@ setvar $mines~total_mines_poofed $total_mines_poofed
 gosub :mines~star_burst
 setvar $total_mines_poofed $mines~total_mines_poofed
 send " Q Q Q Z N L Z"&#8&$planet&"*  *  J  C  *  * "
-settexttrigger landed :landed "Citadel command (?"
-settextlinetrigger notlanded :notlanded "Are you sure you want to jettison all cargo"
+setstrigger landed :landed "Citadel command (?"
+setslinetrigger notlanded :notlanded "Are you sure you want to jettison all cargo"
 pause
 
 :notlanded
@@ -901,10 +901,10 @@ if ($twarpto > 0)
 	send "q q* mz"&$twarpto " * "
 	settexttrigger there :adj_warp "You are already in that sector!"
 	settextlinetrigger adj_warp :adj_warp "Sector  : "&$twarpto&" "
-	settexttrigger locking :locking "Do you want to engage the TransWarp drive?"
+	setstrigger locking :locking "Do you want to engage the TransWarp drive?"
 	settexttrigger igd :twarpigd "An Interdictor Generator in this sector holds you fast!"
 	settexttrigger noturns :twarpphotoned "Your ship was hit by a Photon and has been disabled"
-	settexttrigger noroute :twarpnoroute "Do you really want to warp there? (Y/N)"
+	setstrigger noroute :twarpnoroute "Do you really want to warp there? (Y/N)"
 	pause
 
 	:adj_warp
@@ -1041,8 +1041,8 @@ send "qq*"
 while (sector.warpsin[$stardock][$i] > 0)
 	setvar $red_adj sector.warpsin[$stardock][$i]
 	send "m "&$red_adj&"* y"
-	settexttrigger twarpblind :twarpblind "Do you want to make this jump blind? "
-	settexttrigger twarplocked :twarplocked "All Systems Ready, shall we engage? "
+	setstrigger twarpblind :twarpblind "Do you want to make this jump blind? "
+	setstrigger twarplocked :twarplocked "All Systems Ready, shall we engage? "
 	settextlinetrigger twarpvoided :twarpvoided "Danger Warning Overridden"
 	settextlinetrigger twarpadj :twarpadj "<Set NavPoint>"
 	pause

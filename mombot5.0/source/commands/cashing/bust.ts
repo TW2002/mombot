@@ -94,7 +94,7 @@ send $name "*  c q * l"
 #waiton "Should this be"
 waiton "<Preparing"
 settextlinetrigger planet :planet $name
-settexttrigger noplanet :noplanet "Land on which"
+setstrigger noplanet :noplanet "Land on which"
 pause
 
 :noplanet

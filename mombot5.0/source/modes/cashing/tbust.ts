@@ -180,7 +180,7 @@ pause
 killtrigger getdetcost
 getword currentline $detcost 5
 striptext $detcost ","
-settexttrigger howmanydets :howmanydets "How many Atomic Detonators do you want"
+setstrigger howmanydets :howmanydets "How many Atomic Detonators do you want"
 pause
 
 :howmanydets
@@ -196,7 +196,7 @@ pause
 killtrigger getgtorpcost
 getword currentline $gtorpcost 6
 striptext $gtorpcost ","
-settexttrigger howmanygtorps :howmanygtorps "How many Genesis Torpedoes do you want"
+setstrigger howmanygtorps :howmanygtorps "How many Genesis Torpedoes do you want"
 pause
 
 :howmanygtorps
