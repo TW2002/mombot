@@ -4,11 +4,11 @@ gosub :loadvars~loadvars
 gosub :help~initialize
 setvar $help~help[1]  $help~tab&"MOVE - Product Mover"
 setvar $help~help[2]  $help~tab&" "
-setvar $help~help[3]  $help~tab&"    move [type] [planet] [rounds]"
+setvar $help~help[3]  $help~tab&"    move [type] [planet|all] [rounds|amount]"
 setvar $help~help[4]  $help~tab&" "
 setvar $help~help[5]  $help~tab&"    [type] - use [f]uel, [o]rg, [e]quip, [fig]hters, [cr]eds"
 setvar $help~help[6]  $help~tab&"    [type] - use [fc] fuel colo, [oc] org colo, [ec] equip colo"
-setvar $help~help[7]  $help~tab&"    [planet] planet to move to"
+setvar $help~help[7]  $help~tab&"    [planet] planet to move to, or [all] for every planet in sector"
 setvar $help~help[8]  $help~tab&"    [rounds] number of rounds to move product / colonists"
 gosub :help~helpfile
 
@@ -16,6 +16,7 @@ killalltriggers
 setvar $stuffmoved ""
 setvar $rounds 0
 setvar $moveextra 0
+setvar $movealldestinations false
 gosub :player~quikstats
 setvar $startlocation $player~current_prompt
 if (($startlocation <> "Citadel") and ($startlocation <> "Planet"))
@@ -44,17 +45,21 @@ else
 	gosub :switchboard~switchboard
 	halt
 end
-isnumber $test $parm2
-if ($test = false)
-	setvar $switchboard~message "Mover Planet Parameter in-valid*"
-	gosub :switchboard~switchboard
-	halt
+if ($parm2 = "all")
+	setvar $movealldestinations true
+else
+	isnumber $test $parm2
+	if ($test = false)
+		setvar $switchboard~message "Mover Planet Parameter in-valid*"
+		gosub :switchboard~switchboard
+		halt
+	end
 end
 setvar $moveall false
 setvar $moveamount 0
 isnumber $test $parm3
 if ($test = false)
-	if ($parm3 = "")
+	if (($parm3 = "") and ($movealldestinations = false))
 		setvar $moveall true
 	else
 		setvar $switchboard~message "Mover Rounds Parameter in-valid*"
@@ -65,6 +70,10 @@ elseif ($parm3 <= 0)
 	setvar $switchboard~message "Must choose more than 0 rounds to move*"
 	gosub :switchboard~switchboard
 	halt
+elseif ($movealldestinations = true)
+	setvar $moveamount $parm3
+	setvar $moveholds 0
+	setvar $moveextra 0
 elseif ($stuffmoved = "Fighters") or ($stuffmoved = "Creds")
 	setvar $moveamount $parm3
 	setvar $moveholds 0
@@ -87,6 +96,11 @@ elseif ($parm3 > 1000)
 else
 	setvar $moveholds $parm3
 	setvar $moveextra 0
+end
+if (($movealldestinations = true) and (($stuffmoved = "Fighters") or ($stuffmoved = "Creds") or ($stuffmoved = "Fuel Colonists") or ($stuffmoved = "Organic Colonists") or ($stuffmoved = "Equipment Colonists")))
+	setvar $switchboard~message "Mover [all] destination is only supported for fuel, organics, or equipment.*"
+	gosub :switchboard~switchboard
+	halt
 end
 if ($startlocation = "Citadel")
 	send "q"
@@ -177,6 +191,10 @@ elseif (($stuffmoved = "Equipment") or ($stuffmoved = "Equipment Colonists"))
 		end
 	end
 end
+if ($movealldestinations = true)
+	gosub :moveallplanets
+	halt
+end
 getwordpos $stuffmoved $pos "Colonists"
 if ($pos > 0)
 	#send "q  j  y l "&$planet&" *  "
@@ -232,6 +250,86 @@ else
 	gosub :switchboard~switchboard
 end
 halt
+
+:moveallplanets
+setvar $moveall_startingplanet $planet
+setvar $moveall_sector $player~current_sector
+setvar $moveall_amount $parm3
+setvar $moveall_totalmoved 0
+setvar $moveall_movedplanets 0
+setarray $moveall_target 2000
+setvar $moveall_targetcount 0
+gosub :planet~getplanets
+setvar $moveall_i 1
+while ($moveall_i <= $planet~planetlistcount)
+	if (($planet~planetlist[$moveall_i][1] = $moveall_sector) and ($planet~planetlist[$moveall_i] <> $moveall_startingplanet))
+		add $moveall_targetcount 1
+		setvar $moveall_target[$moveall_targetcount] $planet~planetlist[$moveall_i]
+	end
+	add $moveall_i 1
+end
+if ($moveall_targetcount <= 0)
+	if ($startlocation = "Citadel")
+		send "c"
+		waiton "Citadel command"
+	end
+	setvar $switchboard~message "No destination planets found in sector "&$moveall_sector&".*"
+	gosub :switchboard~switchboard
+	return
+end
+gosub :getplanetinfo
+gosub :moveall_sourceamount
+setvar $moveall_i 1
+while (($moveall_i <= $moveall_targetcount) and ($moveall_sourceamount > 0))
+	setvar $moveall_before $moveall_sourceamount
+	setvar $planet~planettofill $moveall_target[$moveall_i]
+	setvar $planet~moveholds 0
+	setvar $planet~moveextra 0
+	setvar $planet~moveamount $moveall_amount
+	setvar $planet~type "t"
+	setvar $planet~category $stuff
+	gosub :planet~moveproduct
+	#if ($planet~movesuccess = false)
+		#if ($startlocation = "Citadel")
+		#	send "c"
+		#	waiton "Citadel command"
+		#end
+		#setvar $switchboard~message "Move all failed at planet "&$moveall_target[$moveall_i]&": "&$planet~moveerror&"*"
+		#gosub :switchboard~switchboard
+		#return
+	#end
+	gosub :getplanetinfo
+	gosub :moveall_sourceamount
+	add $moveall_movedplanets 1
+	setvar $moveall_moved ($moveall_before - $moveall_sourceamount)
+	if ($moveall_moved > 0)
+		add $moveall_totalmoved $moveall_moved
+	end
+	add $moveall_i 1
+end
+if ($startlocation = "Citadel")
+	send "c"
+	waiton "Citadel command"
+end
+if ($moveall_sourceamount <= 0)
+	setvar $switchboard~message "Moved "&$moveall_totalmoved&" total "&$stuffmoved&" to "&$moveall_movedplanets&" planets; starting planet is out.*"
+else
+	setvar $switchboard~message "Moved "&$moveall_amount&" "&$stuffmoved&" to "&$moveall_movedplanets&" planets ("&$moveall_totalmoved&" total).*"
+end
+gosub :switchboard~switchboard
+return
+
+:moveall_sourceamount
+if ($stuffmoved = "Fuel")
+	setvar $moveall_sourceamount $planet_fuel
+elseif ($stuffmoved = "Organics")
+	setvar $moveall_sourceamount $planet_organics
+elseif ($stuffmoved = "Equipment")
+	setvar $moveall_sourceamount $planet_equipment
+else
+	setvar $moveall_sourceamount 0
+end
+return
 
 :getinfo
 gosub :player~getinfo

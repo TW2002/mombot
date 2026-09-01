@@ -10,7 +10,7 @@ setvar $help~help[4] $help~tab&"  Usage:  farm remove {sector1} {sector2} {...}"
 setvar $help~help[5] $help~tab&"  Usage:  farm list"
 setvar $help~help[6] $help~tab&"  Usage:  farm clear"
 setvar $help~help[7] $help~tab&"  Usage:  farm balance"
-setvar $help~help[8] $help~tab&"  Usage:  farm fill {planets}/{all} {options}"
+setvar $help~help[8] $help~tab&"  Usage:  farm fill {planets}/{all} {options} {amount}"
 setvar $help~help[9] $help~tab&"  Usage:  farm "
 setvar $help~help[10] $help~tab&"    "
 setvar $help~help[11] $help~tab&"Examples:"
@@ -18,7 +18,7 @@ setvar $help~help[12] $help~tab&"       "
 setvar $help~help[13] $help~tab&"  >farm set 1224 1925 3176     "
 setvar $help~help[14] $help~tab&"  >farm     "
 setvar $help~help[15] $help~tab&"  >farm fill 12 13 14     "
-setvar $help~help[16] $help~tab&"  >farm fill all     "
+setvar $help~help[16] $help~tab&"  >farm fill all f 900000     "
 setvar $help~help[17] $help~tab&"       "
 setvar $help~help[18] $help~tab&"Modes:"
 setvar $help~help[19] $help~tab&"       "
@@ -30,7 +30,7 @@ setvar $help~help[24] $help~tab&"      "
 setvar $help~help[25] $help~tab&"   Running farm with no options attempts to farm all products."
 setvar $help~help[26] $help~tab&"   If you specify one or more options, only those will be farmed."
 setvar $help~help[27] $help~tab&"   Planet numbers or 'all' specify planets to be filled."
-setvar $help~help[28] $help~tab&"       "
+setvar $help~help[28] $help~tab&"   With f/o/e, amount limits product farmed to each destination planet."
 setvar $help~help[29] $help~tab&"       Product Options:"
 setvar $help~help[30] $help~tab&"            {f}   - Farm fuel ore"
 setvar $help~help[31] $help~tab&"            {o}   - Farm organics"
@@ -94,6 +94,11 @@ end
 gosub :player~quikstats
 setvar $startinglocation $player~current_sector
 setvar $startingprompt $player~current_prompt
+getword $bot~user_command_line $isfill 1
+setvar $farmfill_limit_active false
+setvar $farmfill_product 0
+setvar $farmfill_amount 0
+setvar $farmfill_target 0
 
 if ($player~current_prompt = "Citadel")
 	send "q"
@@ -210,6 +215,9 @@ if ($prodstofarm = false)
 	setvar $planet~emptyshields false
 	setvar $prodstofarm true
 end
+if ($isfill = "fill")
+	gosub :parsefarmfillamount
+end
 
 setvar $farmfightersonly false
 if ($planet~emptyfigs > 0) and ($planet~emptyfuel <= 0) and ($planet~emptyorganics <= 0) and ($planet~emptyequipment <= 0) and ($planet~emptyfuelcolos <= 0) and ($planet~emptyorgcolos <= 0) and ($planet~emptyequcolos <= 0) and ($planet~emptyshields <= 0)
@@ -217,7 +225,7 @@ if ($planet~emptyfigs > 0) and ($planet~emptyfuel <= 0) and ($planet~emptyorgani
 end
 
 logging off
-setvar $planet~burstsize 50
+setvar $planet~burstsize 1000
 
 if ($player~planet_scanner = "No")
 	setvar $switchboard~message "Planet Farmer must be run with a planet scanner.*"
@@ -225,10 +233,9 @@ if ($player~planet_scanner = "No")
 	halt
 end
 
-setarray $planetlist 200
+setarray $planetlist SECTORS
 setvar $planetlist_count 0
 
-getword $bot~user_command_line $isfill 1
 if ($isfill = "fill")
 	getword $bot~user_command_line $check 2
 	if ($check = "all")
@@ -263,6 +270,9 @@ gosub :loadfarmsectorlist
 
 setvar $relog_nocitadel 1
 savevar $relog_nocitadel
+setvar $strip~active true
+setvar $strip~resume_requested false
+setvar $planet~disconnected false
 setvar $p 0
 while ($p < $planetlist_count)
 	add $p 1
@@ -273,12 +283,79 @@ while ($p < $planetlist_count)
 	setvar $planet~nocit true
 	gosub :planet~landingsub
 	if ($planet~successfulplanet = true)
+		if ($farmfill_limit_active = true)
+			gosub :farmfillinitdestination
+		end
 		setvar $switchboard~message "Farm is filling planet " $planet~planettofill ".*"
 		gosub :switchboard~switchboard
 		gosub :farmplanet
 	end
 end
 goto :endfarmer
+
+:parsefarmfillamount
+setvar $farmfill_i 2
+setvar $farmfill_check ""
+while ($farmfill_check <> "%%%")
+	getword $bot~user_command_line $farmfill_check $farmfill_i "%%%"
+	if ($farmfill_check <> "%%%")
+		if ($farmfill_check = "f") or ($farmfill_check = "o") or ($farmfill_check = "e")
+			setvar $farmfill_next ($farmfill_i + 1)
+			getword $bot~user_command_line $farmfill_amountcheck $farmfill_next
+			isnumber $farmfill_test $farmfill_amountcheck
+			if (($farmfill_test = true) and ($farmfill_amountcheck > 0))
+				if ($farmfill_check = "f")
+					setvar $farmfill_product 1
+					setvar $planet~emptyfuel true
+					setvar $planet~emptyorganics false
+					setvar $planet~emptyequipment false
+				elseif ($farmfill_check = "o")
+					setvar $farmfill_product 2
+					setvar $planet~emptyfuel false
+					setvar $planet~emptyorganics true
+					setvar $planet~emptyequipment false
+				else
+					setvar $farmfill_product 3
+					setvar $planet~emptyfuel false
+					setvar $planet~emptyorganics false
+					setvar $planet~emptyequipment true
+				end
+				setvar $planet~emptyfuelcolos false
+				setvar $planet~emptyorgcolos false
+				setvar $planet~emptyequcolos false
+				setvar $planet~emptyfigs false
+				setvar $planet~emptyshields false
+				setvar $farmfill_amount $farmfill_amountcheck
+				setvar $farmfill_limit_active true
+				setvar $farmfill_check "%%%"
+			end
+		end
+	end
+	add $farmfill_i 1
+end
+return
+
+:farmfillinitdestination
+gosub :planet~getplanetinfo
+if ($farmfill_product = 1)
+	setvar $farmfill_target ($planet~planet_fuel + $farmfill_amount)
+	if (($planet~planet_fuel_max > 0) and ($farmfill_target > $planet~planet_fuel_max))
+		setvar $farmfill_target $planet~planet_fuel_max
+	end
+elseif ($farmfill_product = 2)
+	setvar $farmfill_target ($planet~planet_organics + $farmfill_amount)
+	if (($planet~planet_organics_max > 0) and ($farmfill_target > $planet~planet_organics_max))
+		setvar $farmfill_target $planet~planet_organics_max
+	end
+elseif ($farmfill_product = 3)
+	setvar $farmfill_target ($planet~planet_equipment + $farmfill_amount)
+	if (($planet~planet_equipment_max > 0) and ($farmfill_target > $planet~planet_equipment_max))
+		setvar $farmfill_target $planet~planet_equipment_max
+	end
+else
+	setvar $farmfill_target 0
+end
+return
 
 :farmplanet
 killalltriggers
@@ -337,7 +414,17 @@ while ($i <= $farmlistcount)
 		setvar $planet~planettostrip $planet~planets[$j]
 		:restrip
 		if ($planet~planettostrip <> $planet~planettofill)
-			gosub :planet~stripplanet
+			setvar $strip~resume_requested false
+			setvar $planet~disconnected false
+			if ($farmfill_limit_active = true)
+				gosub :farmstriplimited
+			else
+				gosub :planet~stripplanet
+			end
+			if ($strip~resume_requested = true) or ($planet~disconnected = true)
+				gosub :farm_resume_after_disconnect
+				goto :restrip
+			end
 		end
 		gosub :landstartingplanet
 		gosub :checkfull
@@ -399,6 +486,9 @@ end
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 killalltriggers
 logging on
+setvar $strip~active false
+setvar $strip~resume_requested false
+setvar $planet~disconnected false
 setvar $relog_nocitadel 0
 savevar $relog_nocitadel
 gosub :player~currentprompt
@@ -1149,36 +1239,200 @@ setvar $farmlistcount $d
 savevar $farmsectors
 return
 
+:farmfillremaining
+if ($farmfill_product = 1)
+	setvar $farmfill_remaining ($farmfill_target - $planet~planet_fuel)
+elseif ($farmfill_product = 2)
+	setvar $farmfill_remaining ($farmfill_target - $planet~planet_organics)
+elseif ($farmfill_product = 3)
+	setvar $farmfill_remaining ($farmfill_target - $planet~planet_equipment)
+else
+	setvar $farmfill_remaining 0
+end
+if ($farmfill_remaining < 0)
+	setvar $farmfill_remaining 0
+end
+return
+
+:farmstriplimited
+killalltriggers
+setvar $farmstrip_destplanet $planet~planettofill
+gosub :player~currentprompt
+if ($player~current_prompt = "Citadel")
+	send "q"
+	waiton "Planet command"
+elseif ($player~current_prompt = "Command")
+	setvar $planet~planet $farmstrip_destplanet
+	setvar $planet~nocit true
+	gosub :planet~landingsub
+elseif ($player~current_prompt <> "Planet")
+	setvar $switchboard~message "Unknown Prompt: "&$player~current_prompt&"*"
+	gosub :switchboard~switchboard
+	halt
+end
+gosub :planet~getplanetinfo
+gosub :farmfillremaining
+if ($farmfill_remaining <= 0)
+	return
+end
+send "q"
+waiton "Command ["
+send "l "&$planet~planettostrip&"*   "
+gosub :planet~getplanetinfo
+if ($farmfill_product = 1)
+	setvar $amount_to_strip $planet~planet_fuel
+elseif ($farmfill_product = 2)
+	setvar $amount_to_strip $planet~planet_organics
+elseif ($farmfill_product = 3)
+	setvar $amount_to_strip $planet~planet_equipment
+else
+	setvar $amount_to_strip 0
+end
+if ($amount_to_strip > $farmfill_remaining)
+	setvar $amount_to_strip $farmfill_remaining
+end
+if ($amount_to_strip > 0)
+	setvar $planet~planettofill $farmstrip_destplanet
+	setvar $planet~category $farmfill_product
+	setvar $category $farmfill_product
+	setvar $planet~type "t"
+	setvar $type "t"
+	setvar $planet~moveholds 0
+	setvar $planet~moveextra 0
+	setvar $planet~moveamount $amount_to_strip
+	gosub :planet~moveproduct
+	if ($strip~resume_requested = true) or ($planet~disconnected = true)
+		return
+	end
+	if ($planet~movesuccess = false)
+		setvar $switchboard~message "Failed to move product, halting.*"
+		gosub :switchboard~switchboard
+		halt
+	end
+end
+gosub :player~currentprompt
+if ($player~current_prompt = "Citadel")
+	send "q"
+	waiton "Planet command"
+end
+if ($player~current_prompt = "Planet")
+	send "q"
+	waiton "Command ["
+end
+setvar $planet~planet $farmstrip_destplanet
+setvar $planet~nocit true
+gosub :planet~landingsub
+return
+
+:farm_resume_after_disconnect
+killalltriggers
+echo "**[Farm] Disconnected - waiting for relog before resuming current planet.**"
+
+:farm_wait_connected
+if (connected <> true)
+	setdelaytrigger farmwaitconnected :farm_wait_connected 3000
+	pause
+end
+
+:farm_wait_prompt
+killtrigger farmcommand
+killtrigger farmplanet
+killtrigger farmcitadel
+killtrigger farmpromptdelay
+settexttrigger farmcommand :farm_prompt_ready "Command [TL"
+settexttrigger farmplanet :farm_prompt_ready "Planet command (?=help) [D]"
+settexttrigger farmcitadel :farm_prompt_ready "Citadel command (?=help)"
+setdelaytrigger farmpromptdelay :farm_prompt_check 3000
+pause
+
+:farm_prompt_check
+killtrigger farmcommand
+killtrigger farmplanet
+killtrigger farmcitadel
+killtrigger farmpromptdelay
+if (connected <> true)
+	goto :farm_wait_connected
+end
+setvar $farm~line currentline
+getwordpos $farm~line $farm~pos "Command [TL"
+if ($farm~pos > 0)
+	goto :farm_prompt_ready
+end
+getwordpos $farm~line $farm~pos "Planet command (?=help) [D]"
+if ($farm~pos > 0)
+	goto :farm_prompt_ready
+end
+getwordpos $farm~line $farm~pos "Citadel command (?=help)"
+if ($farm~pos > 0)
+	goto :farm_prompt_ready
+end
+goto :farm_wait_prompt
+
+:farm_prompt_ready
+killtrigger farmcommand
+killtrigger farmplanet
+killtrigger farmcitadel
+killtrigger farmpromptdelay
+gosub :player~quikstats
+gosub :landstartingplanet
+setvar $planet~planet $planet~planettofill
+gosub :planet~getplanetinfo
+setvar $planet~disconnected false
+setvar $strip~resume_requested false
+echo "**[Farm] Recovered - retrying planet "&$planet~planettostrip&".**"
+return
+		
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :checkfull
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $skipsector false
 if ($planet~emptyfuel > 0)
-	setvar $oretofill ($planet~planet_fuel_max - $planet~planet_fuel)
-	if ($planet~planet_fuel_max > 0) and (($planet~planet_fuel * 100) > ($planet~planet_fuel_max * 99))
-		setvar $oretofill 0
-	elseif ($oretofill < $player~total_holds)
-		setvar $oretofill 0
+	if (($farmfill_limit_active = true) and ($farmfill_product = 1))
+		setvar $oretofill ($farmfill_target - $planet~planet_fuel)
+		if ($oretofill < 0)
+			setvar $oretofill 0
+		end
+	else
+		setvar $oretofill ($planet~planet_fuel_max - $planet~planet_fuel)
+		if ($planet~planet_fuel_max > 0) and (($planet~planet_fuel * 100) > ($planet~planet_fuel_max * 99))
+			setvar $oretofill 0
+		elseif ($oretofill < $player~total_holds)
+			setvar $oretofill 0
+		end
 	end
 else
 	setvar $oretofill 0
 end
 if ($planet~emptyorganics > 0)
-	setvar $orgtofill ($planet~planet_organics_max - $planet~planet_organics)
-	if ($planet~planet_organics_max > 0) and (($planet~planet_organics * 100) > ($planet~planet_organics_max * 99))
-		setvar $orgtofill 0
-	elseif ($orgtofill < $player~total_holds)
-		setvar $orgtofill 0
+	if (($farmfill_limit_active = true) and ($farmfill_product = 2))
+		setvar $orgtofill ($farmfill_target - $planet~planet_organics)
+		if ($orgtofill < 0)
+			setvar $orgtofill 0
+		end
+	else
+		setvar $orgtofill ($planet~planet_organics_max - $planet~planet_organics)
+		if ($planet~planet_organics_max > 0) and (($planet~planet_organics * 100) > ($planet~planet_organics_max * 99))
+			setvar $orgtofill 0
+		elseif ($orgtofill < $player~total_holds)
+			setvar $orgtofill 0
+		end
 	end
 else
 	setvar $orgtofill 0
 end
 if ($planet~emptyequipment > 0)
-	setvar $equtofill ($planet~planet_equipment_max - $planet~planet_equipment)
-	if ($planet~planet_equipment_max > 0) and (($planet~planet_equipment * 100) > ($planet~planet_equipment_max * 99))
-		setvar $equtofill 0
-	elseif ($equtofill < $player~total_holds)
-		setvar $equtofill 0
+	if (($farmfill_limit_active = true) and ($farmfill_product = 3))
+		setvar $equtofill ($farmfill_target - $planet~planet_equipment)
+		if ($equtofill < 0)
+			setvar $equtofill 0
+		end
+	else
+		setvar $equtofill ($planet~planet_equipment_max - $planet~planet_equipment)
+		if ($planet~planet_equipment_max > 0) and (($planet~planet_equipment * 100) > ($planet~planet_equipment_max * 99))
+			setvar $equtofill 0
+		elseif ($equtofill < $player~total_holds)
+			setvar $equtofill 0
+		end
 	end
 else
 	setvar $equtofill 0

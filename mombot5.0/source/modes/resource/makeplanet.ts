@@ -3,27 +3,29 @@
 gosub :loadvars~loadvars
 
 gosub :help~initialize
-setvar $help~help[1]    $help~tab&"makeplanet {ewarp} {create:} {"&#34&"custom planet name"&#34&"} "
+setvar $help~help[1]    $help~tab&"makeplanet {ewarp} {count:x} {create:} {"&#34&"custom planet name"&#34&"} "
 setvar $help~help[2]    $help~tab&"       "
 setvar $help~help[3]    $help~tab&"     {ewarp}  - Will refurb torps and atomics by ewarp "
 setvar $help~help[4]    $help~tab&"                This is NOT safe."
 setvar $help~help[5]    $help~tab&"       "
-setvar $help~help[6]    $help~tab&"   {create:}  - List of planet types to make.  First word"
-setvar $help~help[7]    $help~tab&"                of planet types separated by commas and no spaces."
-setvar $help~help[8]    $help~tab&"                Default will use keeper planets in preferences."
-setvar $help~help[9]    $help~tab&"                "
-setvar $help~help[10]   $help~tab&"{custom name} - Name the planet will be.  Otherwise it's a random   "
-setvar $help~help[11]   $help~tab&"                name from a database              "
-setvar $help~help[12]   $help~tab&"                              "
-setvar $help~help[13]   $help~tab&"      {strip} - Strip the made planets of products. Must start"
-setvar $help~help[14]   $help~tab&"                on the planet to fill.               "
-setvar $help~help[15]   $help~tab&"                              "
-setvar $help~help[16]   $help~tab&"      Examples:                   "
-setvar $help~help[17]   $help~tab&"            >makeplanet create:earth,volcanic,oceanic "
-setvar $help~help[18]   $help~tab&"            >makeplanet ewarp strip create:earth         "
-setvar $help~help[19]   $help~tab&"            >makeplanet "&#34&"death"&#34&" create:volcanic "
-setvar $help~help[20]   $help~tab&"                              "
-setvar $help~help[21]   $help~tab&"               - Originally written by Xide"
+setvar $help~help[6]    $help~tab&"   {count:x}  - Number of planets to make."
+setvar $help~help[7]    $help~tab&"       "
+setvar $help~help[8]    $help~tab&"   {create:}  - List of planet types to make.  First word"
+setvar $help~help[9]    $help~tab&"                of planet types separated by commas and no spaces."
+setvar $help~help[10]    $help~tab&"                Default will use keeper planets in preferences."
+setvar $help~help[11]    $help~tab&"                "
+setvar $help~help[12]   $help~tab&"{custom name} - Name the planet will be.  Otherwise it's a random   "
+setvar $help~help[13]   $help~tab&"                name from a database              "
+setvar $help~help[14]   $help~tab&"                              "
+setvar $help~help[15]   $help~tab&"      {strip} - Strip the made planets of products. Must start"
+setvar $help~help[16]   $help~tab&"                on the planet to fill.               "
+setvar $help~help[17]   $help~tab&"                              "
+setvar $help~help[18]   $help~tab&"      Examples:                   "
+setvar $help~help[19]   $help~tab&"            >makeplanet create:earth,volcanic,oceanic "
+setvar $help~help[20]   $help~tab&"            >makeplanet ewarp strip create:earth         "
+setvar $help~help[21]   $help~tab&"            >makeplanet "&#34&"death"&#34&" create:volcanic "
+setvar $help~help[22]   $help~tab&"                              "
+setvar $help~help[23]   $help~tab&"               - Originally written by Xide"
 gosub :help~helpfile
 
 loadvar $game~genesis_cost
@@ -109,6 +111,19 @@ else
 	end
 end
 
+getwordpos " "&$bot~user_command_line&" " $pos "count:"
+if ($pos > 0)
+	gettext " "&$bot~user_command_line&" " $count "count:" " "
+	isnumber $test $count
+	if ($test = false)
+		setvar $switchboard~message "Invalid count specified, halting.*"
+		gosub :switchboard~switchboard
+		halt
+	end
+else
+	setvar $count 1
+end
+
 setvar $custom_planet_name ""
 getwordpos $bot~user_command_line $pos #34
 if ($pos > 0)
@@ -125,11 +140,17 @@ end
 
 gosub :planetnames~make_planet_array
 
-gosub :makeplanet
+setvar $madenum 0
+while ($madenum < $count)
+	add $madenum 1
+	gosub :makeplanet
+end
+
 if (($startinglocation = "Citadel") or ($startinglocation = "Planet"))
 	setvar $planet~planet $startingplanet
 	gosub :planet~landingsub
 end
+
 halt
 
 :makeplanet

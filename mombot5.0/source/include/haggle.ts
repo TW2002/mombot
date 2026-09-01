@@ -238,6 +238,11 @@ settexttrigger done :done "Command [TL="
 pause
 
 :done
+cuttext currentline $test 1 12
+if ($test <> "Command [TL=")
+	settexttrigger done :done "Command [TL="
+	pause
+end
 killtrigger abort
 killtrigger sell
 killtrigger buy

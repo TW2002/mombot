@@ -45,6 +45,11 @@ else
 end
 
 setarray $planetloop~ignorelist 8
+setarray $upgrade~cacheplanet 2000
+setarray $upgrade~cachesector 2000
+setarray $upgrade~cacheamount 2000 3
+setarray $upgrade~cachecolo 2000 3
+setvar $upgrade~cachecount 0
 
 setvar $index $startarg
 while ($index < 8)
@@ -248,6 +253,9 @@ setvar $planetupgrade~failed 0
 
 setvar $planet~noheader 1
 gosub :planet~planetinfo
+setvar $upgrade~cacheplanetid $planetupgrade~planetid
+setvar $upgrade~cachesectorid $planetupgrade~sector
+gosub :upgrade_cacheplanet
 setvar $planetupgrade~level $planet~citadel
 
 setvar $best 0
@@ -425,7 +433,7 @@ if ($planetupgrade~colosneeded > 0)
 	end
 end
 
-send "l" $planetupgrade~planetid "*"
+send "l " $planetupgrade~planetid "*"
 goto :planetupgrade
 
 :gather
@@ -449,15 +457,28 @@ if ($gather~seek)
 	send "d"
 	gosub :move~move
 else
-	setvar $findproduct~quantity $gather~get
-	setvar $findproduct~product $gather~product
-	setvar $findproduct~ignorelist $gather~ignorelist
-	setvar $findproduct~stayonplanet 1
-	setvar $findproduct~sector $gather~sector
+	gosub :upgrade_findcachedproduct
 
-	gosub :findproduct~findproduct
+	if ($upgrade~cachefound <> 0)
+		setvar $findproduct~location $upgrade~cachefound
+		setvar $findproduct~category $upgrade~cachecategory
+	else
+		setvar $findproduct~quantity $gather~get
+		setvar $findproduct~product $gather~product
+		setvar $findproduct~ignorelist $gather~ignorelist
+		setvar $findproduct~stayonplanet 1
+		setvar $findproduct~sector $gather~sector
 
-	setvar $gather~ignorelist $findproduct~ignorelist
+		gosub :findproduct~findproduct
+
+		setvar $gather~ignorelist $findproduct~ignorelist
+
+		if (($findproduct~location <> 0) and ($findproduct~location <> "P"))
+			setvar $upgrade~cacheplanetid $findproduct~location
+			setvar $upgrade~cachesectorid $gather~sector
+			gosub :upgrade_cacheplanet
+		end
+	end
 
 	if ($findproduct~location = 0)
 		setvar $gather~failed 1
@@ -482,6 +503,7 @@ setvar $product $gather~product
 setvar $quantity ($gather~quantity - $gather~gathered)
 setvar $safe 0
 gosub :moveproduct
+gosub :upgrade_applycachedmove
 
 add $gather~gathered $moved
 
@@ -512,8 +534,170 @@ if ($findproduct~location <> 0)
 	setvar $move~found 1
 	setvar $gather~sourcesector $move~cursector
 	setvar $gather~found $findproduct~location
+	if ($findproduct~location <> "P")
+		setvar $upgrade~cacheplanetid $findproduct~location
+		setvar $upgrade~cachesectorid $move~cursector
+		gosub :upgrade_cacheplanet
+	end
 end
 
+return
+
+:upgrade_cacheplanet
+if ($planet~planet <= 0)
+	setvar $planet~planet $upgrade~cacheplanetid
+end
+if ($planet~planet <= 0)
+	return
+end
+if ($planet~current_sector <= 0)
+	setvar $planet~current_sector $upgrade~cachesectorid
+end
+if ($planet~current_sector <= 0)
+	setvar $planet~current_sector $player~current_sector
+end
+setvar $upgrade~cacheindex 0
+setvar $upgrade~i 1
+while ($upgrade~i <= $upgrade~cachecount)
+	if ($upgrade~cacheplanet[$upgrade~i] = $planet~planet)
+		setvar $upgrade~cacheindex $upgrade~i
+		setvar $upgrade~i 2001
+	else
+		add $upgrade~i 1
+	end
+end
+if ($upgrade~cacheindex = 0)
+	add $upgrade~cachecount 1
+	setvar $upgrade~cacheindex $upgrade~cachecount
+	setvar $upgrade~cacheplanet[$upgrade~cacheindex] $planet~planet
+end
+setvar $upgrade~cachesector[$upgrade~cacheindex] $planet~current_sector
+setvar $upgrade~cacheamount[$upgrade~cacheindex][1] $planet~amount[1]
+setvar $upgrade~cacheamount[$upgrade~cacheindex][2] $planet~amount[2]
+setvar $upgrade~cacheamount[$upgrade~cacheindex][3] $planet~amount[3]
+setvar $upgrade~cachecolo[$upgrade~cacheindex][1] $planet~colo[1]
+setvar $upgrade~cachecolo[$upgrade~cacheindex][2] $planet~colo[2]
+setvar $upgrade~cachecolo[$upgrade~cacheindex][3] $planet~colo[3]
+return
+
+:upgrade_cacheignored
+setvar $upgrade~cacheignore 0
+setvar $upgrade~j 1
+while ($upgrade~j <= 50)
+	getword $gather~ignorelist $upgrade~ignoreplanet $upgrade~j
+	if ($upgrade~ignoreplanet = 0)
+		setvar $upgrade~j 51
+	else
+		if ($upgrade~ignoreplanet = $upgrade~cacheplanet[$upgrade~i])
+			setvar $upgrade~cacheignore 1
+			setvar $upgrade~j 51
+		else
+			add $upgrade~j 1
+		end
+	end
+end
+return
+
+:upgrade_findcachedproduct
+setvar $upgrade~cachefound 0
+setvar $upgrade~cachecategory 0
+setvar $upgrade~i 1
+while ($upgrade~i <= $upgrade~cachecount)
+	if ($upgrade~cachesector[$upgrade~i] = $gather~sector)
+		gosub :upgrade_cacheignored
+		if ($upgrade~cacheignore = 0)
+			if ($gather~product = "C")
+				setvar $upgrade~j 1
+				while ($upgrade~j <= 3)
+					if ($upgrade~cachecolo[$upgrade~i][$upgrade~j] >= $gather~get)
+						setvar $upgrade~cachefound $upgrade~cacheplanet[$upgrade~i]
+						setvar $upgrade~cachecategory $upgrade~j
+						setvar $upgrade~i 2001
+						setvar $upgrade~j 4
+					else
+						add $upgrade~j 1
+					end
+				end
+			else
+				if ($upgrade~cacheamount[$upgrade~i][$gather~product] >= $gather~get)
+					setvar $upgrade~cachefound $upgrade~cacheplanet[$upgrade~i]
+					setvar $upgrade~i 2001
+				end
+			end
+		end
+	end
+	add $upgrade~i 1
+end
+if ($upgrade~cachefound <> 0)
+	send "l " $upgrade~cachefound "*"
+	waiton "Planet command (?=help)"
+end
+return
+
+:upgrade_getcacheindex
+setvar $upgrade~cacheindex 0
+setvar $upgrade~i 1
+while ($upgrade~i <= $upgrade~cachecount)
+	if ($upgrade~cacheplanet[$upgrade~i] = $upgrade~queryplanet)
+		setvar $upgrade~cacheindex $upgrade~i
+		setvar $upgrade~i 2001
+	else
+		add $upgrade~i 1
+	end
+end
+return
+
+:upgrade_getsourceamount
+setvar $upgrade~cachehit 0
+setvar $upgrade~sourceamount 0
+setvar $upgrade~queryplanet $source
+gosub :upgrade_getcacheindex
+if ($upgrade~cacheindex > 0)
+	setvar $upgrade~cachehit 1
+	if ($product = "C")
+		setvar $upgrade~sourceamount $upgrade~cachecolo[$upgrade~cacheindex][$sourcecategory]
+	else
+		setvar $upgrade~sourceamount $upgrade~cacheamount[$upgrade~cacheindex][$product]
+	end
+end
+return
+
+:upgrade_applycachedmove
+if ($moved <= 0)
+	return
+end
+if ($source <> "P")
+	setvar $upgrade~queryplanet $source
+	gosub :upgrade_getcacheindex
+	if ($upgrade~cacheindex > 0)
+		if ($product = "C")
+			subtract $upgrade~cachecolo[$upgrade~cacheindex][$sourcecategory] $moved
+			if ($upgrade~cachecolo[$upgrade~cacheindex][$sourcecategory] < 0)
+				setvar $upgrade~cachecolo[$upgrade~cacheindex][$sourcecategory] 0
+			end
+		else
+			subtract $upgrade~cacheamount[$upgrade~cacheindex][$product] $moved
+			if ($upgrade~cacheamount[$upgrade~cacheindex][$product] < 0)
+				setvar $upgrade~cacheamount[$upgrade~cacheindex][$product] 0
+			end
+		end
+	end
+end
+if ($dest <> "P")
+	setvar $upgrade~queryplanet $dest
+	gosub :upgrade_getcacheindex
+	if ($upgrade~cacheindex = 0)
+		add $upgrade~cachecount 1
+		setvar $upgrade~cacheindex $upgrade~cachecount
+		setvar $upgrade~cacheplanet[$upgrade~cacheindex] $dest
+		setvar $upgrade~cachesector[$upgrade~cacheindex] $destsector
+	end
+	if ($product = "C")
+		add $upgrade~cachecolo[$upgrade~cacheindex][$destcategory] $moved
+	else
+		add $upgrade~cacheamount[$upgrade~cacheindex][$product] $moved
+	end
+end
 return
 
 :seekproduct
@@ -644,17 +828,32 @@ if ($source = "P")
 		setvar $quantity $portquantity
 	end
 else
-	send "d"
-	setvar $planet~noheader 1
-	gosub :planet~planetinfo
-
-	if ($product = "C")
-		if ($planet~colo[$sourcecategory] < $quantity)
-			setvar $quantity $planet~colo[$sourcecategory]
+	gosub :upgrade_getsourceamount
+	if ($upgrade~cachehit)
+		if ($product = "C")
+			setvar $planet~colo[$sourcecategory] $upgrade~sourceamount
+		else
+			setvar $planet~amount[$product] $upgrade~sourceamount
+		end
+		if ($upgrade~sourceamount < $quantity)
+			setvar $quantity $upgrade~sourceamount
 		end
 	else
-		if ($planet~amount[$product] < $quantity)
-			setvar $quantity $planet~amount[$product]
+		send "d"
+		setvar $planet~noheader 1
+		gosub :planet~planetinfo
+		setvar $upgrade~cacheplanetid $source
+		setvar $upgrade~cachesectorid $sourcesector
+		gosub :upgrade_cacheplanet
+
+		if ($product = "C")
+			if ($planet~colo[$sourcecategory] < $quantity)
+				setvar $quantity $planet~colo[$sourcecategory]
+			end
+		else
+			if ($planet~amount[$product] < $quantity)
+				setvar $quantity $planet~amount[$product]
+			end
 		end
 	end
 end
@@ -865,12 +1064,12 @@ else
 		if (($product = 1) and (port.buyorg[$sourcesector] = 0))
 			setvar $send $send&"0*"
 		end
-	else
-		if ($pscan or (sector.planetcount[$sourcesector] > 1))
-			setvar $send $send&"l"&$source&"*"
 		else
-			setvar $send $send&"l"
-		end
+			if ($pscan or (sector.planetcount[$sourcesector] > 1))
+				setvar $send $send&"l  "&$source&"*"
+			else
+				setvar $send $send&"l  "
+			end
 
 		if (($cycles = 1) and ($remainder > 0))
 			setvar $send $send&$pickuptext&$remainder&"*q"
@@ -879,7 +1078,7 @@ else
 		end
 	end
 
-	setvar $send $send&"l"&$dest&"*"&$dropofftext&"*q"
+	setvar $send $send&"l  "&$dest&"*"&$dropofftext&"*q"
 
 	send $send
 	subtract $cycles 1
@@ -899,7 +1098,7 @@ else
 		setvar $gameprefs~bank "MOVEPRODUCT"
 		gosub :gameprefs~setgameprefs
 
-		send "l" $dest "*"
+		send "l  " $dest "*"
 		waiton "Planet command (?=help)"
 		gosub :restorehaggle
 		return

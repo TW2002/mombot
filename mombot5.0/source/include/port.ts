@@ -59,10 +59,7 @@ pause
 killalltriggers
 setvar $port~noport 1
 setvar $port~foundport false
-send "q"
-if ($port~restore_messages = true)
-	gosub :player~msgs_on
-end
+gosub :leavecomputer
 return
 
 :foundport
@@ -98,10 +95,7 @@ pause
 
 :gotcr
 killalltriggers
-send "Q"
-if ($port~restore_messages = true)
-	gosub :player~msgs_on
-end
+gosub :leavecomputer
 getsectorparameter $sector "OREMCIC" $tmp
 isnumber $test $tmp
 if ($test = true)
@@ -129,6 +123,26 @@ if ($port~equbuying = "Buying") and ($port~equtrading > 500) and ($port~equperce
 	setvar $port~equvalue ($port~equtrading * $equunitvalue)
 end
 setvar $port~portvalue ($port~orgvalue + $port~equvalue)
+return
+
+:leavecomputer
+send "q"
+settexttrigger leftcomputer :leftcomputer "<Computer deactivated>"
+setdelaytrigger leftcomputer_timeout :leftcomputer_timeout 5000
+pause
+
+:leftcomputer
+killtrigger leftcomputer_timeout
+if ($port~restore_messages = true)
+	gosub :player~msgs_on
+end
+return
+
+:leftcomputer_timeout
+killtrigger leftcomputer
+if ($port~restore_messages = true)
+	gosub :player~msgs_on
+end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

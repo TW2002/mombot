@@ -802,11 +802,16 @@ return
 :planet~getplanetnumber
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "*"
+:planetnumstart
 settextlinetrigger planetinfo3 :getjustthenumber "Planet #"
 pause
 
 :planet~getjustthenumber
 send "  "
+getwordpos currentline $pos "Planet #"
+if ($pos > 1)
+	goto :planetnumstart
+end
 getword currentline $planet~planet 2
 striptext $planet~planet "#"
 getword currentline $player~current_sector 5
@@ -1024,6 +1029,11 @@ send "*"
 waiton "Planet #"
 
 :planet~planet
+getwordpos currentline $pos "Planet #"
+if ($pos > 1)
+	settextlinetrigger planet :planet "Planet #"
+	pause
+end
 getword currentline $planet~pnum_ck 2
 striptext $planet~pnum_ck "#"
 gosub :killlandingtriggers
@@ -1098,7 +1108,14 @@ if ($planet~pwarp_scan = true)
 end
 setvar $planet~pwarp_scan false
 send "q *"
-waiton "Planet #"
+:pwarp_pnumstart
+settextlinetrigger pnum :pwarp_pnum "Planet #"
+pause
+:pwarp_pnum
+getwordpos currentline $pos "Planet #"
+if ($pos > 1)
+	goto :pwarp_pnumstart
+end
 getword currentline $planet~planet 2
 striptext $planet~planet "#"
 savevar $planet~planet

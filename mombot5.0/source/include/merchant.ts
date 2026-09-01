@@ -1132,10 +1132,30 @@ if (((sector.limpets.quantity[$player~current_sector] <= 0) or (sector.mines.qua
 	gosub :domines
 end
 if ($merchant~mines = true)
-	send "s* "
-	gosub :player~quikstats
-	if ((sector.limpets.quantity[$player~current_sector] > 0) and (($player~limpets <= 5) or ($player~armids <= 5)))
-		gosub :attempt_refurb
+	gosub :player~currentprompt
+	if ($player~current_prompt = "Computer")
+		send "q"
+		settexttrigger postport_leftcomputer :postport_leftcomputer "<Computer deactivated>"
+		setdelaytrigger postport_leftcomputer_timeout :postport_leftcomputer_timeout 5000
+		pause
+
+		:postport_leftcomputer
+		killtrigger postport_leftcomputer_timeout
+		gosub :player~currentprompt
+
+		:postport_leftcomputer_timeout
+		killtrigger postport_leftcomputer
+	end
+	if ($player~current_prompt = "Citadel")
+		send "s* "
+		gosub :player~quikstats
+		if ((sector.limpets.quantity[$player~current_sector] > 0) and (($player~limpets <= 5) or ($player~armids <= 5)))
+			gosub :attempt_refurb
+		end
+	else
+		setvar $switchboard~message "Unable to reach Citadel prompt for post-port mine scan.*"
+		gosub :switchboard~switchboard
+		return
 	end
 end
 if ($merchant~do_rob = true)

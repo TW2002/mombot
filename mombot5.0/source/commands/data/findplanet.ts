@@ -20,7 +20,24 @@ setvar $output "SubSpace"
 gosub :help~initialize
 setvar $help~help[1] $help~tab&"Locates a corporate or personal planet and reports back.  "
 setvar $help~help[2] $help~tab&"   "
-setvar $help~help[3] $help~tab&"Usage:  findplanet # | list"
+setvar $help~help[3] $help~tab&"Usage:  findplanet {mode} {args}"
+setvar $help~help[4] $help~tab&"  "
+setvar $help~help[5] $help~tab&"Modes:"
+setvar $help~help[6] $help~tab&"  "
+setvar $help~help[7] $help~tab&"         # - Find a specific planet by its number "
+setvar $help~help[8] $help~tab&"      list - List all planets  "
+setvar $help~help[9] $help~tab&"       top - List top 10 planets by fuel/org/equ/fig"
+setvar $help~help[10] $help~tab&"   "
+setvar $help~help[11] $help~tab&"Args:"
+setvar $help~help[12] $help~tab&"  "
+setvar $help~help[13] $help~tab&"  shielded - Only shielded planets"
+setvar $help~help[14] $help~tab&" f/o/e/fig - Sort by specified resource"
+setvar $help~help[15] $help~tab&"  "
+setvar $help~help[16] $help~tab&"Examples:"
+setvar $help~help[17] $help~tab&"  "
+setvar $help~help[18] $help~tab&">findplanet 6"
+setvar $help~help[19] $help~tab&">findplanet top f"
+setvar $help~help[20] $help~tab&">findplanet top fig shielded"
 gosub :help~helpfile
 
 setvar $bot~validprompts "Command"
@@ -33,19 +50,56 @@ else
 	setvar $listplanets false
 end
 
-setvar $target 0
-if ($bot~parm1 <> "") and ($bot~parm1 <> 0) and ($listplanets = false)
-	isnumber $test $bot~parm1
-	if ($test)
-		setvar $target $bot~parm1
-	end
-	if ($target = 0)
-		setvar $switchboard~message "Invalid planet number.  Usage: findplanet #*"
-		gosub :switchboard~switchboard
-		halt
-	end
+isnumber $test $bot~parm1
+if ($test)
+	setvar $target $bot~parm1
+	goto :processplanets
+else
+	setvar $target 0
 end
 
+if ($bot~parm1 = "top")
+	setvar $top true
+elseif ($bot~parm1 = "list")
+	setvar $listplanets true
+end
+
+getwordpos " "&$bot~user_command_line&" " $pos " shielded "
+if ($pos > 0)
+	setvar $shielded true
+else
+	setvar $shielded false
+end
+
+getwordpos " "&$bot~user_command_line&" " $pos " f "
+if ($pos > 0)
+	setvar $fuel true
+else
+	setvar $fuel false
+end
+
+getwordpos " "&$bot~user_command_line&" " $pos " o "
+if ($pos > 0)
+	setvar $org true
+else
+	setvar $org false
+end
+
+getwordpos " "&$bot~user_command_line&" " $pos " e "
+if ($pos > 0)
+	setvar $equ true
+else
+	setvar $equ false
+end
+
+getwordpos " "&$bot~user_command_line&" " $pos " fig "
+if ($pos > 0)
+	setvar $fig true
+else
+	setvar $fig false
+end
+
+:processplanets
 setvar $plist ""
 setvar $plist_cnt 0
 setvar $plist_columns 6
@@ -70,7 +124,7 @@ if ($pnum_first_char <> "#")
 end
 if ($pnum_first_char = "#")
 	striptext $pnum "#"
-	if ($pnum = $target)
+	if ($target > 0) and ($pnum = $target)
 		goto :gotpnum
 	end
 	if ($listplanets = true)

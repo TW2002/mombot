@@ -451,6 +451,10 @@ end
 goto :sellproduct
 
 :planethaggle~donewithport
+cuttext currentline $planethaggle~prompttest 1 12
+if ($planethaggle~prompttest <> "Command [TL=")
+	goto :sellproduct
+end
 killtrigger sellfuel
 killtrigger sellorg
 killtrigger sellequ
@@ -542,6 +546,10 @@ setvar $planethaggle~currenthaggle "failed"
 goto :sellhagglefailed
 
 :planethaggle~nativesellprompt
+cuttext currentline $planethaggle~prompttest 1 12
+if ($planethaggle~prompttest <> "Command [TL=")
+	goto :planethaggle~sellhagglenativewait
+end
 killalltriggers
 if ($planethaggle~currenthaggle <> "succeeded")
 	if ($haggle~abort <> 1)

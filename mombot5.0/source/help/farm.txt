@@ -2,6 +2,7 @@ FARM - Visits sectors in list and farms the planets there.
        The default will visit all planets on the TL list
 
      farm {set} {clear} {list}                                 
+     farm fill {planets}/{all} {f/o/e} {amount}
 
      [set] {sector1} {...} {sectorx}  - set puts sectors 
                       in the order you enter into a file
@@ -9,3 +10,7 @@ FARM - Visits sectors in list and farms the planets there.
      [clear] - clear deletes the farm file                        
      [list]  - show lists of all sectors in the farm file 
               in order
+
+     [fill]  - fill named planets, or all planets in sector
+               Example: >farm fill all f 900000
+               Adds up to 900,000 fuel ore to each planet
