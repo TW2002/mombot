@@ -9,7 +9,7 @@ development version for TradeWars 2002.
 | --- | --- | --- |
 | [`mombot4.01p`](mombot4.01p/) | 4.01p | Historical public release from [`TW2002/mombot-public`](https://github.com/TW2002/mombot-public). |
 | [`mombot4.7beta`](mombot4.7beta/) | 4.7beta | Historical development source previously published at [`TW2002/mombot`](https://github.com/TW2002/mombot). |
-| [`mombot5.0`](mombot5.0/) | 5.0beta1 | Current development and release tree. |
+| [`mombot5.0`](mombot5.0/) | 5.0 | Current release tree. |
 
 The runtime version is defined by each tree's `mombot.ts` source, not merely by
 its directory name. The 4.01p tree uses the older ready-to-run public layout;
