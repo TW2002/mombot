@@ -70,6 +70,8 @@ else
 	end
 end
 
+setarray $sector_planet_count SECTORS
+setarray $sector_seen SECTORS
 waiton "Corporate Planet Scan"
 
 :getcorpplanetlist
@@ -107,40 +109,27 @@ killtrigger persplanetsdone2
 
 :calculate
 setvar $overloads 0
+setvar $compare_index 0
 
 :compareouterloop
-if ($sector_list_length > 0)
-	getword $sector_list $currentdatasector 1
-	setvar $planet~planets_this_sector 1
-	setvar $compare_index 1
+if ($compare_index < $sector_list_length)
+	add $compare_index 1
+	getword $sector_list $currentdatasector $compare_index
+	setvar $planet~planets_this_sector $sector_planet_count[$currentdatasector]
+	if ($planet~planets_this_sector > $pps)
+		getsectorparameter $currentdatasector "BUBBLE" $isbubble
+		getsectorparameter $currentdatasector "FARM" $isfarm
 
-	:compareinnerloop
-	if ($compare_index < $sector_list_length)
-		add $compare_index 1
-		getword $sector_list $compare_sector $compare_index
-		if ($currentdatasector = $compare_sector)
-			add $planet~planets_this_sector 1
-		end
-		goto :compareinnerloop
-	else
-		if ($planet~planets_this_sector > $pps)
-			getsectorparameter $currentdatasector "BUBBLE" $isbubble
-			getsectorparameter $currentdatasector "FARM" $isfarm
-
-			if (($bubble <> true) or (($bubble = true) and (($isbubble = true) or ($isfarm = true))))
-				setvar $switchboard~message "OVERLOAD: " & $planet~planets_this_sector & " planets found in sector " & $currentdatasector & "*"
-				gosub :switchboard~switchboard
-				add $overloads 1
-			end
-		elseif ((($planet~planets_this_sector > 1) or ($pps <= 1)) and ($planet~planets_this_sector < $pps) and ($showunderload = true))
-			setvar $switchboard~message  ""&$planet~planets_this_sector & " planets found in sector " & $currentdatasector & ". Sector needs " &($pps-$planet~planets_this_sector)&" planets to be full.*"
+		if (($bubble <> true) or (($bubble = true) and (($isbubble = true) or ($isfarm = true))))
+			setvar $switchboard~message "OVERLOAD: " & $planet~planets_this_sector & " planets found in sector " & $currentdatasector & "*"
 			gosub :switchboard~switchboard
+			add $overloads 1
 		end
-		setvar $replace_sector " " & $currentdatasector & " "
-		replacetext $sector_list $replace_sector " "
-		subtract $sector_list_length $planet~planets_this_sector
-		goto :compareouterloop
+	elseif ((($planet~planets_this_sector > 1) or ($pps <= 1)) and ($planet~planets_this_sector < $pps) and ($showunderload = true))
+		setvar $switchboard~message  ""&$planet~planets_this_sector & " planets found in sector " & $currentdatasector & ". Sector needs " &($pps-$planet~planets_this_sector)&" planets to be full.*"
+		gosub :switchboard~switchboard
 	end
+	goto :compareouterloop
 else
 	setvar $switchboard~message ""&$overloads & " Overloads Found*"
 	gosub :switchboard~switchboard
@@ -152,8 +141,12 @@ setvar $line currentline
 cuttext $line $goodline 41 5
 if ($goodline = "Class")
 	getword $line $sector 1
-	setvar $sector_list $sector_list & $sector & " "
-	add $sector_list_length 1
+	if ($sector_seen[$sector] <> true)
+		setvar $sector_seen[$sector] true
+		setvar $sector_list $sector_list & $sector & " "
+		add $sector_list_length 1
+	end
+	add $sector_planet_count[$sector] 1
 end
 return
 # ======================================= END OVERLOAD =========================================

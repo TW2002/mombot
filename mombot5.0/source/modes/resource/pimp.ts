@@ -6,20 +6,21 @@ loadvar $map~stardock
 
 setvar $help~help[1] $help~tab&"PIMP - Makes planets and strips them of product "
 setvar $help~help[2] $help~tab&"   "
-setvar $help~help[3] $help~tab&"pimp {"&#34&"planet name"&#34&"} {f} {o} {e}"
+setvar $help~help[3] $help~tab&"pimp {"&#34&"planet name"&#34&"} {f} {o} {e} {all}"
 setvar $help~help[4] $help~tab&"      "
 setvar $help~help[5] $help~tab&"[planet name] - creates planet with this name (default"
 setvar $help~help[6] $help~tab&"                is random name)"
 setvar $help~help[7] $help~tab&"          [f] - fuel"
 setvar $help~help[8] $help~tab&"          [o] - organics"
 setvar $help~help[9] $help~tab&"          [e] - equipment"
+setvar $help~help[10] $help~tab&"   "
+setvar $help~help[11] $help~tab&"Adding all as the last argument will pimp all planets in sector."
 gosub :help~helpfile
 
 setvar $switchboard~message "product pimp starting up!*"
 gosub :switchboard~switchboard
 
-:pimp
-window prodpimp 400 150 "product pimp stats" ontop
+window prodpimp 400 150 "pimp - "&GAMENAME ontop
 gosub :player~quikstats
 setvar $starting_location $player~current_prompt
 getrnd $random 1 100000
@@ -68,6 +69,12 @@ if (($emptyorganics = false) and ($emptyequipment = false) and ($emptyfuel = fal
 	gosub :switchboard~switchboard
 	halt
 end
+getwordpos $bot~user_command_line $pos " all "
+if ($pos > 0)
+	setvar $pimpall true
+else
+	setvar $pimpall false
+end
 
 if ($map~stardock = 0) or ($map~stardock = "")
 	setvar $om_sdloc STARDOCK
@@ -84,14 +91,24 @@ setvar $starting_location $player~current_prompt
 if ($starting_location = "Citadel")
 	send "q"
 	gosub :planet~getplanetinfo
-	send "c"
-	waitfor "Citadel command"
+	setvar $myplanet $planet~planet
+	if ($pimpall = true)
+		send "q "
+		waitfor "Command [TL"
+	else
+		send "c"
+		waitfor "Citadel command"
+	end
 elseif ($starting_location = "Planet")
 	gosub :planet~getplanetinfo
-	send " q l " $planet~planet "* "
+	setvar $myplanet $planet~planet
+	if ($pimpall = true)
+		send "q "
+		waitfor "Command [TL"
+	end
 end
 
-setvar $target $planet~planet
+setvar $firstplanet $planet~planet
 setvar $target_cash $planet~citadelcredits
 setvar $totalfuel $planet~planetfuel
 setvar $totalorg $planet~planetorg
@@ -107,10 +124,8 @@ if ($player~photons > 0)
 	halt
 end
 
-:inac
 killalltriggers
 
-:myinfo
 if ($player~unlimitedgame = false)
 	if ($player~turns < $bot~bot_turn_limit)
 		setvar $switchboard~message "I have too few turns to pimp product, script halting.*"
@@ -118,35 +133,65 @@ if ($player~unlimitedgame = false)
 		halt
 	end
 end
-if (($player~credits + $target_cash) < 1000000)
+if (($player~credits + $target_cash) < 100000)
 	setvar $switchboard~message "I have too little cash on hand, script halting.*"
 	gosub :switchboard~switchboard
 	halt
 end
 
-:myplanetinfo
-if ($starting_location = "Citadel")
-	send "q"
-	gosub :planet~getplanetinfo
-	send "c"
-	waitfor "Citadel command"
-elseif ($starting_location = "Planet")
-	gosub :planet~getplanetinfo
+if ($pimpall = true)
+	gosub :planet~countplanets
+	setvar $totalplanets $planet~planetcount
+	setvar $i_pimp 0
+	while ($i_pimp < $totalplanets)
+		add $i_pimp 1
+		if ($i_pimp = $totalplanets)
+			setvar $lastplanet true
+		else
+			setvar $lastplanet false
+		end
+		setvar $target $planet~planets[$i_pimp]
+		send "q q *"
+		waiton "Command [TL"
+		send "j y q * l "&$target&"*"
+		waiton "Planet command"
+		gosub :planet~getplanetinfo
+		gosub :pimp
+		send "q q *"
+		waiton "Command [TL"
+		send "l "&$firstplanet&"*"
+		waiton "Planet command"
+		send "mnt*q"
+		waiton "Command [TL"
+	end
+else
+	setvar $target $planet~planet
+	gosub :pimp
 end
+halt
 
+:pimp
 setvar $totalfuel $planet~planetfuel
 setvar $totalorg $planet~planetorg
 setvar $totalequ $planet~planetequip
-if ($starting_location = "Citadel")
+if ($starting_location = "Citadel") and ($pimpall <> true)
 	send "q"
 end
 
 #Empty Holds to Planet
-send "m * * * t n l 1* t n l 2* t n l 3* s* l 1* q "
+send "m * * * t n l 1* t n l 2* t n l 3* q "
 
 seteventtrigger discod1 	:discod     	"CONNECTION LOST"
 seteventtrigger	discod2		:discod     	"Connections have been temporarily disabled."
 waitfor "Command [TL"
+
+if ($player~unlimitedgame)
+	setvar $switchboard~message "Running product pimp with unlimited turns and "&$player~credits&" credits left*"
+	gosub :switchboard~switchboard
+else
+	setvar $switchboard~message "Running product pimp with "&$player~turns&" turns and "&$player~credits&" credits left*"
+	gosub :switchboard~switchboard
+end
 
 :makeplanet
 killalltriggers
@@ -155,12 +200,12 @@ gosub :player~quikstats
 if (($player~credits < 1000000) and (($player~genesis <= 0) or ($player~atomic <= 0)))
 	setvar $cashonhand $target_cash
 	add $cashonhand $player~credits
-	send "l j" #8 $target "* c "
-	if ($cashonhand > 5000000)
+	send "l " $firstplanet "* c "
+	if ($cashonhand > 1000000)
 		send "T T " $player~credits "* "
 		send "T F " 5000000 "* "
 		setvar $player~credits 5000000
-	elseif ($cashonhand > 1000000)
+	elseif ($cashonhand > 100000)
 		send "T T " $player~credits "* "
 		send "T F " $cashonhand "* "
 		setvar $player~credits $cashonhand
@@ -196,15 +241,33 @@ if (($player~genesis > 0) and ($player~atomic > 0))
 	send "u y * " #8 #8 $pimp_planet_name "* p q * "
 	gosub :set_windows
 	add $totalplanets 1
-	killalltriggers
+:inac
+killalltriggers
 	seteventtrigger 	discod1 	:discod     	"CONNECTION LOST"
 	seteventtrigger		discod2		:discod     	"Connections have been temporarily disabled."
 	settexttrigger builtplanet :findplanet "For building this planet"
+	settexttrigger makeplanetneedrestock :makeplanetneedrestock "You don't have any Genesis Torpedoes"
+		setdelaytrigger makeplanetfailed :makeplanetfailed 5000
 	pause
 else
 	gosub :restock
 	goto :makeplanet
 end
+
+:makeplanetneedrestock
+killalltriggers
+gosub :restock
+goto :makeplanet
+
+:makeplanetfailed
+killalltriggers
+send "l " $target "* "
+if ($starting_location = "Citadel")
+	send "c "
+end
+setvar $switchboard~message "Planet creation did not complete. Product pimp stopping on starting planet.*"
+gosub :switchboard~switchboard
+halt
 
 :findplanet
 killalltriggers
@@ -219,11 +282,28 @@ pause
 :get_planet_num
 setvar $line currentline
 striptext $line "<"
-getword $line $planet~planetnum 1
-striptext $planet~planetnum ">"
-send $planet~planetnum "*"
-#check ore
+getword $line $pnum 1
+striptext $pnum ">"
+setvar $planet~planetnum $pnum
+killalltriggers
+seteventtrigger 	discod1 	:discod     	"CONNECTION LOST"
+seteventtrigger		discod2		:discod     	"Connections have been temporarily disabled."
+settexttrigger landcreatedplanet :land_created_planet "Land on which planet"
+pause
 
+:land_created_planet
+killalltriggers
+send $planet~planetnum "*"
+waitfor "Planet command"
+goto :harvestplanet
+
+:revisitplanet
+killalltriggers
+send "l " $planet~planetnum "*"
+waitfor "Planet command"
+
+:harvestplanet
+#check ore
 gosub :planet~getplanetinfo
 gosub :planet~updateplanetprods
 setvar $skip_prods_read 1
@@ -252,7 +332,7 @@ killalltriggers
 seteventtrigger 	discod1 	:discod     	"CONNECTION LOST"
 seteventtrigger		discod2		:discod     	"Connections have been temporarily disabled."
 if ($emptyfuel)
-	send "t*t1*q l j" #8 $target "* t*l1*q l j" #8 $planet~planetnum "* "
+	send "t*t1*q l " $target "* t*l1*q l " $planet~planetnum "* "
 	settexttrigger fuelsuccess :fuelsuccess "You load the "
 	settexttrigger fuelempty :fuelempty "There aren't that many "
 	settexttrigger fuelfull :fullplanet "They don't have room for that many "
@@ -272,7 +352,7 @@ killalltriggers
 :tryorganics
 killalltriggers
 if ($emptyorganics)
-	send "t*t2*q l j" #8 $target "* t*l2*q l j" #8 $planet~planetnum "* "
+		send "t*t2*q l " $target "* t*l2*q l " $planet~planetnum "* "
 	seteventtrigger 	discod1 	:discod     	"CONNECTION LOST"
 	seteventtrigger		discod2		:discod     	"Connections have been temporarily disabled."
 	settexttrigger success :orgsuccess "You load the "
@@ -296,7 +376,7 @@ killalltriggers
 if ($emptyequipment)
 	seteventtrigger 	discod1 	:discod     	"CONNECTION LOST"
 	seteventtrigger		discod2		:discod     	"Connections have been temporarily disabled."
-	send "t*t3*q l j" #8 $target "* t*l3*q l j" #8 $planet~planetnum "* "
+		send "t*t3*q l " $target "* t*l3*q l " $planet~planetnum "* "
 	settexttrigger success :equsuccess "You load the "
 	settexttrigger emptyempty :emptyplanet "There aren't that many "
 	settexttrigger fullfill :fullplanet "They don't have room for that many "
@@ -316,13 +396,16 @@ goto :emptyplanet
 
 :fullplanet
 killalltriggers
-send "qqqqqq* l j"&#8&$target&"* "
+send "qqqqqq* l " $target "* "
 if ($starting_location = "Citadel")
 	send "c "
 end
-setvar $switchboard~message " Planet " & $target & " is full, stopping.*"
-gosub :switchboard~switchboard
-halt
+if ($pimpall = false) or ($lastplanet = true)
+	setvar $switchboard~message " Planet " & $target & " is full, stopping.*"
+	gosub :switchboard~switchboard
+	halt
+end
+return
 
 :emptyplanet
 killalltriggers
@@ -332,7 +415,7 @@ seteventtrigger		discod2		:discod     	"Connections have been temporarily disabl
 waitfor "Average Interval Lag:"
 send "Q"
 waitfor "Command [TL"
-goto :findplanet
+goto :revisitplanet
 
 :nodets
 send "QQ"
@@ -343,7 +426,7 @@ if ($player~alignment < 1000)
 end
 
 gosub :restock
-goto  :findplanet
+goto  :revisitplanet
 
 :restock
 killalltriggers
@@ -352,32 +435,17 @@ if (($player~current_sector = $map~stardock) or (currentsector = $map~stardock))
 	setvar $already_at_dock true
 	goto :sdyes
 end
-send "d"
-settextlinetrigger 	figprompt 	:figprompt 		"Fighters:"
-settextlinetrigger 	nofigprompt :nofigprompt	"Warps to Sector(s) :"
-pause
-
-:nofigprompt
-killalltriggers
-setvar $switchboard~message "No fighters here to twarp back to.*"
-gosub :switchboard~switchboard
-halt
-
-:figprompt
-killalltriggers
-getword currentline $chkpers 3
-if ($chkpers <> "(yours)")
-	getword currentline $whichcorp 6
-	if ($whichcorp <> "Corp)")
+	setvar $figcnt sector.figs.quantity[$player~current_sector]
+	setvar $figowner sector.figs.owner[$player~current_sector]
+	if (($figcnt <= 0) or (($figowner <> "belong to your Corp") and ($figowner <> "yours")))
 		setvar $switchboard~message "No fighters here to twarp back to.*"
 		gosub :switchboard~switchboard
 		halt
 	end
-end
 
-seteventtrigger 	discod1 	:discod     	"CONNECTION LOST"
+	seteventtrigger 	discod1 	:discod     	"CONNECTION LOST"
 seteventtrigger		discod2		:discod     	"Connections have been temporarily disabled."
-settextlinetrigger sdyes :sdyes "Commerce report for Stargate Alpha I:"
+	settextlinetrigger sdyes :sdyes "Commerce report for"
 settextlinetrigger sdno1  :sdno  "You have never visted sector"
 settextlinetrigger sdno2  :sdno  "I have no information about a port in that sector."
 setdelaytrigger sdno3 :sdno 10000
@@ -409,13 +477,6 @@ gosub :player~quikstats
 if (($player~ore_holds < $player~total_holds) and ((port.buyfuel[$player~current_sector] <> true) and (port.exists[$player~current_sector] = true)))
 	send "P T * * * "
 	setvar $switchboard~message "Didn't have full fuel for restocking pimp. Buying fuel from port and trying again!*"
-	gosub :switchboard~switchboard
-end
-if ($player~unlimitedgame)
-	setvar $switchboard~message "Running product pimp with unlimited turns and "&$player~credits&" credits left*"
-	gosub :switchboard~switchboard
-else
-	setvar $switchboard~message "Running product pimp with "&$player~turns&" turns and "&$player~credits&" credits left*"
 	gosub :switchboard~switchboard
 end
 killalltriggers
@@ -485,7 +546,7 @@ if ($already_at_dock = false)
 		halt
 	end
 end
-send "l "&$target&"* t n l 1* t n l 2* t n l 3* q "
+send "l " $target "* t n l 1* t n l 2* t n l 3* q "
 return
 
 :planetfull

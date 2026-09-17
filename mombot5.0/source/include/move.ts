@@ -641,7 +641,7 @@ pause
 
 :move~bwarp_no_range
 gosub :killbwarptriggers
-setvar $player~msg "Not enough range on this planet's transporter.*"
+setvar $player~msg "Not enough range on this planet's transporter."
 #gosub :switchboard~switchboard
 return
 
@@ -650,7 +650,7 @@ gosub :killbwarptriggers
 send "* "
 setvar $player~target $player~warpto
 setsectorparameter $player~target "FIGSEC" false
-setvar $player~msg "No fighter down at that destination, aborting*"
+setvar $player~msg "No fighter down at that destination, aborting"
 #gosub :switchboard~switchboard
 return
 
@@ -659,7 +659,7 @@ gosub :killbwarptriggers
 send "* "
 setvar $player~target $player~warpto
 #setsectorparameter $player~target "FIGSEC" false
-setvar $player~msg "Sector is avoided, aborting*"
+setvar $player~msg "Sector is avoided, aborting"
 #gosub :switchboard~switchboard
 return
 
@@ -671,11 +671,12 @@ setsectorparameter $player~target "FIGSEC" true
 #setvar $switchboard~message "B-warp completed.*"
 #gosub :switchboard~switchboard
 setvar $player~bwarpsuccess true
+setvar $player~current_sector $player~warpto
 return
 
 :move~bwarpnofuel
 gosub :killbwarptriggers
-setvar $player~msg "Not enough fuel on the planet to make the transport!*"
+setvar $player~msg "Not enough fuel on the planet to make the transport!"
 #gosub :switchboard~switchboard
 return
 

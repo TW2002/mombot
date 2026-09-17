@@ -41,9 +41,9 @@ setvar $checkedforinfo ""
 setvar $grid_figs 1
 setvar $attack_retreat false
 
-getsectorparameter sectors "FIGSEC" $isfigged
-getsectorparameter sectors "MINESEC" $isarmided
-getsectorparameter sectors "LIMPSEC" $islimped
+getsectorparameter 2 "FIG_COUNT" $figdata
+loadvar $bot~armid_count
+loadvar $bot~limpet_count
 gosub :loadvars~loadvars
 gosub :help~initialize
 setvar $help~help[1] $help~tab&"Ultimate gridder. Visits all targeted sectors."
@@ -175,17 +175,17 @@ if (($stardock = 0) or ($stardock = ""))
 	gosub :switchboard~switchboard
 	halt
 end
-if ($isfigged = "")
+if ($figdata = "")
 	setvar $switchboard~message "It appears no grid data is available.  Run a fighter grid checker that uses the sector parameter FIGSEC. (Try figs command)*"
 	gosub :switchboard~switchboard
 	halt
 end
-if ($isarmided = "")
+if ($bot~armid_count = "")
 	setvar $switchboard~message "It appears no armid data is available.  Run an armid grid checker that uses the sector parameter MINESEC. (Try armids command)*"
 	gosub :switchboard~switchboard
 	halt
 end
-if ($islimped = "")
+if ($bot~limpet_count = "")
 	setvar $switchboard~message "It appears no limpet data is available.  Run a limpet grid checker that uses the sector parameter LIMPSEC. (Try limps command)*"
 	gosub :switchboard~switchboard
 	halt
@@ -298,6 +298,12 @@ if ($player~limpets < $grid_limpets) or ($player~armids < $grid_armids) or (($im
 end
 
 :continueon
+if ($databasecount <= 0)
+	setvar $switchboard~message "Database Cleared - Recalculating and Restarting...*"
+	gosub :switchboard~switchboard
+	waiton "Message sent on sub-space"
+	goto :restart
+end
 getrnd $random 1 $databasecount
 getword $database $warpto $random
 if ($warpto = 0)
@@ -690,9 +696,17 @@ if ($databasecount <= 0)
 	if ($refurb)
 		gosub :attempt_refurb
 		gosub :player~quikstats
-		send "p "&$home_sector&"* y "
-		gosub :player~quikstats
-		setvar $switchboard~message "Scrubbed at dock and pwarped home..*"
+		setvar $return_home $home_sector
+		if (($return_home <= 0) or ($return_home = ""))
+			setvar $return_home $homesec
+		end
+		if (($return_home > 0) and (($return_home <= sectors) and ($return_home <> $player~current_sector)))
+			send "p "&$return_home&"* y "
+			gosub :player~quikstats
+			setvar $switchboard~message "Scrubbed at dock and pwarped home..*"
+		else
+			setvar $switchboard~message "Scrubbed at dock and returned home..*"
+		end
 		gosub :switchboard~switchboard
 	end
 

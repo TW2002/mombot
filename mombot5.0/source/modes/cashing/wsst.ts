@@ -397,14 +397,60 @@ goto :wsst
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :transport
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :player~quikstats
 if ($inship1)
-	send ("x        "&$wsst_ship2&"* q * ")
-	setvar $player~ship_number $wsst_ship2
+	setvar $transporttargetship $wsst_ship2
+	setvar $transporttargetsector $ship2sector
+	if ($ship1sector <> $player~current_sector)
+		setvar $ship1sector $player~current_sector
+	end
 else
-	send ("x        "&$wsst_ship1&"* q * ")
-	setvar $player~ship_number $wsst_ship1
+	setvar $transporttargetship $wsst_ship1
+	setvar $transporttargetsector $ship1sector
+	if ($ship2sector <> $player~current_sector)
+		setvar $ship2sector $player~current_sector
+	end
 end
-savevar $player~ship_number
+if ($transportrange > 0)
+	setvar $transportneedsscan false
+	if (($transporttargetsector <= 0) or ($transporttargetsector > sectors))
+		setvar $transportneedsscan true
+	else
+		setvar $transportdist -1
+		if ($transporttargetsector = $player~current_sector)
+			setvar $transportdist 0
+		else
+			getdistance $transportdist $player~current_sector $transporttargetsector
+		end
+		if (($transportdist < 0) or ($transportdist > $transportrange))
+			setvar $transportneedsscan true
+		end
+	end
+	if ($transportneedsscan = true)
+		gosub :findship
+		setvar $transporttargetsector $destination
+		if ($inship1)
+			setvar $ship2sector $transporttargetsector
+		else
+			setvar $ship1sector $transporttargetsector
+		end
+		setvar $transportdist -1
+		if (($transporttargetsector > 0) and ($transporttargetsector <= sectors))
+			if ($transporttargetsector = $player~current_sector)
+				setvar $transportdist 0
+			else
+				getdistance $transportdist $player~current_sector $transporttargetsector
+			end
+		end
+		if (($transportdist < 0) or ($transportdist > $transportrange))
+			setvar $switchboard~message "Other SST ship is not in transport range; stopping before xport.*"
+			gosub :switchboard~switchboard
+			gosub :haggle~restoreautohaggle
+			halt
+		end
+	end
+end
+send ("x        "&$transporttargetship&"* q * ")
 killtrigger 1
 killtrigger 2
 killtrigger 3
@@ -418,6 +464,7 @@ pause
 killtrigger 1
 killtrigger 2
 killtrigger 3
+gosub :haggle~restoreautohaggle
 halt
 goto :transport
 
@@ -425,6 +472,8 @@ goto :transport
 killtrigger 1
 killtrigger 2
 killtrigger 3
+setvar $player~ship_number $transporttargetship
+savevar $player~ship_number
 if ($inship1)
 	setvar $inship1 false
 else
@@ -671,12 +720,12 @@ while ($ship1needsport = true)
 					setvar $ship1equipment $player~equipment_holds
 					gosub :displaycredits
 				else
-					setvar $blocked[$knownsstsector] true
+					setvar $invalidsstport[$knownsstsector] true
 					setvar $ship1needsport true
 					goto :tryknownrouteship1
 				end
 			else
-				setvar $blocked[$knownsstsector] true
+				setvar $invalidsstport[$knownsstsector] true
 				goto :tryknownrouteship1
 			end
 		end
@@ -721,18 +770,20 @@ while ($ship1needsport = true)
 			end
 			gosub :moveintosector
 			if ($moveintosectorsuccess <> true)
-				setvar $blocked[$moveintosector] true
+				setvar $invalidsstport[$moveintosector] true
 				setvar $ship1needsport true
 				goto :trynewrouteship1
 			end
 			setvar $testsector $moveintosector
 			gosub :iswsstbustrisky
-		gosub :isusablesstportcandidate
-			if (($candidateportvalid = true) and ($wsstbustrisky <> true) and ($moveintosector <> $ship2sector))
-				gosub :player~quikstats
-				setvar $ship1needsport false
-				setvar $ship1searchstarted false
-				setvar $ship1sector $course[$j]
+			gosub :isusablesstportcandidate
+			setvar $knownsstothersector $ship2sector
+			gosub :iswsstcandidateintransportrange
+				if (($candidateportvalid = true) and ($wsstbustrisky <> true) and ($wsstcandidateinrange = true) and ($moveintosector <> $ship2sector))
+					gosub :player~quikstats
+					setvar $ship1needsport false
+					setvar $ship1searchstarted false
+					setvar $ship1sector $course[$j]
 				setvar $testsector $course[$j]
 			gosub :getsstportinfo
 				if ($portinfovalid)
@@ -740,7 +791,7 @@ while ($ship1needsport = true)
 					setvar $ship1equipment $player~equipment_holds
 					gosub :displaycredits
 				else
-					setvar $blocked[$moveintosector] true
+					setvar $invalidsstport[$moveintosector] true
 					setvar $ship1needsport true
 					goto :trynewrouteship1
 				end
@@ -762,14 +813,16 @@ while ($ship1needsport = true)
 				setvar $mineowner sector.mines.owner[$checkingneighbor]
 				setvar $limpowner sector.limpets.owner[$checkingneighbor]
 				setvar $figcount  sector.figs.quantity[$checkingneighbor]
-					setvar $testsector $checkingneighbor
-					gosub :iswsstbustrisky
-					gosub :isusablesstportcandidate
-					if (($candidateportvalid = true) and ($wsstbustrisky <> true) and ($checkingneighbor <> $ship2sector) and ($containsshieldedplanet = false) and (($figcount <= $safefighterlevel) and (($figowner = "belong to your Corp") or ($figowner = "yours"))))
-					setvar $moveintosector $checkingneighbor
-					gosub :moveintosector
-					if ($moveintosectorsuccess <> true)
-						setvar $blocked[$checkingneighbor] true
+						setvar $testsector $checkingneighbor
+						gosub :iswsstbustrisky
+						gosub :isusablesstportcandidate
+						setvar $knownsstothersector $ship2sector
+						gosub :iswsstcandidateintransportrange
+						if (($candidateportvalid = true) and ($wsstbustrisky <> true) and ($wsstcandidateinrange = true) and ($checkingneighbor <> $ship2sector) and ($containsshieldedplanet = false) and (($figcount <= $safefighterlevel) and (($figowner = "belong to your Corp") or ($figowner = "yours"))))
+						setvar $moveintosector $checkingneighbor
+						gosub :moveintosector
+						if ($moveintosectorsuccess <> true)
+							setvar $invalidsstport[$checkingneighbor] true
 						setvar $ship1needsport true
 						goto :trynewrouteship1
 						end
@@ -785,7 +838,7 @@ while ($ship1needsport = true)
 							gosub :displaycredits
 							setvar $isfound true
 						else
-							setvar $blocked[$checkingneighbor] true
+							setvar $invalidsstport[$checkingneighbor] true
 							setvar $ship1needsport true
 							goto :trynewrouteship1
 						end
@@ -828,12 +881,12 @@ while ($ship1needsport = true)
 					setvar $ship2equipment $player~equipment_holds
 					gosub :displaycredits
 				else
-					setvar $blocked[$knownsstsector] true
+					setvar $invalidsstport[$knownsstsector] true
 					setvar $ship2needsport true
 					goto :tryknownrouteship2
 				end
 			else
-				setvar $blocked[$knownsstsector] true
+				setvar $invalidsstport[$knownsstsector] true
 				goto :tryknownrouteship2
 			end
 		end
@@ -877,18 +930,20 @@ while ($ship1needsport = true)
 			end
 			gosub :moveintosector
 			if ($moveintosectorsuccess <> true)
-				setvar $blocked[$moveintosector] true
+				setvar $invalidsstport[$moveintosector] true
 				setvar $ship2needsport true
 				goto :trynewrouteship2
 			end
-			setvar $testsector $course[$j]
-			gosub :iswsstbustrisky
-		gosub :isusablesstportcandidate
-			if (($candidateportvalid = true) and ($wsstbustrisky <> true) and ($course[$j] <> $ship1sector))
-				setvar $ship2needsport false
-				setvar $ship2searchstarted false
-				setvar $ship2sector $course[$j]
-				gosub :player~quikstats
+				setvar $testsector $course[$j]
+				gosub :iswsstbustrisky
+			gosub :isusablesstportcandidate
+			setvar $knownsstothersector $ship1sector
+			gosub :iswsstcandidateintransportrange
+				if (($candidateportvalid = true) and ($wsstbustrisky <> true) and ($wsstcandidateinrange = true) and ($course[$j] <> $ship1sector))
+					setvar $ship2needsport false
+					setvar $ship2searchstarted false
+					setvar $ship2sector $course[$j]
+					gosub :player~quikstats
 			setvar $testsector $course[$j]
 			gosub :getsstportinfo
 				if ($portinfovalid)
@@ -896,7 +951,7 @@ while ($ship1needsport = true)
 					setvar $ship2equipment $player~equipment_holds
 					gosub :displaycredits
 				else
-					setvar $blocked[$course[$j]] true
+					setvar $invalidsstport[$course[$j]] true
 					setvar $ship2needsport true
 					goto :trynewrouteship2
 				end
@@ -918,14 +973,16 @@ while ($ship1needsport = true)
 				setvar $mineowner sector.mines.owner[$checkingneighbor]
 				setvar $limpowner sector.limpets.owner[$checkingneighbor]
 				setvar $figcount  sector.figs.quantity[$checkingneighbor]
-				setvar $testsector $checkingneighbor
-				gosub :iswsstbustrisky
-				gosub :isusablesstportcandidate
-				if (($candidateportvalid = true) and ($wsstbustrisky <> true) and ($checkingneighbor <> $ship1sector) and ($containsshieldedplanet = false) and (($figcount <= $safefighterlevel) and (($figowner = "belong to your Corp") or ($figowner = "yours"))))
-					setvar $moveintosector $checkingneighbor
-					gosub :moveintosector
-					if ($moveintosectorsuccess <> true)
-						setvar $blocked[$checkingneighbor] true
+					setvar $testsector $checkingneighbor
+					gosub :iswsstbustrisky
+					gosub :isusablesstportcandidate
+					setvar $knownsstothersector $ship1sector
+					gosub :iswsstcandidateintransportrange
+					if (($candidateportvalid = true) and ($wsstbustrisky <> true) and ($wsstcandidateinrange = true) and ($checkingneighbor <> $ship1sector) and ($containsshieldedplanet = false) and (($figcount <= $safefighterlevel) and (($figowner = "belong to your Corp") or ($figowner = "yours"))))
+						setvar $moveintosector $checkingneighbor
+						gosub :moveintosector
+						if ($moveintosectorsuccess <> true)
+							setvar $invalidsstport[$checkingneighbor] true
 						setvar $ship2needsport true
 						goto :trynewrouteship2
 						end
@@ -941,7 +998,7 @@ while ($ship1needsport = true)
 							gosub :displaycredits
 							setvar $isfound true
 						else
-							setvar $blocked[$checkingneighbor] true
+							setvar $invalidsstport[$checkingneighbor] true
 							setvar $ship2needsport true
 							goto :trynewrouteship2
 						end
@@ -961,57 +1018,18 @@ if ($cachedshipdistancevalid <> true)
 	gosub :findship
 end
 
-if (($dist1 > $transportrange) or ($dist2 > $transportrange))
-	if ($inship1)
-		setvar $ship1needsport true
-	else
-		setvar $ship2needsport true
+	if (($dist1 > $transportrange) or ($dist2 > $transportrange))
+		if ($inship1)
+			setvar $ship1needsport true
+		else
+			setvar $ship2needsport true
 		end
-		gosub :getcourse
-		setvar $j 1
-		setvar $result ""
-		setvar $routebuildsector $player~current_sector
-		setvar $routesafe true
-		while (($j <= ($courselength - 1)) and ($routesafe = true))
-			setvar $routehop $course[$j]
-			isnumber $routehopvalid $routehop
-			if ($routehopvalid <> true)
-				setvar $routesafe false
-			elseif (($routehop > 0) and ($routehop <> $routebuildsector))
-				setvar $wssthop $routehop
-				gosub :iswsstmovementhopallowed
-				if ($wssthopallowed <> true)
-					setvar $routesafe false
-				end
-				setvar $routeisadjacent false
-				setvar $routeadjindex 1
-				if ($routesafe = true)
-					while (sector.warps[$routebuildsector][$routeadjindex] > 0)
-						if (sector.warps[$routebuildsector][$routeadjindex] = $routehop)
-							setvar $routeisadjacent true
-						end
-						add $routeadjindex 1
-					end
-				end
-				if (($routesafe = true) and ($routeisadjacent = true))
-					setvar $result $result&" m "&$routehop&"* "
-					if (($routehop > 10) and ($routehop <> $map~stardock))
-						setvar $result $result & " z a " & $ship~ship_max_attack & "* * "
-					end
-					if (($routehop > 10) and ($routehop <> $map~stardock) and ($j > 2))
-						setvar $result $result&" f 1 * c d "
-						setsectorparameter $routehop "FIGSEC" true
-					end
-					setvar $routebuildsector $routehop
-				elseif ($routesafe = true)
-					setvar $routesafe false
-				end
-			end
-			add $j 1
-		end
-		if (($routesafe = true) and ($result <> ""))
-			send $result & " ** "
-			gosub :player~quikstats
+		setvar $wsstmowtarget $destination
+		gosub :mowtowsssttarget
+		if ($wsstmowsuccess <> true)
+			setvar $switchboard~message "Unable to mow back toward other SST ship; stopping instead of route-search looping.*"
+			gosub :switchboard~switchboard
+			goto :endsst
 		end
 		goto :findsstports
 	end
@@ -1037,16 +1055,12 @@ if ($sstsearchfailed = true)
 	return
 end
 add $sstsearchroutecount 1
-if ($sstsearchroutecount > $sstsearchhardlimit)
-	setvar $switchboard~message "Unable to find reachable replacement SST port for ship "&$sstsearchship&" after "&$sstsearchhardlimit&" route attempts; falling back to legacy random mow/search.*"
-	gosub :switchboard~switchboard
-	setvar $sstsearchmanualfallback true
-	setvar $sstsearchallowrestricted true
-	setvar $sstsearchlegacyfallback true
-	setvar $sstsearchroutes ""
-	setvar $sstsearchroutecount 0
-	return
-end
+	if ($sstsearchroutecount > $sstsearchhardlimit)
+		setvar $switchboard~message "Unable to find reachable replacement SST port for ship "&$sstsearchship&" after "&$sstsearchhardlimit&" route attempts; stopping instead of route-search looping.*"
+		gosub :switchboard~switchboard
+		setvar $sstsearchfailed true
+		return
+	end
 if (($sstsearchroutecount > $sstsearchroutelimit) and ($sstsearchallowrestricted <> true))
 	setvar $switchboard~message "Unable to find normal replacement SST route for ship "&$sstsearchship&" after "&$sstsearchroutelimit&" attempts; allowing restricted escape hops.*"
 	gosub :switchboard~switchboard
@@ -1107,7 +1121,7 @@ setvar $wsstallowrestrictedhop $wsstsavedrestrictedhop
 if ($wssthopallowed <> true)
 	return
 end
-if ($testsector = $knownsstothersector) or ($blocked[$testsector] = true)
+	if ($testsector = $knownsstothersector) or (($blocked[$testsector] = true) or ($invalidsstport[$testsector] = true))
 	return
 end
 gosub :isusablesstportcandidate
@@ -1152,6 +1166,19 @@ setvar $wsstbustrisky false
 getsectorparameter $testsector "BUSTED" $isbusted
 if (($isbusted = true) or ($testsector = $laststealrobsector))
 	setvar $wsstbustrisky true
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:iswsstcandidateintransportrange
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $wsstcandidateinrange true
+if (($knownsstothersector > 10) and ($knownsstothersector <= sectors))
+	getdistance $knownsstdist1 $testsector $knownsstothersector
+	getdistance $knownsstdist2 $knownsstothersector $testsector
+	if (($knownsstdist1 <= 0) or (($knownsstdist2 <= 0) or (($knownsstdist1 > $transportrange) or ($knownsstdist2 > $transportrange))))
+		setvar $wsstcandidateinrange false
+	end
 end
 return
 
@@ -1254,35 +1281,43 @@ if ($player~twarp_type <> "No")
 		end
 		add $knownsstadjindex 1
 	end
-end
-setvar $player~starting_point $player~current_sector
-setvar $player~destination $knownsstsector
-gosub :player~getcourse
-if ($player~courselength <= 1)
-	return
-end
-gosub :validatewsstcourse
-if ($wsstcoursevalid <> true)
-	return
-end
-setvar $j 1
-while ($j <= $player~courselength)
-	setvar $playercoursehop $player~course[$j]
-	isnumber $playercoursehopvalid $playercoursehop
-	if (($playercoursehopvalid = true) and (($playercoursehop > 0) and ($playercoursehop <> $player~current_sector)))
-		setvar $moveintosector $playercoursehop
-		gosub :moveintosector
-		if ($moveintosectorsuccess <> true)
-			return
-		end
 	end
-	add $j 1
-end
-setvar $knownsstmoved true
-return
+	setvar $wsstmowtarget $knownsstsector
+	gosub :mowtowsssttarget
+	if ($wsstmowsuccess = true)
+		setvar $knownsstmoved true
+	end
+	return
 
-#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-:warptoknownsstcandidate
+	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	:mowtowsssttarget
+	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	setvar $wsstmowsuccess false
+	if (($wsstmowtarget <= 0) or ($wsstmowtarget > sectors))
+		return
+	end
+	if ($player~current_sector = $wsstmowtarget)
+		setvar $wsstmowsuccess true
+		return
+	end
+	setvar $savedmovetarget $move~target
+	setvar $savedmovesaveme $move~saveme
+	setvar $savedmovecalled $move~called
+	setvar $move~target $wsstmowtarget
+	setvar $move~saveme false
+	setvar $move~called false
+	gosub :move~mow
+	gosub :player~quikstats
+	if (($move~success = true) and ($player~current_sector = $wsstmowtarget))
+		setvar $wsstmowsuccess true
+	end
+	setvar $move~target $savedmovetarget
+	setvar $move~saveme $savedmovesaveme
+	setvar $move~called $savedmovecalled
+	return
+
+	#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	:warptoknownsstcandidate
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $knownsstmoved false
 if ($player~current_sector = $knownsstsector)
@@ -1454,6 +1489,10 @@ setvar $localfueltop 1
 setvar $localfuelqueue[1] $player~current_sector
 setvar $localfuelchecked[$player~current_sector] 1
 setvar $localfuelhop[$player~current_sector] 0
+setvar $localfuelhoplimit 3
+if ($transportrange > $localfuelhoplimit)
+	setvar $localfuelhoplimit $transportrange
+end
 while (($localfuelbottom <= $localfueltop) and ($localfuelsuccess <> true))
 	setvar $focus $localfuelqueue[$localfuelbottom]
 	getsectorparameter $focus "BUSTED" $isbusted
@@ -1498,7 +1537,7 @@ while (($localfuelbottom <= $localfueltop) and ($localfuelsuccess <> true))
 			end
 		end
 	end
-	if ($localfuelhop[$focus] < 3)
+	if ($localfuelhop[$focus] < $localfuelhoplimit)
 		setvar $localfueladjindex 1
 		while (sector.warps[$focus][$localfueladjindex] > 0)
 			setvar $localfueladjacent sector.warps[$focus][$localfueladjindex]
@@ -1730,7 +1769,7 @@ if (($isbusted1 <> true) and ($isbusted2 <> true))
 			goto :endsst
 		end
 		if ($steal < $minimumsteal)
-			setvar $blocked[$laststeal] true
+			setvar $invalidsstport[$laststeal] true
 			if ($laststealisship1)
 				setvar $ship1needsport true
 			else
@@ -1830,7 +1869,7 @@ goto :continue
 killalltriggers
 setvar $lastbustsector $laststeal
 setsectorparameter $lastbustsector "BUSTED" true
-setvar $blocked[$lastbustsector] true
+setvar $invalidsstport[$lastbustsector] true
 savevar $lastbustsector
 setvar $fakebustedship $laststealship
 setvar $fakebustedisship1 $laststealisship1
@@ -2096,7 +2135,7 @@ return
 
 :isusablesstportcandidate
 setvar $candidateportvalid true
-if ((port.class[$testsector] <> 2) and ((port.class[$testsector] <> 3) and (port.class[$testsector] <> 4)))
+if ((port.class[$testsector] <> 2) and ((port.class[$testsector] <> 3) and ((port.class[$testsector] <> 4) and (port.class[$testsector] <> 8))))
 	setvar $candidateportvalid false
 	return
 end
@@ -2259,13 +2298,9 @@ if ($player~current_sector = $refurbport)
 		waitfor "<Hardware Emporium>"
 	end
 
-	send "/"
-	waitfor #179 & "Figs"
-	gettext currentline $player~credits (#179 & "Creds") (#179 & "Figs")
-	striptext $player~credits " "
-	striptext $player~credits ","
+		gosub :player~quikstats
 
-	setvar $spentcredits ($spentcredits+($beforefurbcredits-$player~credits))
+		setvar $spentcredits ($spentcredits+($beforefurbcredits-$player~credits))
 	setvar $player~fighterspurchased ($player~fighterspurchased+$figstobuy)
 	setvar $player~shieldspurchased ($player~shieldspurchased+$player~shieldstobuy)
 	else
@@ -2362,7 +2397,7 @@ if ($player~current_sector <> $map~stardock)
 	return
 end
 if (($return_sector > 10) and ($return_sector <= sectors))
-	setvar $blocked[$return_sector] true
+	setvar $invalidsstport[$return_sector] true
 end
 if ($inship1)
 	setvar $ship1sector $map~stardock
@@ -2383,24 +2418,24 @@ if ($knownsstsector <= 0)
 end
 gosub :warptoknownsstcandidate
 if ($knownsstmoved <> true)
-	setvar $blocked[$knownsstsector] true
+		setvar $invalidsstport[$knownsstsector] true
 	goto :tryrecoverfailedreturn
 end
 gosub :player~quikstats
 if ($player~current_sector <> $knownsstsector)
-	setvar $blocked[$knownsstsector] true
+		setvar $invalidsstport[$knownsstsector] true
 	goto :tryrecoverfailedreturn
 end
 gosub :clearpostrefurbcargo
 gosub :player~quikstats
 if (($player~organic_holds > 0) or (($player~equipment_holds > 0) or (($player~ore_holds > 0) and ($preservefuelcashdrop <> true))))
-	setvar $blocked[$knownsstsector] true
+		setvar $invalidsstport[$knownsstsector] true
 	goto :tryrecoverfailedreturn
 end
 setvar $testsector $knownsstsector
 gosub :getsstportinfo
 if ($portinfovalid <> true)
-	setvar $blocked[$knownsstsector] true
+		setvar $invalidsstport[$knownsstsector] true
 	goto :tryrecoverfailedreturn
 end
 if ($inship1)
@@ -3157,20 +3192,31 @@ return
 :getsomefuel
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 gosub :player~quikstats
+if (($return_sector <= 0) or ($return_sector > sectors))
+	setvar $return_sector $player~current_sector
+end
 setvar $fuelneeded ($ore_req - $player~ore_holds)
 if ($fuelneeded < 1)
 	return
 end
-	setvar $bottom 1
-	setvar $top 1
-	setarray $checked sectors
+setvar $fuelretriedfromdock false
+if ($player~current_sector = $map~stardock)
+	setvar $fuelretriedfromdock true
+end
+setvar $bottom 1
+setvar $top 1
+setarray $checked sectors
 	setarray $fuelhop sectors
-	setvar $que[1] $player~current_sector
-	setvar $checked[$player~current_sector] 1
-	setvar $fuelhop[$player~current_sector] 0
-	setvar $a 1
+setvar $que[1] $player~current_sector
+setvar $checked[$player~current_sector] 1
+setvar $fuelhop[$player~current_sector] 0
+setvar $fuelhoplimit 3
+if ($transportrange > $fuelhoplimit)
+	setvar $fuelhoplimit $transportrange
+end
+setvar $a 1
 
-	:try_again
+:try_again
 	while ($bottom <= $top)
 		# Now, pull out the next sector in the queue, and make it our focus
 			setvar $focus $que[$bottom]
@@ -3179,26 +3225,34 @@ end
 
 		getdistance $fuel_dist1 $focus $map~stardock
 	if ($fuel_dist1 <= 0)
-		goto :queuefueladjacents
+		setvar $fueloretarget $player~total_holds
+	else
+		setvar $fueloretarget (($fuel_dist1 + $dist2) * 3)
 	end
-	setvar $fueloretarget (($fuel_dist1 + $dist2) * 3)
 	setvar $candidatefuelneeded $fueloretarget
 	subtract $candidatefuelneeded $player~ore_holds
 	if ($candidatefuelneeded < 1)
 		setvar $candidatefuelneeded 1
 	end
 
-			if (($fuelhop[$focus] <= 3) and (($focus > 1) and ((port.exists[$focus] = true) and (port.buyfuel[$focus] <> true))))
+			if (($fuelhop[$focus] <= $fuelhoplimit) and (($focus > 1) and ((port.exists[$focus] = true) and (port.buyfuel[$focus] <> true))))
 				gosub :checkfuelcandidate
 				if (($fuelportvalid = true) or ($fuelportupgradeable = true))
 					if ($player~current_sector <> $focus)
 						setvar $savedwsstallowrestrictedhop $wsstallowrestrictedhop
 						setvar $wsstallowrestrictedhop true
 						setvar $mowintosector $focus
-						gosub :movetargetpreferingtwarp
-						setvar $wsstallowrestrictedhop $savedwsstallowrestrictedhop
-						if ($twarpmovemoved <> true)
-							goto :queuefueladjacents
+							gosub :movetargetpreferingtwarp
+							setvar $wsstallowrestrictedhop $savedwsstallowrestrictedhop
+							if ($twarpmovemoved <> true)
+								setvar $savedwsstallowrestrictedhop $wsstallowrestrictedhop
+								setvar $wsstallowrestrictedhop true
+								setvar $mowintosector $focus
+								gosub :mowusingknownwarps
+								setvar $wsstallowrestrictedhop $savedwsstallowrestrictedhop
+								if ($knownmowsuccess <> true)
+									goto :queuefueladjacents
+								end
 					end
 				end
 				if ($fuelportvalid <> true)
@@ -3227,7 +3281,7 @@ end
 		:queuefueladjacents
 		# That wasn't it, so let's add all the adjacents to the queue for future testing.
 		setvar $a 1
-		while ((sector.warps[$focus][$a] > 0) and ($fuelhop[$focus] < 3))
+		while ((sector.warps[$focus][$a] > 0) and ($fuelhop[$focus] < $fuelhoplimit))
 			setvar $adjacent sector.warps[$focus][$a]
 			# But only add them if they haven't been added previously
 			if ($checked[$adjacent] = 0)
@@ -3248,10 +3302,54 @@ end
 		setvar $twarp_refurb_success true
 		return
 	end
-setvar $switchboard~message "Can't find a route to fuel.  Halting*"
-gosub :switchboard~switchboard
-halt
+	if (($dockfuelmowsuccess = true) and ($fuelretriedfromdock <> true))
+		setvar $fuelretriedfromdock true
+		setvar $bottom 1
+		setvar $top 1
+		setarray $checked sectors
+		setarray $fuelhop sectors
+		setvar $que[1] $player~current_sector
+		setvar $checked[$player~current_sector] 1
+		setvar $fuelhop[$player~current_sector] 0
+		setvar $a 1
+		goto :try_again
+	end
+	gosub :returnfromfailedfuel
+	if ($failedfuelreturned = true)
+		setvar $switchboard~message "Can't find a route to fuel; returned to sector "&$player~current_sector&". Halting*"
+		gosub :switchboard~switchboard
+		halt
+	end
+	setvar $switchboard~message "Can't find a route to fuel.  Halting*"
+	gosub :switchboard~switchboard
+	halt
 
+	return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:returnfromfailedfuel
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $failedfuelreturned false
+if (($return_sector <= 0) or ($return_sector > sectors))
+	return
+end
+gosub :player~quikstats
+if ($player~current_sector = $return_sector)
+	setvar $failedfuelreturned true
+	return
+end
+setvar $savedwsstallowrestrictedhop $wsstallowrestrictedhop
+setvar $wsstallowrestrictedhop true
+setvar $mowintosector $return_sector
+gosub :movetargetpreferingtwarp
+if ($twarpmovemoved <> true)
+	gosub :mowusingknownwarps
+end
+setvar $wsstallowrestrictedhop $savedwsstallowrestrictedhop
+gosub :player~quikstats
+if ($player~current_sector = $return_sector)
+	setvar $failedfuelreturned true
+end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -3259,7 +3357,7 @@ return
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setarray $equipatport sectors
 setarray $fuelatport sectors
-#setarray $invalidsstport sectors
+	setarray $invalidsstport sectors
 setarray $blocked sectors
 
 gosub :sector~getavoids
@@ -3286,9 +3384,128 @@ setvar $savedwsstallowrestrictedhop $wsstallowrestrictedhop
 setvar $wsstallowrestrictedhop true
 setvar $mowintosector $map~stardock
 gosub :movetargetpreferingtwarp
+if ($twarpmovemoved <> true)
+	gosub :mowusingknownwarps
+end
 setvar $wsstallowrestrictedhop $savedwsstallowrestrictedhop
 if (($twarpmovemoved = true) and ($player~current_sector = $map~stardock))
 	setvar $dockfuelmowsuccess true
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:mowusingknownwarps
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $knownmowsuccess false
+if (($mowintosector <= 0) or ($mowintosector > sectors))
+	return
+end
+if ($player~current_sector = $mowintosector)
+	setvar $knownmowsuccess true
+	return
+end
+setarray $knownmowchecked sectors
+setarray $knownmowparent sectors
+setarray $knownmowqueue sectors
+setarray $knownmowpath sectors
+setvar $knownmowbottom 1
+setvar $knownmowtop 1
+setvar $knownmowfound false
+setvar $knownmowqueue[1] $player~current_sector
+setvar $knownmowchecked[$player~current_sector] 1
+while (($knownmowbottom <= $knownmowtop) and ($knownmowfound <> true))
+	setvar $knownmowfocus $knownmowqueue[$knownmowbottom]
+	setvar $knownmowadjindex 1
+	while ((sector.warps[$knownmowfocus][$knownmowadjindex] > 0) and ($knownmowfound <> true))
+		setvar $knownmowadjacent sector.warps[$knownmowfocus][$knownmowadjindex]
+		if ($knownmowchecked[$knownmowadjacent] = 0)
+			setvar $wssthop $knownmowadjacent
+			gosub :iswsstmovementhopallowed
+			if ($wssthopallowed = true)
+				setvar $knownmowchecked[$knownmowadjacent] 1
+				setvar $knownmowparent[$knownmowadjacent] $knownmowfocus
+				if ($knownmowadjacent = $mowintosector)
+					setvar $knownmowfound true
+				end
+				add $knownmowtop 1
+				setvar $knownmowqueue[$knownmowtop] $knownmowadjacent
+			end
+		end
+		add $knownmowadjindex 1
+	end
+	add $knownmowbottom 1
+end
+if ($knownmowfound <> true)
+	return
+end
+setvar $knownmowpathcount 0
+setvar $knownmowsector $mowintosector
+while (($knownmowsector <> $player~current_sector) and ($knownmowsector > 0))
+	add $knownmowpathcount 1
+	setvar $knownmowpath[$knownmowpathcount] $knownmowsector
+	setvar $knownmowsector $knownmowparent[$knownmowsector]
+end
+if ($knownmowsector <> $player~current_sector)
+	return
+end
+setvar $knownmowresult ""
+setvar $knownmowstep 1
+setvar $knownmowroutebuild $player~current_sector
+setvar $knownmowindex $knownmowpathcount
+while ($knownmowindex >= 1)
+	setvar $routehop $knownmowpath[$knownmowindex]
+	setvar $routeisadjacent false
+	setvar $routeadjindex 1
+	while (sector.warps[$knownmowroutebuild][$routeadjindex] > 0)
+		if (sector.warps[$knownmowroutebuild][$routeadjindex] = $routehop)
+			setvar $routeisadjacent true
+		end
+		add $routeadjindex 1
+	end
+	if ($routeisadjacent <> true)
+		return
+	end
+	setvar $knownmowresult $knownmowresult&"m"&$routehop&"* "
+	if (($routehop > 10) and ($routehop <> $map~stardock))
+		setvar $knownmowattack $ship~ship_max_attack
+		if ($player~fighters < $knownmowattack)
+			setvar $knownmowattack $player~fighters
+		end
+		setvar $knownmowresult $knownmowresult&"za"&$knownmowattack&"* * "
+	end
+	if (($dropfigs = true) and ($routehop > 10) and ($routehop <> $map~stardock) and ($knownmowstep > 1))
+		setvar $fig_drop 1
+		if ($x100)
+			if ($player~fighters > 1000)
+				setvar $fig_drop 100
+				setvar $player~fighters ($player~fighters - 100)
+			end
+		elseif ($x1000)
+			if ($player~fighters > 10000)
+				setvar $fig_drop 1000
+				setvar $player~fighters ($player~fighters - 1000)
+			end
+		end
+		setvar $knownmowresult $knownmowresult&"f  z  "&$fig_drop&"* z  c  d  *  "
+		setsectorparameter $routehop "FIGSEC" true
+	end
+	if ($droplimps)
+		setvar $knownmowresult $knownmowresult&"  H  2  Z  3*  Z C  *  "
+		setsectorparameter $routehop "LIMPSEC" true
+	end
+	if ($droparmids)
+		setvar $knownmowresult $knownmowresult&"  H  1  Z  3*  Z C  *  "
+		setsectorparameter $routehop "MINESEC" true
+	end
+	setvar $knownmowroutebuild $routehop
+	add $knownmowstep 1
+	subtract $knownmowindex 1
+end
+send $knownmowresult
+gosub :player~quikstats
+if ($player~current_sector = $mowintosector)
+	setvar $knownmowsuccess true
+	setvar $twarpmovemoved true
 end
 return
 

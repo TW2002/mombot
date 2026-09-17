@@ -31,40 +31,49 @@ elseif ($startingprompt <> "Command")
 	halt
 end
 
-getwordpos $user_command_line $pos "ignore"
+setvar $upgrade~commandline $bot~user_command_line
+if ($upgrade~commandline = "")
+	setvar $upgrade~commandline $user_command_line
+end
+lowercase $upgrade~commandline
+getwordpos " "&$upgrade~commandline&" " $pos " ignore "
 if ($pos > 0)
 	setvar $ignore 1
 else
 	setvar $ignore 0
 end
 
-if ($ignore = 1)
-	setvar $startarg 1
-else
-	setvar $startarg 0
-end
-
-setarray $planetloop~ignorelist 8
+setvar $planetloop~ignorelist ""
+setvar $planetloop~onlylist ""
+setarray $planetloop~ignore 50
+setarray $planetloop~only 50
 setarray $upgrade~cacheplanet 2000
 setarray $upgrade~cachesector 2000
 setarray $upgrade~cacheamount 2000 3
 setarray $upgrade~cachecolo 2000 3
 setvar $upgrade~cachecount 0
 
-setvar $index $startarg
-while ($index < 8)
+setvar $index 0
+while ($index < 50)
 	add $index 1
-	getword $user_command_line $tmp $index
-	isnumber $isnumber $tmp
-	if ($isnumber = 0)
+	getword $upgrade~commandline $tmp $index "%%%"
+	if ($tmp = "%%%")
 		goto :end_ignoreloop
 	end
-	if ($tmp < 2)
-		goto :end_ignoreloop
+	if ($tmp <> "ignore")
+		if ($tmp <> "upgrade")
+			isnumber $isnumber $tmp
+			if ($isnumber = true)
+				if ($tmp > 1)
+					if ($ignore = 1)
+						setvar $planetloop~ignorelist $planetloop~ignorelist&" "&$tmp
+					else
+						setvar $planetloop~onlylist $planetloop~onlylist&" "&$tmp
+					end
+				end
+			end
+		end
 	end
-	setvar $planetloop~ignorelist[$index] $tmp
-	add $index 1
-	setvar $isnumber 0
 end
 :end_ignoreloop
 #loadvar $MASSUPGRADESAVED
@@ -92,12 +101,11 @@ if (sector.planetcount[$sector] = 0)
 	return
 end
 
-send "jy"
+gosub :upgrade_clearshipholds
 gosub :player~quikstats
 setvar $holds $player~total_holds
 
 setvar $planetloop~loopsub ":CHECKPLANET"
-setvar $planetloop~ignorelist $ignorelist
 setvar $planetupgrade~failed 0
 
 logging off
@@ -137,6 +145,17 @@ if ($planetloop~ignore[$planetloop~i] <> 0)
 	goto :planetloop_i
 end
 setvar $planetloop~ignorelist ""
+setvar $planetloop~i 1
+setvar $planetloop~onlycount 0
+
+:planetloop_only_i
+getword $planetloop~onlylist $planetloop~only[$planetloop~i] $planetloop~i
+if ($planetloop~only[$planetloop~i] <> 0)
+	add $planetloop~i 1
+	add $planetloop~onlycount 1
+	goto :planetloop_only_i
+end
+setvar $planetloop~onlylist ""
 
 setvar $planetloop~found 0
 send "l"
@@ -235,6 +254,19 @@ return
 :planetloop_sub_checkignore
 setvar $planetloop~j 1
 setvar $planetloop~ignore 0
+if ($planetloop~onlycount > 0)
+	setvar $planetloop~ignore 1
+	:planetloop_only_j
+	if ($planetloop~j <= $planetloop~onlycount)
+		if ($planetloop~only[$planetloop~j] = $planetloop~id)
+			setvar $planetloop~ignore 0
+		else
+			add $planetloop~j 1
+			goto :planetloop_only_j
+		end
+	end
+	return
+end
 
 :planetloop_j
 if ($planetloop~j <= $planetloop~ignorecount)
@@ -249,8 +281,6 @@ end
 return
 
 :planetupgrade
-setvar $planetupgrade~failed 0
-
 setvar $planet~noheader 1
 gosub :planet~planetinfo
 setvar $upgrade~cacheplanetid $planetupgrade~planetid
@@ -353,6 +383,31 @@ subtract $planetupgrade~fuelneeded $planet~amount[1]
 subtract $planetupgrade~orgneeded $planet~amount[2]
 subtract $planetupgrade~equipneeded $planet~amount[3]
 
+setvar $planetupgrade~capacityfailed 0
+setvar $planetupgrade~capacityproduct ""
+
+if (($planetupgrade~fuelneeded > 0) and (($planet~amount[1] + $planetupgrade~fuelneeded) > $planet~max[1]))
+	setvar $planetupgrade~capacityfailed 1
+	setvar $planetupgrade~capacityproduct "fuel ore"
+end
+
+if (($planetupgrade~orgneeded > 0) and (($planet~amount[2] + $planetupgrade~orgneeded) > $planet~max[2]))
+	setvar $planetupgrade~capacityfailed 1
+	setvar $planetupgrade~capacityproduct "organics"
+end
+
+if (($planetupgrade~equipneeded > 0) and (($planet~amount[3] + $planetupgrade~equipneeded) > $planet~max[3]))
+	setvar $planetupgrade~capacityfailed 1
+	setvar $planetupgrade~capacityproduct "equipment"
+end
+
+if ($planetupgrade~capacityfailed)
+	setvar $planetupgrade~failed 1
+	setvar $switchboard~message "Planet "&$planetupgrade~planetid&" cannot store the required "&$planetupgrade~capacityproduct&" for upgrade; skipping.*"
+	gosub :switchboard~switchboard
+	return
+end
+
 if (($planetupgrade~colosneeded <= 0) and (($planetupgrade~fuelneeded <= 0) and (($planetupgrade~orgneeded <= 0) and ($planetupgrade~equipneeded <= 0))))
 	if ($planetupgrade~daysneeded = 0)
 		setdelaytrigger upgradepause :planetupgrade_upgradepause 1000
@@ -380,6 +435,9 @@ if ($planetupgrade~fuelneeded > 0)
 
 	if ($gather~failed)
 		setvar $planetupgrade~failed 1
+		setvar $planetloop~found 1
+		setvar $switchboard~message "Unable to gather enough fuel ore to continue upgrading; stopping.*"
+		gosub :switchboard~switchboard
 		return
 	end
 end
@@ -396,6 +454,9 @@ if ($planetupgrade~orgneeded > 0)
 
 	if ($gather~failed)
 		setvar $planetupgrade~failed 1
+		setvar $planetloop~found 1
+		setvar $switchboard~message "Unable to gather enough organics to continue upgrading; stopping.*"
+		gosub :switchboard~switchboard
 		return
 	end
 end
@@ -412,6 +473,9 @@ if ($planetupgrade~equipneeded > 0)
 
 	if ($gather~failed)
 		setvar $planetupgrade~failed 1
+		setvar $planetloop~found 1
+		setvar $switchboard~message "Unable to gather enough equipment to continue upgrading; stopping.*"
+		gosub :switchboard~switchboard
 		return
 	end
 end
@@ -429,6 +493,9 @@ if ($planetupgrade~colosneeded > 0)
 
 	if ($gather~failed)
 		setvar $planetupgrade~failed 1
+		setvar $planetloop~found 1
+		setvar $switchboard~message "Unable to gather enough colonists to continue upgrading; stopping.*"
+		gosub :switchboard~switchboard
 		return
 	end
 end
@@ -436,16 +503,59 @@ end
 send "l " $planetupgrade~planetid "*"
 goto :planetupgrade
 
+:upgrade_clearshipholds
+gosub :player~currentprompt
+
+if ($player~current_prompt = "Citadel")
+	send "q"
+	waiton "Planet command (?=help)"
+	setvar $player~current_prompt "Planet"
+end
+
+if ($player~current_prompt = "Planet")
+	send "t n l 1* t n l 2* t n l 3*"
+	waiton "Planet command (?=help)"
+elseif ($player~current_prompt = "Command")
+	send "jy"
+	waiton "Command [TL="
+end
+return
+
 :gather
 setvar $gather~gathered 0
 setvar $gather~failed 0
 
-if ($gather~holds = 0)
+gosub :player~quikstats
+if (($player~empty_holds <= 0) and (($player~ore_holds + ($player~organic_holds + $player~equipment_holds)) > 0))
+	gosub :upgrade_clearshipholds
 	gosub :player~quikstats
-	setvar $gather~holds $player~total_holds
+end
+
+setvar $gather~holds $player~empty_holds
+
+if ($gather~holds <= 0)
+	setvar $gather~failed 1
+	setvar $switchboard~message "Unable to clear ship holds while gathering product; skipping planet.*"
+	gosub :switchboard~switchboard
+	return
 end
 
 :gather_gogather
+gosub :player~quikstats
+if (($player~empty_holds <= 0) and (($player~ore_holds + ($player~organic_holds + $player~equipment_holds)) > 0))
+	gosub :upgrade_clearshipholds
+	gosub :player~quikstats
+end
+
+setvar $gather~holds $player~empty_holds
+
+if ($gather~holds <= 0)
+	setvar $gather~failed 1
+	setvar $switchboard~message "Unable to clear ship holds while gathering product; skipping planet.*"
+	gosub :switchboard~switchboard
+	return
+end
+
 if (($gather~quantity - $gather~gathered) < $gather~holds)
 	setvar $gather~get ($gather~quantity - $gather~gathered)
 else
@@ -1066,9 +1176,9 @@ else
 		end
 		else
 			if ($pscan or (sector.planetcount[$sourcesector] > 1))
-				setvar $send $send&"l  "&$source&"*"
+				setvar $send $send&"l "&$source&"*"
 			else
-				setvar $send $send&"l  "
+				setvar $send $send&"l "
 			end
 
 		if (($cycles = 1) and ($remainder > 0))
@@ -1078,7 +1188,7 @@ else
 		end
 	end
 
-	setvar $send $send&"l  "&$dest&"*"&$dropofftext&"*q"
+	setvar $send $send&"l "&$dest&"*"&$dropofftext&"*q"
 
 	send $send
 	subtract $cycles 1
@@ -1098,7 +1208,7 @@ else
 		setvar $gameprefs~bank "MOVEPRODUCT"
 		gosub :gameprefs~setgameprefs
 
-		send "l  " $dest "*"
+		send "l " $dest "*"
 		waiton "Planet command (?=help)"
 		gosub :restorehaggle
 		return

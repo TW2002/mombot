@@ -152,6 +152,24 @@ return
 :ship~getshipstats
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "c;"
+waiton "Computer command"
+:ship~keeplookingshipname
+killalltriggers
+settextlinetrigger 1 :ship~checkshipname
+pause
+
+# Added by Shadow 9/14/26
+:ship~checkshipname
+if (currentline = "")
+	goto :ship~keeplookingshipname
+else
+	getword currentline $stemp 1
+	getwordpos currentline $pos $stemp
+	cuttext currentline $stemp $pos 999
+	getwordpos $stemp $pos2 "  "
+	cuttext $stemp $ship~ship_name 1 ($pos2 - 1)
+end
+
 settextlinetrigger getshipoffense :ship~shipoffenseodds "Offensive Odds:"
 settextlinetrigger getshipdefense :ship~shipdefenseodds "Defensive Odds:"
 settextlinetrigger getshipfighters :ship~shipmaxfigsperattack " TransWarp Drive:   "
@@ -253,6 +271,18 @@ pause
 
 :ship~getshipstats_returnprompt
 killalltriggers
+
+# Added by Shadow 9/14/26
+gosub :ship~loadshipinfo
+setvar $ship~gbonus 0
+setvar $ship~i_ship 0
+while ($ship~i_ship < $ship~shipcounter)
+	add $ship~i_ship 1
+	if ($ship~shiplist[$ship~i_ship] = $ship~ship_name)
+		setvar $ship~gbonus $ship~shiplist[$ship~i_ship][8]
+	end
+end
+
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

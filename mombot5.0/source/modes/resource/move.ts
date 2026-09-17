@@ -259,12 +259,12 @@ setvar $moveall_totalmoved 0
 setvar $moveall_movedplanets 0
 setarray $moveall_target 2000
 setvar $moveall_targetcount 0
-gosub :planet~getplanets
+gosub :moveallsectorplanets
 setvar $moveall_i 1
-while ($moveall_i <= $planet~planetlistcount)
-	if (($planet~planetlist[$moveall_i][1] = $moveall_sector) and ($planet~planetlist[$moveall_i] <> $moveall_startingplanet))
+while ($moveall_i <= $planet~planetcount)
+	if ($planet~planets[$moveall_i] <> $moveall_startingplanet)
 		add $moveall_targetcount 1
-		setvar $moveall_target[$moveall_targetcount] $planet~planetlist[$moveall_i]
+		setvar $moveall_target[$moveall_targetcount] $planet~planets[$moveall_i]
 	end
 	add $moveall_i 1
 end
@@ -317,6 +317,27 @@ else
 	setvar $switchboard~message "Moved "&$moveall_amount&" "&$stuffmoved&" to "&$moveall_movedplanets&" planets ("&$moveall_totalmoved&" total).*"
 end
 gosub :switchboard~switchboard
+return
+
+:moveallsectorplanets
+gosub :player~currentprompt
+if ($player~current_prompt = "Citadel")
+	send "q"
+	waiton "Planet command"
+	gosub :player~currentprompt
+end
+if ($player~current_prompt = "Planet")
+	send "q "
+	waiton "Command"
+	gosub :player~currentprompt
+end
+if ($player~current_prompt <> "Command")
+	setvar $planet~planetcount 0
+	return
+end
+gosub :planet~countplanets
+send "l "&$moveall_startingplanet&"*"
+waiton "Planet command"
 return
 
 :moveall_sourceamount

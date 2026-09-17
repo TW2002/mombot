@@ -1337,9 +1337,8 @@ pause
 #end
 #=---------------- CN9 Check ---------------------------------
 if ($location = "Command")
-	send "?d"
-	settexttrigger allkeys_off	:allkeys_off "=-=-=-=-=-=-=-="
-	settexttrigger allkey_on	:allkey_on "Warps to Sector(s) : "
+	gosub :player~startcnsettings
+	return
 else
 	send "sn**"
 	settexttrigger allkeys_off	:allkeys_off "Warps to Sector(s) : "

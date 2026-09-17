@@ -10,7 +10,7 @@ if ($player~current_prompt = "Citadel")
 	if ($player~was_silent <> true)
 		setvar $port~restore_messages true
 	end
-	send "S*CR"
+	send "CR"
 elseif ($player~current_prompt = "Command")
 	gosub :player~msgs_off
 	if ($player~was_silent <> true)

@@ -336,12 +336,13 @@ if ($isfound = false)
 end
 setvar $switchboard~message "Planet gridding into sector " & $pgridsector & "* c v* y* " & $pgridsector & "* q "
 
-setvar $mac " * "
+setvar $mac " * * "
 if ($pgrid_waves <= 0)
 	setvar $pgrid_waves 1
 end
 if ($wave > 0)
-	setvar $mac $mac & "a z"&$wave&"* * r * "
+#	setvar $mac $mac & "a z"&$wave&"* * r * "
+	setvar $mac $mac & "a z"&$wave&"* "
 else
 	if ($player~fighters < $ship~ship_max_attack)
 		setvar $mac $mac & "a z " & ($player~fighters-1) & "9999" & "* * "
@@ -355,7 +356,7 @@ else
 	end
 end
 if ($unsafe = true)
-	setvar $mac $mac & "f z "&$fighterdrop&" * z c d l j" & #8 & $planet~planet & "* l j" & #8 & $planet~planet & "*  "
+	setvar $mac $mac & "* f z "&$fighterdrop&" * z c d l j" & #8 & $planet~planet & "* l j" & #8 & $planet~planet & "*  "
 elseif ($xporting = false)
 	setvar $mac $mac & "j r * f z "&$fighterdrop&" * z c d * "
 else

@@ -27,7 +27,13 @@ waiton "Citadel treasury contains "
 getword currentline $planet~citadelcash 4
 striptext $planet~citadelcash ","
 striptext $planet~citadelcash "."
-if (($cashtotranfer+$planet~citadelcash) >= $planet~citadel_cash_max)
+gosub :player~currentprompt
+if ($player~current_prompt <> "Citadel")
+	setvar $switchboard~message "Deposit aborted because prompt changed to ["&$player~current_prompt&"] before treasury transfer.*"
+	gosub :switchboard~switchboard
+	goto :wait_for_command
+end
+if (($cashtotransfer+$planet~citadelcash) >= $planet~citadel_cash_max)
 	setvar $switchboard~message "Citadel has too much cash to do transfer (how sad for you)*"
 	gosub :switchboard~switchboard
 	goto :wait_for_command

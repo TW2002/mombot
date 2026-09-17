@@ -181,10 +181,8 @@ killtrigger aliveonplanet
 killtrigger aliveincitadel
 killtrigger delete
 gosub :relog_freeze_trigger
-killtrigger 1
-setdelaytrigger 1 :didnotmakeittogame 10000
+# An in-game prompt confirmed login; long sector listings can delay quikstats.
 gosub :player~quikstats
-killtrigger 1
 setvar $relog~starting_prompt $player~current_prompt
 if (($relog~starting_prompt <> "Planet") and ($relog~starting_prompt <> "Citadel"))
 	send "Z*  *  Z*  Z   A 9999*  Z*  "
@@ -240,9 +238,6 @@ if (($relog_message <> "") and ($relog_message <> "0"))
 end
 halt
 
-:didnotmakeittogame
-echo ansi_4&"*Didn't make it into the game!  Bot will try again in about 30 seconds.*"&ansi_15
-halt
 #============================== END ONLINE WATCH/RELOG SUB ==============================
 :relog_freeze_trigger
 killtrigger unfreezingtrigger
@@ -268,22 +263,96 @@ gosub :killrelogtriggers
 settexttrigger loginsuccessful :continuerelog4 "==-- "
 settexttrigger loginsuccessful2 :continuerelog4 "Copyright (C) EIS"
 settexttrigger loginsuccessful3 :continuerelog4 "OpenTW Server"
+setdelaytrigger loginmenufallback :continuerelog4 300
 send $bot~servername & "*"
 pause
 
 :continuerelog4
 gosub :killrelogtriggers
+setvar $relog~saw_game_letter false
+setvar $relog~menu_probe_line ""
+setvar $relog~menu_probe_count 0
 setstrigger relog69 :continuerelog5 "Make a Selection:"
 setstrigger relog3 :continuerelog5 "Selection (? for menu):"
 setstrigger relog5 :continuerelog5 "Selection:"
 setstrigger relogselect :continuerelog5 "Select a game"
+setvar $relog~game_letter_marker $bot~letter&" - "
+settexttrigger relogletterdash :saw_game_letter_on_menu $relog~game_letter_marker
+setvar $relog~game_letter_marker $bot~letter&". "
+settexttrigger relogletterdot :saw_game_letter_on_menu $relog~game_letter_marker
+setvar $relog~game_letter_marker "<"&$bot~letter&">"
+settexttrigger relogletterangle :saw_game_letter_on_menu $relog~game_letter_marker
+setvar $relog~game_letter_marker "["&$bot~letter&"]"
+settexttrigger relogletterbracket :saw_game_letter_on_menu $relog~game_letter_marker
+setvar $relog~game_letter_marker "("&$bot~letter&")"
+settexttrigger relogletterparen :saw_game_letter_on_menu $relog~game_letter_marker
+setdelaytrigger relogmenupromptcheck :check_first_game_menu_prompt 200
 #send "#"&#8
+pause
+
+:saw_game_letter_on_menu
+setvar $relog~saw_game_letter true
+pause
+
+:check_first_game_menu_prompt
+setvar $relog~line currentline
+getwordpos $relog~line $relog~pos "Command ["
+if ($relog~pos > 0)
+	getwordpos $relog~line $relog~pos "Menu"
+	if ($relog~pos > 0)
+		goto :continuerelog5
+	else
+		goto :done_do_relog
+	end
+end
+getwordpos $relog~line $relog~pos "Planet command (?=help) [D]"
+if ($relog~pos > 0)
+	goto :done_do_relog
+end
+getwordpos $relog~line $relog~pos "Citadel command (?=help)"
+if ($relog~pos > 0)
+	goto :done_do_relog
+end
+getwordpos $relog~line $relog~pos "Enter your choice"
+if ($relog~pos > 0)
+	goto :continuerelog5
+end
+getwordpos $relog~line $relog~pos "Selection (? for menu)"
+if ($relog~pos > 0)
+	goto :continuerelog5
+end
+getwordpos $relog~line $relog~pos "Selection:"
+if ($relog~pos > 0)
+	goto :continuerelog5
+end
+getwordpos $relog~line $relog~pos "Select a game"
+if ($relog~pos > 0)
+	goto :continuerelog5
+end
+if (($game~game_menu_prompt <> 0) and ($game~game_menu_prompt <> ""))
+	getwordpos $relog~line $relog~pos $game~game_menu_prompt
+	if ($relog~pos > 0)
+		goto :continuerelog5
+	end
+end
+if (($relog~saw_game_letter = true) and ($relog~line <> ""))
+	if ($relog~line = $relog~menu_probe_line)
+		add $relog~menu_probe_count 1
+	else
+		setvar $relog~menu_probe_line $relog~line
+		setvar $relog~menu_probe_count 0
+	end
+	if ($relog~menu_probe_count >= 3)
+		goto :continuerelog5
+	end
+end
+setdelaytrigger relogmenupromptcheck :check_first_game_menu_prompt 200
 pause
 
 :continuerelog5
 gosub :killrelogtriggers
 settexttrigger firstpause :firstpause "[Pause]"
-setstrigger alive :done_do_relog "Command ["
+setstrigger alive :relog_check_game_menu_prompt "Command ["
 setstrigger aliveonplanet :done_do_relog "Planet command (?=help) [D]"
 setstrigger aliveincitadel :done_do_relog "Citadel command (?=help)"
 setstrigger enter :enter_game_menu "Enter your choice"
@@ -292,10 +361,14 @@ send $bot~letter
 pause
 
 :relog_check_game_menu_prompt
+killtrigger relogmenupromptcheck
 setvar $relog~line currentline
 getwordpos $relog~line $relog~pos "Command ["
 if ($relog~pos > 0)
-	goto :done_do_relog
+	getwordpos $relog~line $relog~pos "Menu"
+	if ($relog~pos <= 0)
+		goto :done_do_relog
+	end
 end
 getwordpos $relog~line $relog~pos "Planet command (?=help) [D]"
 if ($relog~pos > 0)
@@ -382,6 +455,12 @@ killtrigger relog69
 killtrigger relog5
 killtrigger relogselect
 killtrigger relog89
+killtrigger relogletterdash
+killtrigger relogletterdot
+killtrigger relogletterangle
+killtrigger relogletterbracket
+killtrigger relogletterparen
+killtrigger loginmenufallback
 killtrigger loginsuccessful
 killtrigger loginsuccessful2
 killtrigger loginsuccessful3

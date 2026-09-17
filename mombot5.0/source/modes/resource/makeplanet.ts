@@ -10,8 +10,8 @@ setvar $help~help[4]    $help~tab&"                This is NOT safe."
 setvar $help~help[5]    $help~tab&"       "
 setvar $help~help[6]    $help~tab&"   {count:x}  - Number of planets to make."
 setvar $help~help[7]    $help~tab&"       "
-setvar $help~help[8]    $help~tab&"   {create:}  - List of planet types to make.  First word"
-setvar $help~help[9]    $help~tab&"                of planet types separated by commas and no spaces."
+setvar $help~help[8]    $help~tab&"   {create:}  - Planet type text to make. First word or quoted"
+setvar $help~help[9]    $help~tab&"                full type, or first words separated by commas."
 setvar $help~help[10]    $help~tab&"                Default will use keeper planets in preferences."
 setvar $help~help[11]    $help~tab&"                "
 setvar $help~help[12]   $help~tab&"{custom name} - Name the planet will be.  Otherwise it's a random   "
@@ -23,7 +23,7 @@ setvar $help~help[17]   $help~tab&"                              "
 setvar $help~help[18]   $help~tab&"      Examples:                   "
 setvar $help~help[19]   $help~tab&"            >makeplanet create:earth,volcanic,oceanic "
 setvar $help~help[20]   $help~tab&"            >makeplanet ewarp strip create:earth         "
-setvar $help~help[21]   $help~tab&"            >makeplanet "&#34&"death"&#34&" create:volcanic "
+setvar $help~help[21]   $help~tab&"            >makeplanet create:"&#34&"Romulan Haven"&#34&" "
 setvar $help~help[22]   $help~tab&"                              "
 setvar $help~help[23]   $help~tab&"               - Originally written by Xide"
 gosub :help~helpfile
@@ -38,6 +38,7 @@ loadvar $planet~planet_file
 gosub :player~quikstats
 setvar $startinglocation $player~current_prompt
 setvar $startingplanet 0
+setvar $startingcredits $player~credits
 
 if ($startinglocation = "Citadel")
 	send "q"
@@ -85,7 +86,16 @@ end
 
 getwordpos " "&$bot~user_command_line&" " $pos "create:"
 if ($pos > 0)
-	gettext " "&$bot~user_command_line&" " $create_list "create:" " "
+	setvar $create_source " "&$bot~user_command_line&" "
+	gettext $create_source $create_list "create:" " "
+	cuttext $create_list $create_first 1 1
+	if ($create_first = #34)
+		gettext $create_source $create_list "create:"&#34 #34
+		striptext $bot~user_command_line "create:"&#34&$create_list&#34
+	else
+		striptext $bot~user_command_line "create:"&$create_list
+	end
+	trim $create_list
 	getwordpos $create_list $pos ","
 	if ($pos > 0)
 		splittext $create_list $wantedplanets  ","
@@ -140,10 +150,19 @@ end
 
 gosub :planetnames~make_planet_array
 
+setvar $show_window false
+if ($count > 5)
+	setvar $show_window true
+	window "STATUS" 350 150 "makeplanet - "&GAMENAME "ONTOP"
+end
+
 setvar $madenum 0
 while ($madenum < $count)
 	add $madenum 1
 	gosub :makeplanet
+	if ($show_window = true)
+		gosub :updatewindow
+	end
 end
 
 if (($startinglocation = "Citadel") or ($startinglocation = "Planet"))
@@ -192,8 +211,15 @@ setslinetrigger 1 :bust_testplanet "What do you want to name"
 pause
 
 :bust_testplanet
-getword currentline $type 11
-striptext $type ")"
+setvar $type currentline
+getwordpos $type $type_pos ","
+if ($type_pos > 0)
+	cuttext $type $type ($type_pos + 1) 9999
+else
+	getword $type $type 11
+	striptext $type ")"
+end
+trim $type
 lowercase $type
 
 if ($wantedplanets[1] = 0)
@@ -219,7 +245,6 @@ if ($wantedplanets[1] = 0)
 		goto :bust_wanted
 	end
 else
-
 	if ($wantedplanets = 0)
 		setvar $switchboard~message "Somehow no wanted planets are defined.  Halting.*"
 		gosub :switchboard~switchboard
@@ -228,7 +253,11 @@ else
 	# see if we want it
 	setvar $i 1
 	while ($i <= $wantedplanets)
-		if ($wantedplanets[$i] = $type)
+		setvar $wanted_type $wantedplanets[$i]
+		trim $wanted_type
+		lowercase $wanted_type
+		getwordpos $type $type_pos $wanted_type
+		if ($type_pos > 0)
 			setvar $announce_message "Made "&$wantedplanets[$i]&" planet!.*"
 			goto :bust_wanted
 		else
@@ -298,7 +327,9 @@ goto :bust
 else
 	setvar $name $custom_planet_name
 end
-send $name "*cl"
+#send $name "*cl"
+send $name "* c "
+return
 
 # get its ID
 waiton "Should this be a"
@@ -383,14 +414,15 @@ pause
 :resupply_gettorps
 getword currentline $resupply_torps 9
 striptext $resupply_torps ")"
-if ($torps >= 20)
-	send "*a"
-elseif ($resupply_torps < (20 - $torps))
-	send $resupply_torps "*a"
-else
-	send (20 - $torps) "*a"
+setvar $resupply_torps_to_buy 0
+if ($torps < 20)
+	setvar $resupply_torps_to_buy (20 - $torps)
+	if ($resupply_torps_to_buy > $resupply_torps)
+		setvar $resupply_torps_to_buy $resupply_torps
+	end
 end
-add $torps $resupply_torps
+send $resupply_torps_to_buy "*a"
+add $torps $resupply_torps_to_buy
 
 waitfor "We have the standard Nuerevy Atomic Detonator"
 settexttrigger resupply_getdets :resupply_getdets ") [0] ?"
@@ -603,6 +635,66 @@ killtrigger makeplanet_warp_figs
 killtrigger makeplanet_warp_stopprompt
 killtrigger makeplanet_warp_minesprompt
 killtrigger makeplanet_warp_arrived
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:updatewindow
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+if ($show_window <> true)
+	return
+end
+setvar $msg ""
+setvar $cashamount $madenum
+gosub :commasize
+setvar $msg $msg&"Planets Made:         "&$cashamount&" / "
+setvar $cashamount $count
+setvar $msg $msg&$cashamount&"*"
+setvar $cashamount ($startingcredits - $player~credits)
+gosub :commasize
+setvar $msg $msg&"Credits Spent:        "&$cashamount&"*"
+setvar $cashamount $player~credits
+gosub :commasize
+setvar $msg $msg&"Credits Remaining:    "&$cashamount&"*"
+setwindowcontents "STATUS" $msg
+return
+
+:commasize
+isnumber $tst $cashamount
+if ($tst = FALSE)
+	echo "***"
+	echo ANSI_14&" Script Halted - CashAmount Invalid"
+	echo "***"
+	halt
+end
+if ($cashamount < 1000)
+elseif ($cashamount < 1000000)
+	getlength $cashamount $len
+	setvar $len ($len - 3)
+	cuttext $cashamount $tmp 1 $len
+	cuttext $cashamount $tmp1 ($len + 1) 999
+	setvar $tmp $tmp&","&$tmp1
+	setvar $cashamount $tmp
+elseif ($cashamount <= 999999999)
+	getlength $cashamount $len
+	setvar $len ($len - 6)
+	cuttext $cashamount $tmp 1 $len
+	setvar $tmp $tmp&","
+	cuttext $cashamount $tmp1 ($len + 1) 3
+	setvar $tmp $tmp&$tmp1&","
+	cuttext $cashamount $tmp1 ($len + 4) 999
+	setvar $tmp $tmp&$tmp1
+	setvar $cashamount $tmp
+end
+return
+
+:pad
+setvar $pad 1
+getlength $cashamount $len
+setvar $len (10 - $len)
+while ($pad <= $len)
+	setvar $cashamount " "&$cashamount
+	add $pad 1
+end
 return
 
 # includes:

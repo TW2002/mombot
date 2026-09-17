@@ -61,6 +61,7 @@ end
 if ($merchant~use_file = true)
 	setvar $sector_idx 1
 end
+setvar $merchant~filetarget false
 
 gosub :player~startcnsettings
 setvar $haggle~nativehagglemode $nativehagglemode
@@ -88,10 +89,11 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 		while ($sector_idx <= $merchant~sectors)
 			setvar $focus $merchant~sectors[$sector_idx]
 			add $sector_idx 1
-			gosub :checkport
-			if ($goodport = true)
+			isnumber $test $focus
+			if ($test = true) and ($focus > 0) and ($focus <= sectors)
 				setvar $nearfig $focus
 				setvar $checkedports[$nearfig] true
+				setvar $merchant~filetarget true
 				goto :merch_sector
 			end
 		end
@@ -102,6 +104,7 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 
 	# selloff first to all the high value ports
 	if ($checkmcic <> true)
+		setvar $merchant~filetarget false
 		setvar $sellscore 0
 		setvar $sellsector 0
 		setvar $focus 1
@@ -132,6 +135,7 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 	# go to the rest of the good ports in order of proximity
 	:tryagain2
 	while ($bottom <= $top)
+		setvar $merchant~filetarget false
 		setvar $focus $que[$bottom]
 		setvar $merchcheckremote true
 		gosub :checkport
@@ -195,6 +199,9 @@ if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 	end
 
 	gosub :merchant~refreshtradeflags
+	if ($merchant~filetarget = true)
+		gosub :merchant~refreshfiletradeflags
+	end
 	setvar $thisportvalue 0
 	if ($cansellequiphere = true)
 		add $thisportvalue $port~equvalue
@@ -242,7 +249,9 @@ if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 		end
 	end
 
-	gosub :player~quikstats
+	if ($planet~planetnegotiate <> true) or ($checkmcic = true) or ($uporg = true) or ($upequ = true)
+		gosub :player~quikstats
+	end
 	if (($player~credits + $planet~citadel_credits) < 5000000) and ($checkmcic = true) and (($uporg = true) or ($upequ = true))
 		setvar $switchboard~message "Not enough credits to continue MCIC check*"
 		gosub :switchboard~switchboard
@@ -265,16 +274,18 @@ if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 		end
 	end
 
-	if ($player~current_prompt = "Command")
-		gosub :planet~landingsub
-	elseif ($player~current_prompt = "Citadel")
-		send "q"
-	end
+	if ($planet~planetnegotiate <> true) or ($salesman = true)
+		if ($player~current_prompt = "Command")
+			gosub :planet~landingsub
+		elseif ($player~current_prompt = "Citadel")
+			send "q"
+		end
 
-	gosub :planet~getplanetinfo
-	send "c"
-	gosub :player~quikstats
-	gosub :port~getportinfo
+		gosub :planet~getplanetinfo
+		send "c"
+		gosub :player~quikstats
+		gosub :port~getportinfo
+	end
 end
 gosub :postport
 goto :select_next_port
@@ -352,10 +363,8 @@ else
 	setvar $planethaggle~_ck_pnego_equiptosell "-1"
 end
 setvar $planethaggle~hasprods 1
-gosub :player~quikstats
 setvar $precreds $player~credits
 gosub :planethaggle~planetneg
-gosub :player~quikstats
 setvar $profit ($planethaggle~oreprofit + $planethaggle~orgprofit + $planethaggle~equprofit)
 setvar $haggledata $profit & " " & $thisportvalue & " " & $oretrading & " " & $orgtrading & " " & $equtrading & "*"
 write $hagglefile $haggledata
@@ -957,6 +966,43 @@ end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:merchant~refreshfiletradeflags
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $cansellfuelhere false
+setvar $cansellorghere false
+setvar $cansellequiphere false
+setvar $canbuyfuelhere false
+setvar $canbuyorghere false
+setvar $canbuyequiphere false
+gosub :merchant~calculatehalfportamounts
+
+if ($sellingfuel = true)
+	if ($planet~planet_fuel >= 100000) and ($port~orebuying = "Buying")
+		setvar $cansellfuelhere true
+	end
+end
+
+if ($sellingorg = true)
+	if ($planet~planet_organics > 0) and ($port~orgbuying = "Buying")
+		setvar $cansellorghere true
+	end
+end
+
+if ($sellingequip = true)
+	if ($planet~planet_equipment > 0) and ($port~equbuying = "Buying")
+		setvar $cansellequiphere true
+	end
+end
+
+if ($buyfuel = true)
+	setvar $planetroom ($planet~planet_fuel_max - $planet~planet_fuel)
+	if (($port~orebuying = "Selling") and ($planetroom > 0) and ($port~oretrading > 0))
+		setvar $canbuyfuelhere true
+	end
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :merchant~calculatehalfportamounts
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 setvar $fuel_half_port_max $half_port_max
@@ -1121,6 +1167,9 @@ return
 :postport
 #send "#"
 #waiton "                            Who's Playing"
+if ($merchant~grid <> true) and ($merchant~mines <> true) and ($merchant~do_rob <> true)
+	return
+end
 gosub :player~quikstats
 if ($merchant~grid = true)
 	send "q m* * *  q "

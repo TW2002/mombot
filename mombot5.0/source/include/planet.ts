@@ -16,11 +16,23 @@ killalltriggers
 setvar $planet~planetcount 0
 
 gosub :player~msgs_off
+settexttrigger planetliststart :planetliststart "Registry"
+settexttrigger noplanets :countdone "There isn't a planet in this sector."
+setslinetrigger promptonly :planetpromptonly "Land on which planet "
 send "lq*"
-waiton "Registry"
+pause
+
+:planet~planetliststart
+killalltriggers
 settextlinetrigger planetgrabber :planetline "   <"
 setslinetrigger bedone :countdone "Land on which planet "
 pause
+
+:planet~planetpromptonly
+killalltriggers
+waiton "Command [TL"
+gosub :player~msgs_on
+return
 
 :planet~planetline
 killalltriggers
@@ -35,19 +47,29 @@ striptext $line ","
 add $planetcount 1
 getword $line $planets[$planetcount] 1
 getwordpos $line $pos "Level"
-if ($pos > 0)
+getwordpos $line $pos2 "None"
+if ($pos > 0) or ($pos2 > 0)
 	cuttext $line $tmp_line $pos 999
 	setarray $planets[$planetcount] 6
-	getword $tmp_line $planets[$planetcount][1] 2
-	getword $tmp_line $tmp 3
+	if ($pos > 0)
+		getword $tmp_line $planets[$planetcount][1] 2
+		setvar $col 2
+	else
+		setvar $planets[$planetcount][1] 0
+		setvar $col 1
+	end
+	getword $tmp_line $tmp ($col + 1)
 	striptext $tmp "%"
 	setvar $planets[$planetcount][2] $tmp
-	getword $tmp_line $tmpqcan 5
+	getword $tmp_line $tmpqcan ($col + 3)
 	striptext $tmpqcan "%"
+	if ($tmpqcan = "None")
+		setvar $tmpqcan 0
+	end
 	setvar $planets[$planetcount][4] $tmpqcan
-	getword $tmp_line $tmpclass 6
+	getword $tmp_line $tmpclass ($col + 4)
 	setvar $planets[$planetcount][5] $tmpclass
-	getword $tmp_line $tmpfig 4
+	getword $tmp_line $tmpfig ($col + 2)
 	getlength $tmpfig $len
 	cuttext $tmpfig $multiplier $len 999
 	if ($multiplier <> "")
@@ -123,7 +145,7 @@ if ($player~current_prompt <> "Command")
 	return
 end
 
-setarray $planetlist 2000 13
+setarray $planetlist SECTORS 13
 setvar $planetlistcount 0
 setvar $pers false
 send "tl"
@@ -165,6 +187,26 @@ settextlinetrigger gotplanet2 :gotplanet2 "  "
 pause
 :gotplanet2
 setvar $line currentline
+replacetext $line "M0" "M 0"
+replacetext $line "M1" "M 1"
+replacetext $line "M2" "M 2"
+replacetext $line "M3" "M 3"
+replacetext $line "M4" "M 4"
+replacetext $line "M5" "M 5"
+replacetext $line "M6" "M 6"
+replacetext $line "M7" "M 7"
+replacetext $line "M8" "M 8"
+replacetext $line "M9" "M 9"
+replacetext $line "T0" "T 0"
+replacetext $line "T1" "T 1"
+replacetext $line "T2" "T 2"
+replacetext $line "T3" "T 3"
+replacetext $line "T4" "T 4"
+replacetext $line "T5" "T 5"
+replacetext $line "T6" "T 6"
+replacetext $line "T7" "T 7"
+replacetext $line "T8" "T 8"
+replacetext $line "T9" "T 9"
 # shields
 getword $line $num 1
 gosub :convertnum
@@ -212,12 +254,16 @@ pause
 :endtl
 killalltriggers
 if ($pers = false)
-	setvar $pers true
-	send "qcy"
-	goto :buildplanetlist
+	if ($planet~listpersonal = 1)
+		setvar $pers true
+		setvar $planet~listpersonal 0
+		send "qcy"
+		goto :buildplanetlist
+	end
 else
 	setvar $pers false
 end
+setvar $planet~listpersonal 0
 send "q "
 if ($startingprompt = "Citadel") or ($startingprompt = "Planet")
 	send "l " &$startingplanet&"* "
@@ -235,6 +281,7 @@ if ($num = "---")
 	setvar $num 0
 	return
 end
+striptext $num ","
 getlength $num $len
 cuttext $num $multiplier $len $len
 if ($multiplier = "M")
@@ -1163,10 +1210,19 @@ return
 
 :pwarp_lock
 killalltriggers
+settextlinetrigger pwarp_success :pwarp_success "-=-=-=- Planetary TransWarp Drive Engaged! -=-=-=-"
+settextlinetrigger pwarp_shutdown :pwarp_shutdown "Planetary TransWarp Drive shutting down."
 send "y"
 #waiton "Planet is now in sector"
-settextlinetrigger pwarp_success :pwarp_success "-=-=-=- Planetary TransWarp Drive Engaged! -=-=-=-"
 pause
+
+:pwarp_shutdown
+killalltriggers
+setvar $planet~msg "Planetary TransWarp Drive shut down before engagement."
+setvar $switchboard~message "Planetary TransWarp Drive shut down before engagement.*"
+gosub :switchboard~switchboard
+return
+
 :pwarp_success
 killalltriggers
 setvar $planet~pwarpsuccess true
@@ -2133,8 +2189,319 @@ setvar $switchboard~message "Quasar Cannon on planet "&$planet~planet&" is set t
 gosub :switchboard~switchboard
 return
 
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:planet~makeplanet
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+loadvar $game~genesis_cost
+loadvar $game~atomic_cost
+loadvar $game~max_planets_per_sector
+setvar $planet~makeplanet_success false
+
+gosub :player~currentprompt
+setvar $startingprompt $player~current_prompt
+setvar $planet~startingprompt $startingprompt
+if ($startingprompt = "Citadel")
+	send "q"
+	waiton "Planet command"
+	gosub :player~currentprompt
+end
+if ($player~current_prompt = "Planet")
+	gosub :planet~getplanetinfo
+	setvar $planet~startingplanet $planet~planet
+	send "q"
+	waiton "Command [TL"
+end
+
+if ($planet~strip = true)
+	if ($startingprompt = "Planet") or ($startingprompt = "Citadel")
+		setvar $planet~planettofill $planet~startingplanet
+		setvar $planet~emptyfuel true
+		setvar $planet~emptyorganics true
+		setvar $planet~emptyequipment true
+	else
+		setvar $switchboard~message "You must start from the Citadel or Planet prompt to strip planets.*"
+		gosub :switchboard~switchboard
+		setvar $planet~strip false
+	end
+end
+
+if ($planet~strip = true)
+	setvar $dostrip true
+	setvar $planet~strip false
+end
+
+gosub :planet~loadplanetinfo
+setvar $kp 1
+setvar $foundplanet false
+setvar $isakeeper false
+while (($kp <= $planet~planetcounter) and ($foundplanet = false))
+	if ($planet~planetlist[$kp][7] = true)
+		setvar $isakeeper true
+	end
+	add $kp 1
+end
+if ($isakeeper <> true) and ($planet~makeanyplanet <> true)
+	setvar $switchboard~message "Keeper planets must be defined in preferences.*"
+	gosub :switchboard~switchboard
+	return
+end
+
+setvar $failed 0
+gosub :player~quikstats
+setvar $sector $player~current_sector
+setvar $credits $player~credits
+setvar $holds $player~total_holds
+setvar $torps $player~genesis
+setvar $dets $player~atomic
+setvar $figs $player~fighters
+setvar $shield $player~shields
+
+# see if we really can twarp
+if ((sector.figs.quantity[$sector] <= 0) or ((sector.figs.owner[$sector] <> "belong to your Corp") and (sector.figs.owner[$sector] = "yours")))
+	setvar $switchboard~message "Cannot twarp safely.  Make sure fighter is in sector.*"
+	gosub :switchboard~switchboard
+	return
+end
+
+setvar $announce_message ""
+
+:bust
+if ($torps <= 0) or ($dets <= 1)
+	# resupply
+	gosub :sub_resupply
+end
+
+if ($failed > 0)
+	return
+end
+
+send "uy n " #8 #8
+subtract $torps 1
+setslinetrigger 1 :bust_testplanet "What do you want to name"
+pause
+
+:bust_testplanet
+setvar $type currentline
+getwordpos $type $type_pos ","
+if ($type_pos > 0)
+	cuttext $type $type ($type_pos + 1) 9999
+else
+	getword $type $type 11
+	striptext $type ")"
+end
+trim $type
+lowercase $type
+
+setvar $planet~planet_type $type
+lowercase $planet~planet_type
+striptext $planet~planet_type ")"
+
+setvar $i 1
+setvar $foundplanet false
+setvar $isakeeper false
+while (($i <= $planet~planetcounter) and ($foundplanet = false))
+	lowercase $planet~planetlist[$i]
+	lowercase $planet~planet_type
+	getwordpos $planet~planetlist[$i] $pos $planet~planet_type
+	if ($pos > 0)
+		setvar $isakeeper $planet~planetlist[$i][7]
+		setvar $planet~isakeeper $isakeeper
+		setvar $foundplanet true
+	end
+	add $i 1
+end
+if ($planet~makeanyplanet = true) or ($isakeeper = true)
+	setvar $planet~makeplanet_success true
+	setvar $planet~makeanyplanet false
+	send ".* c"
+	goto :makeplanet_return
+end
+
+# we don't want it
+getrnd $name 1000 99999
+mergetext "Kill-" $name $longname
+send $longname "*cl"
+waitfor "Command [TL="
+
+# get its ID
+settextlinetrigger 1 :bust_landed "Landing sequence engaged..."
+settextlinetrigger 2 :bust_getid $longname
+pause
+
+:bust_getid
+setvar $line currentline
+striptext $line "<"
+striptext $line ">"
+getword $line $planetid 1
+send $planetid "* "
+killtrigger 1
+
+:bust_landed
+killtrigger 2
+gosub :planet~getplanetinfo
+gosub :planet~updateplanetprods
+
+if ($dostrip = true)
+	setvar $planet~planettostrip $planetid
+	gosub :planet~stripplanet
+	gosub :player~currentprompt
+	if ($player~current_prompt = "Citadel")
+		send "q"
+	elseif ($player~current_prompt = "Command")
+		setvar $planet~planet $planetid
+		gosub :planet~landingsub
+	end
+end
+
+# nuke it
+if ($player~ore_holds < $player~total_holds) and ($planet~planet_fuel > 0)
+	send "tnt1*"
+end
+send "zdy  "
+subtract $dets 1
+goto :bust
+
+:bust_getid
+# get its ID
+waiton "Should this be a"
+settextlinetrigger 1 :bust_landed2 "Landing sequence engaged..."
+settextlinetrigger 2 :bust_getid2 $name
+pause
+
+:bust_getid2
+setvar $line currentline
+striptext $line "<"
+striptext $line ">"
+getword $line $planetid 1
+send "q*"
+killtrigger 1
+if ($announce_message <> "")
+	setvar $switchboard~message $announce_message
+	gosub :switchboard~switchboard
+	setvar $announce_message ""
+end
+return
+
+:bust_landed2
+settextlinetrigger 1 :bust_landed3 "Planet #"
+pause
+
+:bust_landed3
+getword currentline $planetid 2
+striptext $planetid "#"
+killtrigger 2
+send "q"
+if ($announce_message <> "")
+	setvar $switchboard~message $announce_message
+	gosub :switchboard~switchboard
+	setvar $announce_message ""
+end
+return
+
+:sub_resupply
+if ($credits < $creditlimit)
+	# low on cash
+	setvar $failed 1
+	return
+end
+
+gosub :player~quikstats
+setvar $buyfigs ($figs - $player~fighters)
+setvar $buyshield ($shield - $player~shields)
+setvar $credits $player~credits
+
+if ($startingprompt = "Planet") or ($startingprompt = "Citadel")
+	send "l"&$planet~startingplanet&"* t n t1* m n t* q"
+	waiton "Planet command"
+	waiton "Command [TL"
+	gosub :player~quikstats
+	setvar $buyfigs ($figs - $player~fighters)
+	setvar $buyshield ($shield - $player~shields)
+	setvar $credits $player~credits
+end
+
+getdistance $dist $player~current_sector $map~stardock
+getdistance $dist2 $map~stardock $player~current_sector
+setvar $ore_req (($dist + $dist2) * 3)
+if ($player~ore_holds < $ore_req)
+	setvar $switchboard~message "Not enough fuel to resupply, halting.*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+setvar $player~warpto $map~stardock
+gosub :move~twarp
+if ($player~twarpsuccess <> TRUE)
+	setvar $switchboard~message $player~msg&"*"
+	gosub :switchboard~switchboard
+	halt
+end
+
+send "ps  g yg qh t"
+waitfor "Planning on starting a colony eh?"
+
+settexttrigger resupply_gettorps :resupply_gettorps ") [0] ?"
+pause
+
+:resupply_gettorps
+getword currentline $resupply_torps 9
+striptext $resupply_torps ")"
+if ($torps >= 20)
+	send "*a"
+elseif ($resupply_torps < (20 - $torps))
+	send $resupply_torps "*a"
+else
+	send (20 - $torps) "*a"
+end
+add $torps $resupply_torps
+
+waitfor "We have the standard Nuerevy Atomic Detonator"
+settexttrigger resupply_getdets :resupply_getdets ") [0] ?"
+pause
+
+:resupply_getdets
+getword currentline $resupply_dets 9
+striptext $resupply_dets ")"
+send $resupply_dets "*"
+add $dets $resupply_dets
+
+if ($buyfigs > 0) or ($buyshield > 0)
+	send "qs p "
+
+	if ($buyfigs > 0)
+		send "b" $buyfigs "*"
+	end
+	if ($buyshield > 0)
+		send "c" $buyshield "*"
+	end
+
+	send "q"
+end
+
+send "qq"
+
+setvar $player~warpto $sector
+gosub :move~twarp
+if ($player~twarpsuccess <> TRUE)
+	setvar $switchboard~message $player~msg&"*"
+	gosub :switchboard~switchboard
+	halt
+end
+return
+
+:makeplanet_return
+if ($planet~startingprompt = "Planet")
+	send "l"&$planet~startingplanet&"*"
+	waiton "Planet command"
+elseif ($planet~startingprompt = "Citadel")
+	send "l"&$planet~startingplanet&"* c"
+	waiton "Citadel command"
+end
+return
+
 # includes
 
 include "source\include\player"
 include "source\include\ship"
 include "source\include\switchboard"
+include "source\include\move"

@@ -81,6 +81,7 @@ gosub :killrelogtriggers
 settexttrigger loginsuccessful :continuerelog4v1 "Game Server v1"
 settexttrigger loginsuccessful2 :continuerelog4v2 "v2"
 settexttrigger loginsuccessful3 :continuerelog4v2 "OpenTW Server"
+setdelaytrigger loginmenufallback :login_menu_fallback 300
 send $bot~servername&"*"
 pause
 
@@ -92,6 +93,12 @@ goto :continuerelog4
 setvar $connectivity~serverversion 2
 goto :continuerelog4
 
+:connectivity~login_menu_fallback
+if (($connectivity~serverversion = "") or ($connectivity~serverversion = 0))
+	setvar $connectivity~serverversion 2
+end
+goto :continuerelog4
+
 :connectivity~continuerelog4
 gosub :killrelogtriggers
 if ($connectivity~first_time)
@@ -99,9 +106,78 @@ if ($connectivity~first_time)
 	disconnect
 	goto :do_relog
 end
+setvar $connectivity~saw_game_letter false
+setvar $connectivity~menu_probe_line ""
+setvar $connectivity~menu_probe_count 0
 setstrigger relog69 :continuerelog5 "Make a Selection:"
 setstrigger relog3 :continuerelog5 "Selection (? for menu):"
 setstrigger relog5 :continuerelog5 "Select a game"
+setvar $connectivity~game_letter_marker $bot~letter&" - "
+settexttrigger relogletterdash :connectivity~saw_game_letter_on_menu $connectivity~game_letter_marker
+setvar $connectivity~game_letter_marker $bot~letter&". "
+settexttrigger relogletterdot :connectivity~saw_game_letter_on_menu $connectivity~game_letter_marker
+setvar $connectivity~game_letter_marker "<"&$bot~letter&">"
+settexttrigger relogletterangle :connectivity~saw_game_letter_on_menu $connectivity~game_letter_marker
+setvar $connectivity~game_letter_marker "["&$bot~letter&"]"
+settexttrigger relogletterbracket :connectivity~saw_game_letter_on_menu $connectivity~game_letter_marker
+setvar $connectivity~game_letter_marker "("&$bot~letter&")"
+settexttrigger relogletterparen :connectivity~saw_game_letter_on_menu $connectivity~game_letter_marker
+setdelaytrigger relogmenupromptcheck :check_first_game_menu_prompt 200
+pause
+
+:connectivity~saw_game_letter_on_menu
+setvar $connectivity~saw_game_letter true
+pause
+
+:connectivity~check_first_game_menu_prompt
+setvar $connectivity~line currentline
+getwordpos $connectivity~line $connectivity~pos "Command ["
+if ($connectivity~pos > 0)
+	getwordpos $connectivity~line $connectivity~pos "Menu"
+	if ($connectivity~pos > 0)
+		goto :continuerelog5
+	else
+		goto :done_do_relog
+	end
+end
+getwordpos $connectivity~line $connectivity~pos "Planet command (?=help) [D]"
+if ($connectivity~pos > 0)
+	goto :done_do_relog
+end
+getwordpos $connectivity~line $connectivity~pos "Citadel command (?=help)"
+if ($connectivity~pos > 0)
+	goto :done_do_relog
+end
+getwordpos $connectivity~line $connectivity~pos "Enter your choice"
+if ($connectivity~pos > 0)
+	goto :continuerelog5
+end
+getwordpos $connectivity~line $connectivity~pos "Selection (? for menu)"
+if ($connectivity~pos > 0)
+	goto :continuerelog5
+end
+getwordpos $connectivity~line $connectivity~pos "Select a game"
+if ($connectivity~pos > 0)
+	goto :continuerelog5
+end
+if (($game~game_menu_prompt <> 0) and ($game~game_menu_prompt <> ""))
+	getwordpos $connectivity~line $connectivity~pos $game~game_menu_prompt
+	if ($connectivity~pos > 0)
+		goto :continuerelog5
+	end
+end
+if (($connectivity~saw_game_letter = true) and ($connectivity~line <> ""))
+	if ($connectivity~line = $connectivity~menu_probe_line)
+		add $connectivity~menu_probe_count 1
+	else
+		setvar $connectivity~menu_probe_line $connectivity~line
+		setvar $connectivity~menu_probe_count 0
+	end
+	if ($connectivity~menu_probe_count >= 3)
+		goto :continuerelog5
+	end
+end
+setdelaytrigger relogmenupromptcheck :check_first_game_menu_prompt 200
 pause
 
 :connectivity~continuerelog5
@@ -134,10 +210,14 @@ else
 end
 
 :connectivity~check_game_menu_prompt
+killtrigger relogmenupromptcheck
 setvar $connectivity~line currentline
 getwordpos $connectivity~line $connectivity~pos "Command ["
 if ($connectivity~pos > 0)
-	goto :done_do_relog
+	getwordpos $connectivity~line $connectivity~pos "Menu"
+	if ($connectivity~pos <= 0)
+		goto :done_do_relog
+	end
 end
 getwordpos $connectivity~line $connectivity~pos "Planet command (?=help) [D]"
 if ($connectivity~pos > 0)
@@ -262,6 +342,12 @@ killtrigger relog5
 killtrigger relog69
 killtrigger relog89
 killtrigger relogmenupromptcheck
+killtrigger relogletterdash
+killtrigger relogletterdot
+killtrigger relogletterangle
+killtrigger relogletterbracket
+killtrigger relogletterparen
+killtrigger loginmenufallback
 killtrigger loginsuccessful
 killtrigger loginsuccessful2
 killtrigger loginsuccessful3
