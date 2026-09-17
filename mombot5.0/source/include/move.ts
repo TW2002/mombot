@@ -65,7 +65,7 @@ if ($move~confirmsector = 1)
 	killtrigger figs
 	killtrigger mines
 else
-	waiton "Command [TL="
+	swaiton "Command [TL="
 end
 
 getsector $move~cursector $move~cursector
@@ -83,12 +83,12 @@ if (($move~scanholo = 2) and ($move~noscan < 2))
 	setvar $move~scannedholo 1
 	send "shsd"
 	waiton "Relative Density Scan"
-	waiton "Command [TL="
+	swaiton "Command [TL="
 elseif ($move~noscan = 0)
 	setvar $move~scannedholo 0
 	send "sd"
 	waiton "Relative Density Scan"
-	waiton "Command [TL="
+	swaiton "Command [TL="
 end
 
 getsector $move~cursector $move~cursector

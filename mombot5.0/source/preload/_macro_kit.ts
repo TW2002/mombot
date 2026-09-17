@@ -33,7 +33,7 @@ if ($startinglocation = "Citadel")
 	:getp
 	getword currentline $planet~planet 2
 	striptext $planet~planet "#"
-	waiton "Citadel command (?="
+	swaiton "Citadel command (?="
 
 	:planetmacmenu
 	:print_the__planet_menu
@@ -88,8 +88,8 @@ if ($startinglocation = "Citadel")
 				goto :planetmacmenu
 			end
 			send "q q c  w  y" & $test & "*  *  *  q  l " $planet~planet "* c s*  "
-			waiton "Computer command [TL="
-			waiton "Citadel command (?=help)"
+			swaiton "Computer command [TL="
+			swaiton "Citadel command (?=help)"
 			halt
 		else
 			setvar $switchboard~message "Out of mine disruptors!*"
@@ -237,7 +237,7 @@ if ($startinglocation = "Citadel")
 
 	:plclear
 	killalltriggers
-	waiton "Citadel command (?=help)"
+	swaiton "Citadel command (?=help)"
 	send "s* "
 	settextlinetrigger perdown :perdown "(Type 2 Limpet) (yours)"
 	settextlinetrigger noperdown :noperdown "Citadel treasury contains"
@@ -278,7 +278,7 @@ if ($startinglocation = "Citadel")
 
 	:clclear
 	killalltriggers
-	waiton "Citadel command (?=help)"
+	swaiton "Citadel command (?=help)"
 	send "s* "
 	settextlinetrigger cldown :cldown "(Type 2 Limpet) (belong to your Corp)"
 	settextlinetrigger nocldown :nocldown "Citadel treasury contains"
@@ -318,7 +318,7 @@ if ($startinglocation = "Citadel")
 
 	:aclear
 	killalltriggers
-	waiton "Citadel command (?=help)"
+	swaiton "Citadel command (?=help)"
 	send "s* "
 	settextlinetrigger adown :adown "(Type 1 Armid) (belong to your Corp)"
 	settextlinetrigger noadown :noadown "Citadel treasury contains"
@@ -339,14 +339,14 @@ if ($startinglocation = "Citadel")
 	:dscan2
 	send "q q z n sdzn l " $planet~planet "* c  "
 	waiton "<Enter Citadel>"
-	waiton "Citadel command (?=help)"
+	swaiton "Citadel command (?=help)"
 	gosub :map~displayadjacentgridansi
 	return
 
 	:hscan
 	send "q q z n s hzn* l " $planet~planet "*  c  "
 	waiton "<Enter Citadel>"
-	waiton "Citadel command (?=help)"
+	swaiton "Citadel command (?=help)"
 	gosub :map~displayadjacentgridansi
 	return
 
@@ -377,7 +377,7 @@ if ($startinglocation = "Citadel")
 
 	:figclear
 	killalltriggers
-	waiton "Citadel command (?=help)"
+	swaiton "Citadel command (?=help)"
 	send "s* "
 	settextlinetrigger figdown :figdown "(belong to your Corp) [Defensive]"
 	settextlinetrigger nofigdown :nofigdown "Citadel treasury contains"
@@ -400,7 +400,7 @@ if ($startinglocation = "Citadel")
 	:toomany
 	killalltriggers
 	waiton "<Scan Sector>"
-	waiton "Citadel command (?=help)"
+	swaiton "Citadel command (?=help)"
 	clientmessage "Ship cannot carry that many " & $deptype & "!"
 	clientmessage "No " & $deptype & " were deployed!"
 	halt
@@ -408,7 +408,7 @@ if ($startinglocation = "Citadel")
 	:notenough
 	killalltriggers
 	waiton "<Scan Sector>"
-	waiton "Citadel command (?=help)"
+	swaiton "Citadel command (?=help)"
 	clientmessage "Ship doesn't have that many " & $deptype & "!"
 	clientmessage "No " & $deptype & " were deployed!"
 	halt

@@ -1289,7 +1289,7 @@ if (($player~alignment < 1000) and ($weareadjdock = false))
 	if ($player~red_adj = 0)
 		waitfor "Command [TL="
 		send "l " & $startingplanet & "* c"
-		waiton "Citadel command"
+		swaiton "Citadel command"
 		setvar $switchboard~message "Cannot Find Jump Sector Adjacent Dock**"
 		gosub :switchboard~switchboard
 		return

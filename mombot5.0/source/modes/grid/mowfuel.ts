@@ -328,7 +328,7 @@ return
 :leavecitadelandplanet
 send "q q"
 waiton "Blasting off from"
-waiton "Command [TL"
+swaiton "Command [TL"
 return
 include "source\include\switchboard.ts"
 include "source\include\loadvars"

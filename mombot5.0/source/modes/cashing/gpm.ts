@@ -482,7 +482,7 @@ if ($player~alignment = 0) and ($player~credits > 25000)
 	send "o1"
 	waiton "Upgrade Starport"
 	send "20*q"
-	waiton "Command [TL"
+	swaiton "Command [TL"
 	setvar $player~alignment 1
 end
 
@@ -986,7 +986,7 @@ while ($i < $selloff_count)
 	setvar $pmacro $pmacro & "q"
 	#send "o p t n t 1* q"
 	send $pmacro
-	waiton "Command [TL"
+	swaiton "Command [TL"
 
 	if ($debug = true)
 		echo "fueltosell " $planet~planetfuel " orgtosell " $planet~planetorg " equiptosell " $planet~planetequip "*"
@@ -1135,7 +1135,7 @@ pause
 
 :holo_fail
 killalltriggers
-waiton "Command [TL"
+swaiton "Command [TL"
 return
 
 :holo_good
@@ -1795,7 +1795,7 @@ if ($place_limps > 0) and ($player~limpets >= $place_limps)
 
 	:badlimp
 	killalltriggers
-	waiton "Command [TL"
+	swaiton "Command [TL"
 end
 
 :minesector_mines
@@ -1838,7 +1838,7 @@ if ($max_attack < 1)
 	waiton "Max Figs Per"
 	getword currentline $max_attack 5
 	send "q"
-	waiton "Command [TL"
+	swaiton "Command [TL"
 end
 
 if ($msec < 1)
@@ -2036,7 +2036,7 @@ loadvar $game~max_planets_per_sector
 loadvar $game~max_planets_in_game
 
 gosub :player~quikstats
-waiton "Command [TL"
+swaiton "Command [TL"
 
 setvar $min_portval "175000"
 
@@ -2638,7 +2638,7 @@ killtrigger gpm_port_done
 killtrigger gpm_port_none
 killtrigger gpm_port_never
 send "Q"
-waiton "Command [TL"
+swaiton "Command [TL"
 return
 
 :gpm_port_done
@@ -2648,7 +2648,7 @@ killtrigger gpm_port_equ
 killtrigger gpm_port_done
 killtrigger gpm_port_none
 killtrigger gpm_port_never
-waiton "Command [TL"
+swaiton "Command [TL"
 return
 
 ##################################################################################################################################
@@ -2850,7 +2850,7 @@ if ($madeone = 1)
 			setvar $overloadtries 1
 		else
 			send "l " $planet~planet & "*"
-			waiton "Planet command"
+			swaiton "Planet command"
 			gosub :blowplanet
 		end
 	end
@@ -3049,7 +3049,7 @@ return
 gosub :current_prompt
 if ($player~current_prompt = "Command")
 	send "l " $planet~planet "* "
-	waiton "Planet command"
+	swaiton "Planet command"
 	#elseif ($PLAYER~CURRENT_PROMPT <> "Planet")
 	#	echo "**Unexpected prompt for blowPlanet: " $PLAYER~CURRENT_PROMPT "*"
 	#	halt
@@ -3094,7 +3094,7 @@ killalltriggers
 getword currentline $player~current_prompt 1
 if ($player~current_prompt = "Planet")
 	send "q "
-	waiton "Command [TL"
+	swaiton "Command [TL"
 end
 
 if ($planet_scanner <> "Yes")
@@ -3220,7 +3220,7 @@ goto :cplanetloop
 
 :endplanets
 killalltriggers
-waiton "Command [TL"
+swaiton "Command [TL"
 
 if ($debug = true)
 	echo "*gotshielded " $shielded " notours " $notours "*"
@@ -3394,7 +3394,7 @@ getword currentline $units 9
 striptext $units "("
 if ($units = 0)
 	send "0*"
-	waiton "Command [TL"
+	swaiton "Command [TL"
 	return
 end
 
@@ -3402,14 +3402,14 @@ setvar $unitcost ($units * 900)
 
 if (($player~credits - $unitcost) < 1000000)
 	send "0*"
-	waiton "Command [TL"
+	swaiton "Command [TL"
 else
 	send $units "*"
 	waiton "For upgrading this StarPort"
 	getword currentline $expup 7
 	add $player~experience $expup
 	send "q"
-	waiton "Command [TL"
+	swaiton "Command [TL"
 	add $upgradedports 1
 end
 
@@ -3422,7 +3422,7 @@ setvar $lastwarp $player~current_sector
 
 killalltriggers
 send "c"
-waiton "Computer command [TL="
+swaiton "Computer command [TL="
 settextlinetrigger dockgood :dockgood "Commerce report for Stargate"
 settextlinetrigger dockbad :dockbad "I have no information"
 send "r" & $map~stardock & "*"
@@ -3431,14 +3431,14 @@ pause
 :dockbad
 killalltriggers
 send "q"
-waiton "Command [TL"
+swaiton "Command [TL"
 echo "Those fucknuts blew up stardock! Halting.*"
 goto :gpm_shutdown
 
 :dockgood
 killalltriggers
 send "q"
-waiton "Command [TL"
+swaiton "Command [TL"
 #send "z*"
 #waiton "Do you want"
 
@@ -3987,7 +3987,7 @@ goto :wrapup
 gosub :player~quikstats
 #send "z*"
 #waiton "Do you want"
-waiton "Command [TL"
+swaiton "Command [TL"
 
 return
 
@@ -4021,7 +4021,7 @@ if ($fedon = "On")
 	send "5"
 end
 send "qq"
-waiton "Command [TL"
+swaiton "Command [TL"
 return
 
 ##################################################################################################################################
@@ -4230,7 +4230,7 @@ setvar $planethaggle~orgprofit 0
 setvar $planethaggle~equprofit 0
 
 send "l " & $planet~planet & "*"
-waiton "Planet command"
+swaiton "Planet command"
 setvar $player~current_prompt "Planet"
 gosub :planethaggle~planetneg
 
@@ -4250,7 +4250,7 @@ end
 gosub :player~currentprompt
 if ($player~current_prompt = "Planet")
 	send "q "
-	waiton "Command [TL"
+	swaiton "Command [TL"
 	setvar $player~current_prompt "Command"
 end
 
@@ -4365,7 +4365,7 @@ killalltriggers
 waiton "Planet #"
 getword currentline $planet~planet 2
 striptext $planet~planet "#"
-waiton "Planet command"
+swaiton "Planet command"
 send "q "
 #SetVar $PLAYER~CURRENT_PROMPT "Planet"
 return

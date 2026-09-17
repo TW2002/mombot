@@ -695,7 +695,7 @@ return
 :leavecitadelandplanet
 send "q q"
 waiton "Blasting off from"
-waiton "Command [TL"
+swaiton "Command [TL"
 return
 
 :showprelockoptions

@@ -138,10 +138,10 @@ pause
 killalltriggers
 setvar $ismined true
 if ($player~startinglocation = "Citadel")
-	waiton "Citadel command (?=help)"
+	swaiton "Citadel command (?=help)"
 	send "s*"
 else
-	waiton "Command [TL="
+	swaiton "Command [TL="
 	send "d*"
 end
 settextlinetrigger armidpersonal :armidpersonal "(Type 1 Armid) (yours)"
@@ -241,7 +241,7 @@ pause
 killalltriggers
 setvar $islimped true
 if ($player~startinglocation = "Citadel")
-	waiton "Citadel command (?=help)"
+	swaiton "Citadel command (?=help)"
 	send "s* "
 else
 	send "d* "
@@ -675,7 +675,7 @@ if ($mines~bwarp = true)
 	send "q  q  "&$mines~_armids_&$mines~_limps_&" l "&$planet~planet&"*  c  "
 
 	gosub :player~quikstats
-	waiton "Citadel command"
+	swaiton "Citadel command"
 
 else
 

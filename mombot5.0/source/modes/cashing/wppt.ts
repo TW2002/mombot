@@ -199,7 +199,7 @@ goto :ppt_afterreports
 killalltriggers
 setvar $ppt~sector $ppt~sectora
 setvar $ppt~aborted 1
-waiton "Command [TL="
+swaiton "Command [TL="
 return
 
 :ppt_afterreports
@@ -332,7 +332,7 @@ if ($ppt~firstrun = 1)
 	end
 
 	waiton "Warping to Sector "&$ppt~sectorb
-	waiton "Command [TL="
+	swaiton "Command [TL="
 
 	getdistance $ppt~distance $ppt~sectorb $ppt~sectora
 	if ($ppt~distance = 1)
@@ -516,7 +516,7 @@ end
 if ($portcheck~scanned = 0)
 	send "sd"
 	waiton "Relative Density Scan"
-	waiton "Command [TL="
+	swaiton "Command [TL="
 	setvar $portcheck~scanned 1
 end
 
@@ -538,7 +538,7 @@ if ($portcheck~scanned = 1)
 	if ($portcheck~holoscan)
 		send "sh"
 		waiton "Long Range Scan"
-		waiton "Command [TL="
+		swaiton "Command [TL="
 		setvar $portcheck~scanned 2
 	end
 end

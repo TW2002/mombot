@@ -118,7 +118,7 @@ setarray $checkedports sectors
 setarray $que sectors
 setarray $checked sectors
 send "q"
-waiton "Planet command (?"
+swaiton "Planet command (?"
 gosub :getplanetinfo
 send "c"
 if ($citadel < 4)
@@ -1721,7 +1721,7 @@ setvar $upgrade false
 killalltriggers
 gosub :player~quikstats
 send "q"
-waiton "Planet command (?"
+swaiton "Planet command (?"
 gosub :getplanetinfo
 send "c"
 if ($upgrade)

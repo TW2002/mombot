@@ -744,9 +744,9 @@ if ((($player~startinglocation = "Citadel") or ($player~startinglocation = "Comm
 		:bot~done_ta
 		send "q"
 		if ($player~startinglocation = "Citadel")
-			waiton "Citadel command ("
+			swaiton "Citadel command ("
 		else
-			waiton "Command ["
+			swaiton "Command ["
 		end
 	end
 	setvar $switchboard~message "is ACTIVE: Version - "&$bot~major_version&"."&$bot~minor_version " - type " #34 $bot~bot_name " help" #34 " for command list*"

@@ -216,7 +216,7 @@ gosub :switchboard~switchboard
 :skipig
 killalltriggers
 send "l"&$planet~planet&"*"
-waiton "Planet command"
+swaiton "Planet command"
 if ($corp <> true)
 	send "op**tnl1*tnl2*tnl3*snl1*snl2*snl3*tnt1*m***cm0*co*pq"
 else
@@ -558,7 +558,7 @@ if ($player~current_prompt = "Planet")
 	end
 	if ($player~current_prompt = "Planet")
 		send "c "
-		waiton "Citadel command (?=help)"
+		swaiton "Citadel command (?=help)"
 		gosub :player~quikstats
 	end
 end

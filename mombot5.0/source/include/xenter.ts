@@ -133,17 +133,17 @@ gosub :player~currentprompt
 	if ($xenter~startinglocation = "Citadel")
 		if ($player~current_prompt = "Planet")
 			send "c"
-		waiton "Citadel command"
+		swaiton "Citadel command"
 	elseif ($player~current_prompt = "Command")
 		gosub :planet~landingsub
 	end
 elseif ($xenter~startinglocation = "Command")
 	if ($player~current_prompt = "Citadel")
 		send "q q "
-		waiton "Command ["
+		swaiton "Command ["
 	elseif ($player~current_prompt = "Planet")
 		send "q "
-			waiton "Command ["
+			swaiton "Command ["
 		end
 	end
 	setvar $xenter~active false

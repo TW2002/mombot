@@ -139,7 +139,7 @@ gosub :planet~getplanetinfo
 
 if ($startinglocation = "Citadel")
 	send "C"
-	waiton "Citadel command (?=help)"
+	swaiton "Citadel command (?=help)"
 	send "S* "
 else
 	send "Q D"
@@ -174,7 +174,7 @@ else
 	send "L "&$planet~planet&"* "
 end
 
-waiton "Planet command (?="
+swaiton "Planet command (?="
 if (haggle)
 	setvar $buydown_restore_haggle 1
 	autohaggle off
@@ -603,7 +603,7 @@ gosub :player~quikstats
 setvar $startingcredits $player~credits
 send "tt "&$player~credits&"* "
 waiton "How much to transfer?"
-waiton "Citadel command"
+swaiton "Citadel command"
 add $citcreds $player~credits
 setvar $player~credits 0
 setvar $fightercreditsstaged true

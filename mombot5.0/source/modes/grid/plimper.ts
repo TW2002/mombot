@@ -167,7 +167,7 @@ killalltriggers
 echo "**" ansi_11 "Paused. Return to Cidadel Prompt to Restart.**"
 settextlinetrigger	hit2		:hit2	"Limpet mine in " & $player~current_sector & " activated"
 setdelaytrigger		reminder	:paused 180000
-waiton "Citadel command (?="
+swaiton "Citadel command (?="
 goto :start
 
 :hit2

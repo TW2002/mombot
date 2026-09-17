@@ -30,7 +30,7 @@ pause
 
 :planet~planetpromptonly
 killalltriggers
-waiton "Command [TL"
+swaiton "Command [TL"
 gosub :player~msgs_on
 return
 
@@ -1639,10 +1639,10 @@ end
 
 if ($startingprompt = "Citadel")
 	send $macro&"* c"
-	waiton "Citadel command"
+	swaiton "Citadel command"
 else
 	send $macro&"*"
-	waiton "Planet command"
+	swaiton "Planet command"
 end
 if ($movefailed = true)
 	setvar $movesuccess false
@@ -1734,7 +1734,7 @@ pause
 :movecredsdestinationcitadel
 killalltriggers
 send "q q l "&$startingplanet&"* c"
-waiton "Citadel command"
+swaiton "Citadel command"
 return
 
 :movecredsdestinationmissing
@@ -1742,7 +1742,7 @@ killalltriggers
 setvar $movefailed true
 setvar $moveerror "Destination planet "&$planet~planettofill&" is not in this sector."
 send "q l "&$startingplanet&"*"
-waiton "Planet command"
+swaiton "Planet command"
 return
 
 :movecredsdestinationinvalid
@@ -1750,7 +1750,7 @@ killalltriggers
 setvar $movefailed true
 setvar $moveerror "Destination planet "&$planet~planettofill&" is invalid."
 send "l "&$startingplanet&"*"
-waiton "Planet command"
+swaiton "Planet command"
 return
 
 :movecredsdestinationbuild
@@ -1758,7 +1758,7 @@ killalltriggers
 setvar $movefailed true
 setvar $moveerror "Destination planet "&$planet~planettofill&" does not have an accessible citadel."
 send "n q l "&$startingplanet&"*"
-waiton "Planet command"
+swaiton "Planet command"
 return
 
 :movecredsdestinationnocitadel
@@ -1766,7 +1766,7 @@ killalltriggers
 setvar $movefailed true
 setvar $moveerror "Destination planet "&$planet~planettofill&" does not have an accessible citadel."
 send "q l "&$startingplanet&"*"
-waiton "Planet command"
+swaiton "Planet command"
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -2068,7 +2068,7 @@ setvar $planet~nocit true
 gosub :landingsub
 if ($strip_restore_ship_fighters)
 	send "m n t*"
-	waiton "Planet command"
+	swaiton "Planet command"
 end
 #if ($startingprompt = "Command")
 	#	send "c"
@@ -2202,14 +2202,14 @@ setvar $startingprompt $player~current_prompt
 setvar $planet~startingprompt $startingprompt
 if ($startingprompt = "Citadel")
 	send "q"
-	waiton "Planet command"
+	swaiton "Planet command"
 	gosub :player~currentprompt
 end
 if ($player~current_prompt = "Planet")
 	gosub :planet~getplanetinfo
 	setvar $planet~startingplanet $planet~planet
 	send "q"
-	waiton "Command [TL"
+	swaiton "Command [TL"
 end
 
 if ($planet~strip = true)
@@ -2412,8 +2412,8 @@ setvar $credits $player~credits
 
 if ($startingprompt = "Planet") or ($startingprompt = "Citadel")
 	send "l"&$planet~startingplanet&"* t n t1* m n t* q"
-	waiton "Planet command"
-	waiton "Command [TL"
+	swaiton "Planet command"
+	swaiton "Command [TL"
 	gosub :player~quikstats
 	setvar $buyfigs ($figs - $player~fighters)
 	setvar $buyshield ($shield - $player~shields)
@@ -2492,10 +2492,10 @@ return
 :makeplanet_return
 if ($planet~startingprompt = "Planet")
 	send "l"&$planet~startingplanet&"*"
-	waiton "Planet command"
+	swaiton "Planet command"
 elseif ($planet~startingprompt = "Citadel")
 	send "l"&$planet~startingplanet&"* c"
-	waiton "Citadel command"
+	swaiton "Citadel command"
 end
 return
 

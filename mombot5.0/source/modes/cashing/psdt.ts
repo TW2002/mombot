@@ -576,7 +576,7 @@ setvar $active_sector $candidate_sector
 setvar $active_planet $candidate_planet
 setvar $active_equipment $candidate_equipment
 send "q q "
-waiton "Command [TL"
+swaiton "Command [TL"
 gosub :sellsdtplanetgear
 setvar $candidate_equipment $active_equipment
 if ($candidate_ship = 1)
@@ -798,7 +798,7 @@ else
 	setvar $active_equipment $ship2equipment
 end
 send "q q "
-waiton "Command [TL"
+swaiton "Command [TL"
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

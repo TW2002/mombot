@@ -251,7 +251,7 @@ if (($avbl > $ab) or ($avbl >= $max))
 		:lock
 			killalltriggers
 			send "y l"&$pl&"*"
-			waiton "Planet command"
+			swaiton "Planet command"
 			gosub :leavecolos
 			#setvar $switchboard~message "Saarducci's Tmilker running from planet "&$pl&". Please don't move planet.*"
 			#gosub :switchboard~switchboard
@@ -372,7 +372,7 @@ pause
 
 :lockd
 send "y l"&$pl&"*"
-waiton "Planet command"
+swaiton "Planet command"
 gosub :leavecolos
 send "c * "
 waiton "treasury contains"
@@ -396,13 +396,13 @@ pause
 
 :leavecolos_full
 killalltriggers
-waiton "Planet command"
+swaiton "Planet command"
 add $colo_prod 1
 goto :leavecolos
 
 :leavecolos_left
 killalltriggers
-waiton "Planet command"
+swaiton "Planet command"
 return
 
 :leavecolos_done

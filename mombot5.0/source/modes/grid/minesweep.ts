@@ -849,7 +849,7 @@ if ($fast)
 	send $_armids_&$_limps_&" l "&$planet&"*  c  "
 	settextlinetrigger laid_limp :laid_limp "Limpet mine(s) on board."
 	settextlinetrigger laid_armid :laid_armid "Armid mine(s) on board."
-	waiton "Citadel command"
+	swaiton "Citadel command"
 else
 	send "r y y "
 	waiton "Epic Interactive Strategy"
@@ -860,7 +860,7 @@ else
 	settextlinetrigger laid_limp :laid_limp "Limpet mine(s) on board."
 	settextlinetrigger laid_armid :laid_armid "Armid mine(s) on board."
 	send "t*   *    *"&password&"*    *    *   q  *  *  h 1 z "&$grid_armids&"* z c * h 2 z "&$grid_limpets&"* z c * l "&$planet&"*  c  "
-	waiton "Citadel command"
+	swaiton "Citadel command"
 end
 if (($laid_armid <> true) or ($laid_limp <> true))
 	goto :attemptclearingmines

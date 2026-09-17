@@ -1147,7 +1147,7 @@ return
 if ((port.exists[$player~current_sector] = 1) and (port.updated[$player~current_sector] = ""))
 	send "cr*q"
 	waiton "Commerce report for "
-	waiton "Command [TL="
+	swaiton "Command [TL="
 end
 
 return

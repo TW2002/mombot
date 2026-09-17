@@ -526,7 +526,7 @@ if ($player~planet_scanner = "No")
 	halt
 end
 send "q"
-waiton "Planet command"
+swaiton "Planet command"
 gosub :planet~getplanetinfo
 setvar $class $planet~planet_class
 gosub :getplanetcolos
@@ -536,7 +536,7 @@ if ($f1 > 0) or ($o1 > 0) or ($e1 > 0)
 	halt
 end
 send "c"
-waiton "Citadel command"
+swaiton "Citadel command"
 logging off
 setvar $relog_nocitadel 1
 savevar $relog_nocitadel
@@ -599,19 +599,19 @@ if ($planet~successfulplanet <> true)
 	halt
 end
 send "c"
-waiton "Citadel command"
+swaiton "Citadel command"
 return
 
 :balance_land_planet
 gosub :player~currentprompt
 if ($player~current_prompt = "Citadel")
 	send "q"
-	waiton "Planet command"
+	swaiton "Planet command"
 	send "q"
-	waiton "Command ["
+	swaiton "Command ["
 elseif ($player~current_prompt = "Planet")
 	send "q"
-	waiton "Command ["
+	swaiton "Command ["
 end
 setvar $planet~planet $balance_land_id
 setvar $planet~nocit true
@@ -638,7 +638,7 @@ while ($j < $planet~planetcount)
 		setvar $balance_current_index $balance_planet_count
 		gosub :balance_record_current_planet
 		send "q"
-		waiton "Command ["
+		swaiton "Command ["
 	end
 end
 return
@@ -909,7 +909,7 @@ pause
 
 :balance_same_success
 killalltriggers
-waiton "Planet command"
+swaiton "Planet command"
 setvar $balance_move_success true
 return
 
@@ -960,10 +960,10 @@ return
 gosub :player~currentprompt
 if ($player~current_prompt = "Command")
 	send "jy"
-	waiton "Command ["
+	swaiton "Command ["
 elseif ($player~current_prompt = "Citadel")
 	send "q"
-	waiton "Planet command"
+	swaiton "Planet command"
 	gosub :balance_unload_holds_to_planet
 elseif ($player~current_prompt = "Planet")
 	gosub :balance_unload_holds_to_planet
@@ -981,23 +981,23 @@ return
 
 :balance_unload_holds_to_planet
 send "tnl1*"
-waiton "Planet command"
+swaiton "Planet command"
 send "tnl2*"
-waiton "Planet command"
+swaiton "Planet command"
 send "tnl3*"
-waiton "Planet command"
+swaiton "Planet command"
 return
 
 :balance_leave_to_command
 gosub :player~currentprompt
 if ($player~current_prompt = "Citadel")
 	send "q"
-	waiton "Planet command"
+	swaiton "Planet command"
 	send "q"
-	waiton "Command ["
+	swaiton "Command ["
 elseif ($player~current_prompt = "Planet")
 	send "q"
-	waiton "Command ["
+	swaiton "Command ["
 end
 return
 
@@ -1260,7 +1260,7 @@ setvar $farmstrip_destplanet $planet~planettofill
 gosub :player~currentprompt
 if ($player~current_prompt = "Citadel")
 	send "q"
-	waiton "Planet command"
+	swaiton "Planet command"
 elseif ($player~current_prompt = "Command")
 	setvar $planet~planet $farmstrip_destplanet
 	setvar $planet~nocit true
@@ -1276,7 +1276,7 @@ if ($farmfill_remaining <= 0)
 	return
 end
 send "q"
-waiton "Command ["
+swaiton "Command ["
 send "l "&$planet~planettostrip&"*   "
 gosub :planet~getplanetinfo
 if ($farmfill_product = 1)
@@ -1313,11 +1313,11 @@ end
 gosub :player~currentprompt
 if ($player~current_prompt = "Citadel")
 	send "q"
-	waiton "Planet command"
+	swaiton "Planet command"
 end
 if ($player~current_prompt = "Planet")
 	send "q"
-	waiton "Command ["
+	swaiton "Command ["
 end
 setvar $planet~planet $farmstrip_destplanet
 setvar $planet~nocit true
@@ -1479,7 +1479,7 @@ if ($planet~emptyfigs > 0)
 		gosub :player~currentprompt
 		if ($player~current_prompt = "Citadel")
 			send "q"
-			waiton "Planet command"
+			swaiton "Planet command"
 		end
 		goto :restrip
 	end
@@ -1562,7 +1562,7 @@ if ($player~current_prompt = "Planet")
 	end
 	if ($player~current_prompt = "Planet")
 		send "c "
-		waiton "Citadel command (?=help)"
+		swaiton "Citadel command (?=help)"
 		gosub :player~quikstats
 	end
 end

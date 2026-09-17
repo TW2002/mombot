@@ -35,14 +35,14 @@ if ($startprompt = "Citadel")
 		gosub :switchboard~switchboard
 		halt
 	end
-	waiton "Citadel command"
+	swaiton "Citadel command"
 	send "sz*"
 	waiton "Warps to Sector(s) :"
-	waiton "Citadel command"
+	swaiton "Citadel command"
 else
 	send "  **  "
 	waiton "Warps to Sector(s) :"
-	waiton "Command [TL="
+	swaiton "Command [TL="
 end
 setvar $nojoy false
 getword $bot~user_command_line $parm1 1
@@ -124,9 +124,9 @@ pause
 killalltriggers
 
 if ($startprompt = "Citadel")
-	waiton "Citadel command"
+	swaiton "Citadel command"
 else
-	waiton "Command [TL="
+	swaiton "Command [TL="
 end
 if ($safe_good = false)
 	setvar $switchboard~message "SAFE ship doesn't appear to be in sector*"

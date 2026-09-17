@@ -46,7 +46,7 @@ setvar $spread_minimum $parm2
 
 if ($startlocation = "Citadel")
 	send "q"
-	waiton "Planet command"
+	swaiton "Planet command"
 end
 
 gosub :getplanetinfo
@@ -217,12 +217,12 @@ setvar $spread_landed false
 gosub :player~currentprompt
 if ($player~current_prompt = "Citadel")
 	send "q"
-	waiton "Planet command"
+	swaiton "Planet command"
 	gosub :player~currentprompt
 end
 if ($player~current_prompt = "Planet")
 	send "q "
-	waiton "Command"
+	swaiton "Command"
 	gosub :player~currentprompt
 end
 if ($player~current_prompt <> "Command")
@@ -242,7 +242,7 @@ setvar $spread_targetplanet $spread_startingplanet
 gosub :landplanet
 if (($spread_landed = true) and ($startlocation = "Citadel"))
 	send "c"
-	waiton "Citadel command"
+	swaiton "Citadel command"
 end
 return
 

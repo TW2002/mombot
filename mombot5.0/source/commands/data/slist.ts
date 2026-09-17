@@ -202,7 +202,7 @@ if ((($player~current_prompt = "Citadel") or ($player~current_prompt = "Planet")
 		gosub  :player~currentprompt
 		if ($player~current_prompt = "Citadel")
 			send "q "
-			waiton "Planet command ("
+			swaiton "Planet command ("
 		elseif ($player~current_prompt <> "Planet")
 			setvar $switchboard~message "PScan - Problem with landing on the planet you provided.*"
 			halt

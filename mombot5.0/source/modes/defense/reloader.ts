@@ -107,7 +107,7 @@ killtrigger 3
 killtrigger 4
 send " q  q  q  q  q  z  n  ** "
 waiton "Warps to Sector(s) :"
-waiton "Command [TL"
+swaiton "Command [TL"
 gosub :player~quikstats
 if ($player~current_prompt <> "Command")
 	setvar $switchboard~message "Unable to get to Command Prompt. Halting!*"

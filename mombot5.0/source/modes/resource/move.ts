@@ -119,10 +119,10 @@ if ($stuffmoved = "Fighters")
 	if (($test = false) or ($ship~ship_fighters_max <= 0))
 		if ($citadel > 0)
 			send "c"
-			waiton "Citadel command"
+			swaiton "Citadel command"
 			gosub :ship~getshipstats
 			send "q"
-			waiton "Planet command"
+			swaiton "Planet command"
 		end
 		isnumber $test $ship~ship_fighters_max
 		if (($test = false) or ($ship~ship_fighters_max <= 0))
@@ -271,7 +271,7 @@ end
 if ($moveall_targetcount <= 0)
 	if ($startlocation = "Citadel")
 		send "c"
-		waiton "Citadel command"
+		swaiton "Citadel command"
 	end
 	setvar $switchboard~message "No destination planets found in sector "&$moveall_sector&".*"
 	gosub :switchboard~switchboard
@@ -309,7 +309,7 @@ while (($moveall_i <= $moveall_targetcount) and ($moveall_sourceamount > 0))
 end
 if ($startlocation = "Citadel")
 	send "c"
-	waiton "Citadel command"
+	swaiton "Citadel command"
 end
 if ($moveall_sourceamount <= 0)
 	setvar $switchboard~message "Moved "&$moveall_totalmoved&" total "&$stuffmoved&" to "&$moveall_movedplanets&" planets; starting planet is out.*"
@@ -323,12 +323,12 @@ return
 gosub :player~currentprompt
 if ($player~current_prompt = "Citadel")
 	send "q"
-	waiton "Planet command"
+	swaiton "Planet command"
 	gosub :player~currentprompt
 end
 if ($player~current_prompt = "Planet")
 	send "q "
-	waiton "Command"
+	swaiton "Command"
 	gosub :player~currentprompt
 end
 if ($player~current_prompt <> "Command")
@@ -337,7 +337,7 @@ if ($player~current_prompt <> "Command")
 end
 gosub :planet~countplanets
 send "l "&$moveall_startingplanet&"*"
-waiton "Planet command"
+swaiton "Planet command"
 return
 
 :moveall_sourceamount

@@ -93,7 +93,7 @@ setvar $switchboard~message "Using ports with minimum " & $minimumproduct & " an
 gosub :switchboard~switchboard
 
 send "'"&$switchboard~bot_name&" login*"
-waiton "Corporate command "
+swaiton "Corporate command "
 
 setvar $switchboard~message "This script assumes all bots are placed correctly before this script is run.*"
 gosub :switchboard~switchboard
@@ -103,7 +103,7 @@ pause
 
 :waitforunlock
 send "q"
-waiton "Planet command (?"
+swaiton "Planet command (?"
 gosub :planet~getplanetinfo
 send "c"
 if ($planet~citadel < 4)
@@ -541,7 +541,7 @@ return
 
 :grabplanetstats
 send "q"
-waiton "Planet command (?"
+swaiton "Planet command (?"
 gosub :planet~getplanetinfo
 send "c"
 return

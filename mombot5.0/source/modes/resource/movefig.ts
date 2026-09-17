@@ -87,7 +87,7 @@ setvar $planet $planet~planet
 setvar $sector_figs 0
 send "q  q  z  n  **   "
 waiton "Warps to Sector(s) :"
-waiton "Command [TL"
+swaiton "Command [TL"
 gosub :player~quikstats
 
 if ($allplanets)
@@ -104,10 +104,10 @@ setvar $starting_planet $planet
 
 if (($figquant <> 0) and (($figowner <> "belong to your Corp") and ($figowner <> "yours")))
 	send "l "&$planet&"*"
-	waiton "Planet command (?=help) [D]"
+	swaiton "Planet command (?=help) [D]"
 	if ($startinglocation = "Citadel")
 		send "c"
-		waiton "Citadel command"
+		swaiton "Citadel command"
 	end
 	setvar $switchboard~message "Friendly Fighters Not Present!*"
 	gosub :switchboard~switchboard
@@ -126,7 +126,7 @@ while ($i <= $planetcount)
 		setvar $move 0
 	end
 	send "l " $planets[$i] "*"
-	waiton "Planet command (?=help) [D]"
+	swaiton "Planet command (?=help) [D]"
 	gosub :planet~getplanetinfo
 	setvar $planet $planet~planet
 

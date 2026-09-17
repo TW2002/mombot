@@ -2906,14 +2906,14 @@ getdistance $dist1 $player~current_sector $destination
 if ($dist1 = "-1")
 	send "cf" & $player~current_sector & "*" & $destination & "*q"
 	waiton "What is the starting sector"
-	waiton "Command [TL="
+	swaiton "Command [TL="
 	getdistance $dist1 $player~current_sector $destination
 end
 getdistance $dist2 $destination $player~current_sector
 if ($dist2 = "-1")
 	send "cf" & $destination & "*" & $player~current_sector & "*q"
 	waiton "What is the starting sector"
-	waiton "Command [TL="
+	swaiton "Command [TL="
 	getdistance $dist2 $destination $player~current_sector
 end
 if (($dist1 <> "-1") and ($dist2 <> "-1"))
@@ -2956,7 +2956,7 @@ end
 :finishshipscan
 killalltriggers
 send "                                                  "
-waiton "Command [TL="
+swaiton "Command [TL="
 if ($inship1)
 	setvar $destination $found2
 else
@@ -2969,7 +2969,7 @@ getdistance $dist1 $player~current_sector $destination
 if ($dist1 = "-1")
 	send "cf" & $player~current_sector & "*" & $destination & "*q"
 	waiton "What is the starting sector"
-	waiton "Command [TL="
+	swaiton "Command [TL="
 	getdistance $dist1 $player~current_sector $destination
 end
 getdistance $dist2 $destination $player~current_sector
@@ -2977,7 +2977,7 @@ getdistance $dist2 $destination $player~current_sector
 if ($dist2 = "-1")
 	send "cf" & $destination & "*" & $player~current_sector & "*q"
 	waiton "What is the starting sector"
-	waiton "Command [TL="
+	swaiton "Command [TL="
 	getdistance $dist2 $destination $player~current_sector
 end
 return
@@ -3564,7 +3564,7 @@ striptext $fuelupgradeamount "("
 if ($fuelupgradeamount <= 0)
 	setvar $fuelupgradefailed true
 	send "0*"
-	waiton "Command [TL="
+	swaiton "Command [TL="
 	return
 end
 if ($fuelupgradeamount > 100)
@@ -3573,7 +3573,7 @@ end
 send $fuelupgradeamount "*"
 waiton "Choice ?"
 send "q"
-waiton "Command [TL="
+swaiton "Command [TL="
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-

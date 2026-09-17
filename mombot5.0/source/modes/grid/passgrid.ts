@@ -841,7 +841,7 @@ if ($target_idx <> 0)
 		if ($holo)
 			gosub :do_holo
 			gosub :display_holo
-			waiton	"Command [TL="
+			swaiton	"Command [TL="
 			if (sector.figs.quantity[$target] <> 0)
 				if ((sector.figs.owner[$target] <> "belong to your Corp") and (sector.figs.owner[$target] <> "yours"))
 					#Trying Again, but this time ignoring $Target

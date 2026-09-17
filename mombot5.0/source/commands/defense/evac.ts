@@ -120,12 +120,12 @@ while ($i <= $evac_total)
 			:evac_twarp
 			gosub :evac_kill_return_warp_triggers
 			send "y  *  *  *  q  z  n  *"
-			waiton "Command [TL="
+			swaiton "Command [TL="
 			goto :evac_return_done
 
 			:evac_adj_warp_back
 			gosub :evac_kill_return_warp_triggers
-			waiton "Command [TL="
+			swaiton "Command [TL="
 
 			:evac_return_done
 		end

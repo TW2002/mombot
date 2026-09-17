@@ -41,7 +41,7 @@ killalltriggers
 send "t***"
 waiton "Password?"
 send $bot~password & "* * * c"
-waiton "Citadel command (?=help)"
+swaiton "Citadel command (?=help)"
 setvar $switchboard~message "Ship has been unlocked!*"
 gosub :switchboard~switchboard
 halt

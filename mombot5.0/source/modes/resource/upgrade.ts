@@ -94,7 +94,7 @@ if ($sector = 0)
 
 	:getsector
 	getword currentline $sector 3
-	waiton "Command [TL="
+	swaiton "Command [TL="
 end
 
 if (sector.planetcount[$sector] = 0)
@@ -508,16 +508,16 @@ gosub :player~currentprompt
 
 if ($player~current_prompt = "Citadel")
 	send "q"
-	waiton "Planet command (?=help)"
+	swaiton "Planet command (?=help)"
 	setvar $player~current_prompt "Planet"
 end
 
 if ($player~current_prompt = "Planet")
 	send "t n l 1* t n l 2* t n l 3*"
-	waiton "Planet command (?=help)"
+	swaiton "Planet command (?=help)"
 elseif ($player~current_prompt = "Command")
 	send "jy"
-	waiton "Command [TL="
+	swaiton "Command [TL="
 end
 return
 
@@ -619,13 +619,13 @@ add $gather~gathered $moved
 
 if ($gather~gathered < $gather~quantity)
 	send "q"
-	waiton "Command [TL="
+	swaiton "Command [TL="
 	goto :gather_gogather
 end
 
 if ($gather~stayonplanet = 0)
 	send "q"
-	waiton "Command [TL="
+	swaiton "Command [TL="
 end
 return
 
@@ -740,7 +740,7 @@ while ($upgrade~i <= $upgrade~cachecount)
 end
 if ($upgrade~cachefound <> 0)
 	send "l " $upgrade~cachefound "*"
-	waiton "Planet command (?=help)"
+	swaiton "Planet command (?=help)"
 end
 return
 
@@ -989,7 +989,7 @@ if ($safe)
 		if ($pickup = 0)
 			gosub :sub_landdest
 			waiton "Planet #"&$dest
-			waiton "Planet command (?=help)"
+			swaiton "Planet command (?=help)"
 			gosub :restorehaggle
 			return
 		end
@@ -1103,7 +1103,7 @@ if ($safe)
 		waiton $waittext
 	end
 
-	waiton "Planet command (?=help)"
+	swaiton "Planet command (?=help)"
 	subtract $quantity $pickup
 	add $moved $pickup
 
@@ -1209,7 +1209,7 @@ else
 		gosub :gameprefs~setgameprefs
 
 		send "l " $dest "*"
-		waiton "Planet command (?=help)"
+		swaiton "Planet command (?=help)"
 		gosub :restorehaggle
 		return
 	end

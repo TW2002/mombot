@@ -88,7 +88,7 @@ if ($startinglocation <> "Citadel")
 end
 
 send "qsnl1*tnl1*tnl2*tnl3*"
-waiton "Planet command (?"
+swaiton "Planet command (?"
 gosub :planet~getplanetinfo
 setvar $startingsector $player~current_sector
 
@@ -238,7 +238,7 @@ if ($nearfig > 0)
 	if ($upgrade)
 		gosub :player~quikstats
 		send "q"
-		waiton "Planet command (?"
+		swaiton "Planet command (?"
 		gosub :planet~getplanetinfo
 		gosub :setwindow
 		send "c"
@@ -293,7 +293,7 @@ if ($nearfig > 0)
 	send "c"
 	gosub :setwindow
 	send "c r*"
-	waiton "Computer command ["
+	swaiton "Computer command ["
 	send "q "
 
 	if ($player~exit_message <> "Normal Exit")
@@ -347,7 +347,7 @@ if ($nearfig > 0)
 		gosub :planet~getplanetinfo
 		gosub :setwindow
 		send "c r*"
-		waiton "Computer command ["
+		swaiton "Computer command ["
 		send "q "
 		gosub :planet~landonplanetentercitadel
 	end

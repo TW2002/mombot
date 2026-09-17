@@ -40,7 +40,7 @@ if ($startinglocation <> "Citadel")
 end
 
 send "q"
-waiton "Planet command (?"
+swaiton "Planet command (?"
 gosub :planet~getplanetinfo
 send "c"
 

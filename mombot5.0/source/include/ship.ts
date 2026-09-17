@@ -152,7 +152,7 @@ return
 :ship~getshipstats
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 send "c;"
-waiton "Computer command"
+swaiton "Computer command"
 :ship~keeplookingshipname
 killalltriggers
 settextlinetrigger 1 :ship~checkshipname
@@ -364,7 +364,7 @@ if ($ship~shipinf <> "EOF")
 	goto :ship~savetheship_readshiplist
 end
 send "c"
-waiton "Computer command"
+swaiton "Computer command"
 send ";"
 
 :ship~savetheship_keeplookingshipname
@@ -469,7 +469,7 @@ if ($ship~shipinf <> "EOF")
 	goto :ship~save_the_ship_readshiplist
 end
 send "c"
-waiton "Computer command"
+swaiton "Computer command"
 send ";"
 
 :ship~save_the_ship_keeplookingshipname

@@ -152,17 +152,17 @@ if ($pimpall = true)
 		end
 		setvar $target $planet~planets[$i_pimp]
 		send "q q *"
-		waiton "Command [TL"
+		swaiton "Command [TL"
 		send "j y q * l "&$target&"*"
-		waiton "Planet command"
+		swaiton "Planet command"
 		gosub :planet~getplanetinfo
 		gosub :pimp
 		send "q q *"
-		waiton "Command [TL"
+		swaiton "Command [TL"
 		send "l "&$firstplanet&"*"
-		waiton "Planet command"
+		swaiton "Planet command"
 		send "mnt*q"
-		waiton "Command [TL"
+		swaiton "Command [TL"
 	end
 else
 	setvar $target $planet~planet

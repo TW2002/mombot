@@ -327,7 +327,7 @@ if ($player~current_sector <> $startingsector)
 end
 if ($player~current_prompt = "Citadel")
 	send "q"
-	waiton "Planet command"
+	swaiton "Planet command"
 elseif ($player~current_prompt = "Command")
 	setvar $planet~planet $planet~planettofill
 	setvar $planet~nocit true

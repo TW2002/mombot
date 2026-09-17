@@ -31,7 +31,7 @@ if ($bot~mode = "General")
 		else
 			send "C N 9 Q Q "
 		end
-		waiton "Computer command [TL="
+		swaiton "Computer command [TL="
 		gettext currentline $timeleft "Computer command [TL=" "]:"
 	else
 		setvar $igstat "Bad Prompt"

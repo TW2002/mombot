@@ -90,7 +90,7 @@ if ($bot~startinglocation = "Citadel")
 		gosub :planet~landingsub
 	elseif ($player~current_prompt = "Planet")
 		send "c "
-		waiton "Citadel command (?=help)"
+		swaiton "Citadel command (?=help)"
 	end
 end
 
