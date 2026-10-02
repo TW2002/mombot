@@ -166,7 +166,7 @@ if (($game~game_menu_prompt <> 0) and ($game~game_menu_prompt <> ""))
 		goto :continuerelog5
 	end
 end
-if (($connectivity~saw_game_letter = true) and ($connectivity~line <> ""))
+if ($connectivity~saw_game_letter = true)
 	if ($connectivity~line = $connectivity~menu_probe_line)
 		add $connectivity~menu_probe_count 1
 	else

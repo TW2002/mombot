@@ -592,7 +592,6 @@ else
 
 	if ($findproduct~location = 0)
 		setvar $gather~failed 1
-		send "t"
 		return
 	end
 

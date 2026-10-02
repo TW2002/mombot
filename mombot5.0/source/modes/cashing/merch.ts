@@ -91,6 +91,25 @@ else
 	setvar $merchant~sellingequip false
 end
 
+getwordpos " "&$bot~user_command_line&" " $merchant~automerch_pos " __automerch_child__ "
+if ($merchant~automerch_pos > 0)
+	setvar $merchant~automerch_child true
+	setvar $merchant~automerch_result "running"
+	savevar $merchant~automerch_result
+	setvar $merchant~automerch_sales 0
+	savevar $merchant~automerch_sales
+else
+	setvar $merchant~automerch_child false
+end
+
+setvar $merchant~started_with_product false
+if ($merchant~sellingorg = true) and ($planet~planet_organics >= $merchant~minprod)
+	setvar $merchant~started_with_product true
+end
+if ($merchant~sellingequip = true) and ($planet~planet_equipment >= $merchant~minprod)
+	setvar $merchant~started_with_product true
+end
+
 getwordpos " "&$bot~user_command_line&" " $pos " buyfuel "
 if ($pos > 0)
 	setvar $merchant~buyfuel true
@@ -260,11 +279,40 @@ setvar $merchant~stop_at_fuel_quarter true
 gosub :merchant~merchant
 gosub :haggle~restoreautohaggle
 
+if ($merchant~automerch_child = true)
+	setvar $merchant~automerch_sales $merchant~sectors_completed
+	savevar $merchant~automerch_sales
+	setvar $merchant~remaining_product false
+	if ($merchant~sellingorg = true) and ($planet~planet_organics >= $merchant~minprod)
+		setvar $merchant~remaining_product true
+	end
+	if ($merchant~sellingequip = true) and ($planet~planet_equipment >= $merchant~minprod)
+		setvar $merchant~remaining_product true
+	end
+
+	if ($merchant~creditstop = true)
+		setvar $merchant~automerch_result "credit_stop"
+	elseif ($merchant~fuelstop = true)
+		setvar $merchant~automerch_result "fuel_stop"
+	elseif ($merchant~started_with_product <> true)
+		setvar $merchant~automerch_result "below_minimum"
+	elseif ($merchant~sectors_completed <= 0)
+		setvar $merchant~automerch_result "no_eligible_ports"
+	elseif ($merchant~remaining_product = true)
+		setvar $merchant~automerch_result "sold_no_eligible_ports"
+	else
+		setvar $merchant~automerch_result "sold"
+	end
+	savevar $merchant~automerch_result
+end
+
 gosub :player~quikstats
 if ($startingsector <> $player~current_sector)
 	send "p"&$startingsector&"*y"
 end
-if ($merchant~fuelstop = true)
+if ($merchant~creditstop = true)
+	setvar $switchboard~message "Planet Merchant stopped because there are not enough credits to fully upgrade the next port.*"
+elseif ($merchant~fuelstop = true)
 	setvar $switchboard~message "Planet Merchant stopped at fuel reserve and returned home.*"
 else
 	setvar $switchboard~message "Planet Merchant completed.*"

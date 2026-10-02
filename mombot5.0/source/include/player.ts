@@ -179,12 +179,17 @@ return
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 killtrigger prompt
 killtrigger prompt_delay
+killtrigger atkeys
+killtrigger prompt_disconnect_wait
+setvar $player~current_prompt "Unknown"
+setvar $player~startinglocation "Unknown"
 settexttrigger prompt :allpromptscatch #145&#8
 setdelaytrigger prompt_delay :current_prompt_delay 5000
 send #145
 pause
 
 :player~current_prompt_delay
+killtrigger prompt_delay
 settextouttrigger atkeys :current_prompt_at_keys
 setdelaytrigger prompt_delay :verifydelay 30000
 pause
@@ -192,11 +197,14 @@ pause
 :player~current_prompt_at_keys
 getouttext $player~out
 send $player~out
+killtrigger prompt
 killtrigger prompt_delay
+killtrigger atkeys
 return
 
 :player~allpromptscatch
 killtrigger prompt_delay
+killtrigger atkeys
 gosub :player~parse_current_prompt_line
 setvar $player~startinglocation $player~current_prompt
 return
@@ -225,8 +233,16 @@ striptext $player~current_prompt #8
 return
 
 :player~verifydelay
-killalltriggers
+killtrigger prompt
+killtrigger prompt_delay
+killtrigger atkeys
 disconnect
+setdelaytrigger prompt_disconnect_wait :current_prompt_disconnect_wait 5000
+pause
+
+:player~current_prompt_disconnect_wait
+killtrigger prompt_disconnect_wait
+return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :player~formatnumberforspaces

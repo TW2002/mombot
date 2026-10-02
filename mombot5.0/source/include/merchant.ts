@@ -26,6 +26,7 @@ setvar $half_port_max $game~port_max
 divide $half_port_max 2
 setvar $merch_sample_amount $player~total_holds
 setvar $fuelstop false
+setvar $creditstop false
 setvar $startingfuel 0
 setvar $minimumfuel 0
 setvar $fuel_half_port_max $half_port_max
@@ -70,6 +71,38 @@ gosub :haggle~configurenativehaggle
 setarray $checkedports sectors
 setarray $que sectors
 setarray $checked sectors
+setarray $merchant~window_targets sectors
+setarray $merchant~window_completed sectors
+setarray $merchant~window_upgraded sectors
+setvar $merchant~sectors_completed 0
+setvar $merchant~sectors_total 0
+setvar $merchant~ports_upgraded 0
+setvar $merchant~session_profit 0
+setvar $merchant~last_port_name "-"
+setvar $merchant~initial_targets_counted false
+getwordpos " "&$bot~user_command_line&" " $merchant~automerch_pos " __automerch_child__ "
+if ($merchant~automerch_pos > 0)
+	setvar $merchant~automerch_child true
+else
+	setvar $merchant~automerch_child false
+end
+if ($merchant~use_file = true)
+	setvar $merchant~target_index 1
+	while ($merchant~target_index <= $merchant~sectors)
+		setvar $merchant~target_sector $merchant~sectors[$merchant~target_index]
+		isnumber $merchant~target_is_number $merchant~target_sector
+		if ($merchant~target_is_number = true) and ($merchant~target_sector > 0) and ($merchant~target_sector <= sectors) and ($merchant~window_targets[$merchant~target_sector] <> true)
+			setvar $merchant~window_targets[$merchant~target_sector] true
+			add $merchant~sectors_total 1
+		end
+		add $merchant~target_index 1
+	end
+	setvar $merchant~initial_targets_counted true
+end
+if ($merchant~automerch_child <> true)
+	window "MERCHANT_STATUS" 350 175 "Merchant - "&GAMENAME "ONTOP"
+end
+gosub :merchant~updatewindow
 
 :select_next_port
 while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip and ($planet~planet_equipment >= $minprod)) or ($salesman = true)
@@ -92,14 +125,16 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 			isnumber $test $focus
 			if ($test = true) and ($focus > 0) and ($focus <= sectors)
 				setvar $nearfig $focus
-				setvar $checkedports[$nearfig] true
-				setvar $merchant~filetarget true
-				goto :merch_sector
+				gosub :checkport
+				if ($goodport = true)
+					setvar $checkedports[$nearfig] true
+					setvar $merchant~filetarget true
+					gosub :merch_sector
+					goto :select_next_port
+				end
 			end
 		end
-		if ($nearfig <= 0)
-			goto :done
-		end
+		goto :done
 	end
 
 	# selloff first to all the high value ports
@@ -112,16 +147,25 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 
 		while ($focus <= sectors)
 			gosub :checkport
+			if ($merchant~initial_targets_counted <> true) and ($goodport = true)
+				setvar $merchant~window_targets[$focus] true
+				add $merchant~sectors_total 1
+			end
 			if ($goodport = true) and ($port~portvalue > $sellscore)
 				setvar $sellscore $port~portvalue
 				setvar $sellsector $focus
 			end
 			add $focus 1
 		end
+		if ($merchant~initial_targets_counted <> true)
+			setvar $merchant~initial_targets_counted true
+			gosub :merchant~updatewindow
+		end
 		if ($sellsector > 0)
 			setvar $nearfig $sellsector
 			setvar $checkedports[$nearfig] true
-			goto :merch_sector
+			gosub :merch_sector
+			goto :select_next_port
 		end
 	end
 
@@ -144,7 +188,8 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 		if ($goodport = true)
 			setvar $nearfig $focus
 			setvar $checkedports[$nearfig] true
-			goto :merch_sector
+			gosub :merch_sector
+			goto :select_next_port
 		else
 			setvar $nearfig 0
 		end
@@ -166,7 +211,11 @@ while ($sellingorg and ($planet~planet_organics >= $minprod)) or ($sellingequip 
 		add $bottom 1
 	end
 
-	setvar $switchboard~message "No ports available*"
+	if ($merchant~automerch_child = true)
+		setvar $switchboard~message "No product available to sell at eligible ports*"
+	else
+		setvar $switchboard~message "No ports available*"
+	end
 	gosub :switchboard~switchboard
 	return
 end
@@ -176,7 +225,9 @@ setvar $switchboard~message "Merchant successfully completed.*"
 gosub :switchboard~switchboard
 return
 
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :merch_sector
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 	gosub :checkfuelreserve
 	if ($fuelstop = true)
@@ -186,16 +237,25 @@ if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 	setvar $planet~warpto $nearfig
 	gosub :planet~pwarp
 	if ($planet~pwarpsuccess = false)
-		goto :select_next_port
+		return
 	end
 	setvar $player~current_sector $nearfig
 	gosub :refreshport
 	setvar $oretrading $port~oretrading
 	setvar $orgtrading $port~orgtrading
 	setvar $equtrading $port~equtrading
+	setvar $merchant~port_oretotal $port~oretotal
+	setvar $merchant~port_orgtotal $port~orgtotal
+	setvar $merchant~port_equtotal $port~equtotal
+	setvar $merchant~last_port_name port.name[$player~current_sector]
+	if ($merchant~last_port_name = "") or ($merchant~last_port_name = 0)
+		setvar $merchant~last_port_name "Sector "&$player~current_sector
+	end
+	setvar $merchant~port_profit 0
+	setvar $merchant~port_completed true
 
 	if ($liveport <> true)
-		goto :select_next_port
+		return
 	end
 
 	gosub :merchant~refreshtradeflags
@@ -214,15 +274,24 @@ if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 	end
 	if ($salesman <> true) and ($cansellfuelhere <> true) and ($cansellorghere <> true) and ($cansellequiphere <> true)
 		gosub :postport
-		goto :select_next_port
+		return
 	end
 	if (($cansellfuelhere <> true) and ($cansellorghere <> true) and ($cansellequiphere <> true) and ($canbuyfuelhere <> true) and ($canbuyorghere <> true) and ($canbuyequiphere <> true))
 		gosub :postport
-		goto :select_next_port
+		return
 	end
 
 	if ($planet~planetnegotiate = true)
 		gosub :sellhaggle
+		if ($creditstop = true)
+			return
+		end
+		if ($planethaggle~sellhagglesucceeded = true)
+			setvar $merchant~port_profit $profit
+			add $merchant~session_profit $merchant~port_profit
+		else
+			setvar $merchant~port_completed false
+		end
 	else
 		gosub :sellnative
 	end
@@ -263,6 +332,9 @@ if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 		if ($tmp <= $upmcic)
 			setvar $port~product 2
 			gosub :upgradeport
+			if ($creditstop = true)
+				return
+			end
 		end
 	end
 
@@ -271,6 +343,9 @@ if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 		if ($tmp <= $upmcic)
 			setvar $port~product 3
 			gosub :upgradeport
+			if ($creditstop = true)
+				return
+			end
 		end
 	end
 
@@ -287,8 +362,13 @@ if ($nearfig > 0) and ($nearfig <> $player~current_sector)
 		gosub :port~getportinfo
 	end
 end
+if ($merchant~port_completed = true) and ($merchant~window_completed[$player~current_sector] <> true)
+	setvar $merchant~window_completed[$player~current_sector] true
+	add $merchant~sectors_completed 1
+end
+gosub :merchant~updatewindow
 gosub :postport
-goto :select_next_port
+return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :checkfuelreserve
@@ -364,7 +444,9 @@ else
 end
 setvar $planethaggle~hasprods 1
 setvar $precreds $player~credits
+setvar $planethaggle~allow_low_percent $merchant~filetarget
 gosub :planethaggle~planetneg
+setvar $planethaggle~allow_low_percent false
 setvar $profit ($planethaggle~oreprofit + $planethaggle~orgprofit + $planethaggle~equprofit)
 setvar $haggledata $profit & " " & $thisportvalue & " " & $oretrading & " " & $orgtrading & " " & $equtrading & "*"
 write $hagglefile $haggledata
@@ -383,6 +465,9 @@ end
 if ($merchant~upfuel = true) and ($port~orebuying = "Selling") and ($planet~planetfuel < ($planet~planetfuelmax / 2)) and ($port~oretrading < $game~port_max)
 	setvar $port~product 1
 	gosub :upgradeport
+	if ($creditstop = true)
+		return
+	end
 end
 if ($canbuyfuelhere = true)
 	setvar $player~buyobject "f"
@@ -592,24 +677,77 @@ end
 return
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:merchant~updatewindow
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+format $merchant~sectors_completed $merchant~display_completed "NUMBER"
+format $merchant~sectors_total $merchant~display_total "NUMBER"
+format $merchant~ports_upgraded $merchant~display_upgraded "NUMBER"
+format $merchant~session_profit $merchant~display_profit "NUMBER"
+format $planet~planet_fuel $merchant~display_fuel "NUMBER"
+format $planet~planet_organics $merchant~display_org "NUMBER"
+format $planet~planet_equipment $merchant~display_equ "NUMBER"
+setvar $merchant~window_text "Sectors:       "&$merchant~display_completed&"/"&$merchant~display_total&"*"
+setvar $merchant~window_text $merchant~window_text&"Upgraded Ports: "&$merchant~display_upgraded&"*"
+setvar $merchant~window_text $merchant~window_text&"Profit:        $"&$merchant~display_profit&"*"
+setvar $merchant~window_text $merchant~window_text&"Fuel Remaining: "&$merchant~display_fuel&"*"
+setvar $merchant~window_text $merchant~window_text&"Org Remaining:  "&$merchant~display_org&"*"
+setvar $merchant~window_text $merchant~window_text&"Equ Remaining:  "&$merchant~display_equ&"*"
+setvar $merchant~window_text $merchant~window_text&"Last Port:      "&$merchant~last_port_name&"*"
+if ($merchant~automerch_child = true)
+	setvar $merchant~automerch_window_text $merchant~window_text
+	savevar $merchant~automerch_window_text
+else
+	setwindowcontents "MERCHANT_STATUS" $merchant~window_text
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :merchant~upgradeport
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 if ($port~product < 1)
 	return
 end
 
-setvar $total_creds_needed ((300*100) + (500*100) + (700*100) + 500000)
-if (($total_creds_needed > $player~credits) and (($player~credits+$planet~citadel_credits) > $total_creds_needed))
-	setvar $cashonhand $planet~citadel_credits
-	add $cashonhand $player~credits
-	if ($cashonhand > $total_creds_needed)
-		send "T T " & $player~credits & "* "
-		send "T F " & $total_creds_needed & "* "
-		setvar $player~credits $total_creds_needed
-	end
+if ($port~product = 1)
+	setvar $merchant~porttotal $merchant~port_oretotal
+	setvar $merchant~upgradecost 300
+elseif ($port~product = 2)
+	setvar $merchant~porttotal $merchant~port_orgtotal
+	setvar $merchant~upgradecost 500
+else
+	setvar $merchant~porttotal $merchant~port_equtotal
+	setvar $merchant~upgradecost 1000
+end
+if ($merchant~porttotal < 0)
+	setvar $merchant~porttotal 0
+end
+setvar $merchant~upgradeunits (($game~port_max - $merchant~porttotal) / 10)
+add $merchant~upgradeunits 1
+if ($merchant~upgradeunits <= 0)
+	return
+end
+setvar $total_creds_needed ($merchant~upgradeunits * $merchant~upgradecost)
+setvar $cashonhand ($planet~citadel_credits + $player~credits)
+if ($cashonhand < $total_creds_needed)
+	setvar $creditstop true
+	setvar $switchboard~message "Not enough credits to fully upgrade the next port. Need "&$total_creds_needed&", available "&$cashonhand&". Stopping.*"
+	gosub :switchboard~switchboard
+	return
+end
+if ($total_creds_needed > $player~credits)
+	send "T T " & $player~credits & "* "
+	send "T F " & $total_creds_needed & "* "
+	setvar $player~credits $total_creds_needed
 end
 send "q q q z a 999* * * * "
+setvar $port~wrong false
+setvar $port~upgradeamount 0
 gosub :port~domaxport
+if ($port~wrong <> true) and ($port~upgradeamount > 0) and ($merchant~window_upgraded[$player~current_sector] <> true)
+	setvar $merchant~window_upgraded[$player~current_sector] true
+	add $merchant~ports_upgraded 1
+	gosub :merchant~updatewindow
+end
 gosub :player~quikstats
 gosub :planet~landingsub
 gosub :refreshport
@@ -812,6 +950,10 @@ end
 
 getsectorparameter $focus "BUSTED" $isbusted
 if (($isbusted = true) or ($checkedports[$focus] = true) or (port.exists[$focus] <> true))
+	return
+end
+
+if (port.buildtime[$focus] > 0)
 	return
 end
 

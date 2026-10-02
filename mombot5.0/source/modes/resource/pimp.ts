@@ -151,6 +151,12 @@ if ($pimpall = true)
 			setvar $lastplanet false
 		end
 		setvar $target $planet~planets[$i_pimp]
+		isnumber $validtarget $target
+		if (($validtarget = false) or ($target <= 0))
+			setvar $switchboard~message "Invalid planet registry in the sector planet list. Product pimp stopping.*"
+			gosub :switchboard~switchboard
+			halt
+		end
 		send "q q *"
 		swaiton "Command [TL"
 		send "j y q * l "&$target&"*"
@@ -240,7 +246,9 @@ end
 if (($player~genesis > 0) and ($player~atomic > 0))
 	send "u y * " #8 #8 $pimp_planet_name "* p q * "
 	gosub :set_windows
-	add $totalplanets 1
+	if ($pimpall = false)
+		add $totalplanets 1
+	end
 :inac
 killalltriggers
 	seteventtrigger 	discod1 	:discod     	"CONNECTION LOST"

@@ -1435,6 +1435,7 @@ loadvar $map~stardock
 setvar $movesuccess false
 setvar $planet~movesuccess false
 setvar $movefailed false
+gosub :setmoveproductdisconnecttriggers
 gosub :player~currentprompt
 setvar $startingprompt $player~current_prompt
 if ($player~current_prompt = "Citadel")
@@ -1515,7 +1516,6 @@ if (($planet~moveamount <= 0) and ($planet~moveholds <= 0) and ($planet~moveextr
 	goto :move_done
 end
 
-gosub :setmoveproductdisconnecttriggers
 settexttrigger empty         :move_done "There aren't that many "
 settexttrigger full          :move_failed "They don't have room for that many "
 settexttrigger empty_colos   :move_failed "There isn't room on the planet"
@@ -1578,10 +1578,48 @@ while ($j < $planet~burstsize)
 			setvar $get $planet~moveamount
 		end
 	else
-		if ($planet~moveamount >= $player~total_holds)
+		setvar $destcategory 0
+		setvar $categorymoveamount $planet~moveamount
+		if ($type = "s")
+			if ($category = 1)
+				if ($planet~moveamount_a > 0)
+					setvar $destcategory 1
+					setvar $categorymoveamount $planet~moveamount_a
+				elseif ($planet~moveamount_b > 0)
+					setvar $destcategory 2
+					setvar $categorymoveamount $planet~moveamount_b
+				elseif ($planet~moveamount_c > 0)
+					setvar $destcategory 3
+					setvar $categorymoveamount $planet~moveamount_c
+				end
+			elseif ($category = 2)
+				if ($planet~moveamount_b > 0)
+					setvar $destcategory 2
+					setvar $categorymoveamount $planet~moveamount_b
+				elseif ($planet~moveamount_a > 0)
+					setvar $destcategory 1
+					setvar $categorymoveamount $planet~moveamount_a
+				elseif ($planet~moveamount_c > 0)
+					setvar $destcategory 3
+					setvar $categorymoveamount $planet~moveamount_c
+				end
+			else
+				if ($planet~moveamount_c > 0)
+					setvar $destcategory 3
+					setvar $categorymoveamount $planet~moveamount_c
+				elseif ($planet~moveamount_a > 0)
+					setvar $destcategory 1
+					setvar $categorymoveamount $planet~moveamount_a
+				elseif ($planet~moveamount_b > 0)
+					setvar $destcategory 2
+					setvar $categorymoveamount $planet~moveamount_b
+				end
+			end
+		end
+		if ($categorymoveamount >= $player~total_holds)
 			setvar $get $player~total_holds
 		else
-			setvar $get $planet~moveamount
+			setvar $get $categorymoveamount
 		end
 	end
 	if ($category = 4)
@@ -1591,6 +1629,13 @@ while ($j < $planet~burstsize)
 	end
 	add $count $get
 	setvar $planet~moveamount ($planet~moveamount - $get)
+	if (($type = "s") and ($destcategory = 1))
+		setvar $planet~moveamount_a ($planet~moveamount_a - $get)
+	elseif (($type = "s") and ($destcategory = 2))
+		setvar $planet~moveamount_b ($planet~moveamount_b - $get)
+	elseif (($type = "s") and ($destcategory = 3))
+		setvar $planet~moveamount_c ($planet~moveamount_c - $get)
+	end
 end
 send "@"
 waiton "Average Interval Lag"
@@ -1619,6 +1664,9 @@ end
 :move_done
 killalltriggers
 setvar $planet~moveamount 0
+setvar $planet~moveamount_a 0
+setvar $planet~moveamount_b 0
+setvar $planet~moveamount_c 0
 setvar $planet~moveholds 0
 setvar $planet~moveextra 0
 setvar $planet~destcategory 0
@@ -1821,13 +1869,57 @@ setvar $countfuel 0
 setvar $countorganics 0
 setvar $countequipment 0
 setvar $countcolonists 0
+setvar $destinationplanetclass $planet~code&", "&$planet~planet_class_name
+setvar $planet~planet_fuel_colonists_max 0
+setvar $planet~planet_org_colonists_max 0
+setvar $planet~planet_equip_colonists_max 0
+if (($emptyfuelcolos) or ($emptyorgcolos) or ($emptyequcolos))
+	loadvar $planet~planet_file
+	fileexists $planetfileexists $planet~planet_file
+	if ($planetfileexists)
+		readtoarray $planet~planet_file $planettypes
+		setvar $planetclassindex 0
+		while ($planetclassindex < $planettypes)
+			add $planetclassindex 1
+			setvar $planettype $planettypes[$planetclassindex]
+			getwordpos $planettype $classpos $destinationplanetclass
+			if ($classpos > 0)
+				cuttext $planettype $classmatch $classpos 999
+				if ($classmatch = $destinationplanetclass)
+					getword $planettype $planet~planet_fuel_colonists_max 1
+					getword $planettype $planet~planet_org_colonists_max 3
+					getword $planettype $planet~planet_equip_colonists_max 5
+					setvar $planetclassindex $planettypes
+				end
+			end
+		end
+	end
+end
 setvar $oretofill ($planet~planet_fuel_max - $planet~planet_fuel)
 setvar $orgtofill ($planet~planet_organics_max - $planet~planet_organics)
 setvar $equtofill ($planet~planet_equipment_max - $planet~planet_equipment)
 setvar $figstofill ($planet~planet_fighters_max - $planet~planet_fighters)
-setvar $fuelcolstofill 999999999
-setvar $orgcolstofill 999999999
-setvar $equcolstofill 999999999
+setvar $fuelcolstofill 0
+setvar $orgcolstofill 0
+setvar $equcolstofill 0
+if ($planet~planet_fuel_colonists_max > 0)
+	setvar $fuelcolstofill ($planet~planet_fuel_colonists_max - $planet~planet_fuel_colonists)
+	if ($fuelcolstofill < 0)
+		setvar $fuelcolstofill 0
+	end
+end
+if ($planet~planet_org_colonists_max > 0)
+	setvar $orgcolstofill ($planet~planet_org_colonists_max - $planet~planet_organics_colonists)
+	if ($orgcolstofill < 0)
+		setvar $orgcolstofill 0
+	end
+end
+if ($planet~planet_equip_colonists_max > 0)
+	setvar $equcolstofill ($planet~planet_equip_colonists_max - $planet~planet_equipment_colonists)
+	if ($equcolstofill < 0)
+		setvar $equcolstofill 0
+	end
+end
 if ($skip_over_99)
 	if ($planet~planet_fuel_max > 0) and (($planet~planet_fuel * 100) > ($planet~planet_fuel_max * 99))
 		setvar $oretofill 0
@@ -1841,23 +1933,14 @@ if ($skip_over_99)
 	if ($planet~planet_fighters_max > 0) and (($planet~planet_fighters * 100) > ($planet~planet_fighters_max * 99))
 		setvar $figstofill 0
 	end
-	if ($planet~planet_fuel_colonists_max > 0)
-		setvar $fuelcolstofill ($planet~planet_fuel_colonists_max - $planet~planet_fuel_colonists)
-		if (($planet~planet_fuel_colonists * 100) > ($planet~planet_fuel_colonists_max * 99))
-			setvar $fuelcolstofill 0
-		end
+	if (($planet~planet_fuel_colonists_max > 0) and (($planet~planet_fuel_colonists * 100) > ($planet~planet_fuel_colonists_max * 99)))
+		setvar $fuelcolstofill 0
 	end
-	if ($planet~planet_organics_colonists_max > 0)
-		setvar $orgcolstofill ($planet~planet_organics_colonists_max - $planet~planet_organics_colonists)
-		if (($planet~planet_organics_colonists * 100) > ($planet~planet_organics_colonists_max * 99))
-			setvar $orgcolstofill 0
-		end
+	if (($planet~planet_org_colonists_max > 0) and (($planet~planet_organics_colonists * 100) > ($planet~planet_org_colonists_max * 99)))
+		setvar $orgcolstofill 0
 	end
-	if ($planet~planet_equipment_colonists_max > 0)
-		setvar $equcolstofill ($planet~planet_equipment_colonists_max - $planet~planet_equipment_colonists)
-		if (($planet~planet_equipment_colonists * 100) > ($planet~planet_equipment_colonists_max * 99))
-			setvar $equcolstofill 0
-		end
+	if (($planet~planet_equip_colonists_max > 0) and (($planet~planet_equipment_colonists * 100) > ($planet~planet_equip_colonists_max * 99)))
+		setvar $equcolstofill 0
 	end
 end
 setvar $spacebuffer $player~total_holds
@@ -1886,7 +1969,11 @@ end
 if ($figstofill < $ship~ship_fighters_max)
 	setvar $figstofill 0
 end
-if ($oretofill <= 0) and ($orgtofill <= 0) and ($equtofill <= 0) and ($figstofill <= 0)
+setvar $hascolonistroom false
+if ((($emptyfuelcolos) or (($emptyorgcolos) or ($emptyequcolos))) and (($fuelcolstofill > 0) or (($orgcolstofill > 0) or ($equcolstofill > 0))))
+	setvar $hascolonistroom true
+end
+if (($oretofill <= 0) and (($orgtofill <= 0) and (($equtofill <= 0) and (($figstofill <= 0) and ($hascolonistroom = false)))))
 	goto :strip_donewiththisplanet
 end
 send "l "&$planet~planettostrip&"*   "
@@ -1958,68 +2045,137 @@ if ($emptyequipment)
 	end
 end
 if ($emptyfuelcolos)
-	setvar $amount_to_strip $planet~planet_fuel_colonists
-	if ($skip_over_99)
-		if ($fuelcolstofill <= 0)
-			setvar $amount_to_strip 0
-		elseif ($amount_to_strip > $fuelcolstofill)
-			setvar $amount_to_strip $fuelcolstofill
+	setvar $amount_to_strip_a 0
+	setvar $amount_to_strip_b 0
+	setvar $amount_to_strip_c 0
+	setvar $remainingcolos $planet~planet_fuel_colonists
+	if (($remainingcolos > 0) and ($fuelcolstofill > 0))
+		setvar $amount_to_strip_a $remainingcolos
+		if ($amount_to_strip_a > $fuelcolstofill)
+			setvar $amount_to_strip_a $fuelcolstofill
+		end
+		subtract $remainingcolos $amount_to_strip_a
+	end
+	if (($remainingcolos > 0) and ($orgcolstofill > 0))
+		setvar $amount_to_strip_b $remainingcolos
+		if ($amount_to_strip_b > $orgcolstofill)
+			setvar $amount_to_strip_b $orgcolstofill
+		end
+		subtract $remainingcolos $amount_to_strip_b
+	end
+	if (($remainingcolos > 0) and ($equcolstofill > 0))
+		setvar $amount_to_strip_c $remainingcolos
+		if ($amount_to_strip_c > $equcolstofill)
+			setvar $amount_to_strip_c $equcolstofill
 		end
 	end
+	setvar $amount_to_strip ($amount_to_strip_a + ($amount_to_strip_b + $amount_to_strip_c))
 	if ($amount_to_strip > 0)
 		setvar $planet~category 1
 		setvar $planet~type "s"
 		setvar $planet~moveholds 0
 		setvar $planet~moveextra 0
 		setvar $planet~moveamount $amount_to_strip
+		setvar $planet~moveamount_a $amount_to_strip_a
+		setvar $planet~moveamount_b $amount_to_strip_b
+		setvar $planet~moveamount_c $amount_to_strip_c
 		gosub :planet~moveproduct
 		if ($movesuccess = false)
 			goto :strip_move_failed
 		end
+		subtract $fuelcolstofill $amount_to_strip_a
+		subtract $orgcolstofill $amount_to_strip_b
+		subtract $equcolstofill $amount_to_strip_c
 		add $countcolonists $planet~count
 	end
 end
 if ($emptyorgcolos)
-	setvar $amount_to_strip $planet~planet_organics_colonists
-	if ($skip_over_99)
-		if ($orgcolstofill <= 0)
-			setvar $amount_to_strip 0
-		elseif ($amount_to_strip > $orgcolstofill)
-			setvar $amount_to_strip $orgcolstofill
+	setvar $amount_to_strip_a 0
+	setvar $amount_to_strip_b 0
+	setvar $amount_to_strip_c 0
+	setvar $remainingcolos $planet~planet_organics_colonists
+	if (($remainingcolos > 0) and ($orgcolstofill > 0))
+		setvar $amount_to_strip_b $remainingcolos
+		if ($amount_to_strip_b > $orgcolstofill)
+			setvar $amount_to_strip_b $orgcolstofill
+		end
+		subtract $remainingcolos $amount_to_strip_b
+	end
+	if (($remainingcolos > 0) and ($fuelcolstofill > 0))
+		setvar $amount_to_strip_a $remainingcolos
+		if ($amount_to_strip_a > $fuelcolstofill)
+			setvar $amount_to_strip_a $fuelcolstofill
+		end
+		subtract $remainingcolos $amount_to_strip_a
+	end
+	if (($remainingcolos > 0) and ($equcolstofill > 0))
+		setvar $amount_to_strip_c $remainingcolos
+		if ($amount_to_strip_c > $equcolstofill)
+			setvar $amount_to_strip_c $equcolstofill
 		end
 	end
+	setvar $amount_to_strip ($amount_to_strip_a + ($amount_to_strip_b + $amount_to_strip_c))
 	if ($amount_to_strip > 0)
 		setvar $planet~category 2
 		setvar $planet~type "s"
 		setvar $planet~moveholds 0
 		setvar $planet~moveextra 0
 		setvar $planet~moveamount $amount_to_strip
+		setvar $planet~moveamount_a $amount_to_strip_a
+		setvar $planet~moveamount_b $amount_to_strip_b
+		setvar $planet~moveamount_c $amount_to_strip_c
 		gosub :planet~moveproduct
 		if ($movesuccess = false)
 			goto :strip_move_failed
 		end
+		subtract $fuelcolstofill $amount_to_strip_a
+		subtract $orgcolstofill $amount_to_strip_b
+		subtract $equcolstofill $amount_to_strip_c
 		add $countcolonists $planet~count
 	end
 end
 if ($emptyequcolos)
-	setvar $amount_to_strip $planet~planet_equipment_colonists
-	if ($skip_over_99)
-		if ($equcolstofill <= 0)
-			setvar $amount_to_strip 0
-		elseif ($amount_to_strip > $equcolstofill)
-			setvar $amount_to_strip $equcolstofill
+	setvar $amount_to_strip_a 0
+	setvar $amount_to_strip_b 0
+	setvar $amount_to_strip_c 0
+	setvar $remainingcolos $planet~planet_equipment_colonists
+	if (($remainingcolos > 0) and ($equcolstofill > 0))
+		setvar $amount_to_strip_c $remainingcolos
+		if ($amount_to_strip_c > $equcolstofill)
+			setvar $amount_to_strip_c $equcolstofill
+		end
+		subtract $remainingcolos $amount_to_strip_c
+	end
+	if (($remainingcolos > 0) and ($fuelcolstofill > 0))
+		setvar $amount_to_strip_a $remainingcolos
+		if ($amount_to_strip_a > $fuelcolstofill)
+			setvar $amount_to_strip_a $fuelcolstofill
+		end
+		subtract $remainingcolos $amount_to_strip_a
+	end
+	if (($remainingcolos > 0) and ($orgcolstofill > 0))
+		setvar $amount_to_strip_b $remainingcolos
+		if ($amount_to_strip_b > $orgcolstofill)
+			setvar $amount_to_strip_b $orgcolstofill
 		end
 	end
+	setvar $amount_to_strip ($amount_to_strip_a + ($amount_to_strip_b + $amount_to_strip_c))
 	if ($amount_to_strip > 0)
 		setvar $planet~category 3
 		setvar $planet~type "s"
 		setvar $planet~moveholds 0
 		setvar $planet~moveextra 0
 		setvar $planet~moveamount $amount_to_strip
+		setvar $planet~moveamount_a $amount_to_strip_a
+		setvar $planet~moveamount_b $amount_to_strip_b
+		setvar $planet~moveamount_c $amount_to_strip_c
 		gosub :planet~moveproduct
 		if ($movesuccess = false)
 			goto :strip_move_failed
 		end
+		subtract $fuelcolstofill $amount_to_strip_a
+		subtract $orgcolstofill $amount_to_strip_b
+		subtract $equcolstofill $amount_to_strip_c
 		add $countcolonists $planet~count
 	end
 end
@@ -2062,6 +2218,25 @@ if ($planet~disconnected = true)
 end
 if ($strip_startingplanet = 0)
 	return
+end
+gosub :player~currentprompt
+if ($player~current_prompt = "Citadel")
+	send "q"
+	swaiton "Planet command"
+	send "q"
+	swaiton "Command [TL"
+elseif ($player~current_prompt = "Planet")
+	send "q"
+	swaiton "Command [TL"
+elseif ($player~current_prompt <> "Command")
+	if ($strip~active = true)
+		setvar $planet~disconnected true
+		setvar $strip~resume_requested true
+		return
+	end
+	setvar $switchboard~message "Could not return to the starting planet from an unknown prompt.*"
+	gosub :switchboard~switchboard
+	halt
 end
 setvar $planet~planet $strip_startingplanet
 setvar $planet~nocit true
@@ -2212,6 +2387,20 @@ if ($player~current_prompt = "Planet")
 	swaiton "Command [TL"
 end
 
+setvar $oldplanetcount 0
+gosub :planet~countplanets
+setvar $oldplanetarraysize $planet~planetcount
+if ($oldplanetarraysize < 1)
+	setvar $oldplanetarraysize 1
+end
+setarray $oldplanet $oldplanetarraysize
+setvar $p 0
+while ($p < $planet~planetcount)
+	add $p 1
+	setvar $oldplanet[$p] $planet~planets[$p]
+	add $oldplanetcount 1
+end
+
 if ($planet~strip = true)
 	if ($startingprompt = "Planet") or ($startingprompt = "Citadel")
 		setvar $planet~planettofill $planet~startingplanet
@@ -2299,6 +2488,7 @@ striptext $planet~planet_type ")"
 setvar $i 1
 setvar $foundplanet false
 setvar $isakeeper false
+setvar $planet~isakeeper false
 while (($i <= $planet~planetcounter) and ($foundplanet = false))
 	lowercase $planet~planetlist[$i]
 	lowercase $planet~planet_type
@@ -2310,10 +2500,31 @@ while (($i <= $planet~planetcounter) and ($foundplanet = false))
 	end
 	add $i 1
 end
+
+setvar $planet~newplanetid 0
 if ($planet~makeanyplanet = true) or ($isakeeper = true)
 	setvar $planet~makeplanet_success true
 	setvar $planet~makeanyplanet false
 	send ".* c"
+	gosub :planet~countplanets
+	setvar $p 0
+	while ($p < $planet~planetcount)
+		add $p 1
+		setvar $pn $planet~planets[$p]
+		setvar $pl 0
+		setvar $isoldplanet false
+		while ($pl < $oldplanetcount)
+			add $pl 1
+			if ($pn = $oldplanet[$pl])
+				setvar $isoldplanet true
+				setvar $pl $oldplanetcount
+			end
+		end
+		if ($isoldplanet = false)
+			setvar $planet~newplanetid $pn
+			setvar $p $planet~planetcount
+		end
+	end
 	goto :makeplanet_return
 end
 
@@ -2357,7 +2568,24 @@ end
 if ($player~ore_holds < $player~total_holds) and ($planet~planet_fuel > 0)
 	send "tnt1*"
 end
+killtrigger makeplanet_destroyed
+killtrigger makeplanet_no_dets
+settextlinetrigger makeplanet_destroyed :makeplanet_destroyed "For blowing up this planet"
+settextlinetrigger makeplanet_no_dets :makeplanet_no_dets "You do not have any Atomic Detonators!"
 send "zdy  "
+pause
+
+:makeplanet_no_dets
+killtrigger makeplanet_destroyed
+killtrigger makeplanet_no_dets
+setvar $dets 0
+send "q q *"
+swaiton "Command [TL"
+goto :bust
+
+:makeplanet_destroyed
+killtrigger makeplanet_destroyed
+killtrigger makeplanet_no_dets
 subtract $dets 1
 goto :bust
 
@@ -2447,13 +2675,14 @@ pause
 getword currentline $resupply_torps 9
 striptext $resupply_torps ")"
 if ($torps >= 20)
-	send "*a"
+	setvar $resupply_torps_to_buy 0
 elseif ($resupply_torps < (20 - $torps))
-	send $resupply_torps "*a"
+	setvar $resupply_torps_to_buy $resupply_torps
 else
-	send (20 - $torps) "*a"
+	setvar $resupply_torps_to_buy (20 - $torps)
 end
-add $torps $resupply_torps
+send $resupply_torps_to_buy "*a"
+add $torps $resupply_torps_to_buy
 
 waitfor "We have the standard Nuerevy Atomic Detonator"
 settexttrigger resupply_getdets :resupply_getdets ") [0] ?"
@@ -2486,6 +2715,12 @@ if ($player~twarpsuccess <> TRUE)
 	setvar $switchboard~message $player~msg&"*"
 	gosub :switchboard~switchboard
 	halt
+end
+if ($torps <= 0) or ($dets <= 1)
+	setvar $failed 1
+	setvar $planet~makeplanet_msg "Unable to buy enough Genesis Torpedoes and Atomic Detonators to continue making planets."
+	setvar $switchboard~message $planet~makeplanet_msg&"*"
+	gosub :switchboard~switchboard
 end
 return
 

@@ -335,7 +335,7 @@ if (($game~game_menu_prompt <> 0) and ($game~game_menu_prompt <> ""))
 		goto :continuerelog5
 	end
 end
-if (($relog~saw_game_letter = true) and ($relog~line <> ""))
+if ($relog~saw_game_letter = true)
 	if ($relog~line = $relog~menu_probe_line)
 		add $relog~menu_probe_count 1
 	else

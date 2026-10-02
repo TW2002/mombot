@@ -104,13 +104,13 @@ if ($planethaggle~equiptosell > $planet~planetequip)
 	setvar $planethaggle~equiptosell $planet~planetequip
 end
 
-if (($port~orebuying <> "Buying") or ($port~orepercent < 15))
+if (($port~orebuying <> "Buying") or (($port~orepercent < 15) and ($planethaggle~allow_low_percent <> true)))
 	setvar $planethaggle~fueltosell 0
 end
-if (($port~orgbuying <> "Buying") or ($port~orgpercent < 15))
+if (($port~orgbuying <> "Buying") or (($port~orgpercent < 15) and ($planethaggle~allow_low_percent <> true)))
 	setvar $planethaggle~orgtosell 0
 end
-if (($port~equbuying <> "Buying") or ($port~equpercent < 15))
+if (($port~equbuying <> "Buying") or (($port~equpercent < 15) and ($planethaggle~allow_low_percent <> true)))
 	setvar $planethaggle~equiptosell 0
 end
 
@@ -356,7 +356,7 @@ if ($planethaggle~test = 0)
 	send "'DEBUG: NAN on fueltosell:"&$planethaggle~fueltosell "*"
 	setvar $planethaggle~fueltosell 0
 end
-if (($port~orepercent >= 15) and ($planethaggle~fueltosell > 0))
+if ((($port~orepercent >= 15) or ($planethaggle~allow_low_percent = true)) and ($planethaggle~fueltosell > 0))
 	if ($planethaggle~fueltosell > $port~oretrading)
 		setvar $planethaggle~fueltosell $port~oretrading
 	end
@@ -393,7 +393,7 @@ if ($planethaggle~test = 0)
 	send "'DEBUG: NAN on orgtosell:"&$planethaggle~orgtosell "*"
 	setvar $planethaggle~orgtosell 0
 end
-if (($port~orgpercent >= 15) and ($planethaggle~orgtosell > 0))
+if ((($port~orgpercent >= 15) or ($planethaggle~allow_low_percent = true)) and ($planethaggle~orgtosell > 0))
 	if ($planethaggle~orgtosell > $port~orgtrading)
 		setvar $planethaggle~orgtosell $port~orgtrading
 	end
@@ -430,7 +430,7 @@ if ($planethaggle~test = 0)
 	send "'DEBUG: NAN on equiptosell:"&$planethaggle~equiptosell "*"
 	setvar $planethaggle~equiptosell 0
 end
-if (($port~equpercent >= 15) and ($planethaggle~equiptosell > 0))
+if ((($port~equpercent >= 15) or ($planethaggle~allow_low_percent = true)) and ($planethaggle~equiptosell > 0))
 	if ($planethaggle~equiptosell > $port~equtrading)
 		setvar $planethaggle~equiptosell $port~equtrading
 	end

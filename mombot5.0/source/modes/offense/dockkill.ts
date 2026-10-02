@@ -130,13 +130,10 @@ else
 	end
 end
 
-isnumber $shipstatsvalid $ship~ship_max_attack
-if (($shipstatsvalid = false) or ($ship~ship_max_attack <= 0) or ($ship~ship_fighters_max <= 0))
-	gosub :ship~getshipstats
-	savevar $ship~ship_fighters_max
-	savevar $ship~ship_max_attack
-	savevar $ship~max_shields
-end
+gosub :ship~getshipstats
+savevar $ship~ship_fighters_max
+savevar $ship~ship_max_attack
+savevar $ship~max_shields
 
 if ($player~targetingperson)
 	setvar $switchboard~message "StarDock Killer Targeting "&$player~target&" running in sector "&$player~current_sector&".*"

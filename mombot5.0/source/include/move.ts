@@ -452,8 +452,32 @@ if (($player~fighters > 0) and ($player~fighters < $ship~ship_max_attack))
 	setvar $ship~ship_max_attack $player~fighters
 end
 
+if ($move~skipcurrentprompt = true)
+	setvar $move~skipcurrentprompt false
+	setvar $player~current_prompt "Command"
+else
+	gosub :player~currentprompt
+end
+
 getdistance $dist $player~current_sector $player~warpto
 if ($dist < 2)
+	if ($player~current_prompt = "Citadel")
+		send "q q "
+		swaiton "Command [TL="
+		setvar $player~current_prompt "Command"
+	elseif ($player~current_prompt = "Planet")
+		send "q "
+		swaiton "Command [TL="
+		setvar $player~current_prompt "Command"
+	elseif (($player~current_prompt = "<StarDock>") or ($player~current_prompt = "<Hardware"))
+		send "q "
+		swaiton "Command [TL="
+		setvar $player~current_prompt "Command"
+		setvar $player~ondock 0
+	elseif ($player~current_prompt <> "Command")
+		setvar $player~msg "Cannot plain warp from the "&$player~current_prompt&" prompt."
+		goto :move~twarpdone
+	end
 	setvar $player~msg "That sector is adjacent, just plain warping."
 	setvar $move~moveintosector $player~warpto
 	gosub :move~moveintosector
@@ -489,7 +513,6 @@ if (($player~alignment < 1000) and ((($player~weareadjdock = false) and (($playe
 		goto :move~twarpdone
 	end
 end
-gosub :player~currentprompt
 gosub :move~killtwarptriggers
 settexttrigger there :move~adj_warp "You are already in that sector!"
 settextlinetrigger adj_warp :move~adj_warp "Sector  : "&$player~warpto&" "

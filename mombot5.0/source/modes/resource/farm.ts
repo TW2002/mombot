@@ -10,36 +10,38 @@ setvar $help~help[4] $help~tab&"  Usage:  farm remove {sector1} {sector2} {...}"
 setvar $help~help[5] $help~tab&"  Usage:  farm list"
 setvar $help~help[6] $help~tab&"  Usage:  farm clear"
 setvar $help~help[7] $help~tab&"  Usage:  farm balance"
-setvar $help~help[8] $help~tab&"  Usage:  farm fill {planets}/{all} {options} {amount}"
-setvar $help~help[9] $help~tab&"  Usage:  farm "
-setvar $help~help[10] $help~tab&"    "
-setvar $help~help[11] $help~tab&"Examples:"
-setvar $help~help[12] $help~tab&"       "
-setvar $help~help[13] $help~tab&"  >farm set 1224 1925 3176     "
-setvar $help~help[14] $help~tab&"  >farm     "
-setvar $help~help[15] $help~tab&"  >farm fill 12 13 14     "
-setvar $help~help[16] $help~tab&"  >farm fill all f 900000     "
-setvar $help~help[17] $help~tab&"       "
-setvar $help~help[18] $help~tab&"Modes:"
-setvar $help~help[19] $help~tab&"       "
-setvar $help~help[20] $help~tab&"   set - Adds sectors in the order entered into the farm set."
-setvar $help~help[21] $help~tab&"   list - Lists all sectors in the farm set."
-setvar $help~help[22] $help~tab&"   clear - Removes all sectors from the farm set."
-setvar $help~help[23] $help~tab&"   balance - Attempts to balance colos on farm planets."
-setvar $help~help[24] $help~tab&"      "
-setvar $help~help[25] $help~tab&"   Running farm with no options attempts to farm all products."
-setvar $help~help[26] $help~tab&"   If you specify one or more options, only those will be farmed."
-setvar $help~help[27] $help~tab&"   Planet numbers or 'all' specify planets to be filled."
-setvar $help~help[28] $help~tab&"   With f/o/e, amount limits product farmed to each destination planet."
-setvar $help~help[29] $help~tab&"       Product Options:"
-setvar $help~help[30] $help~tab&"            {f}   - Farm fuel ore"
-setvar $help~help[31] $help~tab&"            {o}   - Farm organics"
-setvar $help~help[32] $help~tab&"            {e}   - Farm equipment"
-setvar $help~help[33] $help~tab&"           {fc}   - Farm fuel ore colonists"
-setvar $help~help[34] $help~tab&"           {oc}   - Farm organic colonists"
-setvar $help~help[35] $help~tab&"           {ec}   - Farm equipment colonists"
-setvar $help~help[36] $help~tab&"          {fig}   - Farm fighters"
-setvar $help~help[37] $help~tab&"           {sh}   - Farm shields"
+setvar $help~help[8] $help~tab&"  Usage:  farm autoset"
+setvar $help~help[9] $help~tab&"  Usage:  farm fill {planets}/{all} {options} {amount}"
+setvar $help~help[10] $help~tab&"  Usage:  farm "
+setvar $help~help[11] $help~tab&"    "
+setvar $help~help[12] $help~tab&"Examples:"
+setvar $help~help[13] $help~tab&"       "
+setvar $help~help[14] $help~tab&"  >farm set 1224 1925 3176     "
+setvar $help~help[15] $help~tab&"  >farm     "
+setvar $help~help[16] $help~tab&"  >farm fill 12 13 14     "
+setvar $help~help[17] $help~tab&"  >farm fill all f 900000     "
+setvar $help~help[18] $help~tab&"       "
+setvar $help~help[19] $help~tab&"Modes:"
+setvar $help~help[20] $help~tab&"       "
+setvar $help~help[21] $help~tab&"   set - Adds sectors in the order entered into the farm set."
+setvar $help~help[22] $help~tab&"   list - Lists all sectors in the farm set."
+setvar $help~help[23] $help~tab&"   clear - Removes all sectors from the farm set."
+setvar $help~help[24] $help~tab&"   balance - Attempts to balance colos on farm planets."
+setvar $help~help[25] $help~tab&"   autoset - Automatically sets farm sectors."
+setvar $help~help[26] $help~tab&"      "
+setvar $help~help[27] $help~tab&"   Running farm with no options attempts to farm all products."
+setvar $help~help[28] $help~tab&"   If you specify one or more options, only those will be farmed."
+setvar $help~help[29] $help~tab&"   Planet numbers or 'all' specify planets to be filled."
+setvar $help~help[30] $help~tab&"   With f/o/e, amount limits product farmed to each destination planet."
+setvar $help~help[31] $help~tab&"       Product Options:"
+setvar $help~help[32] $help~tab&"            {f}   - Farm fuel ore"
+setvar $help~help[33] $help~tab&"            {o}   - Farm organics"
+setvar $help~help[34] $help~tab&"            {e}   - Farm equipment"
+setvar $help~help[35] $help~tab&"           {fc}   - Farm fuel ore colonists"
+setvar $help~help[36] $help~tab&"           {oc}   - Farm organic colonists"
+setvar $help~help[37] $help~tab&"           {ec}   - Farm equipment colonists"
+setvar $help~help[38] $help~tab&"          {fig}   - Farm fighters"
+setvar $help~help[39] $help~tab&"           {sh}   - Farm shields"
 gosub :help~helpfile
 
 getwordpos $bot~user_command_line $pos "silent"
@@ -71,28 +73,33 @@ if ($pos > 0)
 	end
 end
 
-getwordpos $bot~parm1 $pos "set"
+getwordpos " "&$bot~parm1&" " $pos " set "
 if ($pos > 0)
 	goto :farm_set
 end
 
-getwordpos $bot~parm1 $pos "add"
+getwordpos " "&$bot~parm1&" " $pos " add "
 if ($pos > 0)
 	goto :farm_set
 end
 
-getwordpos $bot~parm1 $pos "remove"
+getwordpos " "&$bot~parm1&" " $pos " autoset "
+if ($pos > 0)
+	goto :farm_autoset
+end
+
+getwordpos " "&$bot~parm1&" " $pos " remove "
 if ($pos > 0)
 	goto :farm_remove
 end
 
-getwordpos $bot~parm1 $pos "delete"
+getwordpos " "&$bot~parm1&" " $pos " delete "
 if ($pos > 0)
 	goto :farm_remove
 end
 
 gosub :player~quikstats
-setvar $startinglocation $player~current_sector
+setvar $mysector $player~current_sector
 setvar $startingprompt $player~current_prompt
 getword $bot~user_command_line $isfill 1
 setvar $farmfill_limit_active false
@@ -233,8 +240,8 @@ if ($player~planet_scanner = "No")
 	halt
 end
 
-setarray $planetlist SECTORS
-setvar $planetlist_count 0
+setarray $fillplanets SECTORS
+setvar $fillplanets_count 0
 
 if ($isfill = "fill")
 	getword $bot~user_command_line $check 2
@@ -244,8 +251,8 @@ if ($isfill = "fill")
 		setvar $j 0
 		while ($j < $planet~planetcount)
 			add $j 1
-			add $planetlist_count 1
-			setvar $planetlist[$planetlist_count] $planet~planets[$j]
+			add $fillplanets_count 1
+			setvar $fillplanets[$fillplanets_count] $planet~planets[$j]
 		end
 		setvar $planet~planet $startingplanet
 		gosub :planet~landonplanetentercitadel
@@ -254,17 +261,16 @@ if ($isfill = "fill")
 		:planetlist_loop
 		getword $bot~user_command_line $check $i
 		if ($check <> "") and ($check > 0)
-			add $planetlist_count 1
-			setvar $planetlist[$planetlist_count] $check
+			add $fillplanets_count 1
+			setvar $fillplanets[$fillplanets_count] $check
 			add $i 1
 			goto :planetlist_loop
 		end
 	end
 else
-	setvar $planetlist[1] $startingplanet
-	setvar $planetlist_count 1
+	setvar $fillplanets[1] $startingplanet
+	setvar $fillplanets_count 1
 end
-:postplanetlist
 
 gosub :loadfarmsectorlist
 
@@ -274,9 +280,9 @@ setvar $strip~active true
 setvar $strip~resume_requested false
 setvar $planet~disconnected false
 setvar $p 0
-while ($p < $planetlist_count)
+while ($p < $fillplanets_count)
 	add $p 1
-	setvar $planet~planettofill $planetlist[$p]
+	setvar $planet~planettofill $fillplanets[$p]
 	setvar $planet~skip_over_99 true
 	send "qqq*"
 	setvar $planet~planet $planet~planettofill
@@ -357,17 +363,21 @@ else
 end
 return
 
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :farmplanet
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 killalltriggers
 setvar $farmplanetdone false
 setvar $i 0
 
+gosub :updatefarmlist
+
 :tryagain
 add $i 1
-while ($i <= $farmlistcount)
+while ($i <= $farmsectorcount)
 	gosub :landstartingplanet
-	send "c"
-	setvar $planet~warpto $sector[$i]
+	gosub :ensurecitadelforpwarp
+	setvar $planet~warpto $farmsectorlist[$i]
 	gosub :planet~pwarp
 	if ($planet~pwarpsuccess = false)
 		goto :tryagain
@@ -448,7 +458,7 @@ if ($player~current_prompt = "Command")
 elseif ($player~current_prompt = "Planet")
 	send "c"
 end
-send "p "&$startinglocation&"  *y"
+send "p "&$mysector&"  *y"
 return
 
 :landstartingplanet
@@ -482,6 +492,72 @@ else
 end
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:updatefarmlist
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+gosub :planet~getplanets
+setarray $farmsectors sectors
+setarray $farmsectorlist $sectorcount
+setvar $farmsectorcount 0
+setvar $p 0
+:nextfarmplanet
+while ($p < $planet~planetlistcount)
+	add $p 1
+	setvar $tmpsec $planet~planetlist[$p][1]
+	if ($farmsectors[$tmpsec] = 1) or ($secindex[$tmpsec] = 0)
+		goto :nextfarmplanet
+	end
+	if ($planet~planetlist[$p][8] > 0) and ($planet~emptyfuel = true)
+		setvar $farmsectors[$tmpsec] 1
+		add $farmsectorcount 1
+		setvar $farmsectorlist[$farmsectorcount] $tmpsec
+		goto :nextfarmplanet
+	end
+	if ($planet~planetlist[$p][9] > 0) and ($planet~emptyorganics = true)
+		setvar $farmsectors[$tmpsec] 1
+		add $farmsectorcount 1
+		setvar $farmsectorlist[$farmsectorcount] $tmpsec
+		goto :nextfarmplanet
+	end
+	if ($planet~planetlist[$p][10] > 0) and ($planet~emptyequipment = true)
+		setvar $farmsectors[$tmpsec] 1
+		add $farmsectorcount 1
+		setvar $farmsectorlist[$farmsectorcount] $tmpsec
+		goto :nextfarmplanet
+	end
+	if ($planet~planetlist[$p][5] > 0) and ($planet~emptyfuelcolos = true)
+		setvar $farmsectors[$tmpsec] 1
+		add $farmsectorcount 1
+		setvar $farmsectorlist[$farmsectorcount] $tmpsec
+		goto :nextfarmplanet
+	end
+	if ($planet~planetlist[$p][6] > 0) and ($planet~emptyorgcolos = true)
+		setvar $farmsectors[$tmpsec] 1
+		add $farmsectorcount 1
+		setvar $farmsectorlist[$farmsectorcount] $tmpsec
+		goto :nextfarmplanet
+	end
+	if ($planet~planetlist[$p][7] > 0) and ($planet~emptyequcolos = true)
+		setvar $farmsectors[$tmpsec] 1
+		add $farmsectorcount 1
+		setvar $farmsectorlist[$farmsectorcount] $tmpsec
+		goto :nextfarmplanet
+	end
+	if ($planet~planetlist[$p][11] > 0) and ($planet~emptyfigs = true)
+		setvar $farmsectors[$tmpsec] 1
+		add $farmsectorcount 1
+		setvar $farmsectorlist[$farmsectorcount] $tmpsec
+		goto :nextfarmplanet
+	end
+	if ($planet~planetlist[$p][4] > 0) and ($planet~emptyshields = true)
+		setvar $farmsectors[$tmpsec] 1
+		add $farmsectorcount 1
+		setvar $farmsectorlist[$farmsectorcount] $tmpsec
+		goto :nextfarmplanet
+	end
+end
+return
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :endfarmer
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 killalltriggers
@@ -495,7 +571,7 @@ gosub :player~currentprompt
 if ($player~current_prompt = "Planet")
 	send "c"
 end
-send "p "&$startinglocation&"  *ys* "
+send "p "&$mysector&"  *ys* "
 if ($planetisfull)
 	setvar $switchboard~message "Farming Planet is full.  Ready to sell off the product!*"
 	gosub :switchboard~switchboard
@@ -504,7 +580,7 @@ else
 	gosub :switchboard~switchboard
 end
 gosub :player~quikstats
-if ($player~current_sector <> $startinglocation)
+if ($player~current_sector <> $mysector)
 	setvar $switchboard~message "Could not make it back to starting sector!*"
 	gosub :switchboard~switchboard
 end
@@ -515,7 +591,7 @@ halt
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 gosub :planet~loadplanetcolos
 gosub :loadfarmsectorlist
-if ($farmlistcount <= 0)
+if ($sectorcount <= 0)
 	setvar $switchboard~message "No sectors in farming list.*"
 	gosub :switchboard~switchboard
 	halt
@@ -542,7 +618,7 @@ setvar $relog_nocitadel 1
 savevar $relog_nocitadel
 setvar $balance_total_moved 0
 setvar $balance_sector_index 0
-while ($balance_sector_index < $farmlistcount)
+while ($balance_sector_index < $sectorcount)
 	add $balance_sector_index 1
 	gosub :balance_land_start_citadel
 	setvar $planet~warpto $sector[$balance_sector_index]
@@ -560,7 +636,7 @@ while ($balance_sector_index < $farmlistcount)
 	end
 end
 gosub :balance_land_start_citadel
-setvar $planet~warpto $startinglocation
+setvar $planet~warpto $mysector
 gosub :planet~pwarp
 gosub :balance_finish
 setvar $switchboard~message "Farm balance complete. Moved "&$balance_total_moved&" colonists.*"
@@ -568,9 +644,9 @@ gosub :switchboard~switchboard
 halt
 
 :loadfarmsectorlist
-setvar $sector sectors
 setarray $sector sectors
-setvar $farmlistcount 0
+setarray $secindex sectors
+setvar $sectorcount 0
 setvar $i 1
 while ($i <= sectors)
 	getword $farmsectors $check $i
@@ -580,9 +656,10 @@ while ($i <= sectors)
 	isnumber $test $check
 	if ($test)
 		if ($check > 0) and ($check <= sectors)
-			if ($check <> $startinglocation)
-				add $farmlistcount 1
-				setvar $sector[$farmlistcount] $check
+			if ($check <> $mysector)
+				add $sectorcount 1
+				setvar $sector[$sectorcount] $check
+				setvar $secindex[$check] 1
 			end
 		end
 	end
@@ -1157,10 +1234,44 @@ gosub :switchboard~switchboard
 halt
 
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+:farm_autoset
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+setvar $farmsectors ""
+setarray $secadded sectors
+if ($planet~planetlistcount < 1)
+	gosub :planet~getplanets
+end
+setvar $i 0
+:donextplanet
+while ($i < $planet~planetlistcount)
+	add $i 1
+	if ($i < 11) or ($i > sectors) or ($i = $mysector)
+		goto :donextplanet
+	end
+	if ($planet~planetlist[$i][5] < 1) and ($planet~planetlist[$i][6] < 1) and ($planet~planetlist[$i][7] < 1)
+		goto :donextplanet
+	end
+	if ($secadded[$planet~planetlist[$i][1]] = 1)
+		goto :donextplanet
+	end
+	setvar $secadded[$planet~planetlist[$i][1]] 1
+	if ($farmsectors = "")
+		setvar $farmsectors $planet~planetlist[$i][1]
+	else
+		setvar $farmsectors $farmsectors&" "&$planet~planetlist[$i][1]
+	end
+	add $sectorsadded 1
+end
+savevar $farmsectors
+setvar $switchboard~message ""&$sectorsadded&" Sectors added to Bot Farming Configuration.*"
+gosub :switchboard~switchboard
+halt
+
+#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 :farm_remove
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 gosub :loadfarmsectorlist
-if ($farmsectors = "") or ($farmlistcount <= 0)
+if ($farmsectors = "") or ($sectorcount <= 0)
 	setvar $switchboard~message "No sectors in farming list.*"
 	gosub :switchboard~switchboard
 	halt
@@ -1174,7 +1285,7 @@ while ($check <> "%%%")
 	if ($check <> "%%%")
 		isnumber $test $check
 		if ($test)
-			if ($check > 0) and ($check <= sectors) and ($check > 10)
+			if ($check > 0) and ($check <= sectors)
 				setvar $farmsec $check
 				gosub :removefromlist
 			end
@@ -1196,7 +1307,7 @@ if ($farmsec = "") or ($farmsec = 0) or ($farmsec > sectors) or ($farmsec < 11)
 	halt
 end
 setvar $c 0
-while ($c < $farmlistcount)
+while ($c < $sectorcount)
 	add $c 1
 	if ($sector[$c] = $farmsec)
 		setvar $switchboard~message "Sector "&$farmsec&" is already in the farm list.*"
@@ -1210,8 +1321,8 @@ else
 	setvar $farmsectors $farmsectors&" "&$farmsec
 end
 add $sectorsadded 1
-add $farmlistcount 1
-setvar $sector[$farmlistcount] $farmsec
+add $sectorcount 1
+setvar $sector[$sectorcount] $farmsec
 savevar $farmsectors
 return
 
@@ -1221,7 +1332,7 @@ return
 setvar $c 0
 setvar $d 0
 setvar $newfarmlist ""
-while ($c < $farmlistcount)
+while ($c < $sectorcount)
 	add $c 1
 	if ($sector[$c] = $farmsec)
 		add $sectorsremoved 1
@@ -1235,7 +1346,7 @@ while ($c < $farmlistcount)
 	end
 end
 setvar $farmsectors $newfarmlist
-setvar $farmlistcount $d
+setvar $sectorcount $d
 savevar $farmsectors
 return
 
@@ -1310,15 +1421,8 @@ if ($amount_to_strip > 0)
 		halt
 	end
 end
-gosub :player~currentprompt
-if ($player~current_prompt = "Citadel")
-	send "q"
-	swaiton "Planet command"
-end
-if ($player~current_prompt = "Planet")
-	send "q"
-	swaiton "Command ["
-end
+send "q"
+swaiton "Command ["
 setvar $planet~planet $farmstrip_destplanet
 setvar $planet~nocit true
 gosub :planet~landingsub
@@ -1326,6 +1430,8 @@ return
 
 :farm_resume_after_disconnect
 killalltriggers
+setvar $farm~relog_settled false
+setvar $farm~recovery_attempts 0
 echo "**[Farm] Disconnected - waiting for relog before resuming current planet.**"
 
 :farm_wait_connected
@@ -1334,52 +1440,188 @@ if (connected <> true)
 	pause
 end
 
-:farm_wait_prompt
-killtrigger farmcommand
-killtrigger farmplanet
-killtrigger farmcitadel
-killtrigger farmpromptdelay
-setstrigger farmcommand :farm_prompt_ready "Command [TL"
-setstrigger farmplanet :farm_prompt_ready "Planet command (?=help) [D]"
-setstrigger farmcitadel :farm_prompt_ready "Citadel command (?=help)"
-setdelaytrigger farmpromptdelay :farm_prompt_check 3000
+:farm_wait_relog
+killtrigger farmwaitrelog
+setvar $farm~relog_active false
+listactivescripts $farm~scripts
+setvar $farm~script_i 1
+while ($farm~script_i <= $farm~scripts)
+	setvar $farm~script_name $farm~scripts[$farm~script_i]
+	lowercase $farm~script_name
+	getwordpos $farm~script_name $farm~pos "relog.cts"
+	if ($farm~pos > 0)
+		setvar $farm~relog_active true
+	end
+	add $farm~script_i 1
+end
+if ($farm~relog_active = true)
+	setdelaytrigger farmwaitrelog :farm_wait_relog 250
+	pause
+end
+if ($farm~relog_settled = false)
+	setvar $farm~relog_settled true
+	setdelaytrigger farmwaitrelog :farm_wait_relog 250
+	pause
+end
+
+:farm_restore_planet
+gosub :killfarmrestoretriggers
+add $farm~recovery_attempts 1
+settexttrigger farmrestoreprompt :farm_restore_prompt #145&#8
+setdelaytrigger farmrestoretimeout :farm_restore_timeout 3000
+send #145
 pause
 
-:farm_prompt_check
-killtrigger farmcommand
-killtrigger farmplanet
-killtrigger farmcitadel
-killtrigger farmpromptdelay
-if (connected <> true)
-	goto :farm_wait_connected
+:farm_restore_prompt
+gosub :killfarmrestoretriggers
+gosub :player~parse_current_prompt_line
+if ($player~current_prompt = "Command")
+	goto :farm_restore_command
+elseif ($player~current_prompt = "Planet")
+	goto :farm_restore_planet_prompt
+elseif ($player~current_prompt = "Citadel")
+	goto :farm_restore_citadel
+elseif ($player~current_prompt = "Computer")
+	goto :farm_restore_computer
+elseif ($player~current_prompt = "Qcannon")
+	goto :farm_restore_qcannon
 end
-setvar $farm~line currentline
-getwordpos $farm~line $farm~pos "Command [TL"
-if ($farm~pos > 0)
-	goto :farm_prompt_ready
-end
-getwordpos $farm~line $farm~pos "Planet command (?=help) [D]"
-if ($farm~pos > 0)
-	goto :farm_prompt_ready
-end
-getwordpos $farm~line $farm~pos "Citadel command (?=help)"
-if ($farm~pos > 0)
-	goto :farm_prompt_ready
-end
-goto :farm_wait_prompt
+goto :farm_restore_timeout
 
-:farm_prompt_ready
-killtrigger farmcommand
-killtrigger farmplanet
-killtrigger farmcitadel
-killtrigger farmpromptdelay
-gosub :player~quikstats
-gosub :landstartingplanet
+:farm_restore_command
+gosub :killfarmrestoretriggers
 setvar $planet~planet $planet~planettofill
+setvar $planet~nocit true
+gosub :planet~landingsub
+if ($planet~successfulplanet = false)
+	goto :farm_restore_timeout
+end
+goto :farm_restore_ready
+
+:farm_restore_citadel
+gosub :killfarmrestoretriggers
+send "q"
+swaiton "Planet command"
+goto :farm_restore_ready
+
+:farm_restore_computer
+gosub :killfarmrestoretriggers
+send "q"
+swaiton "Command ["
+goto :farm_restore_planet
+
+:farm_restore_qcannon
+gosub :killfarmrestoretriggers
+send "q"
+swaiton "Citadel command"
+send "q"
+swaiton "Planet command"
+goto :farm_restore_ready
+
+:farm_restore_planet_prompt
+gosub :killfarmrestoretriggers
+
+:farm_restore_ready
 gosub :planet~getplanetinfo
+if ($planet~planet <> $planet~planettofill)
+	send "q"
+	swaiton "Command ["
+	if ($farm~recovery_attempts < 5)
+		goto :farm_restore_planet
+	end
+	setvar $switchboard~message "Could not restore farming planet "&$planet~planettofill&" after relog; halting farm run.*"
+	gosub :switchboard~switchboard
+	halt
+end
+gosub :player~quikstats
+setvar $farm~recovery_cargo ($player~ore_holds + $player~organic_holds + $player~equipment_holds + $player~colonist_holds)
+if ($farm~recovery_cargo > 0)
+	if ($player~ore_holds > 0)
+		send "tnl1*"
+		swaiton "Planet command"
+	end
+	if ($player~organic_holds > 0)
+		send "tnl2*"
+		swaiton "Planet command"
+	end
+	if ($player~equipment_holds > 0)
+		send "tnl3*"
+		swaiton "Planet command"
+	end
+	if ($player~colonist_holds > 0) and ($planet~category >= 1) and ($planet~category <= 3)
+		send "snl"&$planet~category&"*"
+		swaiton "Planet command"
+	end
+	gosub :player~quikstats
+	setvar $farm~recovery_cargo ($player~ore_holds + $player~organic_holds + $player~equipment_holds + $player~colonist_holds)
+	if ($farm~recovery_cargo > 0)
+		send "q"
+		swaiton "Command ["
+		setvar $planet~planet $planet~planettostrip
+		setvar $planet~nocit true
+		gosub :planet~landingsub
+		if ($planet~successfulplanet = false)
+			setvar $switchboard~message "Could not return in-transit cargo to planet "&$planet~planettostrip&" after relog; halting farm run.*"
+			gosub :switchboard~switchboard
+			halt
+		end
+		if ($player~ore_holds > 0)
+			send "tnl1*"
+			swaiton "Planet command"
+		end
+		if ($player~organic_holds > 0)
+			send "tnl2*"
+			swaiton "Planet command"
+		end
+		if ($player~equipment_holds > 0)
+			send "tnl3*"
+			swaiton "Planet command"
+		end
+		if ($player~colonist_holds > 0) and ($planet~category >= 1) and ($planet~category <= 3)
+			send "snl"&$planet~category&"*"
+			swaiton "Planet command"
+		end
+		gosub :player~quikstats
+		setvar $farm~recovery_cargo ($player~ore_holds + $player~organic_holds + $player~equipment_holds + $player~colonist_holds)
+		if ($farm~recovery_cargo > 0)
+			setvar $switchboard~message "Could not safely unload in-transit cargo after relog; halting farm run without jettisoning it.*"
+			gosub :switchboard~switchboard
+			halt
+		end
+		send "q"
+		swaiton "Command ["
+		setvar $planet~planet $planet~planettofill
+		setvar $planet~nocit true
+		gosub :planet~landingsub
+		if ($planet~successfulplanet = false)
+			setvar $switchboard~message "Could not return to farming planet "&$planet~planettofill&" after preserving in-transit cargo; halting farm run.*"
+			gosub :switchboard~switchboard
+			halt
+		end
+	end
+end
 setvar $planet~disconnected false
 setvar $strip~resume_requested false
 echo "**[Farm] Recovered - retrying planet "&$planet~planettostrip&".**"
+return
+
+:farm_restore_timeout
+gosub :killfarmrestoretriggers
+if (connected <> true)
+	goto :farm_wait_connected
+end
+if ($farm~recovery_attempts < 5)
+	setdelaytrigger farmretryrestore :farm_restore_planet 500
+	pause
+end
+setvar $switchboard~message "Could not restore farming planet after relog; halting farm run.*"
+gosub :switchboard~switchboard
+halt
+
+:killfarmrestoretriggers
+killtrigger farmrestoreprompt
+killtrigger farmrestoretimeout
+killtrigger farmretryrestore
 return
 		
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -1445,11 +1687,11 @@ if ($planet~emptyfigs > 0)
 		setvar $figstofill 0
 	end
 	if ($figstofill = 0) and ($planet~dumpfigs > 0)
-		setvar $planet~warpto $startinglocation
+		setvar $planet~warpto $mysector
 		gosub :ensurecitadelforpwarp
 		gosub :planet~pwarp
 		if ($planet~pwarpsuccess = false)
-			setvar $switchboard~message "Unable to pwarp to sector "&$startinglocation&"*"
+			setvar $switchboard~message "Unable to pwarp to sector "&$mysector&"*"
 			gosub :switchboard~switchboard
 			halt
 		end
